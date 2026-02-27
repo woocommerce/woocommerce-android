@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -16,6 +18,7 @@ import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +33,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCOrderStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardPaymentViewModelTest {
@@ -63,6 +67,10 @@ class WooPosCardPaymentViewModelTest {
         on { asString(any()) }.thenReturn("parsed error")
     }
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
+    private val orderStore: WCOrderStore = mock()
+    private val orderMapper: OrderMapper = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val priceFormat: WooPosFormatPrice = mock()
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
 
@@ -86,6 +94,10 @@ class WooPosCardPaymentViewModelTest {
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
             analyticsTracker = analyticsTracker,
+            orderStore = orderStore,
+            orderMapper = orderMapper,
+            selectedSite = selectedSite,
+            priceFormat = priceFormat,
         )
     }
 
@@ -373,6 +385,10 @@ class WooPosCardPaymentViewModelTest {
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
             analyticsTracker = analyticsTracker,
+            orderStore = orderStore,
+            orderMapper = orderMapper,
+            selectedSite = selectedSite,
+            priceFormat = priceFormat,
         )
         advanceUntilIdle()
 

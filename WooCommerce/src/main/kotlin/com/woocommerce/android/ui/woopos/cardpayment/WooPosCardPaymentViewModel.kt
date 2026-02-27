@@ -7,6 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -20,6 +22,7 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentCont
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +34,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCOrderStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,6 +47,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
+    private val orderStore: WCOrderStore,
+    private val orderMapper: OrderMapper,
+    private val selectedSite: SelectedSite,
+    private val priceFormat: WooPosFormatPrice,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -57,6 +66,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
+    private val _orderTotals = MutableStateFlow<WooPosOrderTotalsViewState?>(null)
+    val orderTotals: StateFlow<WooPosOrderTotalsViewState?> = _orderTotals.asStateFlow()
+
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
@@ -65,6 +77,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     init {
         observeCardReaderStatus()
+        loadOrderTotals()
     }
 
     private fun observeCardReaderStatus() {
@@ -90,6 +103,24 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun loadOrderTotals() {
+        viewModelScope.launch {
+            val orderEntity = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
+            val order = orderEntity?.let { orderMapper.toAppModel(it) } ?: return@launch
+
+            _orderTotals.value = WooPosOrderTotalsViewState(
+                subtotal = priceFormat(order.productsTotal),
+                discount = if (order.discountTotal > BigDecimal.ZERO) {
+                    priceFormat(order.discountTotal)
+                } else {
+                    null
+                },
+                taxes = priceFormat(order.totalTax),
+                total = priceFormat(order.total),
+            )
         }
     }
 
