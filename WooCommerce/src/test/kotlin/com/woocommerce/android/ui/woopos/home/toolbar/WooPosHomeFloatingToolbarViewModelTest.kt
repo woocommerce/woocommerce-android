@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -9,7 +10,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -36,8 +35,8 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        onBlocking { isEnabled(any()) }.thenReturn(false)
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isCurrentSiteCIAB() }.thenReturn(false)
     }
 
     @Test
@@ -258,12 +257,38 @@ class WooPosHomeFloatingToolbarViewModelTest {
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
+    @Test
+    fun `given CIAB site, when menu opened, then bookings item is shown`() = runTest {
+        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
+        val viewModel = createViewModel()
+
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        val menu = viewModel.state.value.menu
+        assertThat(menu).isInstanceOf(WooPosHomeFloatingToolbarState.Menu.Visible::class.java)
+        val items = (menu as WooPosHomeFloatingToolbarState.Menu.Visible).items
+        assertThat(items.any { it.title == R.string.woopos_bookings_title }).isTrue
+    }
+
+    @Test
+    fun `given non-CIAB site, when menu opened, then bookings item is not shown`() = runTest {
+        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(false)
+        val viewModel = createViewModel()
+
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        val menu = viewModel.state.value.menu
+        assertThat(menu).isInstanceOf(WooPosHomeFloatingToolbarState.Menu.Visible::class.java)
+        val items = (menu as WooPosHomeFloatingToolbarState.Menu.Visible).items
+        assertThat(items.any { it.title == R.string.woopos_bookings_title }).isFalse
+    }
+
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
         networkStatus,
         resourceProvider,
         analyticsTracker,
-        featureFlagRepository,
+        ciabSiteGateKeeper,
     )
 }

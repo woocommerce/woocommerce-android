@@ -11,21 +11,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -51,7 +50,6 @@ fun WPComLoginPasswordScreen(viewModel: WPComLoginPasswordViewModel) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WPComLoginPasswordScreen(
     viewState: WPComLoginPasswordViewModel.ViewState,
@@ -62,6 +60,11 @@ fun WPComLoginPasswordScreen(
     onResetPasswordClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val titleRes = if (viewState.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -73,7 +76,7 @@ fun WPComLoginPasswordScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colors.surface)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
@@ -81,27 +84,22 @@ fun WPComLoginPasswordScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(16.dp),
             ) {
                 JetpackToWooHeader()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-                val title = if (viewState.isJetpackInstalled) {
-                    R.string.login_jetpack_connect
-                } else {
-                    R.string.login_jetpack_install
-                }
+                Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = title),
-                    style = MaterialTheme.typography.h4,
+                    text = stringResource(id = titleRes),
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
                 UserInfo(
                     emailOrUsername = viewState.emailOrUsername,
                     avatarUrl = viewState.avatarUrl,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(
                         id = if (viewState.isJetpackInstalled) {
@@ -111,7 +109,7 @@ fun WPComLoginPasswordScreen(
                         }
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
                 WCPasswordField(
                     value = viewState.password,
                     onValueChange = onPasswordChanged,
@@ -143,29 +141,21 @@ fun WPComLoginPasswordScreen(
                 enabled = viewState.enableSubmit,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(
-                    text = stringResource(
-                        id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connect
-                        } else {
-                            R.string.login_jetpack_install
-                        }
-                    )
-                )
+                Text(text = stringResource(id = titleRes))
             }
             WCOutlinedButton(
                 onClick = onMagicLinkClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.login_jetpack_installation_continue_magic_link)
                 )
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 
@@ -176,15 +166,16 @@ fun WPComLoginPasswordScreen(
 
 @Preview
 @Composable
-private fun JetpackActivationWPComScreenPreview() {
+private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLoginPasswordScreen(
             viewState = WPComLoginPasswordViewModel.ViewState(
+                isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 password = "",
-                avatarUrl = "",
-                isJetpackInstalled = false
+                avatarUrl = ""
             )
         )
     }
 }
+

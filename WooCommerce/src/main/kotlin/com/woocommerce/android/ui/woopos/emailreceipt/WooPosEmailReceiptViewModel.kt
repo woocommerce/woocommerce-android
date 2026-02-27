@@ -24,6 +24,7 @@ class WooPosEmailReceiptViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY)!!
+    private val receiptAlreadySent = savedState.get<Boolean>(EMAIL_RECEIPT_ROUTE_ALREADY_SENT_KEY) ?: false
 
     private val _state = savedState.getStateFlow<WooPosEmailReceiptState>(
         scope = viewModelScope,
@@ -39,6 +40,10 @@ class WooPosEmailReceiptViewModel @Inject constructor(
     )
 
     val state: StateFlow<WooPosEmailReceiptState> = _state
+
+    init {
+        loadBillingEmail()
+    }
 
     fun onUIEvent(event: WooPosEmailReceiptUIEvent) {
         when (event) {
@@ -93,6 +98,19 @@ class WooPosEmailReceiptViewModel @Inject constructor(
                     status = WooPosEmailReceiptState.Email.Button.Status.DISABLED
                 )
             )
+        }
+    }
+
+    private fun loadBillingEmail() {
+        if (receiptAlreadySent) return
+        viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is WooPosEmailReceiptState.Email && currentState.email.isBlank()) {
+                val billingEmail = repository.getBillingEmail(orderId) ?: return@launch
+                if (_state.value is WooPosEmailReceiptState.Email) {
+                    handleEmailChanged(billingEmail)
+                }
+            }
         }
     }
 }

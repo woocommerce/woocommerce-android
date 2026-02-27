@@ -7,7 +7,6 @@ import com.gravatar.AvatarQueryOptions
 import com.gravatar.AvatarUrl
 import com.gravatar.DefaultAvatarOption
 import com.gravatar.types.Email
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,6 +15,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
+import com.woocommerce.android.ui.login.WPComLoginRepository.LoginResult
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -29,8 +29,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
+import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,10 +66,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
         flowOf(Pair(navArgs.emailOrUsername, avatarUrlFromEmail(navArgs.emailOrUsername)))
     ) { password, isLoadingDialogShown, errorMessage, (emailOrUsername, avatarUrl) ->
         ViewState(
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = emailOrUsername,
             password = password,
             avatarUrl = avatarUrl,
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
@@ -96,7 +96,9 @@ class WPComLoginPasswordViewModel @Inject constructor(
         triggerEvent(
             ShowMagicLinkScreen(
                 emailOrUsername = navArgs.emailOrUsername,
-                jetpackStatus = navArgs.jetpackStatus
+                jetpackStatus = navArgs.jetpackStatus,
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
+                requestAtStart = true
             )
         )
     }
@@ -117,21 +119,36 @@ class WPComLoginPasswordViewModel @Inject constructor(
         )
 
         isLoadingDialogShown.value = true
-        wpComLoginRepository.login(navArgs.emailOrUsername, password.value).fold(
-            onSuccess = {
-                fetchAccount()
-            },
-            onFailure = {
-                val failure = (it as? OnChangedException)?.error as? AuthenticationError
+        when (val result = wpComLoginRepository.login(navArgs.emailOrUsername, password.value)) {
+            is LoginResult.Success -> fetchAccount()
 
-                when (failure?.type) {
-                    AuthenticationErrorType.NEEDS_2FA -> {
-                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, password.value, navArgs.jetpackStatus))
-                    }
+            is LoginResult.TwoFactorRequired -> triggerEvent(
+                Show2FAScreen(
+                    emailOrUsername = navArgs.emailOrUsername,
+                    password = password.value,
+                    jetpackStatus = navArgs.jetpackStatus,
+                    userId = result.userId,
+                    webauthnNonce = result.webauthnNonce,
+                    supportedAuthTypes = result.supportedAuthTypes
+                )
+            )
 
+            is LoginResult.Error -> {
+                when (result.error.type) {
                     AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
                     AuthenticationErrorType.NOT_AUTHENTICATED -> {
                         errorMessage.value = R.string.password_incorrect
+                    }
+
+                    AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED -> {
+                        triggerEvent(
+                            ShowMagicLinkScreen(
+                                emailOrUsername = navArgs.emailOrUsername,
+                                jetpackStatus = navArgs.jetpackStatus,
+                                magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
+                                requestAtStart = false
+                            )
+                        )
                     }
 
                     else -> {
@@ -143,11 +160,11 @@ class WPComLoginPasswordViewModel @Inject constructor(
                     JETPACK_SETUP_LOGIN_FLOW,
                     mapOf(
                         AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_PASSWORD,
-                        AnalyticsTracker.KEY_FAILURE to (failure?.type?.name ?: "Unknown error")
+                        AnalyticsTracker.KEY_FAILURE to (result.error.type?.name ?: "Unknown error")
                     )
                 )
             }
-        )
+        }
         isLoadingDialogShown.value = false
     }
 
@@ -174,10 +191,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val isJetpackInstalled: Boolean,
         val emailOrUsername: String,
         val password: String,
         val avatarUrl: String,
-        val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {
@@ -187,11 +204,16 @@ class WPComLoginPasswordViewModel @Inject constructor(
     data class Show2FAScreen(
         val emailOrUsername: String,
         val password: String,
-        val jetpackStatus: JetpackStatus
+        val jetpackStatus: JetpackStatus,
+        val userId: String,
+        val webauthnNonce: String,
+        val supportedAuthTypes: List<String>
     ) : MultiLiveEvent.Event()
 
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
-        val jetpackStatus: JetpackStatus
+        val jetpackStatus: JetpackStatus,
+        val magicLinkFallbackButton: MagicLinkFallbackButton,
+        val requestAtStart: Boolean
     ) : MultiLiveEvent.Event()
 }

@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -43,6 +44,8 @@ class WPComLogin2FAViewModel @Inject constructor(
 
     private val navArgs: WPComLogin2FAFragmentArgs by savedStateHandle.navArgs()
 
+    private val isSecurityKeySupported = navArgs.supportedAuthTypes.contains("webauthn")
+
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
     private val loadingMessage =
         savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "loading-message")
@@ -57,10 +60,11 @@ class WPComLogin2FAViewModel @Inject constructor(
         loadingMessage,
     ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, ->
         ViewState(
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+            isSecurityKeySupported = isSecurityKeySupported,
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 }
         )
@@ -84,8 +88,12 @@ class WPComLogin2FAViewModel @Inject constructor(
             emailOrUsername = navArgs.emailOrUsername,
             password = navArgs.password
         ).fold(
-            onSuccess = {
-                triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
+            onSuccess = { result ->
+                when (result) {
+                    WPComLoginRepository.SMSRequestResult.UserSignedIn -> fetchAccount()
+                    WPComLoginRepository.SMSRequestResult.SMSRequested ->
+                        triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
+                }
             },
             onFailure = {
                 triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_failure))
@@ -127,12 +135,56 @@ class WPComLogin2FAViewModel @Inject constructor(
                     JETPACK_SETUP_LOGIN_FLOW,
                     mapOf(
                         AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_VERIFICATION_CODE,
-                        AnalyticsTracker.KEY_TAP to (failure?.type?.name ?: "Unknown error")
+                        AnalyticsTracker.KEY_FAILURE to (failure?.type?.name ?: "Unknown error")
                     )
                 )
             }
         )
         loadingMessage.value = 0
+    }
+
+    fun onSecurityKeyClick() = launch {
+        if (navArgs.webauthnNonce.isBlank()) {
+            triggerEvent(ShowSnackbar(R.string.error_generic))
+            return@launch
+        }
+        loadingMessage.value = R.string.logging_in
+        wpComLoginRepository.startSecurityKeyChallenge(
+            userId = navArgs.userId,
+            webauthnNonce = navArgs.webauthnNonce
+        ).fold(
+            onSuccess = { challengeData ->
+                loadingMessage.value = 0
+                triggerEvent(
+                    StartPasskeyAuthentication(
+                        userId = challengeData.userId,
+                        twoStepNonce = challengeData.twoStepNonce,
+                        challengeJson = challengeData.challengeJson
+                    )
+                )
+            },
+            onFailure = {
+                loadingMessage.value = 0
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+            }
+        )
+    }
+
+    fun onPasskeyResult(userId: String, twoStepNonce: String, clientData: String) = launch {
+        loadingMessage.value = R.string.logging_in
+        wpComLoginRepository.finishSecurityKeyChallenge(
+            userId = userId,
+            twoStepNonce = twoStepNonce,
+            clientData = clientData
+        ).fold(
+            onSuccess = { fetchAccount() },
+            onFailure = { triggerEvent(ShowSnackbar(R.string.error_generic)) }
+        )
+        loadingMessage.value = 0
+    }
+
+    fun onPasskeyError() {
+        triggerEvent(ShowSnackbar(R.string.error_generic))
     }
 
     private suspend fun fetchAccount() {
@@ -152,13 +204,20 @@ class WPComLogin2FAViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val isJetpackInstalled: Boolean,
         val emailOrUsername: String,
         val password: String,
         val otp: String,
-        val isJetpackInstalled: Boolean,
+        val isSecurityKeySupported: Boolean = false,
         val errorMessage: Int? = null,
         val loadingMessage: Int? = null
     ) {
         val enableSubmit = otp.isNotBlank()
     }
+
+    data class StartPasskeyAuthentication(
+        val userId: String,
+        val twoStepNonce: String,
+        val challengeJson: String
+    ) : MultiLiveEvent.Event()
 }

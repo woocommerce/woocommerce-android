@@ -1,13 +1,19 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
+data class DateSelectorState(
+    val formattedDate: String,
+    val selectedDateMillis: Long,
+)
+
+@Immutable
 sealed class WooPosBookingsState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
+    abstract val dateSelectorState: DateSelectorState?
 
     @Immutable
     sealed interface BookingAction {
@@ -15,6 +21,15 @@ sealed class WooPosBookingsState {
 
         @Immutable
         data class EmailReceipt(override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class IssueRefund(override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class CancelBooking(val bookingId: Long, override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class ViewOrder(override val orderId: Long) : BookingAction
     }
 
     @Immutable
@@ -53,7 +68,7 @@ sealed class WooPosBookingsState {
         val discountAmount: String,
         val totalAmount: String,
         val paidWithLabel: String?,
-        val showPayButtons: Boolean,
+        val collectPaymentLabel: String?,
     )
 
     @Immutable
@@ -61,7 +76,8 @@ sealed class WooPosBookingsState {
         val id: Long,
         val orderId: Long,
         val number: String,
-        val status: WooPosBookingStatus,
+        val paymentStatus: PaymentStatus,
+        val isCancelled: Boolean,
         val actionsState: BookingActionsState,
         val headerTitle: String,
         val headerSubtitle: String,
@@ -81,27 +97,33 @@ sealed class WooPosBookingsState {
     @Immutable
     data class BookingItemViewState(
         val id: Long,
-        val title: String,
-        val date: String,
-        val total: String,
-        val customerEmail: String?,
+        val timeRange: String,
+        val subtitle: String,
         val isSelected: Boolean,
-        val status: WooPosBookingStatus,
-        val statusSlug: String,
-        val createdAtMillis: Long
-    )
+        val paymentStatus: PaymentStatus,
+        val isCancelled: Boolean,
+        val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
+        val teamMember: TeamMember? = null,
+    ) {
+        @Immutable
+        data class TeamMember(
+            val initials: String,
+            val avatarUrl: String?,
+        )
+    }
 
     @Immutable
     data class Content(
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
+        override val dateSelectorState: DateSelectorState?,
         val selectedDetails: BookingDetailsViewState?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
     ) : WooPosBookingsState() {
         sealed class Items {
             data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
-            object Searching : Items()
+            object Loading : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
         }
@@ -111,6 +133,27 @@ sealed class WooPosBookingsState {
             data class IssueRefund(
                 val orderId: Long
             ) : DialogState()
+
+            sealed class CancelBooking : DialogState() {
+                abstract val bookingId: Long
+                abstract val message: String
+
+                data class PendingConfirmation(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Processing(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Error(
+                    override val bookingId: Long,
+                    override val message: String,
+                    val errorMessage: String,
+                ) : CancelBooking()
+            }
         }
     }
 
@@ -119,38 +162,15 @@ sealed class WooPosBookingsState {
         val message: String,
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        override val dateSelectorState: DateSelectorState? = null
     }
 
     @Immutable
-    data object Loading : WooPosBookingsState() {
+    data class Loading(
+        override val dateSelectorState: DateSelectorState,
+    ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
-
-    @Immutable
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosBookingsState()
 }
 
-enum class WooPosBookingStatusColorKey {
-    COMPLETED,
-    FAILED,
-    PROCESSING,
-    ON_HOLD,
-    OTHER;
-
-    companion object {
-        fun fromStatus(status: Status): WooPosBookingStatusColorKey = when (status) {
-            Status.Completed -> COMPLETED
-            Status.Failed -> FAILED
-            Status.Processing -> PROCESSING
-            Status.OnHold -> ON_HOLD
-            else -> OTHER
-        }
-    }
-}
-
-data class WooPosBookingStatus(
-    val text: String,
-    val colorKey: WooPosBookingStatusColorKey
-)
+typealias PaymentStatus = com.woocommerce.android.ui.bookings.PaymentStatus

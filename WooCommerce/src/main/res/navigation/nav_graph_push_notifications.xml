@@ -17,5 +17,9 @@
     <fragment
         android:id="@+id/wooPushNotificationsConnectionStepsFragment"
         android:name="com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsFragment"
-        android:label="WooPushNotificationsConnectionStepsFragment" />
+        android:label="WooPushNotificationsConnectionStepsFragment" >
+        <argument
+            android:name="isSiteConnectedToJetpack"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

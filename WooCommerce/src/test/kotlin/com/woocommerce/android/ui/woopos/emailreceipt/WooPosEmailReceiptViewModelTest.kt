@@ -191,4 +191,71 @@ class WooPosEmailReceiptViewModelTest {
         // THEN
         verify(tracker).track(EmailReceiptSendSuccess(posReceiptsAreEnabled))
     }
+
+    @Test
+    fun `given billing email exists, when view model is created, then email is prefilled`() = runTest {
+        // GIVEN
+        whenever(repository.getBillingEmail(123L)).thenReturn("billing@example.com")
+        whenever(repository.isEmailValid("billing@example.com")).thenReturn(true)
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(mapOf(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L)),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosEmailReceiptState.Email
+        assertThat(state.email).isEqualTo("billing@example.com")
+        assertThat(state.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.ENABLED)
+    }
+
+    @Test
+    fun `given receipt already sent, when view model is created, then email remains empty`() = runTest {
+        // GIVEN
+        whenever(repository.getBillingEmail(123L)).thenReturn("billing@example.com")
+        whenever(repository.isEmailValid("billing@example.com")).thenReturn(true)
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(
+                mapOf(
+                    EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L,
+                    EMAIL_RECEIPT_ROUTE_ALREADY_SENT_KEY to true,
+                )
+            ),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosEmailReceiptState.Email
+        assertThat(state.email).isEmpty()
+        assertThat(state.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.DISABLED)
+    }
+
+    @Test
+    fun `given no billing email, when view model is created, then email remains empty`() = runTest {
+        // GIVEN
+        whenever(repository.getBillingEmail(123L)).thenReturn(null)
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(mapOf(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L)),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosEmailReceiptState.Email
+        assertThat(state.email).isEmpty()
+        assertThat(state.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.DISABLED)
+    }
 }

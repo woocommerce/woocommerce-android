@@ -480,7 +480,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
-            height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
+            height = selectedPackage.safeHeight.toFloat(),
             weight = weight,
             isLetter = selectedPackage.isLetter,
             shipmentId = selectedRate.rate.shipmentId,

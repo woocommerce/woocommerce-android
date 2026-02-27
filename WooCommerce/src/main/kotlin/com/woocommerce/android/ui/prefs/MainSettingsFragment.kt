@@ -205,6 +205,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupApplicationPasswordsSettings()
 
         binding.optionEnablePushNotifications.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
             findNavController().navigateSafely(
                 MainSettingsFragmentDirections.actionMainSettingsFragmentToWooPushNotificationsIntroductionDialog()
             )
@@ -321,8 +322,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             .show()
     }
 
-    override fun showEnablePushNotificationsOption() {
-        binding.optionEnablePushNotifications.isVisible = true
+    override fun setEnablePushNotificationsOptionVisible(isVisible: Boolean) {
+        binding.optionEnablePushNotifications.isVisible = isVisible
         updateStoreSettingsContainerVisibility()
     }
 

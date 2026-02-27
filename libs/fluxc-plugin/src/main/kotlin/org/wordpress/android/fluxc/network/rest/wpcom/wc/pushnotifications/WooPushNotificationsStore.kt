@@ -17,11 +17,20 @@ class WooPushNotificationsStore @Inject internal constructor(
     suspend fun registerPushToken(
         site: SiteModel,
         token: String,
-        deviceUuid: String
+        deviceUuid: String,
+        deviceLocale: String,
+        metadata: Map<String, String> = emptyMap()
     ): WooResult<String> =
         coroutineEngine.withDefaultContext(T.API, this, "registerWooPushToken") {
             val origin = if (BuildConfig.DEBUG) ORIGIN_DEV else ORIGIN
-            val payload = pushNotificationsRestClient.registerPushToken(site, token, origin, deviceUuid)
+            val request = PushNotificationsRestClient.PushTokenRegistrationRequest(
+                token = token,
+                origin = origin,
+                deviceUuid = deviceUuid,
+                deviceLocale = deviceLocale,
+                metadata = metadata
+            )
+            val payload = pushNotificationsRestClient.registerPushToken(site, request)
 
             if (payload.isError || payload.result == null) {
                 WooResult(payload.error)

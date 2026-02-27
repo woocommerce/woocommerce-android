@@ -20,8 +20,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
@@ -185,4 +185,5 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
 
         finish()
     }
+
 }
