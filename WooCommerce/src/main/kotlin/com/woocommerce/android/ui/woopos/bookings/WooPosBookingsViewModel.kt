@@ -161,10 +161,9 @@ class WooPosBookingsViewModel @Inject constructor(
                     return@collectLatest
                 }
 
-                if (bookings.isEmpty() && current is WooPosBookingsState.Content &&
-                    (current.items is WooPosBookingsState.Content.Items.Loading ||
-                        fetchJob?.isActive == true)
-                ) {
+                val isFetchingContent = current is WooPosBookingsState.Content &&
+                    (current.items is WooPosBookingsState.Content.Items.Loading || fetchJob?.isActive == true)
+                if (bookings.isEmpty() && isFetchingContent) {
                     return@collectLatest
                 }
 
