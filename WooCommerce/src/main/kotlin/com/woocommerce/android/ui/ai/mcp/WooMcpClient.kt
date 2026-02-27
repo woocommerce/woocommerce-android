@@ -4,7 +4,6 @@ import com.woocommerce.android.tools.SelectedSite
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.sse.SSE
-import io.ktor.http.HttpHeaders
 import io.modelcontextprotocol.kotlin.sdk.client.Client
 import io.modelcontextprotocol.kotlin.sdk.client.StreamableHttpClientTransport
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
@@ -42,13 +41,11 @@ class WooMcpClient @Inject constructor(
         }
         httpClient = ktorClient
 
-        val credentials = okhttp3.Credentials.basic(consumerKey, consumerSecret)
-
         val transport = StreamableHttpClientTransport(
             client = ktorClient,
             url = mcpUrl,
         ) {
-            headers.append(HttpHeaders.Authorization, credentials)
+            headers.append(MCP_API_KEY_HEADER, "$consumerKey:$consumerSecret")
         }
 
         val client = Client(
@@ -93,5 +90,9 @@ class WooMcpClient @Inject constructor(
                 else -> block.toString()
             }
         }
+    }
+
+    companion object {
+        private const val MCP_API_KEY_HEADER = "X-MCP-API-Key"
     }
 }
