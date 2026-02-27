@@ -134,10 +134,7 @@ fun WooPosBookingDetails(
                     thickness = 0.5.dp,
                 )
                 WooPosButton(
-                    text = stringResource(
-                        R.string.woopos_bookings_details_collect_payment,
-                        details.paymentSection.collectPaymentLabel
-                    ),
+                    text = stringResource(R.string.card_reader_collect_payment),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
