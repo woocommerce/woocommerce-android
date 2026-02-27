@@ -18,7 +18,8 @@ enum class FeatureFlag {
     WOO_PUSH_NOTIFICATIONS_SYSTEM,
     WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,
     WOO_POS_CLIENT_SIDE_BANNER,
-    AGE_ELIGIBILITY_CHECKS;
+    AGE_ELIGIBILITY_CHECKS,
+    AI_ASSISTANT;
 
     fun isEnabled(context: Context? = null): Boolean {
         if (PackageUtils.isDebugBuild()) {
@@ -44,7 +45,8 @@ enum class FeatureFlag {
             POS_PRODUCTS_FTS,
             POS_REFUNDS,
             WOO_POS_CLIENT_SIDE_BANNER,
-            AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
+            AGE_ELIGIBILITY_CHECKS,
+            AI_ASSISTANT -> PackageUtils.isDebugBuild()
 
             WOO_PUSH_NOTIFICATIONS_SYSTEM,
             WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,

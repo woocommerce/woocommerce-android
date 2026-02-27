@@ -334,7 +334,14 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_moreMenu_to_aiAssistant"
+            app:destination="@id/aiAssistantFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/aiAssistantFragment"
+        android:name="com.woocommerce.android.ui.ai.AIAssistantFragment"
+        android:label="AI Assistant" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"

@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEv
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewBookingsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAIAssistantEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
@@ -113,6 +114,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
+                is ViewAIAssistantEvent -> navigateToAIAssistant()
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
             }
@@ -193,6 +195,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToBookings() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToBookings()
+        )
+    }
+
+    private fun navigateToAIAssistant() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToAiAssistant()
         )
     }
 

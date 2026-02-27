@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -238,6 +239,17 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_inbox,
                 onClick = ::onInboxButtonClick,
                 state = inboxState,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_ai_assistant,
+                description = R.string.more_menu_button_ai_assistant_description,
+                icon = R.drawable.ic_more_menu_inbox,
+                onClick = ::onAIAssistantButtonClick,
+                state = if (FeatureFlag.AI_ASSISTANT.isEnabled()) {
+                    MoreMenuItemButton.State.Visible
+                } else {
+                    MoreMenuItemButton.State.Hidden
+                },
             )
         )
     )
@@ -462,6 +474,10 @@ class MoreMenuViewModel @Inject constructor(
     private fun onUpgradesButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_UPGRADES)
         triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
+    }
+
+    private fun onAIAssistantButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewAIAssistantEvent)
     }
 
     private fun trackMoreMenuOptionSelected(

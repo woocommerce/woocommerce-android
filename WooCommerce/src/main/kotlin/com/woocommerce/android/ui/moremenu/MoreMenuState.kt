@@ -30,6 +30,7 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data object ViewCouponsEvent : MoreMenuEvent()
 
     data object ViewCustomersEvent : MoreMenuEvent()
+    data object ViewAIAssistantEvent : MoreMenuEvent()
 }
 
 data class MoreMenuItemSection(

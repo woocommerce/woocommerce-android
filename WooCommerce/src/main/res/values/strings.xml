@@ -3178,6 +3178,9 @@
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_inbox_description">Stay up-to-date</string>
 
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="more_menu_button_ai_assistant_description">Manage your store with AI</string>
+
     <string name="more_menu_button_store">View Store</string>
     <string name="more_menu_button_store_description">View your store</string>
 
