@@ -149,7 +149,7 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     private fun observeBookings() {
         viewModelScope.launch {
             combine(
