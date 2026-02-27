@@ -4,7 +4,7 @@
 
 24.3
 -----
-
+- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
 
 24.2
 -----
