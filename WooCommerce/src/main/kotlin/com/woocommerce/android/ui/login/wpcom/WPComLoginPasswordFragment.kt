@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -28,7 +29,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -78,18 +78,20 @@ class WPComLoginPasswordFragment : BaseFragment() {
                 .actionWPComLoginPasswordFragmentToWPComLogin2FAFragment(
                     jetpackStatus = event.jetpackStatus,
                     emailOrUsername = event.emailOrUsername,
-                    password = event.password
+                    password = event.password,
+                    userId = event.userId,
+                    webauthnNonce = event.webauthnNonce,
+                    supportedAuthTypes = event.supportedAuthTypes.toTypedArray()
                 )
         )
     }
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            WPComLoginPasswordFragmentDirections
-                .actionWPComLoginPasswordFragmentToJetpackActivationMainFragment(
-                    jetpackStatus = event.jetpackStatus,
-                    siteUrl = event.siteUrl
-                )
+            NavGraphJetpackActivationDirections.actionGlobalToJetpackActivationMainFragment(
+                siteUrl = event.siteUrl,
+                jetpackStatus = event.jetpackStatus
+            )
         )
     }
 
@@ -99,8 +101,8 @@ class WPComLoginPasswordFragment : BaseFragment() {
                 .actionWPComLoginPasswordFragmentToWPComLoginMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
                     jetpackStatus = event.jetpackStatus,
-                    fallbackButton = MagicLinkFallbackButton.Password,
-                    requestAtStart = true,
+                    fallbackButton = event.magicLinkFallbackButton,
+                    requestAtStart = event.requestAtStart,
                     isNewWpComAccount = false
                 )
         )

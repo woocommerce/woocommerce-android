@@ -11,28 +11,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
 @Composable
 fun WPComLoginEmailScreen(viewModel: WPComLoginEmailViewModel) {
@@ -54,6 +54,11 @@ fun WPComLoginEmailScreen(
     onContinueClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val titleRes = if (viewState.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -65,7 +70,7 @@ fun WPComLoginEmailScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colors.surface)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
@@ -73,21 +78,16 @@ fun WPComLoginEmailScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(16.dp),
             ) {
                 JetpackToWooHeader()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-                val title = if (viewState.isJetpackInstalled) {
-                    R.string.login_jetpack_connect
-                } else {
-                    R.string.login_jetpack_install
-                }
+                Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = title),
-                    style = MaterialTheme.typography.h4,
+                    text = stringResource(id = titleRes),
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(
                         id = if (viewState.isJetpackInstalled) {
@@ -97,7 +97,7 @@ fun WPComLoginEmailScreen(
                         }
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 WCOutlinedTextField(
                     value = viewState.emailOrUsername,
@@ -118,11 +118,11 @@ fun WPComLoginEmailScreen(
                         }
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 if (!viewState.usernameOnly) {
                     Text(
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         text = stringResource(id = R.string.login_jetpack_connection_create_account)
                     )
                 }
@@ -138,24 +138,17 @@ fun WPComLoginEmailScreen(
                 enabled = viewState.enableSubmit,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(
-                    text = stringResource(
-                        id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connect
-                        } else {
-                            R.string.login_jetpack_install
-                        }
-                    )
-                )
+                Text(text = stringResource(id = titleRes))
             }
-            JetpackConsent(
+            WPComConsent(
+                forJetpackSetup = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = 16.dp)
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 
@@ -164,16 +157,17 @@ fun WPComLoginEmailScreen(
     }
 }
 
-@Preview(heightDp = 130)
+@Preview
 @Composable
-private fun JetpackActivationWPComScreenPreview() {
+private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLoginEmailScreen(
             viewState = WPComLoginEmailViewModel.ViewState(
+                isJetpackInstalled = false,
                 usernameOnly = false,
                 emailOrUsername = "",
-                isJetpackInstalled = false
             )
         )
     }
 }
+

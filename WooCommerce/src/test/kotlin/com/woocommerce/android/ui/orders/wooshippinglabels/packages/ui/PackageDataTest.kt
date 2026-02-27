@@ -68,4 +68,60 @@ class PackageDataTest {
         assertThat(packageData.width).isEmpty()
         assertThat(packageData.height).isEmpty()
     }
+
+    @Test
+    fun `given valid height, when safeHeight is accessed, then returns parsed value`() {
+        val packageData = PackageData(
+            id = "1",
+            name = "Test Package",
+            dimensions = "10 x 20 x 30",
+            weight = "5",
+            isSelected = false,
+            isLetter = false,
+        )
+
+        assertThat(packageData.safeHeight).isEqualTo(30.0)
+    }
+
+    @Test
+    fun `given zero height, when safeHeight is accessed, then returns MIN_HEIGHT`() {
+        val packageData = PackageData(
+            id = "1",
+            name = "Test Package",
+            dimensions = "10 x 20 x 0",
+            weight = "5",
+            isSelected = false,
+            isLetter = false,
+        )
+
+        assertThat(packageData.safeHeight).isEqualTo(PackageData.MIN_HEIGHT)
+    }
+
+    @Test
+    fun `given empty height, when safeHeight is accessed, then returns DEFAULT_HEIGHT`() {
+        val packageData = PackageData(
+            id = "1",
+            name = "Test Package",
+            dimensions = "10 x 20",
+            weight = "5",
+            isSelected = false,
+            isLetter = false,
+        )
+
+        assertThat(packageData.safeHeight).isEqualTo(PackageData.DEFAULT_HEIGHT)
+    }
+
+    @Test
+    fun `given negative height, when safeHeight is accessed, then returns MIN_HEIGHT`() {
+        val packageData = PackageData(
+            id = "1",
+            name = "Test Package",
+            dimensions = "10 x 20 x -5",
+            weight = "5",
+            isSelected = false,
+            isLetter = false,
+        )
+
+        assertThat(packageData.safeHeight).isEqualTo(PackageData.MIN_HEIGHT)
+    }
 }

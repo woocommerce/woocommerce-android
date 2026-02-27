@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -33,20 +36,27 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
-import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
-import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
+import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -65,12 +75,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import org.wordpress.android.util.ToastUtils
 
 val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 
@@ -78,33 +90,41 @@ val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     backStackEntry: NavBackStackEntry,
+    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
     }
 
-    val cashPaymentResult = backStackEntry.savedStateHandle
-        .getStateFlow(BOOKING_CASH_PAYMENT_SUCCESS_KEY, false)
-        .collectAsState()
-
-    LaunchedEffect(cashPaymentResult.value) {
-        if (cashPaymentResult.value) {
-            viewModel.onRefresh()
-            backStackEntry.savedStateHandle[BOOKING_CASH_PAYMENT_SUCCESS_KEY] = false
+    LaunchedEffect(Unit) {
+        viewModel.toastEvent.collect { message ->
+            ToastUtils.showToast(context, message, ToastUtils.Duration.LONG)
         }
     }
 
-    val cardPaymentResult = backStackEntry.savedStateHandle
-        .getStateFlow(BOOKING_CARD_PAYMENT_SUCCESS_KEY, false)
+    val paymentFlowFinishedResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_PAYMENT_FLOW_FINISHED_KEY, false)
         .collectAsState()
 
-    LaunchedEffect(cardPaymentResult.value) {
-        if (cardPaymentResult.value) {
-            viewModel.onRefresh()
-            backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
+    LaunchedEffect(paymentFlowFinishedResult.value) {
+        if (paymentFlowFinishedResult.value) {
+            viewModel.onPaymentCompleted()
+            backStackEntry.savedStateHandle[BOOKING_PAYMENT_FLOW_FINISHED_KEY] = false
+        }
+    }
+
+    val bookingNoteResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_NOTE_RESULT_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(bookingNoteResult.value) {
+        if (bookingNoteResult.value) {
+            viewModel.onBookingNoteSaved()
+            backStackEntry.savedStateHandle[BOOKING_NOTE_RESULT_KEY] = false
         }
     }
 
@@ -112,20 +132,20 @@ fun WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onRefresh = viewModel::onRefresh,
+        onRefresh = viewModel::onPullToRefresh,
         onBookingSelected = viewModel::onBookingSelected,
         onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
-        onBookingsEmptyActionClicked = viewModel::onBookingsEmptyActionClicked,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
+        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
+        refundReasonUpdate = refundReasonResult,
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-@Suppress("UnusedParameter")
 private fun WooPosBookingsScreen(
     state: WooPosBookingsState,
     scrollToTopEvent: SharedFlow<Unit>,
@@ -134,10 +154,11 @@ private fun WooPosBookingsScreen(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onBookingsEmptyActionClicked: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -156,17 +177,15 @@ private fun WooPosBookingsScreen(
                 onUIEvent = onUIEvent
             )
 
-            is WooPosBookingsState.Empty -> WooPosBookingsEmpty(
-                onActionClicked = onBookingsEmptyActionClicked,
-                modifier = Modifier.statusBarsPadding()
-            )
-
             is WooPosBookingsState.Error -> WooPosBookingsError(
                 onRetryClicked = onBookingsLoadingErrorRetryButtonClicked,
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen()
+            is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen(
+                dateSelectorState = state.dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
         }
 
         WooPosToolbar(
@@ -176,6 +195,21 @@ private fun WooPosBookingsScreen(
                 .fillMaxWidth()
                 .statusBarsPadding()
         )
+
+        if (state is WooPosBookingsState.Content) {
+            when (val dialogState = state.dialogState) {
+                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
+                    WooPosIssueRefundDialog(
+                        orderId = dialogState.orderId,
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onNavigationEvent = onNavigationEvent,
+                        refundReasonUpdate = refundReasonUpdate
+                    )
+                }
+                WooPosBookingsState.Content.DialogState.Hidden -> Unit
+                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
+            }
+        }
     }
 }
 
@@ -189,58 +223,76 @@ private fun WooPosBookingsContent(
     onPaginationErrorTryAgain: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        WooPosBookingsListPane(
-            state = state,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onBookingSelected = onBookingSelected,
-            onEndOfBookingsListReached = onEndOfBookingsListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            WooPosBookingsListPane(
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onUIEvent = onUIEvent,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            )
 
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when {
-                state.selectedDetails != null -> {
-                    WooPosBookingDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = state.selectedDetails,
-                        onUIEvent = onUIEvent
-                    )
-                }
-                state.items is WooPosBookingsState.Content.Items.Searching -> {
-                    BookingDetailsLoadingPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(
-                                start = WooPosSpacing.Medium.value,
-                                end = WooPosSpacing.Medium.value,
-                                top = WooPosSpacing.XLarge.value,
-                                bottom = WooPosSpacing.XLarge.value
-                            )
-                    )
-                }
-                else -> {
-                    WooPosEmptyScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
-                        title = stringResource(R.string.woopos_orders_no_order_selected),
-                        message = "",
-                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                    )
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                when {
+                    state.selectedDetails != null -> {
+                        WooPosBookingDetails(
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                            details = state.selectedDetails,
+                            onUIEvent = onUIEvent
+                        )
+                    }
+                    state.items is WooPosBookingsState.Content.Items.Loading -> {
+                        BookingDetailsLoadingPane(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(
+                                    start = WooPosSpacing.Medium.value,
+                                    end = WooPosSpacing.Medium.value,
+                                    top = WooPosSpacing.XLarge.value,
+                                    bottom = WooPosSpacing.XLarge.value
+                                )
+                        )
+                    }
+                    else -> {
+                        WooPosEmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            icon = WooPosIcons.OrdersEmpty,
+                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
+                            message = "",
+                            contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                        )
+                    }
                 }
             }
         }
+
+        val cancelDialog =
+            state.dialogState as? WooPosBookingsState.Content.DialogState.CancelBooking
+        BackHandler(enabled = cancelDialog != null) {
+            onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed)
+        }
+        WooPosCancelBookingDialog(
+            isVisible = cancelDialog != null,
+            message = cancelDialog?.message.orEmpty(),
+            isProcessing = cancelDialog is WooPosBookingsState.Content.DialogState.CancelBooking.Processing,
+            errorMessage = (cancelDialog as? WooPosBookingsState.Content.DialogState.CancelBooking.Error)
+                ?.errorMessage,
+            onConfirm = { onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed) },
+            onDismiss = { onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed) },
+        )
     }
 }
 
@@ -254,6 +306,7 @@ private fun WooPosBookingsListPane(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -266,7 +319,12 @@ private fun WooPosBookingsListPane(
                 .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        state.dateSelectorState?.let { dateSelectorState ->
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -288,6 +346,7 @@ private fun WooPosBookingsListPane(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onRetry = onRefresh,
             )
 
             PullRefreshIndicator(
@@ -311,6 +370,7 @@ private fun WooPosBookingsList(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
@@ -325,7 +385,7 @@ private fun WooPosBookingsList(
             )
         }
 
-        is WooPosBookingsState.Content.Items.Searching -> {
+        is WooPosBookingsState.Content.Items.Loading -> {
             WooPosBookingsListLoadingPane(
                 modifier = modifier.imePadding()
             )
@@ -345,7 +405,7 @@ private fun WooPosBookingsList(
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
                         text = stringResource(id = R.string.retry),
-                        click = { throw NotImplementedError("Retry button clicked") }
+                        click = onRetry
                     )
                 )
             }
@@ -407,69 +467,10 @@ private fun WooPosLoadedBookingsList(
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->
-            WooPosCard(
-                modifier = modifier
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                elevation = WooPosElevation.Medium,
-                shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onBookingSelected(item.id) }
-                        .padding(WooPosSpacing.Medium.value),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        WooPosText(
-                            item.title,
-                            style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        WooPosText(
-                            item.date,
-                            style = WooPosTypography.BodySmall,
-                            color = WooPosTheme.colors.onSurfaceVariantHighest,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        item.customerEmail?.let { email ->
-                            WooPosText(
-                                email,
-                                style = WooPosTypography.BodySmall,
-                                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-
-                        Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-                        WooPosBookingsStatusBadge(item.status)
-                    }
-
-                    WooPosText(
-                        text = item.total,
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1
-                    )
-                }
-            }
+            WooPosBookingListItem(
+                item = item,
+                onBookingSelected = onBookingSelected,
+            )
         }
 
         if (paginationState == WooPosPaginationState.Loading) {
@@ -487,19 +488,111 @@ private fun WooPosLoadedBookingsList(
 }
 
 @Composable
-private fun WooPosBookingsEmpty(
-    onActionClicked: () -> Unit,
-    modifier: Modifier = Modifier
+private fun WooPosBookingListItem(
+    item: WooPosBookingsState.BookingItemViewState,
+    onBookingSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    WooPosEmptyScreen(
-        modifier = modifier.fillMaxSize(),
-        icon = WooPosIcons.OrdersEmpty,
-        title = stringResource(id = R.string.woopos_bookings_empty_list_title),
-        message = "",
-        contentDescription = stringResource(id = R.string.woopos_bookings_empty_list_image_description),
-        actionLabel = stringResource(id = R.string.woopos_bookings_empty_action_label),
-        onActionClicked = onActionClicked
-    )
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        isSelected = item.isSelected,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onBookingSelected(item.id) }
+                .padding(WooPosSpacing.Medium.value),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                WooPosText(
+                    item.timeRange,
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+                WooPosText(
+                    item.subtitle,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+                ) {
+                    if (item.isCancelled) {
+                        WooPosCancelledBadge()
+                    }
+                    WooPosAttendanceBadge(item.attendanceBadge)
+                    WooPosPaymentStatusBadge(item.paymentStatus)
+                }
+            }
+
+            item.teamMember?.let { teamMember ->
+                WooPosTeamMemberAvatar(
+                    teamMember = teamMember,
+                    modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WooPosTeamMemberAvatar(
+    teamMember: WooPosBookingsState.BookingItemViewState.TeamMember,
+    modifier: Modifier = Modifier,
+) {
+    val avatarSize = 24.dp
+    var imageLoaded by remember { mutableStateOf(false) }
+    val borderModifier = if (imageLoaded) {
+        Modifier.border(1.dp, WooPosTheme.colors.outline, CircleShape)
+    } else {
+        Modifier
+    }
+    Box(
+        modifier = modifier
+            .size(avatarSize)
+            .then(borderModifier)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceDim),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (!imageLoaded) {
+            WooPosText(
+                text = teamMember.initials,
+                style = WooPosTypography.Caption,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                maxLines = 1,
+            )
+        }
+        if (teamMember.avatarUrl != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(teamMember.avatarUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(avatarSize),
+                onSuccess = { imageLoaded = true },
+                onError = { imageLoaded = false },
+            )
+        }
+    }
 }
 
 @Composable
@@ -509,8 +602,8 @@ private fun WooPosBookingsError(
 ) {
     WooPosErrorScreen(
         modifier = modifier,
-        message = stringResource(id = R.string.woopos_orders_loading_error_title),
-        reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+        message = stringResource(id = R.string.woopos_bookings_loading_error_title),
+        reason = stringResource(id = R.string.woopos_bookings_loading_error_message),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
@@ -536,31 +629,29 @@ private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Un
 fun WooPosBookingsScreenPreview() {
     val item1 = WooPosBookingsState.BookingItemViewState(
         id = 1,
-        title = "#014",
-        date = "Aug 28, 2025 at 10:31 AM",
-        total = "$17.00",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:00 - 10:30 AM",
+        subtitle = "Women's Haircut \u00B7 John Doe",
         isSelected = true,
-        status = WooPosBookingStatus(
-            text = "Completed",
-            colorKey = WooPosBookingStatusColorKey.COMPLETED
+        paymentStatus = PaymentStatus.PAID,
+        isCancelled = false,
+        attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
+        teamMember = WooPosBookingsState.BookingItemViewState.TeamMember(
+            initials = "JD",
+            avatarUrl = null,
         ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
     )
     val item2 = WooPosBookingsState.BookingItemViewState(
         id = 2,
-        title = "#013",
-        date = "Jul 28, 2025 at 10:31 AM",
-        total = "$43.90",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:30 - 11:30 AM",
+        subtitle = "Women's Haircut \u00B7 Jane Smith",
         isSelected = false,
-        status = WooPosBookingStatus(
-            text = "Processing",
-            colorKey = WooPosBookingStatusColorKey.PROCESSING
+        paymentStatus = PaymentStatus.UNPAID,
+        isCancelled = true,
+        attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
+        teamMember = WooPosBookingsState.BookingItemViewState.TeamMember(
+            initials = "JS",
+            avatarUrl = null,
         ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
     )
 
     val details1 = sampleBookingDetails(id = 1L, number = "#014")
@@ -576,6 +667,10 @@ fun WooPosBookingsScreenPreview() {
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -586,9 +681,9 @@ fun WooPosBookingsScreenPreview() {
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
-            onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -606,6 +701,10 @@ fun WooPosBookingsNothingFoundStatePreview() {
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -616,32 +715,10 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
-            onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosBookingsEmptyStatePreview() {
-    WooPosTheme {
-        WooPosBookingsScreen(
-            state = WooPosBookingsState.Empty(
-                pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            ),
-            scrollToTopEvent = MutableSharedFlow(),
-            onBackClicked = {},
-            onRefresh = {},
-            onBookingSelected = {},
-            onEndOfBookingsListReached = {},
-            onPaginationErrorTryAgain = {},
-            onBookingsEmptyActionClicked = {},
-            onBookingsLoadingErrorRetryButtonClicked = {},
-            onUIEvent = {},
-            onNavigationEvent = {},
         )
     }
 }
@@ -654,7 +731,8 @@ private fun sampleBookingDetails(
     id = id,
     orderId = id * 10,
     number = number,
-    status = WooPosBookingStatus(text = "Paid", colorKey = WooPosBookingStatusColorKey.COMPLETED),
+    paymentStatus = PaymentStatus.PAID,
+    isCancelled = false,
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(
         listOf(WooPosBookingsState.BookingAction.EmailReceipt(id))
     ),
@@ -683,7 +761,7 @@ private fun sampleBookingDetails(
         discountAmount = "-",
         totalAmount = "$59.50",
         paidWithLabel = "WooCommerce In-Person Payments",
-        showPayButtons = false,
+        collectPaymentLabel = null,
     ),
     bookingNote = null,
 )

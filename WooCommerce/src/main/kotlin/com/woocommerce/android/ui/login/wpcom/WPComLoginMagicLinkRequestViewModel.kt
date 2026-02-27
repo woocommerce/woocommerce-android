@@ -43,9 +43,9 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(
         scope = viewModelScope,
         initialValue = ViewState.MagicLinkRequestState(
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = false
         )
@@ -102,9 +102,9 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         )
 
         _viewState.value = ViewState.MagicLinkRequestState(
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = true
         )
@@ -115,8 +115,8 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
-                    email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
                     isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+                    email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
                     magicLinkFallbackButton = navArgs.fallbackButton,
                 )
             },
@@ -155,17 +155,17 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
         @Parcelize
         data class MagicLinkRequestState(
+            override val isJetpackInstalled: Boolean,
             val emailOrUsername: String,
             val avatarUrl: String,
-            override val isJetpackInstalled: Boolean,
             override val magicLinkFallbackButton: MagicLinkFallbackButton,
             val isLoadingDialogShown: Boolean
         ) : ViewState
 
         @Parcelize
         data class MagicLinkSentState(
-            val email: String?,
             override val isJetpackInstalled: Boolean,
+            val email: String?,
             override val magicLinkFallbackButton: MagicLinkFallbackButton
         ) : ViewState
     }

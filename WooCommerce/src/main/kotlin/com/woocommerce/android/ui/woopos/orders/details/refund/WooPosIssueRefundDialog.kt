@@ -352,6 +352,17 @@ private fun RefundSuccessContent(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
+
+            if (state.receiptSentMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosText(
+                    text = state.receiptSentMessage,
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(marginBetweenButtonAndText))
@@ -369,7 +380,12 @@ private fun RefundSuccessContent(
             WooPosOutlinedButton(
                 text = stringResource(R.string.woopos_receipt_button),
                 onClick = {
-                    onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(state.orderId))
+                    onNavigationEvent(
+                        WooPosNavigationEvent.OpenEmailReceipt(
+                            orderId = state.orderId,
+                            receiptAlreadySent = state.receiptSentMessage != null,
+                        )
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )

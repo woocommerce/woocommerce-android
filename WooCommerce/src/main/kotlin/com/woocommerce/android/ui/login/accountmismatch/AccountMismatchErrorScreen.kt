@@ -35,16 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
@@ -94,22 +92,8 @@ private fun AccountMismatchErrorScreen(
         )
 
         if (viewState.showJetpackTermsConsent) {
-            val context = LocalContext.current
-            val consent = clickableAnnotatedStringRes(
-                stringResId = R.string.login_jetpack_connection_consent,
-                onUrlClick = { url ->
-                    when (url) {
-                        "terms" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
-                        "sync" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_SYNC_POLICY)
-                    }
-                }
-            )
-
-            Text(
-                text = consent,
-                style = MaterialTheme.typography.caption,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface
+            WPComConsent(
+                forJetpackSetup = true
             )
         }
     }

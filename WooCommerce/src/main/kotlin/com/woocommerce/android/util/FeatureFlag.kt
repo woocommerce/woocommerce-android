@@ -16,7 +16,7 @@ enum class FeatureFlag(
     WC_SHIPPING_BANNER("wc_shipping_banner"),
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2"),
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate"),
-    BOOKINGS_MVP("bookings_mvp"),
+    BOOKINGS_MVP("bookings_mvp", default = true),
     POS_REFUNDS("pos_refunds"),
     POS_BOOKINGS("pos_bookings"),
     POS_PRODUCTS_FTS("pos_products_fts"),

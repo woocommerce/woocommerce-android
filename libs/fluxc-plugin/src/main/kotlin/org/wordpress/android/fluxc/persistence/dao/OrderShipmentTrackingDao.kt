@@ -44,12 +44,4 @@ abstract class OrderShipmentTrackingDao {
 
     @Delete
     abstract suspend fun deleteShipmentTracking(tracking: WCOrderShipmentTrackingModel)
-
-    @Query(
-        """
-        DELETE FROM OrderShipmentTrackingEntity
-        WHERE localSiteId = :siteId
-        """
-    )
-    abstract suspend fun deleteShipmentTrackingsForSite(siteId: LocalId)
 }

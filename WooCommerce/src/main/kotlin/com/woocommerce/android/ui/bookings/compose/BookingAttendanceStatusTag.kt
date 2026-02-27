@@ -83,20 +83,10 @@ fun BookingAttendanceStatus?.text(): String {
 }
 
 @Composable
-fun BookingAttendanceStatus.backgroundColor(): Color {
-    return when (this) {
-        BookingStatus.Cancelled -> R.color.tag_bg_booking_cancelled
-        else -> R.color.tagView_bg
-    }.let { colorResource(it) }
-}
+fun BookingAttendanceStatus.backgroundColor(): Color = colorResource(R.color.tagView_bg)
 
 @Composable
-fun BookingAttendanceStatus.textColor(): Color {
-    return when (this) {
-        BookingStatus.Cancelled -> R.color.tag_text_booking_cancelled
-        else -> R.color.tagView_text
-    }.let { colorResource(it) }
-}
+fun BookingAttendanceStatus.textColor(): Color = colorResource(R.color.tagView_text)
 
 @Preview
 @Composable

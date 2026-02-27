@@ -29,7 +29,8 @@ class BookingListHandler @Inject constructor(
 
     private val mutex = Mutex()
     private var page = MutableStateFlow(1)
-    private val canLoadMore = AtomicBoolean(false)
+    private val _canLoadMore = AtomicBoolean(false)
+    val hasMorePages: Boolean get() = _canLoadMore.get()
 
     private val searchQuery = MutableStateFlow<String?>(null)
     private val filters = MutableStateFlow(BookingFilters.EMPTY)
@@ -59,10 +60,10 @@ class BookingListHandler @Inject constructor(
         searchQuery: String? = null,
         filters: BookingFilters = BookingFilters.EMPTY,
         sortBy: BookingListSortOption
-    ): Result<Unit> = mutex.withLock {
+    ): Result<Int> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
-        canLoadMore.set(true)
+        _canLoadMore.set(true)
 
         val previousQuery = this.searchQuery.value
         this.searchQuery.value = searchQuery
@@ -79,19 +80,19 @@ class BookingListHandler @Inject constructor(
                 // If the query is empty, return cached results directly
                 // Mimic network delay to allow the UI to show then hide the refreshing indicator
                 delay(MIN_FETCH_DURATION_MS)
-                Result.success(Unit)
+                Result.success(0)
             } else {
                 fetchBookings()
             }
         }
     }
 
-    suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        if (!canLoadMore.get()) return@withLock Result.success(Unit)
+    suspend fun loadMore(): Result<Int> = mutex.withLock {
+        if (!_canLoadMore.get()) return@withLock Result.success(0)
         return fetchBookings()
     }
 
-    private suspend fun fetchBookings(): Result<Unit> {
+    private suspend fun fetchBookings(): Result<Int> {
         val pageToFetch = page.value
         val isSearching = !searchQuery.value.isNullOrEmpty()
         val order = sortBy.value.toBookingsOrderOption()
@@ -102,7 +103,7 @@ class BookingListHandler @Inject constructor(
             filters = filters.value,
             order = order
         ).onSuccess { result ->
-            canLoadMore.set(result.hasMorePages)
+            _canLoadMore.set(result.hasMorePages)
             if (result.hasMorePages) {
                 page.update { it + 1 }
             }
@@ -113,7 +114,7 @@ class BookingListHandler @Inject constructor(
                     searchResults.update { it + result.bookings }
                 }
             }
-        }.map { }
+        }.map { it.bookings.size }
     }
 
     private fun BookingListSortOption.toBookingsOrderOption() = when (this) {

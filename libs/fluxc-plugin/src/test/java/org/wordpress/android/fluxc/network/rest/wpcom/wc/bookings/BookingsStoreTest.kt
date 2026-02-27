@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -184,12 +185,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -227,12 +228,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -270,12 +271,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -313,12 +314,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 2,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(2),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             )
                 .thenReturn(WooPayload(arrayOf(dto)))
@@ -387,18 +388,18 @@ class BookingsStoreTest {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
             val dto = sampleBookingDto().copy(orderId = 0L)
-            val filters = BookingFilters(
+            val requestedFilters = BookingFilters(
                 dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
                 customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -409,15 +410,27 @@ class BookingsStoreTest {
                 perPage = 25,
                 page = 1,
                 query = null,
-                filters = filters,
+                filters = requestedFilters,
                 order = BookingsOrderOption.DESC
             )
 
             // then
             assertThat(result.isError).isFalse()
+            verify(bookingsRestClient).fetchBookings(
+                site = eq(site),
+                perPage = eq(25),
+                page = eq(1),
+                query = eq(null),
+                filters = argThat {
+                    dateRange.before == requestedFilters.dateRange.before?.plusSeconds(1) &&
+                        dateRange.after == requestedFilters.dateRange.after?.minusSeconds(1) &&
+                        customer == requestedFilters.customer
+                },
+                order = eq(BookingsOrderOption.DESC)
+            )
             verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingFilters>(),
+                eq(requestedFilters),
                 any<List<BookingEntity>>()
             )
         }
