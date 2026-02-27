@@ -110,7 +110,7 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Canceled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_orders_loading_error_message))

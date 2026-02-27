@@ -37,7 +37,6 @@ class WooPosBookingViewStateMapper @Inject constructor(
         val timeRange = formatTimeRange(booking)
         val paymentStatus = paymentStatusResolver.resolve(
             orderId = booking.orderId,
-            orderTotal = booking.order.paymentInfo?.total,
         )
 
         return WooPosBookingsState.BookingItemViewState(
@@ -55,6 +54,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     suspend fun mapToDetailsViewState(
         booking: BookingEntity,
         resourceName: String?,
+        location: String?,
     ): WooPosBookingsState.BookingDetailsViewState {
         val detailsDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
@@ -72,7 +72,6 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
         val paymentStatus = paymentStatusResolver.resolve(
             orderId = booking.orderId,
-            orderTotal = booking.order.paymentInfo?.total,
         )
 
         return WooPosBookingsState.BookingDetailsViewState(
@@ -109,7 +108,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 .normalizeDuration()
                 .toHumanReadableFormat(resourceProvider),
             teamMember = resourceName,
-            location = null,
+            location = location?.ifBlank { null },
             customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
             attendanceSection = buildAttendanceSection(booking),
             paymentSection = buildPaymentSection(booking, paymentStatus),

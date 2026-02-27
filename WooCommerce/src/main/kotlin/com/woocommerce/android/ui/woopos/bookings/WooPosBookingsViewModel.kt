@@ -18,6 +18,9 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,6 +66,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
+    private val locationCache = mutableMapOf<Long, String?>()
 
     private val _state = MutableStateFlow<WooPosBookingsState>(
         WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
@@ -187,10 +191,16 @@ class WooPosBookingsViewModel @Inject constructor(
                     selectedBookingId = bookings.first().id.value
                 }
 
+                fetchBookingLocations(bookings)
+
                 val items = bookings.associate { booking ->
                     val resource = resourcesMap[booking.resourceId]
                     mapper.mapToItemViewState(booking, selectedBookingId, resource) to
-                        mapper.mapToDetailsViewState(booking, resource?.name)
+                        mapper.mapToDetailsViewState(
+                            booking,
+                            resource?.name,
+                            locationCache[booking.productId]
+                        )
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -249,6 +259,20 @@ class WooPosBookingsViewModel @Inject constructor(
         }
 
         doRefresh()
+    }
+
+    private fun refreshSingleBooking(bookingId: Long) {
+        viewModelScope.launch {
+            bookingsRepository.fetchBooking(bookingId)
+                .onFailure {
+                    val messageResId = if (it.isNetworkError()) {
+                        R.string.offline_error
+                    } else {
+                        R.string.something_went_wrong_try_again
+                    }
+                    _toastEvent.emit(resourceProvider.getString(messageResId))
+                }
+        }
     }
 
     private fun doRefresh() {
@@ -381,7 +405,7 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     private fun handleCollectPayment() {
@@ -474,11 +498,11 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingNoteSaved() {
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     fun onPaymentCompleted() {
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
@@ -577,7 +601,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 )
             }
             if (result.isSuccess) {
-                doRefresh()
+                refreshSingleBooking(bookingId)
             }
         }
     }
@@ -590,9 +614,29 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
+    private suspend fun fetchBookingLocations(bookings: List<BookingEntity>) {
+        val newProductIds = bookings
+            .map { it.productId }
+            .distinct()
+            .filter { it != 0L && it !in locationCache }
+        if (newProductIds.isNotEmpty()) {
+            coroutineScope {
+                newProductIds.map { productId ->
+                    async {
+                        val location = bookingsRepository
+                            .fetchProductBookingLocation(productId)
+                            .getOrNull()
+                        locationCache[productId] = location
+                    }
+                }.awaitAll()
+            }
+        }
+    }
+
     private fun handleDateChange(newDate: LocalDate) {
         selectedDate = newDate
         selectedBookingId = null
+        locationCache.clear()
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
                 items = WooPosBookingsState.Content.Items.Loading,

@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 
@@ -44,6 +45,7 @@ fun WooPushNotificationsIntroductionScreen(viewModel: WooPushNotificationsIntrod
         WooPushNotificationsIntroductionScreen(
             viewState = viewState,
             onContinueClick = viewModel::onContinueClick,
+            onCloseClick = viewModel::onCloseClick,
             onNotNowClick = viewModel::onNotNowClick,
             onWhatIsWPComClick = viewModel::onWhatIsWPComClick,
             onContactSupportClick = viewModel::onContactSupportClick
@@ -55,6 +57,7 @@ fun WooPushNotificationsIntroductionScreen(viewModel: WooPushNotificationsIntrod
 fun WooPushNotificationsIntroductionScreen(
     viewState: ViewState,
     onContinueClick: () -> Unit,
+    onCloseClick: () -> Unit,
     onNotNowClick: () -> Unit,
     onWhatIsWPComClick: () -> Unit,
     onContactSupportClick: () -> Unit,
@@ -63,7 +66,7 @@ fun WooPushNotificationsIntroductionScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                onNavigationButtonClick = onNotNowClick,
+                onNavigationButtonClick = onCloseClick,
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 windowInsets = TopAppBarDefaults.windowInsets
             )
@@ -262,6 +265,15 @@ private fun IntroContent(
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
+
+        if (!isUpdateRequired) {
+            WPComConsent(
+                forJetpackSetup = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+        }
     }
 }
 
@@ -332,6 +344,7 @@ private fun WooPushNotificationsIntroductionLoadingPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Loading,
             onContinueClick = {},
+            onCloseClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -346,6 +359,7 @@ private fun WooPushNotificationsIntroductionNotConnectedPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.NotConnected,
             onContinueClick = {},
+            onCloseClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -360,6 +374,7 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.UpdateRequired,
             onContinueClick = {},
+            onCloseClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -374,6 +389,7 @@ private fun WooPushNotificationsIntroductionErrorPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.GenericError,
             onContinueClick = {},
+            onCloseClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}

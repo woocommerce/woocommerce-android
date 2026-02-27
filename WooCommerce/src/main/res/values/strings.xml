@@ -2643,7 +2643,7 @@
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
     <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b>%1$s&lt;/b> to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
@@ -3906,7 +3906,7 @@
     <string name="woopos_orders_status_processing">Processing</string>
     <string name="woopos_orders_status_on_hold">On hold</string>
     <string name="woopos_orders_status_failed">Failed</string>
-    <string name="woopos_orders_status_cancelled">Cancelled</string>
+    <string name="woopos_orders_status_cancelled">Canceled</string>
     <string name="woopos_orders_status_completed">Completed</string>
     <string name="woopos_orders_status_refunded">Refunded</string>
 
@@ -3928,7 +3928,7 @@
     <string name="woopos_bookings_payment_status_failed">Failed</string>
     <string name="woopos_bookings_payment_status_refunded">Refunded</string>
     <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
-    <string name="woopos_bookings_status_cancelled">Cancelled</string>
+    <string name="woopos_bookings_status_cancelled">Canceled</string>
     <string name="woopos_bookings_details_attendance_title">Attendance status</string>
     <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
     <string name="woopos_bookings_details_payment_title">Payment</string>
@@ -4391,11 +4391,14 @@
     <string name="booking_payment_status_unpaid">Unpaid</string>
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
-    <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_cancelled">Canceled</string>
     <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
+    <string name="booking_payment_status_refunded">Refunded</string>
+    <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="booking_payment_status_failed">Failed</string>
     <string name="booking_attendance_status_attended">Attended</string>
     <string name="booking_attendance_status_unattended">Unattended</string>
     <string name="booking_mark_as_attended">Mark as attended</string>
@@ -4433,7 +4436,7 @@
     <string name="booking_note_screen_title">Booking note</string>
     <string name="booking_note_screen_done">DONE</string>
     <string name="booking_note_screen_update_error">Error saving booking note</string>
-    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_cancel_error">Error canceling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
     <string name="booking_not_selected">Booking not selected</string>
     <string name="booking_overflow_refund">Issue refund</string>
