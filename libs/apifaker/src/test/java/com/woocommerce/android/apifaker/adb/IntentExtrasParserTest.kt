@@ -146,6 +146,15 @@ class IntentExtrasParserTest {
     }
 
     @Test
+    fun `when parseQueryParameters with empty String, then returns empty list`() {
+        whenever(intent.getStringExtra(Extras.QUERY_PARAMS)).thenReturn("")
+
+        val result = IntentExtrasParser.parseQueryParameters(intent)
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
     fun `when parseQueryParameters with single param, then returns single parameter`() {
         whenever(intent.getStringExtra(Extras.QUERY_PARAMS)).thenReturn("key=value")
 

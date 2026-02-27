@@ -29,6 +29,7 @@ internal object IntentExtrasParser {
 
     fun parseQueryParameters(intent: Intent): List<QueryParameter> {
         return intent.getStringExtra(Extras.QUERY_PARAMS)
+            ?.takeIf { it.isNotBlank() }
             ?.split(",")
             ?.map { param ->
                 val parts = param.split("=", limit = 2)
