@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -57,6 +60,7 @@ fun WooPosCardPaymentScreen(
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val orderTotals by viewModel.orderTotals.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
@@ -79,6 +83,7 @@ fun WooPosCardPaymentScreen(
 
     WooPosCardPaymentScreenContent(
         state = state,
+        orderTotals = orderTotals,
         showCashPaymentButton = viewModel.showCashPaymentButton,
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
@@ -91,6 +96,7 @@ fun WooPosCardPaymentScreen(
 @Composable
 private fun WooPosCardPaymentScreenContent(
     state: WooPosCardPaymentState,
+    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
@@ -107,6 +113,7 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.Preparing) {
                 CardPaymentPreparingReader(
                     state = state,
+                    orderTotals = orderTotals,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
                 )
@@ -117,6 +124,7 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.ReadyForPayment) {
                 CardPaymentReadyForPayment(
                     state = state,
+                    orderTotals = orderTotals,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
                 )
@@ -127,6 +135,7 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.ReaderDisconnected) {
                 CardPaymentReaderDisconnected(
                     state = state,
+                    orderTotals = orderTotals,
                     onConnectReaderClicked = onConnectReaderClicked,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
@@ -179,6 +188,7 @@ private fun CardPaymentInitiating() {
 @Composable
 private fun CardPaymentPreparingReader(
     state: WooPosCardPaymentState.Collecting.Preparing,
+    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -201,6 +211,11 @@ private fun CardPaymentPreparingReader(
                 )
             }
         },
+        summary = {
+            if (orderTotals != null) {
+                CardPaymentOrderSummary(totals = orderTotals)
+            }
+        },
         buttons = {
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
@@ -218,6 +233,7 @@ private fun CardPaymentPreparingReader(
 @Composable
 private fun CardPaymentReadyForPayment(
     state: WooPosCardPaymentState.Collecting.ReadyForPayment,
+    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -250,6 +266,11 @@ private fun CardPaymentReadyForPayment(
                 )
             }
         },
+        summary = {
+            if (orderTotals != null) {
+                CardPaymentOrderSummary(totals = orderTotals)
+            }
+        },
         buttons = {
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
@@ -267,6 +288,7 @@ private fun CardPaymentReadyForPayment(
 @Composable
 private fun CardPaymentReaderDisconnected(
     state: WooPosCardPaymentState.Collecting.ReaderDisconnected,
+    orderTotals: WooPosOrderTotalsViewState?,
     onConnectReaderClicked: () -> Unit,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
@@ -293,6 +315,11 @@ private fun CardPaymentReaderDisconnected(
                     text = state.subtitle,
                     style = WooPosTypography.BodyLarge,
                 )
+            }
+        },
+        summary = {
+            if (orderTotals != null) {
+                CardPaymentOrderSummary(totals = orderTotals)
             }
         },
         buttons = {
@@ -421,6 +448,7 @@ private fun CardPaymentFailed(
 private fun CardPaymentCenteredLayout(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
+    summary: @Composable ColumnScope.() -> Unit = {},
     buttons: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -435,7 +463,80 @@ private fun CardPaymentCenteredLayout(
         ) {
             content()
         }
+        summary()
         buttons()
+    }
+}
+
+@Composable
+private fun CardPaymentOrderSummary(
+    totals: WooPosOrderTotalsViewState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(0.4f)
+            .padding(WooPosSpacing.Large.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_subtotal_label),
+            value = totals.subtotal,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        totals.discount?.let {
+            OrderSummaryRow(
+                label = stringResource(R.string.woopos_payment_discount_label),
+                value = it,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        }
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_tax_label),
+            value = totals.taxes,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_total_label),
+            value = totals.total,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun OrderSummaryRow(
+    label: String,
+    value: String,
+    style: WooPosTypography = WooPosTypography.BodyLarge,
+    fontWeight: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        WooPosText(
+            text = label,
+            style = style,
+            fontWeight = fontWeight,
+        )
+        WooPosText(
+            text = value,
+            style = style,
+            fontWeight = fontWeight,
+        )
     }
 }
 
@@ -445,6 +546,7 @@ fun CardPaymentInitiatingPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Initiating,
+            orderTotals = null,
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -464,6 +566,7 @@ fun CardPaymentPreparingReaderPreview() {
                 title = "Preparing reader",
                 subtitle = "$12.50",
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -483,6 +586,7 @@ fun CardPaymentReadyForPaymentPreview() {
                 title = "Ready for payment",
                 subtitle = "Tap, insert, or swipe to pay $12.50",
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -503,6 +607,7 @@ fun CardPaymentReaderDisconnectedPreview() {
                 subtitle = "Please reconnect your card reader",
                 actionButtonLabel = "Connect reader",
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -522,6 +627,7 @@ fun CardPaymentInProgressPreview() {
                 title = "Processing payment",
                 subtitle = "$12.50",
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -543,6 +649,7 @@ fun CardPaymentFailedWithRetryPreview() {
                 actionButtonLabel = "Try again",
                 isDismissButtonVisible = true,
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -564,6 +671,7 @@ fun CardPaymentFailedWithoutRetryPreview() {
                 actionButtonLabel = null,
                 isDismissButtonVisible = true,
             ),
+            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -573,3 +681,10 @@ fun CardPaymentFailedWithoutRetryPreview() {
         )
     }
 }
+
+private fun previewOrderTotals() = WooPosOrderTotalsViewState(
+    subtotal = "$10.00",
+    discount = "$2.00",
+    taxes = "$1.50",
+    total = "$9.50",
+)
