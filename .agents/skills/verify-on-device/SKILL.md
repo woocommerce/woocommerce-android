@@ -288,7 +288,6 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 
 **Key tips:**
 - All am broadcast commands must include -p com.woocommerce.android.dev — without it, Android 8.0+ silently drops the broadcast.
-- ApiFaker requires at least one endpoint before it can be enabled.
 - All actions log results to logcat under the `WCApiFaker` tag — use `adb logcat -s WCApiFaker -d` to check feedback.
 
 ## WooCommerce Navigation Reference
