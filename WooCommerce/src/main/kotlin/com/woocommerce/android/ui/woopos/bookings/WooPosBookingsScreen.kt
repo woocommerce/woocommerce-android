@@ -203,7 +203,8 @@ private fun WooPosBookingsScreen(
                         orderId = dialogState.orderId,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
+                        refundReasonUpdate = refundReasonUpdate,
+                        disablePartialRefund = true
                     )
                 }
                 WooPosBookingsState.Content.DialogState.Hidden -> Unit
