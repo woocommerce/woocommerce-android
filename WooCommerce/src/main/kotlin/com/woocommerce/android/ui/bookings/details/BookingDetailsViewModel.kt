@@ -51,6 +51,7 @@ class BookingDetailsViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
 
     private var bookingFetchJob: Job? = null
+    private var attendanceUpdateJob: Job? = null
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
@@ -193,7 +194,8 @@ class BookingDetailsViewModel @Inject constructor(
         bookingId: Long,
         status: BookingAttendanceStatus
     ) {
-        launch {
+        attendanceUpdateJob?.cancel()
+        attendanceUpdateJob = launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
