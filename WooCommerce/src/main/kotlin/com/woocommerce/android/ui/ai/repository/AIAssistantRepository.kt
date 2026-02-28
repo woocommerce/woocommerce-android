@@ -1,30 +1,39 @@
 package com.woocommerce.android.ui.ai.repository
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.ai.mcp.McpToolMapper
 import com.woocommerce.android.ui.ai.mcp.WooMcpClient
 import com.woocommerce.android.ui.ai.model.AIAssistantEvent
 import com.woocommerce.android.ui.ai.model.ChatMessage
 import com.woocommerce.android.ui.ai.model.ChatMessage.Role
-import com.woocommerce.android.ui.ai.model.FunctionCall
 import com.woocommerce.android.ui.ai.model.ToolCall
-import com.woocommerce.android.ui.ai.repository.AIApiProxyRestClient.ChatCompletionResult
+import com.woocommerce.android.ui.ai.repository.JetpackAIQueryRestClient.ChatCompletionResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.longOrNull
+import org.wordpress.android.fluxc.model.JWTToken
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAIJWTTokenResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AIAssistantRepository @Inject constructor(
-    private val aiApiProxyRestClient: AIApiProxyRestClient,
+    private val jetpackAIQueryRestClient: JetpackAIQueryRestClient,
+    private val jetpackAIRestClient: JetpackAIRestClient,
+    private val selectedSite: SelectedSite,
     private val mcpClient: WooMcpClient
 ) {
     private val json = Json { ignoreUnknownKeys = true }
+    private val tokenMutex = Mutex()
+    private var jwtToken: JWTToken? = null
 
     suspend fun connectToStore(
         consumerKey: String,
@@ -48,45 +57,99 @@ class AIAssistantRepository @Inject constructor(
         while (iteration < MAX_TOOL_CALL_ITERATIONS) {
             iteration++
 
-            val result = aiApiProxyRestClient.sendChatCompletion(
+            val token = getValidJwtToken()
+            if (token == null) {
+                emit(AIAssistantEvent.Error("Failed to obtain authentication token"))
+                return@flow
+            }
+
+            val result = jetpackAIQueryRestClient.sendChatCompletion(
+                jwtToken = token.value,
                 messages = currentMessages,
                 tools = toolDefinitions
             )
 
             when (result) {
                 is ChatCompletionResult.Error -> {
+                    if (result.isAuthError) {
+                        // Clear cached token so next iteration fetches a fresh one
+                        invalidateJwtToken()
+                        continue
+                    }
                     emit(AIAssistantEvent.Error(result.message))
                     return@flow
                 }
 
                 is ChatCompletionResult.Success -> {
-                    if (result.finishReason == "tool_calls" && !result.toolCalls.isNullOrEmpty()) {
-                        val toolResults = executeToolCalls(result.toolCalls) { event ->
-                            emit(event)
-                        }
-
-                        currentMessages.add(
-                            ChatMessage(
-                                role = Role.ASSISTANT,
-                                content = result.content,
-                                toolCalls = result.toolCalls
-                            )
-                        )
-                        currentMessages.addAll(toolResults)
-                    } else {
-                        emit(
-                            AIAssistantEvent.FinalResponse(
-                                fullText = result.content ?: "",
-                                toolCalls = result.toolCalls
-                            )
-                        )
-                        return@flow
+                    val shouldContinue = handleSuccess(result, currentMessages) { event ->
+                        emit(event)
                     }
+                    if (!shouldContinue) return@flow
                 }
             }
         }
 
         emit(AIAssistantEvent.Error("Too many tool call iterations"))
+    }
+
+    /**
+     * Handles a successful chat completion result.
+     * @return true if the tool-call loop should continue, false if a final response was emitted.
+     */
+    private suspend fun handleSuccess(
+        result: ChatCompletionResult.Success,
+        currentMessages: MutableList<ChatMessage>,
+        emitEvent: suspend (AIAssistantEvent) -> Unit
+    ): Boolean {
+        return if (result.finishReason == "tool_calls" && !result.toolCalls.isNullOrEmpty()) {
+            val toolResults = executeToolCalls(result.toolCalls, emitEvent)
+
+            currentMessages.add(
+                ChatMessage(
+                    role = Role.ASSISTANT,
+                    content = result.content,
+                    toolCalls = result.toolCalls
+                )
+            )
+            currentMessages.addAll(toolResults)
+            true
+        } else {
+            emitEvent(
+                AIAssistantEvent.FinalResponse(
+                    fullText = result.content ?: "",
+                    toolCalls = result.toolCalls
+                )
+            )
+            false
+        }
+    }
+
+    private suspend fun getValidJwtToken(): JWTToken? = tokenMutex.withLock {
+        val site = selectedSite.getOrNull() ?: return@withLock null
+        val siteId = site.siteId
+
+        // Return cached token if still valid for this site
+        jwtToken?.validateExpiryDate()?.let { validToken ->
+            if (validToken.getPayloadItem("blog_id")?.toLongOrNull() == siteId) {
+                return@withLock validToken
+            }
+        }
+
+        // Fetch a new JWT token
+        when (val response = jetpackAIRestClient.fetchJetpackAIJWTToken(site)) {
+            is JetpackAIJWTTokenResponse.Success -> {
+                jwtToken = response.token
+                response.token
+            }
+            is JetpackAIJWTTokenResponse.Error -> {
+                jwtToken = null
+                null
+            }
+        }
+    }
+
+    private suspend fun invalidateJwtToken() = tokenMutex.withLock {
+        jwtToken = null
     }
 
     private suspend fun executeToolCalls(
@@ -161,6 +224,7 @@ class AIAssistantRepository @Inject constructor(
     }
 
     suspend fun disconnect() {
+        invalidateJwtToken()
         mcpClient.disconnect()
     }
 

@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,7 +23,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class AIApiProxyRestClient @Inject constructor(
+class JetpackAIQueryRestClient @Inject constructor(
     @Named("regular") private val okHttpClient: OkHttpClient,
     private val accessToken: AccessToken
 ) {
@@ -34,6 +35,7 @@ class AIApiProxyRestClient @Inject constructor(
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun sendChatCompletion(
+        jwtToken: String,
         messages: List<ChatMessage>,
         tools: List<OpenAIToolDefinition>,
         model: String = DEFAULT_MODEL
@@ -41,14 +43,17 @@ class AIApiProxyRestClient @Inject constructor(
         val requestBody = ChatCompletionRequest(
             model = model,
             messages = messages.map { it.toApiMessage() },
-            tools = tools.takeIf { it.isNotEmpty() }?.map { it.toApiTool() }
+            tools = tools.takeIf { it.isNotEmpty() }?.map { it.toApiTool() },
+            feature = AI_FEATURE_NAME
         )
 
         val jsonBody = json.encodeToString(requestBody)
+        val url = ENDPOINT_URL.toHttpUrl().newBuilder()
+            .addQueryParameter("token", jwtToken)
+            .build()
         val request = Request.Builder()
-            .url(ENDPOINT_URL)
+            .url(url)
             .addHeader("Authorization", "Bearer ${accessToken.get()}")
-            .addHeader(AI_FEATURE_HEADER, AI_FEATURE_NAME)
             .post(jsonBody.toRequestBody(JSON_MEDIA_TYPE))
             .build()
 
@@ -56,7 +61,11 @@ class AIApiProxyRestClient @Inject constructor(
             val response = okHttpClient.newCall(request).execute()
             if (!response.isSuccessful) {
                 val errorBody = response.body.use { it.string() }
-                return@withContext ChatCompletionResult.Error("HTTP ${response.code}: $errorBody")
+                val isAuthError = response.code in AUTH_ERROR_CODES
+                return@withContext ChatCompletionResult.Error(
+                    message = "HTTP ${response.code}: $errorBody",
+                    isAuthError = isAuthError
+                )
             }
 
             val responseBody = response.body.use { it.string() }
@@ -118,7 +127,10 @@ class AIApiProxyRestClient @Inject constructor(
             val finishReason: String?
         ) : ChatCompletionResult()
 
-        data class Error(val message: String) : ChatCompletionResult()
+        data class Error(
+            val message: String,
+            val isAuthError: Boolean = false
+        ) : ChatCompletionResult()
     }
 
     // region API models
@@ -127,6 +139,7 @@ class AIApiProxyRestClient @Inject constructor(
         val model: String,
         val messages: List<ApiMessage>,
         val tools: List<ApiToolDefinition>? = null,
+        val feature: String,
         val stream: Boolean = false
     )
 
@@ -189,10 +202,10 @@ class AIApiProxyRestClient @Inject constructor(
 
     companion object {
         private const val ENDPOINT_URL =
-            "https://public-api.wordpress.com/wpcom/v2/ai-api-proxy/v1/chat/completions"
-        private const val AI_FEATURE_HEADER = "X-WPCOM-AI-Feature"
+            "https://public-api.wordpress.com/wpcom/v2/jetpack-ai-query"
         private const val AI_FEATURE_NAME = "woo_android_ai_assistant"
         private const val DEFAULT_MODEL = "gpt-4o"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+        private val AUTH_ERROR_CODES = setOf(401, 403)
     }
 }
