@@ -96,7 +96,8 @@ class JetpackAIQueryRestClient @Inject constructor(
     private fun ChatMessage.toApiMessage(): ApiMessage {
         return ApiMessage(
             role = role.name.lowercase(),
-            content = content,
+            // Backend requires content on every message (null would be omitted by explicitNulls=false)
+            content = content ?: "",
             toolCalls = toolCalls?.map { tc ->
                 ApiToolCall(
                     id = tc.id,
@@ -146,7 +147,7 @@ class JetpackAIQueryRestClient @Inject constructor(
     @Serializable
     private data class ApiMessage(
         val role: String,
-        val content: String? = null,
+        val content: String,
         @SerialName("tool_calls")
         val toolCalls: List<ApiToolCall>? = null,
         @SerialName("tool_call_id")
