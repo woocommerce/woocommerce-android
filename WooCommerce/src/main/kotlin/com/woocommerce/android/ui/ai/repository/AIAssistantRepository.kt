@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -179,20 +181,23 @@ class AIAssistantRepository @Inject constructor(
     private fun parseArguments(argumentsJson: String): Map<String, Any?> {
         return try {
             val jsonObject = json.decodeFromString<JsonObject>(argumentsJson)
-            jsonObject.mapValues { (_, value) ->
-                when (value) {
-                    is JsonPrimitive -> when {
-                        value.isString -> value.content
-                        value.booleanOrNull != null -> value.booleanOrNull
-                        value.longOrNull != null -> value.longOrNull
-                        value.doubleOrNull != null -> value.doubleOrNull
-                        else -> value.content
-                    }
-                    else -> value.toString()
-                }
-            }
+            jsonObject.mapValues { (_, value) -> jsonElementToKotlin(value) }
         } catch (_: Exception) {
             emptyMap()
+        }
+    }
+
+    private fun jsonElementToKotlin(element: JsonElement): Any? {
+        return when (element) {
+            is JsonPrimitive -> when {
+                element.isString -> element.content
+                element.booleanOrNull != null -> element.booleanOrNull
+                element.longOrNull != null -> element.longOrNull
+                element.doubleOrNull != null -> element.doubleOrNull
+                else -> element.content
+            }
+            is JsonObject -> element.mapValues { (_, v) -> jsonElementToKotlin(v) }
+            is JsonArray -> element.map { jsonElementToKotlin(it) }
         }
     }
 
