@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,14 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,12 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.ai.AIAssistantViewModel.AIAssistantUiState
 import com.woocommerce.android.ui.ai.AIAssistantViewModel.UiChatMessage
 import com.woocommerce.android.ui.ai.components.ChatInputBar
 import com.woocommerce.android.ui.ai.components.ChatMessageItem
+import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun AIAssistantScreen(
@@ -69,7 +68,7 @@ fun AIAssistantScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
+            Toolbar(
                 title = {
                     Column {
                         Text("AI Assistant")
@@ -82,14 +81,8 @@ fun AIAssistantScreen(
                         }
                     }
                 },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+                onNavigationButtonClick = onBackClick
             )
         },
         bottomBar = {
@@ -120,7 +113,8 @@ fun AIAssistantScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         Box(
             modifier = Modifier
