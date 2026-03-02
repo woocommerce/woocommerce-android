@@ -66,6 +66,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
+    private var attendanceUpdateJob: Job? = null
     private val locationCache = mutableMapOf<Long, String?>()
 
     private val _state = MutableStateFlow<WooPosBookingsState>(
@@ -444,7 +445,8 @@ class WooPosBookingsViewModel @Inject constructor(
             items = updateItemsWithDetails(currentState.items, updatedDetails),
         )
 
-        viewModelScope.launch {
+        attendanceUpdateJob?.cancel()
+        attendanceUpdateJob = viewModelScope.launch {
             val entityStatus = if (attended) {
                 BookingEntity.AttendanceStatus.Attended
             } else {

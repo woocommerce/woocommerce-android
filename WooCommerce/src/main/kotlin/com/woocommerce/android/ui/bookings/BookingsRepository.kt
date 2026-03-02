@@ -135,18 +135,18 @@ class BookingsRepository @Inject constructor(
     suspend fun updateAttendanceStatus(
         bookingId: Long,
         attendanceStatus: BookingEntity.AttendanceStatus,
-    ): Result<Unit> = appCoroutineScope.async {
+    ): Result<Unit> {
         val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
             bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = attendanceStatus)
         )
-        if (result.isError) {
+        return if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
             Result.success(Unit)
         }
-    }.await()
+    }
 
     suspend fun updateNote(
         bookingId: Long,
