@@ -684,7 +684,7 @@ fun CardPaymentFailedWithoutRetryPreview() {
 
 private fun previewOrderTotals() = WooPosOrderTotalsViewState(
     subtotal = "$10.00",
-    discount = "$2.00",
+    discount = "-$2.00",
     taxes = "$1.50",
     total = "$9.50",
 )
