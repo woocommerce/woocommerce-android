@@ -15,8 +15,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosOrderDetailsMapperTest : BaseUnitTest() {
@@ -54,7 +54,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     @Test
     fun `given order is paid, when mapOrderDetails, then totalPaid equals formatted total`() = testBlocking {
         setupMocks()
-        val order = OrderTestUtils.generateTestOrder().copy(datePaid = Date())
+        val order = OrderTestUtils.generateTestOrder()
+            .copy(datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"))
         whenever(formatPrice(order.total, order.currency)).thenReturn("$106.00")
         whenever(formatPrice(any<BigDecimal>())).thenReturn("")
 
@@ -80,7 +81,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     fun `given order is paid, when mapOrderDetailsWithoutActions, then totalPaid equals formatted total`() =
         testBlocking {
             setupMocks()
-            val order = OrderTestUtils.generateTestOrder().copy(datePaid = Date())
+            val order = OrderTestUtils.generateTestOrder()
+                .copy(datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"))
             whenever(formatPrice(order.total)).thenReturn("$106.00")
 
             val result = sut.mapOrderDetailsWithoutActions(order)
