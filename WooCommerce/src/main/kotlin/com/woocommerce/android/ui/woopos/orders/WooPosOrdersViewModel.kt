@@ -512,7 +512,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
         _state.value = current.copy(
             items = WooPosOrdersState.Content.Items.Loaded(newMap),
-            selectedDetails = if (selectedId == updated.id) newDetailsViewState else current.selectedDetails
+            selectedDetails = if (current.selectedDetails?.id == updated.id) newDetailsViewState else current.selectedDetails
         )
     }
 
