@@ -1591,4 +1591,24 @@ class WooPosBookingsViewModelTest {
         // THEN
         verify(analyticsTracker).trackAttendanceChangeFailed(any(), any())
     }
+
+    @Test
+    fun `when payment completed, then collect payment button is hidden immediately`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.fetchBooking(any())).doSuspendableAnswer {
+            delay(5000)
+            Result.success(booking())
+        }
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        val contentBefore = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(contentBefore.selectedDetails!!.paymentSection.collectPaymentLabel).isNotNull()
+
+        // WHEN
+        viewModel.onPaymentCompleted()
+
+        // THEN
+        val contentAfter = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(contentAfter.selectedDetails!!.paymentSection.collectPaymentLabel).isNull()
+    }
 }

@@ -502,7 +502,20 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onPaymentCompleted() {
+        hideCollectPaymentButton()
         selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
+    }
+
+    private fun hideCollectPaymentButton() {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val selectedDetails = currentState.selectedDetails ?: return
+        _state.value = currentState.copy(
+            selectedDetails = selectedDetails.copy(
+                paymentSection = selectedDetails.paymentSection.copy(
+                    collectPaymentLabel = null
+                )
+            )
+        )
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
