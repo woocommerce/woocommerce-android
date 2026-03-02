@@ -7,8 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -34,7 +32,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -47,9 +44,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
-    private val orderStore: WCOrderStore,
-    private val orderMapper: OrderMapper,
-    private val selectedSite: SelectedSite,
+    private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
 ) : ViewModel() {
 
@@ -108,8 +103,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun loadOrderTotals() {
         viewModelScope.launch {
-            val orderEntity = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
-            val order = orderEntity?.let { orderMapper.toAppModel(it) } ?: return@launch
+            val order = cardPaymentRepository.getOrderById(orderId) ?: return@launch
 
             _orderTotals.value = WooPosOrderTotalsViewState(
                 subtotal = priceFormat(order.productsTotal),
