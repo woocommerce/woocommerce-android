@@ -325,7 +325,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `when onAttendanceToggle called rapidly, then first request error is suppressed by cancellation`() =
         testBlocking {
-            // Given — both calls will fail, but cancellation should suppress the first error
+            // GIVEN
             whenever(bookingsRepository.updateAttendanceStatus(any(), any())).doSuspendableAnswer {
                 delay(1000)
                 Result.failure(Exception("Network error"))
@@ -335,13 +335,13 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             events.clear() // ignore init events
 
-            // When — toggle twice rapidly (first job is cancelled before its failure handler runs)
+            // WHEN
             val state = viewModel.state.getOrAwaitValue()
             state.bookingUiState?.onAttendanceToggle()
             state.bookingUiState?.onAttendanceToggle()
             advanceUntilIdle()
 
-            // Then — only one error snackbar (from second request), not two
+            // THEN
             assertThat(events.filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>())
                 .hasSize(1)
         }
