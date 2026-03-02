@@ -161,9 +161,10 @@ class WooPosBookingsViewModel @Inject constructor(
                     return@collectLatest
                 }
 
-                val isFetchingContent = current is WooPosBookingsState.Content &&
-                    (current.items is WooPosBookingsState.Content.Items.Loading || fetchJob?.isActive == true)
-                if (bookings.isEmpty() && isFetchingContent) {
+                if (bookings.isEmpty() && current is WooPosBookingsState.Content && fetchJob?.isActive == true) {
+                    _state.value = current.copy(
+                        items = WooPosBookingsState.Content.Items.Loading,
+                    )
                     return@collectLatest
                 }
 
