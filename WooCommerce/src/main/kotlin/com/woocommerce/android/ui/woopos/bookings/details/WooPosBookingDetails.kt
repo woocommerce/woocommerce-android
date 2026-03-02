@@ -57,6 +57,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
+private const val SHOW_PAYMENT_SECTION = false
+
 @Composable
 fun WooPosBookingDetails(
     modifier: Modifier = Modifier,
@@ -103,9 +105,11 @@ fun WooPosBookingDetails(
 
             Spacer(Modifier.height(WooPosSpacing.Large.value))
 
-            BookingPaymentCard(paymentSection = details.paymentSection)
-
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
+            @Suppress("KotlinConstantConditions")
+            if (SHOW_PAYMENT_SECTION) {
+                BookingPaymentCard(paymentSection = details.paymentSection)
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+            }
 
             BookingNoteSection(bookingNote = details.bookingNote, onUIEvent = onUIEvent)
         }
