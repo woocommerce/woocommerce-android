@@ -54,6 +54,18 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         it != StepType.ConnectStore || !navArgs.isSiteConnectedToJetpack
     }
 
+    private val titleRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_title_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_title_connect
+    }
+
+    private val bodyRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_body_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_body_connect
+    }
+
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = Step(type = StepType.CheckPluginCompatibility),
@@ -65,6 +77,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         flowOf(visibleStepTypes)
     ) { currentStep, stepTypes ->
         ViewState(
+            titleRes = titleRes,
+            bodyRes = bodyRes,
             siteAddress = siteAddress,
             steps = stepTypes.map { stepType ->
                 Step(
@@ -257,6 +271,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     data class ViewState(
+        @StringRes val titleRes: Int,
+        @StringRes val bodyRes: Int,
         val siteAddress: String,
         val steps: List<Step>
     ) {
