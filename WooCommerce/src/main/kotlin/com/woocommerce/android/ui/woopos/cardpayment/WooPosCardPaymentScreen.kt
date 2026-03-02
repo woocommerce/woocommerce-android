@@ -422,6 +422,7 @@ private fun CardPaymentFailed(
                 )
             }
         },
+        summary = {},
         buttons = {
             if (state.actionButtonLabel != null) {
                 WooPosButton(
@@ -448,7 +449,7 @@ private fun CardPaymentFailed(
 private fun CardPaymentCenteredLayout(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-    summary: @Composable ColumnScope.() -> Unit = {},
+    summary: @Composable ColumnScope.() -> Unit,
     buttons: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
