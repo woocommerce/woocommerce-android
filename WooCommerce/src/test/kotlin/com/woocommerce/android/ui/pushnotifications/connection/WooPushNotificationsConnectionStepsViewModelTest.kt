@@ -354,4 +354,15 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             eq(mapOf(AnalyticsTracker.KEY_STEP to "enable_push_notifications"))
         )
     }
+
+    @Test
+    fun `given site already connected, when initialized, then ConnectStore step is hidden`() = testBlocking {
+        setup(isStoreAlreadyConnected = true)
+
+        val state = viewModel.viewState.getOrAwaitValue()
+
+        assertThat(state.steps).hasSize(2)
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+        assertThat(state.steps[1].type).isEqualTo(StepType.EnablePushNotifications)
+    }
 }
