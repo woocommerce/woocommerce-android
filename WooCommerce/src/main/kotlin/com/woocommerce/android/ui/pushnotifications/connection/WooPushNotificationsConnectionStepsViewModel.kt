@@ -50,6 +50,10 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val siteAddress = getSiteAddress()
     private val navArgs by savedStateHandle.navArgs<WooPushNotificationsConnectionStepsFragmentArgs>()
 
+    private val visibleStepTypes = StepType.entries.filter {
+        it != StepType.ConnectStore || !navArgs.isSiteConnectedToJetpack
+    }
+
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = Step(type = StepType.CheckPluginCompatibility),
@@ -58,7 +62,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     val viewState = combine(
         currentStep,
-        flowOf(StepType.entries.toList())
+        flowOf(visibleStepTypes)
     ) { currentStep, stepTypes ->
         ViewState(
             siteAddress = siteAddress,
@@ -127,12 +131,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private suspend fun connectStoreToJetpack() {
-        if (navArgs.isSiteConnectedToJetpack) {
-            markCurrentStepAsCompleted()
-            advanceToNextStep()
-            return
-        }
-
         jetpackActivationRepository.registerSite(
             site = selectedSite.get(),
             useApplicationPasswords = true
@@ -174,7 +172,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     @Suppress("unused")
     private fun advanceToNextStep() {
         currentStep.update { current ->
-            val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
+            val currentIndex = visibleStepTypes.indexOf(current.type)
+            val nextType = visibleStepTypes.getOrNull(currentIndex + 1)
             if (nextType != null) {
                 Step(type = nextType, state = StepState.Ongoing)
             } else {
