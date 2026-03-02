@@ -1,15 +1,21 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
+import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -39,40 +45,53 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         bookingInfoMapper = bookingInfoMapper,
     )
 
-    private suspend fun setupMocks() {
-        whenever(orderStatusMapper.mapOrderStatus(any())).thenReturn(mock())
+    private val paidOrder: Order = OrderTestUtils.generateTestOrder().copy(
+        datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"),
+        status = Order.Status.Completed,
+    )
+
+    @Before
+    fun setup() = runBlocking {
+        whenever(orderStatusMapper.mapOrderStatus(any())).thenReturn(
+            PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED)
+        )
         whenever(resourceProvider.getString(any())).thenReturn("at")
         whenever(refundInfoBuilder.buildRefundInfo(any(), any())).thenReturn(
             RefundInfo(emptyList(), BigDecimal.ZERO)
         )
-        whenever(refundInfoBuilder.buildTotalsBreakdown(any(), any())).thenReturn(mock())
+        whenever(refundInfoBuilder.buildTotalsBreakdown(any(), any())).thenReturn(
+            TotalsBreakdown(
+                products = "$10.00",
+                discount = null,
+                discountCode = null,
+                taxes = "$0.00",
+                shipping = null,
+                refunds = emptyList(),
+                netPayment = null,
+            )
+        )
         whenever(orderActionsProvider.getAvailableActions(any())).thenReturn(emptyList())
-        whenever(formatPrice(any<BigDecimal>(), anyOrNull<String>())).thenReturn("")
-        whenever(formatPrice(any<BigDecimal>())).thenReturn("")
+        whenever(formatPrice(any<BigDecimal>(), anyOrNull<String>())).thenReturn("$0.00")
+        whenever(formatPrice(any<BigDecimal>())).thenReturn("$0.00")
+        Unit
     }
 
     @Test
     fun `given order is paid, when mapOrderDetails, then totalPaid equals formatted total`() = testBlocking {
-        setupMocks()
-        val order = OrderTestUtils.generateTestOrder()
-            .copy(datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"))
-        whenever(formatPrice(order.total, order.currency)).thenReturn("$106.00")
-        whenever(formatPrice(any<BigDecimal>())).thenReturn("")
+        whenever(formatPrice(paidOrder.total, paidOrder.currency)).thenReturn("$106.00")
 
-        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+        val result = sut.mapOrderDetails(paidOrder, RefundsFetchResult.Success(emptyList()))
 
         assertThat(result.totalPaid).isEqualTo("$106.00")
     }
 
     @Test
     fun `given order is unpaid, when mapOrderDetails, then totalPaid equals formatted zero`() = testBlocking {
-        setupMocks()
-        val order = OrderTestUtils.generateTestOrder().copy(datePaid = null)
-        whenever(formatPrice(BigDecimal.ZERO, order.currency)).thenReturn("$0.00")
-        whenever(formatPrice(order.total, order.currency)).thenReturn("$106.00")
-        whenever(formatPrice(any<BigDecimal>())).thenReturn("")
+        val unpaidOrder = paidOrder.copy(datePaid = null)
+        whenever(formatPrice(unpaidOrder.total, unpaidOrder.currency)).thenReturn("$106.00")
+        whenever(formatPrice(BigDecimal.ZERO, unpaidOrder.currency)).thenReturn("$0.00")
 
-        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+        val result = sut.mapOrderDetails(unpaidOrder, RefundsFetchResult.Success(emptyList()))
 
         assertThat(result.totalPaid).isEqualTo("$0.00")
     }
@@ -80,12 +99,9 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     @Test
     fun `given order is paid, when mapOrderDetailsWithoutActions, then totalPaid equals formatted total`() =
         testBlocking {
-            setupMocks()
-            val order = OrderTestUtils.generateTestOrder()
-                .copy(datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"))
-            whenever(formatPrice(order.total)).thenReturn("$106.00")
+            whenever(formatPrice(paidOrder.total)).thenReturn("$106.00")
 
-            val result = sut.mapOrderDetailsWithoutActions(order)
+            val result = sut.mapOrderDetailsWithoutActions(paidOrder)
 
             assertThat(result.totalPaid).isEqualTo("$106.00")
         }
@@ -93,12 +109,11 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     @Test
     fun `given order is unpaid, when mapOrderDetailsWithoutActions, then totalPaid equals formatted zero`() =
         testBlocking {
-            setupMocks()
-            val order = OrderTestUtils.generateTestOrder().copy(datePaid = null)
+            val unpaidOrder = paidOrder.copy(datePaid = null)
+            whenever(formatPrice(unpaidOrder.total)).thenReturn("$106.00")
             whenever(formatPrice(BigDecimal.ZERO)).thenReturn("$0.00")
-            whenever(formatPrice(order.total)).thenReturn("$106.00")
 
-            val result = sut.mapOrderDetailsWithoutActions(order)
+            val result = sut.mapOrderDetailsWithoutActions(unpaidOrder)
 
             assertThat(result.totalPaid).isEqualTo("$0.00")
         }
