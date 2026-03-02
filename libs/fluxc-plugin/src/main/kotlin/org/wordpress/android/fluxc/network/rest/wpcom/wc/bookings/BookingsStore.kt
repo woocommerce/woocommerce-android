@@ -96,6 +96,13 @@ class BookingsStore @Inject internal constructor(
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
 
+    suspend fun getBookings(
+        site: SiteModel,
+        limit: Int? = null,
+        filters: BookingFilters? = null,
+        order: BookingsOrderOption
+    ): List<BookingEntity> = bookingsDao.getBookings(site.localId(), limit, filters, order)
+
     fun observeBookingCount(
         site: SiteModel
     ): Flow<Long> = bookingsDao.observeBookingsCount(site.localId())
