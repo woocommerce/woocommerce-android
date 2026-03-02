@@ -114,7 +114,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             _orderTotals.value = WooPosOrderTotalsViewState(
                 subtotal = priceFormat(order.productsTotal),
                 discount = if (order.discountTotal > BigDecimal.ZERO) {
-                    priceFormat(order.discountTotal)
+                    "-${priceFormat(order.discountTotal)}"
                 } else {
                     null
                 },
