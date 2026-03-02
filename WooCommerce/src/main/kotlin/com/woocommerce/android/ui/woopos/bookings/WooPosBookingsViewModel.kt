@@ -237,32 +237,6 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun rebuildStateWithLocations(
-        bookings: List<BookingEntity>,
-        resourcesMap: Map<Long, BookingResourceEntity>
-    ) {
-        val currentState = _state.value as? WooPosBookingsState.Content ?: return
-
-        val items = bookings.associate { booking ->
-            val resource = resourcesMap[booking.resourceId]
-            mapper.mapToItemViewState(booking, selectedBookingId, resource) to
-                mapper.mapToDetailsViewState(
-                    booking,
-                    resource?.name,
-                    locationCache[booking.productId]
-                )
-        }
-
-        val selectedDetails = selectedBookingId?.let { id ->
-            items.entries.find { it.key.id == id }?.value
-        }
-
-        _state.value = currentState.copy(
-            items = WooPosBookingsState.Content.Items.Loaded(items),
-            selectedDetails = selectedDetails,
-        )
-    }
-
     fun onBookingSelected(bookingId: Long) {
         viewModelScope.launch { analyticsTracker.trackListItemTapped() }
         selectedBookingId = bookingId
@@ -663,6 +637,32 @@ class WooPosBookingsViewModel @Inject constructor(
                 }.awaitAll()
             }
         }
+    }
+
+    private suspend fun rebuildStateWithLocations(
+        bookings: List<BookingEntity>,
+        resourcesMap: Map<Long, BookingResourceEntity>
+    ) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+
+        val items = bookings.associate { booking ->
+            val resource = resourcesMap[booking.resourceId]
+            mapper.mapToItemViewState(booking, selectedBookingId, resource) to
+                mapper.mapToDetailsViewState(
+                    booking,
+                    resource?.name,
+                    locationCache[booking.productId]
+                )
+        }
+
+        val selectedDetails = selectedBookingId?.let { id ->
+            items.entries.find { it.key.id == id }?.value
+        }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(items),
+            selectedDetails = selectedDetails,
+        )
     }
 
     private fun handleDateChange(newDate: LocalDate) {
