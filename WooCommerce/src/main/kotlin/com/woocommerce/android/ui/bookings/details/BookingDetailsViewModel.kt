@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
@@ -48,6 +50,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val bookingMapper: BookingMapper,
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
 
     private var bookingFetchJob: Job? = null
@@ -198,12 +201,23 @@ class BookingDetailsViewModel @Inject constructor(
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE,
+                mapOf("booking_status" to status.toAnalyticsValue())
+            )
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel()
             bookingsRepository.updateAttendanceStatus(
                 bookingId = bookingId,
                 attendanceStatus = attendanceStatus
             ).onFailure {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
+                    properties = mapOf("action" to "update_attendance"),
+                    errorContext = this@BookingDetailsViewModel::class.java.simpleName,
+                    errorType = null,
+                    errorDescription = it.message
+                )
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
             }
             attendanceUpdateStatus.value = AttendanceUpdateStatus.Idle
@@ -226,18 +240,28 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
         bookingsRepository.cancelBooking(bookingId)
             .onFailure {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
+                    properties = mapOf("action" to "cancel_booking"),
+                    errorContext = this@BookingDetailsViewModel::class.java.simpleName,
+                    errorType = null,
+                    errorDescription = it.message
+                )
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
             }
         cancelStatusState.value = CancelStatus.Idle
     }
 
     private fun openBookingNote(bookingId: Long) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
         triggerEvent(NavigateToBookingNote(bookingId))
     }
 
     private fun openOrderDetails(orderId: Long) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
         triggerEvent(NavigateToOrder(orderId))
     }
 
@@ -293,6 +317,11 @@ class BookingDetailsViewModel @Inject constructor(
 
             else -> BookingStaffMemberStatus.Unavailable
         }
+    }
+
+    private fun BookingAttendanceStatus.toAnalyticsValue(): String = when (this) {
+        BookingAttendanceStatus.Attended -> "attended"
+        BookingAttendanceStatus.Unattended -> "unattended"
     }
 
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
