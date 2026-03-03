@@ -505,8 +505,8 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
 
     MAIN_TAB_HUB_MENU_SELECTED,
     MAIN_TAB_HUB_MENU_RESELECTED,
-    MAIN_TAB_BOOKINGS_SELECTED,
-    MAIN_TAB_BOOKINGS_RESELECTED,
+    MAIN_TAB_BOOKINGS_SELECT,
+    MAIN_TAB_BOOKINGS_RESELECT,
 
     // -- Settings
     SETTING_CHANGE,
