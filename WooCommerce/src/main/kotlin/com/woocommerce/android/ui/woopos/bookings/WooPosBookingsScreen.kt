@@ -269,28 +269,13 @@ private fun WooPosBookingsContent(
                         )
                     }
                     else -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = WooPosSpacing.XLarge.value),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Image(
-                                modifier = Modifier.size(80.dp),
-                                imageVector = WooPosIcons.BookingsEmpty,
-                                contentDescription = stringResource(
-                                    R.string.woopos_bookings_empty_image_description
-                                ),
-                            )
-                            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-                            WooPosText(
-                                text = stringResource(R.string.woopos_bookings_no_booking_selected),
-                                style = WooPosTypography.BodyMedium,
-                                color = WooPosTheme.colors.onSurfaceVariantLowest,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
+                        WooPosEmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            icon = WooPosIcons.BookingsEmpty,
+                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
+                            message = "",
+                            contentDescription = stringResource(R.string.woopos_bookings_empty_image_description)
+                        )
                     }
                 }
             }
