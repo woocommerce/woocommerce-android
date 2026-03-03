@@ -265,17 +265,14 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onShowBookings called with filters, then BOOKING_LIST_APPLY_FILTERS is tracked`() {
-        // GIVEN
         val state = viewModel.uiState.getOrAwaitValue()
         state.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         state.onUpdateFilterOption(
             BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended))
         )
 
-        // WHEN
         viewModel.uiState.getOrAwaitValue().onShowBookings()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS),
             argThat<Map<String, Any>> {
@@ -289,7 +286,6 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given two team member ids, when updated, then teamMemberValue shows count`() = testBlocking {
-        // Given
         val bookingFilterRepository = mock<BookingFilterRepository> {
             on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
         }
@@ -300,12 +296,10 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper = mock(),
         )
 
-        // When: update filters with two different member IDs
         val state = viewModel.uiState.getOrAwaitValue()
         val ids = setOf(LocalOrRemoteId.RemoteId(1), LocalOrRemoteId.RemoteId(2))
         state.onUpdateFilterOption.invoke(BookingsFilterOption.TeamMembers(ids))
 
-        // Then
         val updated = viewModel.uiState.getOrAwaitValue()
         assertThat(updated.selectedFilterValues.teamMemberValue).isEqualTo("2")
     }

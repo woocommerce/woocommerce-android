@@ -315,14 +315,11 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onAttendanceToggle called, then BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE is tracked`() = testBlocking {
-        // Given
         val viewModel = createViewModel()
 
-        // When
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onAttendanceToggle()
 
-        // Then
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE),
             argThat<Map<String, Any>> { this["booking_status"] == "attended" }
@@ -331,23 +328,19 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onConfirmCancelBooking called, then BOOKING_DETAIL_CANCEL_BOOKING is tracked`() = testBlocking {
-        // Given
         whenever(bookingsRepository.cancelBooking(any())).thenReturn(Result.success(Unit))
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
 
-        // When
         stateWithDialog.dialogState?.positiveButton?.onClick()
 
-        // Then
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
     }
 
     @Test
     fun `when cancel fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
-        // Given
         whenever(bookingsRepository.cancelBooking(any())).thenReturn(
             Result.failure(Exception("Cancel failed"))
         )
@@ -356,14 +349,15 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
 
-        // When
         stateWithDialog.dialogState?.positiveButton?.onClick()
         advanceUntilIdle()
 
-        // Then
         verify(analyticsTrackerWrapper).track(
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
-            properties = argThat<Map<String, Any>> { this["action"] == "cancel_booking" },
+            properties = argThat<Map<String, Any>> {
+                this["action"] == "cancel_booking" &&
+                    this["error_code"] == "Exception"
+            },
             errorContext = eq("BookingDetailsViewModel"),
             errorType = isNull(),
             errorDescription = eq("Cancel failed")
@@ -372,47 +366,41 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onNoteClicked called, then BOOKING_DETAIL_ADD_NOTE_TAP is tracked`() = testBlocking {
-        // Given
         val viewModel = createViewModel()
 
-        // When
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onNoteClicked?.invoke()
 
-        // Then
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
     }
 
     @Test
     fun `when onViewOrderClicked called, then BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP is tracked`() = testBlocking {
-        // Given
         val viewModel = createViewModel()
 
-        // When
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onViewOrderClicked?.invoke()
 
-        // Then
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
     }
 
     @Test
     fun `when attendance update fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
-        // Given
         whenever(bookingsRepository.updateAttendanceStatus(any(), any())).thenReturn(
             Result.failure(Exception("Update failed"))
         )
         val viewModel = createViewModel()
 
-        // When
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onAttendanceToggle()
         advanceUntilIdle()
 
-        // Then
         verify(analyticsTrackerWrapper).track(
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
-            properties = argThat<Map<String, Any>> { this["action"] == "update_attendance" },
+            properties = argThat<Map<String, Any>> {
+                this["action"] == "update_attendance" &&
+                    this["error_code"] == "Exception"
+            },
             errorContext = eq("BookingDetailsViewModel"),
             errorType = isNull(),
             errorDescription = eq("Update failed")

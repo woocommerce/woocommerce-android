@@ -434,14 +434,11 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when tab is changed, then BOOKING_LIST_TAB_SELECT is tracked`() = testBlocking {
-        // GIVEN
         setup()
 
-        // WHEN
         val state = viewModel.state.getOrAwaitValue()
         state.tabState.onTabChanged(BookingListTab.Upcoming)
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_TAB_SELECT),
             argThat<Map<String, Any>> { this["selected_tab"] == "upcoming" }
@@ -450,48 +447,59 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when booking is clicked, then BOOKING_LIST_BOOKING_TAP is tracked`() = testBlocking {
-        // GIVEN
         setup()
 
-        // WHEN
         val state = viewModel.state.getOrAwaitValue()
         state.contentState.onBookingClick(123L)
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_BOOKING_TAP),
             argThat<Map<String, Any>> {
                 this["is_search_active"] == "false" &&
+                    this["is_filtering_active"] == "false" &&
                     this["selected_tab"] == "today"
             }
         )
     }
 
     @Test
+    fun `given active filters, when booking is clicked, then BOOKING_LIST_BOOKING_TAP tracks is_filtering_active as true`() =
+        testBlocking {
+            bookingFiltersFlow.value = BookingFilters(
+                bookingType = BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE)
+            )
+            setup()
+
+            val state = viewModel.state.getOrAwaitValue()
+            state.contentState.onBookingClick(123L)
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.BOOKING_LIST_BOOKING_TAP),
+                argThat<Map<String, Any>> {
+                    this["is_filtering_active"] == "true"
+                }
+            )
+        }
+
+    @Test
     fun `when sort is clicked, then BOOKING_LIST_SORT_BY_TAP is tracked`() = testBlocking {
-        // GIVEN
         setup()
 
-        // WHEN
         val state = viewModel.state.getOrAwaitValue()
         state.controlsState.onSortClick()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_LIST_SORT_BY_TAP)
     }
 
     @Test
     fun `when sort option is selected, then BOOKING_LIST_SORT_BY_OPTION_TAP is tracked`() = testBlocking {
-        // GIVEN
         setup()
         val state = viewModel.state.getOrAwaitValue()
         state.controlsState.onSortClick()
         val stateWithSheet = viewModel.state.getOrAwaitValue()
 
-        // WHEN
         stateWithSheet.sortBottomSheetState?.onSelect?.invoke(BookingListSortOption.OldestToNewest)
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_SORT_BY_OPTION_TAP),
             argThat<Map<String, Any>> { this["sort_option"] == "oldest_first" }
@@ -500,44 +508,36 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when filter is clicked, then BOOKING_LIST_FILTERS_TAP is tracked`() = testBlocking {
-        // GIVEN
         setup()
 
-        // WHEN
         val state = viewModel.state.getOrAwaitValue()
         state.controlsState.onFilterClick()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_LIST_FILTERS_TAP)
     }
 
     @Test
     fun `when search is activated, then BOOKING_LIST_SEARCH_TAP is tracked`() = testBlocking {
-        // GIVEN
         setup()
 
-        // WHEN
         val state = viewModel.state.getOrAwaitValue()
         state.searchState.onQueryChanged("")
 
-        // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_LIST_SEARCH_TAP)
     }
 
     @Test
     fun `when fetch fails, then BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS is tracked`() = testBlocking {
-        // GIVEN
         setup {
             whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any(), sortBy = any()))
                 .thenReturn(Result.failure(Exception("Network error")))
         }
 
-        // WHEN
         advanceUntilIdle()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS),
+            properties = argThat<Map<String, Any>> { this["error_code"] == "Exception" },
             errorContext = eq("BookingListViewModel"),
             errorType = isNull(),
             errorDescription = eq("Network error")
@@ -546,14 +546,11 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when bookings loaded successfully, then BOOKING_LIST_VIEW is tracked`() = testBlocking {
-        // GIVEN
         val bookings = listOf(getSampleBooking(1))
         setup(bookings = bookings)
 
-        // WHEN
         advanceUntilIdle()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_VIEW),
             argThat<Map<String, Any>> {
@@ -567,17 +564,14 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given active filters, when bookings loaded, then BOOKING_LIST_VIEW tracks is_filtered as true`() = testBlocking {
-        // GIVEN
         bookingFiltersFlow.value = BookingFilters(
             bookingType = BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE)
         )
         val bookings = listOf(getSampleBooking(1))
         setup(bookings = bookings)
 
-        // WHEN
         advanceUntilIdle()
 
-        // THEN
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BOOKING_LIST_VIEW),
             argThat<Map<String, Any>> {

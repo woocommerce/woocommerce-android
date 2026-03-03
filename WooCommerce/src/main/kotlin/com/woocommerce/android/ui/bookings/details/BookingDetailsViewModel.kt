@@ -213,7 +213,10 @@ class BookingDetailsViewModel @Inject constructor(
             ).onFailure {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
-                    properties = mapOf("action" to "update_attendance"),
+                    properties = mapOf(
+                        "action" to "update_attendance",
+                        "error_code" to (it::class.java.simpleName ?: "")
+                    ),
                     errorContext = this@BookingDetailsViewModel::class.java.simpleName,
                     errorType = null,
                     errorDescription = it.message
@@ -245,7 +248,10 @@ class BookingDetailsViewModel @Inject constructor(
             .onFailure {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
-                    properties = mapOf("action" to "cancel_booking"),
+                    properties = mapOf(
+                        "action" to "cancel_booking",
+                        "error_code" to (it::class.java.simpleName ?: "")
+                    ),
                     errorContext = this@BookingDetailsViewModel::class.java.simpleName,
                     errorType = null,
                     errorDescription = it.message

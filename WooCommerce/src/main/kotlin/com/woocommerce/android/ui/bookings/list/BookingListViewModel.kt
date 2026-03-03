@@ -236,6 +236,7 @@ class BookingListViewModel @Inject constructor(
         }.onFailure {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
+                properties = mapOf("error_code" to (it::class.java.simpleName ?: "")),
                 errorContext = this::class.java.simpleName,
                 errorType = null,
                 errorDescription = it.message
@@ -261,10 +262,12 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onBookingClick(bookingId: Long) {
+        val enabledFiltersCount = state.value?.controlsState?.enabledFiltersCount ?: 0
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_BOOKING_TAP,
             mapOf(
                 "is_search_active" to (searchQuery.value != null).toString(),
+                "is_filtering_active" to (enabledFiltersCount > 0).toString(),
                 "selected_tab" to selectedTab.value.toAnalyticsValue()
             )
         )
