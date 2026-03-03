@@ -180,6 +180,18 @@ class BookingsRepository @Inject constructor(
         }
     }.await()
 
+    suspend fun fetchProductBookingLocation(productId: Long): Result<String?> {
+        val result = bookingsStore.fetchProductBookingLocation(
+            site = selectedSite.get(),
+            productId = productId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(result.model)
+        }
+    }
+
     suspend fun markAsPaid(
         bookingId: Long,
     ): Result<Unit> = appCoroutineScope.async {

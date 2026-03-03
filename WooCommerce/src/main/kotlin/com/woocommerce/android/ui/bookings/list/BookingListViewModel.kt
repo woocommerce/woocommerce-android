@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -46,6 +47,7 @@ class BookingListViewModel @Inject constructor(
     private val dateFilterBuilder: BookingListDateFilterBuilder,
     private val bookingMapper: BookingMapper,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val paymentStatusResolver: PaymentStatusResolver,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -87,7 +89,12 @@ class BookingListViewModel @Inject constructor(
         selectedBookingIdFlow,
     ) { bookings, loadingState, selectedBookingId ->
         openFirstLoadedBookingOnTablet(bookings)
-        val listItems = with(bookingMapper) { bookings.map { it.toListItem() } }
+        val listItems = with(bookingMapper) {
+            bookings.map {
+                val paymentStatus = paymentStatusResolver.resolve(it.orderId)
+                it.toListItem(paymentStatus)
+            }
+        }
         BookingListContentState(
             bookings = listItems,
             loadingState = loadingState,

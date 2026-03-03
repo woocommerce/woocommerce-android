@@ -2,9 +2,14 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.3
+-----
+- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
+
 24.2
 -----
 - Add support for signing in using passkeys for WordPress.com accounts during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/15379]
+- [Internal] Enable Bookings MVP for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15445]
 
 24.1
 -----

@@ -71,14 +71,19 @@ class WooPosBookingViewStateMapperTest {
     @Before
     fun setup() {
         whenever(timeRangeFormatter.format(any(), any())).thenReturn(FORMATTED_TIME_RANGE)
-        mapper = WooPosBookingViewStateMapper(resourceProvider, formatPrice, paymentStatusResolver, timeRangeFormatter)
+        mapper = WooPosBookingViewStateMapper(
+            resourceProvider,
+            formatPrice,
+            paymentStatusResolver,
+            timeRangeFormatter,
+        )
     }
 
     @Test
     fun `given booking, when mapped to item view state, then maps fields correctly`() = runTest {
         // GIVEN
         val booking = sampleBooking()
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
@@ -96,7 +101,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled booking, when mapped to item view state, then isCancelled is true`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
@@ -107,40 +112,62 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() = runTest {
-        // GIVEN
-        val start = Instant.parse("2025-07-05T11:00:00Z")
-        val end = start.plus(Duration.ofMinutes(90))
-        val booking = sampleBooking(start = start, end = end)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() =
+        runTest {
+            // GIVEN
+            val start = Instant.parse("2025-07-05T11:00:00Z")
+            val end = start.plus(Duration.ofMinutes(90))
+            val booking = sampleBooking(start = start, end = end)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
-        // THEN
-        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-            .withZone(ZoneOffset.UTC)
-            .format(start)
-        assertThat(result.appointmentDate).isEqualTo(expectedDate)
-        assertThat(result.appointmentTime).isEqualTo(FORMATTED_TIME_RANGE)
-        assertThat(result.duration).isEqualTo("1 hour 30 minutes")
-    }
+            // THEN
+            val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                .withZone(ZoneOffset.UTC)
+                .format(start)
+            assertThat(result.appointmentDate).isEqualTo(expectedDate)
+            assertThat(result.appointmentTime).isEqualTo(FORMATTED_TIME_RANGE)
+            assertThat(result.duration).isEqualTo("1 hour 30 minutes")
+        }
 
     @Test
-    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() = runTest {
-        // GIVEN
-        val booking = sampleBooking(paymentInfo = null)
-        whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
+    fun `given booking near midnight UTC, when mapped to details, then date uses UTC`() =
+        runTest {
+            // GIVEN
+            val start = Instant.parse("2025-07-06T03:00:00Z")
+            val end = start.plus(Duration.ofHours(1))
+            val booking = sampleBooking(start = start, end = end)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
-        // THEN
-        assertThat(result.paymentSection.serviceAmount).isEqualTo("-")
-        assertThat(result.paymentSection.taxAmount).isEqualTo("-")
-        assertThat(result.paymentSection.discountAmount).isEqualTo("-")
-        assertThat(result.paymentSection.totalAmount).isEqualTo("-")
-    }
+            // THEN
+            val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                .withZone(ZoneOffset.UTC)
+                .format(start)
+            assertThat(expectedDate).contains("July 6")
+            assertThat(result.appointmentDate).isEqualTo(expectedDate)
+        }
+
+    @Test
+    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(paymentInfo = null)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+            // THEN
+            assertThat(result.paymentSection.serviceAmount).isEqualTo("-")
+            assertThat(result.paymentSection.taxAmount).isEqualTo("-")
+            assertThat(result.paymentSection.discountAmount).isEqualTo("-")
+            assertThat(result.paymentSection.totalAmount).isEqualTo("-")
+        }
 
     @Test
     fun `given booking with discount, when mapped to details, then discount is negative formatted`() = runTest {
@@ -154,10 +181,10 @@ class WooPosBookingViewStateMapperTest {
             totalTax = BigDecimal("9"),
         )
         val booking = sampleBooking(paymentInfo = paymentInfo)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.paymentSection.discountAmount).isEqualTo("-$10")
@@ -165,21 +192,23 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() = runTest {
-        // GIVEN
-        val booking = sampleBooking(
-            status = BookingEntity.Status.Confirmed,
-            attendanceStatus = BookingEntity.AttendanceStatus.Attended,
-        )
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(
+                status = BookingEntity.Status.Confirmed,
+                attendanceStatus = BookingEntity.AttendanceStatus.Attended,
+            )
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
-        // THEN
-        assertThat(result.attendanceSection).isNotNull
-        assertThat(result.attendanceSection?.selection).isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
-    }
+            // THEN
+            assertThat(result.attendanceSection).isNotNull
+            assertThat(result.attendanceSection?.selection)
+                .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+        }
 
     @Test
     fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
@@ -188,10 +217,10 @@ class WooPosBookingViewStateMapperTest {
             status = BookingEntity.Status.Cancelled,
             attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
         )
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.attendanceSection).isNull()
@@ -201,10 +230,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given booking with null customerInfo, when mapped, then customer section is null`() = runTest {
         // GIVEN
         val booking = sampleBooking(customerInfo = null, customerNote = null)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.customerSection).isNull()
@@ -220,10 +249,10 @@ class WooPosBookingViewStateMapperTest {
             billingPhone = "",
         )
         val booking = sampleBooking(customerInfo = customerInfo, customerNote = "")
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.customerSection).isNull()
@@ -233,10 +262,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given paid booking, when mapped to details, then actions include EmailReceipt`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Paid)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -247,10 +276,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given unpaid booking, when mapped to details, then actions do not include EmailReceipt`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -261,10 +290,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given paid booking, when mapped to details, then actions include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Paid)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -275,10 +304,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given complete booking, when mapped to details, then actions include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Complete)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -289,10 +318,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given unpaid booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -303,10 +332,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -317,10 +346,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancellable booking, when mapped to details, then actions include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -331,10 +360,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -345,10 +374,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled unpaid booking, when mapped to details, then collectPaymentLabel is shown`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.paymentSection.collectPaymentLabel).isNotNull()
@@ -358,10 +387,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled paid booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.paymentSection.collectPaymentLabel).isNull()
@@ -371,10 +400,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled refunded booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.REFUNDED)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.REFUNDED)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         assertThat(result.paymentSection.collectPaymentLabel).isNull()
@@ -384,10 +413,10 @@ class WooPosBookingViewStateMapperTest {
     fun `given complete booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Complete)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -395,14 +424,40 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given location provided, when mapped to details, then location is passed through`() = runTest {
+        // GIVEN
+        val booking = sampleBooking()
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = "Room 5")
+
+        // THEN
+        assertThat(result.location).isEqualTo("Room 5")
+    }
+
+    @Test
+    fun `given blank location, when mapped to details, then location is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking()
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = "   ")
+
+        // THEN
+        assertThat(result.location).isNull()
+    }
+
+    @Test
     fun `given any booking, when mapped to details, then actions always include ViewOrder with correct orderId`() =
         runTest {
             // GIVEN
             val booking = sampleBooking(id = 42L)
-            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
             // WHEN
-            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
             // THEN
             val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -416,7 +471,7 @@ class WooPosBookingViewStateMapperTest {
         // GIVEN
         val booking = sampleBooking()
         val resource = sampleResource(name = "John Doe")
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = resource)
@@ -432,7 +487,7 @@ class WooPosBookingViewStateMapperTest {
         // GIVEN
         val booking = sampleBooking()
         val resource = sampleResource(name = "Jane", imageUrl = "https://example.com/avatar.jpg")
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = resource)
@@ -446,7 +501,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given null resource, when mapped to item, then team member is null`() = runTest {
         // GIVEN
         val booking = sampleBooking()
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)

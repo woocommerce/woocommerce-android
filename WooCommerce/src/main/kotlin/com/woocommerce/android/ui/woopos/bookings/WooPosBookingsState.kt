@@ -123,7 +123,7 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState() {
         sealed class Items {
             data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
-            object Searching : Items()
+            object Loading : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
         }
@@ -166,22 +166,11 @@ sealed class WooPosBookingsState {
     }
 
     @Immutable
-    data object Loading : WooPosBookingsState() {
+    data class Loading(
+        override val dateSelectorState: DateSelectorState,
+    ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
-        override val dateSelectorState: DateSelectorState? = null
     }
-
-    @Immutable
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val dateSelectorState: DateSelectorState? = null,
-    ) : WooPosBookingsState()
 }
 
-enum class PaymentStatus {
-    PAID,
-    UNPAID,
-    FAILED,
-    REFUNDED,
-    PARTIALLY_REFUNDED,
-}
+typealias PaymentStatus = com.woocommerce.android.ui.bookings.PaymentStatus

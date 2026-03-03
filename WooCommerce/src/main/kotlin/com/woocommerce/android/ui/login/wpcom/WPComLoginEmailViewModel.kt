@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -52,7 +53,7 @@ class WPComLoginEmailViewModel @Inject constructor(
         errorMessage
     ) { emailOrUsername, isLoadingDialogShown, errorMessage ->
         ViewState(
-            wpComLoginMode = navArgs.wpComLoginMode,
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             usernameOnly = navArgs.usernameOnly,
             emailOrUsername = emailOrUsername,
             isLoadingDialogShown = isLoadingDialogShown,
@@ -96,14 +97,14 @@ class WPComLoginEmailViewModel @Inject constructor(
                     triggerEvent(
                         ShowMagicLinkScreen(
                             emailOrUsername = emailOrUsername,
-                            wpComLoginMode = navArgs.wpComLoginMode,
+                            jetpackStatus = navArgs.jetpackStatus,
                             magicLinkFallbackButton = MagicLinkFallbackButton.None,
                             requestAtStart = true,
                             isNewWpComAccount = false
                         )
                     )
                 } else {
-                    triggerEvent(ShowPasswordScreen(emailOrUsername, navArgs.wpComLoginMode))
+                    triggerEvent(ShowPasswordScreen(emailOrUsername, navArgs.jetpackStatus))
                 }
             },
             onFailure = {
@@ -127,7 +128,7 @@ class WPComLoginEmailViewModel @Inject constructor(
                         triggerEvent(
                             ShowMagicLinkScreen(
                                 emailOrUsername = emailOrUsername,
-                                wpComLoginMode = navArgs.wpComLoginMode,
+                                jetpackStatus = navArgs.jetpackStatus,
                                 magicLinkFallbackButton = MagicLinkFallbackButton.None,
                                 requestAtStart = true,
                                 isNewWpComAccount = true
@@ -142,7 +143,7 @@ class WPComLoginEmailViewModel @Inject constructor(
                 triggerEvent(
                     ShowMagicLinkScreen(
                         emailOrUsername = emailOrUsername,
-                        wpComLoginMode = navArgs.wpComLoginMode,
+                        jetpackStatus = navArgs.jetpackStatus,
                         magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
                         requestAtStart = false,
                         isNewWpComAccount = false
@@ -170,7 +171,7 @@ class WPComLoginEmailViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val wpComLoginMode: WPComLoginMode,
+        val isJetpackInstalled: Boolean,
         val usernameOnly: Boolean,
         val emailOrUsername: String,
         val isLoadingDialogShown: Boolean = false,
@@ -181,12 +182,12 @@ class WPComLoginEmailViewModel @Inject constructor(
 
     data class ShowPasswordScreen(
         val emailOrUsername: String,
-        val wpComLoginMode: WPComLoginMode
+        val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
-        val wpComLoginMode: WPComLoginMode,
+        val jetpackStatus: JetpackStatus,
         val magicLinkFallbackButton: MagicLinkFallbackButton,
         val requestAtStart: Boolean,
         val isNewWpComAccount: Boolean,

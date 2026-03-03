@@ -23,12 +23,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
-import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinuePushNotificationsSetup
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragmentArgs
 import com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkHandlerFragmentArgs
-import com.woocommerce.android.ui.login.wpcom.WPComLoginMode
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,7 +104,6 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
                 OpenSitePicker, CancelJetpackActivation -> openMainActivity()
                 OpenLogin -> showLoginScreen()
                 is ContinueJetpackActivation -> continueJetpackActivation(event)
-                is ContinuePushNotificationsSetup -> continuePushNotificationsSetup()
                 is ShowSnackbar -> showSnackBar(event.message)
             }
         }
@@ -180,7 +177,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             .addDestination(
                 R.id.wPComLoginMagicLinkHandlerFragment,
                 WPComLoginMagicLinkHandlerFragmentArgs(
-                    wpComLoginMode = WPComLoginMode.JetpackSetup(event.jetpackStatus)
+                    jetpackStatus = event.jetpackStatus
                 ).toBundle()
             )
             .createPendingIntent()
@@ -189,21 +186,4 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun continuePushNotificationsSetup() {
-        NavDeepLinkBuilder(this)
-            .setComponentName(MainActivity::class.java)
-            .setGraph(R.navigation.nav_graph_main)
-            .addDestination(R.id.dashboard)
-            .addDestination(R.id.wooPushNotificationsIntroductionDialog)
-            .addDestination(
-                R.id.wPComLoginMagicLinkHandlerFragment,
-                WPComLoginMagicLinkHandlerFragmentArgs(
-                    wpComLoginMode = WPComLoginMode.PushNotificationsSetup
-                ).toBundle()
-            )
-            .createPendingIntent()
-            .send()
-
-        finish()
-    }
 }

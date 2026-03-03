@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
@@ -45,7 +46,6 @@ import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -120,7 +120,6 @@ fun BookingDetailsScreen(
                                     BookingDetailsContent(
                                         booking = viewState.bookingUiState,
                                         onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                        onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                     )
                                 }
                             }
@@ -137,7 +136,6 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onMarkAsPaid: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -158,11 +156,8 @@ private fun BookingDetailsContent(
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
-            status = booking.bookingSummary.status,
-            onMarkAsPaid = onMarkAsPaid,
             onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(
@@ -253,7 +248,8 @@ private fun BookingDetailsPreview() {
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
                         attendanceStatus = BookingAttendanceStatus.Attended,
-                        status = BookingStatus.Paid,
+                        paymentStatus = PaymentStatus.PAID,
+                        isCancelled = false,
                         attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),
                     bookingsAppointmentDetails = BookingAppointmentDetailsModel(

@@ -3,8 +3,7 @@ package com.woocommerce.android.ui.login
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailFlow
 
 enum class MagicLinkFlow(private val value: String) : AuthEmailFlow {
-    JetpackConnection("jetpack-connection"),
-    PushNotificationsSetup("push-notifications-setup");
+    JetpackConnection("jetpack-connection");
 
     override fun getName(): String = value
 

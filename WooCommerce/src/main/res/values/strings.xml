@@ -321,9 +321,6 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
-    <string name="login_wpcom_connect_title">Connect to WordPress.com</string>
-    <string name="login_wpcom_connect_subtitle">Log in with your WordPress.com account to connect your store.</string>
-    <string name="login_wpcom_connect_create_account_hint">If you don\'t have a WordPress.com account, we\'ll use this email to create one.</string>
     <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="login_wpcom_connection_consent_jetpack">By tapping the Connect Jetpack button</string>
     <string name="login_wpcom_connection_consent_generic">By continuing</string>
@@ -381,7 +378,7 @@
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
     <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
-    <string name="my_store_widget_push_notifications_description">Connect your store to a WordPress.com account to get alerts for new orders and reviews.</string>
+    <string name="my_store_widget_push_notifications_description">Connect your store to WordPress.com to get alerts for new orders and reviews.</string>
 
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
@@ -2634,13 +2631,21 @@
 
     <!-- Woo Push Notifications Introduction Screen -->
     <string name="woo_push_notifications_introduction_title">Unlock push notifications with WordPress.com</string>
-    <string name="woo_push_notifications_introduction_body">Connect your store to a WordPress.com account to get access to push notifications for new orders, reviews and more.</string>
+    <string name="woo_push_notifications_introduction_body">Connect your store to WordPress.com to get access to push notifications for new orders, reviews and more.</string>
     <string name="woo_push_notifications_introduction_body2">It only takes a minute.</string>
     <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
     <string name="woo_push_notifications_introduction_continue">Continue</string>
     <string name="woo_push_notifications_introduction_not_now">Not now</string>
-    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b>%1$s&lt;/b> to your WordPress.com account.</string>
+    <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
+    <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
+    <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
+    <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
+    <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
+    <string name="woo_push_notifications_connection_steps_title_connect">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_setup">Set up push notifications</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Please wait while we set up push notifications for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
@@ -3903,14 +3908,11 @@
     <string name="woopos_orders_status_processing">Processing</string>
     <string name="woopos_orders_status_on_hold">On hold</string>
     <string name="woopos_orders_status_failed">Failed</string>
-    <string name="woopos_orders_status_cancelled">Cancelled</string>
+    <string name="woopos_orders_status_cancelled">Canceled</string>
     <string name="woopos_orders_status_completed">Completed</string>
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
-    <string name="woopos_bookings_empty_list_title">No bookings found</string>
-    <string name="woopos_bookings_empty_list_image_description">No bookings</string>
-    <string name="woopos_bookings_empty_action_label">Refresh</string>
     <string name="woopos_bookings_details_attendance_attended">Attended</string>
     <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
     <string name="woopos_bookings_details_title">Booking #%s</string>
@@ -3928,7 +3930,7 @@
     <string name="woopos_bookings_payment_status_failed">Failed</string>
     <string name="woopos_bookings_payment_status_refunded">Refunded</string>
     <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
-    <string name="woopos_bookings_status_cancelled">Cancelled</string>
+    <string name="woopos_bookings_status_cancelled">Canceled</string>
     <string name="woopos_bookings_details_attendance_title">Attendance status</string>
     <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
     <string name="woopos_bookings_details_payment_title">Payment</string>
@@ -4391,11 +4393,14 @@
     <string name="booking_payment_status_unpaid">Unpaid</string>
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
-    <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_cancelled">Canceled</string>
     <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
+    <string name="booking_payment_status_refunded">Refunded</string>
+    <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="booking_payment_status_failed">Failed</string>
     <string name="booking_attendance_status_attended">Attended</string>
     <string name="booking_attendance_status_unattended">Unattended</string>
     <string name="booking_mark_as_attended">Mark as attended</string>
@@ -4433,7 +4438,7 @@
     <string name="booking_note_screen_title">Booking note</string>
     <string name="booking_note_screen_done">DONE</string>
     <string name="booking_note_screen_update_error">Error saving booking note</string>
-    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_cancel_error">Error canceling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
     <string name="booking_not_selected">Booking not selected</string>
     <string name="booking_overflow_refund">Issue refund</string>
