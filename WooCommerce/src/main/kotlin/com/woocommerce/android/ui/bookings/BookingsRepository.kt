@@ -61,6 +61,18 @@ class BookingsRepository @Inject constructor(
             order = order
         )
 
+    suspend fun getBookingsList(
+        limit: Int? = null,
+        filters: BookingFilters? = null,
+        order: BookingsOrderOption
+    ): List<Booking> =
+        bookingsStore.getBookings(
+            site = selectedSite.get(),
+            limit = limit,
+            filters = filters,
+            order = order
+        )
+
     fun observeBookingsCount(): Flow<Long> = bookingsStore.observeBookingCount(site = selectedSite.get())
 
     fun observeBooking(bookingId: Long): Flow<Booking?> =
