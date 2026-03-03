@@ -76,6 +76,24 @@ fun WooPosCancelledBadge() {
 }
 
 @Composable
+fun WooPosGuestBadge() {
+    WooPosText(
+        text = stringResource(R.string.customer_detail_guest_customer),
+        style = WooPosTypography.Caption,
+        color = WooPosTheme.colors.onDefault,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            .background(WooPosTheme.colors.disabledContainer)
+            .padding(
+                horizontal = WooPosSpacing.Small.value,
+                vertical = WooPosSpacing.XSmall.value
+            )
+    )
+}
+
+@Composable
 fun WooPosAttendanceBadge(attendanceState: WooPosBookingsState.AttendanceState) {
     val text = when (attendanceState) {
         WooPosBookingsState.AttendanceState.ATTENDED ->
