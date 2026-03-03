@@ -26,7 +26,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
@@ -326,19 +325,6 @@ class WooPosCashPaymentViewModelTest {
             val event = awaitItem()
             assertThat(event).isEqualTo(WooPosNavigationEvent.GoBack)
         }
-    }
-
-    @Test
-    fun `given button is loading, when CompleteOrderClicked again, then completeOrder is called only once`() = runTest {
-        // GIVEN
-        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
-
-        // WHEN
-        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
-        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
-
-        // THEN
-        verify(repository, times(1)).completeOrder(any(), any())
     }
 
     private suspend fun givenRepoFailsToCompleteOrder(): String {

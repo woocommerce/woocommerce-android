@@ -120,9 +120,6 @@ class WooPosCashPaymentViewModel @Inject constructor(
     }
 
     private fun handleOrderCompletion() {
-        val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return
-        if (currentState.button.status != WooPosCashPaymentState.Collecting.Button.Status.ENABLED) return
-
         viewModelScope.launch {
             analyticsTracker.track(CashPaymentTapped)
 
