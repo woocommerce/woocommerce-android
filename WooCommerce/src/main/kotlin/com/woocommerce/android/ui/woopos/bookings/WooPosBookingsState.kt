@@ -54,6 +54,7 @@ sealed class WooPosBookingsState {
         val phone: String?,
         val billingAddress: String?,
         val note: String?,
+        val isGuest: Boolean,
     )
 
     @Immutable
