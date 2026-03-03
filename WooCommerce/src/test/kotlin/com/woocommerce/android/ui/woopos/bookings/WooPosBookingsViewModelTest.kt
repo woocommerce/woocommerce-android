@@ -709,9 +709,11 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosBookingsState.Content
-        assertThat(content.selectedDetails?.attendanceSection?.selection)
+        val details = content.selectedDetails!!
+        val attendanceSection = details.attendanceSection as WooPosBookingsState.AttendanceSection.Visible
+        assertThat(attendanceSection.selection)
             .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
-        assertThat(content.selectedDetails?.attendanceBadge)
+        assertThat(details.attendanceBadge)
             .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
     }
 
@@ -732,9 +734,11 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosBookingsState.Content
-        assertThat(content.selectedDetails?.attendanceSection?.selection)
+        val details = content.selectedDetails!!
+        val attendanceSection = details.attendanceSection as WooPosBookingsState.AttendanceSection.Visible
+        assertThat(attendanceSection.selection)
             .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
-        assertThat(content.selectedDetails?.attendanceBadge)
+        assertThat(details.attendanceBadge)
             .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
     }
 
@@ -747,7 +751,9 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
 
         val contentBefore = viewModel.state.value as WooPosBookingsState.Content
-        val previousSelection = contentBefore.selectedDetails?.attendanceSection?.selection
+        val previousSection = contentBefore.selectedDetails!!.attendanceSection
+            as WooPosBookingsState.AttendanceSection.Visible
+        val previousSelection = previousSection.selection
 
         // WHEN
         viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
@@ -755,7 +761,9 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosBookingsState.Content
-        assertThat(content.selectedDetails?.attendanceSection?.selection).isEqualTo(previousSelection)
+        val attendanceSection = content.selectedDetails!!.attendanceSection
+            as WooPosBookingsState.AttendanceSection.Visible
+        assertThat(attendanceSection.selection).isEqualTo(previousSelection)
     }
 
     @Test

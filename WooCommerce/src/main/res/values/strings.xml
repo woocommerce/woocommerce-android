@@ -2642,8 +2642,10 @@
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
-    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_connect">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_setup">Set up push notifications</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Please wait while we set up push notifications for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>

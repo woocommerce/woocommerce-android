@@ -57,9 +57,13 @@ sealed class WooPosBookingsState {
     )
 
     @Immutable
-    data class AttendanceSection(
-        val selection: AttendanceState?,
-    )
+    sealed class AttendanceSection {
+        @Immutable
+        data class Visible(val selection: AttendanceState) : AttendanceSection()
+
+        @Immutable
+        data object Hidden : AttendanceSection()
+    }
 
     @Immutable
     data class PaymentSection(
@@ -89,7 +93,7 @@ sealed class WooPosBookingsState {
         val teamMember: String?,
         val location: String?,
         val customerSection: CustomerSection?,
-        val attendanceSection: AttendanceSection?,
+        val attendanceSection: AttendanceSection,
         val paymentSection: PaymentSection,
         val bookingNote: String?,
     )
@@ -102,7 +106,7 @@ sealed class WooPosBookingsState {
         val isSelected: Boolean,
         val paymentStatus: PaymentStatus,
         val isCancelled: Boolean,
-        val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
+        val attendanceBadge: AttendanceState? = null,
         val teamMember: TeamMember? = null,
     ) {
         @Immutable
