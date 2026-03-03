@@ -60,7 +60,6 @@ fun WooPosCardPaymentScreen(
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-    val orderTotals by viewModel.orderTotals.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
@@ -83,7 +82,6 @@ fun WooPosCardPaymentScreen(
 
     WooPosCardPaymentScreenContent(
         state = state,
-        orderTotals = orderTotals,
         showCashPaymentButton = viewModel.showCashPaymentButton,
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
@@ -96,7 +94,6 @@ fun WooPosCardPaymentScreen(
 @Composable
 private fun WooPosCardPaymentScreenContent(
     state: WooPosCardPaymentState,
-    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
@@ -113,7 +110,6 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.Preparing) {
                 CardPaymentPreparingReader(
                     state = state,
-                    orderTotals = orderTotals,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
                 )
@@ -124,7 +120,6 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.ReadyForPayment) {
                 CardPaymentReadyForPayment(
                     state = state,
-                    orderTotals = orderTotals,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
                 )
@@ -135,7 +130,6 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.Collecting.ReaderDisconnected) {
                 CardPaymentReaderDisconnected(
                     state = state,
-                    orderTotals = orderTotals,
                     onConnectReaderClicked = onConnectReaderClicked,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
@@ -188,7 +182,6 @@ private fun CardPaymentInitiating() {
 @Composable
 private fun CardPaymentPreparingReader(
     state: WooPosCardPaymentState.Collecting.Preparing,
-    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -212,9 +205,7 @@ private fun CardPaymentPreparingReader(
             }
         },
         summary = {
-            if (orderTotals != null) {
-                CardPaymentOrderSummary(totals = orderTotals)
-            }
+            CardPaymentOrderSummary(totals = state.orderTotals)
         },
         buttons = {
             if (showCashPaymentButton) {
@@ -233,7 +224,6 @@ private fun CardPaymentPreparingReader(
 @Composable
 private fun CardPaymentReadyForPayment(
     state: WooPosCardPaymentState.Collecting.ReadyForPayment,
-    orderTotals: WooPosOrderTotalsViewState?,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -267,9 +257,7 @@ private fun CardPaymentReadyForPayment(
             }
         },
         summary = {
-            if (orderTotals != null) {
-                CardPaymentOrderSummary(totals = orderTotals)
-            }
+            CardPaymentOrderSummary(totals = state.orderTotals)
         },
         buttons = {
             if (showCashPaymentButton) {
@@ -288,7 +276,6 @@ private fun CardPaymentReadyForPayment(
 @Composable
 private fun CardPaymentReaderDisconnected(
     state: WooPosCardPaymentState.Collecting.ReaderDisconnected,
-    orderTotals: WooPosOrderTotalsViewState?,
     onConnectReaderClicked: () -> Unit,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
@@ -318,9 +305,7 @@ private fun CardPaymentReaderDisconnected(
             }
         },
         summary = {
-            if (orderTotals != null) {
-                CardPaymentOrderSummary(totals = orderTotals)
-            }
+            CardPaymentOrderSummary(totals = state.orderTotals)
         },
         buttons = {
             WooPosButton(
@@ -541,13 +526,19 @@ private fun OrderSummaryRow(
     }
 }
 
+private fun previewOrderTotals() = WooPosOrderTotalsViewState(
+    subtotal = "$10.00",
+    discount = "-$2.00",
+    taxes = "$1.50",
+    total = "$9.50",
+)
+
 @WooPosPreview
 @Composable
 fun CardPaymentInitiatingPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Initiating,
-            orderTotals = null,
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -566,8 +557,8 @@ fun CardPaymentPreparingReaderPreview() {
             state = WooPosCardPaymentState.Collecting.Preparing(
                 title = "Preparing reader",
                 subtitle = "$12.50",
+                orderTotals = previewOrderTotals(),
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -586,8 +577,8 @@ fun CardPaymentReadyForPaymentPreview() {
             state = WooPosCardPaymentState.Collecting.ReadyForPayment(
                 title = "Ready for payment",
                 subtitle = "Tap, insert, or swipe to pay $12.50",
+                orderTotals = previewOrderTotals(),
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -607,8 +598,8 @@ fun CardPaymentReaderDisconnectedPreview() {
                 title = "Reader disconnected",
                 subtitle = "Please reconnect your card reader",
                 actionButtonLabel = "Connect reader",
+                orderTotals = previewOrderTotals(),
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = true,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -628,7 +619,6 @@ fun CardPaymentInProgressPreview() {
                 title = "Processing payment",
                 subtitle = "$12.50",
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -650,7 +640,6 @@ fun CardPaymentFailedWithRetryPreview() {
                 actionButtonLabel = "Try again",
                 isDismissButtonVisible = true,
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -672,7 +661,6 @@ fun CardPaymentFailedWithoutRetryPreview() {
                 actionButtonLabel = null,
                 isDismissButtonVisible = true,
             ),
-            orderTotals = previewOrderTotals(),
             showCashPaymentButton = false,
             onRetryClicked = {},
             onDismissClicked = {},
@@ -682,10 +670,3 @@ fun CardPaymentFailedWithoutRetryPreview() {
         )
     }
 }
-
-private fun previewOrderTotals() = WooPosOrderTotalsViewState(
-    subtotal = "$10.00",
-    discount = "-$2.00",
-    taxes = "$1.50",
-    total = "$9.50",
-)
