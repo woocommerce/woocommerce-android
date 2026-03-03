@@ -114,6 +114,30 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given site not connected, when initialized, then connect strings are used`() = testBlocking {
+        setup()
+
+        val state = viewModel.viewState.getOrAwaitValue()
+
+        assertThat(state.titleRes)
+            .isEqualTo(R.string.woo_push_notifications_connection_steps_title_connect)
+        assertThat(state.bodyRes)
+            .isEqualTo(R.string.woo_push_notifications_connection_steps_body_connect)
+    }
+
+    @Test
+    fun `given site already connected, when initialized, then setup strings are used`() = testBlocking {
+        setup(isStoreAlreadyConnected = true)
+
+        val state = viewModel.viewState.getOrAwaitValue()
+
+        assertThat(state.titleRes)
+            .isEqualTo(R.string.woo_push_notifications_connection_steps_title_setup)
+        assertThat(state.bodyRes)
+            .isEqualTo(R.string.woo_push_notifications_connection_steps_body_setup)
+    }
+
+    @Test
     fun `when close is clicked, then Exit event is triggered`() = testBlocking {
         setup {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
@@ -353,5 +377,16 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_SUCCESS),
             eq(mapOf(AnalyticsTracker.KEY_STEP to "enable_push_notifications"))
         )
+    }
+
+    @Test
+    fun `given site already connected, when initialized, then ConnectStore step is hidden`() = testBlocking {
+        setup(isStoreAlreadyConnected = true)
+
+        val state = viewModel.viewState.getOrAwaitValue()
+
+        assertThat(state.steps).hasSize(2)
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+        assertThat(state.steps[1].type).isEqualTo(StepType.EnablePushNotifications)
     }
 }
