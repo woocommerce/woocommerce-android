@@ -431,6 +431,13 @@ class WCOrderStore @Inject internal constructor(
         return ordersDaoDecorator.getOrder(orderId, site.localId())
     }
 
+    suspend fun getOrdersByIdsAndSite(orderIds: List<Long>, site: SiteModel): List<OrderEntity> {
+        if (orderIds.isEmpty()) return emptyList()
+        return coroutineEngine.withDefaultContext(API, this, "getOrdersByIdsAndSite") {
+            ordersDaoDecorator.getOrdersForSiteByRemoteIds(site.localId(), orderIds)
+        }
+    }
+
     /**
      * Given an order id and [SiteModel],
      * returns the metadata from the database for an order
