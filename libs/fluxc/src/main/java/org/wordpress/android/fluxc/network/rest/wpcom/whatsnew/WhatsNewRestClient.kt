@@ -35,7 +35,7 @@ class WhatsNewRestClient @Inject constructor(
         val url = WPCOMV2.mobile.feature_announcements.url
 
         val params = mapOf(
-                "app_id" to appIdForAnnouncements.toString(),
+                "app_id" to WhatsNewAppId.WOO_ANDROID.id.toString(),
                 "app_version" to versionName,
                 "_locale" to getAppLocale().toString()
         )
@@ -111,9 +111,6 @@ class WhatsNewRestClient @Inject constructor(
     class WhatsNewFetchedPayload(
         val whatsNewItems: List<WhatsNewAnnouncementModel>? = null
     ) : Payload<BaseNetworkError>()
-
-    private val appIdForAnnouncements: Int
-        get() = WhatsNewAppId.WOO_ANDROID.id
 
     private fun getAppLocale(): Locale {
         return mAppContext?.resources?.configuration
