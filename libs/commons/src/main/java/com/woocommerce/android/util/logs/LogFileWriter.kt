@@ -50,8 +50,8 @@ class LogFileWriter(
             return
         }
 
-        mutex.withLock {
-            withContext(dispatchers.io) {
+        withContext(dispatchers.io) {
+            mutex.withLock {
                 if (logFile.length() >= MAX_LOG_FILE_SIZE_BYTES) {
                     logFile.delete()
                     logFile.createNewFile()
@@ -67,8 +67,8 @@ class LogFileWriter(
 
     suspend fun readFileContent(fileName: String): String? {
         ensureDirectoryExists()
-        return mutex.withLock {
-            withContext(dispatchers.io) {
+        return withContext(dispatchers.io) {
+            mutex.withLock {
                 logFiles.find { it.name == fileName }
                     ?.readText()
             }
