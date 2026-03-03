@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewResponse.Announcement
+import androidx.core.os.ConfigurationCompat
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
@@ -36,7 +37,7 @@ class WhatsNewRestClient @Inject constructor(
         val params = mapOf(
                 "app_id" to appIdForAnnouncements.toString(),
                 "app_version" to versionName,
-                "_locale" to Locale.getDefault().toString()
+                "_locale" to getAppLocale().toString()
         )
 
         val response = wpComGsonRequestBuilder.syncGetRequest(
@@ -113,4 +114,10 @@ class WhatsNewRestClient @Inject constructor(
 
     private val appIdForAnnouncements: Int
         get() = WhatsNewAppId.WOO_ANDROID.id
+
+    private fun getAppLocale(): Locale {
+        return mAppContext?.resources?.configuration
+            ?.let { ConfigurationCompat.getLocales(it).get(0) }
+            ?: Locale.getDefault()
+    }
 }
