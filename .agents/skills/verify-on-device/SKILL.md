@@ -118,7 +118,28 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 Call `mobile_list_available_devices`. If multiple devices are returned, ask the user which to use. If none are found, instruct the user to boot an emulator or connect a device.
 
-### 2. Build the Debug APK
+### 2. Prepare the Device
+
+Run these ADB commands to configure the device for reliable agent interaction:
+
+```bash
+# Disable animations (prevents flaky element detection during transitions)
+adb -s <device_id> shell settings put global animator_duration_scale 0
+adb -s <device_id> shell settings put global transition_animation_scale 0
+adb -s <device_id> shell settings put global window_animation_scale 0
+```
+
+### 3. Disable LeakCanary
+
+LeakCanary shows leak detection notifications and dialogs that interfere with agent verification. Disable it before building by setting the flag in `developer.properties` (a git-ignored local config file):
+
+```bash
+# Ensure developer.properties exists and has LeakCanary disabled
+touch developer.properties
+grep -q "enable_leak_canary" developer.properties && sed -i '' 's/enable_leak_canary=.*/enable_leak_canary=false/' developer.properties || echo "enable_leak_canary=false" >> developer.properties
+```
+
+### 4. Build the Debug APK
 
 ```
 ./gradlew assembleWasabiDebug
@@ -126,23 +147,28 @@ Call `mobile_list_available_devices`. If multiple devices are returned, ask the 
 
 If the build fails with "SDK location not found", check that `local.properties` exists and contains the `sdk.dir` path. See the Error Recovery section below.
 
-### 3. Install the APK
+### 5. Install the APK
 
 Use `mobile_install_app` with:
 - **path:** `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`
 
 Optionally call `mobile_list_apps` first to check if the app is already installed.
 
-### 4. Launch the App
+### 6. Launch the App
 
-Use `mobile_launch_app` with:
-- **packageName:** `com.woocommerce.android.dev`
+Launch `MainActivity` explicitly to ensure the app always opens to the main screen (not a deep link handler or login redirect):
 
-### 5. Handle Post-Launch Dialogs
+```bash
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
+```
+
+Do NOT use `mobile_launch_app` — it launches the default launcher intent which may not always resolve to `MainActivity`.
+
+### 7. Handle Post-Launch Dialogs
 
 Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
 
-### 6. Start Screen Recording (Optional)
+### 8. Start Screen Recording (Optional)
 
 If the user requests a recording or demo video, start an ADB screen recording **before** navigating:
 
@@ -153,7 +179,7 @@ adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
 
 Use `--size 720x1280` to keep the file small. The recording runs in the background while you perform navigation steps. See the Screen Recording section below for full details.
 
-### 7. Navigate and Verify
+### 9. Navigate and Verify
 
 Navigate as needed per the user's request. After each navigation action:
 1. Wait for the screen to stabilize (see "Waiting for Screen Transitions").
@@ -165,7 +191,7 @@ If the expected screen identifier is NOT present after retries:
 2. Call `mobile_list_elements_on_screen` and identify which screen you are actually on.
 3. Report to the user: "Navigation to [target] failed. Currently on [detected screen]."
 
-### 8. Stop Recording and Save Evidence
+### 10. Stop Recording and Save Evidence
 
 **If recording:** stop the recording, pull the file, and clean up:
 
@@ -178,7 +204,7 @@ adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
 
 **Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
 
-### 9. Report Results
+### 11. Report Results
 
 Summarize what was verified, include saved screenshot and recording paths, and flag any issues found.
 
