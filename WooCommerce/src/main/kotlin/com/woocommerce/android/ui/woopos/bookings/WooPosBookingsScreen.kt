@@ -283,7 +283,7 @@ private fun WooPosBookingsContent(
                                     R.string.woopos_bookings_empty_image_description
                                 ),
                             )
-                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
                             WooPosText(
                                 text = stringResource(R.string.woopos_bookings_no_booking_selected),
                                 style = WooPosTypography.BodyMedium,
