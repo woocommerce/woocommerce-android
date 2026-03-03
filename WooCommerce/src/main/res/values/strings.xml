@@ -3921,6 +3921,7 @@
     <string name="woopos_bookings_details_location_label">Location</string>
     <string name="woopos_bookings_details_duration_label">Duration</string>
     <string name="woopos_bookings_details_customer_title">Customer</string>
+    <string name="woopos_bookings_details_customer_guest_badge">Guest</string>
     <string name="woopos_bookings_details_billing_address_label">Billing address</string>
     <string name="woopos_bookings_details_customer_note_label">Note</string>
     <string name="woopos_bookings_payment_status_paid">Paid</string>

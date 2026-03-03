@@ -78,7 +78,7 @@ fun WooPosCancelledBadge() {
 @Composable
 fun WooPosGuestBadge() {
     WooPosText(
-        text = stringResource(R.string.customer_detail_guest_customer),
+        text = stringResource(R.string.woopos_bookings_details_customer_guest_badge),
         style = WooPosTypography.Caption,
         color = WooPosTheme.colors.onDefault,
         maxLines = 1,
