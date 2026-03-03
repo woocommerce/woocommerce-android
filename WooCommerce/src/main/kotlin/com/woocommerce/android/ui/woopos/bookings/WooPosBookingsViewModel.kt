@@ -109,10 +109,10 @@ class WooPosBookingsViewModel @Inject constructor(
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.Error(
                                 title = resourceProvider.getString(
-                                    R.string.woopos_orders_loading_error_title
+                                    R.string.woopos_bookings_loading_error_title
                                 ),
                                 message = resourceProvider.getString(
-                                    R.string.woopos_orders_loading_error_message
+                                    R.string.woopos_bookings_loading_error_message
                                 )
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -132,7 +132,9 @@ class WooPosBookingsViewModel @Inject constructor(
                                 title = resourceProvider.getString(
                                     R.string.woopos_bookings_no_bookings_for_date
                                 ),
-                                message = ""
+                                message = resourceProvider.getString(
+                                    R.string.woopos_bookings_no_bookings_for_date_message
+                                )
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         )
@@ -176,7 +178,9 @@ class WooPosBookingsViewModel @Inject constructor(
                             title = resourceProvider.getString(
                                 R.string.woopos_bookings_no_bookings_for_date
                             ),
-                            message = ""
+                            message = resourceProvider.getString(
+                                R.string.woopos_bookings_no_bookings_for_date_message
+                            )
                         ),
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         dateSelectorState = dateSelectorState,
@@ -654,7 +658,9 @@ class WooPosBookingsViewModel @Inject constructor(
             title = resourceProvider.getString(
                 R.string.woopos_bookings_no_bookings_for_date
             ),
-            message = ""
+            message = resourceProvider.getString(
+                R.string.woopos_bookings_no_bookings_for_date_message
+            )
         ),
         pullToRefreshState = WooPosPullToRefreshState.Enabled,
         dateSelectorState = buildDateSelectorState(),

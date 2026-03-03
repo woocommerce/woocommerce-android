@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -267,13 +269,28 @@ private fun WooPosBookingsContent(
                         )
                     }
                     else -> {
-                        WooPosEmptyScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            icon = WooPosIcons.OrdersEmpty,
-                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
-                            message = "",
-                            contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = WooPosSpacing.XLarge.value),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Image(
+                                modifier = Modifier.size(80.dp),
+                                imageVector = WooPosIcons.BookingsEmpty,
+                                contentDescription = stringResource(
+                                    R.string.woopos_bookings_empty_image_description
+                                ),
+                            )
+                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                            WooPosText(
+                                text = stringResource(R.string.woopos_bookings_no_booking_selected),
+                                style = WooPosTypography.BodyMedium,
+                                color = WooPosTheme.colors.onSurfaceVariantLowest,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
                     }
                 }
             }
@@ -415,10 +432,10 @@ private fun WooPosBookingsList(
             WooPosEmptyScreen(
                 modifier = modifier
                     .imePadding()
-                    .padding(horizontal = WooPosSpacing.XLarge.value),
+                    .padding(horizontal = WooPosSpacing.XXLarge.value),
                 title = items.title,
                 message = items.message,
-                contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description)
+                contentDescription = stringResource(id = R.string.woopos_bookings_empty_image_description)
             )
         }
     }
@@ -615,8 +632,8 @@ private fun WooPosBookingsError(
 private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     WooPosPaginationErrorIndicator(
         icon = null,
-        message = stringResource(id = R.string.woopos_orders_pagination_error_title),
-        description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
+        message = stringResource(id = R.string.woopos_bookings_pagination_error_title),
+        description = stringResource(id = R.string.woopos_bookings_pagination_error_description),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_pagination_try_again_label),
             click = onPaginationErrorTryAgain
@@ -697,8 +714,8 @@ fun WooPosBookingsNothingFoundStatePreview() {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Content(
                 items = WooPosBookingsState.Content.Items.NothingFound(
-                    title = stringResource(R.string.woopos_search_orders_empty_title),
-                    message = stringResource(R.string.woopos_search_orders_empty_description)
+                    title = stringResource(R.string.woopos_bookings_no_bookings_for_date),
+                    message = stringResource(R.string.woopos_bookings_no_bookings_for_date_message)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 dateSelectorState = DateSelectorState(
