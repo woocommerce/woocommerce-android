@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -342,8 +341,9 @@ class BookingListViewModel @Inject constructor(
         searchQuery.value = newQuery
     }
 
-    private suspend fun trackBookingListView(fetchParams: FetchParams) {
-        val bookings = bookingListHandler.bookingsFlow.first()
+    private fun trackBookingListView(fetchParams: FetchParams) {
+        val bookings = state.value?.contentState?.bookings ?: emptyList()
+
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_VIEW,
             mapOf(
