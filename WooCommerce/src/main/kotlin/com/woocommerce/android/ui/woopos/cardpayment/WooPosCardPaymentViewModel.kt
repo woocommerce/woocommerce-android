@@ -61,8 +61,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
-    private val _orderTotals = MutableStateFlow<WooPosOrderTotalsViewState?>(null)
-    val orderTotals: StateFlow<WooPosOrderTotalsViewState?> = _orderTotals.asStateFlow()
+    private lateinit var orderTotals: WooPosOrderTotalsViewState
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
@@ -71,8 +70,35 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var analyticsTrackerJob: Job? = null
 
     init {
-        observeCardReaderStatus()
-        loadOrderTotals()
+        viewModelScope.launch {
+            if (loadOrderTotals()) {
+                observeCardReaderStatus()
+            }
+        }
+    }
+
+    private suspend fun loadOrderTotals(): Boolean {
+        val order = cardPaymentRepository.fetchOrGetOrder(orderId)
+        if (order == null) {
+            _state.value = WooPosCardPaymentState.PaymentFailed(
+                title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
+                subtitle = resourceProvider.getString(R.string.woopos_products_loading_error_message),
+                isDismissButtonVisible = true,
+            )
+            return false
+        }
+
+        orderTotals = WooPosOrderTotalsViewState(
+            subtotal = priceFormat(order.productsTotal),
+            discount = if (order.discountTotal > BigDecimal.ZERO) {
+                "-${priceFormat(order.discountTotal)}"
+            } else {
+                null
+            },
+            taxes = priceFormat(order.totalTax),
+            total = priceFormat(order.total),
+        )
+        return true
     }
 
     private fun observeCardReaderStatus() {
@@ -98,23 +124,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     }
                 }
             }
-        }
-    }
-
-    private fun loadOrderTotals() {
-        viewModelScope.launch {
-            val order = cardPaymentRepository.getOrderById(orderId) ?: return@launch
-
-            _orderTotals.value = WooPosOrderTotalsViewState(
-                subtotal = priceFormat(order.productsTotal),
-                discount = if (order.discountTotal > BigDecimal.ZERO) {
-                    "-${priceFormat(order.discountTotal)}"
-                } else {
-                    null
-                },
-                taxes = priceFormat(order.totalTax),
-                total = priceFormat(order.total),
-            )
         }
     }
 
@@ -159,7 +168,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             subtitle = resourceProvider.getString(
                                 paymentState.cardReaderHint
                                     ?: R.string.woopos_totals_reader_ready_for_payment_subtitle
-                            )
+                            ),
+                            orderTotals = orderTotals,
                         )
                     }
 
@@ -269,7 +279,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun buildPreparingState() = WooPosCardPaymentState.Collecting.Preparing(
         title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
-        subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
+        subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment),
+        orderTotals = orderTotals,
     )
 
     private fun buildReaderDisconnectedState() = WooPosCardPaymentState.Collecting.ReaderDisconnected(
@@ -278,6 +289,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         actionButtonLabel = resourceProvider.getString(
             R.string.woopos_success_totals_error_reader_not_connected_cta_button_label
         ),
+        orderTotals = orderTotals,
     )
 
     fun onScreenResumed() {
