@@ -127,7 +127,7 @@ class BookingFilterListViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS,
             mapOf(
-                "selected_filters" to filters.activeFilterTrackingKeys().sorted().toString()
+                KEY_SELECTED_FILTERS to filters.activeFilterTrackingKeys().sorted().toString()
             )
         )
         launch {
@@ -158,4 +158,8 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun hasUnsavedChanges() = _uiState.value.initialBookingFilters != _uiState.value.updatedBookingFilters
+
+    companion object {
+        private const val KEY_SELECTED_FILTERS = "selected_filters"
+    }
 }

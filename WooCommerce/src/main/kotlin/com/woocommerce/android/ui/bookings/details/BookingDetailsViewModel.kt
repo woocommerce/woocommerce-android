@@ -5,7 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
@@ -203,7 +205,7 @@ class BookingDetailsViewModel @Inject constructor(
             }
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE,
-                mapOf("booking_status" to status.toAnalyticsValue())
+                mapOf(KEY_BOOKING_STATUS to status.toAnalyticsValue())
             )
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel()
@@ -213,12 +215,12 @@ class BookingDetailsViewModel @Inject constructor(
             ).onFailure {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
-                    properties = mapOf(
-                        "action" to "update_attendance",
-                        "error_code" to (it::class.java.simpleName ?: "")
-                    ),
+                    properties = buildMap {
+                        put(KEY_ACTION, "update_attendance")
+                        it.errorCode()?.let { code -> put(AnalyticsTracker.KEY_ERROR_CODE, code) }
+                    },
                     errorContext = this@BookingDetailsViewModel::class.java.simpleName,
-                    errorType = null,
+                    errorType = it.errorType(),
                     errorDescription = it.message
                 )
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
@@ -248,12 +250,12 @@ class BookingDetailsViewModel @Inject constructor(
             .onFailure {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
-                    properties = mapOf(
-                        "action" to "cancel_booking",
-                        "error_code" to (it::class.java.simpleName ?: "")
-                    ),
+                    properties = buildMap {
+                        put(KEY_ACTION, "cancel_booking")
+                        it.errorCode()?.let { code -> put(AnalyticsTracker.KEY_ERROR_CODE, code) }
+                    },
                     errorContext = this@BookingDetailsViewModel::class.java.simpleName,
-                    errorType = null,
+                    errorType = it.errorType(),
                     errorDescription = it.message
                 )
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
@@ -330,6 +332,18 @@ class BookingDetailsViewModel @Inject constructor(
         BookingAttendanceStatus.Unattended -> "unattended"
     }
 
+    private fun Throwable.errorCode(): String? = (this as? WooException)?.error?.apiErrorCode
+
+    private fun Throwable.errorType(): String? = when (this) {
+        is WooException -> error.type.name
+        else -> javaClass.simpleName
+    }
+
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToBookingNote(val bookingId: Long) : MultiLiveEvent.Event()
+
+    companion object {
+        private const val KEY_BOOKING_STATUS = "booking_status"
+        private const val KEY_ACTION = "action"
+    }
 }

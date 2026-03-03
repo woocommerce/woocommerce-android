@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings.list
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
@@ -30,12 +31,14 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -528,18 +531,19 @@ class BookingListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch fails, then BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS is tracked`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Network error", "rest_error")
         setup {
             whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any(), sortBy = any()))
-                .thenReturn(Result.failure(Exception("Network error")))
+                .thenReturn(Result.failure(WooException(error)))
         }
 
         advanceUntilIdle()
 
         verify(analyticsTrackerWrapper).track(
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS),
-            properties = argThat<Map<String, Any>> { this["error_code"] == "Exception" },
+            properties = argThat<Map<String, Any>> { this["error_code"] == "rest_error" },
             errorContext = eq("BookingListViewModel"),
-            errorType = isNull(),
+            errorType = eq("API_ERROR"),
             errorDescription = eq("Network error")
         )
     }

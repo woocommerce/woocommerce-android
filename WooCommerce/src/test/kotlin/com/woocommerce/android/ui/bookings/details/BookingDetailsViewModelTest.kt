@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
@@ -32,12 +33,14 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
@@ -341,8 +344,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when cancel fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Cancel failed", "cancel_error")
         whenever(bookingsRepository.cancelBooking(any())).thenReturn(
-            Result.failure(Exception("Cancel failed"))
+            Result.failure(WooException(error))
         )
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
@@ -356,10 +360,10 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
             properties = argThat<Map<String, Any>> {
                 this["action"] == "cancel_booking" &&
-                    this["error_code"] == "Exception"
+                    this["error_code"] == "cancel_error"
             },
             errorContext = eq("BookingDetailsViewModel"),
-            errorType = isNull(),
+            errorType = eq("API_ERROR"),
             errorDescription = eq("Cancel failed")
         )
     }
@@ -386,8 +390,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when attendance update fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Update failed", "update_error")
         whenever(bookingsRepository.updateAttendanceStatus(any(), any())).thenReturn(
-            Result.failure(Exception("Update failed"))
+            Result.failure(WooException(error))
         )
         val viewModel = createViewModel()
 
@@ -399,10 +404,10 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
             properties = argThat<Map<String, Any>> {
                 this["action"] == "update_attendance" &&
-                    this["error_code"] == "Exception"
+                    this["error_code"] == "update_error"
             },
             errorContext = eq("BookingDetailsViewModel"),
-            errorType = isNull(),
+            errorType = eq("API_ERROR"),
             errorDescription = eq("Update failed")
         )
     }
