@@ -75,12 +75,10 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                         binding.closeFeatureAnnouncementButton.text = getString(R.string.learn_more)
                         binding.closeFeatureAnnouncementButton.setOnClickListener {
                             openDetailsUrl(announcement.detailsUrl)
-                            viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
                         binding.dismissFeatureAnnouncementButton.visibility = View.VISIBLE
                         binding.dismissFeatureAnnouncementButton.setOnClickListener {
-                            viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
                     } else {
@@ -88,7 +86,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                         binding.dismissFeatureAnnouncementButton.setOnClickListener(null)
                         binding.closeFeatureAnnouncementButton.text = getString(R.string.continue_button)
                         binding.closeFeatureAnnouncementButton.setOnClickListener {
-                            viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
                     }
