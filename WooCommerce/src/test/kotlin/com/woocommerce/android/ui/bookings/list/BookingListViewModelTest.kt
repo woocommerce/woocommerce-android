@@ -27,6 +27,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -70,7 +71,10 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val paymentStatusResolver: PaymentStatusResolver = mock {
-        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
+        onBlocking { resolveAll(any()) } doSuspendableAnswer { invocation ->
+            val orderIds = invocation.getArgument<List<Long>>(0)
+            orderIds.distinct().associateWith { PaymentStatus.UNPAID }
+        }
     }
 
     private lateinit var viewModel: BookingListViewModel
