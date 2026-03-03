@@ -79,6 +79,7 @@ fun BookingListScreen(viewModel: BookingListViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingListScreen(state: BookingListViewState) {
     state.sortBottomSheetState?.let { BookingSortBottomSheet(it) }
@@ -130,12 +131,20 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    EmptyView(
-                        state = state,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
-                            .fillMaxSize()
-                    )
+                    WCPullToRefreshBox(
+                        isRefreshing = state.contentState.loadingState ==
+                            BookingListLoadingState.Refreshing,
+                        onRefresh = state.contentState.onRefresh,
+                        state = rememberPullToRefreshState(),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        EmptyView(
+                            state = state,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
