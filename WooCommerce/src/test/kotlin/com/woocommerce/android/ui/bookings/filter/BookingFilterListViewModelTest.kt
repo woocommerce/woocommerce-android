@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -13,8 +15,11 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -28,13 +33,15 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() {
         viewModel = BookingFilterListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
-            bookingsRepository = mock()
+            bookingsRepository = mock(),
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -257,6 +264,30 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onShowBookings called with filters, then BOOKING_LIST_APPLY_FILTERS is tracked`() {
+        // GIVEN
+        val state = viewModel.uiState.getOrAwaitValue()
+        state.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
+        state.onUpdateFilterOption(
+            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended))
+        )
+
+        // WHEN
+        viewModel.uiState.getOrAwaitValue().onShowBookings()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS),
+            argThat<Map<String, Any>> {
+                val filters = this["selected_filters"] as? String
+                filters != null &&
+                    filters.contains("attendance_status") &&
+                    filters.contains("booking_type")
+            }
+        )
+    }
+
+    @Test
     fun `given two team member ids, when updated, then teamMemberValue shows count`() = testBlocking {
         // Given
         val bookingFilterRepository = mock<BookingFilterRepository> {
@@ -265,7 +296,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val viewModel = BookingFilterListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
-            bookingsRepository = mock()
+            bookingsRepository = mock(),
+            analyticsTrackerWrapper = mock(),
         )
 
         // When: update filters with two different member IDs
