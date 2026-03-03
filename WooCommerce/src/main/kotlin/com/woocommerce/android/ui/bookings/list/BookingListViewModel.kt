@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -48,6 +51,7 @@ class BookingListViewModel @Inject constructor(
     private val bookingMapper: BookingMapper,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val paymentStatusResolver: PaymentStatusResolver,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -107,9 +111,7 @@ class BookingListViewModel @Inject constructor(
     private val searchState = searchQuery.map {
         BookingListSearchState(
             query = it,
-            onQueryChanged = { newQuery ->
-                searchQuery.value = newQuery
-            }
+            onQueryChanged = ::onSearchQueryChanged
         )
     }
     private val tabsState = selectedTab.map {
@@ -229,7 +231,15 @@ class BookingListViewModel @Inject constructor(
             searchQuery = fetchParams.searchQuery,
             filters = fetchParams.prepareFilters(),
             sortBy = fetchParams.sortOption
-        ).onFailure {
+        ).onSuccess {
+            trackBookingListView(fetchParams)
+        }.onFailure {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
+                errorContext = this::class.java.simpleName,
+                errorType = null,
+                errorDescription = it.message
+            )
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
         loadingState.value = BookingListLoadingState.Idle
@@ -251,6 +261,13 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onBookingClick(bookingId: Long) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.BOOKING_LIST_BOOKING_TAP,
+            mapOf(
+                "is_search_active" to (searchQuery.value != null).toString(),
+                "selected_tab" to selectedTab.value.toAnalyticsValue()
+            )
+        )
         if (isWindowClassLargeThanCompact()) {
             selectedBookingIdOnBigScreen = bookingId
         }
@@ -258,14 +275,23 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onTabChanged(tab: BookingListTab) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.BOOKING_LIST_TAB_SELECT,
+            mapOf("selected_tab" to tab.toAnalyticsValue())
+        )
         selectedTab.value = tab
     }
 
     private fun onSortClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_LIST_SORT_BY_TAP)
         isSortSheetVisible.value = true
     }
 
     private fun onSortOptionSelected(option: BookingListSortOption) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.BOOKING_LIST_SORT_BY_OPTION_TAP,
+            mapOf("sort_option" to option.toAnalyticsValue())
+        )
         sortOption.value = option
         isSortSheetVisible.value = false
     }
@@ -275,6 +301,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onFilterClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_LIST_FILTERS_TAP)
         triggerEvent(NavigateToFilters)
     }
 
@@ -302,6 +329,38 @@ class BookingListViewModel @Inject constructor(
         BookingListTab.All -> filters.copy(
             dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange)
         )
+    }
+
+    private fun onSearchQueryChanged(newQuery: String?) {
+        if (searchQuery.value == null && newQuery != null) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_LIST_SEARCH_TAP)
+        }
+        searchQuery.value = newQuery
+    }
+
+    private suspend fun trackBookingListView(fetchParams: FetchParams) {
+        val bookings = bookingListHandler.bookingsFlow.first()
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.BOOKING_LIST_VIEW,
+            mapOf(
+                "selected_tab" to fetchParams.selectedTab.toAnalyticsValue(),
+                "is_default_tab" to (fetchParams.selectedTab == BookingListTab.Today).toString(),
+                "is_list_empty" to bookings.isEmpty().toString(),
+                "is_filtered" to
+                    (fetchParams.filters.enabledFiltersCount > 0).toString()
+            )
+        )
+    }
+
+    private fun BookingListTab.toAnalyticsValue(): String = when (this) {
+        BookingListTab.Today -> "today"
+        BookingListTab.Upcoming -> "upcoming"
+        BookingListTab.All -> "all"
+    }
+
+    private fun BookingListSortOption.toAnalyticsValue(): String = when (this) {
+        BookingListSortOption.NewestToOldest -> "newest_first"
+        BookingListSortOption.OldestToNewest -> "oldest_first"
     }
 
     private data class FetchParams(
