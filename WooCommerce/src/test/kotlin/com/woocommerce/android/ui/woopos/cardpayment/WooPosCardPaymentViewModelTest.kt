@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -22,15 +23,20 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardPaymentViewModelTest {
@@ -65,9 +71,25 @@ class WooPosCardPaymentViewModelTest {
     }
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
     private val cardPaymentRepository: WooPosCardPaymentRepository = mock()
-    private val priceFormat: WooPosFormatPrice = mock()
+    private val priceFormat: WooPosFormatPrice = mock {
+        onBlocking { invoke(any<BigDecimal>()) } doReturn "$0.00"
+    }
+
+    private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(
+        productsTotal = BigDecimal.TEN,
+        discountTotal = BigDecimal.ZERO,
+        totalTax = BigDecimal.ONE,
+        total = BigDecimal.TEN,
+    )
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
+
+    @Before
+    fun setUp() {
+        runBlocking {
+            whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(testOrder)
+        }
+    }
 
     private fun createViewModel(
         orderId: Long = 100L,
@@ -582,5 +604,39 @@ class WooPosCardPaymentViewModelTest {
 
         assertThat(viewModel.state.value)
             .isInstanceOf(WooPosCardPaymentState.PaymentInProgress::class.java)
+    }
+
+    @Test
+    fun `given order without discount, when init, then orderTotals discount is null`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.Collecting
+        assertThat(state.orderTotals.discount).isNull()
+    }
+
+    @Test
+    fun `given order with discount, when init, then orderTotals discount has negative prefix`() = runTest {
+        val orderWithDiscount = testOrder.copy(discountTotal = BigDecimal(5))
+        whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(orderWithDiscount)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.Collecting
+        assertThat(state.orderTotals.discount).startsWith("-")
+    }
+
+    @Test
+    fun `given order load fails, when init, then state is PaymentFailed`() = runTest {
+        whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(null)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+        val failedState = viewModel.state.value as WooPosCardPaymentState.PaymentFailed
+        assertThat(failedState.isDismissButtonVisible).isTrue()
     }
 }
