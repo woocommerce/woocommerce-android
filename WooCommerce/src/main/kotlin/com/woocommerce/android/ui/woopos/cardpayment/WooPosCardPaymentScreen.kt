@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -133,6 +134,7 @@ private fun WooPosCardPaymentScreenContent(
                     onConnectReaderClicked = onConnectReaderClicked,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
+                    onBackClicked = onBackClicked,
                 )
             }
         }
@@ -279,9 +281,11 @@ private fun CardPaymentReaderDisconnected(
     onConnectReaderClicked: () -> Unit,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     CardPaymentCenteredLayout(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+        onBackClicked = onBackClicked,
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(
@@ -386,6 +390,7 @@ private fun CardPaymentFailed(
 ) {
     BackHandler { onBackClicked() }
     CardPaymentCenteredLayout(
+        onBackClicked = onBackClicked,
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
@@ -433,24 +438,36 @@ private fun CardPaymentFailed(
 @Composable
 private fun CardPaymentCenteredLayout(
     modifier: Modifier = Modifier,
+    onBackClicked: (() -> Unit)? = null,
     content: @Composable () -> Unit,
     summary: @Composable ColumnScope.() -> Unit,
     buttons: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(vertical = WooPosSpacing.XXXLarge.value),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            content()
+        if (onBackClicked != null) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_card_payment_toolbar_title),
+                onBackClicked = onBackClicked,
+            )
         }
-        summary()
-        buttons()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = WooPosSpacing.XXXLarge.value),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                content()
+            }
+            summary()
+            buttons()
+        }
     }
 }
 
