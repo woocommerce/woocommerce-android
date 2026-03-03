@@ -21,7 +21,7 @@ enum class FeatureFlag(
     POS_BOOKINGS("pos_bookings"),
     POS_PRODUCTS_FTS("pos_products_fts"),
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH("woo_pos_local_catalog_file_approach", default = false),
-    WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", default = false),
+    WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1", default = false),
     WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", default = false),
     WOO_POS_CLIENT_SIDE_BANNER("woo_pos_client_side_banner"),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks"),
