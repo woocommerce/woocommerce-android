@@ -61,6 +61,17 @@ class LogFileWriter(
         return getLogFile()
     }
 
+    suspend fun readFileContent(fileName: String): String? {
+        ensureDirectoryExists()
+        return mutex.withLock {
+            withContext(dispatchers.io) {
+                logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
+                    ?.find { it.name == fileName }
+                    ?.readText()
+            }
+        }
+    }
+
     suspend fun getLogFiles(): List<File> {
         ensureDirectoryExists()
         return withContext(dispatchers.io) {
