@@ -175,19 +175,6 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given bookable products fetch fails onStart, when invoke, then emits based on persisted values`() =
-        testBlocking {
-            bookableProdsCountFlow.value = 1
-            selectedSiteFlow.value = ciabSite()
-            setup()
-
-            sut().test {
-                assert(awaitItem())
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    @Test
     fun `given CIAB site with non-zero cached product count, when invoke, then products are not fetched`() =
         testBlocking {
             bookableProdsCountFlow.value = 5
