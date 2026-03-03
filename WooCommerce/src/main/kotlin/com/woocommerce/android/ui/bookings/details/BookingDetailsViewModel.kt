@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
@@ -20,6 +21,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -48,6 +50,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val bookingMapper: BookingMapper,
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
+    @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
 
     private var bookingFetchJob: Job? = null
@@ -195,7 +198,7 @@ class BookingDetailsViewModel @Inject constructor(
         status: BookingAttendanceStatus
     ) {
         attendanceUpdateJob?.cancel()
-        attendanceUpdateJob = launch {
+        attendanceUpdateJob = appScope.launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
