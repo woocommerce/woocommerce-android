@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -57,7 +58,12 @@ class BookingListViewModel @Inject constructor(
 
     private val stateHandle = savedStateHandle
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
+
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
+    private var didUserSwitchTab: Boolean
+        get() = stateHandle["did_user_switch_tab"] ?: false
+        set(value) = stateHandle.set("did_user_switch_tab", value)
+
     private val searchQuery = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
@@ -144,7 +150,7 @@ class BookingListViewModel @Inject constructor(
         }
     }
 
-    val state = combine(
+    private val _state = combine(
         contentState,
         tabsState,
         controlsState,
@@ -158,7 +164,8 @@ class BookingListViewModel @Inject constructor(
             sortBottomSheetState = listSortBottomSheetState,
             searchState = searchState
         )
-    }.asLiveData()
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+    val state = _state.asLiveData()
 
     val bottomNavigationVisible = searchState.map { !it.isSearchActive }
         .asLiveData()
@@ -227,9 +234,7 @@ class BookingListViewModel @Inject constructor(
             searchQuery = fetchParams.searchQuery,
             filters = fetchParams.prepareFilters(),
             sortBy = fetchParams.sortOption
-        ).onSuccess {
-            trackBookingListView(fetchParams)
-        }.onFailure {
+        ).onFailure {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
                 properties = buildMap {
@@ -282,6 +287,7 @@ class BookingListViewModel @Inject constructor(
             AnalyticsEvent.BOOKING_LIST_TAB_SELECT,
             mapOf(KEY_SELECTED_TAB to tab.toAnalyticsValue())
         )
+        didUserSwitchTab = true
         selectedTab.value = tab
     }
 
@@ -341,16 +347,16 @@ class BookingListViewModel @Inject constructor(
         searchQuery.value = newQuery
     }
 
-    private fun trackBookingListView(fetchParams: FetchParams) {
-        val bookings = state.value?.contentState?.bookings ?: emptyList()
+    fun trackBookingListView() = launch {
+        val state = _state.first()
 
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_VIEW,
             mapOf(
-                KEY_SELECTED_TAB to fetchParams.selectedTab.toAnalyticsValue(),
-                KEY_IS_DEFAULT_TAB to (fetchParams.selectedTab == BookingListTab.Today).toString(),
-                KEY_IS_LIST_EMPTY to bookings.isEmpty().toString(),
-                KEY_IS_FILTERED to (fetchParams.filters.enabledFiltersCount > 0).toString()
+                KEY_SELECTED_TAB to state.tabState.selectedTab.toAnalyticsValue(),
+                KEY_IS_DEFAULT_TAB to (!didUserSwitchTab).toString(),
+                KEY_IS_LIST_EMPTY to state.contentState.bookings.isEmpty().toString(),
+                KEY_IS_FILTERED to (state.controlsState.enabledFiltersCount > 0).toString()
             )
         )
     }

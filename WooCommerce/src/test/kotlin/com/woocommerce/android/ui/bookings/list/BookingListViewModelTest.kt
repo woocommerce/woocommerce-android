@@ -549,9 +549,10 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when bookings loaded successfully, then BOOKING_LIST_VIEW is tracked`() = testBlocking {
+    fun `when screen is foregrounded, then BOOKING_LIST_VIEW is tracked`() = testBlocking {
         val bookings = listOf(getSampleBooking(1))
         setup(bookings = bookings)
+        viewModel.trackBookingListView()
 
         advanceUntilIdle()
 
