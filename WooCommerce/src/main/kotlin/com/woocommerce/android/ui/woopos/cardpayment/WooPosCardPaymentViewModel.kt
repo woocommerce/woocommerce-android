@@ -71,13 +71,15 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (loadOrderTotals()) {
+            val totals = loadOrderTotals()
+            if (totals != null) {
+                orderTotals = totals
                 observeCardReaderStatus()
             }
         }
     }
 
-    private suspend fun loadOrderTotals(): Boolean {
+    private suspend fun loadOrderTotals(): WooPosOrderTotalsViewState? {
         val order = cardPaymentRepository.fetchOrGetOrder(orderId)
         if (order == null) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -85,10 +87,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 subtitle = resourceProvider.getString(R.string.woopos_products_loading_error_message),
                 isDismissButtonVisible = true,
             )
-            return false
+            return null
         }
 
-        orderTotals = WooPosOrderTotalsViewState(
+        return WooPosOrderTotalsViewState(
             subtotal = priceFormat(order.productsTotal),
             discount = if (order.discountTotal > BigDecimal.ZERO) {
                 "-${priceFormat(order.discountTotal)}"
@@ -98,7 +100,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
             taxes = priceFormat(order.totalTax),
             total = priceFormat(order.total),
         )
-        return true
     }
 
     private fun observeCardReaderStatus() {
