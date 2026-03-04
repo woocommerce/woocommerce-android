@@ -449,7 +449,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             country = address.country,
             name = "${address.firstName} ${address.lastName}",
             company = address.company,
-            phone = address.phone
+            phone = address.phone,
+            email = address.email
         )
     }
 
@@ -479,7 +480,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
-            height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
+            height = selectedPackage.safeHeight.toFloat(),
             weight = weight,
             isLetter = selectedPackage.isLetter,
             shipmentId = selectedRate.rate.shipmentId,

@@ -43,6 +43,7 @@ class WooPosSearchByIdentifierResultConverterTest {
                 remoteVariationId = 1L,
                 remoteProductId = 1L,
                 globalUniqueId = "test-unique-id",
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = java.math.BigDecimal("10.0"),
                 image = null,
                 attributes = emptyList(),

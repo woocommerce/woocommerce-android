@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
@@ -86,6 +87,10 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         wooPosLocalCatalogToggle.isChecked = AppPrefs.wooPosLocalCatalogEnabled
         wooPosLocalCatalogToggle.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(
+                POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,
+                mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+            )
             AppPrefs.wooPosLocalCatalogEnabled = isChecked
         }
     }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -95,7 +96,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given user logged in and WOO_REGISTERED, when invoked forcefully, then registers in WPCom`() = testBlocking {
-        setupStatus(Status.WOO_REGISTERED)
+        setupStatus(Status.REGISTERED_WOO_ONLY)
 
         sut(FORCEFULLY)
 
@@ -104,7 +105,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given user logged in and WPCOM_REGISTERED, when invoked forcefully, then registers in WPCom`() = testBlocking {
-        setupStatus(Status.WPCOM_REGISTERED)
+        setupStatus(Status.REGISTERED_WPCOM_ONLY)
 
         sut(FORCEFULLY)
 
@@ -113,7 +114,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given REGISTERED_IN_BOTH, when invoked forcefully, then registers in WPCom`() = testBlocking {
-        setupStatus(Status.REGISTERED_IN_BOTH)
+        setupStatus(Status.REGISTERED_BOTH)
 
         sut(FORCEFULLY)
 
@@ -131,7 +132,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given WPCOM_REGISTERED, when invoked if needed, then does not register`() = testBlocking {
-        setupStatus(Status.WPCOM_REGISTERED)
+        setupStatus(Status.REGISTERED_WPCOM_ONLY)
 
         sut(IF_NEEDED)
 
@@ -141,7 +142,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given WOO_REGISTERED, when invoked if needed, then does not register`() = testBlocking {
-        setupStatus(Status.WOO_REGISTERED)
+        setupStatus(Status.REGISTERED_WOO_ONLY)
 
         sut(IF_NEEDED)
 
@@ -151,7 +152,7 @@ class RegisterDeviceTest : BaseUnitTest() {
 
     @Test
     fun `given REGISTERED_IN_BOTH, when invoked if needed, then does not register`() = testBlocking {
-        setupStatus(Status.REGISTERED_IN_BOTH)
+        setupStatus(Status.REGISTERED_BOTH)
 
         sut(IF_NEEDED)
 
@@ -170,7 +171,7 @@ class RegisterDeviceTest : BaseUnitTest() {
     }
 
     private suspend fun setupStatus(status: Status) {
-        whenever(pushNotificationRegistrationStatus(any())).thenReturn(status)
+        whenever(pushNotificationRegistrationStatus.invoke(anyOrNull())).thenReturn(status)
     }
 
     companion object {

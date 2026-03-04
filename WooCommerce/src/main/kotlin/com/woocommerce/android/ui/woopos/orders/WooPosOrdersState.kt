@@ -64,6 +64,18 @@ sealed class WooPosOrdersState {
                 val actionsState: OrderActionsState
             ) {
                 @Immutable
+                sealed interface BookingInfo {
+                    @Immutable
+                    data class Loading(val bookingId: Long) : BookingInfo
+
+                    @Immutable
+                    data class Loaded(val text: String) : BookingInfo
+
+                    @Immutable
+                    data class Error(val text: String) : BookingInfo
+                }
+
+                @Immutable
                 data class LineItemRow(
                     val id: Long,
                     val name: String,
@@ -71,6 +83,7 @@ sealed class WooPosOrdersState {
                     val qtyAndUnitPrice: String,
                     val lineTotal: String,
                     val imageUrl: String?,
+                    val bookingInfo: BookingInfo? = null,
                 )
 
                 @Immutable
@@ -107,7 +120,7 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
-        val dialogState: DialogState = DialogState.Hidden
+        val dialogState: DialogState
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()

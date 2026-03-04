@@ -48,7 +48,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERR
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.TIMEOUT_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore.RemoteOrderPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.SearchOrdersResponsePayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.fluxc.utils.putIfNotEmpty
@@ -65,57 +64,6 @@ class OrderRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
     private val coroutineEngine: CoroutineEngine
 ) {
-    /**
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given
-     * WooCommerce [SiteModel].
-     *
-     * The number of orders fetched is defined in [WCOrderStore.NUM_ORDERS_PER_FETCH], and retrieving older
-     * orders is done by passing an [offset].
-     *
-     * Dispatches a [WCOrderAction.FETCHED_ORDERS] action with the resulting list of orders.
-     *
-     * @param [filterByStatus] Nullable. If not null, fetch only orders with a matching order status.
-     */
-    fun fetchOrders(site: SiteModel, offset: Int, filterByStatus: String? = null) {
-        coroutineEngine.launch(T.API, this, "fetchOrders") {
-            val url = WOOCOMMERCE.orders.pathV3
-            val params = mutableMapOf(
-                "per_page" to WCOrderStore.NUM_ORDERS_PER_FETCH.toString(),
-                "offset" to offset.toString(),
-                "_fields" to ORDER_FIELDS
-            ).putIfNotEmpty(
-                "status" to filterByStatus
-            )
-
-            val response = wooNetwork.executeGetGsonRequest(
-                site = site,
-                path = url,
-                params = params,
-                clazz = Array<OrderDto>::class.java
-            )
-
-            when (response) {
-                is WPAPIResponse.Success -> {
-                    val orderModels = response.data?.map { orderDto ->
-                        orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
-                    }.orEmpty()
-
-                    val canLoadMore = orderModels.size == WCOrderStore.NUM_ORDERS_PER_FETCH
-                    val payload = FetchOrdersResponsePayload(
-                        site, orderModels, filterByStatus, offset > 0, canLoadMore
-                    )
-                    dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersAction(payload))
-                }
-
-                is WPAPIResponse.Error -> {
-                    val orderError = wpAPINetworkErrorToOrderError(response.error)
-                    val payload = FetchOrdersResponsePayload(orderError, site)
-                    dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersAction(payload))
-                }
-            }
-        }
-    }
-
     suspend fun fetchOrdersSync(
         site: SiteModel,
         offset: Int,
@@ -191,7 +139,7 @@ class OrderRestClient @Inject constructor(
             "status" to statusFilter,
             "created_via" to createdVia,
             "search" to searchQuery,
-            "dp" to decimalPoints.toString(),
+            "dp" to decimalPoints?.toString(),
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -426,60 +374,6 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given
-     * WooCommerce [SiteModel] matching [searchQuery]
-     *
-     * The number of orders fetched is defined in [WCOrderStore.NUM_ORDERS_PER_FETCH]
-     *
-     * Dispatches a [WCOrderAction.SEARCHED_ORDERS] action with the resulting list of orders.
-     *
-     * @param [searchQuery] the keyword or phrase to match orders with
-     */
-    fun searchOrders(site: SiteModel, searchQuery: String, offset: Int) {
-        coroutineEngine.launch(T.API, this, "searchOrders") {
-            val url = WOOCOMMERCE.orders.pathV3
-            val params = mutableMapOf(
-                "per_page" to WCOrderStore.NUM_ORDERS_PER_FETCH.toString(),
-                "offset" to offset.toString(),
-                "_fields" to ORDER_FIELDS
-            ).putIfNotEmpty("search" to searchQuery)
-
-            val response = wooNetwork.executeGetGsonRequest(
-                site = site,
-                path = url,
-                clazz = Array<OrderDto>::class.java,
-                params = params
-            )
-
-            when (response) {
-                is WPAPIResponse.Success -> {
-                    val orderModels = response.data?.map { orderDto ->
-                        orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
-                    }.orEmpty()
-
-                    val canLoadMore = orderModels.size == WCOrderStore.NUM_ORDERS_PER_FETCH
-                    val nextOffset = offset + orderModels.size
-
-                    val payload = SearchOrdersResponsePayload(
-                        site,
-                        searchQuery,
-                        canLoadMore,
-                        nextOffset,
-                        orderModels.map { it.first }
-                    )
-                    dispatcher.dispatch(WCOrderActionBuilder.newSearchedOrdersAction(payload))
-                }
-
-                is WPAPIResponse.Error -> {
-                    val orderError = wpAPINetworkErrorToOrderError(response.error)
-                    val payload = SearchOrdersResponsePayload(orderError, site, searchQuery)
-                    dispatcher.dispatch(WCOrderActionBuilder.newSearchedOrdersAction(payload))
-                }
-            }
-        }
-    }
-
-    /**
      * Makes a GET request to `/wp-json/wc/v3/orders/{remoteOrderId}` to fetch a single order by the remoteOrderId.
      *
      * @param [orderId] Unique server id of the order to fetch
@@ -491,7 +385,7 @@ class OrderRestClient @Inject constructor(
     ): RemoteOrderPayload.Fetching {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
         val params = mutableMapOf("_fields" to ORDER_FIELDS)
-            .putIfNotEmpty("dp" to decimalPoints.toString())
+            .putIfNotEmpty("dp" to decimalPoints?.toString())
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -526,24 +420,6 @@ class OrderRestClient @Inject constructor(
                     site
                 )
             }
-        }
-    }
-
-    /**
-     * Makes a GET call to `/wp-json/wc/v3/reports/orders/totals` retrieving count of orders for
-     * the given WooCommerce [SiteModel], broken down by order status.
-     *
-     * Dispatches a [WCOrderAction.FETCHED_ORDERS_COUNT] action with the resulting count.
-     *
-     * @param [filterByStatus] The order status to return a count for
-     */
-    fun fetchOrderCountSync(site: SiteModel, filterByStatus: String) {
-        coroutineEngine.launch(T.API, this, "fetchOrderCount") {
-            dispatcher.dispatch(
-                WCOrderActionBuilder.newFetchedOrdersCountAction(
-                    doFetchOrderCount(site, filterByStatus)
-                )
-            )
         }
     }
 

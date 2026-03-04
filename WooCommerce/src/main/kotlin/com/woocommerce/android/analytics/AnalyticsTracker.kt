@@ -247,6 +247,7 @@ class AnalyticsTracker private constructor(
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
         const val KEY_TAP = "tap"
+        const val KEY_BUTTON_LABEL = "button_label"
         const val KEY_FAILURE = "failure"
         const val KEY_SCANNING_SOURCE = "source"
         const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
@@ -483,6 +484,7 @@ class AnalyticsTracker private constructor(
 
         // -- More Menu (aka Hub Menu) option values
         const val VALUE_MORE_MENU_VIEW_STORE = "view_store"
+        const val VALUE_MORE_MENU_BOOKINGS = "bookings"
         const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"

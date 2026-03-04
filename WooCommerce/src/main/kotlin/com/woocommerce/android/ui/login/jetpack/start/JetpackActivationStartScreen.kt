@@ -44,8 +44,8 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.JetpackActivationState
+import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
 @Composable
 fun JetpackActivationStartScreen(viewModel: JetpackActivationStartViewModel) {
@@ -137,7 +137,8 @@ fun JetpackActivationStartScreen(
                     Text(stringResource(id = R.string.login_jetpack_installation_exit_without_connection))
                 }
             } else {
-                JetpackConsent(
+                WPComConsent(
+                    forJetpackSetup = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))

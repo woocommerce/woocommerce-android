@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git stash *)",
+      "Bash(git fetch *)",
+      "Bash(git cherry-pick *)",
+      "Bash(git remote *)",
+      "Bash(git rev-parse *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Bash(gh api *)",
+      "Bash(adb *)",
+      "Bash(emulator *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push * trunk)",
+      "Bash(git push origin trunk)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(fastlane release *)",
+      "Bash(fastlane deliver *)"
+    ]
+  }
+}

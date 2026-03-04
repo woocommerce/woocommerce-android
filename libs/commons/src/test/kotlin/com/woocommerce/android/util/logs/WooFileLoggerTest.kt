@@ -28,10 +28,15 @@ class WooFileLoggerTest : BaseUnitTest() {
         testLifecycleOwner = TestLifecycleOwner(initialState = initialLifecycleState)
 
         wooFileLogger = WooFileLogger(
-            logsDirectory = logsDirectory,
             appCoroutineScope = testScope,
             processLifecycleOwner = testLifecycleOwner,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            logFileWriter = LogFileWriter(
+                logsDirectory = logsDirectory,
+                maxLogFiles = 7,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                availableDiskBytes = { Long.MAX_VALUE }
+            ),
         )
     }
 

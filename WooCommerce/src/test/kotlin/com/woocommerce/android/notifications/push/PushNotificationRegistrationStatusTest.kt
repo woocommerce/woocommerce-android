@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -37,7 +38,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.REGISTERED_IN_BOTH)
+        assertThat(result).isEqualTo(Status.REGISTERED_BOTH)
     }
 
     @Test
@@ -47,7 +48,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.WOO_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WOO_ONLY)
     }
 
     @Test
@@ -57,7 +58,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.WPCOM_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WPCOM_ONLY)
     }
 
     @Test
@@ -76,7 +77,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(null)
 
-        assertThat(result).isEqualTo(Status.WPCOM_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WPCOM_ONLY)
     }
 
     @Test
@@ -105,8 +106,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
             .thenReturn(deviceId)
     }
 
-    private suspend fun setupWooRegistration(siteId: Long, isRegistered: Boolean) {
-        whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(siteId)).thenReturn(isRegistered)
+    private fun setupWooRegistration(siteId: Long, isRegistered: Boolean) {
+        whenever(pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId))
+            .thenReturn(flowOf(isRegistered))
     }
 
     companion object {

@@ -19,11 +19,13 @@ import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,9 +36,11 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
+    private val registrationStatus: PushNotificationRegistrationStatus,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val workManagerScheduler: WorkManagerScheduler
 ) {
@@ -65,11 +69,6 @@ class NotificationMessageHandler @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>) {
-        if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        }
-
         if (!selectedSite.exists()) {
             wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
@@ -80,13 +79,6 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val pushUserId = messageData[PUSH_ARG_USER]
-        // pushUserId is always set server side, but better to double check it here.
-        if (accountStore.account.userId.toString() != pushUserId) {
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
-        }
-
         val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
             wooLog.e(NOTIFICATIONS, "Notification data is empty!")
@@ -94,9 +86,32 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
-        if (notification.remoteNoteId == 0L) {
+        val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
+        val isRegisteredForWooPush =
+            registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY ||
+                registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
+        val pushUserId = messageData[PUSH_ARG_USER]
+
+        // We need to filter out duplicate notifications from the WPCOM system
+        if (isRegisteredForWooPush) {
+            if (notification.remoteNoteId > 0L) {
+                wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
+                return
+            }
+            if (siteStore.visibleSites.none { it.siteId == notification.remoteSiteId }) {
+                wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
+                return
+            }
+        } else if (!accountStore.hasAccessToken()) {
+            wooLog.e(NOTIFICATIONS, "User is not logged in!")
+            return
+        } else if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
             wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+            return
+        } else if (accountStore.account.userId.toString() != pushUserId) {
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
 
@@ -179,7 +194,7 @@ class NotificationMessageHandler @Inject constructor(
             // We always generate new id for NewOrder.
             activeNotifications
                 .firstOrNull {
-                    it.remoteNoteId == noteId &&
+                    noteId != 0L && it.remoteNoteId == noteId &&
                         it.noteTypeTrackingValue != WooNotificationType.NewOrder.trackingValue
                 }
                 ?.let { return it.id }

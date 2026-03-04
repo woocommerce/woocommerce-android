@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
@@ -151,6 +152,7 @@ fun WCWebView(
                 }
             },
             modifier = Modifier
+                .fillMaxSize()
                 .alpha(webViewAlpha)
         )
 

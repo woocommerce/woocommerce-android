@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,7 +32,10 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.ExcludedBookingStatuses
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.Status.Cancelled
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.Status.Complete
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -40,9 +44,10 @@ class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingFilterRepository: BookingFilterRepository,
     private val bookingListHandler: BookingListHandler,
-    private val filtersBuilder: BookingListFiltersBuilder,
+    private val dateFilterBuilder: BookingListDateFilterBuilder,
     private val bookingMapper: BookingMapper,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val paymentStatusResolver: PaymentStatusResolver,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -79,15 +84,19 @@ class BookingListViewModel @Inject constructor(
     private var bookingsLoadMoreJob: Job? = null
 
     private val contentState = combine(
-        bookingListHandler.bookingsFlow.map { bookings ->
-            openFirstLoadedBookingOnTablet(bookings)
-            with(bookingMapper) { bookings.map { it.toListItem() } }
-        },
+        bookingListHandler.bookingsFlow,
         loadingState,
         selectedBookingIdFlow,
     ) { bookings, loadingState, selectedBookingId ->
+        openFirstLoadedBookingOnTablet(bookings)
+        val listItems = with(bookingMapper) {
+            bookings.map {
+                val paymentStatus = paymentStatusResolver.resolve(it.orderId)
+                it.toListItem(paymentStatus)
+            }
+        }
         BookingListContentState(
-            bookings = bookings,
+            bookings = listItems,
             loadingState = loadingState,
             selectedBooking = selectedBookingId,
             onRefresh = { refreshTrigger.tryEmit(Unit) },
@@ -116,7 +125,6 @@ class BookingListViewModel @Inject constructor(
     ) { tab, sort, filters ->
         BookingListControlsState(
             selectedSortOption = sort,
-            isFilterButtonVisible = tab == BookingListTab.All,
             enabledFiltersCount = filters.enabledFiltersCount,
             onSortClick = ::onSortClicked,
             onFilterClick = ::onFilterClicked,
@@ -284,13 +292,16 @@ class BookingListViewModel @Inject constructor(
         }
     }
 
-    private fun FetchParams.prepareFilters(): BookingFilters = with(filtersBuilder) {
-        when (selectedTab) {
-            BookingListTab.Today,
-            BookingListTab.Upcoming -> BookingFilters(dateRange = selectedTab.asDateRangeFilter())
+    private fun FetchParams.prepareFilters(): BookingFilters = when (selectedTab) {
+        BookingListTab.Today,
+        BookingListTab.Upcoming -> BookingFilters(
+            dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange),
+            excludedBookingStatuses = ExcludedBookingStatuses(setOf(Cancelled, Complete))
+        )
 
-            BookingListTab.All -> filters
-        }
+        BookingListTab.All -> filters.copy(
+            dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange)
+        )
     }
 
     private data class FetchParams(

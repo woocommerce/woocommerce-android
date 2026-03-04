@@ -55,8 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -130,12 +130,19 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    EmptyView(
-                        state = state,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
-                            .fillMaxSize()
-                    )
+                    WCPullToRefreshBox(
+                        isRefreshing = state.contentState.loadingState ==
+                            BookingListLoadingState.Refreshing,
+                        onRefresh = state.contentState.onRefresh,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        EmptyView(
+                            state = state,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
@@ -303,36 +310,34 @@ private fun BookingListControls(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (state.isFilterButtonVisible) {
-            OutlinedButton(
-                modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                colors = ButtonDefaults.outlinedButtonColors().copy(
-                    containerColor = if (state.areFiltersActive) {
-                        colorResource(R.color.primary_colored_button_background)
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    },
-                    contentColor = if (state.areFiltersActive) {
-                        Color.White
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    }
-                ),
-                onClick = state.onFilterClick,
-            ) {
-                Text(
-                    text = if (state.areFiltersActive) {
-                        stringResource(
-                            id = R.string.bookings_filters_enabled_title,
-                            state.enabledFiltersCount
-                        )
-                    } else {
-                        stringResource(R.string.bookings_filters_default_title)
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+        OutlinedButton(
+            modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            colors = ButtonDefaults.outlinedButtonColors().copy(
+                containerColor = if (state.areFiltersActive) {
+                    colorResource(R.color.primary_colored_button_background)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                contentColor = if (state.areFiltersActive) {
+                    Color.White
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                }
+            ),
+            onClick = state.onFilterClick,
+        ) {
+            Text(
+                text = if (state.areFiltersActive) {
+                    stringResource(
+                        id = R.string.bookings_filters_enabled_title,
+                        state.enabledFiltersCount
+                    )
+                } else {
+                    stringResource(R.string.bookings_filters_default_title)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
@@ -393,13 +398,13 @@ private fun EmptyListView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = when (selectedTab) {
-                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
-                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
-                BookingListTab.All -> if (areFiltersActive) {
-                    stringResource(R.string.bookings_empty_state_title_default)
-                } else {
-                    stringResource(R.string.bookings_empty_state_title_all)
+            text = if (areFiltersActive) {
+                stringResource(R.string.bookings_empty_state_title_default)
+            } else {
+                when (selectedTab) {
+                    BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
+                    BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
+                    BookingListTab.All -> stringResource(R.string.bookings_empty_state_title_all)
                 }
             },
             style = MaterialTheme.typography.titleLarge,
@@ -409,15 +414,13 @@ private fun EmptyListView(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = when (selectedTab) {
-                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
-                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
-                else -> {
-                    if (areFiltersActive) {
-                        stringResource(R.string.bookings_filtered_empty_state_description)
-                    } else {
-                        stringResource(R.string.bookings_empty_state_description_all)
-                    }
+            text = if (areFiltersActive) {
+                stringResource(R.string.bookings_filtered_empty_state_description)
+            } else {
+                when (selectedTab) {
+                    BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
+                    BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
+                    BookingListTab.All -> stringResource(R.string.bookings_empty_state_description_all)
                 }
             },
             style = MaterialTheme.typography.titleMedium,
@@ -507,8 +510,9 @@ private fun BookingListPreview() {
                                 date = "Aug 20, 2024",
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
-                                attendanceStatus = BookingAttendanceStatus.Booked,
-                                status = BookingStatus.Paid,
+                                attendanceStatus = BookingAttendanceStatus.Attended,
+                                paymentStatus = PaymentStatus.PAID,
+                                isCancelled = false,
                                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                             )
                         )
@@ -524,7 +528,6 @@ private fun BookingListPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
-                    isFilterButtonVisible = true,
                     enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
@@ -559,7 +562,6 @@ private fun EmptyViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
-                    isFilterButtonVisible = true,
                     enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
@@ -594,7 +596,6 @@ private fun EmptySearchResultsViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
-                    isFilterButtonVisible = true,
                     enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},

@@ -52,7 +52,8 @@
         android:gravity="center_vertical"
         android:paddingStart="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
-        android:text="@string/product_downloadable_files_add_from_wpmedia_library" />
+        android:text="@string/product_downloadable_files_add_from_wpmedia_library"
+        app:drawableTint="@color/color_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/add_downloadable_manually"

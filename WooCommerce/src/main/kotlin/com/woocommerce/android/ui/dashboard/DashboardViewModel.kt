@@ -22,6 +22,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -68,6 +69,7 @@ class DashboardViewModel @Inject constructor(
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -91,7 +93,7 @@ class DashboardViewModel @Inject constructor(
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
-            site?.displayName
+            site.displayName
         } else {
             site?.name
         } ?: resourceProvider.getString(R.string.store_name_default)
@@ -226,6 +228,10 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    fun trackPushNotificationsCardView() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_CARD_VIEW)
+    }
+
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         hasNewWidgets: Boolean,
@@ -292,26 +298,30 @@ class DashboardViewModel @Inject constructor(
         }
 
         val dismissTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        val siteId = selectedSite.getIfExists()?.siteId
 
-        return dismissTrigger.onStart { emit(Unit) }
-            .map {
-                val durationSinceDismissal =
-                    (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner =
-                    pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId) == Status.UNREGISTERED &&
-                        durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
-                JetpackBenefitsBannerUiModel(
-                    show = showBanner,
-                    onDismiss = {
-                        appPrefsWrapper.recordJetpackBenefitsDismissal()
-                        analyticsTrackerWrapper.track(
-                            stat = FEATURE_JETPACK_BENEFITS_BANNER,
-                            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                        )
-                        dismissTrigger.tryEmit(Unit)
-                    }
-                )
-            }
+        return combine(
+            dismissTrigger.onStart { emit(Unit) },
+            pushNotificationRegistrationStatus.observe(siteId),
+            shouldShowEnablePushNotificationsUi()
+        ) { _, registrationStatus, enablePnUiAvailable ->
+            val durationSinceDismissal =
+                (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
+            val showBanner = !enablePnUiAvailable &&
+                registrationStatus == Status.UNREGISTERED &&
+                durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
+            JetpackBenefitsBannerUiModel(
+                show = showBanner,
+                onDismiss = {
+                    appPrefsWrapper.recordJetpackBenefitsDismissal()
+                    analyticsTrackerWrapper.track(
+                        stat = FEATURE_JETPACK_BENEFITS_BANNER,
+                        properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+                    )
+                    dismissTrigger.tryEmit(Unit)
+                }
+            )
+        }
     }
 
     sealed interface DashboardWidgetUiModel {
@@ -367,6 +377,8 @@ class DashboardViewModel @Inject constructor(
         data object FeedbackNegativeAction : DashboardEvent()
 
         data object RefreshJitm : DashboardEvent()
+
+        data object OpenWooPushNotificationsIntroduction : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

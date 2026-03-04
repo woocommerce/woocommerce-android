@@ -1,1 +1,1 @@
-Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
+Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.

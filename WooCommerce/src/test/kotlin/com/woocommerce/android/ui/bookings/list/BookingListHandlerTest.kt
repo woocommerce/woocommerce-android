@@ -142,7 +142,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     fun `when last page is reached, then can load more becomes false`() = testBlocking {
         bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
 
-        var result: Result<Unit>? = null
+        var result: Result<Int>? = null
         repeat(availablePages - 1) {
             result = bookingListHandler.loadMore()
         }
@@ -305,7 +305,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         parentId = 0L,
         personCounts = listOf(1L),
         localTimezone = "",
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         order = BookingOrderInfo(),
         customerNote = ""
     )

@@ -19,13 +19,15 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.Mockito.mock
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveShippingLabelNoticeTests : BaseUnitTest() {
-    private val addressValidationHelper: AddressValidationHelper = mock()
+    private val addressValidationHelper: AddressValidationHelper = mock {
+        on { isPhoneValidForShippingLabel("1234567890") } doReturn true
+    }
     private val coroutineScope: CoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
 
     private val sut = ObserveShippingLabelNotice(addressValidationHelper)
@@ -42,7 +44,8 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
             address = Address.EMPTY.copy(
                 firstName = "John",
                 lastName = "Doe",
-                address1 = "123 Main St"
+                address1 = "123 Main St",
+                phone = "1234567890"
             ),
             isVerified = true
         ),

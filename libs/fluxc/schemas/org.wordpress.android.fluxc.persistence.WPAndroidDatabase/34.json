@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 34,
-    "identityHash": "e0e75ec8c4d18c3f5d3db161f1c8dd35",
+    "identityHash": "7715b72b8bb92d5c420708c2dc10abfe",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -366,7 +366,7 @@
       },
       {
         "tableName": "WhatsNewAnnouncementEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `minimumAppVersion` TEXT NOT NULL, `maximumAppVersion` TEXT NOT NULL, `appVersionTargets` TEXT NOT NULL, `detailsUrl` TEXT NOT NULL DEFAULT '', `localized` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `minimumAppVersion` TEXT NOT NULL, `maximumAppVersion` TEXT NOT NULL, `appVersionTargets` TEXT NOT NULL, `localized` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
         "fields": [
           {
             "fieldPath": "announcementId",
@@ -391,13 +391,6 @@
             "columnName": "appVersionTargets",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "detailsUrl",
-            "columnName": "detailsUrl",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
           },
           {
             "fieldPath": "localized",
@@ -515,11 +508,99 @@
             "slug"
           ]
         }
+      },
+      {
+        "tableName": "NotificationEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`remoteSiteId` INTEGER NOT NULL, `remoteNoteId` INTEGER NOT NULL, `noteHash` INTEGER NOT NULL, `type` TEXT NOT NULL, `subtype` TEXT, `read` INTEGER NOT NULL, `icon` TEXT, `noticon` TEXT, `timestamp` TEXT, `url` TEXT, `title` TEXT, `formattableBody` TEXT, `formattableSubject` TEXT, `formattableMeta` TEXT, PRIMARY KEY(`remoteSiteId`, `remoteNoteId`))",
+        "fields": [
+          {
+            "fieldPath": "remoteSiteId",
+            "columnName": "remoteSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteNoteId",
+            "columnName": "remoteNoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noteHash",
+            "columnName": "noteHash",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtype",
+            "columnName": "subtype",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "read",
+            "columnName": "read",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "noticon",
+            "columnName": "noticon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableBody",
+            "columnName": "formattableBody",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableSubject",
+            "columnName": "formattableSubject",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableMeta",
+            "columnName": "formattableMeta",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "remoteSiteId",
+            "remoteNoteId"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e0e75ec8c4d18c3f5d3db161f1c8dd35')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7715b72b8bb92d5c420708c2dc10abfe')"
     ]
   }
 }

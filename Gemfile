@@ -8,6 +8,10 @@ gem 'fastlane-plugin-firebase_app_distribution', '~> 0.10'
 gem 'nokogiri'
 gem 'rubocop', '~> 1.65'
 
+# Security: https://github.com/lostisland/faraday/pull/1665
+# Faraday 2.0 is not compatible with Fastlane
+gem 'faraday', '~> 1.10', '>= 1.10.5'
+
 ### Fastlane Plugins
 
 gem 'fastlane-plugin-wpmreleasetoolkit', '~> 13.8'

@@ -147,6 +147,27 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given file-based flag disabled, when syncing, then sync succeeds`() = testBlocking {
+        // GIVEN
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 150,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
+
+        // WHEN
+        val result = sut.syncLocalCatalogFull(site)
+
+        // THEN
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+    }
+
+    @Test
     fun `when full sync fails with network error, then returns NetworkError failure`() = testBlocking {
         // GIVEN
         givenFileBasedFullSyncFails(
