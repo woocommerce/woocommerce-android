@@ -472,6 +472,7 @@ class WooPosBookingsViewModel @Inject constructor(
                     selectedDetails = reverted,
                     items = updateItemsWithDetails(rollbackState.items, reverted),
                 )
+                _toastEvent.emit(resourceProvider.getString(R.string.booking_attendance_status_error))
             }
         }
     }
