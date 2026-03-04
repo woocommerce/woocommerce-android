@@ -53,6 +53,9 @@ fun BookingSummary(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(top = 6.dp)
         ) {
+            if (model.isCancelled) {
+                BookingCancelledTag()
+            }
             model.attendanceStatus?.let {
                 BookingAttendanceStatusTag(
                     state = it,
@@ -60,9 +63,6 @@ fun BookingSummary(
                 )
             }
             BookingPaymentStatusTag(paymentStatus = model.paymentStatus)
-            if (model.isCancelled) {
-                BookingCancelledTag()
-            }
         }
     }
 }
@@ -145,6 +145,25 @@ private fun BookingSummaryAttendanceUpdatingPreview() {
                 paymentStatus = PaymentStatus.PAID,
                 isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BookingSummaryCancelledPreview() {
+    WooThemeWithBackground {
+        BookingSummary(
+            model = BookingSummaryModel(
+                date = "05/07/2025, 11:00 AM",
+                name = "Women's Haircut",
+                customerName = "Margarita Nikolaevna",
+                attendanceStatus = BookingAttendanceStatus.Unattended,
+                paymentStatus = PaymentStatus.UNPAID,
+                isCancelled = true,
+                attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
         )
