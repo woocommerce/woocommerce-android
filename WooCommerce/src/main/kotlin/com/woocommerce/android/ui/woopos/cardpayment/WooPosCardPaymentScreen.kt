@@ -435,7 +435,7 @@ private fun CardPaymentCenteredLayout(
     ) {
         if (onBackClicked != null) {
             WooPosToolbar(
-                titleText = stringResource(R.string.woopos_card_payment_toolbar_title),
+                titleText = stringResource(R.string.payment),
                 onBackClicked = onBackClicked,
             )
         }
