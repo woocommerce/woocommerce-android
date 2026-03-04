@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -355,7 +356,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             bookingsRepository = bookingsRepository,
             bookingMapper = bookingMapper,
             networkStatus = networkStatus,
-            paymentStatusResolver = paymentStatusResolver
+            paymentStatusResolver = paymentStatusResolver,
+            appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }
