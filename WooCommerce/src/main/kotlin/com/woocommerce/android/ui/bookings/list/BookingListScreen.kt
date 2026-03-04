@@ -130,12 +130,19 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    EmptyView(
-                        state = state,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
-                            .fillMaxSize()
-                    )
+                    WCPullToRefreshBox(
+                        isRefreshing = state.contentState.loadingState ==
+                            BookingListLoadingState.Refreshing,
+                        onRefresh = state.contentState.onRefresh,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        EmptyView(
+                            state = state,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
