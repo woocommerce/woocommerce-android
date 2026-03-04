@@ -125,6 +125,7 @@ class WooPosProductsRemoteDataSourceTest {
                 remoteVariationId = productVariation.remoteVariationId,
                 remoteProductId = productVariation.remoteProductId,
                 globalUniqueId = productVariation.globalUniqueId,
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = productVariation.price,
                 image = productVariation.image?.let { WooPosVariation.WooPosVariationImage(it.source) },
                 attributes = productVariation.attributes.map {
@@ -1178,6 +1179,7 @@ class WooPosProductsRemoteDataSourceTest {
                 remoteVariationId = variationId,
                 remoteProductId = productId,
                 globalUniqueId = "test-global-id",
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = java.math.BigDecimal("10.0"),
                 image = null,
                 attributes = emptyList(),
@@ -1267,6 +1269,7 @@ class WooPosProductsRemoteDataSourceTest {
                 remoteVariationId = variationId,
                 remoteProductId = productId,
                 globalUniqueId = "test-global-id",
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = java.math.BigDecimal("99.99"),
                 image = null,
                 attributes = emptyList(),

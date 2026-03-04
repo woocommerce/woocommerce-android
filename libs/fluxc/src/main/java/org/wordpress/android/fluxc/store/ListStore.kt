@@ -5,18 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.PagedList.BoundaryCallback
-import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.ListAction
-import org.wordpress.android.fluxc.action.ListAction.FETCHED_LIST_ITEMS
-import org.wordpress.android.fluxc.action.ListAction.LIST_DATA_INVALIDATED
-import org.wordpress.android.fluxc.action.ListAction.LIST_ITEMS_REMOVED
-import org.wordpress.android.fluxc.action.ListAction.LIST_REQUIRES_REFRESH
-import org.wordpress.android.fluxc.action.ListAction.REMOVE_ALL_LISTS
-import org.wordpress.android.fluxc.action.ListAction.REMOVE_EXPIRED_LISTS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.list.LIST_STATE_TIMEOUT
@@ -25,13 +19,11 @@ import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 import org.wordpress.android.fluxc.model.list.ListItemModel
 import org.wordpress.android.fluxc.model.list.ListModel
 import org.wordpress.android.fluxc.model.list.ListState
-import org.wordpress.android.fluxc.model.list.ListState.FETCHED
 import org.wordpress.android.fluxc.model.list.PagedListFactory
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource
 import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInterface
-import org.wordpress.android.fluxc.persistence.ListItemSqlUtils
-import org.wordpress.android.fluxc.persistence.ListSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.store.ListStore.OnListChanged.CauseOfListChange
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -41,18 +33,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-// How long a list should stay in DB if it hasn't been updated
-const val DEFAULT_EXPIRATION_DURATION = 1000L * 60 * 60 * 24 * 7
-
 /**
  * This Store is responsible for managing lists and their metadata. One of the designs goals for this Store is expose
  * as little as possible to the consumers and make sure the exposed parts are immutable. This not only moves the
  * responsibility of mutation to the Store but also makes it much easier to use the exposed data.
  */
 @Singleton
-class ListStore @Inject constructor(
-    private val listSqlUtils: ListSqlUtils,
-    private val listItemSqlUtils: ListItemSqlUtils,
+class ListStore @Inject internal constructor(
+    private val listDao: ListDao,
     private val coroutineContext: CoroutineContext,
     private val coroutineEngine: CoroutineEngine,
     dispatcher: Dispatcher
@@ -62,13 +50,16 @@ class ListStore @Inject constructor(
         val actionType = action.type as? ListAction ?: return
 
         when (actionType) {
-            FETCHED_LIST_ITEMS -> handleFetchedListItems(action.payload as FetchedListItemsPayload)
-            LIST_ITEMS_REMOVED -> handleListItemsRemoved(action.payload as ListItemsRemovedPayload)
-            LIST_REQUIRES_REFRESH -> handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
-            LIST_DATA_INVALIDATED -> handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
-            REMOVE_EXPIRED_LISTS -> handleRemoveExpiredLists(action.payload as RemoveExpiredListsPayload)
-            REMOVE_ALL_LISTS -> handleRemoveAllLists()
-            ListAction.LIST_DATA_FAILURE -> handleDataFailure(action.payload as OnListDataFailure)
+            ListAction.FETCHED_LIST_ITEMS ->
+                coroutineEngine.launch(AppLog.T.API, this, "handleFetchedListItems") {
+                    handleFetchedListItems(action.payload as FetchedListItemsPayload)
+                }
+            ListAction.LIST_REQUIRES_REFRESH ->
+                handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
+            ListAction.LIST_DATA_INVALIDATED ->
+                handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
+            ListAction.LIST_DATA_FAILURE ->
+                handleDataFailure(action.payload as OnListDataFailure)
         }
     }
 
@@ -104,8 +95,10 @@ class ListStore @Inject constructor(
                 listDescriptor = listDescriptor,
                 lifecycle = lifecycle,
                 refresh = {
-                    handleFetchList(listDescriptor, loadMore = false) { offset ->
-                        dataSource.fetchList(listDescriptor, offset)
+                    coroutineEngine.launch(AppLog.T.API, this, "ListStore: Refreshing first page") {
+                        handleFetchList(listDescriptor, loadMore = false) { offset ->
+                            dataSource.fetchList(listDescriptor, offset)
+                        }
                     }
                 },
                 invalidate = factory::invalidate,
@@ -149,27 +142,19 @@ class ListStore @Inject constructor(
         listDescriptor: LIST_DESCRIPTOR,
         dataSource: ListItemDataSourceInterface<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM>
     ): PagedListFactory<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM> {
-        val getRemoteItemIds = { getListItems(listDescriptor).map { RemoteId(value = it) } }
-        val getIsListFullyFetched = { getListState(listDescriptor) == FETCHED }
         return PagedListFactory(
                 createDataSource = {
-                    InternalPagedListDataSource(
-                            listDescriptor = listDescriptor,
-                            remoteItemIds = getRemoteItemIds(),
-                            isListFullyFetched = getIsListFullyFetched(),
-                            itemDataSource = dataSource
-                    )
+                    runBlocking {
+                        val remoteItemIds = listDao.getListItems(listDescriptor)
+                        val isListFullyFetched = getListState(listDescriptor) == ListState.FETCHED
+                        InternalPagedListDataSource(
+                                listDescriptor = listDescriptor,
+                                remoteItemIds = remoteItemIds.map { RemoteId(value = it.remoteItemId) },
+                                isListFullyFetched = isListFullyFetched,
+                                itemDataSource = dataSource
+                        )
+                    }
                 })
-    }
-
-    /**
-     * A helper function that returns the list items for the given [ListDescriptor].
-     */
-    private fun getListItems(listDescriptor: ListDescriptor): List<Long> {
-        val listModel = listSqlUtils.getList(listDescriptor)
-        return if (listModel != null) {
-            listItemSqlUtils.getListItems(listModel.id).map { it.remoteItemId }
-        } else emptyList()
     }
 
     /**
@@ -179,7 +164,7 @@ class ListStore @Inject constructor(
      * update the list's state and emit that change. Finally, it'll calculate the offset and initiate the fetch with
      * the given [fetchList] function.
      */
-    private fun handleFetchList(
+    private suspend fun handleFetchList(
         listDescriptor: ListDescriptor,
         loadMore: Boolean,
         fetchList: (Long) -> Unit
@@ -194,13 +179,10 @@ class ListStore @Inject constructor(
         }
 
         val newState = if (loadMore) ListState.LOADING_MORE else ListState.FETCHING_FIRST_PAGE
-        listSqlUtils.insertOrUpdateList(listDescriptor, newState)
+        val listModel = listDao.insertOrUpdateList(listDescriptor, newState)
         handleListStateChange(listDescriptor, newState)
 
-        val listModel = requireNotNull(listSqlUtils.getList(listDescriptor)) {
-            "The `ListModel` can never be `null` here since either a new list is inserted or existing one updated"
-        }
-        val offset = if (loadMore) listItemSqlUtils.getListItemsCount(listModel.id) else 0L
+        val offset = if (loadMore) listDao.getListItemsCount(listModel.id) else 0L
         fetchList(offset)
     }
 
@@ -222,35 +204,19 @@ class ListStore @Inject constructor(
      *
      * See [handleFetchList] to see how items are fetched.
      */
-    private fun handleFetchedListItems(payload: FetchedListItemsPayload) {
+    private suspend fun handleFetchedListItems(payload: FetchedListItemsPayload) {
         val newState = when {
             payload.isError -> ListState.ERROR
             payload.canLoadMore -> ListState.CAN_LOAD_MORE
-            else -> FETCHED
+            else -> ListState.FETCHED
         }
-        listSqlUtils.insertOrUpdateList(payload.listDescriptor, newState)
+        val listModel = listDao.insertOrUpdateList(payload.listDescriptor, newState)
 
         if (!payload.isError) {
-            val db = WellSql.giveMeWritableDb()
-            db.beginTransaction()
-            try {
-                if (!payload.loadedMore) {
-                    deleteListItems(payload.listDescriptor)
-                }
-                val listModel = requireNotNull(listSqlUtils.getList(payload.listDescriptor)) {
-                    "The `ListModel` can never be `null` here since either a new list is inserted or existing one " +
-                            "updated"
-                }
-                listItemSqlUtils.insertItemList(payload.remoteItemIds.map { remoteItemId ->
-                    val listItemModel = ListItemModel()
-                    listItemModel.listId = listModel.id
-                    listItemModel.remoteItemId = remoteItemId
-                    return@map listItemModel
-                })
-                db.setTransactionSuccessful()
-            } finally {
-                db.endTransaction()
+            val listItems = payload.remoteItemIds.map { remoteItemId ->
+                ListItemModel(listModel.id, remoteItemId)
             }
+            listDao.deleteAndInsertItems(listModel.id, !payload.loadedMore, listItems)
         }
         val causeOfChange = if (payload.isError) {
             CauseOfListChange.ERROR
@@ -266,35 +232,14 @@ class ListStore @Inject constructor(
         remoteItemIds: List<Long>,
         canLoadMore: Boolean
     ) {
-        val newState = if (canLoadMore) ListState.CAN_LOAD_MORE else FETCHED
-
-        listSqlUtils.insertOrUpdateList(listDescriptor, newState)
-
-        val listModel = requireNotNull(listSqlUtils.getList(listDescriptor)) {
-            "The `ListModel` can never be `null` here since either a new list is inserted or existing one " +
-                    "updated"
-        }
+        val newState = if (canLoadMore) ListState.CAN_LOAD_MORE else ListState.FETCHED
+        val listModel = listDao.insertOrUpdateList(listDescriptor, newState)
 
         val listItems = remoteItemIds.map { remoteItemId ->
-            val listItemModel = ListItemModel()
-            listItemModel.listId = listModel.id
-            listItemModel.remoteItemId = remoteItemId
-            listItemModel
+            ListItemModel(listModel.id, remoteItemId)
         }
-        listItemSqlUtils.insertItemList(listItems)
+        listDao.insertItems(listItems)
         emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier))
-    }
-
-    /**
-     * Handles the [ListAction.LIST_ITEMS_REMOVED] action.
-     *
-     * Items in [ListItemsRemovedPayload.remoteItemIds] will be removed from lists with
-     * [ListDescriptorTypeIdentifier] after which [OnListDataInvalidated] event will be emitted.
-     */
-    private fun handleListItemsRemoved(payload: ListItemsRemovedPayload) {
-        val lists = listSqlUtils.getListsWithTypeIdentifier(payload.type)
-        listItemSqlUtils.deleteItemsFromLists(lists.map { it.id }, payload.remoteItemIds)
-        emitChange(OnListDataInvalidated(payload.type))
     }
 
     /**
@@ -317,42 +262,15 @@ class ListStore @Inject constructor(
         emitChange(OnListDataInvalidated(type = typeIdentifier))
     }
 
-    /**
-     * Handles the [ListAction.REMOVE_EXPIRED_LISTS] action.
-     *
-     * It deletes [ListModel]s that hasn't been updated for the given [RemoveExpiredListsPayload.expirationDuration].
-     */
-    private fun handleRemoveExpiredLists(payload: RemoveExpiredListsPayload) {
-        listSqlUtils.deleteExpiredLists(payload.expirationDuration)
-    }
-
-    /**
-     * Handles the [ListAction.REMOVE_ALL_LISTS] action.
-     *
-     * It simply deletes every [ListModel] in the DB.
-     */
-    private fun handleRemoveAllLists() {
-        listSqlUtils.deleteAllLists()
-    }
-
     private fun handleDataFailure(event: OnListDataFailure) {
         emitChange(event)
     }
 
     /**
-     * Deletes all the items for the given [ListDescriptor].
-     */
-    private fun deleteListItems(listDescriptor: ListDescriptor) {
-        listSqlUtils.getList(listDescriptor)?.let {
-            listItemSqlUtils.deleteItems(it.id)
-        }
-    }
-
-    /**
      * A helper function that returns the [ListState] for the given [ListDescriptor].
      */
-     fun getListState(listDescriptor: ListDescriptor): ListState {
-        val listModel = listSqlUtils.getList(listDescriptor)
+    suspend fun getListState(listDescriptor: ListDescriptor): ListState {
+        val listModel = listDao.getList(listDescriptor)
         val currentState = listModel?.let {
             requireNotNull(ListState.entries.firstOrNull { it.value == listModel.stateDbValue }) {
                 "The stateDbValue of the ListModel didn't match any of the `ListState`s. This likely happened " +
@@ -361,7 +279,7 @@ class ListStore @Inject constructor(
         }
         val isListStateValid = currentState != null
                 && (isListStateOutdated(listModel).not() || (currentState in ListState.notExpiredStates))
-        return if (isListStateValid) currentState!! else ListState.defaultState
+        return if (isListStateValid) currentState else ListState.defaultState
     }
 
     /**
@@ -388,7 +306,7 @@ class ListStore @Inject constructor(
         val listDescriptors: List<ListDescriptor>,
         val causeOfChange: CauseOfListChange,
         error: ListError?
-    ) : Store.OnChanged<ListError>() {
+    ) : OnChanged<ListError>() {
         enum class CauseOfListChange {
             ERROR, FIRST_PAGE_FETCHED, LOADED_MORE
         }
@@ -405,7 +323,7 @@ class ListStore @Inject constructor(
         val listDescriptor: ListDescriptor,
         val newState: ListState,
         error: ListError?
-    ) : Store.OnChanged<ListError>() {
+    ) : OnChanged<ListError>() {
         init {
             this.error = error
         }
@@ -414,23 +332,14 @@ class ListStore @Inject constructor(
     /**
      * The event to be emitted when a list needs to be refresh for a specific [ListDescriptorTypeIdentifier].
      */
-    class OnListRequiresRefresh(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListRequiresRefresh(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
     /**
      * The event to be emitted when a list's data is invalidated for a specific [ListDescriptorTypeIdentifier].
      */
-    class OnListDataInvalidated(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListDataInvalidated(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
-    /**
-     * This is the payload for [ListAction.LIST_ITEMS_REMOVED].
-     *
-     * @property type [ListDescriptorTypeIdentifier] which will tell [ListStore] and the clients which
-     * [ListDescriptor]s are updated.
-     * @property remoteItemIds Remote item ids to be removed from the lists matching the [ListDescriptorTypeIdentifier].
-     */
-    class ListItemsRemovedPayload(val type: ListDescriptorTypeIdentifier, val remoteItemIds: List<Long>)
-
-    class OnListDataFailure(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListDataFailure(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
     /**
      * This is the payload for [ListAction.FETCHED_LIST_ITEMS].
@@ -453,13 +362,6 @@ class ListStore @Inject constructor(
             this.error = error
         }
     }
-
-    /**
-     * This is the payload for [ListAction.REMOVE_EXPIRED_LISTS].
-     *
-     * @property expirationDuration Tells how long a list should be kept in the DB if it hasn't been updated
-     */
-    class RemoveExpiredListsPayload(val expirationDuration: Long = DEFAULT_EXPIRATION_DURATION)
 
     class ListError(
         val type: ListErrorType,

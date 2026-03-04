@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -58,9 +59,10 @@ fun BookingSummary(
                     attendanceUpdateStatus = model.attendanceUpdateStatus,
                 )
             }
-            BookingStatusTag(
-                state = model.status
-            )
+            BookingPaymentStatusTag(paymentStatus = model.paymentStatus)
+            if (model.isCancelled) {
+                BookingCancelledTag()
+            }
         }
     }
 }
@@ -87,7 +89,8 @@ data class BookingSummaryModel(
     val name: String,
     val customerName: String?,
     val attendanceStatus: BookingAttendanceStatus?,
-    val status: BookingStatus,
+    val paymentStatus: PaymentStatus,
+    val isCancelled: Boolean,
     val attendanceUpdateStatus: AttendanceUpdateStatus,
 )
 
@@ -98,10 +101,11 @@ private fun BookingSummaryPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                status = BookingStatus.Paid,
+                attendanceStatus = BookingAttendanceStatus.Attended,
+                paymentStatus = PaymentStatus.PAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -116,10 +120,11 @@ private fun BookingSummaryDarkPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.Booked,
-                status = BookingStatus.PendingConfirmation,
+                attendanceStatus = BookingAttendanceStatus.Unattended,
+                paymentStatus = PaymentStatus.UNPAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -134,10 +139,11 @@ private fun BookingSummaryAttendanceUpdatingPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                status = BookingStatus.Paid,
+                attendanceStatus = BookingAttendanceStatus.Attended,
+                paymentStatus = PaymentStatus.PAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             ),
             modifier = Modifier.fillMaxWidth()

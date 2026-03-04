@@ -21,11 +21,8 @@ data class BookingAttendanceStatusFilterUiState(
 
     private fun availableAttendanceStatuses(): List<AttendanceStatus?> = listOf(
         AttendanceStatus.any,
-        AttendanceStatus.Booked,
-        AttendanceStatus.CheckedIn,
-        AttendanceStatus.NoShow,
-        // The Cancelled status will be added when the backend implementation is complete (WOOBO0K-574)
-        // AttendanceStatus.Cancelled,
+        AttendanceStatus.Attended,
+        AttendanceStatus.Unattended,
     )
 
     private fun isSelected(status: AttendanceStatus?): Boolean = if (status == AttendanceStatus.any) {
@@ -37,10 +34,8 @@ data class BookingAttendanceStatusFilterUiState(
 
 val AttendanceStatus?.titleRes: Int
     @StringRes get() = when (this) {
-        AttendanceStatus.Booked -> R.string.booking_attendance_status_booked
-        AttendanceStatus.CheckedIn -> R.string.booking_attendance_status_checked_in
-        AttendanceStatus.NoShow -> R.string.booking_attendance_status_no_show
-        AttendanceStatus.Cancelled -> R.string.booking_attendance_status_cancelled
+        AttendanceStatus.Attended -> R.string.booking_attendance_status_attended
+        AttendanceStatus.Unattended -> R.string.booking_attendance_status_unattended
         else -> R.string.bookings_filter_default
     }
 

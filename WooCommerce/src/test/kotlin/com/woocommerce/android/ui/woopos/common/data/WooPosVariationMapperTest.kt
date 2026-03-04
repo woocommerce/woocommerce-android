@@ -540,7 +540,8 @@ class WooPosVariationMapperTest : BaseUnitTest() {
         attributesJson: String = "[]",
         imageUrl: String = "",
         status: String = "publish",
-        price: String = "19.99"
+        price: String = "19.99",
+        type: String = "variation"
     ): WooPosVariationEntity {
         return WooPosVariationEntity(
             localSiteId = LocalOrRemoteId.LocalId(1),
@@ -551,22 +552,85 @@ class WooPosVariationMapperTest : BaseUnitTest() {
             imageUrl = imageUrl,
             attributesJson = attributesJson,
             status = status,
-            downloadable = false
+            downloadable = false,
+            type = type
         )
     }
 
     private fun createWooPosVariation(
-        attributes: List<WooPosVariation.WooPosVariationAttribute> = emptyList()
+        attributes: List<WooPosVariation.WooPosVariationAttribute> = emptyList(),
+        type: WooPosVariation.WooPosVariationType = WooPosVariation.WooPosVariationType.VARIATION
     ): WooPosVariation {
         return WooPosVariation(
             remoteVariationId = 456L,
             remoteProductId = 123L,
             globalUniqueId = "test-global-id",
+            type = type,
             price = BigDecimal("19.99"),
             image = null,
             attributes = attributes,
             isVisible = true,
             isDownloadable = false
         )
+    }
+
+    @Test
+    fun `given variation entity with variation type, when mapping, then type is VARIATION`() {
+        // GIVEN
+        val entity = createWooPosVariationEntity(type = "variation")
+
+        // WHEN
+        val result = sut.fromWooPosVariationEntity(entity)
+
+        // THEN
+        assertThat(result.type).isEqualTo(WooPosVariation.WooPosVariationType.VARIATION)
+    }
+
+    @Test
+    fun `given variation entity with subscription_variation type, when mapping, then type is SUBSCRIPTION_VARIATION`() {
+        // GIVEN
+        val entity = createWooPosVariationEntity(type = "subscription_variation")
+
+        // WHEN
+        val result = sut.fromWooPosVariationEntity(entity)
+
+        // THEN
+        assertThat(result.type).isEqualTo(WooPosVariation.WooPosVariationType.SUBSCRIPTION_VARIATION)
+    }
+
+    @Test
+    fun `given variation entity with unknown type, when mapping, then type is UNKNOWN`() {
+        // GIVEN
+        val entity = createWooPosVariationEntity(type = "some_unknown_type")
+
+        // WHEN
+        val result = sut.fromWooPosVariationEntity(entity)
+
+        // THEN
+        assertThat(result.type).isEqualTo(WooPosVariation.WooPosVariationType.UNKNOWN)
+    }
+
+    @Test
+    fun `given ProductVariation, when mapping, then type defaults to VARIATION`() {
+        // GIVEN
+        val productVariation = ProductTestUtils.generateProductVariation()
+
+        // WHEN
+        val result = sut.fromProductVariation(productVariation)
+
+        // THEN
+        assertThat(result.type).isEqualTo(WooPosVariation.WooPosVariationType.VARIATION)
+    }
+
+    @Test
+    fun `given WCProductVariationModel, when mapping, then type defaults to VARIATION`() {
+        // GIVEN
+        val wcModel = createWCProductVariationModel()
+
+        // WHEN
+        val result = sut.fromWCProductVariationModel(wcModel)
+
+        // THEN
+        assertThat(result.type).isEqualTo(WooPosVariation.WooPosVariationType.VARIATION)
     }
 }

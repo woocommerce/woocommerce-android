@@ -35,21 +35,25 @@ class JetpackActivationRepository @Inject constructor(
         SiteUtils.getSiteByMatchingUrl(siteStore, url)
     }
 
+    suspend fun registerSite(
+        site: SiteModel,
+        useApplicationPasswords: Boolean
+    ): Result<Long> {
+        WooLog.d(WooLog.T.LOGIN, "Registering Jetpack site using the API")
+        return jetpackStore.registerSite(site, useApplicationPasswords).let {
+            when {
+                it.isError -> Result.failure<Long>(OnChangedException(it.error))
+                it.data == null -> Result.failure<Long>(IllegalStateException("Blog ID missing"))
+                else -> Result.success(it.data!!)
+            }
+        }
+    }
+
     suspend fun connectJetpackAccount(
         site: SiteModel,
         jetpackConnectionStatus: JetpackConnectionStatus.AccountNotConnected,
         useApplicationPasswords: Boolean
     ): Result<Unit> {
-        suspend fun registerSite(): Result<Long> {
-            return jetpackStore.registerSite(site, useApplicationPasswords).let {
-                when {
-                    it.isError -> Result.failure<Long>(OnChangedException(it.error))
-                    it.data == null -> Result.failure<Long>(IllegalStateException("Blog ID missing"))
-                    else -> Result.success(it.data!!)
-                }
-            }
-        }
-
         suspend fun connectJetpackAccount(blogId: Long): Result<Unit> {
             return jetpackStore.connectJetpackAccount(site, blogId, useApplicationPasswords).let {
                 if (it.isError) {
@@ -64,7 +68,7 @@ class JetpackActivationRepository @Inject constructor(
 
         val blogId: Long = when (jetpackConnectionStatus.siteRegistrationStatus) {
             JetpackSiteRegistrationStatus.NOT_REGISTERED -> {
-                registerSite().getOrElse {
+                registerSite(site, useApplicationPasswords).getOrElse {
                     WooLog.w(WooLog.T.LOGIN, "Jetpack registration failed: ${it.message}")
                     return Result.failure(it)
                 }

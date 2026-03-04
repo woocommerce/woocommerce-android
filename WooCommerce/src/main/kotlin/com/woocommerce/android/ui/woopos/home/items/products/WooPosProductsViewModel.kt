@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.util.isNetworkError
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import javax.inject.Inject
 
 @HiltViewModel
@@ -357,9 +356,7 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun isNetworkError(error: Any?): Boolean {
         return when (error) {
-            is WooException ->
-                error.error.type == WooErrorType.TIMEOUT ||
-                    error.error.type == WooErrorType.NO_CONNECTION
+            is Throwable -> error.isNetworkError()
             is PosLocalCatalogSyncResult.Failure.NetworkError -> true
             else -> false
         }

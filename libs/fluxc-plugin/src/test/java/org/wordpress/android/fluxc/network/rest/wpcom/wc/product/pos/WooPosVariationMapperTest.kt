@@ -199,4 +199,52 @@ class WooPosVariationMapperTest {
         assertThat(model.manageStock).isFalse()
         assertThat(model.downloadable).isFalse()
     }
+
+    @Test
+    fun `given API response with variation type, when mapper called, then type is mapped correctly`() {
+        // Given
+        val response = WooPosVariationApiResponse(
+            id = 123L,
+            productId = 456L,
+            type = "variation"
+        )
+
+        // When
+        val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
+
+        // Then
+        assertThat(model.type).isEqualTo("variation")
+    }
+
+    @Test
+    fun `given API response with subscription_variation type, when mapper called, then type is mapped correctly`() {
+        // Given
+        val response = WooPosVariationApiResponse(
+            id = 123L,
+            productId = 456L,
+            type = "subscription_variation"
+        )
+
+        // When
+        val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
+
+        // Then
+        assertThat(model.type).isEqualTo("subscription_variation")
+    }
+
+    @Test
+    fun `given API response with empty type, when mapper called, then type is empty string`() {
+        // Given
+        val response = WooPosVariationApiResponse(
+            id = 123L,
+            productId = 456L,
+            type = ""
+        )
+
+        // When
+        val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
+
+        // Then
+        assertThat(model.type).isEmpty()
+    }
 }

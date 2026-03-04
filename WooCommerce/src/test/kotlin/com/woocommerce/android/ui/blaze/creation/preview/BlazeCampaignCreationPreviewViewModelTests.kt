@@ -421,10 +421,10 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         assertThat(state.dialogState!!.message).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_image_dialog_text)
         )
-        assertThat(state.dialogState!!.positiveButton!!.text).isEqualTo(
+        assertThat(state.dialogState.positiveButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_image_dialog_positive_button)
         )
-        assertThat(state.dialogState!!.negativeButton!!.text).isEqualTo(
+        assertThat(state.dialogState.negativeButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.cancel)
         )
     }
@@ -463,10 +463,10 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         assertThat(state.dialogState!!.message).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_content_dialog_text)
         )
-        assertThat(state.dialogState!!.positiveButton!!.text).isEqualTo(
+        assertThat(state.dialogState.positiveButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_content_dialog_positive_button)
         )
-        assertThat(state.dialogState!!.negativeButton!!.text).isEqualTo(
+        assertThat(state.dialogState.negativeButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.cancel)
         )
     }
@@ -515,10 +515,10 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         assertThat(state.dialogState!!.message).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_objective_dialog_text)
         )
-        assertThat(state.dialogState!!.positiveButton!!.text).isEqualTo(
+        assertThat(state.dialogState.positiveButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.blaze_campaign_preview_missing_objective_dialog_positive_button)
         )
-        assertThat(state.dialogState!!.negativeButton!!.text).isEqualTo(
+        assertThat(state.dialogState.negativeButton!!.text).isEqualTo(
             UiString.UiStringRes(R.string.cancel)
         )
     }

@@ -56,12 +56,14 @@ class MagicLinkInterceptViewModel @Inject constructor(
         _isLoading.value = false
         when (requestResult) {
             RequestResult.SUCCESS -> {
-                if (flow == MagicLinkFlow.JetpackConnection &&
-                    selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
-                ) {
-                    handleJetpackConnectionFlow()
-                } else {
-                    triggerEvent(OpenSitePicker)
+                when {
+                    flow == MagicLinkFlow.JetpackConnection &&
+                        selectedSite.connectionType == SiteConnectionType.ApplicationPasswords -> {
+                        handleJetpackConnectionFlow()
+                    }
+                    else -> {
+                        triggerEvent(OpenSitePicker)
+                    }
                 }
             }
 

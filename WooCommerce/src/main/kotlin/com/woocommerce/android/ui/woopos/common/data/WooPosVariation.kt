@@ -10,12 +10,24 @@ data class WooPosVariation(
     val remoteVariationId: Long,
     val remoteProductId: Long,
     val globalUniqueId: String,
+    val type: WooPosVariationType,
     val price: BigDecimal?,
     val image: WooPosVariationImage?,
     val attributes: List<WooPosVariationAttribute>,
     val isVisible: Boolean,
     val isDownloadable: Boolean
 ) {
+
+    enum class WooPosVariationType(val value: String) {
+        VARIATION("variation"),
+        SUBSCRIPTION_VARIATION("subscription_variation"),
+        UNKNOWN("unknown");
+
+        companion object {
+            fun fromValue(value: String): WooPosVariationType =
+                entries.firstOrNull { it.value == value } ?: UNKNOWN
+        }
+    }
 
     data class WooPosVariationImage(
         val source: String

@@ -142,27 +142,6 @@ class OrderShipmentTrackingDaoTest {
     }
 
     @Test
-    fun `when all shipment trackings are deleted for site, then they are removed from database`() = runTest {
-        // given
-        val trackings = List(3) { id ->
-            generateShipmentTracking(
-                siteId = defaultSiteId.value,
-                orderId = defaultOrderId,
-                remoteTrackingId = "track$id",
-                trackingNumber = "12345$id"
-            )
-        }
-        trackings.forEach { orderShipmentTrackingDao.upsertShipmentTracking(it) }
-
-        // when
-        orderShipmentTrackingDao.deleteShipmentTrackingsForSite(defaultSiteId)
-        val retrievedTrackings = orderShipmentTrackingDao.getShipmentTrackings(defaultSiteId, RemoteId(defaultOrderId))
-
-        // then
-        assertThat(retrievedTrackings).isEmpty()
-    }
-
-    @Test
     fun `when shipment trackings are retrieved, then they are ordered by date shipped DESC`() = runTest {
         // given
         val tracking1 = generateShipmentTracking(

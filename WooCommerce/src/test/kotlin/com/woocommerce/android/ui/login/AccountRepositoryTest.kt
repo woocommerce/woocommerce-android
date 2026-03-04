@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.login
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +35,7 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val posDataStore: DataStore<Preferences> = mock()
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
             emitChange(AccountStore.OnAccountChanged())
@@ -50,7 +54,8 @@ class AccountRepositoryTest : BaseUnitTest() {
         appCoroutineScope = appCoroutineScope,
         siteVisibilityDataStore = visibleWooSitesDataStore,
         dispatchers = coroutinesTestRule.testDispatchers,
-        pushNotificationRepository = pushNotificationRepository
+        pushNotificationRepository = pushNotificationRepository,
+        posDataStore = posDataStore
     )
 
     @Test
@@ -79,4 +84,15 @@ class AccountRepositoryTest : BaseUnitTest() {
 
             assertThat(sitesDeleted).containsExactlyElementsOf(sites)
         }
+
+    @Test
+    fun `given signed in using app password, when logout is called, then unregister only Woo tokens`() = testBlocking {
+        given(accountStore.hasAccessToken()).willReturn(false)
+        given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+        given(selectedSite.get()).willReturn(SiteModel())
+
+        repository.logout()
+
+        verify(pushNotificationRepository).unregisterWooCoreTokensFromServer()
+    }
 }

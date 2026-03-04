@@ -233,7 +233,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.onCouponEditResult(couponRemoveResult)
 
         // then
-        latestOrderDraft!!.couponLines.apply { assertTrue(isEmpty()) }
+        latestOrderDraft.couponLines.apply { assertTrue(isEmpty()) }
     }
 
     @Test

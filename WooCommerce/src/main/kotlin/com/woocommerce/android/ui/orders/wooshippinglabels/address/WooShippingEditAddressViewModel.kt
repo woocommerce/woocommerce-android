@@ -35,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -63,7 +64,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private var postalCode by mutableStateOf(InputValue(value = "", isRequired = true))
     private var email by mutableStateOf(InputValue(value = "", isRequired = true))
     private var country = MutableStateFlow(Location.EMPTY)
-    private var phone by mutableStateOf(InputValue(value = "", isRequired = shouldRequirePhone()))
+    private var phone by mutableStateOf(InputValue(value = "", isRequired = true))
 
     private var rawState by mutableStateOf("")
     private val selectedState = MutableStateFlow(Location.EMPTY)
@@ -145,20 +146,27 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val emailValidatedFlow = snapshotFlow { email }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
             if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+                inputValue.copy(error = addressValidator.validateEmail(inputValue.value))
             } else {
                 inputValue
             }
         }
 
     private val phoneValidatedFlow = snapshotFlow { phone }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+        .combine(country) { phoneValue, countryValue -> Pair(phoneValue, countryValue) }
+        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { (inputValue, countryValue) ->
+            val validatedPhone = if (inputValue.isRequired && inputValue.error == null) {
+                val error = if (countryValue.code == US_COUNTRY_CODE) {
+                    addressValidator.validateUSCustomsPhone(inputValue.value)
+                } else {
+                    addressValidator.validatePhoneNumber(inputValue.value)
+                }
+                inputValue.copy(error = error)
             } else {
                 inputValue
             }
-        }
+            Pair(validatedPhone, countryValue)
+        }.map { it.first }
 
     private val isCompanyExpanded = MutableStateFlow(false)
 
@@ -265,7 +273,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
         country.mapLatest { country ->
             getStatesByCountryCode(country.code)
         }.collectLatest { states ->
-            phone = phone.copy(isRequired = shouldRequirePhone())
             statesState.value = LocationState.Loaded(states)
             val stateCode = if (country.value.code == currentAddress.value.country.code) {
                 currentAddress.value.state.codeOrRaw
@@ -290,8 +297,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
             }
         }
     }
-
-    private fun shouldRequirePhone() = navArgs.flow is EditAddressFlow.EditOriginAddress || country.value.code != "US"
 
     fun handleBackPress(): Boolean {
         if (allowBackNavigation()) {
@@ -716,6 +721,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_TIME_MILLIS = 500L
+        private const val US_COUNTRY_CODE = "US"
     }
 }
 

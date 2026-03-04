@@ -45,6 +45,7 @@ fun WooPosVariationApiResponse.mapToPosVariationModel(
         localSiteId = localSiteId,
         remoteProductId = LocalOrRemoteId.RemoteId(this.productId),
         remoteVariationId = LocalOrRemoteId.RemoteId(this.id),
+        type = this.type,
         dateModified = this.dateModified,
         sku = this.sku,
         globalUniqueId = this.globalUniqueId,

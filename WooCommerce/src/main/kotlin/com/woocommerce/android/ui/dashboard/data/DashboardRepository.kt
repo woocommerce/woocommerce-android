@@ -28,6 +28,7 @@ class DashboardRepository @Inject constructor(
     private val dashboardDataStore: DashboardDataStore,
     observeSiteOrdersState: ObserveSiteOrdersState,
     observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
+    observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus,
     observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus,
     observeStockWidgetStatus: ObserveStockWidgetStatus,
     observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus
@@ -53,6 +54,8 @@ class DashboardRepository @Inject constructor(
 
     private val blazeWidgetStatus = widgetStatusFlow { observeBlazeWidgetStatus() }
 
+    private val pushNotificationsWidgetStatus = widgetStatusFlow { observePushNotificationsWidgetStatus() }
+
     private val onboardingWidgetStatus = widgetStatusFlow { observeOnboardingWidgetStatus() }
 
     private val stockWidgetStatus = widgetStatusFlow { observeStockWidgetStatus() }
@@ -63,13 +66,16 @@ class DashboardRepository @Inject constructor(
         dashboardDataStore.widgets,
         siteOrdersState,
         blazeWidgetStatus,
+        pushNotificationsWidgetStatus,
         onboardingWidgetStatus,
         stockWidgetStatus,
         googleAdsWidgetStatus
-    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus, stockWidgetStatus, googleAdsWidgetStatus ->
+    ) { widgets, siteOrdersState, blazeWidgetStatus, pushNotificationsWidgetStatus, onboardingWidgetStatus,
+        stockWidgetStatus, googleAdsWidgetStatus ->
         widgets.toDomainModel(
             siteOrdersState,
             blazeWidgetStatus,
+            pushNotificationsWidgetStatus,
             onboardingWidgetStatus,
             stockWidgetStatus,
             googleAdsWidgetStatus
@@ -115,6 +121,7 @@ class DashboardRepository @Inject constructor(
     private fun List<DashboardWidgetDataModel>.toDomainModel(
         siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
+        pushNotificationsWidgetStatus: DashboardWidget.Status,
         onboardingWidgetStatus: DashboardWidget.Status,
         stockWidgetStatus: DashboardWidget.Status,
         googleAdsWidgetStatus: DashboardWidget.Status
@@ -130,6 +137,7 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.POPULAR_PRODUCTS -> siteOrdersState
 
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
+                    DashboardWidget.Type.PUSH_NOTIFICATIONS -> pushNotificationsWidgetStatus
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                     DashboardWidget.Type.STOCK -> stockWidgetStatus
                     DashboardWidget.Type.GOOGLE_ADS -> googleAdsWidgetStatus
