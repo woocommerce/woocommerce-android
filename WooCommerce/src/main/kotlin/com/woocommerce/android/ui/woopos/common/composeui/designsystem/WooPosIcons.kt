@@ -73,8 +73,8 @@ object WooPosIcons {
     val BookingsEmpty: ImageVector
         @Composable
         get() = bookingsEmpty(
-            bodyColor = WooPosTheme.colors.outlineVariant,
-            detailColor = WooPosTheme.colors.onSurfaceVariantLowest,
+            bodyColor = MaterialTheme.colorScheme.secondary,
+            detailColor = MaterialTheme.colorScheme.primary,
         )
 
     val CardReaderNotConnected: ImageVector
