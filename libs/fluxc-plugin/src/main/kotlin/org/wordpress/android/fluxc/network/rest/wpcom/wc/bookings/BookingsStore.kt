@@ -128,10 +128,12 @@ class BookingsStore @Inject internal constructor(
                     if (orderResult?.isError == true) {
                         return@withDefaultContext WooResult(orderResult.error)
                     }
+                    val existingBooking = bookingsDao.getBooking(site.localId(), bookingId)
                     val entity = with(bookingDtoMapper) {
                         bookingDto.toEntity(
                             localSiteId = site.localId(),
                             orderEntity = orderResult?.model,
+                            existingLocation = existingBooking?.location,
                         )
                     }
                     bookingsDao.upsert(listOf(entity))
@@ -194,13 +196,26 @@ class BookingsStore @Inject internal constructor(
 
     suspend fun fetchProductBookingLocation(
         site: SiteModel,
-        productId: Long
+        productId: Long,
+        bookingId: Long? = null
     ): WooResult<String?> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBookingLocation") {
+            if (bookingId != null) {
+                val existing = bookingsDao.getBooking(site.localId(), bookingId)
+                if (!existing?.location.isNullOrBlank()) {
+                    return@withDefaultContext WooResult(existing.location)
+                }
+            }
             val response = bookingsRestClient.fetchProductBookingLocation(site, productId)
             when {
                 response.isError -> WooResult(response.error)
-                response.result != null -> WooResult(response.result.bookingLocation)
+                response.result != null -> {
+                    val location = response.result.bookingLocation
+                    if (bookingId != null) {
+                        bookingsDao.updateLocation(site.localId(), bookingId, location)
+                    }
+                    WooResult(location)
+                }
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

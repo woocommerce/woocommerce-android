@@ -38,6 +38,7 @@ data class BookingEntity(
     val customerNote: String?,
     @ColumnInfo(defaultValue = "") val attendanceStatus: AttendanceStatus,
     @ColumnInfo(defaultValue = "") val note: String = "",
+    @ColumnInfo val location: String? = null,
     @Embedded("order_") val order: BookingOrderInfo
 ) {
     sealed interface Status {
