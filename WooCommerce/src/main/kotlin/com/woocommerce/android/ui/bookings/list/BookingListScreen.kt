@@ -79,7 +79,6 @@ fun BookingListScreen(viewModel: BookingListViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingListScreen(state: BookingListViewState) {
     state.sortBottomSheetState?.let { BookingSortBottomSheet(it) }
@@ -135,7 +134,6 @@ fun BookingListScreen(state: BookingListViewState) {
                         isRefreshing = state.contentState.loadingState ==
                             BookingListLoadingState.Refreshing,
                         onRefresh = state.contentState.onRefresh,
-                        state = rememberPullToRefreshState(),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         EmptyView(
