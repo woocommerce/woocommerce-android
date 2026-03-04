@@ -194,7 +194,12 @@ private fun CardPaymentPreparingReader(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                Box(
+                    modifier = Modifier.size(256.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                }
                 Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
                 WooPosText(
                     text = state.title,
