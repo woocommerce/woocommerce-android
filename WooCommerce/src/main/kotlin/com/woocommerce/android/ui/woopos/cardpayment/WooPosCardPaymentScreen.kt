@@ -9,14 +9,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -188,7 +194,12 @@ private fun CardPaymentPreparingReader(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                Box(
+                    modifier = Modifier.size(256.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                }
                 Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
                 WooPosText(
                     text = state.title,
@@ -202,6 +213,9 @@ private fun CardPaymentPreparingReader(
                     fontWeight = FontWeight.Bold
                 )
             }
+        },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
         },
         buttons = {
             if (showCashPaymentButton) {
@@ -252,6 +266,9 @@ private fun CardPaymentReadyForPayment(
                 )
             }
         },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
+        },
         buttons = {
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
@@ -298,6 +315,9 @@ private fun CardPaymentReaderDisconnected(
                     style = WooPosTypography.BodyLarge,
                 )
             }
+        },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
         },
         buttons = {
             WooPosButton(
@@ -400,6 +420,7 @@ private fun CardPaymentFailed(
                 )
             }
         },
+        summary = null,
         buttons = {
             if (state.actionButtonLabel != null) {
                 WooPosButton(
@@ -426,8 +447,9 @@ private fun CardPaymentFailed(
 private fun CardPaymentCenteredLayout(
     modifier: Modifier = Modifier,
     onBackClicked: (() -> Unit)? = null,
-    content: @Composable () -> Unit,
-    buttons: @Composable ColumnScope.() -> Unit,
+    content: @Composable (() -> Unit),
+    summary: @Composable (() -> Unit)?,
+    buttons: @Composable (() -> Unit),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -439,22 +461,107 @@ private fun CardPaymentCenteredLayout(
                 onBackClicked = onBackClicked,
             )
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = WooPosSpacing.XXXLarge.value),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center,
+
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .defaultMinSize(minHeight = maxHeight)
+                    .padding(vertical = WooPosSpacing.XXXLarge.value),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 content()
+                if (summary != null) {
+                    summary()
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    buttons()
+                }
             }
-            buttons()
         }
     }
 }
+
+@Composable
+private fun CardPaymentOrderSummary(
+    totals: WooPosOrderTotalsViewState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(0.4f)
+            .padding(WooPosSpacing.Large.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_subtotal_label),
+            value = totals.subtotal,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        totals.discount?.let {
+            OrderSummaryRow(
+                label = stringResource(R.string.woopos_payment_discount_label),
+                value = it,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        }
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_tax_label),
+            value = totals.taxes,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_total_label),
+            value = totals.total,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun OrderSummaryRow(
+    label: String,
+    value: String,
+    style: WooPosTypography = WooPosTypography.BodyLarge,
+    fontWeight: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        WooPosText(
+            text = label,
+            style = style,
+            fontWeight = fontWeight,
+        )
+        WooPosText(
+            text = value,
+            style = style,
+            fontWeight = fontWeight,
+        )
+    }
+}
+
+private fun previewOrderTotals() = WooPosOrderTotalsViewState(
+    subtotal = "$10.00",
+    discount = "-$2.00",
+    taxes = "$1.50",
+    total = "$9.50",
+)
 
 @WooPosPreview
 @Composable
@@ -480,6 +587,7 @@ fun CardPaymentPreparingReaderPreview() {
             state = WooPosCardPaymentState.Collecting.Preparing(
                 title = "Preparing reader",
                 subtitle = "$12.50",
+                orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
             onRetryClicked = {},
@@ -499,6 +607,7 @@ fun CardPaymentReadyForPaymentPreview() {
             state = WooPosCardPaymentState.Collecting.ReadyForPayment(
                 title = "Ready for payment",
                 subtitle = "Tap, insert, or swipe to pay $12.50",
+                orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
             onRetryClicked = {},
@@ -519,6 +628,7 @@ fun CardPaymentReaderDisconnectedPreview() {
                 title = "Reader disconnected",
                 subtitle = "Please reconnect your card reader",
                 actionButtonLabel = "Connect reader",
+                orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
             onRetryClicked = {},
