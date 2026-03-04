@@ -56,7 +56,8 @@ sealed class WooPosOrdersState {
                 val customerEmail: String?,
                 val status: PosOrderStatus,
 
-                val lineItems: List<LineItemRow>,
+                val lineItems: List<LineItemRow>? = null,
+                val refundedLineItems: List<LineItemRow>? = null,
                 val breakdown: TotalsBreakdown,
                 val total: String,
                 val totalPaid: String,

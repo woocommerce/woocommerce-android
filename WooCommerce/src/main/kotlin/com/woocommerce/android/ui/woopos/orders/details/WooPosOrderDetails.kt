@@ -91,7 +91,9 @@ fun WooPosOrderDetails(
 
         Spacer(Modifier.height(WooPosSpacing.Large.value))
 
-        OrdersProducts(lineItems = details.lineItems)
+        ProductsSection(lineItems = details.lineItems)
+
+        RefundedProductsSection(refundedLineItems = details.refundedLineItems)
 
         Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
@@ -161,11 +163,50 @@ private fun OrdersHeader(details: WooPosOrdersState.OrderDetailsViewState.Comput
 }
 
 @Composable
-private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>) {
+private fun ProductsSection(
+    lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>?
+) {
+    when {
+        lineItems == null -> ProductsShimmer(
+            title = stringResource(R.string.woopos_orders_details_products_title)
+        )
+        lineItems.isNotEmpty() -> OrdersProducts(
+            title = stringResource(R.string.woopos_orders_details_products_title),
+            lineItems = lineItems
+        )
+    }
+}
+
+@Composable
+private fun RefundedProductsSection(
+    refundedLineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>?
+) {
+    when {
+        refundedLineItems == null -> {
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+            ProductsShimmer(
+                title = stringResource(R.string.woopos_orders_details_refunded_products_title)
+            )
+        }
+        refundedLineItems.isNotEmpty() -> {
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+            OrdersProducts(
+                title = stringResource(R.string.woopos_orders_details_refunded_products_title),
+                lineItems = refundedLineItems
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrdersProducts(
+    title: String,
+    lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>
+) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
-                text = stringResource(R.string.woopos_orders_details_products_title),
+                text = title,
                 style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -176,6 +217,55 @@ private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewSta
                 OrderProductItem(row = item)
 
                 if (ind < lineItems.size - 1) {
+                    DividerWithSpacing()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductsShimmer(title: String) {
+    WooPosCard(shadowType = ShadowType.Soft) {
+        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+            WooPosText(
+                text = title,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+
+            repeat(2) { index ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = WooPosSpacing.Small.value),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    WooPosShimmerBox(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    )
+                    Spacer(Modifier.width(WooPosSpacing.Medium.value))
+                    Column(modifier = Modifier.weight(1f)) {
+                        WooPosShimmerBox(
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f)
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                        )
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                        WooPosShimmerBox(
+                            modifier = Modifier
+                                .fillMaxWidth(0.3f)
+                                .height(14.dp)
+                                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                        )
+                    }
+                }
+                if (index < 1) {
                     DividerWithSpacing()
                 }
             }
@@ -506,6 +596,16 @@ fun WooPosOrderDetailsPreview() {
                 bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
                     "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
                 )
+            )
+        ),
+        refundedLineItems = listOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 101,
+                name = "Cup",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $4.00",
+                lineTotal = "-$4.00",
+                imageUrl = null
             )
         ),
         breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(

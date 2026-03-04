@@ -3885,6 +3885,7 @@
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
+    <string name="woopos_orders_details_refunded_products_title">Refunded Products</string>
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
