@@ -223,7 +223,6 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
             "variable" to WooPosProductModel.WooPosProductType.Variable,
             "grouped" to WooPosProductModel.WooPosProductType.Grouped,
             "external" to WooPosProductModel.WooPosProductType.External,
-            "variation" to WooPosProductModel.WooPosProductType.Variation(parentProductName = ""),
             "subscription" to WooPosProductModel.WooPosProductType.Subscription,
             "variable-subscription" to WooPosProductModel.WooPosProductType.VariableSubscription,
             "bundle" to WooPosProductModel.WooPosProductType.Bundle,

@@ -293,7 +293,7 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
             "variable" -> WooPosProductModel.WooPosProductType.Variable
             "grouped" -> WooPosProductModel.WooPosProductType.Grouped
             "external" -> WooPosProductModel.WooPosProductType.External
-            "variation" -> WooPosProductModel.WooPosProductType.Variation(parentProductName = "")
+            "variation" -> error("Variations must be mapped via fromVariationEntity()")
             "subscription" -> WooPosProductModel.WooPosProductType.Subscription
             "variable-subscription" -> WooPosProductModel.WooPosProductType.VariableSubscription
             "bundle" -> WooPosProductModel.WooPosProductType.Bundle
