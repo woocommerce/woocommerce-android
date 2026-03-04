@@ -269,10 +269,10 @@ private fun WooPosBookingsContent(
                     else -> {
                         WooPosEmptyScreen(
                             modifier = Modifier.fillMaxSize(),
-                            icon = WooPosIcons.OrdersEmpty,
+                            icon = WooPosIcons.BookingsEmpty,
                             title = stringResource(R.string.woopos_bookings_no_booking_selected),
                             message = "",
-                            contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                            contentDescription = stringResource(R.string.woopos_bookings_empty_image_description)
                         )
                     }
                 }
@@ -415,10 +415,10 @@ private fun WooPosBookingsList(
             WooPosEmptyScreen(
                 modifier = modifier
                     .imePadding()
-                    .padding(horizontal = WooPosSpacing.XLarge.value),
+                    .padding(horizontal = WooPosSpacing.XXLarge.value),
                 title = items.title,
                 message = items.message,
-                contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description)
+                contentDescription = stringResource(id = R.string.woopos_bookings_empty_image_description)
             )
         }
     }
@@ -615,8 +615,8 @@ private fun WooPosBookingsError(
 private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     WooPosPaginationErrorIndicator(
         icon = null,
-        message = stringResource(id = R.string.woopos_orders_pagination_error_title),
-        description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
+        message = stringResource(id = R.string.woopos_bookings_pagination_error_title),
+        description = stringResource(id = R.string.woopos_bookings_pagination_error_description),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_pagination_try_again_label),
             click = onPaginationErrorTryAgain
@@ -697,8 +697,8 @@ fun WooPosBookingsNothingFoundStatePreview() {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Content(
                 items = WooPosBookingsState.Content.Items.NothingFound(
-                    title = stringResource(R.string.woopos_search_orders_empty_title),
-                    message = stringResource(R.string.woopos_search_orders_empty_description)
+                    title = stringResource(R.string.woopos_bookings_no_bookings_for_date),
+                    message = stringResource(R.string.woopos_bookings_no_bookings_for_date_message)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 dateSelectorState = DateSelectorState(
