@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -73,9 +74,29 @@ fun BookingAppointmentDetails(
                 }
             }
             AppointmentDetailsRow(
-                label = R.string.booking_appointment_label_location,
-                value = model.location
-            )
+                label = R.string.booking_appointment_label_location
+            ) {
+                when (model.location) {
+                    is BookingLocationStatus.Loaded, is BookingLocationStatus.Unavailable -> {
+                        Text(
+                            text = (model.location as? BookingLocationStatus.Loaded)?.location?.orNullIfEmpty() ?: "-",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    BookingLocationStatus.Loading -> {
+                        SkeletonView(
+                            width = 80.dp,
+                            height = with(LocalDensity.current) {
+                                MaterialTheme.typography.bodyMedium.fontSize.toDp()
+                            },
+                        )
+                    }
+                }
+            }
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_duration,
                 value = model.duration,
@@ -166,7 +187,7 @@ data class BookingAppointmentDetailsModel(
     val date: String,
     val time: String,
     val staff: BookingStaffMemberStatus?,
-    val location: String,
+    val location: BookingLocationStatus,
     val duration: String,
     val cancelButtonVisible: Boolean,
     val cancelStatus: CancelStatus,
@@ -179,6 +200,12 @@ data class BookingAppointmentDetailsModel(
     val attendanceButtonVisible: Boolean = isAttendanceStatusEditable
     val attendanceButtonEnabled: Boolean = attendanceUpdateStatus != AttendanceUpdateStatus.InProgress
     val attendanceInProgressShown: Boolean = attendanceUpdateStatus == AttendanceUpdateStatus.InProgress
+}
+
+sealed interface BookingLocationStatus {
+    data object Loading : BookingLocationStatus
+    data class Loaded(val location: String) : BookingLocationStatus
+    data object Unavailable : BookingLocationStatus
 }
 
 sealed interface BookingStaffMemberStatus {
@@ -196,7 +223,7 @@ private fun BookingAppointmentDetailsPreview() {
                 date = "05/07/2025, 11:00 AM",
                 time = "11:00 am - 12:00 pm",
                 staff = BookingStaffMemberStatus.Loading,
-                location = "238 Willow Creek Drive, Montgomery AL 36109",
+                location = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109"),
                 duration = "60 min",
                 cancelButtonVisible = true,
                 cancelStatus = CancelStatus.Idle,
@@ -219,7 +246,7 @@ private fun BookingAppointmentDetailsCancelHiddenPreview() {
                 date = "05/07/2025, 11:00 AM",
                 time = "11:00 am - 12:00 pm",
                 staff = BookingStaffMemberStatus.Loading,
-                location = "238 Willow Creek Drive, Montgomery AL 36109",
+                location = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109"),
                 duration = "60 min",
                 cancelButtonVisible = false,
                 cancelStatus = CancelStatus.Idle,
