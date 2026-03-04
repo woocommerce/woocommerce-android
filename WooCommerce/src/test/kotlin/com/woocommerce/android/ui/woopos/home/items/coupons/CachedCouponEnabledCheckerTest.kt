@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.coupons
 
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,32 +36,6 @@ class CachedCouponEnabledCheckerTest {
     }
 
     @Test
-    fun `returns true when coupons are enabled in site settings`() = runTest {
-        // GIVEN
-        val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = true)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
-
-        // WHEN
-        val result = cachedCouponEnabledChecker.isEnabled()
-
-        // THEN
-        assertThat(result).isTrue()
-    }
-
-    @Test
-    fun `returns false when coupons are disabled in site settings`() = runTest {
-        // GIVEN
-        val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = false)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
-
-        // WHEN
-        val result = cachedCouponEnabledChecker.isEnabled()
-
-        // THEN
-        assertThat(result).isFalse()
-    }
-
-    @Test
     fun `returns false when site settings are null`() = runTest {
         // GIVEN
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
@@ -89,5 +64,48 @@ class CachedCouponEnabledCheckerTest {
         // THEN
         assertThat(firstResult).isTrue()
         assertThat(secondResult).isTrue() // Still true from cache, not false from new mock
+    }
+
+    @Test
+    fun `given CIAB site, when checking coupons availability, then returns true`() = runTest {
+        // GIVEN
+        val ciabSiteModel = SiteModel().apply {
+            id = 123
+            setIsGardenSite(true)
+            gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+        }
+        whenever(selectedSite.get()).thenReturn(ciabSiteModel)
+
+        // WHEN
+        val result = cachedCouponEnabledChecker.isEnabled()
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given non-CIAB site, when coupons disabled in settings, then returns false`() = runTest {
+        // GIVEN
+        val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = false)
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+
+        // WHEN
+        val result = cachedCouponEnabledChecker.isEnabled()
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given non-CIAB site, when coupons enabled in settings, then returns true`() = runTest {
+        // GIVEN
+        val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = true)
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+
+        // WHEN
+        val result = cachedCouponEnabledChecker.isEnabled()
+
+        // THEN
+        assertThat(result).isTrue()
     }
 }
