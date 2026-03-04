@@ -451,7 +451,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     name = this.name,
                     price = priceFormat(this.pricing.displayPrice),
                     imageUrl = this.firstImageUrl,
-                    productId = this.parentId ?: 0L,
+                    productId = requireNotNull(this.parentId),
                     parentProductName = type.parentProductName,
                 )
             }
