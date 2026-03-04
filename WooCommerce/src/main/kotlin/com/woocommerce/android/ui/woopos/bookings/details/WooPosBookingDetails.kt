@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.woopos.bookings.WooPosAttendanceBadge
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsUIEvent
 import com.woocommerce.android.ui.woopos.bookings.WooPosCancelledBadge
+import com.woocommerce.android.ui.woopos.bookings.WooPosGuestBadge
 import com.woocommerce.android.ui.woopos.bookings.WooPosPaymentStatusBadge
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -277,12 +278,20 @@ private fun BookingCustomerCard(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     WooPosCard(shadowType = ShadowType.Soft) {
-        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
-            WooPosText(
-                text = stringResource(R.string.woopos_bookings_details_customer_title),
-                style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
+        Column(Modifier.fillMaxWidth().padding(WooPosSpacing.Medium.value)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_bookings_details_customer_title),
+                    style = WooPosTypography.BodyXLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (customerSection.isGuest) {
+                    WooPosGuestBadge()
+                }
+            }
 
             customerSection.email?.let { email ->
                 Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -600,6 +609,7 @@ fun WooPosBookingDetailsPreview() {
             phone = "+1 742582943798",
             billingAddress = "238 Willow Creek Drive, Montgomery, AL 36109",
             note = "Prefers eco-friendly products, shorter length cuts",
+            isGuest = false,
         ),
         attendanceSection = WooPosBookingsState.AttendanceSection(
             selection = WooPosBookingsState.AttendanceState.UNATTENDED,

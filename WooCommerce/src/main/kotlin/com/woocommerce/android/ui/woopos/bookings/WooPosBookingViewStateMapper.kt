@@ -70,9 +70,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
             customerName?.let { append(" \u00B7 $it") }
         }
 
-        val paymentStatus = paymentStatusResolver.resolve(
-            orderId = booking.orderId,
-        )
+        val paymentStatus = paymentStatusResolver.resolve(orderId = booking.orderId)
+        val actionsState = buildActionsState(booking, paymentStatus)
 
         return WooPosBookingsState.BookingDetailsViewState(
             id = booking.id.value,
@@ -80,24 +79,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             number = "#${booking.id.value}",
             paymentStatus = paymentStatus,
             isCancelled = booking.status == BookingEntity.Status.Cancelled,
-            actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                buildList {
-                    add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
-                    val paymentState = resolvePaymentState(booking.status, paymentStatus)
-                    if (paymentState == PaymentState.Paid) {
-                        add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-                        add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
-                    }
-                    if (booking.isCancellable) {
-                        add(
-                            WooPosBookingsState.BookingAction.CancelBooking(
-                                bookingId = booking.id.value,
-                                orderId = booking.orderId
-                            )
-                        )
-                    }
-                }
-            ),
+            actionsState = actionsState,
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,
             attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
@@ -109,10 +91,39 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 .toHumanReadableFormat(resourceProvider),
             teamMember = resourceName,
             location = location?.ifBlank { null },
-            customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
+            customerSection = buildCustomerSection(
+                customerInfo,
+                customerName,
+                booking.customerNote,
+                booking.customerId
+            ),
             attendanceSection = buildAttendanceSection(booking),
             paymentSection = buildPaymentSection(booking, paymentStatus),
             bookingNote = booking.note.ifBlank { null },
+        )
+    }
+
+    private fun buildActionsState(
+        booking: BookingEntity,
+        paymentStatus: PaymentStatus,
+    ): WooPosBookingsState.BookingActionsState.Loaded {
+        return WooPosBookingsState.BookingActionsState.Loaded(
+            buildList {
+                add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
+                val paymentState = resolvePaymentState(booking.status, paymentStatus)
+                if (paymentState == PaymentState.Paid) {
+                    add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                    add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
+                }
+                if (booking.isCancellable) {
+                    add(
+                        WooPosBookingsState.BookingAction.CancelBooking(
+                            bookingId = booking.id.value,
+                            orderId = booking.orderId
+                        )
+                    )
+                }
+            }
         )
     }
 
@@ -182,14 +193,16 @@ class WooPosBookingViewStateMapper @Inject constructor(
         customerInfo: BookingCustomerInfo?,
         customerName: String?,
         customerNote: String?,
+        customerId: Long,
     ): WooPosBookingsState.CustomerSection? {
+        val isGuest = customerId == 0L
         val email = customerInfo?.billingEmail?.ifBlank { null }
         val phone = customerInfo?.billingPhone?.ifBlank { null }
         val billingAddress = buildBillingAddress(customerInfo)
         val note = customerNote?.ifBlank { null }
 
         val hasContent = customerName != null || email != null || phone != null ||
-            billingAddress != null || note != null
+            billingAddress != null || note != null || isGuest
         if (!hasContent) return null
 
         return WooPosBookingsState.CustomerSection(
@@ -198,6 +211,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             phone = phone,
             billingAddress = billingAddress,
             note = note,
+            isGuest = isGuest,
         )
     }
 
