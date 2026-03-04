@@ -2314,6 +2314,7 @@
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_whats_new_icon_description">New feature icon image</string>
+    <string name="feature_announcement_dismiss">Not Now</string>
     <string name="settings_app_theme_title">Appearance</string>
     <string name="settings_app_theme_option_light">Light</string>
     <string name="settings_app_theme_option_dark">Dark</string>
