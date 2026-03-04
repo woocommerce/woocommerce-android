@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.whatsnew
 
 import android.content.Context
+import androidx.core.os.ConfigurationCompat
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
@@ -16,7 +17,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewResponse.Announcement
-import androidx.core.os.ConfigurationCompat
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
