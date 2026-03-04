@@ -174,14 +174,18 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given products to remove, when syncFtsForIncrementalSync, then deletes FTS entries`() =
+    fun `given products to remove, when syncFtsForIncrementalSync, then deletes products and their variations from FTS`() =
         testBlocking {
+            // GIVEN
             whenever(isFtsEnabled()).thenReturn(true)
             val productsToRemove = listOf(RemoteId(5), RemoteId(10))
 
+            // WHEN
             sut.syncFtsForIncrementalSync("1", emptyList(), emptyList(), productsToRemove)
 
+            // THEN
             verify(ftsDao).deleteProducts("1", listOf("5", "10"))
+            verify(ftsDao).deleteVariationsByParentProductIds("1", listOf("5", "10"))
             verify(ftsDao, never()).insertAll(any())
         }
 
@@ -232,6 +236,88 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         verify(ftsDao, never()).countAllForSite(any())
         verify(ftsDao, never()).insertAll(any())
     }
+
+    @Test
+    fun `given variation with missing parent, when syncFtsForFullSync, then skips variation and logs warning`() =
+        testBlocking {
+            // GIVEN
+            whenever(isFtsEnabled()).thenReturn(true)
+            val products = listOf(createProduct(1, "Product A", "SKU-A", ""))
+            val variations = listOf(
+                createVariation(10, 1, "VAR-SKU-1", "", "[]"),
+                createVariation(20, 999, "VAR-SKU-2", "", "[]")
+            )
+
+            // WHEN
+            sut.syncFtsForFullSync("1", products, variations)
+
+            // THEN
+            verify(logger).w("Skipping variation 20: parent product 999 not found")
+            verify(ftsDao).insertAll(
+                listOf(
+                    WooPosSearchableFtsEntity(
+                        localSiteId = "1",
+                        itemId = "1",
+                        parentProductId = "",
+                        name = "Product A",
+                        sku = "SKU-A",
+                        barcode = "",
+                        attributeValues = ""
+                    ),
+                    WooPosSearchableFtsEntity(
+                        localSiteId = "1",
+                        itemId = "10",
+                        parentProductId = "1",
+                        name = "Product A",
+                        sku = "VAR-SKU-1",
+                        barcode = "",
+                        attributeValues = ""
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given variation with missing parent, when syncFtsForIncrementalSync, then skips variation and logs warning`() =
+        testBlocking {
+            // GIVEN
+            whenever(isFtsEnabled()).thenReturn(true)
+            val products = listOf(createProduct(1, "Product A", "SKU-A", ""))
+            val variations = listOf(
+                createVariation(10, 1, "VAR-SKU-1", "", "[]"),
+                createVariation(20, 999, "VAR-SKU-2", "", "[]")
+            )
+            whenever(productsDao.getProductsByIds(LocalId(1), listOf(RemoteId(999))))
+                .thenReturn(emptyList())
+
+            // WHEN
+            sut.syncFtsForIncrementalSync("1", products, variations, emptyList())
+
+            // THEN
+            verify(logger).w("Skipping variation 20: parent product 999 not found")
+            verify(ftsDao).insertAll(
+                listOf(
+                    WooPosSearchableFtsEntity(
+                        localSiteId = "1",
+                        itemId = "1",
+                        parentProductId = "",
+                        name = "Product A",
+                        sku = "SKU-A",
+                        barcode = "",
+                        attributeValues = ""
+                    ),
+                    WooPosSearchableFtsEntity(
+                        localSiteId = "1",
+                        itemId = "10",
+                        parentProductId = "1",
+                        name = "Product A",
+                        sku = "VAR-SKU-1",
+                        barcode = "",
+                        attributeValues = ""
+                    )
+                )
+            )
+        }
 
     @Test
     fun `given variation with empty attributes, when building FTS entity, then attributeValues is empty`() =

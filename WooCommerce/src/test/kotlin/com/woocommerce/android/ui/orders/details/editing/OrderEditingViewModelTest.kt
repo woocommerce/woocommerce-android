@@ -136,7 +136,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         testBlocking {
             val originalOrder = testOrder.copy(
                 customer = testOrder.customer!!.copy(
-                    billingAddress = testOrder.customer!!.billingAddress.copy(email = "original@email.com")
+                    billingAddress = testOrder.customer.billingAddress.copy(email = "original@email.com")
                 )
             )
 

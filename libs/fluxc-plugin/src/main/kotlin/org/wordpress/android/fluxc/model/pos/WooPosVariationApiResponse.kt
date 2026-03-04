@@ -59,7 +59,10 @@ data class WooPosVariationApiResponse(
     val downloadable: Boolean = false,
 
     @SerializedName("name")
-    val name: String = ""
+    val name: String = "",
+
+    @SerializedName("type")
+    val type: String = ""
 ) {
     data class VariationImage(
         @SerializedName("id")

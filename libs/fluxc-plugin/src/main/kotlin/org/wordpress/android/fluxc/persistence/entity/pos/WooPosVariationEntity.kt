@@ -15,6 +15,7 @@ data class WooPosVariationEntity(
     val localSiteId: LocalId = LocalId(0),
     val remoteProductId: RemoteId = RemoteId(0),
     val remoteVariationId: RemoteId = RemoteId(0),
+    val type: String = "",
     val dateModified: String = "",
     val sku: String = "",
     val globalUniqueId: String = "",

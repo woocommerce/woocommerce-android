@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -84,6 +86,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val getWooVisibleSites: GetWooVisibleSites = mock {
         onBlocking { invoke() } doReturn defaultExpectedSiteList
     }
+    private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -96,11 +100,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,
             appPrefsWrapper = appPrefsWrapper,
+            unifiedLoginTracker = unifiedLoginTracker,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             userEligibilityFetcher = userEligibilityFetcher,
-            unifiedLoginTracker = unifiedLoginTracker,
             experimentTracker = experimentTracker,
-            getWooVisibleSites = getWooVisibleSites
+            getWooVisibleSites = getWooVisibleSites,
+            visibleWooSitesDataStore = visibleWooSitesDataStore,
+            registerDevice = registerDevice
         )
     }
 
@@ -377,10 +383,26 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
+        verify(visibleWooSitesDataStore, times(0)).updateSiteVisibilityStatus(any())
         val sites = items?.filterIsInstance<WooSiteUiModel>()
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
+
+    @Test
+    fun `given user is logging in from hidden site address, when auto login starts, then site visibility is restored`() =
+        testBlocking {
+            val hiddenSite = defaultExpectedSiteList[1]
+            givenThatUserLoggedInFromEnteringSiteAddress(hiddenSite)
+            givenThatSiteVerificationIsCompleted()
+            whenever(getWooVisibleSites()).thenReturn(
+                defaultExpectedSiteList.filter { it.siteId != hiddenSite.siteId }
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            verify(visibleWooSitesDataStore, atLeastOnce()).updateSiteVisibilityStatus(mapOf(hiddenSite.siteId to true))
+        }
 
     @Test
     fun `given login with wp email, when only a single woo store is available, then site should be auto selected`() =

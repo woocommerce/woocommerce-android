@@ -93,14 +93,12 @@ object NotificationTestUtils {
     )
 
     fun generateTestNotification(
-        noteId: Int = 0,
         remoteNoteId: Long,
         remoteSiteId: Long,
         uniqueId: Long,
         channelType: NotificationChannelType,
         noteType: WooNotificationType
     ) = Notification(
-        noteId = noteId,
         uniqueId = uniqueId,
         remoteNoteId = remoteNoteId,
         remoteSiteId = remoteSiteId,

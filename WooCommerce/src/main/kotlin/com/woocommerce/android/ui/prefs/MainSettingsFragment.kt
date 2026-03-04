@@ -200,12 +200,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         presenter.setupAnnouncementOption()
+        presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
 
-        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
-            binding.optionDomain.isVisible ||
-            binding.optionStoreName.isVisible
+        binding.optionEnablePushNotifications.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToWooPushNotificationsIntroductionDialog()
+            )
+        }
+
+        updateStoreSettingsContainerVisibility()
 
         binding.optionStoreName.setOnClickListener {
             findNavController()
@@ -314,5 +320,17 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 dialog.dismiss()
             }
             .show()
+    }
+
+    override fun setEnablePushNotificationsOptionVisible(isVisible: Boolean) {
+        binding.optionEnablePushNotifications.isVisible = isVisible
+        updateStoreSettingsContainerVisibility()
+    }
+
+    private fun updateStoreSettingsContainerVisibility() {
+        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
+            binding.optionDomain.isVisible ||
+            binding.optionStoreName.isVisible ||
+            binding.optionEnablePushNotifications.isVisible
     }
 }

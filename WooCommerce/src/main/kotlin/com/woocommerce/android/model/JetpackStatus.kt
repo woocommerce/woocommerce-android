@@ -10,6 +10,13 @@ data class JetpackStatus(
 ) : Parcelable {
     val isCurrentUserConnected: Boolean
         get() = jetpackConnectionStatus is JetpackConnectionStatus.AccountConnected
+
+    val isSiteConnected: Boolean
+        get() = when (jetpackConnectionStatus) {
+            is JetpackConnectionStatus.AccountConnected -> true
+            is JetpackConnectionStatus.AccountNotConnected ->
+                jetpackConnectionStatus.siteRegistrationStatus == JetpackSiteRegistrationStatus.REGISTERED
+        }
 }
 
 sealed interface JetpackConnectionStatus : Parcelable {

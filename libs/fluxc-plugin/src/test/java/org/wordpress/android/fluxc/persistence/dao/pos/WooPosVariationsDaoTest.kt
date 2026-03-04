@@ -441,6 +441,108 @@ class WooPosVariationsDaoTest {
         assertEquals(true, storedVariation.downloadable)
     }
 
+    @Test
+    fun `given variations with different types, when observing, then only variation type is returned`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val variations = listOf(
+            generatePosVariation(productId = productId, variationId = 1001L, type = "variation"),
+            generatePosVariation(productId = productId, variationId = 1002L, type = "subscription_variation"),
+            generatePosVariation(productId = productId, variationId = 1003L, type = "variation")
+        )
+        sut.upsertVariations(variations)
+
+        // WHEN
+        val results = sut.observeVariationsForProduct(1, productId).first()
+
+        // THEN
+        assertEquals(2, results.size)
+        assertTrue(results.all { it.type == "variation" })
+        assertTrue(results.any { it.remoteVariationId.value == 1001L })
+        assertTrue(results.any { it.remoteVariationId.value == 1003L })
+        assertTrue(results.none { it.remoteVariationId.value == 1002L })
+    }
+
+    @Test
+    fun `given subscription_variation type, when getting by id, then null is returned`() = runTest {
+        // GIVEN
+        val variation = generatePosVariation(
+            productId = 100L,
+            variationId = 1001L,
+            type = "subscription_variation"
+        )
+        sut.upsertVariation(variation)
+
+        // WHEN
+        val result = sut.getVariation(
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
+        )
+
+        // THEN
+        assertNull(result)
+    }
+
+    @Test
+    fun `given variation type, when getting by id, then variation is returned`() = runTest {
+        // GIVEN
+        val variation = generatePosVariation(
+            productId = 100L,
+            variationId = 1001L,
+            type = "variation"
+        )
+        sut.upsertVariation(variation)
+
+        // WHEN
+        val result = sut.getVariation(
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
+        )
+
+        // THEN
+        assertNotNull(result)
+        assertEquals("variation", result.type)
+    }
+
+    @Test
+    fun `given subscription_variation type, when finding by identifier, then null is returned`() = runTest {
+        // GIVEN
+        val variation = generatePosVariation(
+            productId = 100L,
+            variationId = 1001L,
+            globalUniqueId = "test-identifier",
+            type = "subscription_variation"
+        )
+        sut.upsertVariation(variation)
+
+        // WHEN
+        val result = sut.findVariationByIdentifier(LocalId(1), "test-identifier")
+
+        // THEN
+        assertNull(result)
+    }
+
+    @Test
+    fun `given variation type, when finding by identifier, then variation is returned`() = runTest {
+        // GIVEN
+        val variation = generatePosVariation(
+            productId = 100L,
+            variationId = 1001L,
+            globalUniqueId = "test-identifier",
+            type = "variation"
+        )
+        sut.upsertVariation(variation)
+
+        // WHEN
+        val result = sut.findVariationByIdentifier(LocalId(1), "test-identifier")
+
+        // THEN
+        assertNotNull(result)
+        assertEquals("variation", result.type)
+    }
+
     private fun generatePosVariation(
         siteId: Int = 1,
         productId: Long = 1L,
@@ -461,7 +563,8 @@ class WooPosVariationsDaoTest {
         imageUrl: String = "",
         status: String = "publish",
         lastUpdated: String = "2024-01-01T10:00:00Z",
-        downloadable: Boolean = false
+        downloadable: Boolean = false,
+        type: String = "variation"
     ) = WooPosVariationEntity(
         localSiteId = LocalId(siteId),
         remoteProductId = RemoteId(productId),
@@ -482,6 +585,7 @@ class WooPosVariationsDaoTest {
         imageUrl = imageUrl,
         status = status,
         lastUpdated = lastUpdated,
-        downloadable = downloadable
+        downloadable = downloadable,
+        type = type
     )
 }

@@ -30,6 +30,16 @@ abstract class WooPosSearchableFtsDao {
     )
     abstract suspend fun deleteVariations(localSiteId: String, variationIds: List<String>)
 
+    @Query(
+        "DELETE FROM PosSearchableFts " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND parentProductId IN (:parentProductIds)"
+    )
+    abstract suspend fun deleteVariationsByParentProductIds(
+        localSiteId: String,
+        parentProductIds: List<String>
+    )
+
     /**
      * Search products and variations with simple ranking.
      *

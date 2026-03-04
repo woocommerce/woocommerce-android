@@ -6,6 +6,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.PaymentStatus
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateFormatter
@@ -51,11 +53,11 @@ class BookingListViewModelTest : BaseUnitTest() {
                 filters = any(),
                 sortBy = any()
             )
-        } doReturn Result.success(Unit)
-        onBlocking { loadMore() } doReturn Result.success(Unit)
+        } doReturn Result.success(0)
+        onBlocking { loadMore() } doReturn Result.success(0)
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
-    private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val filtersBuilder = BookingListDateFilterBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val dateFormatter = mock<DateFormatter>()
 
     private val currencyFormatter = mock<CurrencyFormatter>()
@@ -67,6 +69,9 @@ class BookingListViewModelTest : BaseUnitTest() {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val paymentStatusResolver: PaymentStatusResolver = mock {
+        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
+    }
 
     private lateinit var viewModel: BookingListViewModel
     private lateinit var savedStateHandle: SavedStateHandle
@@ -84,9 +89,10 @@ class BookingListViewModelTest : BaseUnitTest() {
             bookingFilterRepository = bookingFilterRepository,
             savedStateHandle = savedStateHandle,
             bookingListHandler = bookingListHandler,
-            filtersBuilder = filtersBuilder,
+            dateFilterBuilder = filtersBuilder,
             bookingMapper = bookingMapper,
             isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+            paymentStatusResolver = paymentStatusResolver,
         )
     }
 
@@ -243,7 +249,13 @@ class BookingListViewModelTest : BaseUnitTest() {
             searchQuery = eq(null),
             filters = eq(
                 BookingFilters().copy(
-                    dateRange = with(filtersBuilder) { BookingListTab.Upcoming.asDateRangeFilter() }
+                    dateRange = filtersBuilder.prepareDateFilter(
+                        BookingListTab.Upcoming,
+                        BookingsFilterOption.DateRange.DEFAULT
+                    ),
+                    excludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses(
+                        setOf(BookingEntity.Status.Cancelled, BookingEntity.Status.Complete)
+                    )
                 )
             ),
             sortBy = any()
@@ -461,7 +473,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended,
             order = BookingOrderInfo(),
             customerNote = ""
         )

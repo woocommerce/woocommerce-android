@@ -115,7 +115,7 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
      */
     fun setOnCheckedChangeListener(onCheckedChangeListener: ((CompoundButton, Boolean) -> Unit)?) {
         listener = onCheckedChangeListener?.let {
-            OnCheckedChangeListener { buttonView, isChecked -> onCheckedChangeListener(buttonView!!, isChecked) }
+            OnCheckedChangeListener { buttonView, isChecked -> onCheckedChangeListener(buttonView, isChecked) }
         }
     }
 

@@ -130,6 +130,7 @@ class WooPosCartViewModelTest {
                 remoteVariationId = productVariation.remoteVariationId,
                 remoteProductId = productVariation.remoteProductId,
                 globalUniqueId = productVariation.globalUniqueId,
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = productVariation.price,
                 image = productVariation.image?.let { WooPosVariation.WooPosVariationImage(it.source) },
                 attributes = productVariation.attributes.map {

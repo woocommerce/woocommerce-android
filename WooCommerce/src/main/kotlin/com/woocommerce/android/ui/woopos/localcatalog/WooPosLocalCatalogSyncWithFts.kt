@@ -78,6 +78,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         if (productsToRemove.isNotEmpty()) {
             val productIdsToRemove = productsToRemove.map { it.value.toString() }
             ftsDao.deleteProducts(siteIdString, productIdsToRemove)
+            ftsDao.deleteVariationsByParentProductIds(siteIdString, productIdsToRemove)
         }
 
         if (variations.isNotEmpty()) {
@@ -145,8 +146,15 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
             parentProducts.forEach { productNamesMap[it.remoteId.value] = it.name }
         }
 
-        val variationFtsEntities = variations.map { variation ->
-            val parentName = productNamesMap[variation.remoteProductId.value] ?: ""
+        val variationFtsEntities = variations.mapNotNull { variation ->
+            val parentName = productNamesMap[variation.remoteProductId.value]
+            if (parentName == null) {
+                logger.w(
+                    "Skipping variation ${variation.remoteVariationId.value}: " +
+                        "parent product ${variation.remoteProductId.value} not found"
+                )
+                return@mapNotNull null
+            }
             variation.toFtsEntity(siteIdString, parentName)
         }
 
@@ -164,8 +172,15 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
         val productNamesMap = products.associate { it.remoteId.value to it.name }
 
-        val variationFtsEntities = variations.map { variation ->
-            val parentName = productNamesMap[variation.remoteProductId.value] ?: ""
+        val variationFtsEntities = variations.mapNotNull { variation ->
+            val parentName = productNamesMap[variation.remoteProductId.value]
+            if (parentName == null) {
+                logger.w(
+                    "Skipping variation ${variation.remoteVariationId.value}: " +
+                        "parent product ${variation.remoteProductId.value} not found"
+                )
+                return@mapNotNull null
+            }
             variation.toFtsEntity(siteIdString, parentName)
         }
 
