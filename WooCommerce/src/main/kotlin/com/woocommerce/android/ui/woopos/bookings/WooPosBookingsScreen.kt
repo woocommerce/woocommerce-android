@@ -203,7 +203,8 @@ private fun WooPosBookingsScreen(
                         orderId = dialogState.orderId,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
+                        refundReasonUpdate = refundReasonUpdate,
+                        disablePartialRefund = true
                     )
                 }
                 WooPosBookingsState.Content.DialogState.Hidden -> Unit
@@ -536,7 +537,7 @@ private fun WooPosBookingListItem(
                     if (item.isCancelled) {
                         WooPosCancelledBadge()
                     }
-                    WooPosAttendanceBadge(item.attendanceBadge)
+                    item.attendanceBadge?.let { WooPosAttendanceBadge(it) }
                     WooPosPaymentStatusBadge(item.paymentStatus)
                 }
             }
@@ -647,7 +648,7 @@ fun WooPosBookingsScreenPreview() {
         isSelected = false,
         paymentStatus = PaymentStatus.UNPAID,
         isCancelled = true,
-        attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
+        attendanceBadge = null,
         teamMember = WooPosBookingsState.BookingItemViewState.TeamMember(
             initials = "JS",
             avatarUrl = null,
@@ -752,7 +753,7 @@ private fun sampleBookingDetails(
         billingAddress = null,
         note = null,
     ),
-    attendanceSection = WooPosBookingsState.AttendanceSection(
+    attendanceSection = WooPosBookingsState.AttendanceSection.Visible(
         selection = WooPosBookingsState.AttendanceState.ATTENDED,
     ),
     paymentSection = WooPosBookingsState.PaymentSection(

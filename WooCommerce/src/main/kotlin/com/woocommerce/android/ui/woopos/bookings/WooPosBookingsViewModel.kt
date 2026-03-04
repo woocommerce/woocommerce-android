@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -66,6 +67,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
+    private var attendanceUpdateJob: Job? = null
     private val locationCache = mutableMapOf<Long, String?>()
 
     private val _state = MutableStateFlow<WooPosBookingsState>(
@@ -104,8 +106,7 @@ class WooPosBookingsViewModel @Inject constructor(
                             message = error.message ?: "Failed to load bookings"
                         )
                     }
-                    current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Loading -> {
+                    current is WooPosBookingsState.Content -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.Error(
                                 title = resourceProvider.getString(
@@ -125,8 +126,7 @@ class WooPosBookingsViewModel @Inject constructor(
                     current is WooPosBookingsState.Loading -> {
                         _state.value = buildNothingFoundState()
                     }
-                    current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Loading -> {
+                    current is WooPosBookingsState.Content -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(
@@ -148,7 +148,7 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     private fun observeBookings() {
         viewModelScope.launch {
             combine(
@@ -162,9 +162,10 @@ class WooPosBookingsViewModel @Inject constructor(
                     return@collectLatest
                 }
 
-                if (bookings.isEmpty() && current is WooPosBookingsState.Content &&
-                    current.items is WooPosBookingsState.Content.Items.Loading
-                ) {
+                if (bookings.isEmpty() && current is WooPosBookingsState.Content && fetchJob?.isActive == true) {
+                    _state.value = current.copy(
+                        items = WooPosBookingsState.Content.Items.Loading,
+                    )
                     return@collectLatest
                 }
 
@@ -190,8 +191,6 @@ class WooPosBookingsViewModel @Inject constructor(
                 if (selectedBookingId == null) {
                     selectedBookingId = bookings.first().id.value
                 }
-
-                fetchBookingLocations(bookings)
 
                 val items = bookings.associate { booking ->
                     val resource = resourcesMap[booking.resourceId]
@@ -227,6 +226,14 @@ class WooPosBookingsViewModel @Inject constructor(
                     dialogState = currentContentState?.dialogState
                         ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
+
+                val hasMissingLocations = bookings.any {
+                    it.productId != 0L && it.productId !in locationCache
+                }
+                if (hasMissingLocations) {
+                    fetchBookingLocations(bookings)
+                    rebuildStateWithLocations(bookings, resourcesMap)
+                }
             }
         }
     }
@@ -424,7 +431,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleAttendanceToggle(attended: Boolean) {
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val details = currentState.selectedDetails ?: return
-        val attendanceSection = details.attendanceSection ?: return
+        val attendanceSection = details.attendanceSection as? WooPosBookingsState.AttendanceSection.Visible ?: return
 
         val newAttendanceState = if (attended) {
             WooPosBookingsState.AttendanceState.ATTENDED
@@ -444,7 +451,8 @@ class WooPosBookingsViewModel @Inject constructor(
             items = updateItemsWithDetails(currentState.items, updatedDetails),
         )
 
-        viewModelScope.launch {
+        attendanceUpdateJob?.cancel()
+        attendanceUpdateJob = viewModelScope.launch {
             val entityStatus = if (attended) {
                 BookingEntity.AttendanceStatus.Attended
             } else {
@@ -460,8 +468,10 @@ class WooPosBookingsViewModel @Inject constructor(
                 val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
                 val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
                 if (rollbackDetails.id != details.id) return@onFailure
+                val rollbackAttendance = rollbackDetails.attendanceSection
+                    as? WooPosBookingsState.AttendanceSection.Visible ?: return@onFailure
                 val reverted = rollbackDetails.copy(
-                    attendanceSection = rollbackDetails.attendanceSection?.copy(selection = previousSelection),
+                    attendanceSection = rollbackAttendance.copy(selection = previousSelection),
                     attendanceBadge = previousBadge,
                 )
                 _state.value = rollbackState.copy(
@@ -502,7 +512,20 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onPaymentCompleted() {
+        hideCollectPaymentButton()
         selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
+    }
+
+    private fun hideCollectPaymentButton() {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val selectedDetails = currentState.selectedDetails ?: return
+        _state.value = currentState.copy(
+            selectedDetails = selectedDetails.copy(
+                paymentSection = selectedDetails.paymentSection.copy(
+                    collectPaymentLabel = null
+                )
+            )
+        )
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
@@ -633,13 +656,37 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    private suspend fun rebuildStateWithLocations(
+        bookings: List<BookingEntity>,
+        resourcesMap: Map<Long, BookingResourceEntity>
+    ) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+
+        val items = bookings.associate { booking ->
+            val resource = resourcesMap[booking.resourceId]
+            mapper.mapToItemViewState(booking, selectedBookingId, resource) to
+                mapper.mapToDetailsViewState(
+                    booking,
+                    resource?.name,
+                    locationCache[booking.productId]
+                )
+        }
+
+        val selectedDetails = selectedBookingId?.let { id ->
+            items.entries.find { it.key.id == id }?.value
+        }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(items),
+            selectedDetails = selectedDetails,
+        )
+    }
+
     private fun handleDateChange(newDate: LocalDate) {
         selectedDate = newDate
         selectedBookingId = null
-        locationCache.clear()
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
-                items = WooPosBookingsState.Content.Items.Loading,
                 dateSelectorState = buildDateSelectorState(),
                 selectedDetails = null,
                 pullToRefreshState = WooPosPullToRefreshState.Disabled

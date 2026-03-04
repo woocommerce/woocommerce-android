@@ -2642,8 +2642,10 @@
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
-    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_connect">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_setup">Set up push notifications</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Please wait while we set up push notifications for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
@@ -3797,7 +3799,6 @@
     <string name="woopos_variations_empty_list_image_description">No variations</string>
     <string name="woopos_variations_any_variation">Any %s</string>
 
-    <string name="woopos_totals_toolbar_title">Payment</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
     <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Connect to reader</string>
@@ -3815,7 +3816,6 @@
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
     <string name="woo_pos_payment_failed_go_back">Go back</string>
 
-    <string name="woopos_card_payment_toolbar_title">Payment</string>
     <string name="woopos_card_payment_done_button">Done</string>
 
     <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>

@@ -46,7 +46,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             isSelected = booking.id.value == selectedBookingId,
             paymentStatus = paymentStatus,
             isCancelled = booking.status == BookingEntity.Status.Cancelled,
-            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            attendanceBadge = mapAttendanceBadgeOrNull(booking),
             teamMember = resource?.let { mapTeamMember(it) },
         )
     }
@@ -100,7 +100,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             ),
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,
-            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            attendanceBadge = mapAttendanceBadgeOrNull(booking),
             bookingName = bookingName,
             appointmentDate = detailsDateFormatter.format(booking.start),
             appointmentTime = appointmentTime,
@@ -126,14 +126,14 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     private fun buildAttendanceSection(
         booking: BookingEntity
-    ): WooPosBookingsState.AttendanceSection? {
-        if (!booking.isAttendanceStatusEditable) return null
+    ): WooPosBookingsState.AttendanceSection {
+        if (!booking.isAttendanceStatusEditable) return WooPosBookingsState.AttendanceSection.Hidden
         val selection = when (booking.attendanceStatus) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            else -> null
+            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
-        return WooPosBookingsState.AttendanceSection(selection = selection)
+        return WooPosBookingsState.AttendanceSection.Visible(selection = selection)
     }
 
     private enum class PaymentState { Paid, Refunded, Unpaid }
@@ -216,6 +216,13 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     private fun formatTimeRange(booking: BookingEntity): String {
         return timeRangeFormatter.format(booking.start, booking.end)
+    }
+
+    private fun mapAttendanceBadgeOrNull(
+        booking: BookingEntity
+    ): WooPosBookingsState.AttendanceState? {
+        if (booking.status == BookingEntity.Status.Cancelled) return null
+        return mapAttendanceBadge(booking.attendanceStatus)
     }
 
     private fun mapAttendanceBadge(

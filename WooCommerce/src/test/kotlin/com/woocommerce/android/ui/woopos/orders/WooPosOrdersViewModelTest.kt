@@ -36,6 +36,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
@@ -63,7 +64,9 @@ class WooPosOrdersViewModelTest {
     private lateinit var orderActionsProvider: WooPosOrderActionsProvider
     private lateinit var orderStatusMapper: WooPosOrderStatusMapper
 
-    private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
+    private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id).copy(
+        datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z")
+    )
 
     private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
         orders.associateWith { RefundsFetchResult.Success(emptyList()) }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.tab
 
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.isCIABSite
+import com.woocommerce.android.extensions.onFirst
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -11,7 +12,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
@@ -52,7 +50,6 @@ class ObserveBookingsVisibility @Inject constructor(
                     .combine(bookingsCountFlow()) { productCount, bookingCount ->
                         productCount > 0 || bookingCount > 0
                     }
-                    .onStart { fetchBookableInfo() }
                     .distinctUntilChanged()
             )
         }
@@ -65,30 +62,33 @@ class ObserveBookingsVisibility @Inject constructor(
                 ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
             ),
             excludeSampleProducts = true
-        )
+        ).onFirst { count ->
+            if (count == 0L) {
+                appCoroutineScope.launch {
+                    productListRepository.fetchProductList(
+                        productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)
+                    ).onFailure {
+                        WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
+                    }
+                }
+            }
+        }
     }
 
     private fun bookingsCountFlow(): Flow<Long> {
         return bookingsRepository.observeBookingsCount()
-    }
-
-    private fun fetchBookableInfo() = appCoroutineScope.launch {
-        val products = async {
-            productListRepository.fetchProductList(
-                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)
-            ).onFailure {
-                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
+            .onFirst { count ->
+                if (count == 0L) {
+                    appCoroutineScope.launch {
+                        bookingsRepository.fetchBookings(
+                            page = 1,
+                            perPage = 25,
+                            order = BookingsOrderOption.DESC
+                        ).onFailure {
+                            WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookings")
+                        }
+                    }
+                }
             }
-        }
-        val bookings = async {
-            bookingsRepository.fetchBookings(
-                page = 1,
-                perPage = 25,
-                order = BookingsOrderOption.DESC
-            ).onFailure {
-                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookings")
-            }
-        }
-        joinAll(products, bookings)
     }
 }

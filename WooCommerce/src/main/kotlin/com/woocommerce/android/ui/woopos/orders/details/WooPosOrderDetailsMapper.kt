@@ -48,7 +48,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             lineItems = lineItems,
             breakdown = breakdown,
             total = formatPrice(order.total, order.currency),
-            totalPaid = formatPrice(order.total, order.currency),
+            totalPaid = if (order.isOrderPaid) {
+                formatPrice(order.total, order.currency)
+            } else {
+                formatPrice(BigDecimal.ZERO, order.currency)
+            },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
             actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions)
         )
@@ -73,7 +77,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             lineItems = lineItems,
             breakdown = breakdown,
             total = formatPrice(order.total),
-            totalPaid = formatPrice(order.total),
+            totalPaid = if (order.isOrderPaid) {
+                formatPrice(order.total)
+            } else {
+                formatPrice(BigDecimal.ZERO)
+            },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
             actionsState = WooPosOrdersState.OrderActionsState.Loading
         )

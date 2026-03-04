@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.notifications.push.PushNotificationRepository
@@ -33,6 +35,7 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val posDataStore: DataStore<Preferences> = mock()
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
             emitChange(AccountStore.OnAccountChanged())
@@ -51,7 +54,8 @@ class AccountRepositoryTest : BaseUnitTest() {
         appCoroutineScope = appCoroutineScope,
         siteVisibilityDataStore = visibleWooSitesDataStore,
         dispatchers = coroutinesTestRule.testDispatchers,
-        pushNotificationRepository = pushNotificationRepository
+        pushNotificationRepository = pushNotificationRepository,
+        posDataStore = posDataStore
     )
 
     @Test

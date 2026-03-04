@@ -50,6 +50,22 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val siteAddress = getSiteAddress()
     private val navArgs by savedStateHandle.navArgs<WooPushNotificationsConnectionStepsFragmentArgs>()
 
+    private val visibleStepTypes = StepType.entries.filter {
+        it != StepType.ConnectStore || !navArgs.isSiteConnectedToJetpack
+    }
+
+    private val titleRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_title_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_title_connect
+    }
+
+    private val bodyRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_body_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_body_connect
+    }
+
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = Step(type = StepType.CheckPluginCompatibility),
@@ -58,9 +74,11 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     val viewState = combine(
         currentStep,
-        flowOf(StepType.entries.toList())
+        flowOf(visibleStepTypes)
     ) { currentStep, stepTypes ->
         ViewState(
+            titleRes = titleRes,
+            bodyRes = bodyRes,
             siteAddress = siteAddress,
             steps = stepTypes.map { stepType ->
                 Step(
@@ -127,12 +145,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private suspend fun connectStoreToJetpack() {
-        if (navArgs.isSiteConnectedToJetpack) {
-            markCurrentStepAsCompleted()
-            advanceToNextStep()
-            return
-        }
-
         jetpackActivationRepository.registerSite(
             site = selectedSite.get(),
             useApplicationPasswords = true
@@ -174,7 +186,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     @Suppress("unused")
     private fun advanceToNextStep() {
         currentStep.update { current ->
-            val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
+            val currentIndex = visibleStepTypes.indexOf(current.type)
+            val nextType = visibleStepTypes.getOrNull(currentIndex + 1)
             if (nextType != null) {
                 Step(type = nextType, state = StepState.Ongoing)
             } else {
@@ -258,6 +271,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     data class ViewState(
+        @StringRes val titleRes: Int,
+        @StringRes val bodyRes: Int,
         val siteAddress: String,
         val steps: List<Step>
     ) {
