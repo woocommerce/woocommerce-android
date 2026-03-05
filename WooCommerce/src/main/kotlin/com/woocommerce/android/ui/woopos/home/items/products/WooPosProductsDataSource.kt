@@ -624,7 +624,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
                 SearchProductsResult.Local(
                     products = localProducts,
                     searchTimeMillis = 0L,
-                    searchMethod = "like",
+                    searchMethod = "cache",
                 )
             )
         }
