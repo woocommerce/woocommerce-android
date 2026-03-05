@@ -60,15 +60,12 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
             if (response.isFailure) {
                 if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
-                    val error = response.exceptionOrNull()
-                    logger.e(
-                        "WooPosFileBasedSyncAction: File-based sync failed " +
-                            "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
-                    )
-                    return WooPosFileBasedSyncResult.Failure(
-                        PosLocalCatalogSyncResult.Failure.NetworkError(
-                            error?.message ?: "API error during catalog sync"
-                        )
+                    val totalPollAttempts = accumulatedPollAttempts + attemptIndex + 1
+                    return handleConsecutiveFailures(
+                        siteId,
+                        totalPollAttempts,
+                        lastGenerationState,
+                        response.exceptionOrNull()
                     )
                 } else {
                     logger.w("Poll attempt $attemptIndex failed: ${response.exceptionOrNull()?.message}")
@@ -82,8 +79,19 @@ class WooPosFileBasedSyncAction @Inject constructor(
             logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptIndex, state: ${result.state}")
 
             val totalPollAttempts = accumulatedPollAttempts + attemptIndex + 1
-            val processedResult = processPollingResult(result, site, startTime, totalPollAttempts)
+            val processedResult = processPollingResult(
+                result,
+                site,
+                startTime,
+                totalPollAttempts
+            )
             if (processedResult != null) {
+                if (processedResult is WooPosFileBasedSyncResult.Failure) {
+                    preferencesRepository.setFileBasedSyncPollAttempts(siteId, totalPollAttempts)
+                    return WooPosFileBasedSyncResult.Failure(
+                        processedResult.result.withTrackingData(totalPollAttempts, lastGenerationState.rawValue)
+                    )
+                }
                 return processedResult
             }
         }
@@ -92,6 +100,26 @@ class WooPosFileBasedSyncAction @Inject constructor(
             siteId = siteId,
             totalPollAttempts = accumulatedPollAttempts + MAX_POLL_ATTEMPTS,
             lastGenerationState = lastGenerationState
+        )
+    }
+
+    private suspend fun handleConsecutiveFailures(
+        siteId: LocalOrRemoteId.LocalId,
+        totalPollAttempts: Int,
+        lastGenerationState: WooPosGenerateCatalogState?,
+        error: Throwable?
+    ): WooPosFileBasedSyncResult.Failure {
+        preferencesRepository.setFileBasedSyncPollAttempts(siteId, totalPollAttempts)
+        logger.e(
+            "WooPosFileBasedSyncAction: File-based sync failed " +
+                "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
+        )
+        return WooPosFileBasedSyncResult.Failure(
+            PosLocalCatalogSyncResult.Failure.NetworkError(
+                error = error?.message ?: "API error during catalog sync",
+                pollAttempts = totalPollAttempts,
+                lastGenerationState = lastGenerationState?.rawValue
+            )
         )
     }
 
@@ -130,7 +158,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                     logger.e("WooPosFileBasedSyncAction: Catalog generation completed but URL is missing")
                     WooPosFileBasedSyncResult.Failure(
                         PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                            "Catalog generation completed but download URL is missing."
+                            error = "Catalog generation completed but download URL is missing."
                         )
                     )
                 }
@@ -156,7 +184,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.NetworkError(
-                        it.message ?: "Failed to download catalog file"
+                        error = it.message ?: "Failed to download catalog file"
                     )
                 )
             }
@@ -166,7 +194,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                        it.message ?: "Failed to parse catalog file"
+                        error = it.message ?: "Failed to parse catalog file"
                     )
                 )
             }
@@ -179,7 +207,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.DatabaseError(
-                        it.message ?: "Failed to store catalog data"
+                        error = it.message ?: "Failed to store catalog data"
                     )
                 )
             }
@@ -192,6 +220,15 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
 
+        return buildSuccessResult(result, parsedData, startTime, pollAttempts)
+    }
+
+    private fun buildSuccessResult(
+        result: WooPosGenerateCatalogResult,
+        parsedData: WooPosCatalogFileParser.ParsedCatalogData,
+        startTime: Long,
+        pollAttempts: Int
+    ): WooPosFileBasedSyncResult.Success {
         val syncDuration = System.currentTimeMillis() - startTime
         val generationDuration = syncTimestampManager.calculateGenerationDuration(
             scheduledAt = result.scheduledAt,
@@ -212,7 +249,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 generationDurationMs = generationDuration,
                 pollAttempts = pollAttempts
             ),
-            // Using scheduledAt (not completedAt) to not miss changes made during generation
             lastModifiedDate = result.scheduledAt
         )
     }

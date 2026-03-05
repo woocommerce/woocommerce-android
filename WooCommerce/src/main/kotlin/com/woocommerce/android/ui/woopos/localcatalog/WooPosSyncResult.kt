@@ -12,17 +12,53 @@ sealed class PosLocalCatalogSyncResult {
         val pollAttempts: Int? = null
     ) : PosLocalCatalogSyncResult()
 
-    sealed class Failure(val error: String) : PosLocalCatalogSyncResult() {
+    sealed class Failure(
+        val error: String,
+        val pollAttempts: Int? = null,
+        val lastGenerationState: String? = null
+    ) : PosLocalCatalogSyncResult() {
         class CatalogTooLarge(error: String) : Failure(error)
-        class NetworkError(error: String) : Failure(error)
-        class DatabaseError(error: String) : Failure(error)
-        class InvalidResponse(error: String) : Failure(error)
-        class UnexpectedError(error: String) : Failure(error)
+        class NetworkError(
+            error: String,
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
+        class DatabaseError(
+            error: String,
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
+        class InvalidResponse(
+            error: String,
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
+        class UnexpectedError(
+            error: String,
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
         class CatalogGenerationTimeout(
             error: String,
-            val lastGenerationState: String? = null,
-            val pollAttempts: Int? = null
-        ) : Failure(error)
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
+        fun withTrackingData(
+            pollAttempts: Int,
+            lastGenerationState: String?
+        ): Failure = when (this) {
+            is NetworkError -> NetworkError(error, pollAttempts, lastGenerationState)
+            is DatabaseError -> DatabaseError(error, pollAttempts, lastGenerationState)
+            is InvalidResponse -> InvalidResponse(error, pollAttempts, lastGenerationState)
+            is CatalogGenerationTimeout -> CatalogGenerationTimeout(error, pollAttempts, lastGenerationState)
+            is CatalogTooLarge -> this
+            is UnexpectedError -> UnexpectedError(error, pollAttempts, lastGenerationState)
+        }
     }
 }
 
