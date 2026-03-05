@@ -129,11 +129,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 val orderItem = order.items.find { it.itemId == agg.orderItemId }
                 val name = orderItem?.name ?: agg.refundItem.name
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
-                val unitPrice = if (agg.quantity > 0) {
-                    agg.total / agg.quantity.toBigDecimal()
-                } else {
-                    agg.total
-                }
+                val unitPrice = agg.refundItem.price
                 val product = getProductById(agg.refundItem.productId)
                 LineItemRow(
                     id = agg.orderItemId,
