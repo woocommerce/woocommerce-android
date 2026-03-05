@@ -8,7 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
@@ -38,6 +40,13 @@ class BookingListHandler @Inject constructor(
 
     private val searchResults = MutableStateFlow(emptyList<Booking>())
 
+    private data class QueryParams(
+        val searchQuery: String?,
+        val filters: BookingFilters,
+        val page: Int,
+        val sortBy: BookingListSortOption
+    )
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val bookingsFlow: Flow<List<Booking>> = combine(
         searchQuery,
@@ -45,16 +54,32 @@ class BookingListHandler @Inject constructor(
         page,
         sortBy
     ) { query, filters, page, sortBy ->
-        if (query.isNullOrEmpty()) {
-            bookingsRepository.observeBookings(
-                limit = page * PAGE_SIZE,
-                filters = filters,
-                order = sortBy.toBookingsOrderOption()
-            )
+        QueryParams(query, filters, page, sortBy)
+    }.flatMapLatest { params ->
+        if (params.searchQuery.isNullOrEmpty()) {
+            val limit = params.page * PAGE_SIZE
+            val order = params.sortBy.toBookingsOrderOption()
+            flow {
+                // Emit a snapshot from the DB immediately so cached data shows without delay
+                val snapshot = bookingsRepository.getBookingsList(
+                    limit = limit,
+                    filters = params.filters,
+                    order = order
+                )
+                emit(snapshot)
+                // Then subscribe to Room flow for ongoing updates
+                emitAll(
+                    bookingsRepository.observeBookings(
+                        limit = limit,
+                        filters = params.filters,
+                        order = order
+                    )
+                )
+            }
         } else {
-            searchResults.map { it.take(page * PAGE_SIZE) }
+            searchResults.map { it.take(params.page * PAGE_SIZE) }
         }
-    }.flatMapLatest { it }
+    }
 
     suspend fun loadBookings(
         searchQuery: String? = null,

@@ -510,9 +510,10 @@ class WooPosOrdersViewModel @Inject constructor(
             if (item.id == updated.id) newItem to newDetails else item to details
         }
 
+        val shouldUpdateDetails = current.selectedDetails?.id == updated.id
         _state.value = current.copy(
             items = WooPosOrdersState.Content.Items.Loaded(newMap),
-            selectedDetails = if (selectedId == updated.id) newDetailsViewState else current.selectedDetails
+            selectedDetails = if (shouldUpdateDetails) newDetailsViewState else current.selectedDetails
         )
     }
 

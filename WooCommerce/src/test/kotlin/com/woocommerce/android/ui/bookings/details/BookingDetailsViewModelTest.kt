@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -322,6 +323,30 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(state.toolbarTitle).isEmpty()
     }
 
+    @Test
+    fun `when onAttendanceToggle called rapidly, then first request error is suppressed by cancellation`() =
+        testBlocking {
+            // GIVEN
+            whenever(bookingsRepository.updateAttendanceStatus(any(), any())).doSuspendableAnswer {
+                delay(1000)
+                Result.failure(Exception("Network error"))
+            }
+            val viewModel = createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            events.clear() // ignore init events
+
+            // WHEN
+            val state = viewModel.state.getOrAwaitValue()
+            state.bookingUiState?.onAttendanceToggle()
+            state.bookingUiState?.onAttendanceToggle()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(events.filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>())
+                .hasSize(1)
+        }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
@@ -331,7 +356,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             bookingsRepository = bookingsRepository,
             bookingMapper = bookingMapper,
             networkStatus = networkStatus,
-            paymentStatusResolver = paymentStatusResolver
+            paymentStatusResolver = paymentStatusResolver,
+            appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }

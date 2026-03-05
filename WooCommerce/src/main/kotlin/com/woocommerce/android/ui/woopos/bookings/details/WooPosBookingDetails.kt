@@ -58,6 +58,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
+private const val SHOW_PAYMENT_SECTION = false
+
 @Composable
 fun WooPosBookingDetails(
     modifier: Modifier = Modifier,
@@ -92,9 +94,10 @@ fun WooPosBookingDetails(
 
             BookingDetailsCard(details = details)
 
-            details.attendanceSection?.let { section ->
+            val attendanceSection = details.attendanceSection
+            if (attendanceSection is WooPosBookingsState.AttendanceSection.Visible) {
                 Spacer(Modifier.height(WooPosSpacing.Large.value))
-                BookingAttendanceSection(attendanceSection = section, onUIEvent = onUIEvent)
+                BookingAttendanceSection(attendanceSection = attendanceSection, onUIEvent = onUIEvent)
             }
 
             details.customerSection?.let { section ->
@@ -104,9 +107,11 @@ fun WooPosBookingDetails(
 
             Spacer(Modifier.height(WooPosSpacing.Large.value))
 
-            BookingPaymentCard(paymentSection = details.paymentSection)
-
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
+            @Suppress("KotlinConstantConditions")
+            if (SHOW_PAYMENT_SECTION) {
+                BookingPaymentCard(paymentSection = details.paymentSection)
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+            }
 
             BookingNoteSection(bookingNote = details.bookingNote, onUIEvent = onUIEvent)
         }
@@ -135,10 +140,7 @@ fun WooPosBookingDetails(
                     thickness = 0.5.dp,
                 )
                 WooPosButton(
-                    text = stringResource(
-                        R.string.woopos_bookings_details_collect_payment,
-                        details.paymentSection.collectPaymentLabel
-                    ),
+                    text = stringResource(R.string.card_reader_collect_payment),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -330,7 +332,7 @@ private fun BookingCustomerCard(
 
 @Composable
 private fun BookingAttendanceSection(
-    attendanceSection: WooPosBookingsState.AttendanceSection,
+    attendanceSection: WooPosBookingsState.AttendanceSection.Visible,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -611,7 +613,7 @@ fun WooPosBookingDetailsPreview() {
             note = "Prefers eco-friendly products, shorter length cuts",
             isGuest = false,
         ),
-        attendanceSection = WooPosBookingsState.AttendanceSection(
+        attendanceSection = WooPosBookingsState.AttendanceSection.Visible(
             selection = WooPosBookingsState.AttendanceState.UNATTENDED,
         ),
         paymentSection = WooPosBookingsState.PaymentSection(
