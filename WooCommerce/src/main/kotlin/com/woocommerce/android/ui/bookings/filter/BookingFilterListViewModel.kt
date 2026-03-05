@@ -133,8 +133,8 @@ class BookingFilterListViewModel @Inject constructor(
         )
         launch {
             bookingFilterRepository.save(filters)
+            triggerEvent(MultiLiveEvent.Event.Exit)
         }
-        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun onDismissUnsavedChangesDialog() {
