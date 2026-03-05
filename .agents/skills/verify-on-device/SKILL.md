@@ -502,7 +502,7 @@ Product Search:    Products List → tap search icon in toolbar → type in sear
 
 Settings:          Menu tab → tap "Settings" (opens AppSettingsActivity)
 Privacy Settings:  Settings → tap "Privacy settings"
-Beta Features:     Settings → tap "Beta features"
+Experimental Features:     Settings → tap "Experimental features"
 Developer Options: Settings → tap "Developer options" (debug builds only)
 
 Payments Hub:      Menu tab → tap "Payments"
