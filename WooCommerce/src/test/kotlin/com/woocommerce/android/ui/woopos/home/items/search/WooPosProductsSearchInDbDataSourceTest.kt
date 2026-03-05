@@ -223,7 +223,10 @@ class WooPosProductsSearchInDbDataSourceTest {
         whenever(isFtsEnabled.invoke()).thenReturn(true)
         val ftsResults = listOf(
             WooPosFtsSearchResult.Product(createProductEntity(1L)),
-            WooPosFtsSearchResult.Variation(createVariationEntity(2L, parentProductId = 10L)),
+            WooPosFtsSearchResult.Variation(
+                entity = createVariationEntity(2L, parentProductId = 10L),
+                parentProductName = "Parent"
+            ),
         )
         whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 0))
             .thenReturn(Result.success(ftsResults))

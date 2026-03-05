@@ -29,6 +29,7 @@ data class WooPosProductModel(
     val categories: List<WooPosProductCategory> = emptyList(),
     val tags: List<WooPosProductTag> = emptyList(),
     val variationIds: List<Long> = emptyList(),
+    val parentProductName: String? = null,
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -68,17 +69,26 @@ data class WooPosProductModel(
             get() = displayPrice?.toPlainString() ?: ""
     }
 
-    enum class WooPosProductType(val value: String) {
-        SIMPLE("simple"),
-        VARIABLE("variable"),
-        GROUPED("grouped"),
-        EXTERNAL("external"),
-        VARIATION("variation"),
-        SUBSCRIPTION("subscription"),
-        VARIABLE_SUBSCRIPTION("variable-subscription"),
-        CUSTOM("custom"),
-        BUNDLE("bundle"),
-        COMPOSITE("composite"),
+    sealed class WooPosProductType(val value: String) : Parcelable {
+        @Parcelize data object Simple : WooPosProductType("simple")
+
+        @Parcelize data object Variable : WooPosProductType("variable")
+
+        @Parcelize data object Grouped : WooPosProductType("grouped")
+
+        @Parcelize data object External : WooPosProductType("external")
+
+        @Parcelize data object Variation : WooPosProductType("variation")
+
+        @Parcelize data object Subscription : WooPosProductType("subscription")
+
+        @Parcelize data object VariableSubscription : WooPosProductType("variable-subscription")
+
+        @Parcelize data object Custom : WooPosProductType("custom")
+
+        @Parcelize data object Bundle : WooPosProductType("bundle")
+
+        @Parcelize data object Composite : WooPosProductType("composite")
     }
 
     enum class WooPosProductStatus(val value: String) {

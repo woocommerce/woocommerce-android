@@ -50,14 +50,15 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
         return entities.map { fromEntity(it) }
     }
 
-    fun fromVariationEntity(entity: WooPosVariationEntity): WooPosProductModel {
+    fun fromVariationEntity(entity: WooPosVariationEntity, parentProductName: String): WooPosProductModel {
         return WooPosProductModel(
             remoteId = entity.remoteVariationId.value,
             parentId = entity.remoteProductId.value,
             name = entity.variationName,
             sku = entity.sku,
             globalUniqueId = entity.globalUniqueId,
-            type = WooPosProductModel.WooPosProductType.VARIATION,
+            type = WooPosProductModel.WooPosProductType.Variation,
+            parentProductName = parentProductName,
             status = mapProductStatus(entity.status),
             pricing = mapPricing(
                 parsePriceOrNull(entity.price),
@@ -289,16 +290,16 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
 
     fun mapProductType(type: String): WooPosProductModel.WooPosProductType {
         return when (type.lowercase()) {
-            "simple" -> WooPosProductModel.WooPosProductType.SIMPLE
-            "variable" -> WooPosProductModel.WooPosProductType.VARIABLE
-            "grouped" -> WooPosProductModel.WooPosProductType.GROUPED
-            "external" -> WooPosProductModel.WooPosProductType.EXTERNAL
-            "variation" -> WooPosProductModel.WooPosProductType.VARIATION
-            "subscription" -> WooPosProductModel.WooPosProductType.SUBSCRIPTION
-            "variable-subscription" -> WooPosProductModel.WooPosProductType.VARIABLE_SUBSCRIPTION
-            "bundle" -> WooPosProductModel.WooPosProductType.BUNDLE
-            "composite" -> WooPosProductModel.WooPosProductType.COMPOSITE
-            else -> WooPosProductModel.WooPosProductType.CUSTOM
+            "simple" -> WooPosProductModel.WooPosProductType.Simple
+            "variable" -> WooPosProductModel.WooPosProductType.Variable
+            "grouped" -> WooPosProductModel.WooPosProductType.Grouped
+            "external" -> WooPosProductModel.WooPosProductType.External
+            "variation" -> WooPosProductModel.WooPosProductType.Variation
+            "subscription" -> WooPosProductModel.WooPosProductType.Subscription
+            "variable-subscription" -> WooPosProductModel.WooPosProductType.VariableSubscription
+            "bundle" -> WooPosProductModel.WooPosProductType.Bundle
+            "composite" -> WooPosProductModel.WooPosProductType.Composite
+            else -> WooPosProductModel.WooPosProductType.Custom
         }
     }
 
