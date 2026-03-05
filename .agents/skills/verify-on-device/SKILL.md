@@ -510,7 +510,7 @@ Coupon List:       Menu tab → tap "Coupons"
 Reviews List:      Menu tab → tap "Reviews"
 Analytics Hub:     Dashboard → tap "View all store analytics"
 Customer List:     Menu tab → tap "Customers"
-Blaze Campaigns:   Menu tab → tap "Blaze Campaigns"
+Blaze:             Menu tab → tap "Blaze"
 ```
 
 ## Error Recovery
