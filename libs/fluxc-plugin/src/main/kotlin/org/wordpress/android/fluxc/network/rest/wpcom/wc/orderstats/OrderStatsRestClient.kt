@@ -68,6 +68,7 @@ class OrderStatsRestClient @Inject constructor(
      * Possible non-generic errors:
      * [OrderStatsErrorType.INVALID_PARAM] if [granularity], [startDate], or [endDate] are invalid or incompatible
      */
+    @Suppress("LongParameterList")
     suspend fun fetchRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
