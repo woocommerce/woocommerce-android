@@ -12,8 +12,8 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -32,7 +32,9 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
-    private val site = SiteModel()
+    private val site = SiteModel().apply {
+        url = "https://example.com"
+    }
 
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn site
@@ -51,7 +53,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
         )
     }
-    private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion = mock()
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: WooPushNotificationsIntroductionViewModel
@@ -60,7 +62,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         viewModel = WooPushNotificationsIntroductionViewModel(
             savedStateHandle = SavedStateHandle(),
             fetchJetpackStatus = fetchJetpackStatus,
-            fetchActiveWCPluginVersion = fetchActiveWCPluginVersion,
+            checkWCPluginSupport = checkWCPluginSupport,
             selectedSite = selectedSite,
             analyticsTrackerWrapper = analyticsTrackerWrapper
         )
@@ -120,7 +122,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
 
@@ -143,7 +146,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
 
@@ -162,8 +166,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion())
-                .thenReturn(WooPushNotificationsIntroductionViewModel.PUSH_NOTIFICATIONS_MIN_WC_VERSION)
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup()
 
@@ -182,7 +186,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn(null)
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup()
 
@@ -223,31 +228,66 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when update plugin is clicked, then NavigateToConnectionSteps event is triggered`() = testBlocking {
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = true,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
-                blogId = 123L
+    fun `given UpdateRequired state, when continue is clicked, then NavigateToConnectionSteps with update required`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+                    blogId = 123L
+                )
             )
-        )
-        whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
-            .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-        whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
-        setup()
+            setup()
 
-        viewModel.onContinueClick()
+            viewModel.onContinueClick()
 
-        val event = viewModel.event.value
-        assertThat(event).isEqualTo(
-            WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(isSiteConnectedToJetpack = true)
-        )
-        verify(analyticsTrackerWrapper).track(
-            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
-            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
-        )
-    }
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = true,
+                    shouldAutoOpenUpdatePlugin = true
+                )
+            )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+            )
+        }
+
+    @Test
+    fun `given NotConnected state, when continue is clicked, then NavigateToConnectionSteps is triggered`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = false,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                    blogId = null
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+
+            setup()
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = false,
+                    shouldAutoOpenUpdatePlugin = true
+                )
+            )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
+            )
+        }
 
     @Test
     fun `when continue is clicked on not connected state, then continue label is tracked`() = testBlocking {

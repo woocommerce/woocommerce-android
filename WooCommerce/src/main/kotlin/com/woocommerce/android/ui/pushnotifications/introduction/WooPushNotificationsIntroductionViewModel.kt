@@ -6,12 +6,12 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport.Result.Compatible
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,12 +24,11 @@ import javax.inject.Inject
 class WooPushNotificationsIntroductionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchJetpackStatus: FetchJetpackStatus,
-    private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion,
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.6.0" // TODO CHECK CORRECT VERSION LATER
         const val BUTTON_LABEL_CONTINUE = "continue"
         const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
         const val BUTTON_LABEL_NOT_NOW = "not_now"
@@ -88,15 +87,11 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     private suspend fun checkWCVersion() {
-        val wcVersion = fetchActiveWCPluginVersion() ?: run {
-            _viewState.value = ViewState.GenericError
-            return
-        }
-
-        if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
-            _viewState.value = ViewState.GenericError
-        } else {
-            _viewState.value = ViewState.UpdateRequired
+        when (checkWCPluginSupport()) {
+            Compatible -> _viewState.value = ViewState.GenericError
+            is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired ->
+                _viewState.value = ViewState.UpdateRequired
+            CheckWooPluginPushNotificationsSupport.Result.Error -> _viewState.value = ViewState.GenericError
         }
     }
 
@@ -107,7 +102,12 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             BUTTON_LABEL_CONTINUE
         }
         trackIntroductionButtonTap(buttonLabel)
-        triggerEvent(NavigateToConnectionSteps(isSiteConnectedToJetpack = _viewState.value !is ViewState.NotConnected))
+        triggerEvent(
+            NavigateToConnectionSteps(
+                isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
+                shouldAutoOpenUpdatePlugin = true
+            )
+        )
     }
 
     fun onNotNowClick() {
@@ -160,7 +160,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     data class NavigateToConnectionSteps(
-        val isSiteConnectedToJetpack: Boolean
+        val isSiteConnectedToJetpack: Boolean,
+        val shouldAutoOpenUpdatePlugin: Boolean
     ) : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
