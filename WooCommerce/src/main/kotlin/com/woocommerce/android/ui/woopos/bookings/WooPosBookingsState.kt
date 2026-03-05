@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.runtime.Immutable
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
@@ -14,6 +15,7 @@ data class DateSelectorState(
 sealed class WooPosBookingsState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
     abstract val dateSelectorState: DateSelectorState?
+    abstract val searchInputState: WooPosSearchInputState
 
     @Immutable
     sealed interface BookingAction {
@@ -117,6 +119,7 @@ sealed class WooPosBookingsState {
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val dateSelectorState: DateSelectorState?,
+        override val searchInputState: WooPosSearchInputState,
         val selectedDetails: BookingDetailsViewState?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
@@ -124,6 +127,7 @@ sealed class WooPosBookingsState {
         sealed class Items {
             data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
             object Loading : Items()
+            object Searching : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
         }
@@ -163,11 +167,13 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
         override val dateSelectorState: DateSelectorState? = null
+        override val searchInputState: WooPosSearchInputState = WooPosSearchInputState.Closed
     }
 
     @Immutable
     data class Loading(
         override val dateSelectorState: DateSelectorState,
+        override val searchInputState: WooPosSearchInputState = WooPosSearchInputState.Closed,
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
