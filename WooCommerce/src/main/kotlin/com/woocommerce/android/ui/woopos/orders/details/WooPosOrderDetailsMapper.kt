@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
@@ -20,7 +19,6 @@ import kotlinx.coroutines.coroutineScope
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
-import kotlin.math.abs
 
 class WooPosOrderDetailsMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
@@ -30,13 +28,19 @@ class WooPosOrderDetailsMapper @Inject constructor(
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
     private val bookingInfoMapper: WooPosBookingInfoMapper,
+    private val getNonRefundedItems: WooPosGetNonRefundedItems,
+    private val groupRefundedItems: WooPosGroupRefundedItems,
 ) {
     suspend fun mapOrderDetails(
         order: Order,
         historicalRefundsResult: RefundsFetchResult
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)
-        val nonRefundedItems = getNonRefundedItems(order, historicalRefundsResult)
+        val refunds = when (historicalRefundsResult) {
+            is RefundsFetchResult.Success -> historicalRefundsResult.refunds
+            is RefundsFetchResult.Error -> emptyList()
+        }
+        val nonRefundedItems = getNonRefundedItems(order, refunds)
         val lineItems = buildLineItems(order, nonRefundedItems)
         val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
@@ -108,31 +112,12 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> return@coroutineScope emptyList()
         }
 
-        val allRefundItems = refunds.flatMap { it.items }
-        if (allRefundItems.isEmpty()) return@coroutineScope emptyList()
-
-        data class AggregatedRefundItem(
-            val orderItemId: Long,
-            val quantity: Int,
-            val total: BigDecimal,
-            val refundItem: Refund.Item
-        )
-
-        val aggregated = allRefundItems
-            .groupBy { it.orderItemId }
-            .map { (orderItemId, items) ->
-                AggregatedRefundItem(
-                    orderItemId = orderItemId,
-                    quantity = items.sumOf { it.quantity },
-                    total = items.fold(BigDecimal.ZERO) { acc, item -> acc + item.total },
-                    refundItem = items.first()
-                )
-            }
+        val aggregated = groupRefundedItems(refunds)
 
         aggregated.map { agg ->
             async {
                 val orderItem = order.items.find { it.itemId == agg.orderItemId }
-                val name = orderItem?.name ?: agg.refundItem.name
+                val name = orderItem?.name ?: agg.orderItemId.toString()
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
                 val unitPrice = if (agg.quantity != 0) {
                     agg.total.divide(
@@ -143,7 +128,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 } else {
                     agg.total
                 }
-                val product = getProductById(agg.refundItem.productId)
+                val product = getProductById(agg.productId)
                 LineItemRow(
                     id = agg.orderItemId,
                     name = name,
@@ -160,37 +145,12 @@ class WooPosOrderDetailsMapper @Inject constructor(
         order: Order,
         refundResult: RefundsFetchResult
     ): List<LineItemRow> {
-        val items = getNonRefundedItems(order, refundResult)
-        return buildLineItems(order, items)
-    }
-
-    private fun getNonRefundedItems(
-        order: Order,
-        refundResult: RefundsFetchResult
-    ): List<Order.Item> {
         val refunds = when (refundResult) {
             is RefundsFetchResult.Success -> refundResult.refunds
-            is RefundsFetchResult.Error -> return order.items
+            is RefundsFetchResult.Error -> emptyList()
         }
-        if (refunds.isEmpty()) return order.items
-
-        val refundedByItemId = refunds
-            .flatMap { it.items }
-            .groupingBy { it.orderItemId }
-            .fold(0) { acc, item -> acc + item.quantity }
-
-        return order.items.mapNotNull { item ->
-            val refundedQty = abs(refundedByItemId[item.itemId] ?: 0).toFloat()
-            val remaining = item.quantity - refundedQty
-            when {
-                remaining <= 0f -> null
-                remaining == item.quantity -> item
-                else -> {
-                    val newTotal = item.total * (remaining / item.quantity).toBigDecimal()
-                    item.copy(quantity = remaining, total = newTotal)
-                }
-            }
-        }
+        val items = getNonRefundedItems(order, refunds)
+        return buildLineItems(order, items)
     }
 
     private suspend fun buildLineItems(

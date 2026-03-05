@@ -38,6 +38,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     private val refundInfoBuilder: WooPosRefundInfoBuilder = mock()
     private val orderActionsProvider: WooPosOrderActionsProvider = mock()
     private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
+    private val getNonRefundedItems = WooPosGetNonRefundedItems()
+    private val groupRefundedItems = WooPosGroupRefundedItems()
 
     private val sut = WooPosOrderDetailsMapper(
         resourceProvider = resourceProvider,
@@ -47,6 +49,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         refundInfoBuilder = refundInfoBuilder,
         orderActionsProvider = orderActionsProvider,
         bookingInfoMapper = bookingInfoMapper,
+        getNonRefundedItems = getNonRefundedItems,
+        groupRefundedItems = groupRefundedItems,
     )
 
     private val paidOrder: Order = OrderTestUtils.generateTestOrder().copy(
