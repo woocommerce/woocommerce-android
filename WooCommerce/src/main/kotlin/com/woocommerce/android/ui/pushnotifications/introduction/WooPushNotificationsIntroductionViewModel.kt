@@ -102,26 +102,12 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             BUTTON_LABEL_CONTINUE
         }
         trackIntroductionButtonTap(buttonLabel)
-
-        when (_viewState.value) {
-            ViewState.UpdateRequired -> {
-                triggerEvent(
-                    NavigateToConnectionSteps(
-                        isSiteConnectedToJetpack = true,
-                        shouldAutoOpenUpdatePlugin = true
-                    )
-                )
-            }
-            ViewState.NotConnected -> {
-                triggerEvent(
-                    NavigateToConnectionSteps(
-                        isSiteConnectedToJetpack = false,
-                        shouldAutoOpenUpdatePlugin = false
-                    )
-                )
-            }
-            else -> Unit
-        }
+        triggerEvent(
+            NavigateToConnectionSteps(
+                isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
+                shouldAutoOpenUpdatePlugin = true
+            )
+        )
     }
 
     fun onNotNowClick() {
