@@ -32,13 +32,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
-    private val site = SiteModel().apply {
-        url = "https://example.com"
-    }
-
-    private val selectedSite: SelectedSite = mock {
-        on { get() } doReturn site
-    }
+    private val selectedSite: SelectedSite = mock()
 
     private val fetchJetpackStatus: FetchJetpackStatus = mock {
         onBlocking { invoke(any(), any(), anyOrNull()) } doReturn Result.success(
@@ -58,7 +52,19 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: WooPushNotificationsIntroductionViewModel
 
-    private fun setup() {
+    private fun setup(isJetpackCPSite: Boolean = false) {
+        val site = SiteModel().apply {
+            url = "https://example.com"
+            origin = if (isJetpackCPSite) {
+                SiteModel.ORIGIN_WPCOM_REST
+            } else {
+                SiteModel.ORIGIN_WPAPI
+            }
+            setIsJetpackCPConnected(isJetpackCPSite)
+            setIsJetpackConnected(false)
+        }
+        whenever(selectedSite.get()).thenReturn(site)
+
         viewModel = WooPushNotificationsIntroductionViewModel(
             savedStateHandle = SavedStateHandle(),
             fetchJetpackStatus = fetchJetpackStatus,
@@ -281,7 +287,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
-                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
             )
         }
 
@@ -350,4 +356,61 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         assertThat((event as WooPushNotificationsIntroductionViewModel.OpenUrlEvent).url)
             .isEqualTo(AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
     }
+
+    @Test
+    fun `given a Jetpack CP site with incompatible WC version, when screen opens, then UpdateRequired state is shown`() =
+        testBlocking {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
+
+            setup(isJetpackCPSite = true)
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.UpdateRequired)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "update_required"))
+            )
+        }
+
+    @Test
+    fun `given a Jetpack CP site with compatible WC version, when screen opens, then GenericError state is shown`() =
+        testBlocking {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
+
+            setup(isJetpackCPSite = true)
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.GenericError)
+        }
+
+    @Test
+    fun `given a Jetpack CP site, when screen opens, then fetchJetpackStatus is not called`() =
+        testBlocking {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
+
+            setup(isJetpackCPSite = true)
+
+            verify(fetchJetpackStatus, org.mockito.kotlin.never()).invoke(any(), any(), anyOrNull())
+        }
+
+    @Test
+    fun `given a Jetpack CP site, when continue is clicked, then isSiteConnectedToJetpack is true`() =
+        testBlocking {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
+
+            setup(isJetpackCPSite = true)
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = true,
+                    shouldAutoOpenUpdatePlugin = true
+                )
+            )
+        }
 }
