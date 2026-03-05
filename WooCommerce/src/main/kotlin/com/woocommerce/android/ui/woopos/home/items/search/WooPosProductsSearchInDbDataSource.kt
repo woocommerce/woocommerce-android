@@ -3,9 +3,12 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosFtsSearchResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -17,6 +20,8 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val productMapper: WooPosProductModelMapper,
+    private val isFtsEnabled: IsPosProductsFtsEnabled,
+    private val logger: WooPosLogWrapper,
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -51,6 +56,61 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
         )
         val siteId = LocalOrRemoteId.LocalId(siteModel.id)
 
+        return if (isFtsEnabled()) {
+            performFtsSearch(siteId, query)
+        } else {
+            performLikeSearch(siteId, query)
+        }
+    }
+
+    private suspend fun performFtsSearch(
+        siteId: LocalOrRemoteId.LocalId,
+        query: String
+    ): Result<List<WooPosProductModel>> {
+        val startTime = System.currentTimeMillis()
+        val offset = searchOffset.get()
+        logger.d("performFtsSearch: query=\"$query\", offset=$offset, pageSize=$PAGE_SIZE")
+
+        val result = posLocalCatalogStore.searchProductsFts(
+            siteId = siteId,
+            searchQuery = query,
+            pageSize = PAGE_SIZE,
+            offset = offset
+        )
+
+        return result.fold(
+            onSuccess = { ftsResults ->
+                val mappedProducts = ftsResults.map { ftsResult ->
+                    when (ftsResult) {
+                        is WooPosFtsSearchResult.Product -> productMapper.fromEntity(ftsResult.entity)
+                        is WooPosFtsSearchResult.Variation -> productMapper.fromVariationEntity(ftsResult.entity)
+                    }
+                }
+
+                accumulatedResults.addAll(mappedProducts)
+                canLoadMoreResults.set(ftsResults.size == PAGE_SIZE)
+                searchOffset.addAndGet(PAGE_SIZE)
+
+                val duration = System.currentTimeMillis() - startTime
+                logger.d(
+                    "performFtsSearch completed: ${ftsResults.size} results " +
+                        "(${accumulatedResults.size} total). Duration: ${duration}ms"
+                )
+
+                Result.success(accumulatedResults.toList())
+            },
+            onFailure = { error ->
+                val duration = System.currentTimeMillis() - startTime
+                logger.e("performFtsSearch failed after ${duration}ms: ${error.message}", error)
+                Result.failure(error)
+            }
+        )
+    }
+
+    private suspend fun performLikeSearch(
+        siteId: LocalOrRemoteId.LocalId,
+        query: String
+    ): Result<List<WooPosProductModel>> {
         val result = posLocalCatalogStore.searchProducts(
             siteId = siteId,
             searchQuery = query,
@@ -68,7 +128,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                 canLoadMoreResults.set(products.size == PAGE_SIZE)
                 searchOffset.addAndGet(PAGE_SIZE)
 
-                Result.success(accumulatedResults)
+                Result.success(accumulatedResults.toList())
             },
             onFailure = { error ->
                 Result.failure(error)

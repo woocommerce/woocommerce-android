@@ -49,6 +49,16 @@ abstract class WooPosVariationsDao {
     @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun getAllVariations(localSiteId: LocalId): List<WooPosVariationEntity>
 
+    @Query(
+        "SELECT * FROM PosVariationEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND remoteVariationId IN (:variationIds)"
+    )
+    abstract suspend fun getVariationsByIds(
+        localSiteId: LocalId,
+        variationIds: List<RemoteId>
+    ): List<WooPosVariationEntity>
+
     @Upsert
     abstract suspend fun upsertVariations(variations: List<WooPosVariationEntity>)
 
