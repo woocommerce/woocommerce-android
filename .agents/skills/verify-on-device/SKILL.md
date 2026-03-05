@@ -508,7 +508,7 @@ Developer Options: Settings → tap "Developer options" (debug builds only)
 Payments Hub:      Menu tab → tap "Payments"
 Coupon List:       Menu tab → tap "Coupons"
 Reviews List:      Menu tab → tap "Reviews"
-Analytics Hub:     Dashboard → tap "See analytics" or Menu tab → "Analytics"
+Analytics Hub:     Dashboard → tap "View all store analytics"
 Customer List:     Menu tab → tap "Customers"
 Blaze Campaigns:   Menu tab → tap "Blaze Campaigns"
 ```
