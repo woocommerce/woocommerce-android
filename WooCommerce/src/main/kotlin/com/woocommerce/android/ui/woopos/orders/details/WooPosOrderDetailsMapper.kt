@@ -112,9 +112,9 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> return@coroutineScope emptyList()
         }
 
-        val aggregated = groupRefundedItems(refunds)
+        val groupedItems = groupRefundedItems(refunds)
 
-        aggregated.map { agg ->
+        groupedItems.map { agg ->
             async {
                 val orderItem = order.items.find { it.itemId == agg.orderItemId }
                 val name = orderItem?.name ?: agg.orderItemId.toString()
