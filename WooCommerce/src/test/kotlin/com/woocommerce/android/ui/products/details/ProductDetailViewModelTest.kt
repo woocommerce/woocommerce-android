@@ -1534,7 +1534,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         Assertions.assertThat(event).isEqualTo(
-            ProductDetailViewModel.OpenProductInWebView(testProductAggregate.product.remoteId)
+            ProductDetailViewModel.OpenBookableServiceInWebView(testProductAggregate.product.remoteId)
         )
     }
 
@@ -1563,6 +1563,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             val events = viewModel.event.captureValues()
 
             // THEN
-            Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
+            Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenBookableServiceInWebView }
         }
 }

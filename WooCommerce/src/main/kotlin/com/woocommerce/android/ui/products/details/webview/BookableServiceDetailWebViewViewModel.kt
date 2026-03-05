@@ -17,14 +17,14 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductDetailWebViewViewModel @Inject constructor(
+class BookableServiceDetailWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productDetailRepository: ProductDetailRepository,
     private val selectedSite: SelectedSite,
     val webViewAuthenticator: WebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs by savedStateHandle.navArgs<ProductDetailWebViewFragmentArgs>()
+    private val navArgs by savedStateHandle.navArgs<BookableServiceDetailWebViewFragmentArgs>()
 
     val viewState: LiveData<ViewState> = liveData {
         val product = productDetailRepository.getProductAsync(navArgs.remoteProductId) ?: run {

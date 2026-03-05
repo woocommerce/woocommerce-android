@@ -147,13 +147,13 @@
                 android:defaultValue="PRODUCT" />
         </action>
         <action
-            android:id="@+id/action_productDetailFragment_to_ProductDetailWebViewFragment"
-            app:destination="@id/productDetailWebViewFragment" />
+            android:id="@+id/action_productDetailFragment_to_bookableServiceDetailWebViewFragment"
+            app:destination="@id/bookableServiceDetailWebViewFragment" />
     </fragment>
     <fragment
-        android:id="@+id/productDetailWebViewFragment"
-        android:name="com.woocommerce.android.ui.products.details.webview.ProductDetailWebViewFragment"
-        android:label="ProductDetailWebViewFragment">
+        android:id="@+id/bookableServiceDetailWebViewFragment"
+        android:name="com.woocommerce.android.ui.products.details.webview.BookableServiceDetailWebViewFragment"
+        android:label="BookableServiceDetailWebViewFragment">
         <argument
             android:name="remoteProductId"
             app:argType="long" />

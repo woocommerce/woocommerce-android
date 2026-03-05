@@ -16,17 +16,17 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductDetailWebViewFragment : BaseFragment() {
+class BookableServiceDetailWebViewFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: ProductDetailWebViewViewModel by viewModels()
+    private val viewModel: BookableServiceDetailWebViewViewModel by viewModels()
     private val isInDetailPane: Boolean
         get() = requireContext().isTwoPanesShouldBeUsed && parentFragment?.id == R.id.detail_nav_container
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            ProductDetailWebViewScreen(
+            BookableServiceDetailWebViewScreen(
                 viewModel = viewModel,
                 showNavigationIcon = shouldShowNavigationIcon()
             )

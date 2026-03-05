@@ -405,8 +405,8 @@ class ProductDetailFragment :
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
-                is ProductDetailViewModel.OpenProductInWebView -> findNavController().navigateSafely(
-                    ProductDetailFragmentDirections.actionProductDetailFragmentToProductDetailWebViewFragment(
+                is ProductDetailViewModel.OpenBookableServiceInWebView -> findNavController().navigateSafely(
+                    ProductDetailFragmentDirections.actionProductDetailFragmentToBookableServiceDetailWebViewFragment(
                         remoteProductId = event.productId
                     )
                 )

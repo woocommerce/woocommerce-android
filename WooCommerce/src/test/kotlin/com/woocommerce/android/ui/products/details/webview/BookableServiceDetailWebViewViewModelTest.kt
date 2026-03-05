@@ -21,14 +21,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
 
 @ExperimentalCoroutinesApi
-class ProductDetailWebViewViewModelTest : BaseUnitTest() {
+class BookableServiceDetailWebViewViewModelTest : BaseUnitTest() {
 
     private val productDetailRepository: ProductDetailRepository = mock()
     private val selectedSite: SelectedSite = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
 
-    private lateinit var viewModel: ProductDetailWebViewViewModel
+    private lateinit var viewModel: BookableServiceDetailWebViewViewModel
     private lateinit var savedStateHandle: SavedStateHandle
 
     private val testProduct = ProductTestUtils.generateProduct(
@@ -55,7 +55,7 @@ class ProductDetailWebViewViewModelTest : BaseUnitTest() {
             set("remoteProductId", remoteProductId)
         }
 
-        viewModel = ProductDetailWebViewViewModel(
+        viewModel = BookableServiceDetailWebViewViewModel(
             savedStateHandle = savedStateHandle,
             productDetailRepository = productDetailRepository,
             selectedSite = selectedSite,

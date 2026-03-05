@@ -16,12 +16,12 @@ import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun ProductDetailWebViewScreen(
-    viewModel: ProductDetailWebViewViewModel,
+fun BookableServiceDetailWebViewScreen(
+    viewModel: BookableServiceDetailWebViewViewModel,
     showNavigationIcon: Boolean
 ) {
     viewModel.viewState.observeAsState().value?.let {
-        ProductDetailWebViewScreen(
+        BookableServiceDetailWebViewScreen(
             viewState = it,
             showNavigationIcon = showNavigationIcon,
             webViewAuthenticator = viewModel.webViewAuthenticator,
@@ -31,8 +31,8 @@ fun ProductDetailWebViewScreen(
 }
 
 @Composable
-private fun ProductDetailWebViewScreen(
-    viewState: ProductDetailWebViewViewModel.ViewState,
+private fun BookableServiceDetailWebViewScreen(
+    viewState: BookableServiceDetailWebViewViewModel.ViewState,
     showNavigationIcon: Boolean,
     webViewAuthenticator: WebViewAuthenticator,
     userAgent: UserAgent
