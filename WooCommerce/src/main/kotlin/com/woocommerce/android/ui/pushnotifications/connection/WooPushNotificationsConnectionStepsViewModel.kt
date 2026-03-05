@@ -9,11 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
@@ -160,7 +160,14 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private suspend fun checkPluginCompatibility() {
         if (navArgs.shouldAutoOpenUpdatePlugin && !hasAutoOpenedUpdate) {
             hasAutoOpenedUpdate = true
-            markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+            // Not using mark markCurrentStepAsFailed as we don't want to track this as failure.
+            currentStep.update { current ->
+                current.copy(
+                    state = StepState.Error(
+                        UiString.UiStringRes(R.string.woo_push_notifications_connection_steps_generic_error)
+                    )
+                )
+            }
             val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PLUGIN_UPDATE_PATH)
             triggerEvent(NavigateToPluginUpdatePage(url))
             return
@@ -178,12 +185,16 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                         R.string.woo_push_notifications_connection_steps_error_plugin_update_required,
                         listOf(UiString.UiStringText(result.currentVersion))
                     ),
+                    error = Exception("Plugin update required."),
                     errorType = StepState.ErrorType.PLUGIN_UPDATE_REQUIRED
                 )
             }
 
             CheckWooPluginPushNotificationsSupport.Result.Error -> {
-                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+                markCurrentStepAsFailed(
+                    messageRes = R.string.woo_push_notifications_connection_steps_generic_error,
+                    error = Exception("Plugin check failed.")
+                )
             }
         }
     }
@@ -229,18 +240,16 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private fun markCurrentStepAsFailed(
         @StringRes messageRes: Int,
+        error: Throwable? = null,
         errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
-    ) {
-        trackFlowError(currentStep.value.type, error)
-        currentStep.update { current ->
-            current.copy(state = StepState.Error(messageRes, errorType))
-        }
-    }
+    ) = markCurrentStepAsFailed(UiString.UiStringRes(messageRes), error, errorType)
 
     private fun markCurrentStepAsFailed(
         message: UiString,
+        error: Throwable? = null,
         errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
     ) {
+        trackFlowError(currentStep.value.type, error)
         currentStep.update { current ->
             current.copy(state = StepState.Error(message, errorType))
         }
@@ -316,6 +325,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         is OnChangedException -> {
             (error as? JetpackStore.JetpackError)?.let { it::class.simpleName } ?: javaClass.simpleName
         }
+
         is WooException -> error.type.name
         else -> javaClass.simpleName
     }
@@ -372,17 +382,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         data class Error(
             val errorMessage: UiString,
             val errorType: ErrorType = ErrorType.GENERIC_ERROR
-        ) : StepState {
-            constructor(
-                message: String,
-                errorType: ErrorType = ErrorType.GENERIC_ERROR
-            ) : this(UiString.UiStringText(message), errorType)
-
-            constructor(
-                @StringRes messageRes: Int,
-                errorType: ErrorType = ErrorType.GENERIC_ERROR
-            ) : this(UiString.UiStringRes(messageRes), errorType)
-        }
+        ) : StepState
 
         enum class ErrorType {
             GENERIC_ERROR,

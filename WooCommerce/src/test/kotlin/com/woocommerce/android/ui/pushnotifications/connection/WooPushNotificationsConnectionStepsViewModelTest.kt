@@ -7,6 +7,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -256,12 +257,13 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             }
 
             assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
-            assertThat(state.steps[1].state)
-                .isEqualTo(
-                    StepState.Error(
+            assertThat(state.steps[1].state).isEqualTo(
+                StepState.Error(
+                    UiStringRes(
                         R.string.woo_push_notifications_connection_steps_error_connection_permission_message
                     )
                 )
+            )
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_ERROR),
                 eq(
@@ -288,7 +290,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
         assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[1].state)
-            .isEqualTo(StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+            .isEqualTo(StepState.Error(UiStringRes(R.string.woo_push_notifications_connection_steps_generic_error)))
     }
 
     @Test
