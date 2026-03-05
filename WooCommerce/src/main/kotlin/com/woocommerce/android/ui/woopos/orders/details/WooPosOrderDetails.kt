@@ -586,7 +586,7 @@ fun WooPosOrderDetailsPreview() {
                 ),
                 WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
                     id = 103,
-                    name = "A vey tasty coffee that incidentally has a very long name " +
+                    name = "A very tasty coffee that incidentally has a very long name " +
                         "and should go over a few lines without overlapping anything",
                     attributesDescription = "Medium roast, Decaf",
                     qtyAndUnitPrice = "1 x $5.00",
