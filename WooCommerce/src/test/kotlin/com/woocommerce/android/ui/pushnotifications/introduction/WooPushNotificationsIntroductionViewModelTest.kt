@@ -276,7 +276,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
                     isSiteConnectedToJetpack = false,
-                    shouldAutoOpenUpdatePlugin = false
+                    shouldAutoOpenUpdatePlugin = true
                 )
             )
             verify(analyticsTrackerWrapper).track(
