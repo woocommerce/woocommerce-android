@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.ui.compose.DialogState
@@ -127,7 +128,7 @@ class BookingFilterListViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS,
             mapOf(
-                KEY_SELECTED_FILTERS to filters.activeFilterTrackingKeys().sorted().toString()
+                BookingAnalyticsHelper.KEY_SELECTED_FILTERS to filters.activeFilterTrackingKeys().sorted().toString()
             )
         )
         launch {
@@ -158,8 +159,4 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun hasUnsavedChanges() = _uiState.value.initialBookingFilters != _uiState.value.updatedBookingFilters
-
-    companion object {
-        private const val KEY_SELECTED_FILTERS = "selected_filters"
-    }
 }

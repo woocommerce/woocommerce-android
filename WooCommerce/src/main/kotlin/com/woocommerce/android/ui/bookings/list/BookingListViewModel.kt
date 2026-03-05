@@ -6,10 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
-import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -55,6 +54,8 @@ class BookingListViewModel @Inject constructor(
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
+
+    private val analyticsHelper = BookingAnalyticsHelper()
 
     private val stateHandle = savedStateHandle
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
@@ -235,17 +236,13 @@ class BookingListViewModel @Inject constructor(
             filters = fetchParams.prepareFilters(),
             sortBy = fetchParams.sortOption
         ).onFailure {
-            analyticsTrackerWrapper.track(
-                stat = AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
-                properties = buildMap {
-                    (it as? WooException)?.error?.apiErrorCode?.let { code ->
-                        put(AnalyticsTracker.KEY_ERROR_CODE, code)
-                    }
-                },
-                errorContext = this::class.java.simpleName,
-                errorType = (it as? WooException)?.error?.type?.name ?: it::class.simpleName,
-                errorDescription = it.message
-            )
+            with(analyticsHelper) {
+                analyticsTrackerWrapper.trackError(
+                    event = AnalyticsEvent.BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
+                    throwable = it,
+                    errorContext = this@BookingListViewModel::class.java.simpleName
+                )
+            }
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
         loadingState.value = BookingListLoadingState.Idle
@@ -271,9 +268,9 @@ class BookingListViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_BOOKING_TAP,
             mapOf(
-                KEY_IS_SEARCH_ACTIVE to (searchQuery.value != null).toString(),
-                KEY_IS_FILTERING_ACTIVE to (enabledFiltersCount > 0).toString(),
-                KEY_SELECTED_TAB to selectedTab.value.toAnalyticsValue()
+                BookingAnalyticsHelper.KEY_IS_SEARCH_ACTIVE to (searchQuery.value != null).toString(),
+                BookingAnalyticsHelper.KEY_IS_FILTERING_ACTIVE to (enabledFiltersCount > 0).toString(),
+                BookingAnalyticsHelper.KEY_SELECTED_TAB to selectedTab.value.toAnalyticsValue()
             )
         )
         if (isWindowClassLargeThanCompact()) {
@@ -285,7 +282,7 @@ class BookingListViewModel @Inject constructor(
     private fun onTabChanged(tab: BookingListTab) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_TAB_SELECT,
-            mapOf(KEY_SELECTED_TAB to tab.toAnalyticsValue())
+            mapOf(BookingAnalyticsHelper.KEY_SELECTED_TAB to tab.toAnalyticsValue())
         )
         didUserSwitchTab = true
         selectedTab.value = tab
@@ -299,7 +296,7 @@ class BookingListViewModel @Inject constructor(
     private fun onSortOptionSelected(option: BookingListSortOption) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_SORT_BY_OPTION_TAP,
-            mapOf(KEY_SORT_OPTION to option.toAnalyticsValue())
+            mapOf(BookingAnalyticsHelper.KEY_SORT_OPTION to option.toAnalyticsValue())
         )
         sortOption.value = option
         isSortSheetVisible.value = false
@@ -353,10 +350,10 @@ class BookingListViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BOOKING_LIST_VIEW,
             mapOf(
-                KEY_SELECTED_TAB to state.tabState.selectedTab.toAnalyticsValue(),
-                KEY_IS_DEFAULT_TAB to (!didUserSwitchTab).toString(),
-                KEY_IS_LIST_EMPTY to state.contentState.bookings.isEmpty().toString(),
-                KEY_IS_FILTERED to (state.controlsState.enabledFiltersCount > 0).toString()
+                BookingAnalyticsHelper.KEY_SELECTED_TAB to state.tabState.selectedTab.toAnalyticsValue(),
+                BookingAnalyticsHelper.KEY_IS_DEFAULT_TAB to (!didUserSwitchTab).toString(),
+                BookingAnalyticsHelper.KEY_IS_LIST_EMPTY to state.contentState.bookings.isEmpty().toString(),
+                BookingAnalyticsHelper.KEY_IS_FILTERED to (state.controlsState.enabledFiltersCount > 0).toString()
             )
         )
     }
@@ -385,13 +382,5 @@ class BookingListViewModel @Inject constructor(
     companion object {
         @VisibleForTesting
         const val KEY_BOOKING_SELECTED_ON_BIG_SCREEN = "key_booking_selected_on_big_screen"
-
-        private const val KEY_SELECTED_TAB = "selected_tab"
-        private const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
-        private const val KEY_IS_FILTERING_ACTIVE = "is_filtering_active"
-        private const val KEY_SORT_OPTION = "sort_option"
-        private const val KEY_IS_DEFAULT_TAB = "is_default_tab"
-        private const val KEY_IS_LIST_EMPTY = "is_list_empty"
-        private const val KEY_IS_FILTERED = "is_filtered"
     }
 }
