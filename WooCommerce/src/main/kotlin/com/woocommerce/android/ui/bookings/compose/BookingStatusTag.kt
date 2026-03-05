@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.compose.component.WCTag
@@ -20,7 +22,8 @@ fun BookingPaymentStatusTag(
     WCTag(
         text = paymentStatus.text(),
         backgroundColor = paymentStatus.backgroundColor(),
-        textColor = paymentStatus.textColor(),
+        textColor = colorResource(R.color.tagView_text),
+        border = paymentStatus.border(),
         fontWeight = FontWeight.Normal,
         modifier = modifier
     )
@@ -49,10 +52,22 @@ private fun PaymentStatus.text(): String = when (this) {
 }
 
 @Composable
-private fun PaymentStatus.backgroundColor(): Color = colorResource(R.color.tagView_bg)
+private fun PaymentStatus.backgroundColor(): Color = when (this) {
+    PaymentStatus.UNPAID -> colorResource(R.color.tag_bg_booking_yellow)
+    PaymentStatus.PAID,
+    PaymentStatus.REFUNDED,
+    PaymentStatus.PARTIALLY_REFUNDED -> Color.Transparent
+    PaymentStatus.FAILED -> colorResource(R.color.tagView_bg)
+}
 
 @Composable
-private fun PaymentStatus.textColor(): Color = colorResource(R.color.tagView_text)
+private fun PaymentStatus.border(): BorderStroke? = when (this) {
+    PaymentStatus.PAID,
+    PaymentStatus.REFUNDED,
+    PaymentStatus.PARTIALLY_REFUNDED -> BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+    PaymentStatus.UNPAID,
+    PaymentStatus.FAILED -> null
+}
 
 @LightDarkThemePreviews
 @Composable
@@ -70,6 +85,16 @@ private fun PaymentStatusTagRefundedPreview() {
     WooThemeWithBackground {
         BookingPaymentStatusTag(
             paymentStatus = PaymentStatus.REFUNDED
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun PaymentStatusTagUnpaidPreview() {
+    WooThemeWithBackground {
+        BookingPaymentStatusTag(
+            paymentStatus = PaymentStatus.UNPAID
         )
     }
 }
