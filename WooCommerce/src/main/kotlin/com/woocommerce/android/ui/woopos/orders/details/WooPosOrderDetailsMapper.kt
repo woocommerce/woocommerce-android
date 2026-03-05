@@ -177,7 +177,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 remaining <= 0f -> null
                 remaining == item.quantity -> item
                 else -> {
-                    val newTotal = item.price * remaining.toBigDecimal()
+                    val newTotal = item.total * (remaining / item.quantity).toBigDecimal()
                     item.copy(quantity = remaining, total = newTotal)
                 }
             }
