@@ -272,18 +272,18 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             viewModel.onContinueClick()
 
-        val event = viewModel.event.value
+            val event = viewModel.event.value
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
                     isSiteConnectedToJetpack = false,
                     shouldAutoOpenUpdatePlugin = false
                 )
             )
-        verify(analyticsTrackerWrapper).track(
-            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
-            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
-        )
-    }
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+            )
+        }
 
     @Test
     fun `when continue is clicked on not connected state, then continue label is tracked`() = testBlocking {
