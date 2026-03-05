@@ -16,6 +16,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosFtsSearchResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -214,6 +216,52 @@ class WooPosProductsSearchInDbDataSourceTest {
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isEqualTo(error)
     }
+
+    @Test
+    fun `given fts enabled, when searchProducts called, then returns fts results`() = runTest {
+        // GIVEN
+        whenever(isFtsEnabled.invoke()).thenReturn(true)
+        val ftsResults = listOf(
+            WooPosFtsSearchResult.Product(createProductEntity(1L)),
+            WooPosFtsSearchResult.Variation(createVariationEntity(2L, parentProductId = 10L)),
+        )
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 0))
+            .thenReturn(Result.success(ftsResults))
+
+        // WHEN
+        val result = sut.searchProducts("query")
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).hasSize(2)
+    }
+
+    @Test
+    fun `given fts enabled and store fails, when searchProducts called, then returns failure`() = runTest {
+        // GIVEN
+        whenever(isFtsEnabled.invoke()).thenReturn(true)
+        val error = IllegalArgumentException("Search query is blank after formatting")
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "***", 15, 0))
+            .thenReturn(Result.failure(error))
+
+        // WHEN
+        val result = sut.searchProducts("***")
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    private fun createVariationEntity(
+        remoteId: Long,
+        parentProductId: Long = 0L
+    ) = WooPosVariationEntity(
+        localSiteId = siteId,
+        remoteProductId = LocalOrRemoteId.RemoteId(parentProductId),
+        remoteVariationId = LocalOrRemoteId.RemoteId(remoteId),
+        price = "10.00",
+        status = "publish",
+    )
 
     private fun createProductEntity(
         remoteId: Long,
