@@ -645,7 +645,9 @@ class WooPosOrdersViewModelTest {
         val selectedItemId = loadedItems.items.keys.single { it.isSelected }.id
         assertThat(selectedItemId).isEqualTo(2L)
         assertThat(content.selectedDetails?.id).isEqualTo(2L)
-        assertThat(content.selectedDetails?.lineItems).isNotEmpty
+        assertThat(content.selectedDetails?.lineItems).isInstanceOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded::class.java
+        )
         assertThat(content.selectedDetails?.total).isEqualTo("$106.00")
     }
 

@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
@@ -208,15 +209,17 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.refundedLineItems).hasSize(1)
-        val refundedItem = result.refundedLineItems!!.first()
+        val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
+        assertThat(refundedItems).hasSize(1)
+        val refundedItem = refundedItems.first()
         assertThat(refundedItem.name).isEqualTo("Cup")
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("1 x $4.00")
         assertThat(refundedItem.lineTotal).isEqualTo("-$4.00")
 
-        assertThat(result.lineItems).hasSize(1)
-        assertThat(result.lineItems!!.first().name).isEqualTo("Cup")
-        assertThat(result.lineItems.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
+        val lineItems = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(lineItems).hasSize(1)
+        assertThat(lineItems.first().name).isEqualTo("Cup")
+        assertThat(lineItems.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
     }
 
     @Test
@@ -247,8 +250,9 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.refundedLineItems).hasSize(1)
-        val refundedItem = result.refundedLineItems!!.first()
+        val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
+        assertThat(refundedItems).hasSize(1)
+        val refundedItem = refundedItems.first()
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("3 x $4.00")
         assertThat(refundedItem.lineTotal).isEqualTo("-$12.00")
     }
@@ -270,7 +274,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.refundedLineItems).isEmpty()
+        assertThat((result.refundedLineItems as LineItemsState.Loaded).items).isEmpty()
     }
 
     @Test
@@ -287,11 +291,11 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.refundedLineItems).isEmpty()
+        assertThat((result.refundedLineItems as LineItemsState.Loaded).items).isEmpty()
     }
 
     @Test
-    fun `given order without refunds, when mapOrderDetailsWithoutActions, then lineItems populated and refunds null`() =
+    fun `given order without refunds, when mapOrderDetailsWithoutActions, then lineItems loaded and refunds empty`() =
         testBlocking {
             // GIVEN
             setupDefaults()
@@ -304,13 +308,13 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
-            assertThat(result.lineItems).isNotNull
-            assertThat(result.lineItems).hasSize(1)
-            assertThat(result.refundedLineItems).isNull()
+            val lineItems = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(lineItems).hasSize(1)
+            assertThat((result.refundedLineItems as LineItemsState.Loaded).items).isEmpty()
         }
 
     @Test
-    fun `given order with refunds, when mapOrderDetailsWithoutActions, then both lineItems are null`() =
+    fun `given order with refunds, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
         testBlocking {
             // GIVEN
             setupDefaults()
@@ -323,8 +327,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
-            assertThat(result.lineItems).isNull()
-            assertThat(result.refundedLineItems).isNull()
+            assertThat(result.lineItems).isInstanceOf(LineItemsState.Loading::class.java)
+            assertThat(result.refundedLineItems).isInstanceOf(LineItemsState.Loading::class.java)
         }
 
     @Test
@@ -350,13 +354,15 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.refundedLineItems).hasSize(2)
-        assertThat(result.refundedLineItems!!.map { it.name }).containsExactly("Cup", "Plate")
-        assertThat(result.refundedLineItems.map { it.lineTotal }).containsExactly("-$4.00", "-$6.00")
+        val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
+        assertThat(refundedItems).hasSize(2)
+        assertThat(refundedItems.map { it.name }).containsExactly("Cup", "Plate")
+        assertThat(refundedItems.map { it.lineTotal }).containsExactly("-$4.00", "-$6.00")
 
-        assertThat(result.lineItems).hasSize(1)
-        assertThat(result.lineItems!!.first().name).isEqualTo("Cup")
-        assertThat(result.lineItems.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
+        val lineItems = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(lineItems).hasSize(1)
+        assertThat(lineItems.first().name).isEqualTo("Cup")
+        assertThat(lineItems.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
     }
 
     @Test
@@ -381,10 +387,12 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.lineItems).hasSize(1)
-        assertThat(result.lineItems!!.first().name).isEqualTo("Plate")
-        assertThat(result.refundedLineItems).hasSize(1)
-        assertThat(result.refundedLineItems!!.first().name).isEqualTo("Cup")
+        val lineItems = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(lineItems).hasSize(1)
+        assertThat(lineItems.first().name).isEqualTo("Plate")
+        val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
+        assertThat(refundedItems).hasSize(1)
+        assertThat(refundedItems.first().name).isEqualTo("Cup")
     }
 
     @Test
@@ -401,10 +409,11 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val result = sut.mapOrderDetails(order, refundResult)
 
         // THEN
-        assertThat(result.lineItems).hasSize(1)
-        assertThat(result.lineItems!!.first().name).isEqualTo("Cup")
-        assertThat(result.lineItems.first().qtyAndUnitPrice).isEqualTo("2 x $4.00")
-        assertThat(result.refundedLineItems).isEmpty()
+        val lineItems = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(lineItems).hasSize(1)
+        assertThat(lineItems.first().name).isEqualTo("Cup")
+        assertThat(lineItems.first().qtyAndUnitPrice).isEqualTo("2 x $4.00")
+        assertThat((result.refundedLineItems as LineItemsState.Loaded).items).isEmpty()
     }
 
     @Test
@@ -442,10 +451,12 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetails(order, refundResult)
 
             // THEN
-            assertThat(result.lineItems).hasSize(1)
-            assertThat(result.lineItems!!.first().name).isEqualTo("Cup (Blue)")
+            val lineItems = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(lineItems).hasSize(1)
+            assertThat(lineItems.first().name).isEqualTo("Cup (Blue)")
 
-            assertThat(result.refundedLineItems).hasSize(1)
-            assertThat(result.refundedLineItems!!.first().name).isEqualTo("Cup (Red)")
+            val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
+            assertThat(refundedItems).hasSize(1)
+            assertThat(refundedItems.first().name).isEqualTo("Cup (Red)")
         }
 }

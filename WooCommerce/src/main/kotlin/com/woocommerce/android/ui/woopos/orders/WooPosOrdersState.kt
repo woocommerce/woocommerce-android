@@ -56,14 +56,23 @@ sealed class WooPosOrdersState {
                 val customerEmail: String?,
                 val status: PosOrderStatus,
 
-                val lineItems: List<LineItemRow>? = null,
-                val refundedLineItems: List<LineItemRow>? = null,
+                val lineItems: LineItemsState = LineItemsState.Loading,
+                val refundedLineItems: LineItemsState = LineItemsState.Loading,
                 val breakdown: TotalsBreakdown,
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
                 val actionsState: OrderActionsState
             ) {
+                @Immutable
+                sealed interface LineItemsState {
+                    @Immutable
+                    data object Loading : LineItemsState
+
+                    @Immutable
+                    data class Loaded(val items: List<LineItemRow>) : LineItemsState
+                }
+
                 @Immutable
                 sealed interface BookingInfo {
                     @Immutable

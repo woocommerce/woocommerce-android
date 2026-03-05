@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
@@ -264,8 +265,8 @@ class WooPosOrdersViewModel @Inject constructor(
                     details.copy(
                         actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
                         breakdown = updatedBreakdown,
-                        lineItems = nonRefundedLineItems,
-                        refundedLineItems = refundedLineItems
+                        lineItems = LineItemsState.Loaded(nonRefundedLineItems),
+                        refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
                 }
             }
@@ -276,8 +277,9 @@ class WooPosOrdersViewModel @Inject constructor(
         orderId: Long,
         details: WooPosOrdersState.OrderDetailsViewState.Computed.Details
     ) {
-        val loadingItems = details.lineItems?.filter { it.bookingInfo is BookingInfo.Loading }
-        if (loadingItems.isNullOrEmpty()) return
+        val loadedItems = (details.lineItems as? LineItemsState.Loaded)?.items ?: return
+        val loadingItems = loadedItems.filter { it.bookingInfo is BookingInfo.Loading }
+        if (loadingItems.isEmpty()) return
 
         viewModelScope.launch {
             val results = coroutineScope {
@@ -293,10 +295,14 @@ class WooPosOrdersViewModel @Inject constructor(
             if (currentState.selectedDetails?.id != orderId) return@launch
 
             _state.value = currentState.withUpdatedDetails(orderId) { details ->
+                val currentItems = (details.lineItems as? LineItemsState.Loaded)?.items
+                    ?: return@withUpdatedDetails details
                 details.copy(
-                    lineItems = details.lineItems?.map { lineItem ->
-                        results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
-                    }
+                    lineItems = LineItemsState.Loaded(
+                        currentItems.map { lineItem ->
+                            results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
+                        }
+                    )
                 )
             }
         }

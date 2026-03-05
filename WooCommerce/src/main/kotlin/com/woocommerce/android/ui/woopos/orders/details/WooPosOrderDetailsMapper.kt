@@ -3,12 +3,12 @@ package com.woocommerce.android.ui.woopos.orders.details
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import kotlin.math.abs
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -19,6 +19,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.math.abs
 
 class WooPosOrderDetailsMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
@@ -49,8 +50,8 @@ class WooPosOrderDetailsMapper @Inject constructor(
             ),
             customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
-            lineItems = lineItems,
-            refundedLineItems = refundedLineItems,
+            lineItems = LineItemsState.Loaded(lineItems),
+            refundedLineItems = LineItemsState.Loaded(refundedLineItems),
             breakdown = breakdown,
             total = formatPrice(order.total, order.currency),
             totalPaid = if (order.isOrderPaid) {
@@ -69,7 +70,9 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val status = orderStatusMapper.mapOrderStatus(order.status)
         val mayHaveRefunds = order.refundTotal > BigDecimal.ZERO ||
             order.status == Order.Status.Refunded
-        val lineItems = if (mayHaveRefunds) null else buildLineItems(order)
+        val lineItems = if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(buildLineItems(order))
+        val refundedLineItems =
+            if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(emptyList())
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 
@@ -82,6 +85,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
             customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
             lineItems = lineItems,
+            refundedLineItems = refundedLineItems,
             breakdown = breakdown,
             total = formatPrice(order.total),
             totalPaid = if (order.isOrderPaid) {
