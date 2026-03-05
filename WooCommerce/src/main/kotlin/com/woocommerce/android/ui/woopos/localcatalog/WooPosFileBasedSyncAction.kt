@@ -215,20 +215,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 )
             }
 
-        val ftsSyncResult = syncWithFts.syncFtsForFullSync(
-            siteIdString = site.localId().value.toString(),
-            products = parsedData.products,
-            variations = parsedData.variations
-        )
-        ftsSyncResult?.let {
-            analyticsTracker.track(
-                WooPosAnalyticsEvent.Event.FtsIndexBuilt(
-                    syncType = "full",
-                    indexDurationMs = it.durationMs,
-                    productsIndexed = it.productsIndexed,
-                )
-            )
-        }
+        syncFtsAndTrack(site, parsedData)
 
         catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
 
@@ -263,6 +250,23 @@ class WooPosFileBasedSyncAction @Inject constructor(
             ),
             lastModifiedDate = result.scheduledAt
         )
+    }
+
+    private suspend fun syncFtsAndTrack(site: SiteModel, parsedData: WooPosCatalogFileParser.CatalogData) {
+        val ftsSyncResult = syncWithFts.syncFtsForFullSync(
+            siteIdString = site.localId().value.toString(),
+            products = parsedData.products,
+            variations = parsedData.variations
+        )
+        ftsSyncResult?.let {
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.FtsIndexBuilt(
+                    syncType = "full",
+                    indexDurationMs = it.durationMs,
+                    productsIndexed = it.productsIndexed,
+                )
+            )
+        }
     }
 
     private fun <T> Result<T>.onFailureLog(context: String): Result<T> {
