@@ -154,16 +154,14 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
         }
 
-        val timeoutResult = result as? PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout
-
         analyticsTracker.track(
             LocalCatalogSyncFailed(
                 syncType = syncType,
                 errorContext = "WooPosLocalCatalogSyncRepository",
                 errorType = errorType,
                 errorDescription = result.error,
-                lastGenerationState = timeoutResult?.lastGenerationState,
-                pollAttempts = timeoutResult?.pollAttempts
+                lastGenerationState = result.lastGenerationState,
+                pollAttempts = result.pollAttempts
             )
         )
     }
