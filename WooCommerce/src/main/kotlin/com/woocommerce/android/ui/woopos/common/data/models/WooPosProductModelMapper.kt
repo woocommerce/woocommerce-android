@@ -57,7 +57,8 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
             name = entity.variationName,
             sku = entity.sku,
             globalUniqueId = entity.globalUniqueId,
-            type = WooPosProductModel.WooPosProductType.Variation(parentProductName = parentProductName),
+            type = WooPosProductModel.WooPosProductType.Variation,
+            parentProductName = parentProductName,
             status = mapProductStatus(entity.status),
             pricing = mapPricing(
                 parsePriceOrNull(entity.price),
@@ -293,7 +294,7 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
             "variable" -> WooPosProductModel.WooPosProductType.Variable
             "grouped" -> WooPosProductModel.WooPosProductType.Grouped
             "external" -> WooPosProductModel.WooPosProductType.External
-            "variation" -> error("Variations must be mapped via fromVariationEntity()")
+            "variation" -> WooPosProductModel.WooPosProductType.Variation
             "subscription" -> WooPosProductModel.WooPosProductType.Subscription
             "variable-subscription" -> WooPosProductModel.WooPosProductType.VariableSubscription
             "bundle" -> WooPosProductModel.WooPosProductType.Bundle

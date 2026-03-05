@@ -29,6 +29,7 @@ data class WooPosProductModel(
     val categories: List<WooPosProductCategory> = emptyList(),
     val tags: List<WooPosProductTag> = emptyList(),
     val variationIds: List<Long> = emptyList(),
+    val parentProductName: String? = null,
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -77,7 +78,7 @@ data class WooPosProductModel(
 
         @Parcelize data object External : WooPosProductType("external")
 
-        @Parcelize data class Variation(val parentProductName: String) : WooPosProductType("variation")
+        @Parcelize data object Variation : WooPosProductType("variation")
 
         @Parcelize data object Subscription : WooPosProductType("subscription")
 

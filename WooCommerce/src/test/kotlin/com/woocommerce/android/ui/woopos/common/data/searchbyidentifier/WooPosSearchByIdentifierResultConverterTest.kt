@@ -73,7 +73,7 @@ class WooPosSearchByIdentifierResultConverterTest {
     fun `given variation product success result, when converting, should process variation`() = runTest {
         // GIVEN
         val variationProduct = testProduct.copy(
-            type = WooPosProductModel.WooPosProductType.Variation(parentProductName = "")
+            type = WooPosProductModel.WooPosProductType.Variation
         )
         val successResult = WooPosSearchByIdentifierResult.Success(variationProduct)
         val variationSuccessResult = WooPosSearchByIdentifierResult.VariationSuccess(testVariation, testProduct)
