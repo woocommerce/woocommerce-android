@@ -465,13 +465,13 @@ class WooPosItemsSearchViewModelTest {
 
         whenever(mockDataSource.searchProducts(query1)).thenReturn(
             flowOf(
-                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Local(emptyList(), searchTimeMillis = 0L, searchMethod = "fts"),
                 SearchProductsResult.Remote(Result.success(emptyList()), 100L)
             )
         )
         whenever(mockDataSource.searchProducts(query2)).thenReturn(
             flowOf(
-                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Local(emptyList(), searchTimeMillis = 0L, searchMethod = "fts"),
                 SearchProductsResult.Remote(Result.success(products), 100L)
             )
         )
@@ -520,7 +520,7 @@ class WooPosItemsSearchViewModelTest {
 
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flow {
-                emit(SearchProductsResult.Local(emptyList()))
+                emit(SearchProductsResult.Local(emptyList(), searchTimeMillis = 0L, searchMethod = "fts"))
                 delay(100)
                 emit(SearchProductsResult.Remote(Result.success(products), 100L))
             }
@@ -1144,7 +1144,7 @@ class WooPosItemsSearchViewModelTest {
     private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flowOf(
-                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Local(emptyList(), searchTimeMillis = 0L, searchMethod = "fts"),
                 SearchProductsResult.Remote(Result.success(products), 100L)
             )
         )
@@ -1156,7 +1156,7 @@ class WooPosItemsSearchViewModelTest {
     private fun mockFailedSearch(query: String, error: Exception) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flowOf(
-                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Local(emptyList(), searchTimeMillis = 0L, searchMethod = "fts"),
                 SearchProductsResult.Remote(Result.failure(error), 100L)
             )
         )
@@ -1186,7 +1186,7 @@ class WooPosItemsSearchViewModelTest {
     ) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flow {
-                emit(SearchProductsResult.Local(listOf(cachedProduct)))
+                emit(SearchProductsResult.Local(listOf(cachedProduct), searchTimeMillis = 10L, searchMethod = "fts"))
                 delay(100) // Small delay between emissions
                 emit(SearchProductsResult.Remote(Result.success(listOf(remoteProduct)), 100L))
             }

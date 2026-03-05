@@ -252,7 +252,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
         )
     }
 
-    private suspend fun syncFtsAndTrack(site: SiteModel, parsedData: WooPosCatalogFileParser.CatalogData) {
+    private suspend fun syncFtsAndTrack(site: SiteModel, parsedData: WooPosCatalogFileParser.ParsedCatalogData) {
         val ftsSyncResult = syncWithFts.syncFtsForFullSync(
             siteIdString = site.localId().value.toString(),
             products = parsedData.products,

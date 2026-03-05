@@ -620,7 +620,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
         val localProducts = searchProductsDataSource.searchLocalProducts(query)
         if (localProducts.isNotEmpty()) {
-            emit(SearchProductsResult.Local(localProducts))
+            emit(
+                SearchProductsResult.Local(
+                    products = localProducts,
+                    searchTimeMillis = 0L,
+                    searchMethod = "like",
+                )
+            )
         }
 
         var remoteResult: Result<List<WooPosProductModel>>
