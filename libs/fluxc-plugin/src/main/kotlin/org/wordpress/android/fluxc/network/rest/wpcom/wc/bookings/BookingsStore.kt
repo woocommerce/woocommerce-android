@@ -277,10 +277,12 @@ class BookingsStore @Inject internal constructor(
         if (orderResult.isError) {
             return null
         } else {
+            val existingBooking = bookingsDao.getBooking(site.localId(), bookingDto.id)
             val entity = with(bookingDtoMapper) {
                 bookingDto.toEntity(
                     localSiteId = site.localId(),
                     orderEntity = orderResult.model,
+                    existingLocation = existingBooking?.location,
                 )
             }
             return entity
@@ -302,6 +304,7 @@ class BookingsStore @Inject internal constructor(
             bookingDto.toEntity(
                 localSiteId = site.localId(),
                 orderEntity = null,
+                existingLocation = storedBooking.location,
             ).copy(
                 // Preserve fields not returned by the API
                 order = storedBooking.order,
