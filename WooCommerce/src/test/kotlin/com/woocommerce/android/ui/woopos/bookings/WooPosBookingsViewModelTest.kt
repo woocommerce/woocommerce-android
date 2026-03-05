@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -157,6 +159,7 @@ class WooPosBookingsViewModelTest {
             resourceProvider = resourceProvider,
             clock = clock,
             analyticsTracker = analyticsTracker,
+            searchHelper = WooPosBookingsSearchHelper(resourceProvider),
             selectedSite = selectedSite,
         )
     }
@@ -1591,4 +1594,229 @@ class WooPosBookingsViewModelTest {
         // THEN
         verify(analyticsTracker).trackAttendanceChangeFailed(any(), any())
     }
+
+    // region Search tests
+
+    @Test
+    fun `when search icon clicked, then state has open search with hint`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+        val open = state.searchInputState as WooPosSearchInputState.Open
+        assertThat(open.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
+        assertThat(open.requestFocus).isTrue()
+    }
+
+    @Test
+    fun `when search icon clicked, then analytics tracked`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).trackSearchButtonTapped()
+    }
+
+    @Test
+    fun `when search query entered, then search state shows query`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("haircut", 7))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        val open = state.searchInputState as WooPosSearchInputState.Open
+        val query = open.input as WooPosSearchInputState.Open.Input.Query
+        assertThat(query.query).isEqualTo("haircut")
+    }
+
+    @Test
+    fun `when search query entered, then loadBookings called with search query`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("haircut", 7))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // THEN
+        val searchQueryCaptor = argumentCaptor<String>()
+        verify(bookingListHandler, times(2)).loadBookings(
+            searchQuery = searchQueryCaptor.capture(),
+            filters = any(),
+            sortBy = any()
+        )
+        assertThat(searchQueryCaptor.lastValue).isEqualTo("haircut")
+    }
+
+    @Test
+    fun `when search query is empty, then fetchBookings called without search query`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("", 0))
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler, times(2)).loadBookings(
+            searchQuery = eq(null),
+            filters = any(),
+            sortBy = any()
+        )
+    }
+
+    @Test
+    fun `when search cleared, then search input shows hint and bookings reload`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("haircut", 7))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Clear)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        val open = state.searchInputState as WooPosSearchInputState.Open
+        assertThat(open.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
+        assertThat(open.requestFocus).isTrue()
+    }
+
+    @Test
+    fun `when search closed, then search state is Closed and bookings reload`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Close)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state.searchInputState).isEqualTo(WooPosSearchInputState.Closed)
+    }
+
+    @Test
+    fun `given search returns no results, when search performed, then NothingFound state`() = runTest {
+        // GIVEN
+        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(listOf(booking(1))))
+        whenever(
+            bookingListHandler.loadBookings(eq("nonexistent"), any(), any())
+        ).thenReturn(Result.success(0))
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("nonexistent", 11))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
+    }
+
+    @Test
+    fun `given search fails, when search performed, then Error state`() = runTest {
+        // GIVEN
+        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(listOf(booking(1))))
+        whenever(
+            bookingListHandler.loadBookings(eq("test"), any(), any())
+        ).thenReturn(Result.failure(Exception("Network error")))
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("test", 4))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.Error::class.java)
+    }
+
+    @Test
+    fun `given active search, when pull to refresh, then search re-executes`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("haircut", 7))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onPullToRefresh()
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // THEN
+        val searchQueryCaptor = argumentCaptor<String>()
+        verify(bookingListHandler, times(3)).loadBookings(
+            searchQuery = searchQueryCaptor.capture(),
+            filters = any(),
+            sortBy = any()
+        )
+        assertThat(searchQueryCaptor.lastValue).isEqualTo("haircut")
+    }
+
+    @Test
+    fun `given active search, when date changed, then search remains open and re-executes`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("haircut", 7))
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceTimeBy(301)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+        val open = state.searchInputState as WooPosSearchInputState.Open
+        val query = open.input as WooPosSearchInputState.Open.Input.Query
+        assertThat(query.query).isEqualTo("haircut")
+    }
+
+    // endregion
 }
