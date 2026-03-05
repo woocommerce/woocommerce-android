@@ -574,6 +574,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         )
         val bookings = listOf(getSampleBooking(1))
         setup(bookings = bookings)
+        viewModel.trackBookingListView()
 
         advanceUntilIdle()
 
