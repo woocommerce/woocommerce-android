@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -52,17 +53,16 @@ fun BookingSummary(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(top = 6.dp)
         ) {
+            if (model.isCancelled) {
+                BookingCancelledTag()
+            }
             model.attendanceStatus?.let {
                 BookingAttendanceStatusTag(
                     state = it,
                     attendanceUpdateStatus = model.attendanceUpdateStatus,
                 )
             }
-            if (model.status != BookingStatus.Complete) {
-                BookingStatusTag(
-                    state = model.status
-                )
-            }
+            BookingPaymentStatusTag(paymentStatus = model.paymentStatus)
         }
     }
 }
@@ -89,7 +89,8 @@ data class BookingSummaryModel(
     val name: String,
     val customerName: String?,
     val attendanceStatus: BookingAttendanceStatus?,
-    val status: BookingStatus,
+    val paymentStatus: PaymentStatus,
+    val isCancelled: Boolean,
     val attendanceUpdateStatus: AttendanceUpdateStatus,
 )
 
@@ -100,10 +101,11 @@ private fun BookingSummaryPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.Attended,
-                status = BookingStatus.Paid,
+                paymentStatus = PaymentStatus.PAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -118,10 +120,11 @@ private fun BookingSummaryDarkPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.Unattended,
-                status = BookingStatus.PendingConfirmation,
+                paymentStatus = PaymentStatus.UNPAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -136,11 +139,31 @@ private fun BookingSummaryAttendanceUpdatingPreview() {
         BookingSummary(
             model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
-                name = "Women’s Haircut",
+                name = "Women's Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.Attended,
-                status = BookingStatus.Paid,
+                paymentStatus = PaymentStatus.PAID,
+                isCancelled = false,
                 attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BookingSummaryCancelledPreview() {
+    WooThemeWithBackground {
+        BookingSummary(
+            model = BookingSummaryModel(
+                date = "05/07/2025, 11:00 AM",
+                name = "Women's Haircut",
+                customerName = "Margarita Nikolaevna",
+                attendanceStatus = BookingAttendanceStatus.Unattended,
+                paymentStatus = PaymentStatus.UNPAID,
+                isCancelled = true,
+                attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
         )

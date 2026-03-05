@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -46,6 +48,7 @@ class BookingListViewModel @Inject constructor(
     private val dateFilterBuilder: BookingListDateFilterBuilder,
     private val bookingMapper: BookingMapper,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val paymentStatusResolver: PaymentStatusResolver,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -81,13 +84,23 @@ class BookingListViewModel @Inject constructor(
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
+    private val bookingListItems = bookingListHandler.bookingsFlow
+        .distinctUntilChanged()
+        .map { bookings ->
+            openFirstLoadedBookingOnTablet(bookings)
+            val paymentStatusesByOrderId = paymentStatusResolver.resolveAll(bookings.map { it.orderId })
+            with(bookingMapper) {
+                bookings.map { booking ->
+                    booking.toListItem(paymentStatusesByOrderId.getValue(booking.orderId))
+                }
+            }
+        }
+
     private val contentState = combine(
-        bookingListHandler.bookingsFlow,
+        bookingListItems,
         loadingState,
         selectedBookingIdFlow,
-    ) { bookings, loadingState, selectedBookingId ->
-        openFirstLoadedBookingOnTablet(bookings)
-        val listItems = with(bookingMapper) { bookings.map { it.toListItem() } }
+    ) { listItems, loadingState, selectedBookingId ->
         BookingListContentState(
             bookings = listItems,
             loadingState = loadingState,

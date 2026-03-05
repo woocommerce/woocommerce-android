@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -85,6 +86,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val getWooVisibleSites: GetWooVisibleSites = mock {
         onBlocking { invoke() } doReturn defaultExpectedSiteList
     }
+    private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: SitePickerViewModel
@@ -103,6 +105,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             userEligibilityFetcher = userEligibilityFetcher,
             experimentTracker = experimentTracker,
             getWooVisibleSites = getWooVisibleSites,
+            visibleWooSitesDataStore = visibleWooSitesDataStore,
             registerDevice = registerDevice
         )
     }
@@ -380,10 +383,26 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
+        verify(visibleWooSitesDataStore, times(0)).updateSiteVisibilityStatus(any())
         val sites = items?.filterIsInstance<WooSiteUiModel>()
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
+
+    @Test
+    fun `given user is logging in from hidden site address, when auto login starts, then site visibility is restored`() =
+        testBlocking {
+            val hiddenSite = defaultExpectedSiteList[1]
+            givenThatUserLoggedInFromEnteringSiteAddress(hiddenSite)
+            givenThatSiteVerificationIsCompleted()
+            whenever(getWooVisibleSites()).thenReturn(
+                defaultExpectedSiteList.filter { it.siteId != hiddenSite.siteId }
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            verify(visibleWooSitesDataStore, atLeastOnce()).updateSiteVisibilityStatus(mapOf(hiddenSite.siteId to true))
+        }
 
     @Test
     fun `given login with wp email, when only a single woo store is available, then site should be auto selected`() =

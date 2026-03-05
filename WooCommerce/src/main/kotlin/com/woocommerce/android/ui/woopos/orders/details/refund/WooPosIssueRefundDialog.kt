@@ -380,7 +380,12 @@ private fun RefundSuccessContent(
             WooPosOutlinedButton(
                 text = stringResource(R.string.woopos_receipt_button),
                 onClick = {
-                    onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(state.orderId))
+                    onNavigationEvent(
+                        WooPosNavigationEvent.OpenEmailReceipt(
+                            orderId = state.orderId,
+                            receiptAlreadySent = state.receiptSentMessage != null,
+                        )
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )

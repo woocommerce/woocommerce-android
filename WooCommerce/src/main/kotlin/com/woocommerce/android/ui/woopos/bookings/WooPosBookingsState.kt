@@ -54,6 +54,7 @@ sealed class WooPosBookingsState {
         val phone: String?,
         val billingAddress: String?,
         val note: String?,
+        val isGuest: Boolean,
     )
 
     @Immutable
@@ -173,10 +174,4 @@ sealed class WooPosBookingsState {
     }
 }
 
-enum class PaymentStatus {
-    PAID,
-    UNPAID,
-    FAILED,
-    REFUNDED,
-    PARTIALLY_REFUNDED,
-}
+typealias PaymentStatus = com.woocommerce.android.ui.bookings.PaymentStatus

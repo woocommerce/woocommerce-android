@@ -6,6 +6,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.PaymentStatus
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateFormatter
@@ -67,6 +69,9 @@ class BookingListViewModelTest : BaseUnitTest() {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val paymentStatusResolver: PaymentStatusResolver = mock {
+        onBlocking { resolveAll(any()) } doReturn mapOf(1L to PaymentStatus.UNPAID)
+    }
 
     private lateinit var viewModel: BookingListViewModel
     private lateinit var savedStateHandle: SavedStateHandle
@@ -87,6 +92,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             dateFilterBuilder = filtersBuilder,
             bookingMapper = bookingMapper,
             isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+            paymentStatusResolver = paymentStatusResolver,
         )
     }
 

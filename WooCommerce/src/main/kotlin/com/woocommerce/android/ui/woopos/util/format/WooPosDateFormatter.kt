@@ -2,13 +2,11 @@ package com.woocommerce.android.ui.woopos.util.format
 
 import android.content.Context
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.clock
-import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -19,9 +17,7 @@ class WooPosDateFormatter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val clock: Clock,
     private val is24HourFormat: Is24HourFormat,
-    private val selectedSite: SelectedSite,
 ) {
-    private val storeZoneId: ZoneId by lazy { selectedSite.get().clock.zone }
 
     private fun getTimeFormatter(): DateTimeFormatter {
         val pattern = if (is24HourFormat()) "HH:mm" else "h:mm a"
@@ -38,9 +34,9 @@ class WooPosDateFormatter @Inject constructor(
         return DateTimeFormatter.ofPattern("MMM d, yyyy 'at' $timePattern", Locale.getDefault())
     }
 
-    fun formatShortDateInStoreTimeZone(instant: Instant): String =
+    fun formatShortDate(instant: Instant): String =
         DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-            .withZone(storeZoneId)
+            .withZone(ZoneOffset.UTC)
             .format(instant)
 
     /**
