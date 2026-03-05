@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -79,7 +78,7 @@ fun BookingAppointmentDetails(
                 when (model.location) {
                     is BookingLocationStatus.Loaded, is BookingLocationStatus.Unavailable -> {
                         Text(
-                            text = (model.location as? BookingLocationStatus.Loaded)?.location?.orNullIfEmpty() ?: "-",
+                            text = (model.location as? BookingLocationStatus.Loaded)?.location ?: "-",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

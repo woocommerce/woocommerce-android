@@ -311,7 +311,7 @@ class BookingDetailsViewModel @Inject constructor(
         loadingState: BookingDetailsLoadingState
     ): BookingLocationStatus {
         return when {
-            !booking.location.isNullOrBlank() -> BookingLocationStatus.Loaded(booking.location!!)
+            booking.location != null -> BookingLocationStatus.Loaded(booking.location!!)
             loadingState == BookingDetailsLoadingState.Loading ||
                 loadingState == BookingDetailsLoadingState.Refreshing -> BookingLocationStatus.Loading
 

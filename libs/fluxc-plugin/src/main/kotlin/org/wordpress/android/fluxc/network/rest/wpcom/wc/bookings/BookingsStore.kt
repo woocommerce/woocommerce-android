@@ -202,7 +202,7 @@ class BookingsStore @Inject internal constructor(
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBookingLocation") {
             if (bookingId != null) {
                 val existing = bookingsDao.getBooking(site.localId(), bookingId)
-                if (!existing?.location.isNullOrBlank()) {
+                if (existing?.location != null) {
                     return@withDefaultContext WooResult(existing.location)
                 }
             }
@@ -210,7 +210,7 @@ class BookingsStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    val location = response.result.bookingLocation
+                    val location = response.result.bookingLocation?.takeIf { it.isNotBlank() }
                     if (bookingId != null) {
                         bookingsDao.updateLocation(site.localId(), bookingId, location)
                     }
