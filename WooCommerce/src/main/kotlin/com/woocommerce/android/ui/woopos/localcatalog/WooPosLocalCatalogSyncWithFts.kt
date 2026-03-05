@@ -24,14 +24,19 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
+    data class FtsSyncResult(
+        val durationMs: Long,
+        val productsIndexed: Int,
+    )
+
     suspend fun syncFtsForFullSync(
         siteIdString: String,
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
-    ) {
+    ): FtsSyncResult? {
         if (!isFtsEnabled()) {
             logger.d("syncFtsForFullSync: FTS is disabled, skipping")
-            return
+            return null
         }
         val startTime = System.currentTimeMillis()
         logger.d("syncFtsForFullSync: clearing and rebuilding FTS index")
@@ -48,6 +53,11 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
             "syncFtsForFullSync completed: ${products.size} products, " +
                 "${variations.size} variations. Duration: ${duration}ms"
         )
+
+        return FtsSyncResult(
+            durationMs = duration,
+            productsIndexed = ftsEntities.size,
+        )
     }
 
     suspend fun syncFtsForIncrementalSync(
@@ -55,14 +65,14 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>,
         productsToRemove: List<RemoteId>
-    ) {
+    ): FtsSyncResult? {
         if (!isFtsEnabled()) {
             logger.d("syncFtsForIncrementalSync: FTS is disabled, skipping")
-            return
+            return null
         }
         if (products.isEmpty() && variations.isEmpty() && productsToRemove.isEmpty()) {
             logger.d("syncFtsForIncrementalSync: no items to update, skipping")
-            return
+            return null
         }
         val startTime = System.currentTimeMillis()
         logger.d(
@@ -93,6 +103,11 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
         val duration = System.currentTimeMillis() - startTime
         logger.d("syncFtsForIncrementalSync completed. Duration: ${duration}ms")
+
+        return FtsSyncResult(
+            durationMs = duration,
+            productsIndexed = ftsEntities.size,
+        )
     }
 
     suspend fun ensureFtsPopulated(site: SiteModel) {

@@ -301,8 +301,14 @@ class WooPosProductsInDbDataSource @Inject constructor(
         val result = localCatalogSearchDataSource.searchProducts(query)
 
         result.fold(
-            onSuccess = { products ->
-                emit(SearchProductsResult.Local(products))
+            onSuccess = { dbSearchResult ->
+                emit(
+                    SearchProductsResult.Local(
+                        products = dbSearchResult.products,
+                        searchTimeMillis = dbSearchResult.searchTimeMillis,
+                        searchMethod = dbSearchResult.searchMethod,
+                    )
+                )
             },
             onFailure = { error ->
                 emit(SearchProductsResult.Remote(Result.failure(error), 0L))

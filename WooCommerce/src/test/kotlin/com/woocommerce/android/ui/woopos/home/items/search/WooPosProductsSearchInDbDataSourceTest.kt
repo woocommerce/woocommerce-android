@@ -68,8 +68,8 @@ class WooPosProductsSearchInDbDataSourceTest {
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(15)
-        assertThat(result.getOrThrow().map { it.remoteId }).containsExactlyInAnyOrder(
+        assertThat(result.getOrThrow().products).hasSize(15)
+        assertThat(result.getOrThrow().products.map { it.remoteId }).containsExactlyInAnyOrder(
             *((1L..15L).toList().toTypedArray())
         )
     }
@@ -169,8 +169,8 @@ class WooPosProductsSearchInDbDataSourceTest {
         val result = sut.searchProducts("newQuery")
 
         // THEN
-        assertThat(result.getOrThrow()).hasSize(1)
-        assertThat(result.getOrThrow()[0].remoteId).isEqualTo(99L)
+        assertThat(result.getOrThrow().products).hasSize(1)
+        assertThat(result.getOrThrow().products[0].remoteId).isEqualTo(99L)
     }
 
     @Test

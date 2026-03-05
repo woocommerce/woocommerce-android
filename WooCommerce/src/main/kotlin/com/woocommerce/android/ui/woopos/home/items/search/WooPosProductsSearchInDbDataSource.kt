@@ -27,6 +27,12 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
         private const val PAGE_SIZE = 15
     }
 
+    data class DbSearchResult(
+        val products: List<WooPosProductModel>,
+        val searchTimeMillis: Long,
+        val searchMethod: String,
+    )
+
     private val searchOffset = AtomicInteger(0)
     private val canLoadMoreResults = AtomicBoolean(false)
     private var currentQuery: String = ""
@@ -35,7 +41,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = canLoadMoreResults.get()
 
-    suspend fun searchProducts(query: String): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+    suspend fun searchProducts(query: String): Result<DbSearchResult> = withContext(Dispatchers.IO) {
         searchOffset.set(0)
         currentQuery = query
         accumulatedResults.clear()
@@ -47,10 +53,10 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
             return@withContext Result.success(accumulatedResults.toList())
         }
 
-        performSearch(query)
+        performSearch(query).map { it.products }
     }
 
-    private suspend fun performSearch(query: String): Result<List<WooPosProductModel>> {
+    private suspend fun performSearch(query: String): Result<DbSearchResult> {
         val siteModel = selectedSite.getOrNull() ?: return Result.failure(
             IllegalStateException("No site selected")
         )
@@ -66,7 +72,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     private suspend fun performFtsSearch(
         siteId: LocalOrRemoteId.LocalId,
         query: String
-    ): Result<List<WooPosProductModel>> {
+    ): Result<DbSearchResult> {
         val startTime = System.currentTimeMillis()
         val offset = searchOffset.get()
         logger.d("performFtsSearch: query=\"$query\", offset=$offset, pageSize=$PAGE_SIZE")
@@ -100,7 +106,13 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                         "(${accumulatedResults.size} total). Duration: ${duration}ms"
                 )
 
-                Result.success(accumulatedResults.toList())
+                Result.success(
+                    DbSearchResult(
+                        products = accumulatedResults.toList(),
+                        searchTimeMillis = duration,
+                        searchMethod = "fts",
+                    )
+                )
             },
             onFailure = { error ->
                 val duration = System.currentTimeMillis() - startTime
@@ -113,7 +125,8 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     private suspend fun performLikeSearch(
         siteId: LocalOrRemoteId.LocalId,
         query: String
-    ): Result<List<WooPosProductModel>> {
+    ): Result<DbSearchResult> {
+        val startTime = System.currentTimeMillis()
         val result = posLocalCatalogStore.searchProducts(
             siteId = siteId,
             searchQuery = query,
@@ -131,7 +144,14 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                 canLoadMoreResults.set(products.size == PAGE_SIZE)
                 searchOffset.addAndGet(PAGE_SIZE)
 
-                Result.success(accumulatedResults.toList())
+                val duration = System.currentTimeMillis() - startTime
+                Result.success(
+                    DbSearchResult(
+                        products = accumulatedResults.toList(),
+                        searchTimeMillis = duration,
+                        searchMethod = "like",
+                    )
+                )
             },
             onFailure = { error ->
                 Result.failure(error)
