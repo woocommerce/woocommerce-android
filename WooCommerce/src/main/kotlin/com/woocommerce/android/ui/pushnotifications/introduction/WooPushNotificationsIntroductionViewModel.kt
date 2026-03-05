@@ -31,14 +31,14 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val BUTTON_LABEL_CONTINUE = "continue"
-        const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
-        const val BUTTON_LABEL_NOT_NOW = "not_now"
-        const val BUTTON_LABEL_SUPPORT = "support"
-        const val STATE_NOT_CONNECTED = "not_connected"
-        const val STATE_UPDATE_REQUIRED = "update_required"
-        const val ERROR_TYPE_NO_PERMISSION = "no_permission"
-        const val ERROR_TYPE_GENERIC = "generic"
+        private const val BUTTON_LABEL_CONTINUE = "continue"
+        private const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
+        private const val BUTTON_LABEL_NOT_NOW = "not_now"
+        private const val BUTTON_LABEL_SUPPORT = "support"
+        private const val STATE_NOT_CONNECTED = "not_connected"
+        private const val STATE_UPDATE_REQUIRED = "update_required"
+        private const val ERROR_TYPE_NO_PERMISSION = "no_permission"
+        private const val ERROR_TYPE_GENERIC = "generic"
     }
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)

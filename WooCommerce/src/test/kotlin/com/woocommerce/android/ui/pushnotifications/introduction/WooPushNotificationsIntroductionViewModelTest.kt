@@ -26,6 +26,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -383,6 +384,26 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.GenericError)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "generic"))
+            )
+        }
+
+    @Test
+    fun `given a Jetpack CP site with WC plugin check error, when screen opens, then GenericError state is shown`() =
+        testBlocking {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
+
+            setup(isJetpackCPSite = true)
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "generic"))
+            )
         }
 
     @Test
@@ -393,7 +414,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             setup(isJetpackCPSite = true)
 
-            verify(fetchJetpackStatus, org.mockito.kotlin.never()).invoke(any(), any(), anyOrNull())
+            verify(fetchJetpackStatus, never()).invoke(any(), any(), anyOrNull())
         }
 
     @Test
