@@ -406,4 +406,46 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         assertThat(result.lineItems.first().qtyAndUnitPrice).isEqualTo("2 x $4.00")
         assertThat(result.refundedLineItems).isEmpty()
     }
+
+    @Test
+    fun `given same product in different line items, when one is refunded, then only that line item is affected`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(
+                    itemId = 1L,
+                    productId = 10L,
+                    name = "Cup (Red)",
+                    price = BigDecimal("4.00"),
+                    quantity = 1f
+                ),
+                createOrderItem(
+                    itemId = 2L,
+                    productId = 10L,
+                    name = "Cup (Blue)",
+                    price = BigDecimal("4.00"),
+                    quantity = 1f
+                ),
+            )
+            val order = createOrder(orderItems)
+            val refunds = listOf(
+                createRefund(
+                    items = listOf(
+                        createRefundItem(orderItemId = 1L, productId = 10L, quantity = 1, total = BigDecimal("4.00"))
+                    )
+                )
+            )
+            val refundResult = RefundsFetchResult.Success(refunds)
+
+            // WHEN
+            val result = sut.mapOrderDetails(order, refundResult)
+
+            // THEN
+            assertThat(result.lineItems).hasSize(1)
+            assertThat(result.lineItems!!.first().name).isEqualTo("Cup (Blue)")
+
+            assertThat(result.refundedLineItems).hasSize(1)
+            assertThat(result.refundedLineItems!!.first().name).isEqualTo("Cup (Red)")
+        }
 }

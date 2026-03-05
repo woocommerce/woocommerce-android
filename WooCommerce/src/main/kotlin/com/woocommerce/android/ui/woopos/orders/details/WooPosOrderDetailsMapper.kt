@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.orders.details
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.getNonRefundedProducts
+import kotlin.math.abs
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
@@ -164,7 +164,24 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> return order.items
         }
         if (refunds.isEmpty()) return order.items
-        return refunds.getNonRefundedProducts(order.items)
+
+        val refundedByItemId = refunds
+            .flatMap { it.items }
+            .groupingBy { it.orderItemId }
+            .fold(0f) { acc, item -> acc + item.quantity }
+
+        return order.items.mapNotNull { item ->
+            val refundedQty = abs(refundedByItemId[item.itemId] ?: 0f)
+            val remaining = item.quantity - refundedQty
+            when {
+                remaining <= 0f -> null
+                remaining == item.quantity -> item
+                else -> {
+                    val newTotal = item.price * remaining.toBigDecimal()
+                    item.copy(quantity = remaining, total = newTotal)
+                }
+            }
+        }
     }
 
     private suspend fun buildLineItems(
