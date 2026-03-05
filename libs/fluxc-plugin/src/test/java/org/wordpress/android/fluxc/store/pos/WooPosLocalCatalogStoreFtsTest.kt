@@ -69,12 +69,13 @@ class WooPosLocalCatalogStoreFtsTest {
     }
 
     @Test
-    fun `given blank query, when searching fts, then returns empty list`() = runTest {
+    fun `given blank query, when searching fts, then returns failure`() = runTest {
         // WHEN
         val result = store.searchProductsFts(siteId, "  ")
 
         // THEN
-        assertThat(result.getOrThrow()).isEmpty()
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test

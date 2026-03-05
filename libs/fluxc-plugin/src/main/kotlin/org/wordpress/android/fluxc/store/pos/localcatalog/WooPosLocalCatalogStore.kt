@@ -145,7 +145,9 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "searchProductsFts") {
             val ftsQuery = formatFtsQuery(searchQuery)
             if (ftsQuery.isBlank()) {
-                return@withDefaultContext Result.success(emptyList())
+                return@withDefaultContext Result.failure(
+                    IllegalArgumentException("Search query is blank after formatting")
+                )
             }
 
             val ftsResults = posFtsDao.search(
