@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingListItemTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingNoteAdded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingViewOrderTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingsListSearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import java.time.Clock
 import java.time.Instant
@@ -32,6 +33,10 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
 
     suspend fun trackListItemTapped() {
         analyticsTracker.track(BookingListItemTapped)
+    }
+
+    suspend fun trackSearchButtonTapped() {
+        analyticsTracker.track(BookingsListSearchButtonTapped)
     }
 
     suspend fun trackBookingCancelled() {
