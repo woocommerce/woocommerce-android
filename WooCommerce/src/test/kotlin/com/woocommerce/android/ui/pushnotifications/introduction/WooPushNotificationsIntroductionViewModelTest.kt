@@ -253,6 +253,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
                     shouldAutoOpenUpdatePlugin = true
                 )
             )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+            )
         }
 
     @Test
@@ -276,12 +280,12 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
                     isSiteConnectedToJetpack = false,
-                    shouldAutoOpenUpdatePlugin = false
+                    shouldAutoOpenUpdatePlugin = true
                 )
             )
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
-                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
             )
         }
 
