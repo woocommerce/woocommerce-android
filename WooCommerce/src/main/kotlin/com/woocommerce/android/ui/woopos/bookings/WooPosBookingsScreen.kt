@@ -751,6 +751,7 @@ private fun sampleBookingDetails(
         phone = "+1 555-123-4567",
         billingAddress = null,
         note = null,
+        isGuest = false,
     ),
     attendanceSection = WooPosBookingsState.AttendanceSection(
         selection = WooPosBookingsState.AttendanceState.ATTENDED,

@@ -9,6 +9,7 @@ data class FeatureAnnouncement(
     val minimumAppVersion: String,
     val maximumAppVersion: String,
     val appVersionTargets: List<String>,
+    val detailsUrl: String,
     val isLocalized: Boolean = false,
     val features: List<FeatureAnnouncementItem>
 ) : Parcelable {
