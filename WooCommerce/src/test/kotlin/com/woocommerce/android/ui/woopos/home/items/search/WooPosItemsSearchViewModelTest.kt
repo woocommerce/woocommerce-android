@@ -1196,6 +1196,66 @@ class WooPosItemsSearchViewModelTest {
         )
     }
 
+    @Test
+    fun `when local search returns results, then trackLocalSearchResults is called`() = runTest {
+        // GIVEN
+        val products = listOf(defaultProduct)
+        whenever(mockDataSource.searchProducts(defaultQuery)).thenReturn(
+            flowOf(
+                SearchProductsResult.Local(
+                    products = products,
+                    searchTimeMillis = 42L,
+                    searchMethod = "fts",
+                ),
+            )
+        )
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(defaultQuery))
+        )
+
+        // WHEN
+        createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockAnalyticsTracker).trackLocalSearchResults(
+            resultsCount = 1,
+            searchTimeMillis = 42L,
+            searchMethod = "fts",
+        )
+    }
+
+    @Test
+    fun `when search result item is tapped, then trackSearchResultTapped is called`() = runTest {
+        // GIVEN
+        val product2 = generateWooPosProduct(
+            productId = 2,
+            productName = "Test Product 2",
+            amount = "20.0",
+            productType = WooPosProductModel.WooPosProductType.Simple
+        )
+        val products = listOf(defaultProduct, product2)
+        mockSuccessfulSearch(defaultQuery, products)
+        whenever(mockAnalyticsTracker.isProductInTheLocalSearchResult(any())).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceTimeBy(600)
+
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosItemsSearchViewState.Content
+            val secondItem = contentState.items[1]
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(secondItem))
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockAnalyticsTracker).trackSearchResultTapped(
+                resultPosition = 1,
+                resultType = "product",
+            )
+        }
+    }
+
     private fun createViewModel() = WooPosItemsSearchViewModel(
         emptyStateRepository = mockEmptyStateProvider,
         priceFormat = mockPriceFormat,
