@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,6 +56,7 @@ fun BookingAttendanceStatusTag(
                     text = state.text(),
                     backgroundColor = state.backgroundColor(),
                     textColor = state.textColor(),
+                    border = state.border(),
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
                         .onSizeChanged {
@@ -83,10 +85,23 @@ fun BookingAttendanceStatus?.text(): String {
 }
 
 @Composable
-fun BookingAttendanceStatus.backgroundColor(): Color = colorResource(R.color.tagView_bg)
+fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
+    Color.Transparent
+} else {
+    colorResource(R.color.tagView_bg)
+}
 
 @Composable
 fun BookingAttendanceStatus.textColor(): Color = colorResource(R.color.tagView_text)
+
+@Composable
+fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {
+    BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+} else {
+    null
+}
+
+private fun BookingAttendanceStatus.isOutlined(): Boolean = this == BookingAttendanceStatus.Attended
 
 @Preview
 @Composable
