@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
-import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -214,7 +213,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val refundedItem = refundedItems.first()
         assertThat(refundedItem.name).isEqualTo("Cup")
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("1 x $4.00")
-        assertThat(refundedItem.lineTotal).isEqualTo("-$4.00")
+        assertThat(refundedItem.lineTotal).isEqualTo("$-4.00")
 
         val lineItems = (result.lineItems as LineItemsState.Loaded).items
         assertThat(lineItems).hasSize(1)
@@ -254,7 +253,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         assertThat(refundedItems).hasSize(1)
         val refundedItem = refundedItems.first()
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("3 x $4.00")
-        assertThat(refundedItem.lineTotal).isEqualTo("-$12.00")
+        assertThat(refundedItem.lineTotal).isEqualTo("$-12.00")
     }
 
     @Test
@@ -357,7 +356,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
         assertThat(refundedItems).hasSize(2)
         assertThat(refundedItems.map { it.name }).containsExactly("Cup", "Plate")
-        assertThat(refundedItems.map { it.lineTotal }).containsExactly("-$4.00", "-$6.00")
+        assertThat(refundedItems.map { it.lineTotal }).containsExactly("$-4.00", "$-6.00")
 
         val lineItems = (result.lineItems as LineItemsState.Loaded).items
         assertThat(lineItems).hasSize(1)

@@ -18,6 +18,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -133,14 +134,22 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 val orderItem = order.items.find { it.itemId == agg.orderItemId }
                 val name = orderItem?.name ?: agg.refundItem.name
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
-                val unitPrice = agg.refundItem.price
+                val unitPrice = if (agg.quantity != 0) {
+                    agg.total.divide(
+                        BigDecimal.valueOf(agg.quantity.toLong()),
+                        agg.total.scale(),
+                        RoundingMode.HALF_UP
+                    )
+                } else {
+                    agg.total
+                }
                 val product = getProductById(agg.refundItem.productId)
                 LineItemRow(
                     id = agg.orderItemId,
                     name = name,
                     attributesDescription = attributesDescription,
                     qtyAndUnitPrice = "${agg.quantity} x ${formatPrice(unitPrice, order.currency)}",
-                    lineTotal = "-${formatPrice(agg.total, order.currency)}",
+                    lineTotal = formatPrice(agg.total.negate(), order.currency),
                     imageUrl = product?.firstImageUrl,
                 )
             }
