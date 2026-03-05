@@ -97,7 +97,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                         "(${accumulatedResults.size} total). Duration: ${duration}ms"
                 )
 
-                Result.success(accumulatedResults)
+                Result.success(accumulatedResults.toList())
             },
             onFailure = { error ->
                 val duration = System.currentTimeMillis() - startTime
@@ -128,7 +128,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                 canLoadMoreResults.set(products.size == PAGE_SIZE)
                 searchOffset.addAndGet(PAGE_SIZE)
 
-                Result.success(accumulatedResults)
+                Result.success(accumulatedResults.toList())
             },
             onFailure = { error ->
                 Result.failure(error)
