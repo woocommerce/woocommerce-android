@@ -454,7 +454,7 @@ Settings is a separate Activity (`AppSettingsActivity`). Use `adb shell dumpsys 
 | Privacy Settings | `PrivacySettingsFragment` | Settings → "Privacy settings" |
 | Experimental features | `BetaFeaturesFragment` | Settings → "Experimental features" |
 | Developer Options | `DeveloperOptionsFragment` | Settings → "Developer options" (debug only) |
-| Notifications | `NotificationSettingsFragment` | Settings → "Notifications" |
+| Manage Notifications | OS Notification Settings | Settings → Manage Notifications |
 | Account Settings | `AccountSettingsFragment` | Settings → Account section |
 | About | `UnifiedAboutScreenActivity` | Settings → "About" |
 | Plugins | `PluginsFragment` | Settings → "Plugins" |
