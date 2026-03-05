@@ -106,9 +106,9 @@ class WooFileLogger(
     suspend fun getLogFileContent(fileName: String): List<LogEntry>? {
         return withContext(dispatchers.io) {
             runCatching {
-                logFileWriter.getLogFiles().find { it.name == fileName }?.readText()?.let { text ->
+                logFileWriter.readFileContent(fileName)?.let { text ->
                     if (text.isBlank()) return@let emptyList<LogEntry>()
-                    text.split("\n${LOG_ENTRY_PREFIX}").map {
+                    text.split("\n${LOG_ENTRY_PREFIX}").mapNotNull {
                         LogEntry.fromString(it.removePrefix(LOG_ENTRY_PREFIX))
                     }
                 }
