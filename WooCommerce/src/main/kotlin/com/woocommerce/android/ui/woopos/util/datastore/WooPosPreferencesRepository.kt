@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -16,7 +18,7 @@ import javax.inject.Inject
 
 class WooPosPreferencesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val dataStore: DataStore<Preferences>
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val dataStore: DataStore<Preferences>
 ) {
     private val recentProductSearchesSiteSpecificKey: Preferences.Key<String>
         get() = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)

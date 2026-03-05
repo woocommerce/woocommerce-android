@@ -9,36 +9,22 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotific
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationResponsePayload;
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsPayload;
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsResponsePayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationSeenResponsePayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsSeenPayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDevicePayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDeviceResponsePayload;
 
 @ActionEnum
 public enum NotificationAction implements IAction {
     // Remote actions
-    @Action(payloadType = RegisterDevicePayload.class)
-    @Deprecated
-    REGISTER_DEVICE, // Register device for push notifications with WordPress.com
     @Action(payloadType = FetchNotificationsPayload.class)
     FETCH_NOTIFICATIONS, // Fetch notifications
     @Action(payloadType = FetchNotificationPayload.class)
     FETCH_NOTIFICATION, // Fetch a single notification
-    @Action(payloadType = MarkNotificationsSeenPayload.class)
-    MARK_NOTIFICATIONS_SEEN, // Submit the time notifications were last seen
 
     // Remote responses
-    @Action(payloadType = RegisterDeviceResponsePayload.class)
-    @Deprecated
-    REGISTERED_DEVICE, // Response to device registration received
     @Action(payloadType = FetchNotificationHashesResponsePayload.class)
     FETCHED_NOTIFICATION_HASHES, // Response to an internal request to fetch notification hashes for synchronization
     @Action(payloadType = FetchNotificationsResponsePayload.class)
     FETCHED_NOTIFICATIONS, // Response to fetching notifications
     @Action(payloadType = FetchNotificationResponsePayload.class)
     FETCHED_NOTIFICATION, // Response to fetching a single notification
-    @Action(payloadType = MarkNotificationSeenResponsePayload.class)
-    MARKED_NOTIFICATIONS_SEEN, // Response to submitting the time notifications were last seen
 
     // Local actions
     @Action(payloadType = NotificationModel.class)

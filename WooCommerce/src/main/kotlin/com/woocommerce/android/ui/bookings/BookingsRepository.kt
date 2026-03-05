@@ -61,6 +61,18 @@ class BookingsRepository @Inject constructor(
             order = order
         )
 
+    suspend fun getBookingsList(
+        limit: Int? = null,
+        filters: BookingFilters? = null,
+        order: BookingsOrderOption
+    ): List<Booking> =
+        bookingsStore.getBookings(
+            site = selectedSite.get(),
+            limit = limit,
+            filters = filters,
+            order = order
+        )
+
     fun observeBookingsCount(): Flow<Long> = bookingsStore.observeBookingCount(site = selectedSite.get())
 
     fun observeBooking(bookingId: Long): Flow<Booking?> =
@@ -135,18 +147,18 @@ class BookingsRepository @Inject constructor(
     suspend fun updateAttendanceStatus(
         bookingId: Long,
         attendanceStatus: BookingEntity.AttendanceStatus,
-    ): Result<Unit> = appCoroutineScope.async {
+    ): Result<Unit> {
         val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
             bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = attendanceStatus)
         )
-        if (result.isError) {
+        return if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
             Result.success(Unit)
         }
-    }.await()
+    }
 
     suspend fun updateNote(
         bookingId: Long,
@@ -179,6 +191,18 @@ class BookingsRepository @Inject constructor(
             Result.success(Unit)
         }
     }.await()
+
+    suspend fun fetchProductBookingLocation(productId: Long): Result<String?> {
+        val result = bookingsStore.fetchProductBookingLocation(
+            site = selectedSite.get(),
+            productId = productId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(result.model)
+        }
+    }
 
     suspend fun markAsPaid(
         bookingId: Long,

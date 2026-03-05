@@ -1,35 +1,25 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.payments.refunds.PaymentChargeRepository
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
-import org.wordpress.android.fluxc.store.WCGatewayStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosGetPaymentMethodTest {
     private lateinit var paymentChargeRepository: PaymentChargeRepository
-    private lateinit var gatewayStore: WCGatewayStore
-    private lateinit var selectedSite: SelectedSite
+    private lateinit var loadPaymentGateway: WooPosLoadPaymentGateway
     private lateinit var resourceProvider: ResourceProvider
-    private lateinit var coroutineDispatchers: CoroutineDispatchers
     private lateinit var sut: WooPosGetPaymentMethod
 
-    private val testSite = SiteModel().apply { id = 1 }
     private val testOrder = OrderTestUtils.generateTestOrder().copy(
         paymentMethod = "stripe",
         paymentMethodTitle = "Credit card",
@@ -39,26 +29,17 @@ class WooPosGetPaymentMethodTest {
     @Before
     fun setup() {
         paymentChargeRepository = mock()
-        gatewayStore = mock()
-        selectedSite = mock()
+        loadPaymentGateway = mock()
         resourceProvider = mock()
-        coroutineDispatchers = CoroutineDispatchers(
-            main = UnconfinedTestDispatcher(),
-            computation = UnconfinedTestDispatcher(),
-            io = UnconfinedTestDispatcher()
-        )
 
-        whenever(selectedSite.get()).thenReturn(testSite)
         whenever(resourceProvider.getString(R.string.order_refunds_manual_refund)).thenReturn("Manual refund")
         whenever(resourceProvider.getString(R.string.order_refunds_credit_card_refund))
             .thenReturn("Credit card refund")
 
         sut = WooPosGetPaymentMethod(
             paymentChargeRepository = paymentChargeRepository,
-            gatewayStore = gatewayStore,
-            selectedSite = selectedSite,
-            resourceProvider = resourceProvider,
-            coroutineDispatchers = coroutineDispatchers
+            loadPaymentGateway = loadPaymentGateway,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -66,17 +47,15 @@ class WooPosGetPaymentMethodTest {
     fun `given enabled gateway with card details, when invoke, then returns formatted payment method with card info`() =
         runTest {
             // GIVEN
-            val gateway = WCGatewayModel(
-                id = "stripe",
+            val gateway = PaymentGateway(
                 title = "Credit Card",
                 description = "",
-                order = 0,
                 isEnabled = true,
                 methodTitle = "Credit card",
                 methodDescription = "",
-                features = listOf("refunds")
+                supportsRefunds = true
             )
-            whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123")).thenReturn(
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                     cardBrand = "visa",
@@ -89,23 +68,22 @@ class WooPosGetPaymentMethodTest {
             val result = sut(testOrder)
 
             // THEN
-            assertThat(result).isEqualTo("Credit Card (Visa **** 4242)")
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrThrow()).isEqualTo("Credit Card (Visa **** 4242)")
         }
 
     @Test
     fun `given disabled gateway, when invoke, then returns manual refund with gateway title`() = runTest {
         // GIVEN
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "Credit Card",
             description = "",
-            order = 0,
             isEnabled = false,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = emptyList()
+            supportsRefunds = false
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
         whenever(
             resourceProvider.getString(
                 R.string.order_refunds_method,
@@ -118,23 +96,22 @@ class WooPosGetPaymentMethodTest {
         val result = sut(testOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Manual refund (Credit Card)")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Manual refund (Credit Card)")
     }
 
     @Test
     fun `given gateway without refund support, when invoke, then returns manual refund`() = runTest {
         // GIVEN
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "Credit Card",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = emptyList()
+            supportsRefunds = false
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
         whenever(
             resourceProvider.getString(
                 R.string.order_refunds_method,
@@ -147,7 +124,8 @@ class WooPosGetPaymentMethodTest {
         val result = sut(testOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Manual refund (Credit Card)")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Manual refund (Credit Card)")
     }
 
     @Test
@@ -158,62 +136,58 @@ class WooPosGetPaymentMethodTest {
             paymentMethodTitle = "Cash on delivery",
             chargeId = null
         )
-        val gateway = WCGatewayModel(
-            id = "cod",
+        val gateway = PaymentGateway(
             title = "Cash on Delivery",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Cash on delivery",
             methodDescription = "",
-            features = listOf("refunds")
+            supportsRefunds = true
         )
-        whenever(gatewayStore.getGateway(testSite, "cod")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(cashOrder)).thenReturn(Result.success(gateway))
 
         // WHEN
         val result = sut(cashOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Cash on Delivery")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Cash on Delivery")
     }
 
     @Test
     fun `given order without chargeId, when invoke, then returns gateway title without card details`() = runTest {
         // GIVEN
         val orderWithoutChargeId = testOrder.copy(chargeId = null)
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "Credit Card",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = listOf("refunds")
+            supportsRefunds = true
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(orderWithoutChargeId)).thenReturn(Result.success(gateway))
 
         // WHEN
         val result = sut(orderWithoutChargeId)
 
         // THEN
-        assertThat(result).isEqualTo("Credit Card")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Credit Card")
     }
 
     @Test
     fun `given card fetch fails, when invoke, then returns gateway title without card details`() = runTest {
         // GIVEN
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "Credit Card",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = listOf("refunds")
+            supportsRefunds = true
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123"))
             .thenReturn(PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error)
 
@@ -221,37 +195,37 @@ class WooPosGetPaymentMethodTest {
         val result = sut(testOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Credit Card")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Credit Card")
     }
 
     @Test
-    fun `given gateway not found, when invoke, then throws IllegalStateException`() = runTest {
+    fun `given gateway not found, when invoke, then returns failure`() = runTest {
         // GIVEN
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(null)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(
+            Result.failure(Exception("Payment gateway 'stripe' not found"))
+        )
 
-        // WHEN & THEN
-        val exception = assertThrows(IllegalStateException::class.java) {
-            runBlocking {
-                sut(testOrder)
-            }
-        }
-        assertThat(exception.message).isEqualTo("Payment gateway not found for method: stripe")
+        // WHEN
+        val result = sut(testOrder)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()?.message).contains("Payment gateway 'stripe' not found")
     }
 
     @Test
     fun `given gateway with blank title, when invoke, then returns method title`() = runTest {
         // GIVEN
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = listOf("refunds")
+            supportsRefunds = true
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123")).thenReturn(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                 cardBrand = "mastercard",
@@ -264,23 +238,22 @@ class WooPosGetPaymentMethodTest {
         val result = sut(testOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Credit card (Mastercard **** 5555)")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Credit card (Mastercard **** 5555)")
     }
 
     @Test
     fun `given card data with empty values, when invoke, then formats with empty brand and last4`() = runTest {
         // GIVEN
-        val gateway = WCGatewayModel(
-            id = "stripe",
+        val gateway = PaymentGateway(
             title = "Credit Card",
             description = "",
-            order = 0,
             isEnabled = true,
             methodTitle = "Credit card",
             methodDescription = "",
-            features = listOf("refunds")
+            supportsRefunds = true
         )
-        whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(gateway)
+        whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123")).thenReturn(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                 cardBrand = null,
@@ -293,6 +266,7 @@ class WooPosGetPaymentMethodTest {
         val result = sut(testOrder)
 
         // THEN
-        assertThat(result).isEqualTo("Credit Card ( **** )")
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEqualTo("Credit Card ( **** )")
     }
 }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -170,7 +171,7 @@ class RegisterDeviceTest : BaseUnitTest() {
     }
 
     private suspend fun setupStatus(status: Status) {
-        whenever(pushNotificationRegistrationStatus(any())).thenReturn(status)
+        whenever(pushNotificationRegistrationStatus.invoke(anyOrNull())).thenReturn(status)
     }
 
     companion object {

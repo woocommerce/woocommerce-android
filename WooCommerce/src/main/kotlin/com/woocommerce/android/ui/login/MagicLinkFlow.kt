@@ -9,7 +9,7 @@ enum class MagicLinkFlow(private val value: String) : AuthEmailFlow {
 
     companion object {
         fun fromString(value: String): MagicLinkFlow? {
-            return MagicLinkFlow.values().firstOrNull { it.value == value }
+            return entries.firstOrNull { it.value == value }
         }
     }
 }

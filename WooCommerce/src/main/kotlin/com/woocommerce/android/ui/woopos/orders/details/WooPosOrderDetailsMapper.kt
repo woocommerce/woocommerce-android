@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -24,6 +25,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
     private val orderStatusMapper: WooPosOrderStatusMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
+    private val bookingInfoMapper: WooPosBookingInfoMapper,
 ) {
     suspend fun mapOrderDetails(
         order: Order,
@@ -33,7 +35,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val lineItems = buildLineItems(order)
         val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
-        val actions = orderActionsProvider.getAvailableActions(order, historicalRefundsResult)
+        val actions = orderActionsProvider.getAvailableActions(order)
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
@@ -46,7 +48,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             lineItems = lineItems,
             breakdown = breakdown,
             total = formatPrice(order.total, order.currency),
-            totalPaid = formatPrice(order.total, order.currency),
+            totalPaid = if (order.isOrderPaid) {
+                formatPrice(order.total, order.currency)
+            } else {
+                formatPrice(BigDecimal.ZERO, order.currency)
+            },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
             actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions)
         )
@@ -71,7 +77,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             lineItems = lineItems,
             breakdown = breakdown,
             total = formatPrice(order.total),
-            totalPaid = formatPrice(order.total),
+            totalPaid = if (order.isOrderPaid) {
+                formatPrice(order.total)
+            } else {
+                formatPrice(BigDecimal.ZERO)
+            },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
             actionsState = WooPosOrdersState.OrderActionsState.Loading
         )
@@ -79,7 +89,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
 
     private suspend fun buildLineItems(
         order: Order
-    ): List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow> = coroutineScope {
+    ): List<LineItemRow> = coroutineScope {
         order.items.map { item ->
             async {
                 val unitPrice =
@@ -89,13 +99,15 @@ class WooPosOrderDetailsMapper @Inject constructor(
                         item.total / item.quantity.toBigDecimal()
                     }
                 val product = getProductById(item.productId)
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                val bookingInfo = item.bookingId?.let { bookingInfoMapper.resolveBookingInfo(it) }
+                LineItemRow(
                     id = item.itemId,
                     name = item.name,
                     attributesDescription = item.attributesDescription.takeIf { it.isNotEmpty() },
                     qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
                     lineTotal = formatPrice(item.total, order.currency),
-                    imageUrl = product?.firstImageUrl
+                    imageUrl = product?.firstImageUrl,
+                    bookingInfo = bookingInfo,
                 )
             }
         }.awaitAll()

@@ -80,7 +80,8 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="@dimen/major_150"
                     android:drawableStart="@drawable/ic_wordpress"
-                    android:text="@string/login_with_wordpress"/>
+                    android:text="@string/login_with_wordpress"
+                    app:drawableTint="@color/color_icon" />
 
                 <View
                     android:id="@+id/view1"

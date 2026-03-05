@@ -26,6 +26,10 @@ data class DashboardWidget(
         val trackingIdentifier: String,
         private val isSupported: Boolean = true,
     ) {
+        PUSH_NOTIFICATIONS(
+            titleResource = R.string.my_store_widget_push_notifications_menu_title,
+            trackingIdentifier = "push_notifications"
+        ),
         ONBOARDING(
             titleResource = R.string.my_store_widget_onboarding_title,
             trackingIdentifier = "store_setup"

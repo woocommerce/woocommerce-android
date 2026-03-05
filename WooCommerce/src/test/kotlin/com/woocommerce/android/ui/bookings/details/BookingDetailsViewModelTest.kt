@@ -7,7 +7,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.PaymentStatus
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -19,6 +20,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -56,6 +58,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
     private val networkStatus = mock<NetworkStatus> {
         on { isConnected() } doReturn true
+    }
+    private val paymentStatusResolver = mock<PaymentStatusResolver> {
+        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
 
     @Before
@@ -95,18 +100,18 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onAttendanceStatusSelected called, then updateAttendanceStatus called`() = testBlocking {
+    fun `when onAttendanceToggle called, then updateAttendanceStatus called`() = testBlocking {
         // Given
         val viewModel = createViewModel()
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.NoShow)
+        state.bookingUiState?.onAttendanceToggle()
 
         // Then
         verify(bookingsRepository, times(1)).updateAttendanceStatus(
             bookingId = initialBooking.id.value,
-            attendanceStatus = BookingEntity.AttendanceStatus.NoShow
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended
         )
     }
 
@@ -305,65 +310,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onMarkAsPaid invoked, then repository markAsPaid called and payment status shows progress then idle`() =
-        testBlocking {
-            // Given
-            whenever(bookingsRepository.markAsPaid(any())).doSuspendableAnswer {
-                delay(100)
-                Result.success(Unit)
-            }
-            val viewModel = createViewModel()
-            val state = viewModel.state.getOrAwaitValue()
-
-            // When
-            state.bookingUiState?.onMarkAsPaid()
-
-            // Then: immediately after click (operation in progress)
-            val during = viewModel.state.getOrAwaitValue()
-            assertThat(during.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.InProgress)
-            verify(bookingsRepository, times(1)).markAsPaid(bookingId)
-
-            // And after operation completes, status returns to idle
-            advanceUntilIdle()
-            val after = viewModel.state.getOrAwaitValue()
-            assertThat(after.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
-        }
-
-    @Test
-    fun `when offline and onMarkAsPaid invoked, then offline snackbar shown and repo not called`() = testBlocking {
-        // Given
-        whenever(networkStatus.isConnected()).thenReturn(false)
-        val viewModel = createViewModel()
-        val state = viewModel.state.getOrAwaitValue()
-
-        // When
-        state.bookingUiState?.onMarkAsPaid()
-
-        // Then
-        val event = viewModel.event.getOrAwaitValue()
-        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
-        verify(bookingsRepository, times(0)).markAsPaid(any())
-    }
-
-    @Test
-    fun `given markAsPaid fails, when called, then show error snackbar and status returns idle`() = testBlocking {
-        // Given
-        whenever(bookingsRepository.markAsPaid(any())).thenReturn(Result.failure(Exception("Mark as paid failed")))
-        val viewModel = createViewModel()
-        val state = viewModel.state.getOrAwaitValue()
-
-        // When
-        state.bookingUiState?.onMarkAsPaid()
-
-        // Then
-        val event = viewModel.event.getOrAwaitValue()
-        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
-        advanceUntilIdle()
-        val after = viewModel.state.getOrAwaitValue()
-        assertThat(after.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
-    }
-
-    @Test
     fun `given Empty mode, when ViewModel created, then state is empty`() = testBlocking {
         // Given
         val savedState = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.Empty))
@@ -377,6 +323,30 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(state.toolbarTitle).isEmpty()
     }
 
+    @Test
+    fun `when onAttendanceToggle called rapidly, then first request error is suppressed by cancellation`() =
+        testBlocking {
+            // GIVEN
+            whenever(bookingsRepository.updateAttendanceStatus(any(), any())).doSuspendableAnswer {
+                delay(1000)
+                Result.failure(Exception("Network error"))
+            }
+            val viewModel = createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            events.clear() // ignore init events
+
+            // WHEN
+            val state = viewModel.state.getOrAwaitValue()
+            state.bookingUiState?.onAttendanceToggle()
+            state.bookingUiState?.onAttendanceToggle()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(events.filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>())
+                .hasSize(1)
+        }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
@@ -385,7 +355,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             bookingsRepository = bookingsRepository,
             bookingMapper = bookingMapper,
-            networkStatus = networkStatus
+            networkStatus = networkStatus,
+            paymentStatusResolver = paymentStatusResolver,
+            appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }
@@ -412,7 +384,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
             order = BookingOrderInfo(),
             customerNote = "Customer note"
         )

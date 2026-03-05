@@ -8,7 +8,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.WCOrderAction
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
@@ -77,13 +76,8 @@ class WCOrderStore @Inject internal constructor(
 ) : Store(dispatcher) {
     companion object {
         const val NUM_ORDERS_PER_FETCH = 15
+        private const val IDS_QUERY_CHUNK_SIZE = 200
     }
-
-    class FetchOrdersPayload(
-        var site: SiteModel,
-        var statusFilter: String? = null,
-        var loadMore: Boolean = false
-    ) : Payload<BaseNetworkError>()
 
     class FetchOrderListPayload(
         val listDescriptor: WCOrderListDescriptor,
@@ -140,29 +134,6 @@ class WCOrderStore @Inject internal constructor(
         }
     }
 
-    class SearchOrdersPayload(
-        var site: SiteModel,
-        var searchQuery: String,
-        var offset: Int
-    ) : Payload<BaseNetworkError>()
-
-    class SearchOrdersResponsePayload(
-        var site: SiteModel,
-        var searchQuery: String,
-        var canLoadMore: Boolean = false,
-        var offset: Int = 0,
-        var orders: List<OrderEntity> = emptyList()
-    ) : Payload<OrderError>() {
-        constructor(error: OrderError, site: SiteModel, query: String) : this(site, query) {
-            this.error = error
-        }
-    }
-
-    class FetchOrdersCountPayload(
-        var site: SiteModel,
-        var statusFilter: String
-    ) : Payload<BaseNetworkError>()
-
     class FetchOrdersCountResponsePayload(
         var site: SiteModel,
         var statusFilter: String?,
@@ -182,12 +153,6 @@ class WCOrderStore @Inject internal constructor(
             this.error = error
         }
     }
-
-    class UpdateOrderStatusPayload(
-        val order: OrderEntity,
-        val site: SiteModel,
-        val status: String
-    ) : Payload<BaseNetworkError>()
 
     sealed class RemoteOrderPayload : Payload<OrderError>() {
         abstract val site: SiteModel
@@ -394,13 +359,6 @@ class WCOrderStore @Inject internal constructor(
         val orderIds: List<Long>
     ) : OnChanged<OrderError>()
 
-    class OnOrdersSearched(
-        var searchQuery: String = "",
-        var canLoadMore: Boolean = false,
-        var nextOffset: Int = 0,
-        var searchResults: List<OrderEntity> = emptyList()
-    ) : OnChanged<OrderError>()
-
     class OnOrderStatusOptionsChanged : OnChanged<OrderError>()
 
     data class OnOrderShipmentProvidersChanged(
@@ -474,6 +432,15 @@ class WCOrderStore @Inject internal constructor(
         return ordersDaoDecorator.getOrder(orderId, site.localId())
     }
 
+    suspend fun getOrdersByIdsAndSite(orderIds: List<Long>, site: SiteModel): List<OrderEntity> {
+        if (orderIds.isEmpty()) return emptyList()
+        return coroutineEngine.withDefaultContext(API, this, "getOrdersByIdsAndSite") {
+            orderIds.chunked(IDS_QUERY_CHUNK_SIZE).flatMap { orderIdsChunk ->
+                ordersDaoDecorator.getOrdersForSiteByRemoteIds(site.localId(), orderIdsChunk)
+            }
+        }
+    }
+
     /**
      * Given an order id and [SiteModel],
      * returns the metadata from the database for an order
@@ -488,14 +455,6 @@ class WCOrderStore @Inject internal constructor(
      */
     suspend fun getDisplayableOrderMetadata(orderId: Long, site: SiteModel): List<WCMetaData> {
         return metaDataDao.getDisplayableMetaData(site.localId(), orderId).map { it.toDomainModel() }
-    }
-
-    /**
-     * Given an order id and [SiteModel],
-     * returns whether there is metadata in the database for an order
-     */
-    suspend fun hasOrderMetadata(orderId: Long, site: SiteModel): Boolean {
-        return metaDataDao.hasMetaData(orderId, site.localId())
     }
 
     /**
@@ -533,49 +492,25 @@ class WCOrderStore @Inject internal constructor(
     suspend fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
         orderShipmentTrackingDao.getShipmentTrackingByNumber(site.localId(), RemoteId(orderId), trackingNumber)
 
-    @Suppress("ComplexMethod", "UseCheckOrError")
     @Subscribe(threadMode = ThreadMode.ASYNC)
     override fun onAction(action: Action<*>) {
         val actionType = action.type as? WCOrderAction ?: return
         when (actionType) {
-            // remote actions
-            FETCH_ORDERS -> fetchOrders(action.payload as FetchOrdersPayload)
             WCOrderAction.FETCH_ORDER_LIST -> fetchOrderList(action.payload as FetchOrderListPayload)
             WCOrderAction.FETCH_ORDERS_BY_IDS -> coroutineEngine.launch(API, this, "fetchOrdersByIds") {
                 fetchOrdersByIds(action.payload as FetchOrdersByIdsPayload)
             }
-            WCOrderAction.FETCH_ORDERS_COUNT -> fetchOrdersCount(action.payload as FetchOrdersCountPayload)
-            WCOrderAction.UPDATE_ORDER_STATUS ->
-                throw IllegalStateException("Invalid action. Use suspendable updateOrderStatus(..) directly")
-
-            WCOrderAction.SEARCH_ORDERS -> searchOrders(action.payload as SearchOrdersPayload)
             WCOrderAction.FETCH_ORDER_STATUS_OPTIONS ->
                 fetchOrderStatusOptions(action.payload as FetchOrderStatusOptionsPayload)
-
-            // remote responses
-            WCOrderAction.FETCHED_ORDERS -> handleFetchOrdersCompleted(action.payload as FetchOrdersResponsePayload)
             WCOrderAction.FETCHED_ORDER_LIST ->
                 handleFetchOrderListCompleted(action.payload as FetchOrderListResponsePayload)
-
             WCOrderAction.FETCHED_ORDERS_BY_IDS ->
                 handleFetchOrderByIdsCompleted(action.payload as FetchOrdersByIdsResponsePayload)
-
-            WCOrderAction.FETCHED_ORDERS_COUNT ->
-                handleFetchOrdersCountCompleted(action.payload as FetchOrdersCountResponsePayload)
-
-            WCOrderAction.SEARCHED_ORDERS -> handleSearchOrdersCompleted(action.payload as SearchOrdersResponsePayload)
             WCOrderAction.FETCHED_ORDER_STATUS_OPTIONS ->
                 handleFetchOrderStatusOptionsCompleted(action.payload as FetchOrderStatusOptionsResponsePayload)
+            // Deprecated actions
+            WCOrderAction.UPDATE_ORDER_STATUS -> {}
         }
-    }
-
-    private fun fetchOrders(payload: FetchOrdersPayload) {
-        val offset = if (payload.loadMore) {
-            ordersDaoDecorator.getOrderCountForSite(payload.site.localId())
-        } else {
-            0
-        }
-        wcOrderRestClient.fetchOrders(payload.site, offset, payload.statusFilter)
     }
 
     private fun fetchOrderList(payload: FetchOrderListPayload) {
@@ -589,14 +524,6 @@ class WCOrderStore @Inject internal constructor(
         return wcOrderRestClient.fetchOrdersByIds(payload.site, payload.orderIds).also {
             mDispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(it))
         }
-    }
-
-    private fun searchOrders(payload: SearchOrdersPayload) {
-        wcOrderRestClient.searchOrders(payload.site, payload.searchQuery, payload.offset)
-    }
-
-    private fun fetchOrdersCount(payload: FetchOrdersCountPayload) {
-        with(payload) { wcOrderRestClient.fetchOrderCountSync(site, statusFilter) }
     }
 
     suspend fun fetchOrdersCount(site: SiteModel, filterByStatus: String? = null): OrdersCountResult {
@@ -948,29 +875,6 @@ class WCOrderStore @Inject internal constructor(
         return orderShipmentProvidersDao.observeOrderShipmentProviders(site.localId())
     }
 
-    @Suppress("SpreadOperator")
-    private fun handleFetchOrdersCompleted(payload: FetchOrdersResponsePayload) {
-        coroutineEngine.launch(API, this, "handleFetchOrdersCompleted") {
-            val onOrderChanged: OnOrderChanged = if (payload.isError) {
-                OnOrderChanged(orderError = payload.error)
-            } else {
-                // Clear existing uploading orders if this is a fresh fetch (loadMore = false in the original request)
-                // This is the simplest way of keeping our local orders in sync with remote orders
-                // (in case of deletions, or if the user manual changed some order IDs).
-                if (!payload.loadedMore) {
-                    ordersDaoDecorator.deleteOrdersForSite(payload.site.localId())
-                    orderNotesDao.deleteOrderNotesForSite(payload.site.localId())
-                    orderShipmentTrackingDao.deleteShipmentTrackingsForSite(payload.site.localId())
-                }
-
-                insertOrder(payload.site.localId(), *payload.ordersWithMeta.toTypedArray())
-                OnOrderChanged(payload.statusFilter, canLoadMore = payload.canLoadMore)
-            }.copy(causeOfChange = FETCH_ORDERS)
-
-            emitChange(onOrderChanged)
-        }
-    }
-
     @Suppress("ForbiddenComment")
     private fun handleFetchOrderListCompleted(payload: FetchOrderListResponsePayload) {
         // TODO: Ideally we would have a separate process that prunes the following
@@ -1092,30 +996,6 @@ class WCOrderStore @Inject internal constructor(
             }
             emitChange(onOrdersFetchedByIds)
         }
-    }
-
-    private fun handleSearchOrdersCompleted(payload: SearchOrdersResponsePayload) {
-        val onOrdersSearched = if (payload.isError) {
-            OnOrdersSearched(payload.searchQuery)
-        } else {
-            OnOrdersSearched(payload.searchQuery, payload.canLoadMore, payload.offset, payload.orders)
-        }
-        emitChange(onOrdersSearched)
-    }
-
-    /**
-     * This is a response to a request to retrieve only the count of orders matching a filter. These
-     * results are not stored in the database.
-     */
-    private fun handleFetchOrdersCountCompleted(payload: FetchOrdersCountResponsePayload) {
-        val onOrderChanged = if (payload.isError) {
-            OnOrderChanged(orderError = payload.error)
-        } else {
-            with(payload) {
-                OnOrderChanged(statusFilter = statusFilter)
-            }
-        }.copy(causeOfChange = WCOrderAction.FETCH_ORDERS_COUNT)
-        emitChange(onOrderChanged)
     }
 
     private suspend fun revertOptimisticOrderUpdate(payload: RemoteOrderPayload.Updating): OnOrderChanged {

@@ -51,7 +51,7 @@ class BookingNoteViewModelTest : BaseUnitTest() {
         parentId = 0L,
         personCounts = listOf(1L),
         localTimezone = "",
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         note = "Initial note",
         order = BookingOrderInfo(),
         customerNote = "Customer Note"

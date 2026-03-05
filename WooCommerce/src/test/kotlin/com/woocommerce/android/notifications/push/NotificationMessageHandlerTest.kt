@@ -40,8 +40,10 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -70,6 +72,7 @@ class NotificationMessageHandlerTest {
         }
     }
     private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
+    private val siteStore: SiteStore = mock()
     private val selectedSite: SelectedSite = mock {
         on { exists() }.thenReturn(true)
     }
@@ -100,6 +103,7 @@ class NotificationMessageHandlerTest {
             wooLog = wooLog,
             dispatcher = dispatcher,
             resourceProvider = resourceProvider,
+            siteStore = siteStore,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
         )
@@ -108,15 +112,25 @@ class NotificationMessageHandlerTest {
         doReturn(accountModel).whenever(accountStore).account
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
         doReturn(emptyList<ActiveNotificationData>()).whenever(notificationBuilder).getActiveNotifications()
+
+        // Mock visibleSites to include both order and review notification site IDs
+        val visibleSite = mock<SiteModel> {
+            on { siteId } doReturn orderNotification.remoteSiteId
+        }
+        val visibleSite2 = mock<SiteModel> {
+            on { siteId } doReturn reviewNotification.remoteSiteId
+        }
+        doReturn(listOf(visibleSite, visibleSite2)).whenever(siteStore).visibleSites
     }
 
     @Test
-    fun `when the user is not logged in, then do not process the incoming notification`() {
+    fun `when the user is not logged in, then do not process the incoming notification`() = runTest {
+        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
         doReturn(false).whenever(accountStore).hasAccessToken()
 
-        notificationMessageHandler.onNewMessageReceived(emptyMap())
-        verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("User is not logged in!"))
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(wooLog).e(eq(WooLog.T.NOTIFICATIONS), eq("User is not logged in!"))
     }
 
     @Test
@@ -132,8 +146,8 @@ class NotificationMessageHandlerTest {
     @Test
     fun `when the notification payload data is empty, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
-        verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(
+
+        verify(wooLog).e(
             eq(WooLog.T.NOTIFICATIONS),
             eq("Push notification received without a valid Bundle!")
         )

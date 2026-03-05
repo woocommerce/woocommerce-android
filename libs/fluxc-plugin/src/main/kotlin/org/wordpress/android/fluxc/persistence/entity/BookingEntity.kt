@@ -92,20 +92,12 @@ data class BookingEntity(
     sealed interface AttendanceStatus {
         val key: String
 
-        data object Booked : AttendanceStatus {
-            override val key = "booked"
+        data object Attended : AttendanceStatus {
+            override val key = "attended"
         }
 
-        data object CheckedIn : AttendanceStatus {
-            override val key = "checked-in"
-        }
-
-        data object NoShow : AttendanceStatus {
-            override val key = "no-show"
-        }
-
-        data object Cancelled : AttendanceStatus {
-            override val key = "cancelled"
+        data object Unattended : AttendanceStatus {
+            override val key = "unattended"
         }
 
         data class Unknown(override val key: String) : AttendanceStatus
@@ -113,10 +105,8 @@ data class BookingEntity(
         companion object {
             fun fromKey(key: String): AttendanceStatus {
                 return when (key) {
-                    Booked.key -> Booked
-                    CheckedIn.key -> CheckedIn
-                    NoShow.key -> NoShow
-                    Cancelled.key -> Cancelled
+                    Attended.key -> Attended
+                    Unattended.key -> Unattended
                     else -> Unknown(key)
                 }
             }

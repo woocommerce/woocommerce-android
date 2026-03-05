@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -21,6 +22,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val productsDataSource: WooPosProductsDataSource,
+    private val isFtsEnabled: IsPosProductsFtsEnabled,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
@@ -125,7 +127,13 @@ class WooPosItemsSearchHelper @Inject constructor(
         wasLastStateClosed = false
 
         val searchHintStringRes = when (viewStateFlow.value) {
-            is WooPosItemsToolbarViewState.ProductList -> R.string.woopos_search_products
+            is WooPosItemsToolbarViewState.ProductList -> {
+                if (isFtsEnabled()) {
+                    R.string.woopos_search_products_and_variations
+                } else {
+                    R.string.woopos_search_products
+                }
+            }
             is WooPosItemsToolbarViewState.CouponList -> R.string.woopos_search_coupons
             is WooPosItemsToolbarViewState.VariationList -> error("Search is not applicable for variations list")
         }
