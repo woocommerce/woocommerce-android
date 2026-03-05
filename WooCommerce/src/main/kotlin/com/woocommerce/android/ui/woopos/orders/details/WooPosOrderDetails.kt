@@ -91,7 +91,10 @@ fun WooPosOrderDetails(
 
         Spacer(Modifier.height(WooPosSpacing.Large.value))
 
-        OrdersProducts(lineItems = details.lineItems)
+        val lineItemsState = details.lineItems
+        if (lineItemsState is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded) {
+            OrdersProducts(lineItems = lineItemsState.items)
+        }
 
         Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
@@ -470,41 +473,43 @@ fun WooPosOrderDetailsPreview() {
         dateTime = "Aug 28, 2025 at 10:31 AM",
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
-        lineItems = listOf(
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 101,
-                name = "Cup",
-                attributesDescription = null,
-                qtyAndUnitPrice = "2 x $4.00",
-                lineTotal = "$8.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 102,
-                name = "T-Shirt",
-                attributesDescription = "Blue, Large",
-                qtyAndUnitPrice = "1 x $10.00",
-                lineTotal = "$10.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 103,
-                name = "A vey tasty coffee that incidentally has a very long name " +
-                    "and should go over a few lines without overlapping anything",
-                attributesDescription = "Medium roast, Decaf",
-                qtyAndUnitPrice = "1 x $5.00",
-                lineTotal = "$5.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 104,
-                name = "Women's Haircut",
-                attributesDescription = null,
-                qtyAndUnitPrice = "1 x $55.00",
-                lineTotal = "$55.00",
-                imageUrl = null,
-                bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
-                    "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+        lineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(
+            listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 101,
+                    name = "Cup",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "2 x $4.00",
+                    lineTotal = "$8.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 102,
+                    name = "T-Shirt",
+                    attributesDescription = "Blue, Large",
+                    qtyAndUnitPrice = "1 x $10.00",
+                    lineTotal = "$10.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 103,
+                    name = "A vey tasty coffee that incidentally has a very long name " +
+                        "and should go over a few lines without overlapping anything",
+                    attributesDescription = "Medium roast, Decaf",
+                    qtyAndUnitPrice = "1 x $5.00",
+                    lineTotal = "$5.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 104,
+                    name = "Women's Haircut",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "1 x $55.00",
+                    lineTotal = "$55.00",
+                    imageUrl = null,
+                    bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
+                        "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+                    )
                 )
             )
         ),
