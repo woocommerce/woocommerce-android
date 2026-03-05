@@ -47,11 +47,16 @@ class BookingsStore @Inject internal constructor(
                         return@withDefaultContext WooResult(ordersResult.error)
                     }
 
+                    val existingLocations = bookingsDao
+                        .getBookingsByIds(site.localId(), response.result.map { it.id })
+                        .associate { it.id.value to it.location }
+
                     val entities = response.result.map {
                         with(bookingDtoMapper) {
                             it.toEntity(
                                 localSiteId = site.localId(),
-                                orderEntity = ordersResult.model?.get(it.orderId)
+                                orderEntity = ordersResult.model?.get(it.orderId),
+                                existingLocation = existingLocations[it.id],
                             )
                         }
                     }

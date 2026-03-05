@@ -180,6 +180,9 @@ interface BookingsDao {
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     suspend fun getBooking(localSiteId: LocalId, bookingId: Long): BookingEntity?
 
+    @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id IN (:bookingIds)")
+    suspend fun getBookingsByIds(localSiteId: LocalId, bookingIds: List<Long>): List<BookingEntity>
+
     @Query("UPDATE Bookings SET location = :location WHERE localSiteId = :localSiteId AND id = :bookingId")
     suspend fun updateLocation(localSiteId: LocalId, bookingId: Long, location: String?)
 

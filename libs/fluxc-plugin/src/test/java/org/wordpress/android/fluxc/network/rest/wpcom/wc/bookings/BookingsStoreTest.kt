@@ -43,7 +43,8 @@ class BookingsStoreTest {
     private val clock: Clock = Clock.systemUTC()
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
+        whenever(bookingsDao.getBookingsByIds(any(), any())).thenReturn(emptyList())
         sut = BookingsStore(
             bookingsRestClient = bookingsRestClient,
             orderStore = orderStore,
