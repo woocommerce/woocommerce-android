@@ -3960,6 +3960,9 @@
     <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
     <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
+    <string name="woopos_search_bookings">Search bookings</string>
+    <string name="woopos_search_bookings_empty_title">No bookings found</string>
+    <string name="woopos_search_bookings_empty_description">We couldn\'t find any matching bookings. Try adjusting your search term.</string>
     <string name="woopos_bookings_no_booking_selected">No booking selected.</string>
     <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
     <string name="woopos_bookings_date_selector_next_day">Next day</string>
