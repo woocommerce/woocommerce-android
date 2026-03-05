@@ -4,7 +4,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -20,7 +19,6 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val productMapper: WooPosProductModelMapper,
-    private val isFtsEnabled: IsPosProductsFtsEnabled,
     private val logger: WooPosLogWrapper,
 ) {
     companion object {
@@ -62,17 +60,6 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
         )
         val siteId = LocalOrRemoteId.LocalId(siteModel.id)
 
-        return if (isFtsEnabled()) {
-            performFtsSearch(siteId, query)
-        } else {
-            performLikeSearch(siteId, query)
-        }
-    }
-
-    private suspend fun performFtsSearch(
-        siteId: LocalOrRemoteId.LocalId,
-        query: String
-    ): Result<DbSearchResult> {
         val startTime = System.currentTimeMillis()
         val offset = searchOffset.get()
         logger.d("performFtsSearch: query=\"$query\", offset=$offset, pageSize=$PAGE_SIZE")
@@ -117,43 +104,6 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
             onFailure = { error ->
                 val duration = System.currentTimeMillis() - startTime
                 logger.e("performFtsSearch failed after ${duration}ms: ${error.message}", error)
-                Result.failure(error)
-            }
-        )
-    }
-
-    private suspend fun performLikeSearch(
-        siteId: LocalOrRemoteId.LocalId,
-        query: String
-    ): Result<DbSearchResult> {
-        val startTime = System.currentTimeMillis()
-        val result = posLocalCatalogStore.searchProducts(
-            siteId = siteId,
-            searchQuery = query,
-            pageSize = PAGE_SIZE,
-            offset = searchOffset.get()
-        )
-
-        return result.fold(
-            onSuccess = { products ->
-                val mappedProducts = products.map { entity ->
-                    productMapper.fromEntity(entity)
-                }
-
-                accumulatedResults.addAll(mappedProducts)
-                canLoadMoreResults.set(products.size == PAGE_SIZE)
-                searchOffset.addAndGet(PAGE_SIZE)
-
-                val duration = System.currentTimeMillis() - startTime
-                Result.success(
-                    DbSearchResult(
-                        products = accumulatedResults.toList(),
-                        searchTimeMillis = duration,
-                        searchMethod = "like",
-                    )
-                )
-            },
-            onFailure = { error ->
                 Result.failure(error)
             }
         )

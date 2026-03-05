@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -20,7 +19,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val ftsDao: WooPosSearchableFtsDao,
     private val productsDao: WooPosProductsDao,
     private val variationsDao: WooPosVariationsDao,
-    private val isFtsEnabled: IsPosProductsFtsEnabled,
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
@@ -34,10 +32,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): FtsSyncResult? {
-        if (!isFtsEnabled()) {
-            logger.d("syncFtsForFullSync: FTS is disabled, skipping")
-            return null
-        }
         val startTime = System.currentTimeMillis()
         logger.d("syncFtsForFullSync: clearing and rebuilding FTS index")
 
@@ -66,10 +60,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         variations: List<WooPosVariationEntity>,
         productsToRemove: List<RemoteId>
     ): FtsSyncResult? {
-        if (!isFtsEnabled()) {
-            logger.d("syncFtsForIncrementalSync: FTS is disabled, skipping")
-            return null
-        }
         if (products.isEmpty() && variations.isEmpty() && productsToRemove.isEmpty()) {
             logger.d("syncFtsForIncrementalSync: no items to update, skipping")
             return null
@@ -112,10 +102,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
     suspend fun ensureFtsPopulated(site: SiteModel) {
         logger.d("ensureFtsPopulated called")
-        if (!isFtsEnabled()) {
-            logger.d("FTS is disabled, skipping")
-            return
-        }
 
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()

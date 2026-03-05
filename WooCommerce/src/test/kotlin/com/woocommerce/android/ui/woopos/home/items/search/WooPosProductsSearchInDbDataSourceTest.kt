@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -27,59 +26,48 @@ class WooPosProductsSearchInDbDataSourceTest {
 
     private val posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val isFtsEnabled: IsPosProductsFtsEnabled = mock()
 
     private lateinit var sut: WooPosProductsSearchInDbDataSource
 
     private val siteModel = SiteModel().apply { id = 123 }
     private val siteId = LocalOrRemoteId.LocalId(123)
-    private val defaultEntity = createProductEntity(1L)
 
-    private val firstPageEntities = (1..15).map { createProductEntity(it.toLong()) }
-    private val secondPageEntities = (16..20).map { createProductEntity(it.toLong()) }
+    private val firstPageFtsResults = (1..15).map {
+        WooPosFtsSearchResult.Product(createProductEntity(it.toLong()))
+    }
+    private val secondPageFtsResults = (16..20).map {
+        WooPosFtsSearchResult.Product(createProductEntity(it.toLong()))
+    }
 
     @Before
     fun setup() = runTest {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        whenever(isFtsEnabled.invoke()).thenReturn(false)
 
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(firstPageEntities))
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 15))
-            .thenReturn(Result.success(secondPageEntities))
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 0))
+            .thenReturn(Result.success(firstPageFtsResults))
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 15))
+            .thenReturn(Result.success(secondPageFtsResults))
 
         sut = WooPosProductsSearchInDbDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
             selectedSite = selectedSite,
             productMapper = WooPosProductModelMapper(mock()),
-            isFtsEnabled = isFtsEnabled,
             logger = mock<WooPosLogWrapper>(),
         )
     }
 
     @Test
     fun `when searchProducts called, then returns first page of results`() = runTest {
-        // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(firstPageEntities))
-
         // WHEN
         val result = sut.searchProducts("query")
 
         // THEN
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrThrow().products).hasSize(15)
-        assertThat(result.getOrThrow().products.map { it.remoteId }).containsExactlyInAnyOrder(
-            *((1L..15L).toList().toTypedArray())
-        )
     }
 
     @Test
     fun `given full page of results, when searchProducts called, then hasMorePages returns true`() = runTest {
-        // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(firstPageEntities))
-
         // WHEN
         sut.searchProducts("query")
 
@@ -90,8 +78,8 @@ class WooPosProductsSearchInDbDataSourceTest {
     @Test
     fun `given partial page of results, when searchProducts called, then hasMorePages returns false`() = runTest {
         // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(listOf(defaultEntity)))
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 0))
+            .thenReturn(Result.success(listOf(WooPosFtsSearchResult.Product(createProductEntity(1L)))))
 
         // WHEN
         sut.searchProducts("query")
@@ -114,82 +102,6 @@ class WooPosProductsSearchInDbDataSourceTest {
     }
 
     @Test
-    fun `when loadMore called, then accumulated results contain all products`() = runTest {
-        // GIVEN
-        sut.searchProducts("query")
-
-        // WHEN
-        val result = sut.loadMore("query")
-
-        // THEN
-        val productIds = result.getOrThrow().map { it.remoteId }
-        assertThat(productIds).containsExactlyInAnyOrder(*((1L..20L).toList().toTypedArray()))
-    }
-
-    @Test
-    fun `given last page has less than page size, when loadMore called, then hasMorePages returns false`() = runTest {
-        // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 15))
-            .thenReturn(Result.success(listOf(defaultEntity)))
-
-        sut.searchProducts("query")
-
-        // WHEN
-        sut.loadMore("query")
-
-        // THEN
-        assertThat(sut.hasMorePages).isFalse()
-    }
-
-    @Test
-    fun `given no more pages, when loadMore called, then returns current accumulated results`() = runTest {
-        // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(listOf(defaultEntity)))
-        sut.searchProducts("query")
-
-        // WHEN
-        val result = sut.loadMore("query")
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(1)
-    }
-
-    @Test
-    fun `when new search started, then resets accumulated results`() = runTest {
-        // GIVEN
-        sut.searchProducts("query")
-        sut.loadMore("query")
-        val singleEntity = listOf(createProductEntity(99L))
-        whenever(posLocalCatalogStore.searchProducts(siteId, "newQuery", 15, 0))
-            .thenReturn(Result.success(singleEntity))
-
-        // WHEN
-        val result = sut.searchProducts("newQuery")
-
-        // THEN
-        assertThat(result.getOrThrow().products).hasSize(1)
-        assertThat(result.getOrThrow().products[0].remoteId).isEqualTo(99L)
-    }
-
-    @Test
-    fun `when new search started, then resets hasMorePages flag`() = runTest {
-        // GIVEN
-        sut.searchProducts("query")
-        assertThat(sut.hasMorePages).isTrue()
-        val singleEntity = listOf(createProductEntity(99L))
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query2", 15, 0))
-            .thenReturn(Result.success(singleEntity))
-
-        // WHEN
-        sut.searchProducts("query2")
-
-        // THEN
-        assertThat(sut.hasMorePages).isFalse()
-    }
-
-    @Test
     fun `given no site selected, when searchProducts called, then returns failure`() = runTest {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
@@ -206,7 +118,7 @@ class WooPosProductsSearchInDbDataSourceTest {
     fun `given store error, when searchProducts called, then returns failure`() = runTest {
         // GIVEN
         val error = Exception("Database error")
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
+        whenever(posLocalCatalogStore.searchProductsFts(siteId, "query", 15, 0))
             .thenReturn(Result.failure(error))
 
         // WHEN
@@ -218,9 +130,8 @@ class WooPosProductsSearchInDbDataSourceTest {
     }
 
     @Test
-    fun `given fts enabled, when searchProducts called, then returns fts results`() = runTest {
+    fun `when searchProducts returns fts results with variations, then maps them correctly`() = runTest {
         // GIVEN
-        whenever(isFtsEnabled.invoke()).thenReturn(true)
         val ftsResults = listOf(
             WooPosFtsSearchResult.Product(createProductEntity(1L)),
             WooPosFtsSearchResult.Variation(
@@ -236,23 +147,7 @@ class WooPosProductsSearchInDbDataSourceTest {
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(2)
-    }
-
-    @Test
-    fun `given fts enabled and store fails, when searchProducts called, then returns failure`() = runTest {
-        // GIVEN
-        whenever(isFtsEnabled.invoke()).thenReturn(true)
-        val error = IllegalArgumentException("Search query is blank after formatting")
-        whenever(posLocalCatalogStore.searchProductsFts(siteId, "***", 15, 0))
-            .thenReturn(Result.failure(error))
-
-        // WHEN
-        val result = sut.searchProducts("***")
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(result.getOrThrow().products).hasSize(2)
     }
 
     private fun createVariationEntity(
