@@ -5,6 +5,7 @@
 24.4
 -----
 
+- [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
 
 24.3
 -----
