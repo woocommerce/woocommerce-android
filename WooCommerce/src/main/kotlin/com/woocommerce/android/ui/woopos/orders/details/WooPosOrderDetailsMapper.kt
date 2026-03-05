@@ -168,10 +168,10 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val refundedByItemId = refunds
             .flatMap { it.items }
             .groupingBy { it.orderItemId }
-            .fold(0f) { acc, item -> acc + item.quantity }
+            .fold(0) { acc, item -> acc + item.quantity }
 
         return order.items.mapNotNull { item ->
-            val refundedQty = abs(refundedByItemId[item.itemId] ?: 0f)
+            val refundedQty = abs(refundedByItemId[item.itemId] ?: 0).toFloat()
             val remaining = item.quantity - refundedQty
             when {
                 remaining <= 0f -> null
