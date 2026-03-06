@@ -420,6 +420,38 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given refunded item not found in order, when buildRefundedLineItems, then refund item name is used as fallback`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00"), quantity = 1f),
+            )
+            val order = createOrder(orderItems)
+            val refunds = listOf(
+                createRefund(
+                    items = listOf(
+                        createRefundItem(
+                            orderItemId = 999L,
+                            productId = 99L,
+                            quantity = 1,
+                            total = BigDecimal("5.00"),
+                            name = "Deleted Product"
+                        )
+                    )
+                )
+            )
+            val refundResult = RefundsFetchResult.Success(refunds)
+
+            // WHEN
+            val result = sut.buildRefundedLineItems(order, refundResult)
+
+            // THEN
+            assertThat(result).hasSize(1)
+            assertThat(result.first().name).isEqualTo("Deleted Product")
+        }
+
+    @Test
     fun `given same product in different line items, when one is refunded, then only that line item is affected`() =
         testBlocking {
             // GIVEN
