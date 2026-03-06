@@ -269,6 +269,12 @@ class WooPosOrdersViewModel @Inject constructor(
                         refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
                 }
+
+                val stateAfterUpdate = _state.value as? WooPosOrdersState.Content
+                val updatedDetails = stateAfterUpdate?.selectedDetails
+                if (updatedDetails != null) {
+                    sideLoadBookings(orderId, updatedDetails)
+                }
             }
         }
     }
