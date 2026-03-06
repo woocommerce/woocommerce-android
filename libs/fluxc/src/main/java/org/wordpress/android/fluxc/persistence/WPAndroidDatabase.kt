@@ -38,7 +38,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 35,
+        version = 36,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -73,6 +73,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             AutoMigration(from = 32, to = 33),
             AutoMigration(from = 33, to = 34),
             AutoMigration(from = 34, to = 35),
+            AutoMigration(from = 35, to = 36),
         ]
 )
 @TypeConverters(

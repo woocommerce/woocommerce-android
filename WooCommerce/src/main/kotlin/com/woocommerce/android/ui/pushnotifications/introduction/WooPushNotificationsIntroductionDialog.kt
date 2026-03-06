@@ -50,7 +50,8 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
                     findNavController().navigateSafely(
                         WooPushNotificationsIntroductionDialogDirections
                             .actionWooPushNotificationsIntroductionDialogToWooPushNotificationsConnectionStepsFragment(
-                                isSiteConnectedToJetpack = event.isSiteConnectedToJetpack
+                                isSiteConnectedToJetpack = event.isSiteConnectedToJetpack,
+                                shouldAutoOpenUpdatePlugin = event.shouldAutoOpenUpdatePlugin
                             )
                     )
                 }

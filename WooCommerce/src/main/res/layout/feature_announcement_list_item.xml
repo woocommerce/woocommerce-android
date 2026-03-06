@@ -20,6 +20,7 @@
             android:id="@+id/feature_item_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="fitCenter"
             android:contentDescription="@string/settings_whats_new_icon_description"
             tools:src="@drawable/ic_deprecated_info_outline_24dp" />
 

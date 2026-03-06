@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -23,6 +24,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -61,6 +63,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val bookingsRepository = mock<BookingsRepository> {
         on { observeBooking(any()) } doReturn bookingFlow
         onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
+        onBlocking { fetchProductBookingLocation(any(), anyOrNull()) } doReturn Result.success(null)
     }
     private val networkStatus = mock<NetworkStatus> {
         on { isConnected() } doReturn true
@@ -317,6 +320,61 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given no cached location, when init, then location is fetched from API`() = testBlocking {
+        // Given
+        val expectedLocation = "123 Main Street, New York NY 10001"
+        whenever(bookingsRepository.fetchProductBookingLocation(any(), anyOrNull()))
+            .doSuspendableAnswer {
+                // Simulate Room emitting updated booking after store persists location
+                bookingFlow.value = getSampleBooking(bookingId, location = expectedLocation)
+                Result.success(expectedLocation)
+            }
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Loaded(expectedLocation))
+    }
+
+    @Test
+    fun `given cached location, when init, then location is shown from cache`() = testBlocking {
+        // Given
+        val cachedLocation = "456 Oak Avenue, Dallas TX 75001"
+        val bookingWithLocation = getSampleBooking(bookingId, location = cachedLocation)
+        bookingFlow.value = bookingWithLocation
+        whenever(bookingsRepository.fetchBooking(any())).thenReturn(Result.success(bookingWithLocation))
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Loaded(cachedLocation))
+    }
+
+    @Test
+    fun `given no cached location and API returns null, when init, then location is unavailable`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.fetchProductBookingLocation(any(), anyOrNull()))
+            .thenReturn(Result.success(null))
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Unavailable)
+    }
+
+    @Test
     fun `when onAttendanceToggle called, then BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE is tracked`() = testBlocking {
         val viewModel = createViewModel()
 
@@ -426,6 +484,30 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(state.toolbarTitle).isEmpty()
     }
 
+    @Test
+    fun `when onAttendanceToggle called rapidly, then first request error is suppressed by cancellation`() =
+        testBlocking {
+            // GIVEN
+            whenever(bookingsRepository.updateAttendanceStatus(any(), any())).doSuspendableAnswer {
+                delay(1000)
+                Result.failure(Exception("Network error"))
+            }
+            val viewModel = createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            events.clear() // ignore init events
+
+            // WHEN
+            val state = viewModel.state.getOrAwaitValue()
+            state.bookingUiState?.onAttendanceToggle()
+            state.bookingUiState?.onAttendanceToggle()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(events.filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>())
+                .hasSize(1)
+        }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
@@ -437,12 +519,13 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }
     }
 
-    private fun getSampleBooking(id: Long): Booking {
+    private fun getSampleBooking(id: Long, location: String? = null): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id),
             localSiteId = LocalOrRemoteId.LocalId(1),
@@ -464,6 +547,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             personCounts = listOf(1L),
             localTimezone = "",
             attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
+            location = location,
             order = BookingOrderInfo(),
             customerNote = "Customer note"
         )

@@ -109,6 +109,33 @@ class WooPosBookingViewStateMapperTest {
         // THEN
         assertThat(result.isCancelled).isTrue()
         assertThat(result.paymentStatus).isEqualTo(PaymentStatus.FAILED)
+        assertThat(result.attendanceBadge).isNull()
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then attendanceBadge is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+        // THEN
+        assertThat(result.attendanceBadge).isNull()
+    }
+
+    @Test
+    fun `given non-cancelled booking, when mapped to item view state, then attendanceBadge is not null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Confirmed)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
+
+        // THEN
+        assertThat(result.attendanceBadge).isNotNull()
     }
 
     @Test
@@ -205,13 +232,13 @@ class WooPosBookingViewStateMapperTest {
             val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
             // THEN
-            assertThat(result.attendanceSection).isNotNull
-            assertThat(result.attendanceSection?.selection)
+            assertThat(result.attendanceSection).isInstanceOf(WooPosBookingsState.AttendanceSection.Visible::class.java)
+            assertThat((result.attendanceSection as WooPosBookingsState.AttendanceSection.Visible).selection)
                 .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
         }
 
     @Test
-    fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
+    fun `given booking with non-editable attendance, when mapped, then attendance section is Hidden`() = runTest {
         // GIVEN
         val booking = sampleBooking(
             status = BookingEntity.Status.Cancelled,
@@ -223,7 +250,7 @@ class WooPosBookingViewStateMapperTest {
         val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
-        assertThat(result.attendanceSection).isNull()
+        assertThat(result.attendanceSection).isInstanceOf(WooPosBookingsState.AttendanceSection.Hidden::class.java)
     }
 
     @Test
@@ -510,6 +537,50 @@ class WooPosBookingViewStateMapperTest {
         assertThat(result.teamMember).isNull()
     }
 
+    @Test
+    fun `given booking with customerId 0, when mapped to details, then customer section isGuest is true`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(customerId = 0L)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+        // THEN
+        assertThat(result.customerSection).isNotNull
+        assertThat(result.customerSection?.isGuest).isTrue()
+    }
+
+    @Test
+    fun `given booking with non-zero customerId, when mapped to details, then customer section isGuest is false`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(customerId = 42L)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+            // THEN
+            assertThat(result.customerSection).isNotNull
+            assertThat(result.customerSection?.isGuest).isFalse()
+        }
+
+    @Test
+    fun `given guest booking with no customer info, when mapped to details, then customer section shows guest badge`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(customerId = 0L, customerInfo = null, customerNote = null)
+            whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+            // THEN
+            assertThat(result.customerSection).isNotNull
+            assertThat(result.customerSection?.isGuest).isTrue()
+        }
+
     private fun sampleResource(
         name: String = "John Doe",
         imageUrl: String? = null,
@@ -549,6 +620,7 @@ class WooPosBookingViewStateMapperTest {
             totalTax = BigDecimal("5.50"),
         ),
         customerNote: String? = "Customer Note",
+        customerId: Long = 1L,
     ): BookingEntity {
         return BookingEntity(
             id = RemoteId(id),
@@ -559,7 +631,7 @@ class WooPosBookingViewStateMapperTest {
             status = status,
             cost = "55.00",
             currency = "USD",
-            customerId = 1L,
+            customerId = customerId,
             productId = 1L,
             resourceId = 1L,
             dateCreated = start,

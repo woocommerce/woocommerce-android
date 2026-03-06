@@ -76,7 +76,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val paymentStatusResolver: PaymentStatusResolver = mock {
-        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
+        onBlocking { resolveAll(any()) } doReturn mapOf(1L to PaymentStatus.UNPAID)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 

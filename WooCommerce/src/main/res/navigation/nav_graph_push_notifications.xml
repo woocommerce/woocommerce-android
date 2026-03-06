@@ -21,5 +21,9 @@
         <argument
             android:name="isSiteConnectedToJetpack"
             app:argType="boolean" />
+        <argument
+            android:name="shouldAutoOpenUpdatePlugin"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 </navigation>

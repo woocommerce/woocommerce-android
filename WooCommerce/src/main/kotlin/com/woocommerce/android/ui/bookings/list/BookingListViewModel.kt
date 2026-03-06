@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -90,18 +91,23 @@ class BookingListViewModel @Inject constructor(
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
-    private val contentState = combine(
-        bookingListHandler.bookingsFlow,
-        loadingState,
-        selectedBookingIdFlow,
-    ) { bookings, loadingState, selectedBookingId ->
-        openFirstLoadedBookingOnTablet(bookings)
-        val listItems = with(bookingMapper) {
-            bookings.map {
-                val paymentStatus = paymentStatusResolver.resolve(it.orderId)
-                it.toListItem(paymentStatus)
+    private val bookingListItems = bookingListHandler.bookingsFlow
+        .distinctUntilChanged()
+        .map { bookings ->
+            openFirstLoadedBookingOnTablet(bookings)
+            val paymentStatusesByOrderId = paymentStatusResolver.resolveAll(bookings.map { it.orderId })
+            with(bookingMapper) {
+                bookings.map { booking ->
+                    booking.toListItem(paymentStatusesByOrderId.getValue(booking.orderId))
+                }
             }
         }
+
+    private val contentState = combine(
+        bookingListItems,
+        loadingState,
+        selectedBookingIdFlow,
+    ) { listItems, loadingState, selectedBookingId ->
         BookingListContentState(
             bookings = listItems,
             loadingState = loadingState,
