@@ -10,6 +10,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.util.AppLog
+import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -172,10 +174,15 @@ class WooPosProductRestClient @Inject constructor(
         val offsetHours = siteGmtOffset?.toDoubleOrNull() ?: return utcDateString
         if (offsetHours == 0.0) return utcDateString
 
-        val offsetSeconds = (offsetHours * SECONDS_PER_HOUR).toInt()
-        val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds)
-        val utcInstant = LocalDateTime.parse(utcDateString, API_DATE_FORMATTER)
-            .toInstant(ZoneOffset.UTC)
-        return API_DATE_FORMATTER.withZone(zoneOffset).format(utcInstant)
+        return try {
+            val offsetSeconds = (offsetHours * SECONDS_PER_HOUR).toInt()
+            val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds)
+            val utcInstant = LocalDateTime.parse(utcDateString, API_DATE_FORMATTER)
+                .toInstant(ZoneOffset.UTC)
+            API_DATE_FORMATTER.withZone(zoneOffset).format(utcInstant)
+        } catch (e: DateTimeException) {
+            AppLog.e(AppLog.T.API, "Error adjusting UTC to site-local time- falling back to UTC.", e)
+            utcDateString
+        }
     }
 }
