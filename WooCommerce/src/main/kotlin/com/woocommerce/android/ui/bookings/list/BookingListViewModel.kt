@@ -165,7 +165,12 @@ class BookingListViewModel @Inject constructor(
             sortBottomSheetState = listSortBottomSheetState,
             searchState = searchState
         )
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+    }.shareIn(
+        scope = viewModelScope,
+        // Drop replayed values once no one is observing, so analytics reads fresh state on return.
+        started = SharingStarted.WhileSubscribed(replayExpirationMillis = 0),
+        replay = 1
+    )
     val state = _state.asLiveData()
 
     val bottomNavigationVisible = searchState.map { !it.isSearchActive }
