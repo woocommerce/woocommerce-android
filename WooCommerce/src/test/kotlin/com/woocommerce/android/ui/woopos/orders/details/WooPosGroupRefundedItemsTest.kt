@@ -88,6 +88,34 @@ class WooPosGroupRefundedItemsTest {
     }
 
     @Test
+    fun `given multiple refunds for same item, when grouped, then price is recomputed from total and quantity`() {
+        // GIVEN
+        val refunds = listOf(
+            createRefund(
+                id = 1L,
+                items = listOf(
+                    createRefundItem(orderItemId = 1L, productId = 10L, quantity = 1, total = BigDecimal("4.00"))
+                )
+            ),
+            createRefund(
+                id = 2L,
+                items = listOf(
+                    createRefundItem(orderItemId = 1L, productId = 10L, quantity = 2, total = BigDecimal("8.00"))
+                )
+            ),
+        )
+
+        // WHEN
+        val result = sut(refunds)
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result.first().quantity).isEqualTo(3)
+        assertThat(result.first().total).isEqualByComparingTo(BigDecimal("12.00"))
+        assertThat(result.first().price).isEqualByComparingTo(BigDecimal("4.00"))
+    }
+
+    @Test
     fun `given multiple different items, when invoked, then separate entries`() {
         // GIVEN
         val refunds = listOf(
