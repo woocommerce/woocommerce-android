@@ -92,7 +92,11 @@ fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
 }
 
 @Composable
-fun BookingAttendanceStatus.textColor(): Color = colorResource(R.color.tagView_text)
+fun BookingAttendanceStatus.textColor(): Color = if (isOutlined()) {
+    colorResource(R.color.color_on_surface_high)
+} else {
+    colorResource(R.color.tagView_text)
+}
 
 @Composable
 fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {

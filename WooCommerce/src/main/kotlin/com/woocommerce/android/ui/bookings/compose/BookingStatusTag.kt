@@ -22,7 +22,7 @@ fun BookingPaymentStatusTag(
     WCTag(
         text = paymentStatus.text(),
         backgroundColor = paymentStatus.backgroundColor(),
-        textColor = colorResource(R.color.tagView_text),
+        textColor = paymentStatus.textColor(),
         border = paymentStatus.border(),
         fontWeight = FontWeight.Normal,
         modifier = modifier
@@ -58,6 +58,15 @@ private fun PaymentStatus.backgroundColor(): Color = when (this) {
     PaymentStatus.REFUNDED,
     PaymentStatus.PARTIALLY_REFUNDED -> Color.Transparent
     PaymentStatus.FAILED -> colorResource(R.color.tagView_bg)
+}
+
+@Composable
+private fun PaymentStatus.textColor(): Color = when (this) {
+    PaymentStatus.PAID,
+    PaymentStatus.REFUNDED,
+    PaymentStatus.PARTIALLY_REFUNDED -> colorResource(R.color.color_on_surface_high)
+    PaymentStatus.UNPAID,
+    PaymentStatus.FAILED -> colorResource(R.color.tagView_text)
 }
 
 @Composable
