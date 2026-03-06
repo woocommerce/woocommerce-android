@@ -92,7 +92,9 @@ fun WooPosOrderDetails(
         Spacer(Modifier.height(WooPosSpacing.Large.value))
 
         val lineItemsState = details.lineItems
-        if (lineItemsState is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded) {
+        if (lineItemsState is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded &&
+            lineItemsState.items.isNotEmpty()
+        ) {
             OrdersProducts(lineItems = lineItemsState.items)
         }
 
