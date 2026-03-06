@@ -1,1 +1,1 @@
-- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
+We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.
