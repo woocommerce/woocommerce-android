@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
@@ -129,16 +130,52 @@ class BookingMapperTest : BaseUnitTest() {
             .format(start)
         val expectedTime = "$FORMATTED_TIME - $FORMATTED_TIME"
 
+        val locationStatus = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109")
+
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle, locationStatus = locationStatus)
+        }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
         assertThat(model.time).isEqualTo(expectedTime)
         assertThat(model.staff).isEqualTo(staffMemberStatus)
-        assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
+        assertThat(model.location).isEqualTo(locationStatus)
         assertThat(model.duration).isEqualTo("1 hour 30 minutes")
         assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
+    }
+
+    @Test
+    fun `given no location, when mapped to appointment details model, then location is loading by default`() {
+        // GIVEN
+        val booking = sampleBooking()
+
+        // WHEN
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(BookingStaffMemberStatus.Loading, CancelStatus.Idle)
+        }
+
+        // THEN
+        assertThat(model.location).isEqualTo(BookingLocationStatus.Loading)
+    }
+
+    @Test
+    fun `given unavailable location, when mapped to appointment details model, then location is unavailable`() {
+        // GIVEN
+        val booking = sampleBooking()
+
+        // WHEN
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(
+                BookingStaffMemberStatus.Loading,
+                CancelStatus.Idle,
+                locationStatus = BookingLocationStatus.Unavailable
+            )
+        }
+
+        // THEN
+        assertThat(model.location).isEqualTo(BookingLocationStatus.Unavailable)
     }
 
     @Test

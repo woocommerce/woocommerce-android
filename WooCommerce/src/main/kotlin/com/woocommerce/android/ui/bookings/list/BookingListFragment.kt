@@ -103,6 +103,11 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
         handleTwoPaneToOnePaneConversionIfNeeded()
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.trackBookingListView()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

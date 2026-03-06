@@ -43,7 +43,8 @@ class BookingsStoreTest {
     private val clock: Clock = Clock.systemUTC()
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
+        whenever(bookingsDao.getBookingsByIds(any(), any())).thenReturn(emptyList())
         sut = BookingsStore(
             bookingsRestClient = bookingsRestClient,
             orderStore = orderStore,
@@ -87,11 +88,14 @@ class BookingsStoreTest {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
             val dto = sampleBookingDto()
+            val existingBooking = sampleBookingEntity(order = BookingOrderInfo(productInfo = null))
+                .copy(location = "Cached Location")
 
             val fetchedOrder = OrderEntity(orderId = dto.orderId, localSiteId = TEST_LOCAL_SITE_ID)
             whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
                 .thenReturn(WooPayload(dto))
+            whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(existingBooking)
             whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
@@ -104,10 +108,12 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
+            val expected = with(bookingDtoMapper) {
+                dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder, existingLocation = existingBooking.location)
+            }
             assertThat(result.model).isEqualTo(expected)
+            assertThat(result.model?.location).isEqualTo("Cached Location")
             verify(bookingsDao).upsert(expected)
-            verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
         }
 
     @Test

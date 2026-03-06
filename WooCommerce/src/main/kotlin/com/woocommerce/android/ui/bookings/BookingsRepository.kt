@@ -192,10 +192,11 @@ class BookingsRepository @Inject constructor(
         }
     }.await()
 
-    suspend fun fetchProductBookingLocation(productId: Long): Result<String?> {
+    suspend fun fetchProductBookingLocation(productId: Long, bookingId: Long? = null): Result<String?> {
         val result = bookingsStore.fetchProductBookingLocation(
             site = selectedSite.get(),
-            productId = productId
+            productId = productId,
+            bookingId = bookingId
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))
