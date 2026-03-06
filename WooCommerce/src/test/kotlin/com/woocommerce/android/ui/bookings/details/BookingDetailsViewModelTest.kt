@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -55,6 +56,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val bookingsRepository = mock<BookingsRepository> {
         on { observeBooking(any()) } doReturn bookingFlow
         onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
+        onBlocking { fetchProductBookingLocation(any(), anyOrNull()) } doReturn Result.success(null)
     }
     private val networkStatus = mock<NetworkStatus> {
         on { isConnected() } doReturn true
@@ -310,6 +312,61 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given no cached location, when init, then location is fetched from API`() = testBlocking {
+        // Given
+        val expectedLocation = "123 Main Street, New York NY 10001"
+        whenever(bookingsRepository.fetchProductBookingLocation(any(), anyOrNull()))
+            .doSuspendableAnswer {
+                // Simulate Room emitting updated booking after store persists location
+                bookingFlow.value = getSampleBooking(bookingId, location = expectedLocation)
+                Result.success(expectedLocation)
+            }
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Loaded(expectedLocation))
+    }
+
+    @Test
+    fun `given cached location, when init, then location is shown from cache`() = testBlocking {
+        // Given
+        val cachedLocation = "456 Oak Avenue, Dallas TX 75001"
+        val bookingWithLocation = getSampleBooking(bookingId, location = cachedLocation)
+        bookingFlow.value = bookingWithLocation
+        whenever(bookingsRepository.fetchBooking(any())).thenReturn(Result.success(bookingWithLocation))
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Loaded(cachedLocation))
+    }
+
+    @Test
+    fun `given no cached location and API returns null, when init, then location is unavailable`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.fetchProductBookingLocation(any(), anyOrNull()))
+            .thenReturn(Result.success(null))
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.location)
+            .isEqualTo(BookingLocationStatus.Unavailable)
+    }
+
+    @Test
     fun `given Empty mode, when ViewModel created, then state is empty`() = testBlocking {
         // Given
         val savedState = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.Empty))
@@ -363,7 +420,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         }
     }
 
-    private fun getSampleBooking(id: Long): Booking {
+    private fun getSampleBooking(id: Long, location: String? = null): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id),
             localSiteId = LocalOrRemoteId.LocalId(1),
@@ -385,6 +442,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             personCounts = listOf(1L),
             localTimezone = "",
             attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
+            location = location,
             order = BookingOrderInfo(),
             customerNote = "Customer note"
         )

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -184,10 +185,19 @@ class BookingDetailsViewModel @Inject constructor(
                     val resourceId = booking?.resourceId?.takeIf { it != 0L } ?: return@async Result.success(Unit)
                     bookingsRepository.fetchResource(resourceId)
                 }
+                val locationTask = async {
+                    val booking = booking.first() ?: bookingTask.await().getOrNull() ?: return@async
+                    val productId = booking.productId.takeIf { it != 0L } ?: return@async
+                    bookingsRepository.fetchProductBookingLocation(
+                        productId = productId,
+                        bookingId = booking.id.value
+                    )
+                }
 
                 if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
+                locationTask.await()
             }
             loadingState.value = BookingDetailsLoadingState.Idle
         }
@@ -267,6 +277,7 @@ class BookingDetailsViewModel @Inject constructor(
                 ),
                 cancelStatus = cancelStatus,
                 attendanceUpdateStatus = attendanceUpdateStatus,
+                locationStatus = buildLocationStatus(booking, loadingState),
             ),
             bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(booking.customerNote),
             bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
@@ -297,6 +308,19 @@ class BookingDetailsViewModel @Inject constructor(
                 loadingState == BookingDetailsLoadingState.Refreshing -> BookingStaffMemberStatus.Loading
 
             else -> BookingStaffMemberStatus.Unavailable
+        }
+    }
+
+    private fun buildLocationStatus(
+        booking: Booking,
+        loadingState: BookingDetailsLoadingState
+    ): BookingLocationStatus {
+        return when {
+            booking.location != null -> BookingLocationStatus.Loaded(requireNotNull(booking.location))
+            loadingState == BookingDetailsLoadingState.Loading ||
+                loadingState == BookingDetailsLoadingState.Refreshing -> BookingLocationStatus.Loading
+
+            else -> BookingLocationStatus.Unavailable
         }
     }
 
