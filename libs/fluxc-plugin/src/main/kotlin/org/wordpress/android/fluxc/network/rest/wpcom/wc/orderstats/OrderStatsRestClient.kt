@@ -54,8 +54,9 @@ class OrderStatsRestClient @Inject constructor(
      * Makes a GET call to `/wc-analytics/reports/revenue/stats`, retrieving data for the given
      * WooCommerce [SiteModel].
      *
-     * The date filtering uses the store's `woocommerce_date_type` analytics setting (server-side default),
-     * which ensures consistency with wp-admin Analytics dashboard.
+     * Passes `date_type=date_paid` to match the default date filtering used by the wp-admin Analytics
+     * dashboard (`get_option('woocommerce_date_type', 'date_paid')`). This ensures the revenue and order
+     * counts displayed in the mobile app are consistent with wp-admin.
      *
      * @param[site] the site to fetch stats data for
      * @param[granularity] one of 'hour', 'day', 'week', 'month', or 'year'
@@ -86,6 +87,7 @@ class OrderStatsRestClient @Inject constructor(
             "per_page" to perPage.toString(),
             "order" to "asc",
             "force_cache_refresh" to forceRefresh.toString(),
+            "date_type" to "date_paid",
         )
 
         val response = wooNetwork.executeGetGsonRequest(
