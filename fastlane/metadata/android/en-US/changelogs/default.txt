@@ -1,1 +1,1 @@
-Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.
+- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
