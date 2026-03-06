@@ -16,17 +16,16 @@ msgid "This update makes the Wear app run more smoothly with faster startup time
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_243"
+msgid ""
+"24.3:\n"
+"We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.\n"
+msgstr ""
+
 msgctxt "release_note_242"
 msgid ""
 "24.2:\n"
 "Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.\n"
-msgstr ""
-
-msgctxt "release_note_241"
-msgid ""
-"24.1:\n"
-"We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.\n"
-"Thanks for selling with WooCommerce! 🚀\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
