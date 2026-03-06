@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
@@ -28,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
@@ -36,6 +40,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
@@ -64,6 +71,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val paymentStatusResolver = mock<PaymentStatusResolver> {
         onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() {
@@ -367,6 +375,102 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onAttendanceToggle called, then BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE is tracked`() = testBlocking {
+        val viewModel = createViewModel()
+
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onAttendanceToggle()
+
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE),
+            argThat<Map<String, Any>> { this["booking_status"] == "attended" }
+        )
+    }
+
+    @Test
+    fun `when onConfirmCancelBooking called, then BOOKING_DETAIL_CANCEL_BOOKING is tracked`() = testBlocking {
+        whenever(bookingsRepository.cancelBooking(any())).thenReturn(Result.success(Unit))
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+
+        stateWithDialog.dialogState?.positiveButton?.onClick()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
+    }
+
+    @Test
+    fun `when cancel fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Cancel failed", "cancel_error")
+        whenever(bookingsRepository.cancelBooking(any())).thenReturn(
+            Result.failure(WooException(error))
+        )
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+
+        stateWithDialog.dialogState?.positiveButton?.onClick()
+        advanceUntilIdle()
+
+        verify(analyticsTrackerWrapper).track(
+            stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
+            properties = argThat<Map<String, Any>> {
+                this["action"] == "cancel_booking" &&
+                    this["error_code"] == "cancel_error"
+            },
+            errorContext = eq("BookingDetailsViewModel"),
+            errorType = eq("API_ERROR"),
+            errorDescription = eq("Cancel failed")
+        )
+    }
+
+    @Test
+    fun `when onNoteClicked called, then BOOKING_DETAIL_ADD_NOTE_TAP is tracked`() = testBlocking {
+        val viewModel = createViewModel()
+
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onNoteClicked?.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
+    }
+
+    @Test
+    fun `when onViewOrderClicked called, then BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP is tracked`() = testBlocking {
+        val viewModel = createViewModel()
+
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onViewOrderClicked?.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
+    }
+
+    @Test
+    fun `when attendance update fails, then BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS is tracked`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Update failed", "update_error")
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any())).thenReturn(
+            Result.failure(WooException(error))
+        )
+        val viewModel = createViewModel()
+
+        val state = viewModel.state.getOrAwaitValue()
+        state.bookingUiState?.onAttendanceToggle()
+        advanceUntilIdle()
+
+        verify(analyticsTrackerWrapper).track(
+            stat = eq(AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS),
+            properties = argThat<Map<String, Any>> {
+                this["action"] == "update_attendance" &&
+                    this["error_code"] == "update_error"
+            },
+            errorContext = eq("BookingDetailsViewModel"),
+            errorType = eq("API_ERROR"),
+            errorDescription = eq("Update failed")
+        )
+    }
+
+    @Test
     fun `given Empty mode, when ViewModel created, then state is empty`() = testBlocking {
         // Given
         val savedState = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.Empty))
@@ -414,6 +518,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             bookingMapper = bookingMapper,
             networkStatus = networkStatus,
             paymentStatusResolver = paymentStatusResolver,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
