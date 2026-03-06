@@ -171,7 +171,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                     id = item.itemId,
                     name = item.name,
                     attributesDescription = item.attributesDescription.takeIf { it.isNotEmpty() },
-                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
+                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice, order.currency)}",
                     lineTotal = formatPrice(item.total, order.currency),
                     imageUrl = product?.firstImageUrl,
                     bookingInfo = bookingInfo,
