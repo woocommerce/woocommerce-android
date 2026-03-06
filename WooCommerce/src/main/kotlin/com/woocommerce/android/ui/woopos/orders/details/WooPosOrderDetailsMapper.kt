@@ -117,7 +117,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
         groupedItems.map { refundItem ->
             async {
                 val orderItem = order.items.find { it.itemId == refundItem.orderItemId }
-                val name = orderItem?.name ?: refundItem.orderItemId.toString()
+                val name = orderItem?.name ?: refundItem.name
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
                 val unitPrice = if (refundItem.quantity != 0) {
                     refundItem.total.divide(
