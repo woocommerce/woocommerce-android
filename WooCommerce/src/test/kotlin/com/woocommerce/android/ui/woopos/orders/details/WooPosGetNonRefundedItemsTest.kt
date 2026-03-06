@@ -121,8 +121,7 @@ class WooPosGetNonRefundedItemsTest {
         // THEN
         assertThat(result).hasSize(1)
         assertThat(result.first().quantity).isEqualTo(2f)
-        val expectedTotal = BigDecimal("12.00") * (2f / 3f).toBigDecimal()
-        assertThat(result.first().total).isEqualByComparingTo(expectedTotal)
+        assertThat(result.first().total).isEqualByComparingTo(BigDecimal("8.00"))
     }
 
     @Test
@@ -157,6 +156,43 @@ class WooPosGetNonRefundedItemsTest {
         // THEN
         assertThat(result).hasSize(1)
         assertThat(result.first().name).isEqualTo("Cup (Blue)")
+    }
+
+    @Test
+    fun `given zero-quantity item with no refunds, when invoked, then item is preserved`() {
+        // GIVEN
+        val items = listOf(
+            createOrderItem(itemId = 1L, name = "Free Gift", price = BigDecimal.ZERO, quantity = 0f),
+        )
+        val order = createOrder(items)
+
+        // WHEN
+        val result = sut(order, emptyList())
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result.first().name).isEqualTo("Free Gift")
+        assertThat(result.first().quantity).isEqualTo(0f)
+    }
+
+    @Test
+    fun `given zero-quantity item with refunds, when invoked, then item is excluded`() {
+        // GIVEN
+        val items = listOf(
+            createOrderItem(itemId = 1L, name = "Free Gift", price = BigDecimal.ZERO, quantity = 0f),
+        )
+        val order = createOrder(items)
+        val refunds = listOf(
+            createRefund(
+                items = listOf(createRefundItem(orderItemId = 1L, quantity = 1, total = BigDecimal.ZERO))
+            )
+        )
+
+        // WHEN
+        val result = sut(order, refunds)
+
+        // THEN
+        assertThat(result).isEmpty()
     }
 
     @Test
