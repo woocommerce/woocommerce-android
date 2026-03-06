@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
