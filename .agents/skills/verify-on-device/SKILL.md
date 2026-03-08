@@ -452,7 +452,7 @@ Settings is a separate Activity (`AppSettingsActivity`). Use `adb shell dumpsys 
 |--------|----------|----------|
 | Main Settings | `MainSettingsFragment` | Menu → "Settings" |
 | Privacy Settings | `PrivacySettingsFragment` | Settings → "Privacy settings" |
-| Beta Features | `BetaFeaturesFragment` | Settings → "Beta features" |
+| Experimental features | `BetaFeaturesFragment` | Settings → "Experimental features" |
 | Developer Options | `DeveloperOptionsFragment` | Settings → "Developer options" (debug only) |
 | Manage Notifications | OS Notification Settings | Settings → Manage Notifications |
 | Account Settings | `AccountSettingsFragment` | Settings → Account section |
