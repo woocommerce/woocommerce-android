@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.network.discovery.SelfHostedEndpointFinder;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.Authenticator;
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
 import org.wordpress.android.fluxc.persistence.AccountSqlUtils;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload;
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 @RunWith(RobolectricTestRunner.class)
 public class AccountStoreTest {
     private Context mContext;
+    private AccountStorePersistence mAccountStorePersistence;
 
     @Before
     public void setUp() {
@@ -40,6 +42,7 @@ public class AccountStoreTest {
         WellSqlConfig config = new SingleStoreWellSqlConfigForTests(mContext, AccountModel.class);
         WellSql.init(config);
         config.reset();
+        mAccountStorePersistence = new AccountStorePersistence();
     }
 
     @Test
@@ -49,17 +52,19 @@ public class AccountStoreTest {
         testAccount.setAboutMe("testAboutMe");
         AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
-                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true));
+                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
+                mAccountStorePersistence);
         Assert.assertEquals(testAccount, testStore.getAccount());
     }
 
     @Test
     public void testHasAccessToken() {
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
-                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true));
+                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
+                mAccountStorePersistence);
         Assert.assertTrue(testStore.hasAccessToken());
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
-                getMockAuthenticator(), getMockAccessToken(false));
+                getMockAuthenticator(), getMockAccessToken(false), mAccountStorePersistence);
         Assert.assertFalse(testStore.hasAccessToken());
     }
 
@@ -69,12 +74,13 @@ public class AccountStoreTest {
         testAccount.setVisibleSiteCount(0);
         AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
-                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(false));
+                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(false),
+                mAccountStorePersistence);
         Assert.assertFalse(testStore.hasAccessToken());
         testAccount.setVisibleSiteCount(1);
         AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
-                getMockAuthenticator(), getMockAccessToken(true));
+                getMockAuthenticator(), getMockAccessToken(true), mAccountStorePersistence);
         Assert.assertTrue(testStore.hasAccessToken());
     }
 
@@ -86,7 +92,8 @@ public class AccountStoreTest {
         testAccount.setUserId(24);
         AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
-                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), testToken);
+                getMockSelfHostedEndpointFinder(), getMockAuthenticator(), testToken,
+                mAccountStorePersistence);
         Assert.assertTrue(testStore.hasAccessToken());
         // Signout is private (and it should remain private)
         Method privateMethod = AccountStore.class.getDeclaredMethod("signOut");
