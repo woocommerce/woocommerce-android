@@ -21,10 +21,6 @@
                 android:name="orderId"
                 android:defaultValue="0L"
                 app:argType="long" />
-            <argument
-                android:name="callerDestinationId"
-                android:defaultValue="0"
-                app:argType="integer" />
         </action>
     </fragment>
 

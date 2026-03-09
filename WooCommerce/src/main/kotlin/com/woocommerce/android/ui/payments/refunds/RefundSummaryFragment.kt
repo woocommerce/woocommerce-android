@@ -123,11 +123,11 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> {
-                    val callerDestId = findNavController()
-                        .getBackStackEntry(R.id.nav_graph_refunds)
-                        .arguments?.getInt("callerDestinationId", 0) ?: 0
-                    val destId = if (callerDestId != 0) callerDestId else R.id.orderDetailFragment
-                    navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, destId)
+                    navigateBackWithNotice(
+                        key = REFUND_ORDER_NOTICE_KEY,
+                        destinationId = R.id.issueRefundFragment,
+                        popDestination = true
+                    )
                 }
                 is ShowRefundConfirmation -> {
                     val action =

@@ -78,8 +78,7 @@ class BookingDetailsFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         BookingDetailsFragmentDirections
                             .actionBookingDetailsFragmentToIssueRefund(
-                                orderId = event.orderId,
-                                callerDestinationId = R.id.bookingDetailsFragment
+                                orderId = event.orderId
                             )
                     )
                 }
