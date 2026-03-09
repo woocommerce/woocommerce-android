@@ -25,7 +25,6 @@
     </fragment>
 
     <include app:graph="@navigation/nav_graph_refunds" />
-    <include app:graph="@navigation/nav_graph_payment_flow" />
 
     <fragment
         android:id="@+id/bookingNoteFragment"
