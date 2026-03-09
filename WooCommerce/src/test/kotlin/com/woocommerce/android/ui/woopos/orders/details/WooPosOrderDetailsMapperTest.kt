@@ -317,20 +317,41 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order with refunds, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
+    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
         testBlocking {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
                 createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
             )
-            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("4.00"))
+            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("2.00"))
 
             // WHEN
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
             assertThat(result.lineItems).isInstanceOf(LineItemsState.Loading::class.java)
+            assertThat(result.refundedLineItems).isInstanceOf(LineItemsState.Loading::class.java)
+        }
+
+    @Test
+    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then lineItems loaded empty and refundedLineItems loading`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(
+                status = Order.Status.Refunded,
+                refundTotal = BigDecimal("4.00")
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutActions(order)
+
+            // THEN
+            assertThat((result.lineItems as LineItemsState.Loaded).items).isEmpty()
             assertThat(result.refundedLineItems).isInstanceOf(LineItemsState.Loading::class.java)
         }
 

@@ -73,11 +73,17 @@ class WooPosOrderDetailsMapper @Inject constructor(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)
-        val mayHaveRefunds = order.refundTotal > BigDecimal.ZERO ||
-            order.status == Order.Status.Refunded
-        val lineItems = if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(buildLineItems(order))
-        val refundedLineItems =
-            if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(emptyList())
+        val isFullyRefunded = order.status == Order.Status.Refunded
+        val hasPartialRefund = order.refundTotal > BigDecimal.ZERO && !isFullyRefunded
+        val lineItems = when {
+            isFullyRefunded -> LineItemsState.Loaded(emptyList())
+            hasPartialRefund -> LineItemsState.Loading
+            else -> LineItemsState.Loaded(buildLineItems(order))
+        }
+        val refundedLineItems = when {
+            isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
+            else -> LineItemsState.Loaded(emptyList())
+        }
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 
