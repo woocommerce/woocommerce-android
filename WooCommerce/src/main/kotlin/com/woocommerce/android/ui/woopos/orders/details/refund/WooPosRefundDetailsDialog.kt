@@ -56,9 +56,10 @@ fun WooPosRefundDetailsDialog(
                 text = dialogState.label,
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
             dialogState.items.forEachIndexed { index, item ->
                 RefundDetailItem(item)
