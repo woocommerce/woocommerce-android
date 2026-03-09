@@ -2314,6 +2314,7 @@
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_whats_new_icon_description">New feature icon image</string>
+    <string name="feature_announcement_dismiss">Not Now</string>
     <string name="settings_app_theme_title">Appearance</string>
     <string name="settings_app_theme_option_light">Light</string>
     <string name="settings_app_theme_option_dark">Dark</string>
@@ -2642,8 +2643,10 @@
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
-    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_connect">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_setup">Set up push notifications</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Please wait while we set up push notifications for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
@@ -2655,6 +2658,8 @@
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
     <string name="woo_push_notifications_connection_steps_retry">Try again</string>
     <string name="woo_push_notifications_connection_steps_generic_error">There was an error completing your request.\nPlease try again or contact support if this error continues.</string>
+    <string name="woo_push_notifications_connection_steps_error_plugin_update_required">Your current WooCommerce plugin version %1$s needs updating to fully connect your store to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_update_plugin">Update plugin</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3921,6 +3926,7 @@
     <string name="woopos_bookings_details_location_label">Location</string>
     <string name="woopos_bookings_details_duration_label">Duration</string>
     <string name="woopos_bookings_details_customer_title">Customer</string>
+    <string name="woopos_bookings_details_customer_guest_badge">Guest</string>
     <string name="woopos_bookings_details_billing_address_label">Billing address</string>
     <string name="woopos_bookings_details_customer_note_label">Note</string>
     <string name="woopos_bookings_payment_status_paid">Paid</string>
@@ -3984,6 +3990,7 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_products_and_variations">Search products and variations</string>
     <string name="woopos_search_coupons">Search coupons</string>
     <string name="woopos_search_orders">Search orders</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
