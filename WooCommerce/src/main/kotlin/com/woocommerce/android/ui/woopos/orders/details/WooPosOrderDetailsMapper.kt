@@ -73,11 +73,17 @@ class WooPosOrderDetailsMapper @Inject constructor(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)
-        val mayHaveRefunds = order.refundTotal > BigDecimal.ZERO ||
-            order.status == Order.Status.Refunded
-        val lineItems = if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(buildLineItems(order))
-        val refundedLineItems =
-            if (mayHaveRefunds) LineItemsState.Loading else LineItemsState.Loaded(emptyList())
+        val isFullyRefunded = order.status == Order.Status.Refunded
+        val hasPartialRefund = order.refundTotal > BigDecimal.ZERO && !isFullyRefunded
+        val lineItems = when {
+            isFullyRefunded -> LineItemsState.Loaded(emptyList())
+            hasPartialRefund -> LineItemsState.Loading
+            else -> LineItemsState.Loaded(buildLineItems(order))
+        }
+        val refundedLineItems = when {
+            isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
+            else -> LineItemsState.Loaded(emptyList())
+        }
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 
@@ -119,22 +125,24 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 val orderItem = order.items.find { it.itemId == refundItem.orderItemId }
                 val name = orderItem?.name ?: refundItem.name
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
-                val unitPrice = if (refundItem.quantity != 0) {
-                    refundItem.total.divide(
-                        BigDecimal.valueOf(refundItem.quantity.toLong()),
-                        refundItem.total.scale(),
+                val absQuantity = kotlin.math.abs(refundItem.quantity)
+                val total = refundItem.total
+                val unitPrice = if (absQuantity != 0) {
+                    total.divide(
+                        BigDecimal.valueOf(absQuantity.toLong()),
+                        total.scale(),
                         RoundingMode.HALF_UP
                     )
                 } else {
-                    refundItem.total
+                    total
                 }
                 val product = getProductById(refundItem.productId)
                 LineItemRow(
                     id = refundItem.orderItemId,
                     name = name,
                     attributesDescription = attributesDescription,
-                    qtyAndUnitPrice = "${refundItem.quantity} x ${formatPrice(unitPrice, order.currency)}",
-                    lineTotal = formatPrice(refundItem.total.negate(), order.currency),
+                    qtyAndUnitPrice = "$absQuantity x ${formatPrice(unitPrice.abs(), order.currency)}",
+                    lineTotal = formatPrice(total.abs(), order.currency),
                     imageUrl = product?.firstImageUrl,
                 )
             }

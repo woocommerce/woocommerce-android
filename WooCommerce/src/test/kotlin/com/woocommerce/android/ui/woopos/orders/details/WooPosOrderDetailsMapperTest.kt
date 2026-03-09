@@ -121,6 +121,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         productId: Long = 10L,
         quantity: Int = 1,
         total: BigDecimal = BigDecimal("10.00"),
+        totalTax: BigDecimal = BigDecimal.ZERO,
         name: String = "Refund Product",
     ) = Refund.Item(
         productId = productId,
@@ -128,6 +129,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         orderItemId = orderItemId,
         name = name,
         total = total,
+        totalTax = totalTax,
         price = if (quantity > 0) total / quantity.toBigDecimal() else total,
     )
 
@@ -217,7 +219,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val refundedItem = refundedItems.first()
         assertThat(refundedItem.name).isEqualTo("Cup")
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("1 x $4.00")
-        assertThat(refundedItem.lineTotal).isEqualTo("$-4.00")
+        assertThat(refundedItem.lineTotal).isEqualTo("$4.00")
 
         val lineItems = (result.lineItems as LineItemsState.Loaded).items
         assertThat(lineItems).hasSize(1)
@@ -257,7 +259,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         assertThat(refundedItems).hasSize(1)
         val refundedItem = refundedItems.first()
         assertThat(refundedItem.qtyAndUnitPrice).isEqualTo("3 x $4.00")
-        assertThat(refundedItem.lineTotal).isEqualTo("$-12.00")
+        assertThat(refundedItem.lineTotal).isEqualTo("$12.00")
     }
 
     @Test
@@ -317,20 +319,41 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order with refunds, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
+    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
         testBlocking {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
                 createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
             )
-            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("4.00"))
+            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("2.00"))
 
             // WHEN
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
             assertThat(result.lineItems).isInstanceOf(LineItemsState.Loading::class.java)
+            assertThat(result.refundedLineItems).isInstanceOf(LineItemsState.Loading::class.java)
+        }
+
+    @Test
+    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then lineItems loaded empty and refundedLineItems loading`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(
+                status = Order.Status.Refunded,
+                refundTotal = BigDecimal("4.00")
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutActions(order)
+
+            // THEN
+            assertThat((result.lineItems as LineItemsState.Loaded).items).isEmpty()
             assertThat(result.refundedLineItems).isInstanceOf(LineItemsState.Loading::class.java)
         }
 
@@ -360,7 +383,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
         assertThat(refundedItems).hasSize(2)
         assertThat(refundedItems.map { it.name }).containsExactly("Cup", "Plate")
-        assertThat(refundedItems.map { it.lineTotal }).containsExactly("$-4.00", "$-6.00")
+        assertThat(refundedItems.map { it.lineTotal }).containsExactly("$4.00", "$6.00")
 
         val lineItems = (result.lineItems as LineItemsState.Loaded).items
         assertThat(lineItems).hasSize(1)
@@ -493,5 +516,76 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val refundedItems = (result.refundedLineItems as LineItemsState.Loaded).items
             assertThat(refundedItems).hasSize(1)
             assertThat(refundedItems.first().name).isEqualTo("Cup (Red)")
+        }
+
+    @Test
+    fun `given refund with tax, when buildRefundedLineItems, then prices exclude tax`() = testBlocking {
+        // GIVEN
+        setupDefaults()
+        val orderItems = listOf(
+            createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00"), quantity = 2f),
+        )
+        val order = createOrder(orderItems)
+        val refunds = listOf(
+            createRefund(
+                items = listOf(
+                    createRefundItem(
+                        orderItemId = 1L,
+                        productId = 10L,
+                        quantity = 1,
+                        total = BigDecimal("4.00"),
+                        totalTax = BigDecimal("0.40"),
+                    )
+                )
+            )
+        )
+        val refundResult = RefundsFetchResult.Success(refunds)
+
+        // WHEN
+        val result = sut.buildRefundedLineItems(order, refundResult)
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
+        assertThat(result.first().lineTotal).isEqualTo("$4.00")
+    }
+
+    @Test
+    fun `given refund with negative quantity, when buildRefundedLineItems, then quantity is shown as positive`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(
+                    itemId = 1L,
+                    productId = 10L,
+                    name = "Cup",
+                    price = BigDecimal("4.00"),
+                    quantity = 2f
+                ),
+            )
+            val order = createOrder(orderItems)
+            val refunds = listOf(
+                createRefund(
+                    items = listOf(
+                        createRefundItem(
+                            orderItemId = 1L,
+                            productId = 10L,
+                            quantity = -1,
+                            total = BigDecimal("-4.00"),
+                            totalTax = BigDecimal("-0.40"),
+                        )
+                    )
+                )
+            )
+            val refundResult = RefundsFetchResult.Success(refunds)
+
+            // WHEN
+            val result = sut.buildRefundedLineItems(order, refundResult)
+
+            // THEN
+            assertThat(result).hasSize(1)
+            assertThat(result.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
+            assertThat(result.first().lineTotal).isEqualTo("$4.00")
         }
 }

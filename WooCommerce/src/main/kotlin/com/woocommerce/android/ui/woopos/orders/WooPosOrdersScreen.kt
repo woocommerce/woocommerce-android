@@ -823,6 +823,7 @@ private fun sampleOrderDetails(
             )
         )
     ),
+    refundedLineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(emptyList()),
     breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",
         discount = "-$5.00",
