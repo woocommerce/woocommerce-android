@@ -76,7 +76,7 @@ sealed interface BookingAttendanceStatus {
 }
 
 @Composable
-fun BookingAttendanceStatus?.text(): String {
+private fun BookingAttendanceStatus?.text(): String {
     return when (this) {
         BookingAttendanceStatus.Attended -> stringResource(R.string.booking_attendance_status_attended)
         BookingAttendanceStatus.Unattended -> stringResource(R.string.booking_attendance_status_unattended)
@@ -85,21 +85,21 @@ fun BookingAttendanceStatus?.text(): String {
 }
 
 @Composable
-fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
+private fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
     Color.Transparent
 } else {
     colorResource(R.color.tagView_bg)
 }
 
 @Composable
-fun BookingAttendanceStatus.textColor(): Color = if (isOutlined()) {
+private fun BookingAttendanceStatus.textColor(): Color = if (isOutlined()) {
     colorResource(R.color.color_on_surface_high)
 } else {
     colorResource(R.color.tagView_text)
 }
 
 @Composable
-fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {
+private fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {
     BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
 } else {
     null
