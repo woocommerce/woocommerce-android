@@ -18,8 +18,6 @@ import org.wordpress.android.fluxc.model.AccountModel;
 import org.wordpress.android.fluxc.persistence.AccountSqlUtils;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 
-import java.util.List;
-
 @RunWith(RobolectricTestRunner.class)
 public class AccountSqlUtilsTest {
     @Before
@@ -34,7 +32,7 @@ public class AccountSqlUtilsTest {
     @Test
     public void testInsertNullAccount() {
         Assert.assertEquals(0, AccountSqlUtils.insertOrUpdateDefaultAccount(null));
-        Assert.assertTrue(AccountSqlUtils.getAllAccounts().isEmpty());
+        Assert.assertNull(AccountSqlUtils.getDefaultAccount());
     }
 
     @Test
@@ -73,18 +71,6 @@ public class AccountSqlUtilsTest {
         Assert.assertTrue(dbAccount.getUsernameCanBeChanged());
         Assert.assertEquals(dbAccount.getAboutMe(), testAboutMe);
         Assert.assertEquals(dbAccount.getEmail(), testEmail);
-    }
-
-    @Test
-    public void testGetAllAccounts() {
-        AccountModel testAccount0 = getTestAccount();
-        AccountModel testAccount1 = getTestAccount();
-        testAccount1.setId(testAccount0.getId() + 1);
-        Assert.assertEquals(0, AccountSqlUtils.insertOrUpdateAccount(testAccount0, testAccount0.getId()));
-        Assert.assertEquals(0, AccountSqlUtils.insertOrUpdateAccount(testAccount1, testAccount1.getId()));
-        List<AccountModel> allAccounts = AccountSqlUtils.getAllAccounts();
-        Assert.assertNotNull(allAccounts);
-        Assert.assertEquals(2, allAccounts.size());
     }
 
     @Test

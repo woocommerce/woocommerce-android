@@ -11,6 +11,8 @@ import org.wordpress.android.fluxc.model.AccountModel;
 
 import java.util.List;
 
+import androidx.annotation.VisibleForTesting;
+
 public class AccountSqlUtils {
     private static final int DEFAULT_ACCOUNT_LOCAL_ID = 1;
 
@@ -52,6 +54,7 @@ public class AccountSqlUtils {
      * Updates an existing row in the Account Table that matches the given local ID. Only columns
      * defined in the given {@link ContentValues} keys are modified.
      */
+    @VisibleForTesting
     public static int updateAccount(long localId, final ContentValues cv) {
         AccountModel account = getAccountByLocalId(localId);
         if (account == null || cv == null) return 0;
@@ -96,10 +99,6 @@ public class AccountSqlUtils {
                 .where().equals(AccountModelTable.ID, account.getId()).endWhere().execute();
     }
 
-    public static List<AccountModel> getAllAccounts() {
-        return WellSql.select(AccountModel.class).getAsModel();
-    }
-
     /**
      * Passthrough to {@link #getAccountByLocalId(long)} using the default Account local ID.
      */
@@ -112,6 +111,7 @@ public class AccountSqlUtils {
      *
      * @return the Account row as {@link AccountModel}, null if no row matches the given ID
      */
+    @VisibleForTesting
     public static AccountModel getAccountByLocalId(long localId) {
         List<AccountModel> accountResult = WellSql.select(AccountModel.class)
                 .where().equals(AccountModelTable.ID, localId)
