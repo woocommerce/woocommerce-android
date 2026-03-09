@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
@@ -159,6 +160,40 @@ class WooPosOrderDetailsMapper @Inject constructor(
         }
         val items = getNonRefundedItems(order, refunds)
         return buildLineItems(order, items)
+    }
+
+    suspend fun buildLineItemsForSingleRefund(
+        order: Order,
+        refund: Refund
+    ): List<LineItemRow> = coroutineScope {
+        val groupedItems = groupRefundedItems(listOf(refund))
+        groupedItems.map { refundItem ->
+            async {
+                val orderItem = order.items.find { it.itemId == refundItem.orderItemId }
+                val name = orderItem?.name ?: refundItem.name
+                val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
+                val absQuantity = kotlin.math.abs(refundItem.quantity)
+                val total = refundItem.total
+                val unitPrice = if (absQuantity != 0) {
+                    total.divide(
+                        BigDecimal.valueOf(absQuantity.toLong()),
+                        total.scale(),
+                        RoundingMode.HALF_UP
+                    )
+                } else {
+                    total
+                }
+                val product = getProductById(refundItem.productId)
+                LineItemRow(
+                    id = refundItem.orderItemId,
+                    name = name,
+                    attributesDescription = attributesDescription,
+                    qtyAndUnitPrice = "$absQuantity x ${formatPrice(unitPrice.abs(), order.currency)}",
+                    lineTotal = formatPrice(total.abs(), order.currency),
+                    imageUrl = product?.firstImageUrl,
+                )
+            }
+        }.awaitAll()
     }
 
     private suspend fun buildLineItems(

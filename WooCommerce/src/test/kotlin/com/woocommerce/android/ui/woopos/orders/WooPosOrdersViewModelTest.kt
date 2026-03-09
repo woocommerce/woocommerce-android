@@ -88,6 +88,7 @@ class WooPosOrdersViewModelTest {
             refundInfoBuilder = refundInfoBuilder,
             orderActionsProvider = orderActionsProvider,
             bookingInfoMapper = bookingInfoMapper,
+            formatPrice = formatPrice,
         )
     }
 
@@ -120,6 +121,16 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_orders_loading_error_message))
             .thenReturn("Please check your connection try again.")
+        whenever(resourceProvider.getString(eq(R.string.woopos_orders_details_refund_label_numbered), any()))
+            .thenAnswer { invocation ->
+                val index = invocation.arguments[1] as Int
+                "Refund #$index"
+            }
+        whenever(resourceProvider.getString(eq(R.string.woopos_orders_details_refund_items_subtotal), any()))
+            .thenAnswer { invocation ->
+                val count = invocation.arguments[1] as String
+                "Items subtotal ($count)"
+            }
     }
 
     private suspend fun setupMockBehaviors() {
@@ -785,7 +796,10 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.breakdown?.refunds).containsExactly("-$10.00", "-$5.00")
+        val refundRows = content.selectedDetails?.breakdown?.refunds
+        assertThat(refundRows).hasSize(2)
+        assertThat(refundRows?.map { it.amount }).containsExactly("-$10.00", "-$5.00")
+        assertThat(refundRows?.map { it.label }).containsExactly("Refund #1", "Refund #2")
         assertThat(content.selectedDetails?.breakdown?.netPayment).isNotNull()
     }
 
