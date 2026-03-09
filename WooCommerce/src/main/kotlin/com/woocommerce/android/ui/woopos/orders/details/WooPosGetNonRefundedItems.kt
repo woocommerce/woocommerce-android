@@ -16,10 +16,10 @@ class WooPosGetNonRefundedItems @Inject constructor() {
         val refundedByItemId = refunds
             .flatMap { it.items }
             .groupingBy { it.orderItemId }
-            .fold(0) { acc, item -> acc + item.quantity }
+            .fold(0) { acc, item -> acc + abs(item.quantity) }
 
         return order.items.mapNotNull { item ->
-            val refundedQty = abs(refundedByItemId[item.itemId] ?: 0).toFloat()
+            val refundedQty = (refundedByItemId[item.itemId] ?: 0).toFloat()
 
             if (item.quantity == 0f) {
                 return@mapNotNull if (refundedQty == 0f) item else null
