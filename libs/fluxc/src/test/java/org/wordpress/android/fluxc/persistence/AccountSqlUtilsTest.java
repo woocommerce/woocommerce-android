@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.account;
+package org.wordpress.android.fluxc.persistence;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,8 +15,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests;
 import org.wordpress.android.fluxc.model.AccountModel;
-import org.wordpress.android.fluxc.persistence.AccountSqlUtils;
-import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 
 @RunWith(RobolectricTestRunner.class)
 public class AccountSqlUtilsTest {
