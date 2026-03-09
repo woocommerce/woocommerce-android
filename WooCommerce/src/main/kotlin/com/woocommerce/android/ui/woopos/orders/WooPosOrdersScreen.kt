@@ -795,30 +795,32 @@ private fun sampleOrderDetails(
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
-    lineItems = listOf(
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 101,
-            name = "Cup",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $8.50",
-            lineTotal = "$15.00",
-            imageUrl = null
-        ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 102,
-            name = "Coffee Container",
-            attributesDescription = "Blue, Large",
-            qtyAndUnitPrice = "1 x $10.00",
-            lineTotal = "$8.00",
-            imageUrl = null
-        ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 103,
-            name = "Paper Filter",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $4.50",
-            lineTotal = "$8.00",
-            imageUrl = null
+    lineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(
+        listOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 101,
+                name = "Cup",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $8.50",
+                lineTotal = "$15.00",
+                imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 102,
+                name = "Coffee Container",
+                attributesDescription = "Blue, Large",
+                qtyAndUnitPrice = "1 x $10.00",
+                lineTotal = "$8.00",
+                imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 103,
+                name = "Paper Filter",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $4.50",
+                lineTotal = "$8.00",
+                imageUrl = null
+            )
         )
     ),
     breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(

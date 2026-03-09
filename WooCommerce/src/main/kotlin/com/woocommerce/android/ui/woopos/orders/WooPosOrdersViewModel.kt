@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
@@ -253,6 +254,8 @@ class WooPosOrdersViewModel @Inject constructor(
             val actions = orderActionsProvider.getAvailableActions(order)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+            val refundedLineItems = orderDetailsMapper.buildRefundedLineItems(order, refundsResult)
+            val nonRefundedLineItems = orderDetailsMapper.buildNonRefundedLineItems(order, refundsResult)
 
             val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
             if (updatedState.selectedDetails?.id == orderId &&
@@ -261,8 +264,16 @@ class WooPosOrdersViewModel @Inject constructor(
                 _state.value = updatedState.withUpdatedDetails(orderId) { details ->
                     details.copy(
                         actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
-                        breakdown = updatedBreakdown
+                        breakdown = updatedBreakdown,
+                        lineItems = LineItemsState.Loaded(nonRefundedLineItems),
+                        refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
+                }
+
+                val stateAfterUpdate = _state.value as? WooPosOrdersState.Content
+                val updatedDetails = stateAfterUpdate?.selectedDetails
+                if (updatedDetails != null) {
+                    sideLoadBookings(orderId, updatedDetails)
                 }
             }
         }
@@ -272,7 +283,8 @@ class WooPosOrdersViewModel @Inject constructor(
         orderId: Long,
         details: WooPosOrdersState.OrderDetailsViewState.Computed.Details
     ) {
-        val loadingItems = details.lineItems.filter { it.bookingInfo is BookingInfo.Loading }
+        val loadedItems = (details.lineItems as? LineItemsState.Loaded)?.items ?: return
+        val loadingItems = loadedItems.filter { it.bookingInfo is BookingInfo.Loading }
         if (loadingItems.isEmpty()) return
 
         viewModelScope.launch {
@@ -289,10 +301,14 @@ class WooPosOrdersViewModel @Inject constructor(
             if (currentState.selectedDetails?.id != orderId) return@launch
 
             _state.value = currentState.withUpdatedDetails(orderId) { details ->
+                val currentItems = (details.lineItems as? LineItemsState.Loaded)?.items
+                    ?: return@withUpdatedDetails details
                 details.copy(
-                    lineItems = details.lineItems.map { lineItem ->
-                        results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
-                    }
+                    lineItems = LineItemsState.Loaded(
+                        currentItems.map { lineItem ->
+                            results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
+                        }
+                    )
                 )
             }
         }
@@ -640,20 +656,11 @@ class WooPosOrdersViewModel @Inject constructor(
         val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
             ?: error("Order $orderId not found in state")
 
-        return orderDetailsMapper.mapOrderDetails(
-            when (orderDetails) {
-                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.order
-                is WooPosOrdersState.OrderDetailsViewState.Computed -> {
-                    loadedItems.items.keys.firstOrNull { it.id == orderId }?.let {
-                        ordersDataSource.getOrderById(it.id).getOrNull()
-                    } ?: error("Order $orderId not found")
-                }
-            },
-            when (orderDetails) {
-                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.refundResult
-                is WooPosOrdersState.OrderDetailsViewState.Computed -> RefundsFetchResult.Error
-            }
-        )
+        return when (orderDetails) {
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> orderDetails.details
+            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
+                orderDetailsMapper.mapOrderDetails(orderDetails.order, orderDetails.refundResult)
+        }
     }
 
     private suspend fun getOrComputeDetailsWithoutActions(

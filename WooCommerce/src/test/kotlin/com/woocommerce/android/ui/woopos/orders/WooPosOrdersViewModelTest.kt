@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
+import com.woocommerce.android.ui.woopos.orders.details.WooPosGetNonRefundedItems
+import com.woocommerce.android.ui.woopos.orders.details.WooPosGroupRefundedItems
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
@@ -147,6 +149,8 @@ class WooPosOrdersViewModelTest {
             refundInfoBuilder,
             orderActionsProvider,
             bookingInfoMapper,
+            WooPosGetNonRefundedItems(),
+            WooPosGroupRefundedItems(),
         )
         orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
     }
@@ -645,7 +649,9 @@ class WooPosOrdersViewModelTest {
         val selectedItemId = loadedItems.items.keys.single { it.isSelected }.id
         assertThat(selectedItemId).isEqualTo(2L)
         assertThat(content.selectedDetails?.id).isEqualTo(2L)
-        assertThat(content.selectedDetails?.lineItems).isNotEmpty
+        assertThat(content.selectedDetails?.lineItems).isInstanceOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded::class.java
+        )
         assertThat(content.selectedDetails?.total).isEqualTo("$106.00")
     }
 
