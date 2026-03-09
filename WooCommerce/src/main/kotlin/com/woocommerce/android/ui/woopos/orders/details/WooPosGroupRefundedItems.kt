@@ -15,10 +15,12 @@ class WooPosGroupRefundedItems @Inject constructor() {
             .map { (orderItemId, items) ->
                 val quantity = items.sumOf { it.quantity }
                 val total = items.fold(BigDecimal.ZERO) { acc, item -> acc + item.total }
+                val totalTax = items.fold(BigDecimal.ZERO) { acc, item -> acc + item.totalTax }
                 items.first().copy(
                     orderItemId = orderItemId,
                     quantity = quantity,
                     total = total,
+                    totalTax = totalTax,
                     price = if (quantity != 0) {
                         total.divide(BigDecimal.valueOf(quantity.toLong()), total.scale(), RoundingMode.HALF_UP)
                     } else {

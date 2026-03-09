@@ -15,12 +15,14 @@ class WooPosGroupRefundedItemsTest {
         productId: Long = 10L,
         quantity: Int = 1,
         total: BigDecimal = BigDecimal("10.00"),
+        totalTax: BigDecimal = BigDecimal.ZERO,
     ) = Refund.Item(
         productId = productId,
         quantity = quantity,
         orderItemId = orderItemId,
         name = "Refund Product",
         total = total,
+        totalTax = totalTax,
         price = if (quantity > 0) total / quantity.toBigDecimal() else total,
     )
 
@@ -157,5 +159,44 @@ class WooPosGroupRefundedItemsTest {
 
         // THEN
         assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `given multiple refunds with tax, when grouped, then totalTax is aggregated`() {
+        // GIVEN
+        val refunds = listOf(
+            createRefund(
+                id = 1L,
+                items = listOf(
+                    createRefundItem(
+                        orderItemId = 1L,
+                        productId = 10L,
+                        quantity = 1,
+                        total = BigDecimal("4.00"),
+                        totalTax = BigDecimal("0.40"),
+                    )
+                )
+            ),
+            createRefund(
+                id = 2L,
+                items = listOf(
+                    createRefundItem(
+                        orderItemId = 1L,
+                        productId = 10L,
+                        quantity = 2,
+                        total = BigDecimal("8.00"),
+                        totalTax = BigDecimal("0.80"),
+                    )
+                )
+            ),
+        )
+
+        // WHEN
+        val result = sut(refunds)
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result.first().totalTax).isEqualByComparingTo(BigDecimal("1.20"))
+        assertThat(result.first().total).isEqualByComparingTo(BigDecimal("12.00"))
     }
 }
