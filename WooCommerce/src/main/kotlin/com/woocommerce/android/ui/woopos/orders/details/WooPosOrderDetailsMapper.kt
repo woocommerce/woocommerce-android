@@ -125,22 +125,24 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 val orderItem = order.items.find { it.itemId == refundItem.orderItemId }
                 val name = orderItem?.name ?: refundItem.name
                 val attributesDescription = orderItem?.attributesDescription?.takeIf { it.isNotEmpty() }
-                val unitPrice = if (refundItem.quantity != 0) {
-                    refundItem.total.divide(
-                        BigDecimal.valueOf(refundItem.quantity.toLong()),
-                        refundItem.total.scale(),
+                val absQuantity = kotlin.math.abs(refundItem.quantity)
+                val total = refundItem.total
+                val unitPrice = if (absQuantity != 0) {
+                    total.divide(
+                        BigDecimal.valueOf(absQuantity.toLong()),
+                        total.scale(),
                         RoundingMode.HALF_UP
                     )
                 } else {
-                    refundItem.total
+                    total
                 }
                 val product = getProductById(refundItem.productId)
                 LineItemRow(
                     id = refundItem.orderItemId,
                     name = name,
                     attributesDescription = attributesDescription,
-                    qtyAndUnitPrice = "${refundItem.quantity} x ${formatPrice(unitPrice, order.currency)}",
-                    lineTotal = formatPrice(refundItem.total.negate(), order.currency),
+                    qtyAndUnitPrice = "$absQuantity x ${formatPrice(unitPrice.abs(), order.currency)}",
+                    lineTotal = formatPrice(total.abs(), order.currency),
                     imageUrl = product?.firstImageUrl,
                 )
             }
