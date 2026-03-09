@@ -44,7 +44,9 @@ class BookableServiceDetailWebViewViewModel @Inject constructor(
 
     private fun buildProductUrl(product: Product): String {
         val site = selectedSite.get()
-        return site.adminUrlOrDefault.slashJoin("?page=next-admin&p=/woocommerce/services/edit/${product.remoteId}")
+        return site.adminUrlOrDefault.slashJoin(
+            "admin.php?page=next-admin&p=/woocommerce/services/edit/${product.remoteId}"
+        )
     }
 
     private fun navigateBack() {
