@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWithFts
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
@@ -55,17 +57,23 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
 ) {
     enum class SyncStrategy {
         REMOTE,
         LOCAL_CATALOG,
+        LOCAL_CATALOG_FILE,
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            localDbDataSource -> if (fileApproachEnabled()) {
+                SyncStrategy.LOCAL_CATALOG_FILE
+            } else {
+                SyncStrategy.LOCAL_CATALOG
+            }
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
@@ -189,6 +197,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val localCatalogSearchDataSource: WooPosProductsSearchInDbDataSource,
+    private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) : WooPosProductsDataSourceInterface {
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
@@ -229,7 +238,15 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     override suspend fun resetVariationsListHandler() = Unit
 
-    override suspend fun prepopulateCache(): Result<Unit> = performInstantCatalogFullSync()
+    override suspend fun prepopulateCache(): Result<Unit> {
+        val result = performInstantCatalogFullSync()
+        if (result.isSuccess) {
+            selectedSite.getOrNull()?.let { site ->
+                syncWithFts.ensureFtsPopulated(site)
+            }
+        }
+        return result
+    }
 
     override fun fetchFirstVariationsPage(
         productId: Long,

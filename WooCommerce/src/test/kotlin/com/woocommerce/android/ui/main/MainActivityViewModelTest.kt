@@ -120,6 +120,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         minimumAppVersion = "14.2",
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
+        detailsUrl = "https://woocommerce.com/mobile/pos/learn-more",
         isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(

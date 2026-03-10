@@ -10,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.BookingsArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBookingListBinding
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
@@ -54,9 +56,16 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
             ).toBundle()
         )
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Hidden
+        get() = if (navArgs.showBottomNavigation) {
+            AppBarStatus.Hidden
+        } else {
+            AppBarStatus.Visible(hasShadow = false, hasDivider = true)
+        }
+    override val shouldShowBottomNavigation: Boolean
+        get() = navArgs.showBottomNavigation
 
     private val viewModel: BookingListViewModel by viewModels()
+    private val navArgs: BookingsArgs by navArgs()
     private val bookingsCommunicationViewModel: BookingsCommunicationViewModel by activityViewModels()
 
     @Inject
@@ -92,6 +101,11 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
         handleEvents()
         handleBottomNavigationVisibility()
         handleTwoPaneToOnePaneConversionIfNeeded()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.trackBookingListView()
     }
 
     override fun onDestroyView() {
@@ -146,7 +160,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
 
     private fun handleBottomNavigationVisibility() {
         viewModel.bottomNavigationVisible.observe(viewLifecycleOwner) { isVisible ->
-            if (!isVisible) {
+            if (!navArgs.showBottomNavigation || !isVisible) {
                 (activity as? MainActivity)?.hideBottomNav()
             } else {
                 (activity as? MainActivity)?.showBottomNav()

@@ -627,11 +627,11 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
             sut.onProductClick(viewState!!.products.first(), ProductSourceForTracking.SEARCH)
 
-            with(viewState?.products) {
+            with(viewState.products) {
                 assertThat(this).size().isEqualTo(1)
-                val item = this?.first()
+                val item = this.first()
                 assertThat(item).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
-                assertThat(item!!.id).isEqualTo(1)
+                assertThat(item.id).isEqualTo(1)
                 assertThat((item as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
                 assertThat(item.selectionState).isEqualTo(SelectionState.SELECTED)
             }
@@ -667,7 +667,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             }
             val variationItem = viewState!!.products.first()
             sut.onProductClick(variationItem, ProductSourceForTracking.SEARCH)
-            with(viewState!!.products.first()) {
+            with(viewState.products.first()) {
                 assertThat(this).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
                 assertThat(id).isEqualTo(1)
                 assertThat((this as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
@@ -675,7 +675,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             }
 
             sut.onProductClick(variationItem, ProductSourceForTracking.SEARCH)
-            with(viewState!!.products.first()) {
+            with(viewState.products.first()) {
                 assertThat(this).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
                 assertThat(id).isEqualTo(1)
                 assertThat((this as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)

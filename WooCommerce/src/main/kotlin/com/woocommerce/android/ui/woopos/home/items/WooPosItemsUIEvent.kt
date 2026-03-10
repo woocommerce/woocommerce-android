@@ -13,4 +13,5 @@ sealed class WooPosItemsUIEvent {
     data object SearchIconClicked : WooPosItemsUIEvent()
     data object AddCouponIconClicked : WooPosItemsUIEvent()
     data object SyncOverdueBannerDismissed : WooPosItemsUIEvent()
+    data object WooCommerceVersionSunsetBannerDismissed : WooPosItemsUIEvent()
 }

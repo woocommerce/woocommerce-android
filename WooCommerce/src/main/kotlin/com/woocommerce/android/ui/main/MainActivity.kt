@@ -253,13 +253,14 @@ class MainActivity :
         private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
             lastFragment = WeakReference(f)
+            val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
-                    if (f is TopLevelFragment) {
+                    if (f is TopLevelFragment && shouldShowBottomNavigation) {
                         // Post this to the view handler to make sure shouldExpandToolbar returns the correct value
                         f.view?.post {
                             if (f.view != null) {
@@ -289,7 +290,7 @@ class MainActivity :
                 }
             }
 
-            if (f is TopLevelFragment) {
+            if (shouldShowBottomNavigation) {
                 showBottomNav()
             } else {
                 hideBottomNav()
@@ -457,7 +458,7 @@ class MainActivity :
         setIntent(intent)
         initFragment(null)
 
-        viewModel.handleIncomingAppLink(intent?.data)
+        viewModel.handleIncomingAppLink(intent.data)
         handleIncomingImages()
     }
 
@@ -759,7 +760,7 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECTED
+            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECT
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -785,7 +786,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECTED
+            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECT
         }
         stat?.let {
             AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))

@@ -40,6 +40,38 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         ) : Error() {
             override val name: String = "order_creation_failed"
         }
+
+        data class BookingCancelError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "booking_cancel_failed"
+        }
+
+        data class BookingAttendanceChangeError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "booking_attendance_change_failed"
+        }
+
+        data class BookingNoteAddError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "booking_note_add_failed"
+        }
+
+        data class BookingRefundError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "booking_refund_failed"
+        }
     }
 
     sealed class Event : WooPosAnalyticsEvent() {
@@ -147,6 +179,66 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
+        }
+
+        data object GoToBookingsTapped : Event() {
+            override val name: String = "bookings_menu_item_tapped"
+        }
+
+        data object BookingListItemTapped : Event() {
+            override val name: String = "bookings_list_booking_tapped"
+        }
+
+        data object BookingsListSearchButtonTapped : Event() {
+            override val name: String = "bookings_list_search_button_tapped"
+        }
+
+        data object BookingCancelled : Event() {
+            override val name: String = "booking_cancelled"
+        }
+
+        data object BookingAttendanceChanged : Event() {
+            override val name: String = "booking_attendance_changed"
+        }
+
+        data object BookingAddNoteTapped : Event() {
+            override val name: String = "booking_add_note_tapped"
+        }
+
+        data object BookingNoteAdded : Event() {
+            override val name: String = "booking_note_added"
+        }
+
+        data class BookingDatePreviousTapped(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_previous_tapped"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
+        data class BookingDateNextTapped(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_next_tapped"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
+        data class BookingDateCalendarSelected(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_calendar_selected"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
+        data object BookingIssueRefundTapped : Event() {
+            override val name: String = "booking_issue_refund_tapped"
+        }
+
+        data object BookingViewOrderTapped : Event() {
+            override val name: String = "booking_view_order_tapped"
         }
 
         data object OrdersListPullToRefreshTriggered : Event() {
@@ -438,21 +530,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val variationsSynced: Int,
             val totalProducts: Int,
             val totalVariations: Int,
-            val syncDurationMs: Long
+            val syncDurationMs: Long,
+            val generationDurationMs: Long? = null,
+            val pollAttempts: Int? = null
         ) : Event() {
             override val name: String = "local_catalog_sync_completed"
 
             init {
-                addProperties(
-                    mapOf(
-                        SyncType.SYNC_TYPE to syncType.toString(),
-                        "products_synced" to productsSynced.toString(),
-                        "variations_synced" to variationsSynced.toString(),
-                        "total_products" to totalProducts.toString(),
-                        "total_variations" to totalVariations.toString(),
-                        "sync_duration_ms" to syncDurationMs.toString()
-                    )
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString(),
+                    "products_synced" to productsSynced.toString(),
+                    "variations_synced" to variationsSynced.toString(),
+                    "total_products" to totalProducts.toString(),
+                    "total_variations" to totalVariations.toString(),
+                    "sync_duration_ms" to syncDurationMs.toString()
                 )
+                generationDurationMs?.let { properties["generation_duration_ms"] = it.toString() }
+                pollAttempts?.let { properties["poll_attempts"] = it.toString() }
+                addProperties(properties)
             }
         }
 
@@ -460,19 +555,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val syncType: SyncType,
             val errorContext: String,
             val errorType: SyncErrorType,
-            val errorDescription: String
+            val errorDescription: String,
+            val lastGenerationState: String? = null,
+            val pollAttempts: Int? = null
         ) : Event() {
             override val name: String = "local_catalog_sync_failed"
 
             init {
-                addProperties(
-                    mapOf(
-                        SyncType.SYNC_TYPE to syncType.toString(),
-                        "error_context" to errorContext,
-                        SyncErrorType.ERROR_TYPE to errorType.toString(),
-                        "error_description" to errorDescription
-                    )
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString(),
+                    "error_context" to errorContext,
+                    SyncErrorType.ERROR_TYPE to errorType.toString(),
+                    "error_description" to errorDescription
                 )
+                lastGenerationState?.let { properties["last_generation_state"] = it }
+                pollAttempts?.let { properties["poll_attempts"] = it.toString() }
+                addProperties(properties)
             }
         }
 
@@ -811,6 +909,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_stale_warning_dismissed"
         }
 
+        data object WooCommerceVersionSunsetWarningShown : Event() {
+            override val name: String = "woocommerce_version_sunset_warning_shown"
+        }
+
+        data object WooCommerceVersionSunsetWarningDismissed : Event() {
+            override val name: String = "woocommerce_version_sunset_warning_dismissed"
+        }
+
         data object SplashScreenErrorShown : Event() {
             override val name: String = "splash_screen_error_shown"
         }
@@ -862,6 +968,62 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     mapOf(
                         "reason" to reason,
                         "sync_strategy" to syncStrategy.toAnalyticsValue()
+                    )
+                )
+            }
+        }
+
+        data object RefundFlowStarted : Event() {
+            override val name: String = "refund_flow_started"
+        }
+
+        data class RefundConfirmTapped(
+            val refundType: String,
+            val hasReason: Boolean
+        ) : Event() {
+            override val name: String = "refund_confirm_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "refund_type" to refundType,
+                        "has_reason" to hasReason.toString()
+                    )
+                )
+            }
+        }
+
+        data object RefundProcessingStarted : Event() {
+            override val name: String = "refund_processing_started"
+        }
+
+        data object RefundProcessingSuccess : Event() {
+            override val name: String = "refund_processing_success"
+        }
+
+        data object RefundProcessingFailed : Event() {
+            override val name: String = "refund_processing_failed"
+        }
+
+        data class RefundFlowAborted(val refundStep: String) : Event() {
+            override val name: String = "refund_flow_aborted"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "refund_step" to refundStep
+                    )
+                )
+            }
+        }
+
+        data class RefundSelectAllTapped(val action: String) : Event() {
+            override val name: String = "refund_select_all_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "action" to action
                     )
                 )
             }
@@ -1130,5 +1292,6 @@ internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
         SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+        SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }

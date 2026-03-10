@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -12,6 +13,10 @@ import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -22,6 +27,7 @@ class MainSettingsPresenter @Inject constructor(
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val accountRepository: AccountRepository,
     private val notificationChannelsHandler: NotificationChannelsHandler,
@@ -29,6 +35,7 @@ class MainSettingsPresenter @Inject constructor(
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper
 ) : MainSettingsContract.Presenter {
+    override val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     override val isChaChingSoundEnabled: Boolean
@@ -39,6 +46,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun dropView() {
+        coroutineScope.coroutineContext.cancelChildren()
         appSettingsFragmentView = null
     }
 
@@ -96,6 +104,14 @@ class MainSettingsPresenter @Inject constructor(
 
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override fun setupEnablePushNotificationsOption() {
+        coroutineScope.launch {
+            shouldShowEnablePushNotificationsUi().collect { shouldShowOption ->
+                appSettingsFragmentView?.setEnablePushNotificationsOptionVisible(shouldShowOption)
+            }
+        }
+    }
 
     override val wooPluginVersion: String
         get() = getWooVersion() ?: ""

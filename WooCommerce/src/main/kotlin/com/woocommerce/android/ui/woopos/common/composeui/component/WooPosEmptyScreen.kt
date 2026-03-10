@@ -93,6 +93,7 @@ private fun WooPosItemsEmptyListInternal(
                 text = title,
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

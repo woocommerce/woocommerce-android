@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ExitPosClicked
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenBookings
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenCashPayment
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenEmailReceipt
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenOrders
@@ -31,6 +32,7 @@ fun WooPosRootHost(
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
                 NavigationEvent.ToOrders -> onNavigationEvent(OpenOrders)
+                NavigationEvent.ToBookings -> onNavigationEvent(OpenBookings)
             }
         }
     }

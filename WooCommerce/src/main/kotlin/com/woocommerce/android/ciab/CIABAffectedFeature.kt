@@ -11,5 +11,6 @@ enum class CIABAffectedFeature {
     CompositeProducts,
     GiftCardEditing,
     ProductsStockDashboardCard,
+    Onboarding,
     POS
 }

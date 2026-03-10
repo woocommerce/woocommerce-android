@@ -227,7 +227,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             flow<CardPaymentStatus> { }
         }
         whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+        whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
         whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test statement descriptor")
@@ -497,7 +497,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment not collectable, then flow terminated and snackbar shown`() =
         testBlocking {
-            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)

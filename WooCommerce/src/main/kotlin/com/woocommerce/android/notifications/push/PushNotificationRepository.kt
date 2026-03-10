@@ -1,38 +1,47 @@
 package com.woocommerce.android.notifications.push
 
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.datastore.DataStoreQualifier
-import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
 class PushNotificationRepository @Inject constructor(
     private val wooPushNotificationsStore: WooPushNotificationsStore,
-    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
-    @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
+    private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
+    @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>,
-    private val notificationAnalyticsTracker: NotificationAnalyticsTracker
+    private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
+    private val localeProvider: LocaleProvider
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -43,46 +52,59 @@ class PushNotificationRepository @Inject constructor(
         wpComPushNotificationStore.registerDevice(token, WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE)
     }
 
-    suspend fun registerPushTokenInWooCoreSystem(token: String) {
+    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel): Result<Unit> {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        selectedSite.getIfExists()?.let { site ->
-            val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
-            val result = wooPushNotificationsStore.registerPushToken(
-                site = site,
-                token = token,
-                deviceUuid = uuid
-            )
-            if (!result.isError) {
-                result.model?.let { pushToken ->
-                    notificationAnalyticsTracker.track(
-                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
-                        siteId = site.siteId
-                    )
-                    savePushTokenForSite(site.siteId, pushToken)
-                    disableWpComNotificationsForSite(site.siteId)
-                } ?: run {
-                    val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
-                    WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
-                    notificationAnalyticsTracker.trackError(
-                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
-                        siteId = site.siteId,
-                        errorDescription = errorMsg,
-                        errorType = WooErrorType.EMPTY_RESPONSE.name
-                    )
-                }
-            } else {
+
+        val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
+        val deviceLocale = getDeviceLocale()
+        val metadata = buildDeviceMetadata()
+        val result = wooPushNotificationsStore.registerPushToken(
+            site = selectedSite,
+            token = token,
+            deviceUuid = uuid,
+            deviceLocale = deviceLocale,
+            metadata = metadata
+        )
+        return if (!result.isError) {
+            result.model?.let { pushToken ->
+                notificationAnalyticsTracker.track(
+                    stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
+                    siteId = selectedSite.siteId
+                )
+                savePushTokenForSite(selectedSite.siteId, pushToken)
+                disableWpComNotificationsForSite(selectedSite.siteId)
+                Result.success(Unit)
+            } ?: run {
+                val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
+                WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
                 notificationAnalyticsTracker.trackError(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
-                    siteId = site.siteId,
-                    errorDescription = result.error?.message,
-                    errorType = result.error?.type?.name,
-                    errorCode = result.error?.apiErrorCode
+                    siteId = selectedSite.siteId,
+                    errorDescription = errorMsg,
+                    errorType = WooErrorType.EMPTY_RESPONSE.name
                 )
+                Result.failure(Exception(errorMsg))
             }
-        } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
+        } else {
+            notificationAnalyticsTracker.trackError(
+                stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                siteId = selectedSite.siteId,
+                errorDescription = result.error?.message,
+                errorType = result.error?.type?.name,
+                errorCode = result.error?.apiErrorCode
+            )
+            WooLog.w(
+                WooLog.T.NOTIFICATIONS,
+                "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
+            )
+            if (!isWpComPushRegistered()) {
+                registerPushTokenInWpComSystem(token)
+            }
+            Result.failure(WooException(result.error))
+        }
     }
 
     private suspend fun disableWpComNotificationsForSite(siteId: Long) {
@@ -99,7 +121,14 @@ class PushNotificationRepository @Inject constructor(
                 stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR,
                 siteId = siteId,
                 errorDescription = error?.message,
-                errorType = error?.type?.let { it::class.simpleName }
+                errorType = error?.type?.let { it::class.simpleName },
+                errorCode = when (val type = error?.type) {
+                    is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
+                    WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
+                        WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
+
+                    null -> null
+                }
             )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
@@ -126,6 +155,11 @@ class PushNotificationRepository @Inject constructor(
         return preferences[tokenKey] != null
     }
 
+    fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
+        val tokenKey = getPushTokenKeyForSite(siteId)
+        return pushNotificationsDataStore.data.map { preferences -> preferences[tokenKey] != null }
+    }
+
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
         val preferences = pushNotificationsDataStore.data.first()
         return preferences.asMap().keys
@@ -143,7 +177,7 @@ class PushNotificationRepository @Inject constructor(
         unregisterWooCoreTokens.await()
     }
 
-    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+    suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val preferences = pushNotificationsDataStore.data.first()
         val sites = wooCommerceStore.getWooCommerceSites()
 
@@ -173,7 +207,32 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
+    private fun isWpComPushRegistered(): Boolean {
+        val wpComPushServerId = prefsWrapper.getFluxCPreferences()
+            .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+        return wpComPushServerId.isNotNullOrEmpty()
+    }
+
+    private fun getDeviceLocale(): String {
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        val language = locale.language
+        val country = locale.country
+
+        return when {
+            language.isEmpty() -> "en_US"
+            country.isEmpty() -> language
+            else -> "${language}_$country"
+        }
+    }
+
+    private fun buildDeviceMetadata(): Map<String, String> = mapOf(
+        "app_version" to BuildConfig.VERSION_NAME,
+        "device_model" to "${Build.MANUFACTURER} ${Build.MODEL}",
+        "os_version" to Build.VERSION.RELEASE
+    )
+
     companion object {
         private const val PUSH_TOKEN_KEY_PREFIX = "push_token_"
+        private const val WPCOM_UNREGISTERED_DEVICE_ERROR_CODE = "unregistered_device"
     }
 }

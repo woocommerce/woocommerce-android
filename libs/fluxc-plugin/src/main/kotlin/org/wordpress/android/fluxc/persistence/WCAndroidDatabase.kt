@@ -75,6 +75,7 @@ import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
@@ -103,6 +104,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosSearchableFtsEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
@@ -129,11 +131,12 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_5_6
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_62_63
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_71_72
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_77_78
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 76
+const val WC_DATABASE_VERSION = 79
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -162,6 +165,7 @@ const val WC_DATABASE_VERSION = 76
         WCProductModel::class,
         WooPosProductEntity::class,
         WooPosVariationEntity::class,
+        WooPosSearchableFtsEntity::class,
         WCProductCategoryModel::class,
         WCProductVariationModel::class,
         WCProductTagModel::class,
@@ -245,6 +249,8 @@ const val WC_DATABASE_VERSION = 76
         AutoMigration(from = 73, to = 74),
         AutoMigration(from = 74, to = 75),
         AutoMigration(from = 75, to = 76),
+        AutoMigration(from = 76, to = 77),
+        AutoMigration(from = 78, to = 79),
     ]
 )
 @TypeConverters(
@@ -280,6 +286,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val productsDao: ProductsDao
     internal abstract val posProductsDao: WooPosProductsDao
     internal abstract val posVariationsDao: WooPosVariationsDao
+    internal abstract val posSearchableFtsDao: WooPosSearchableFtsDao
     internal abstract val productVariationsDao: ProductVariationsDao
     internal abstract val productCategoriesDao: ProductCategoriesDao
     internal abstract val productTagsDao: ProductTagsDao
@@ -333,6 +340,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             .addMigrations(MIGRATION_31_32)
             .addMigrations(MIGRATION_62_63)
             .addMigrations(MIGRATION_71_72)
+            .addMigrations(MIGRATION_77_78)
             .build()
     }
 

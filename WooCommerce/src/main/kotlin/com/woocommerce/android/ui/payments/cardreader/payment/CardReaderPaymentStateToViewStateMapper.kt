@@ -194,7 +194,7 @@ class CardReaderPaymentStateToViewStateMapper @Inject constructor(
                     errorType = paymentState.errorType,
                     amountLabel = paymentState.amountWithCurrencyLabel,
                     primaryLabel = R.string.card_reader_payment_payment_failed_ok,
-                    onPrimaryActionClicked = paymentState.onCancel!!,
+                    onPrimaryActionClicked = paymentState.onCancel,
                 )
             }
         }

@@ -11,6 +11,7 @@ interface MainSettingsContract {
         fun getStoreDomainName(): String
         fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
+        fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
         fun onNotificationsClicked()
@@ -25,6 +26,7 @@ interface MainSettingsContract {
         fun showDeviceAppNotificationSettings()
         fun showNotificationsSettingsScreen()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
+        fun setEnablePushNotificationsOptionVisible(isVisible: Boolean)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
     }

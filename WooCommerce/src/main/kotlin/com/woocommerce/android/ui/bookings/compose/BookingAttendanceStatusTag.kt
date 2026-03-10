@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -54,7 +55,8 @@ fun BookingAttendanceStatusTag(
                 WCTag(
                     text = state.text(),
                     backgroundColor = state.backgroundColor(),
-                    textColor = colorResource(R.color.tagView_text),
+                    textColor = state.textColor(),
+                    border = state.border(),
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
                         .onSizeChanged {
@@ -69,37 +71,48 @@ fun BookingAttendanceStatusTag(
 }
 
 sealed interface BookingAttendanceStatus {
-    data object Booked : BookingAttendanceStatus
-    data object CheckedIn : BookingAttendanceStatus
-    data object NoShow : BookingAttendanceStatus
-    data object Cancelled : BookingAttendanceStatus
+    data object Attended : BookingAttendanceStatus
+    data object Unattended : BookingAttendanceStatus
 }
 
 @Composable
-fun BookingAttendanceStatus?.text(): String {
+private fun BookingAttendanceStatus?.text(): String {
     return when (this) {
-        BookingAttendanceStatus.Booked -> stringResource(R.string.booking_attendance_status_booked)
-        BookingAttendanceStatus.CheckedIn -> stringResource(R.string.booking_attendance_status_checked_in)
-        BookingAttendanceStatus.Cancelled -> stringResource(R.string.booking_attendance_status_cancelled)
-        BookingAttendanceStatus.NoShow -> stringResource(R.string.booking_attendance_status_no_show)
+        BookingAttendanceStatus.Attended -> stringResource(R.string.booking_attendance_status_attended)
+        BookingAttendanceStatus.Unattended -> stringResource(R.string.booking_attendance_status_unattended)
         else -> ""
     }
 }
 
 @Composable
-fun BookingAttendanceStatus.backgroundColor(): Color {
-    return when (this) {
-        BookingAttendanceStatus.NoShow -> R.color.tag_bg_booking_yellow
-        else -> R.color.tagView_bg
-    }.let { colorResource(it) }
+private fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
+    Color.Transparent
+} else {
+    colorResource(R.color.tagView_bg)
 }
+
+@Composable
+private fun BookingAttendanceStatus.textColor(): Color = if (isOutlined()) {
+    colorResource(R.color.color_on_surface_high)
+} else {
+    colorResource(R.color.tagView_text)
+}
+
+@Composable
+private fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {
+    BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+} else {
+    null
+}
+
+private fun BookingAttendanceStatus.isOutlined(): Boolean = this == BookingAttendanceStatus.Attended
 
 @Preview
 @Composable
-private fun AttendanceStatusTagPreview() {
+private fun AttendanceStatusTagAttendedPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.Booked,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
         )
     }
@@ -107,10 +120,10 @@ private fun AttendanceStatusTagPreview() {
 
 @Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun AttendanceStatusTagDarkPreview() {
+private fun AttendanceStatusTagUnattendedDarkPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.CheckedIn,
+            state = BookingAttendanceStatus.Unattended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
         )
     }
@@ -118,10 +131,10 @@ private fun AttendanceStatusTagDarkPreview() {
 
 @LightDarkThemePreviews
 @Composable
-private fun AttendanceStatusTagNoShowPreview() {
+private fun AttendanceStatusTagCancelledPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.NoShow,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             modifier = Modifier.padding(10.dp)
         )
@@ -133,7 +146,7 @@ private fun AttendanceStatusTagNoShowPreview() {
 private fun AttendanceStatusTagInProgressPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.NoShow,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             modifier = Modifier.padding(10.dp)
         )

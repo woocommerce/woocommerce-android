@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
@@ -77,6 +78,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
+    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -100,7 +102,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName: String = clientId
                 override suspend fun isEnabledForJetpackAccess(): Boolean = true
             },
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            registerDevice = registerDevice
         )
     }
 

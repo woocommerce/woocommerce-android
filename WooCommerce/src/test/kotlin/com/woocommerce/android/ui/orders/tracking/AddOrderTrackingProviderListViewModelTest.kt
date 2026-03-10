@@ -65,7 +65,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
         verify(shipmentProvidersRepository, times(1)).fetchOrderShipmentProviders(ORDER_ID)
         assertThat(state!!.showSkeleton).isFalse()
-        assertThat(state!!.providersList).isEqualTo(testShipmentProvider)
+        assertThat(state.providersList).isEqualTo(testShipmentProvider)
     }
 
     @Test
@@ -119,7 +119,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
         }
 
         assertThat(state!!.providersList.size).isEqualTo(1)
-        assertThat(state!!.providersList[0]).isEqualTo(testShipmentProvider[1])
+        assertThat(state.providersList[0]).isEqualTo(testShipmentProvider[1])
     }
 
     @Test

@@ -1,0 +1,65 @@
+package com.woocommerce.android.ui.login.wpcom
+
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.jetpack.GoToStore
+import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ScopedViewModel
+
+open class WPComLoginPostLoginViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val selectedSite: SelectedSite,
+    private val jetpackActivationRepository: JetpackActivationRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+) : ScopedViewModel(savedStateHandle) {
+    @VisibleForTesting
+    internal suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+        return handleJetpackSetupPostLogin(jetpackStatus)
+    }
+
+    private suspend fun handleJetpackSetupPostLogin(jetpackStatus: JetpackStatus): Result<Unit> {
+        analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
+
+        val siteUrl = selectedSite.get().url
+        if (jetpackStatus.isCurrentUserConnected) {
+            // Attempt returning the site from the DB if it exists, otherwise fetch it from API
+            val jetpackSite = jetpackActivationRepository.getJetpackSiteByUrl(siteUrl)
+                .takeIf { it?.hasWooCommerce == true }
+                ?: jetpackActivationRepository.fetchJetpackSite(siteUrl)
+                    .getOrElse {
+                        triggerEvent(ShowSnackbar(R.string.error_generic))
+                        return Result.failure(it)
+                    }
+
+            jetpackActivationRepository.setSelectedSiteAndCleanOldSites(jetpackSite)
+            if (jetpackStatus.isJetpackInstalled) {
+                triggerEvent(GoToStore)
+            } else {
+                triggerEvent(ShowJetpackCPInstallationScreen)
+            }
+            return Result.success(Unit)
+        } else {
+            triggerEvent(
+                ShowJetpackActivationScreen(
+                    jetpackStatus = jetpackStatus,
+                    siteUrl = siteUrl
+                )
+            )
+            return Result.success(Unit)
+        }
+    }
+
+    data class ShowJetpackActivationScreen(
+        val jetpackStatus: JetpackStatus,
+        val siteUrl: String
+    ) : MultiLiveEvent.Event()
+
+    object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
+}

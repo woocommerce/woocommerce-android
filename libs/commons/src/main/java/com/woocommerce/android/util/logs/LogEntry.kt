@@ -42,23 +42,36 @@ class LogEntry(
             get() = SimpleDateFormat("MMM-dd kk:mm:ss:SSS", Locale.US)
 
         @Suppress("MagicNumber")
-        fun fromString(log: String): LogEntry {
-            val firstParts = log.removePrefix("[").substringBefore("]")
-            val parts = firstParts.split(" ")
+        fun fromString(log: String): LogEntry? {
+            return runCatching {
+                val firstParts = log.removePrefix("[").substringBefore("]")
+                val parts = firstParts.split(" ")
 
-            val logDate = formatter.parse(parts[0] + " " + parts[1])
-                ?: Date()
-            val tag = WooLog.T.valueOf(parts[2])
-            val level = WooLog.LogLevel.valueOf(parts[3])
+                val logDate = formatter.parse(parts[0] + " " + parts[1])
+                    ?: Date()
+                val tagName = migrateDeprecatedTagNames(parts[2])
+                val tag = WooLog.T.valueOf(tagName)
+                val level = WooLog.LogLevel.valueOf(parts[3])
 
-            val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
+                val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
 
-            return LogEntry(
-                tag = tag,
-                level = level,
-                text = text,
-                logDate = logDate
-            )
+                LogEntry(
+                    tag = tag,
+                    level = level,
+                    text = text,
+                    logDate = logDate
+                )
+            }.getOrNull()
+        }
+
+        // TODO WOOMOB-2212 remove this migration code after a couple of releases,
+        //  logs are only kept for one week so the issue should fix itself by then.
+        private val deprecatedTagNames = mapOf(
+            "NOTIFS" to WooLog.T.NOTIFICATIONS.name
+        )
+
+        private fun migrateDeprecatedTagNames(tagName: String): String {
+            return deprecatedTagNames[tagName] ?: tagName
         }
     }
 }

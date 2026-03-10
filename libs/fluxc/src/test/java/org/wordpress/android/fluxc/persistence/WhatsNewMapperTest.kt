@@ -13,6 +13,7 @@ class WhatsNewMapperTest {
             minimumAppVersion = "1.0",
             maximumAppVersion = "2.0",
             appVersionTargets = emptyList(),
+            detailsUrl = "https://woocommerce.com/mobile/pos/learn-more",
             isLocalized = true,
             features = listOf(
                 WhatsNewAnnouncementFeature(

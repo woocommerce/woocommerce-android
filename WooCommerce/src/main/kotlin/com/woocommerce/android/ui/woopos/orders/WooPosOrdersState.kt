@@ -56,13 +56,35 @@ sealed class WooPosOrdersState {
                 val customerEmail: String?,
                 val status: PosOrderStatus,
 
-                val lineItems: List<LineItemRow>,
+                val lineItems: LineItemsState = LineItemsState.Loading,
+                val refundedLineItems: LineItemsState = LineItemsState.Loading,
                 val breakdown: TotalsBreakdown,
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
                 val actionsState: OrderActionsState
             ) {
+                @Immutable
+                sealed interface LineItemsState {
+                    @Immutable
+                    data object Loading : LineItemsState
+
+                    @Immutable
+                    data class Loaded(val items: List<LineItemRow>) : LineItemsState
+                }
+
+                @Immutable
+                sealed interface BookingInfo {
+                    @Immutable
+                    data class Loading(val bookingId: Long) : BookingInfo
+
+                    @Immutable
+                    data class Loaded(val text: String) : BookingInfo
+
+                    @Immutable
+                    data class Error(val text: String) : BookingInfo
+                }
+
                 @Immutable
                 data class LineItemRow(
                     val id: Long,
@@ -71,6 +93,7 @@ sealed class WooPosOrdersState {
                     val qtyAndUnitPrice: String,
                     val lineTotal: String,
                     val imageUrl: String?,
+                    val bookingInfo: BookingInfo? = null,
                 )
 
                 @Immutable
@@ -107,7 +130,7 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
-        val dialogState: DialogState = DialogState.Hidden
+        val dialogState: DialogState
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()

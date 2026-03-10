@@ -31,10 +31,11 @@ class WooPosSyncActionTest {
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSyncAction(posLocalCatalogStore, logger)
+        sut = WooPosSyncAction(posLocalCatalogStore, logger, syncWithFts)
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -374,6 +375,26 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(10) // no trash products
+    }
+
+    @Test
+    fun `when incremental sync with trash products, then deletes trash products from FTS`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(0), serverDate = "2024-01-01T12:00:00Z")
+        givenTrashProductsWithIds(listOf(100L, 101L))
+        givenAllModifiedProductsMatchPosProducts(count = 5)
+
+        // WHEN
+        sut.syncCatalog(site, "2024-01-01T12:00:00Z", PAGE_SIZE, 10)
+
+        // THEN
+        verify(syncWithFts).syncFtsForIncrementalSync(
+            eq("1"),
+            any(),
+            any(),
+            eq(listOf(LocalOrRemoteId.RemoteId(100L), LocalOrRemoteId.RemoteId(101L)))
+        )
     }
 
     // === TRANSACTION TESTS ===
@@ -900,6 +921,36 @@ class WooPosSyncActionTest {
                     hasMore = false,
                     nextPage = 1,
                     syncedCount = count,
+                    serverDate = "2024-01-01T12:00:00Z"
+                )
+            )
+        )
+    }
+
+    private fun givenTrashProductsWithIds(ids: List<Long>) = runBlocking {
+        val products = ids.map { id ->
+            WooPosProductEntity(
+                remoteId = LocalOrRemoteId.RemoteId(id),
+                name = "Trash Product $id"
+            )
+        }
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                any(),
+                anyOrNull(),
+                any(),
+                any(),
+                eq(listOf(CoreProductStatus.TRASH))
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosPaginatedFetchResult(
+                    items = products,
+                    totalPages = 1,
+                    hasMore = false,
+                    nextPage = 1,
+                    syncedCount = products.size,
                     serverDate = "2024-01-01T12:00:00Z"
                 )
             )

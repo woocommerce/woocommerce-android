@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_push_notifications"
+    app:startDestination="@id/wooPushNotificationsIntroductionDialog">
+
+    <dialog
+        android:id="@+id/wooPushNotificationsIntroductionDialog"
+        android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
+        android:label="WooPushNotificationsIntroductionDialog">
+        <action
+            android:id="@+id/action_wooPushNotificationsIntroductionDialog_to_wooPushNotificationsConnectionStepsFragment"
+            app:destination="@id/wooPushNotificationsConnectionStepsFragment"
+            app:popUpTo="@id/wooPushNotificationsIntroductionDialog"
+            app:popUpToInclusive="true" />
+    </dialog>
+    <fragment
+        android:id="@+id/wooPushNotificationsConnectionStepsFragment"
+        android:name="com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsFragment"
+        android:label="WooPushNotificationsConnectionStepsFragment" >
+        <argument
+            android:name="isSiteConnectedToJetpack"
+            app:argType="boolean" />
+        <argument
+            android:name="shouldAutoOpenUpdatePlugin"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+</navigation>

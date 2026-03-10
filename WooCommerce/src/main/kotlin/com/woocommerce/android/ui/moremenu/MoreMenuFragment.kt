@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptions
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewBookingsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
@@ -91,6 +93,7 @@ class MoreMenuFragment : TopLevelFragment() {
     override fun onResume() {
         super.onResume()
 
+        viewModel.onWindowClassChanged(requireContext().isTwoPanesShouldBeUsed)
         viewModel.onViewResumed()
     }
 
@@ -99,6 +102,7 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
+                is ViewBookingsEvent -> navigateToBookings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
                 is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.isCreationFlow)
@@ -183,6 +187,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToCustomers() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToCustomerListFragment()
+        )
+    }
+
+    private fun navigateToBookings() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToBookings()
         )
     }
 

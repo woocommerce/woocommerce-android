@@ -11,9 +11,15 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 
+/**
+ * Represents a notification to be displayed to the user.
+ *
+ * This class is used for both remote (push) notifications and local notifications.
+ * For remote notifications, all ID-related operations use [remoteNoteId].
+ * For local notifications, the notification ID is passed separately to display methods.
+ */
 @Parcelize
 data class Notification(
-    val noteId: Int,
     val uniqueId: Long,
     val remoteNoteId: Long,
     val remoteSiteId: Long,
@@ -51,7 +57,6 @@ data class Notification(
 
 fun NotificationModel.toAppModel(resourceProvider: ResourceProvider): Notification {
     return Notification(
-        noteId = this.noteId,
         remoteNoteId = this.remoteNoteId,
         remoteSiteId = this.remoteSiteId,
         icon = this.icon,

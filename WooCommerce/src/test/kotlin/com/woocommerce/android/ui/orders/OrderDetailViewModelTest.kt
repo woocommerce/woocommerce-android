@@ -244,7 +244,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
         doReturn(site).whenever(selectedSite).getIfExists()
         testBlocking {
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         }
 
         pluginsInfo.clear()
@@ -274,7 +274,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             orderInfo = orderInfo.copy(order = nonRefundedOrder)
         )
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
@@ -347,7 +347,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = Date()
@@ -376,7 +376,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = null
@@ -405,7 +405,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
-            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
@@ -429,7 +429,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `collect button hidden if payment is not collectable`() =
         testBlocking {
             // GIVEN
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -445,7 +445,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `collect button shown if payment is collectable`() =
         testBlocking {
             // GIVEN
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -682,7 +682,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
@@ -2253,7 +2253,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -2277,7 +2277,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())

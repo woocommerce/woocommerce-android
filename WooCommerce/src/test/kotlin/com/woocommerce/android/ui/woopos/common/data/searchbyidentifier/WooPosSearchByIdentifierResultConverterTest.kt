@@ -43,6 +43,7 @@ class WooPosSearchByIdentifierResultConverterTest {
                 remoteVariationId = 1L,
                 remoteProductId = 1L,
                 globalUniqueId = "test-unique-id",
+                type = WooPosVariation.WooPosVariationType.VARIATION,
                 price = java.math.BigDecimal("10.0"),
                 image = null,
                 attributes = emptyList(),
@@ -71,7 +72,9 @@ class WooPosSearchByIdentifierResultConverterTest {
     @Test
     fun `given variation product success result, when converting, should process variation`() = runTest {
         // GIVEN
-        val variationProduct = testProduct.copy(type = WooPosProductModel.WooPosProductType.VARIATION)
+        val variationProduct = testProduct.copy(
+            type = WooPosProductModel.WooPosProductType.Variation
+        )
         val successResult = WooPosSearchByIdentifierResult.Success(variationProduct)
         val variationSuccessResult = WooPosSearchByIdentifierResult.VariationSuccess(testVariation, testProduct)
         val searchFunction: suspend () -> WooPosSearchByIdentifierResult = { successResult }

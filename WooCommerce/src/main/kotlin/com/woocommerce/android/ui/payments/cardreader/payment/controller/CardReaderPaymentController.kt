@@ -110,6 +110,7 @@ class CardReaderPaymentController(
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
+    private val allowCancelledStatus: Boolean = false,
 ) {
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -201,7 +202,7 @@ class CardReaderPaymentController(
             fetchOrder()?.let { order ->
                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
 
-                if (!paymentCollectibilityChecker.isCollectable(order)) {
+                if (!paymentCollectibilityChecker.isCollectable(order, allowCancelledStatus)) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
