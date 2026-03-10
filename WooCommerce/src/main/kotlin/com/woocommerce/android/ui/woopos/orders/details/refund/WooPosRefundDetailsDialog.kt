@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
@@ -47,28 +49,33 @@ fun WooPosRefundDetailsDialog(
         onCloseClick = onDismissRequest,
         onDismissRequest = onDismissRequest,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             WooPosText(
                 text = dialogState.label,
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = WooPosSpacing.XLarge.value),
             )
 
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-            dialogState.items.forEachIndexed { index, item ->
-                RefundDetailItem(item)
-                if (index < dialogState.items.size - 1) {
-                    DividerWithSpacing()
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                dialogState.items.forEachIndexed { index, item ->
+                    RefundDetailItem(item)
+                    if (index < dialogState.items.size - 1) {
+                        DividerWithSpacing()
+                    }
                 }
             }
 
-            DividerWithSpacing()
+            Divider()
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
             TotalRowLine(
                 label = dialogState.itemsSubtotalLabel,
@@ -161,21 +168,22 @@ private fun TotalRowLine(
     value: String,
     boldLabel: Boolean = true,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         WooPosText(
             text = label,
             style = if (boldLabel) WooPosTypography.BodyLarge else WooPosTypography.BodyMedium,
             fontWeight = if (boldLabel) FontWeight.Bold else FontWeight.Normal,
-            color = if (boldLabel) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                WooPosTheme.colors.onSurfaceVariantHighest
-            }
+            color = MaterialTheme.colorScheme.onSurface,
         )
-        Spacer(Modifier.weight(1f))
         WooPosText(
             text = value,
-            style = WooPosTypography.BodyMedium,
+            style = if (boldLabel) WooPosTypography.BodyLarge else WooPosTypography.BodyMedium,
+            fontWeight = if (boldLabel) FontWeight.Bold else FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -183,6 +191,17 @@ private fun TotalRowLine(
 @Composable
 private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    HorizontalDivider(
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.25.dp,
+    )
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
+}
+
+@Composable
+private fun Divider() {
+    HorizontalDivider(
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.25.dp,
+    )
 }
