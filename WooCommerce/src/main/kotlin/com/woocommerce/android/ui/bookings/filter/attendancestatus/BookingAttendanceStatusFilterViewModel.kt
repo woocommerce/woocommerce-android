@@ -22,27 +22,20 @@ class BookingAttendanceStatusFilterViewModel @AssistedInject constructor(
 
     private val _uiState = MutableStateFlow(
         BookingAttendanceStatusFilterUiState(
-            selectedStatuses = initialStatuses ?: AttendanceStatuses.DEFAULT,
+            selectedStatus = initialStatuses?.values?.firstOrNull(),
             onStatusSelected = ::onStatusSelected
         )
     )
     val uiState: LiveData<BookingAttendanceStatusFilterUiState> = _uiState.asLiveData()
 
     private fun onStatusSelected(status: AttendanceStatus?) {
-        val newSelectedStatusesState = if (status == AttendanceStatus.any) {
-            AttendanceStatuses.DEFAULT
-        } else {
-            val statusSet = _uiState.value.selectedStatuses.values.toMutableSet()
-            if (statusSet.contains(status)) {
-                statusSet.remove(status)
-            } else {
-                status?.let { statusSet.add(it) }
-            }
-            AttendanceStatuses(statusSet)
+        val newSelectedStatus = when {
+            status == AttendanceStatus.any -> null
+            else -> status
         }
 
-        _uiState.update { it.copy(selectedStatuses = newSelectedStatusesState) }
-        onFilterChanged(newSelectedStatusesState)
+        _uiState.update { it.copy(selectedStatus = newSelectedStatus) }
+        onFilterChanged(AttendanceStatuses(setOfNotNull(newSelectedStatus)))
     }
 
     @AssistedFactory
