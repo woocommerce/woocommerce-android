@@ -223,7 +223,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should preserve _payment_status meta data`() = runTest {
+    fun `when stripping order, then _payment_status meta data is preserved`() = runTest {
         // given
         val metaDataFromRemote = listOf(
             WCMetaData(1, redundantMemberKey, "sample value"),
