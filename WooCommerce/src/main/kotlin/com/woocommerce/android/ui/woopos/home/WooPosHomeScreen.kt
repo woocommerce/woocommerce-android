@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -194,13 +193,6 @@ private fun Dialogs(
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
-
-    if (dialogState is WooPosHomeState.DialogState.CardReaderConnectionDialog) {
-        WooPosCardReaderConnectionDialog(
-            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) },
-            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
-        )
-    }
 }
 
 @Composable

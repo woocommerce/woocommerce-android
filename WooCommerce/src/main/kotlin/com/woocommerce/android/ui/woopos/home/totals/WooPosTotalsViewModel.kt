@@ -9,7 +9,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
@@ -124,10 +123,6 @@ class WooPosTotalsViewModel @Inject constructor(
                         cancelPaymentAction()
                     }
 
-                    Reconnecting -> {
-                        // We start payment right away so this state not worth handling
-                    }
-
                     is Connected -> {
                         val state = uiState.value
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
@@ -174,11 +169,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.RetryFailedTransactionClicked -> handleRetryFailedTransactionClicked()
 
-            WooPosTotalsUIEvent.ConnectReaderClicked -> {
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
-                }
-            }
+            WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
 
@@ -390,12 +381,13 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
-                    is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
+                    is CardReaderPaymentState.CollectingPayment -> handleCollectingPaymentState(paymentState)
 
                     is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
 
-                    is CardReaderPaymentState.PaymentCapturing -> {
-                        handleCapturingPaymentState()
+                    is CardReaderPaymentState.PaymentCapturing,
+                    is CardReaderPaymentState.ProcessingPayment -> {
+                        handleProcessingOrCapturingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
@@ -421,10 +413,12 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
-    private suspend fun handleCapturingPaymentState() {
+    private suspend fun handleProcessingOrCapturingPaymentState() {
         val state = uiState.value
         if (state is WooPosTotalsViewState.Checkout) {
             uiState.value = state.copy(totals = Totals.Hidden)
+            // allow the UI to show "shrinking" exit animation of totals grid before showing
+            // the "payment in progress" state.
             @Suppress("MagicNumber")
             delay(384)
         }
@@ -435,7 +429,7 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private suspend fun handleProcessingPaymentState(paymentState: CardReaderPaymentState.ProcessingPayment) {
+    private suspend fun handleCollectingPaymentState(paymentState: CardReaderPaymentState.CollectingPayment) {
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(

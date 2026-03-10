@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
-import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
@@ -17,6 +17,8 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMeth
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +31,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
-@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: CreatePaymentAction
@@ -40,7 +41,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     private val paymentUtils: PaymentUtils = mock()
 
     @Before
-    fun setUp() = testBlocking {
+    fun setUp() {
         action = CreatePaymentAction(
             paymentIntentParametersFactory,
             terminal,
@@ -53,30 +54,34 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
-        whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
-        whenever(intentParametersBuilder.setApplicationFeeAmount(any())).thenReturn(intentParametersBuilder)
-        whenever(intentParametersBuilder.setStatementDescriptor(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
             CardReaderConfigForUSA
         )
-        whenever(terminal.createPaymentIntent(any())).thenReturn(mock())
+
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
     }
 
     @Test
     fun `when creating paymentIntent succeeds, then Success is emitted`() = testBlocking {
-        whenever(terminal.createPaymentIntent(any())).thenReturn(mock())
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
 
-        val result = action.createPaymentIntent(createPaymentInfo())
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Success::class.java)
     }
 
     @Test
     fun `when creating paymentIntent fails, then Failure is emitted`() = testBlocking {
-        whenever(terminal.createPaymentIntent(any())).thenAnswer { throw mock<TerminalException>() }
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+        }
 
-        val result = action.createPaymentIntent(createPaymentInfo())
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Failure::class.java)
     }
@@ -84,11 +89,35 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating paymentIntent succeeds, then updated paymentIntent is returned`() = testBlocking {
         val updatedPaymentIntent = mock<PaymentIntent>()
-        whenever(terminal.createPaymentIntent(any())).thenReturn(updatedPaymentIntent)
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
+        }
 
-        val result = action.createPaymentIntent(createPaymentInfo())
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat((result as CreatePaymentStatus.Success).paymentIntent).isEqualTo(updatedPaymentIntent)
+    }
+
+    @Test
+    fun `when creating paymentIntent succeeds, then flow is terminated`() = testBlocking {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+
+        val result = action.createPaymentIntent(createPaymentInfo()).toList()
+
+        assertThat(result.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when creating paymentIntent fails, then flow is terminated`() = testBlocking {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+        }
+
+        val result = action.createPaymentIntent(createPaymentInfo()).toList()
+
+        assertThat(result.size).isEqualTo(1)
     }
 
     @Test
@@ -101,7 +130,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
                     customerEmail = expectedEmail,
                     wcpayCanSendReceipt = true
                 )
-            )
+            ).toList()
 
             verify(intentParametersBuilder, never()).setReceiptEmail(any())
         }
@@ -116,21 +145,21 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
                     customerEmail = expectedEmail,
                     wcpayCanSendReceipt = false
                 )
-            )
+            ).toList()
 
             verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
         }
 
     @Test
     fun `when customer email is null, then PaymentIntent setReceiptEmail not invoked`() = testBlocking {
-        action.createPaymentIntent(createPaymentInfo(customerEmail = null))
+        action.createPaymentIntent(createPaymentInfo(customerEmail = null)).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
 
     @Test
     fun `when customer email is empty, then PaymentIntent setReceiptEmail not invoked`() = testBlocking {
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
@@ -139,7 +168,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when statement descriptor not empty, then PaymentIntent setStatementDescriptor invoked`() = testBlocking {
         val expected = "Site abcd"
 
-        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected))
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
 
         verify(intentParametersBuilder).setStatementDescriptor(expected)
     }
@@ -148,7 +177,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when statement descriptor empty, then PaymentIntent setStatementDescriptor NOT invoked`() = testBlocking {
         val expected = ""
 
-        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected))
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
 
         verify(intentParametersBuilder, never()).setStatementDescriptor(any())
     }
@@ -157,7 +186,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when statement descriptor null, then PaymentIntent setStatementDescriptor NOT invoked`() = testBlocking {
         val expected: String? = null
 
-        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected))
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
 
         verify(intentParametersBuilder, never()).setStatementDescriptor(any())
     }
@@ -166,14 +195,14 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when creating payment intent, then payment description set`() = testBlocking {
         val expectedDescription = "test description"
 
-        action.createPaymentIntent(createPaymentInfo(paymentDescription = expectedDescription))
+        action.createPaymentIntent(createPaymentInfo(paymentDescription = expectedDescription)).toList()
 
         verify(intentParametersBuilder).setDescription(expectedDescription)
     }
 
     @Test
     fun `when statement fee null, then PaymentIntent setApplicationFeeAmount NOT invoked`() = testBlocking {
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
 
         verify(intentParametersBuilder, never()).setApplicationFeeAmount(any())
     }
@@ -182,7 +211,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when statement fee is not null, then PaymentIntent setApplicationFeeAmount invoked`() = testBlocking {
         val expected = 100L
 
-        action.createPaymentIntent(createPaymentInfo(feeAmount = expected))
+        action.createPaymentIntent(createPaymentInfo(feeAmount = expected)).toList()
 
         verify(intentParametersBuilder).setApplicationFeeAmount(expected)
     }
@@ -190,9 +219,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating payment intent, then store name set`() = testBlocking {
         val expected = "dummy store name"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo(storeName = expected))
+        action.createPaymentIntent(createPaymentInfo(storeName = expected)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.STORE.key]).isEqualTo(expected)
@@ -201,9 +233,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating payment intent, then customer name set`() = testBlocking {
         val expected = "dummy customer name"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo(customerName = expected))
+        action.createPaymentIntent(createPaymentInfo(customerName = expected)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.CUSTOMER_NAME.key]).isEqualTo(expected)
@@ -212,9 +247,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating payment intent, then customer email set`() = testBlocking {
         val expected = "dummy customer email"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo(customerEmail = expected))
+        action.createPaymentIntent(createPaymentInfo(customerEmail = expected)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.CUSTOMER_EMAIL.key]).isEqualTo(expected)
@@ -223,9 +261,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating payment intent, then site url set`() = testBlocking {
         val expected = "dummy site url"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo(siteUrl = expected))
+        action.createPaymentIntent(createPaymentInfo(siteUrl = expected)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.SITE_URL.key]).isEqualTo(expected)
@@ -234,9 +275,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `when creating payment intent, then order id set`() = testBlocking {
         val expected = 99L
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo(orderId = expected))
+        action.createPaymentIntent(createPaymentInfo(orderId = expected)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.ORDER_ID.key]).isEqualTo(expected.toString())
@@ -249,7 +293,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         val reader = mock<CardReader> { on { id }.thenReturn(readerId) }
         whenever(terminal.getConnectedReader()).thenReturn(reader)
 
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.READER_ID.key]).isEqualTo(readerId)
@@ -262,7 +306,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         val reader = mock<CardReader> { on { type }.thenReturn(readerModel) }
         whenever(terminal.getConnectedReader()).thenReturn(reader)
 
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue["reader_model"]).isEqualTo(readerModel)
@@ -273,7 +317,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         val captor = argumentCaptor<Map<String, String>>()
         whenever(terminal.getConnectedReader()).thenReturn(null)
 
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue["reader_model"]).isNull()
@@ -281,9 +325,12 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when creating payment intent, then payment type set`() = testBlocking {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.PAYMENT_TYPE.key]).isEqualTo(MetaDataKeys.PaymentTypes.SINGLE.key)
@@ -291,36 +338,48 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when creating payment intent, then dollar amount converted to cents`() = testBlocking {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
         val amount = BigDecimal(1)
         whenever(paymentUtils.convertToSmallestCurrencyUnit(eq(amount), eq("USD"))).thenReturn(100L)
 
-        action.createPaymentIntent(createPaymentInfo(amount = amount))
+        action.createPaymentIntent(createPaymentInfo(amount = amount)).toList()
 
         verify(intentParametersBuilder).setAmount(100)
     }
 
     @Test
-    fun `given payment info with order key, when creating payment intent, then order key is set`() = testBlocking {
-        val captor = argumentCaptor<Map<String, String>>()
-        val orderKey = "order_key"
+    fun `given payment info with order key, when creating payment intent, then order key is set`() {
+        testBlocking {
+            whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            }
+            val captor = argumentCaptor<Map<String, String>>()
+            val orderKey = "order_key"
 
-        action.createPaymentIntent(createPaymentInfo(orderKey = orderKey))
-        verify(intentParametersBuilder).setMetadata(captor.capture())
+            action.createPaymentIntent(createPaymentInfo(orderKey = orderKey)).toList()
+            verify(intentParametersBuilder).setMetadata(captor.capture())
 
-        assertThat(captor.firstValue[MetaDataKeys.ORDER_KEY.key]).isEqualTo(orderKey)
+            assertThat(captor.firstValue[MetaDataKeys.ORDER_KEY.key]).isEqualTo(orderKey)
+        }
     }
 
     @Test
-    fun `given payment info with order key is empty, when creating payment intent, then order key is not set`() =
+    fun `given payment info with order key is empty, when creating payment intent, then order key is not set`() {
         testBlocking {
+            whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            }
             val captor = argumentCaptor<Map<String, String>>()
             val orderKey = ""
 
-            action.createPaymentIntent(createPaymentInfo(orderKey = orderKey))
+            action.createPaymentIntent(createPaymentInfo(orderKey = orderKey)).toList()
             verify(intentParametersBuilder).setMetadata(captor.capture())
 
             assertThat(captor.firstValue[MetaDataKeys.ORDER_KEY.key]).isNull()
         }
+    }
 
     @Test
     fun `given store in Canada, when creating payment intent, then payment method set`() = testBlocking {
@@ -332,7 +391,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             CardReaderConfigForCanada
         )
 
-        action.createPaymentIntent(createPaymentInfo(countryCode = "CA"))
+        action.createPaymentIntent(createPaymentInfo(countryCode = "CA")).toList()
 
         verify(paymentIntentParametersFactory).createBuilder(expectedPaymentMethod)
     }
@@ -346,7 +405,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             CardReaderConfigForUSA
         )
 
-        action.createPaymentIntent(createPaymentInfo(countryCode = "US"))
+        action.createPaymentIntent(createPaymentInfo(countryCode = "US")).toList()
 
         verify(paymentIntentParametersFactory).createBuilder(expectedPaymentMethod)
     }
@@ -355,7 +414,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     fun `when creating payment intent, then platform set to android`() = testBlocking {
         val captor = argumentCaptor<Map<String, String>>()
 
-        action.createPaymentIntent(createPaymentInfo())
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue["platform"]).isEqualTo("android")
@@ -364,29 +423,37 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     @Test
     fun `given payment info with pos channel, when creating payment intent, then channel is set`() = testBlocking {
         val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
 
-        action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.Pos))
+        action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.Pos)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isEqualTo("mobile_pos")
     }
 
     @Test
-    fun `given payment info with store manager channel, when creating payment intent, then channel is set`() =
-        testBlocking {
-            val captor = argumentCaptor<Map<String, String>>()
-
-            action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.StoreManager))
-            verify(intentParametersBuilder).setMetadata(captor.capture())
-
-            assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isEqualTo("mobile_store_management")
+    fun `given payment info with store manager channel, when creating payment intent, then channel is set`() = testBlocking {
+        val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
+
+        action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.StoreManager)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isEqualTo("mobile_store_management")
+    }
 
     @Test
     fun `given payment info with no channel, when creating payment intent, then channel is not set`() = testBlocking {
         val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
 
-        action.createPaymentIntent(createPaymentInfo(channel = null))
+        action.createPaymentIntent(createPaymentInfo(channel = null)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isNull()

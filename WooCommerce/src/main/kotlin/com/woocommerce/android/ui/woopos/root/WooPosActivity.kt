@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
@@ -22,6 +23,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooPosActivity : AppCompatActivity() {
+    @Inject
+    lateinit var wooPosCardReaderFacade: WooPosCardReaderFacade
+
     @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
@@ -39,6 +43,7 @@ class WooPosActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
+        lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
         lifecycle.addObserver(wooPosCouponCreationFacade)
         lifecycle.addObserver(wooPosPeriodicSyncFacade)

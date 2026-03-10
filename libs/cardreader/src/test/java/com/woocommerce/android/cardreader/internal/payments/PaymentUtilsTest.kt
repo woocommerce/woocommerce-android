@@ -16,7 +16,6 @@ import java.math.BigDecimal
 private const val NONE_USD_CURRENCY = "CZK"
 private const val USD_CURRENCY = "USD"
 
-@Suppress("DoNotMockDataClass", "DoNotMockSealedClass")
 @ExperimentalCoroutinesApi
 class PaymentUtilsTest : CardReaderBaseUnitTest() {
     private lateinit var paymentUtils: PaymentUtils

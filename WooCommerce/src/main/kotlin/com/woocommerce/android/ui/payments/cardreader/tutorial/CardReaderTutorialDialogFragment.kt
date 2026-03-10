@@ -59,13 +59,11 @@ class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.car
     private fun navigateNext() {
         when (val param = args.cardReaderFlowParam) {
             is CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
+            is CardReaderFlowParam.WooPosConnection -> error("Not supported param: $param")
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
                     .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param, args.cardReaderType)
                 findNavController().navigateSafely(action)
-            }
-            CardReaderFlowParam.WooPosConnection -> {
-                error("WooPosConnection should not be used with CardReaderTutorialDialogFragment")
             }
         }
     }

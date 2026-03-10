@@ -4,8 +4,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -19,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -38,10 +35,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val controller: WooPosCardReaderConnectionController = mock()
-    private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
-        on { create(any()) }.thenReturn(controller)
-    }
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isCurrentSiteCIAB() }.thenReturn(false)
     }
@@ -124,7 +117,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `when ConnectToAReaderClicked passed, then show connection dialog event should be sent`() = runTest {
+    fun `when ConnectToAReaderClicked passed, then connect to reader should be called`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
         whenever(networkStatus.isConnected()).thenReturn(true)
@@ -134,7 +127,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+        verify(cardReaderFacade).connectToReader()
     }
 
     @Test
@@ -165,11 +158,11 @@ class WooPosHomeFloatingToolbarViewModelTest {
             viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
-            verify(controller).disconnect()
+            verify(cardReaderFacade).disconnectFromReader()
         }
 
     @Test
-    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then show connection dialog event should be sent`() =
+    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then connect to reader should be called`() =
         runTest {
             // GIVEN
             whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
@@ -180,7 +173,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
             viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
-            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+            verify(cardReaderFacade).connectToReader()
         }
 
     @Test
@@ -203,7 +196,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `given there is no internet, when trying to connect card reader, then show connection dialog event is not sent`() =
+    fun `given there is no internet, when trying to connect card reader, then connect card reader method is not called`() =
         runTest {
             // GIVEN
             whenever(networkStatus.isConnected()).thenReturn(false)
@@ -215,7 +208,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
             viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
-            verify(childrenToParentEventSender, never()).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+            verify(cardReaderFacade, never()).connectToReader()
         }
 
     @Test
@@ -265,31 +258,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `given card reader status is Reconnecting, when initialized, then state should be Reconnecting`() = runTest {
-        // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Reconnecting))
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
-    }
-
-    @Test
-    fun `given card reader status is Reconnecting, when OnCardReaderStatusClicked, then cancelReconnection should be called`() =
-        runTest {
-            // GIVEN
-            whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Reconnecting))
-            val viewModel = createViewModel()
-
-            // WHEN
-            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
-
-            // THEN
-            verify(cardReaderFacade).cancelReconnection()
-        }
-
-    @Test
     fun `given CIAB site, when menu opened, then bookings item is shown`() = runTest {
         whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
         val viewModel = createViewModel()
@@ -322,6 +290,5 @@ class WooPosHomeFloatingToolbarViewModelTest {
         resourceProvider,
         analyticsTracker,
         ciabSiteGateKeeper,
-        controllerFactory,
     )
 }
