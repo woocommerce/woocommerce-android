@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -27,7 +26,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,11 +56,16 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                cardReaderFacade.readerStatus,
-                cardReaderFacade.batteryStatus
-            ) { readerStatus, batteryStatus ->
-                mapCardReaderStatusToUiState(readerStatus, batteryStatus)
+            cardReaderFacade.readerStatus.flatMapLatest { readerStatus ->
+                when (readerStatus) {
+                    is Connected -> cardReaderFacade.batteryStatus.map { batteryStatus ->
+                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
+                            batteryState = mapBatteryState(batteryStatus)
+                        )
+                    }
+                    is NotConnected, Connecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
+                    Reconnecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
+                }
             }.collect { cardReaderStatus ->
                 _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
             }
@@ -147,17 +153,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 cardReaderFacade.cancelReconnection()
             }
         }
-    }
-
-    private fun mapCardReaderStatusToUiState(
-        status: CardReaderStatus,
-        batteryStatus: CardReaderBatteryStatus
-    ): WooPosHomeFloatingToolbarState.WooPosCardReaderStatus = when (status) {
-        is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
-            batteryState = mapBatteryState(batteryStatus)
-        )
-        is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
-        Reconnecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
     }
 
     private fun mapBatteryState(status: CardReaderBatteryStatus): WooPosHomeFloatingToolbarState.BatteryState {
