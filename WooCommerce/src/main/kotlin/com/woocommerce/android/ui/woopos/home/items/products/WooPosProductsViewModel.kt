@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class WooPosProductsViewModel @Inject constructor(
@@ -326,6 +328,7 @@ class WooPosProductsViewModel @Inject constructor(
                         when (syncResult.value) {
                             is PosLocalCatalogSyncResult.Success -> {
                                 _viewState.value = hidePTRIndicator()
+                                loadProducts(forceRefreshProducts = false)
                             }
                             is PosLocalCatalogSyncResult.Failure -> {
                                 handlePTRError(isNetworkError = isNetworkError(syncResult.value))
