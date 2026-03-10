@@ -3630,7 +3630,8 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
+    <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
