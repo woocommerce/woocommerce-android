@@ -45,17 +45,22 @@ fun <T> Fragment.navigateBackWithResult(
 ) {
     val navController = if (navHostId != null) findNavController(navHostId) else findNavController()
 
-    val entry = if (destinationId != null) {
-        navController.getBackStackEntry(destinationId)
+    if (popDestination && destinationId != null) {
+        navController.popBackStack(destinationId, true)
+        navController.currentBackStackEntry?.savedStateHandle?.set(key, result)
     } else {
-        navController.previousBackStackEntry
-    }
-    entry?.savedStateHandle?.set(key, result)
+        val entry = if (destinationId != null) {
+            navController.getBackStackEntry(destinationId)
+        } else {
+            navController.previousBackStackEntry
+        }
+        entry?.savedStateHandle?.set(key, result)
 
-    if (destinationId != null) {
-        findNavController().popBackStack(destinationId, popDestination)
-    } else {
-        findNavController().navigateUp()
+        if (destinationId != null) {
+            navController.popBackStack(destinationId, false)
+        } else {
+            navController.navigateUp()
+        }
     }
 }
 
