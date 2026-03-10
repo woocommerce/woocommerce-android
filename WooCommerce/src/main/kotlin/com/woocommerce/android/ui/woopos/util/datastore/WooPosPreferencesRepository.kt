@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
@@ -130,8 +131,34 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun getFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        return dataStore.data.map { it[key] ?: 0 }.first()
+    }
+
+    suspend fun setFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId, attempts: Int) {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        dataStore.edit { preferences ->
+            preferences[key] = attempts
+        }
+    }
+
+    suspend fun getAndClearFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        var attempts = 0
+        dataStore.edit { preferences ->
+            attempts = preferences[key] ?: 0
+            preferences.remove(key)
+        }
+        return attempts
+    }
+
     private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
         booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
+
+    private fun buildFileBasedSyncPollAttemptsKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Int> =
+        intPreferencesKey("pos_file_based_sync_poll_attempts_${siteId.value}")
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 

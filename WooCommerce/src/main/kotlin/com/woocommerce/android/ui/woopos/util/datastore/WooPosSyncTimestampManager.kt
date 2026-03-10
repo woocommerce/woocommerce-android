@@ -49,6 +49,13 @@ class WooPosSyncTimestampManager @Inject constructor(
         return parseGmtTimestamp(dateFromApi)
     }
 
+    fun calculateGenerationDuration(scheduledAt: String?, completedAt: String?): Long? {
+        if (scheduledAt == null || completedAt == null) return null
+        val scheduledTs = parseGmtTimestamp(scheduledAt) ?: return null
+        val completedTs = parseGmtTimestamp(completedAt) ?: return null
+        return completedTs - scheduledTs
+    }
+
     private fun parseGmtTimestamp(dateFromApi: String): Long? {
         for (formatter in PARSING_FORMATTERS) {
             try {

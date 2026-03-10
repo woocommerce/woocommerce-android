@@ -153,7 +153,7 @@ class WooPosProductsInMemoryCacheTest {
             sku = "SKU-$id",
             pricing = WooPosProductModel.WooPosPricing.RegularPricing(price = BigDecimal.TEN),
             globalUniqueId = "global-$id",
-            type = WooPosProductModel.WooPosProductType.SIMPLE,
+            type = WooPosProductModel.WooPosProductType.Simple,
             status = WooPosProductModel.WooPosProductStatus.PUBLISH,
             description = "Description for $name",
             shortDescription = "Short description for $name",

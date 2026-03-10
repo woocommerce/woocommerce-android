@@ -31,7 +31,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -65,7 +64,7 @@ class WooPosItemsSearchViewModelTest {
         productId = 1,
         productName = "Test Product",
         amount = "10.0",
-        productType = WooPosProductModel.WooPosProductType.SIMPLE
+        productType = WooPosProductModel.WooPosProductType.Simple
     )
 
     @Before
@@ -300,7 +299,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Variable Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 variationIds = listOf(101L, 102L, 103L)
             )
 
@@ -331,7 +330,7 @@ class WooPosItemsSearchViewModelTest {
             productId = 2,
             productName = "Test Product 2",
             amount = "20.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -365,7 +364,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 2,
                 productName = "Test Product 2",
                 amount = "20.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
 
             mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -412,14 +411,14 @@ class WooPosItemsSearchViewModelTest {
             productId = 1,
             productName = "Cached Product",
             amount = "10.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         val remoteProduct = generateWooPosProduct(
             productId = 2,
             productName = "Remote Product",
             amount = "20.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         mockCachedThenRemoteSearch(defaultQuery, cachedProduct, remoteProduct)
@@ -460,7 +459,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 
@@ -512,7 +511,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 
@@ -556,7 +555,7 @@ class WooPosItemsSearchViewModelTest {
                     productId = 1,
                     productName = "Test Product",
                     amount = "10.0",
-                    productType = WooPosProductModel.WooPosProductType.SIMPLE
+                    productType = WooPosProductModel.WooPosProductType.Simple
                 )
             )
 
@@ -598,7 +597,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 
@@ -666,23 +665,35 @@ class WooPosItemsSearchViewModelTest {
     }
 
     @Test
-    fun `given variation, when item clicked, then throw error`() = runTest {
+    fun `given variation, when item clicked, then send variation click event to parent`() = runTest {
         // GIVEN
-        val variation = Product.Variation(
+        val variation = Product.VariationSearchResult(
             id = 1,
             name = "Test Variation",
             price = "$10.0",
-            productId = 1L,
+            productId = 42L,
             imageUrl = null,
+            parentProductName = "Parent Product",
         )
 
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variation))
 
         // THEN
-        assertThrows(IllegalStateException::class.java) {
-            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variation))
-        }
+        val itemData = ItemClickedData.Product.Variation(productId = 42L, id = 1)
+        verify(mockChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = itemData,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = itemData,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    )
+                )
+            )
+        )
     }
 
     @Test

@@ -5,14 +5,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -20,6 +25,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -48,9 +54,14 @@ class BookingDetailsViewModel @Inject constructor(
     private val bookingMapper: BookingMapper,
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
 
+    private val analyticsHelper = BookingAnalyticsHelper()
+
     private var bookingFetchJob: Job? = null
+    private var attendanceUpdateJob: Job? = null
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
@@ -180,10 +191,19 @@ class BookingDetailsViewModel @Inject constructor(
                     val resourceId = booking?.resourceId?.takeIf { it != 0L } ?: return@async Result.success(Unit)
                     bookingsRepository.fetchResource(resourceId)
                 }
+                val locationTask = async {
+                    val booking = booking.first() ?: bookingTask.await().getOrNull() ?: return@async
+                    val productId = booking.productId.takeIf { it != 0L } ?: return@async
+                    bookingsRepository.fetchProductBookingLocation(
+                        productId = productId,
+                        bookingId = booking.id.value
+                    )
+                }
 
                 if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
+                locationTask.await()
             }
             loadingState.value = BookingDetailsLoadingState.Idle
         }
@@ -193,17 +213,30 @@ class BookingDetailsViewModel @Inject constructor(
         bookingId: Long,
         status: BookingAttendanceStatus
     ) {
-        launch {
+        attendanceUpdateJob?.cancel()
+        attendanceUpdateJob = appScope.launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE,
+                mapOf(BookingAnalyticsHelper.KEY_BOOKING_STATUS to status.toAnalyticsValue())
+            )
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel()
             bookingsRepository.updateAttendanceStatus(
                 bookingId = bookingId,
                 attendanceStatus = attendanceStatus
             ).onFailure {
+                with(analyticsHelper) {
+                    analyticsTrackerWrapper.trackError(
+                        event = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
+                        throwable = it,
+                        errorContext = this@BookingDetailsViewModel::class.java.simpleName,
+                        additionalProperties = mapOf(BookingAnalyticsHelper.KEY_ACTION to "update_attendance")
+                    )
+                }
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
             }
             attendanceUpdateStatus.value = AttendanceUpdateStatus.Idle
@@ -226,18 +259,29 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
         bookingsRepository.cancelBooking(bookingId)
             .onFailure {
+                with(analyticsHelper) {
+                    analyticsTrackerWrapper.trackError(
+                        event = AnalyticsEvent.BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
+                        throwable = it,
+                        errorContext = this@BookingDetailsViewModel::class.java.simpleName,
+                        additionalProperties = mapOf(BookingAnalyticsHelper.KEY_ACTION to "cancel_booking")
+                    )
+                }
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
             }
         cancelStatusState.value = CancelStatus.Idle
     }
 
     private fun openBookingNote(bookingId: Long) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
         triggerEvent(NavigateToBookingNote(bookingId))
     }
 
     private fun openOrderDetails(orderId: Long) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
         triggerEvent(NavigateToOrder(orderId))
     }
 
@@ -262,6 +306,7 @@ class BookingDetailsViewModel @Inject constructor(
                 ),
                 cancelStatus = cancelStatus,
                 attendanceUpdateStatus = attendanceUpdateStatus,
+                locationStatus = buildLocationStatus(booking, loadingState),
             ),
             bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(booking.customerNote),
             bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
@@ -293,6 +338,24 @@ class BookingDetailsViewModel @Inject constructor(
 
             else -> BookingStaffMemberStatus.Unavailable
         }
+    }
+
+    private fun buildLocationStatus(
+        booking: Booking,
+        loadingState: BookingDetailsLoadingState
+    ): BookingLocationStatus {
+        return when {
+            booking.location != null -> BookingLocationStatus.Loaded(requireNotNull(booking.location))
+            loadingState == BookingDetailsLoadingState.Loading ||
+                loadingState == BookingDetailsLoadingState.Refreshing -> BookingLocationStatus.Loading
+
+            else -> BookingLocationStatus.Unavailable
+        }
+    }
+
+    private fun BookingAttendanceStatus.toAnalyticsValue(): String = when (this) {
+        BookingAttendanceStatus.Attended -> "attended"
+        BookingAttendanceStatus.Unattended -> "unattended"
     }
 
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()

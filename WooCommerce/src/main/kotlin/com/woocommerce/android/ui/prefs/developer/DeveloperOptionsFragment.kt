@@ -74,6 +74,13 @@ class DeveloperOptionsFragment : BaseFragment() {
                         DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToDevFeatureFlagsFragment()
                     )
                 }
+
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowFeatureAnnouncement -> {
+                    findNavController().navigate(
+                        DeveloperOptionsFragmentDirections
+                            .actionDeveloperOptionsFragmentToFeatureAnnouncementDialogFragment(event.announcement)
+                    )
+                }
             }
         }
     }
