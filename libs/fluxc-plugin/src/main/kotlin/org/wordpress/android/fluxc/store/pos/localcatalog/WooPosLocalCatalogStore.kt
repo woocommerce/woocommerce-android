@@ -112,6 +112,28 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets a paginated list of products from the local database.
+     *
+     * @param [siteId] The local site ID
+     * @param [pageSize] The number of results to return
+     * @param [offset] The offset for pagination
+     * @return Result containing the list of products or error
+     */
+    suspend fun getProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosProductEntity>> =
+        coroutineEngine.withDefaultContext(API, this, "getProducts") {
+            val products = posProductDao.getProducts(
+                localSiteId = siteId,
+                limit = pageSize.coerceAtMost(MAX_PAGE_SIZE),
+                offset = offset
+            )
+            Result.success(products)
+        }
+
+    /**
      * Searches products in the local database by name, SKU, or global unique ID.
      *
      * @param [siteId] The local site ID
