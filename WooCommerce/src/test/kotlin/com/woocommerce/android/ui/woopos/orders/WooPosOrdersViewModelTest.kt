@@ -33,6 +33,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -126,10 +127,10 @@ class WooPosOrdersViewModelTest {
                 val index = invocation.arguments[1] as Int
                 "Refund #$index"
             }
-        whenever(resourceProvider.getString(eq(R.string.woopos_orders_details_refund_items_subtotal), any()))
+        whenever(resourceProvider.getQuantityString(any(), any(), anyOrNull(), anyOrNull()))
             .thenAnswer { invocation ->
-                val count = invocation.arguments[1] as String
-                "Items subtotal ($count)"
+                val count = invocation.arguments[0] as Int
+                if (count == 1) "Items subtotal ($count item)" else "Items subtotal ($count items)"
             }
     }
 

@@ -433,9 +433,10 @@ class WooPosOrdersViewModel @Inject constructor(
                 dialogState = WooPosOrdersState.Content.DialogState.RefundDetails(
                     label = rowData.label,
                     items = items,
-                    itemsSubtotalLabel = resourceProvider.getString(
-                        R.string.woopos_orders_details_refund_items_subtotal,
-                        items.size.toString()
+                    itemsSubtotalLabel = resourceProvider.getQuantityString(
+                        quantity = items.size,
+                        default = R.string.woopos_orders_details_refund_items_subtotal_other,
+                        one = R.string.woopos_orders_details_refund_items_subtotal_one,
                     ),
                     itemsSubtotalAmount = itemsSubtotal,
                     tax = tax,
