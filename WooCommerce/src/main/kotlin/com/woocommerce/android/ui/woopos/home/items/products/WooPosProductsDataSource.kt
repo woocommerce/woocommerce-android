@@ -342,7 +342,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
         get() = localCatalogSearchDataSource.hasMorePages
 
     companion object {
-        private const val PAGE_SIZE = 100
+        private const val PAGE_SIZE = 25
     }
 }
 

@@ -171,8 +171,8 @@ class WooPosProductsInDbDataSourceTest {
     @Test
     fun `given full first page, when hasMoreProductsPages checked, then returns true`() = runTest {
         // Given
-        val entities = (1..200).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
-        val models = (1..200).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+        val entities = (1..25).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val models = (1..25).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
 
         whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
             .thenReturn(Result.success(entities))
@@ -209,16 +209,16 @@ class WooPosProductsInDbDataSourceTest {
     @Test
     fun `given full first page, when loadMoreProducts called, then returns accumulated products`() = runTest {
         // Given
-        val firstPageEntities = (1..100).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
-        val firstPageModels = (1..100).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+        val firstPageEntities = (1..25).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val firstPageModels = (1..25).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
 
         // Second page partial
-        val secondPageEntities = (101..130).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
-        val secondPageModels = (101..130).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+        val secondPageEntities = (26..40).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val secondPageModels = (26..40).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
 
-        whenever(posLocalCatalogStore.getProducts(any(), eq(100), eq(0)))
+        whenever(posLocalCatalogStore.getProducts(any(), eq(25), eq(0)))
             .thenReturn(Result.success(firstPageEntities))
-        whenever(posLocalCatalogStore.getProducts(any(), eq(100), eq(100)))
+        whenever(posLocalCatalogStore.getProducts(any(), eq(25), eq(25)))
             .thenReturn(Result.success(secondPageEntities))
 
         (firstPageEntities + secondPageEntities).zip(firstPageModels + secondPageModels)
@@ -232,7 +232,7 @@ class WooPosProductsInDbDataSourceTest {
 
         // Then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(130)
+        assertThat(result.getOrThrow()).hasSize(40)
         assertThat(result.getOrThrow()).containsAll(firstPageModels + secondPageModels)
     }
 
