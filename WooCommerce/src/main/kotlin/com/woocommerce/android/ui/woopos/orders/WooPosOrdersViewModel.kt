@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
 
@@ -414,16 +415,16 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun onViewRefundDetailsClicked(refundIndex: Int) {
         val rowData = currentRefundRows.getOrNull(refundIndex) ?: return
         val order = currentOrderForRefunds ?: return
-        val currentState = _state.value as? WooPosOrdersState.Content ?: return
+        if (_state.value !is WooPosOrdersState.Content) return
 
         viewModelScope.launch {
             val items = orderDetailsMapper.buildLineItemsForSingleRefund(order, rowData.refund)
             val itemsSubtotal = formatPrice(
-                rowData.refund.items.fold(java.math.BigDecimal.ZERO) { acc, item -> acc + item.total },
+                rowData.refund.items.fold(BigDecimal.ZERO) { acc, item -> acc + item.total },
                 order.currency
             )
             val tax = formatPrice(
-                rowData.refund.items.fold(java.math.BigDecimal.ZERO) { acc, item -> acc + item.totalTax },
+                rowData.refund.items.fold(BigDecimal.ZERO) { acc, item -> acc + item.totalTax },
                 order.currency
             )
             val refundTotal = formatPrice(rowData.refund.amount, order.currency)
