@@ -66,7 +66,9 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                             batteryState = mapBatteryState(batteryStatus)
                         )
                     }
-                    is NotConnected, Connecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
+                    is NotConnected, Connecting -> flowOf(
+                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
+                    )
                     Reconnecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
                 }
             }.collect { cardReaderStatus ->
