@@ -7,8 +7,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
@@ -17,7 +19,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToBookingsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -34,8 +35,13 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
+
+    private val controller: WooPosCardReaderConnectionController by lazy {
+        controllerFactory.create(viewModelScope)
+    }
+
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
             cardReaderStatus = WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected,
@@ -89,13 +95,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 }
             }
 
-            R.string.woopos_bookings_title -> {
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToBookings)
-                    analyticsTracker.track(GoToBookingsTapped)
-                }
-            }
-
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
@@ -118,7 +117,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         when (_state.value.cardReaderStatus) {
             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
                 viewModelScope.launch {
-                    cardReaderFacade.disconnectFromReader()
+                    controller.disconnect()
                 }
             }
 
@@ -132,8 +131,14 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    cardReaderFacade.connectToReader()
+                    viewModelScope.launch {
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+                    }
                 }
+            }
+
+            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting -> {
+                cardReaderFacade.cancelReconnection()
             }
         }
     }
@@ -141,34 +146,25 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private fun mapCardReaderStatusToUiState(status: CardReaderStatus) = when (status) {
         is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
         is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
+        Reconnecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
     }
 
     private val toolbarMenuItems by lazy {
         buildList {
-            if (ciabSiteGateKeeper.isCurrentSiteCIAB()) {
-                add(
+            addAll(
+                listOf(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_bookings_title,
-                        icon = R.drawable.ic_analytics_calendar,
-                    )
-                )
-            }
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_orders_title,
-                    icon = R.drawable.ic_description_filled_24dp,
-                )
-            )
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_settings_title,
-                    icon = R.drawable.ic_settings_filled_24dp,
-                )
-            )
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_exit_confirmation_title,
-                    icon = R.drawable.ic_exit_to_app_24dp,
+                        title = R.string.woopos_orders_title,
+                        icon = R.drawable.ic_description_filled_24dp,
+                    ),
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_settings_title,
+                        icon = R.drawable.ic_settings_filled_24dp,
+                    ),
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_exit_confirmation_title,
+                        icon = R.drawable.ic_exit_to_app_24dp,
+                    ),
                 )
             )
         }

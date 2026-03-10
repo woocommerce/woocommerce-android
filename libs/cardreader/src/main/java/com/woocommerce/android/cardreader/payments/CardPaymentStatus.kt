@@ -2,7 +2,6 @@ package com.woocommerce.android.cardreader.payments
 
 sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
-    object CollectingPayment : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     data class ProcessingPaymentCompleted(val paymentMethodType: PaymentMethodType) : CardPaymentStatus()

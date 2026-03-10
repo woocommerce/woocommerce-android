@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -97,6 +98,7 @@ fun WooPosOutlinedButton(
     modifier: Modifier = Modifier,
     text: String,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
+    maxLines: Int = Int.MAX_VALUE,
     onClick: () -> Unit,
 ) {
     val borderColor = if (state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING) {
@@ -118,6 +120,7 @@ fun WooPosOutlinedButton(
             disabledContentColor = WooPosTheme.colors.onDisabledContainer,
         ),
         state = state,
+        maxLines = maxLines,
         onClick = onClick,
     )
 }
@@ -242,6 +245,7 @@ private fun Button(
     colors: ButtonColors,
     border: BorderStroke? = null,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
+    maxLines: Int = Int.MAX_VALUE,
     onClick: () -> Unit,
 ) {
     val onClickLocal = if (state == WooPosButtonState.ENABLED) {
@@ -271,6 +275,8 @@ private fun Button(
                 text = text,
                 style = textStyle,
                 fontWeight = FontWeight.Bold,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.alpha(if (state == WooPosButtonState.LOADING) 0f else 1f)
             )
             when (state) {

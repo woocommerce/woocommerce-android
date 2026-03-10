@@ -29,7 +29,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -317,14 +316,6 @@ class CardReaderPaymentController(
             InitializingPayment -> {
                 _paymentState.value =
                     CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
-            }
-
-            CollectingPayment -> {
-                _paymentState.value = paymentStateProvider.provideCollectingPaymentState(
-                    cardReaderType,
-                    amountLabel,
-                    ::onCancelPaymentFlow
-                )
             }
 
             ProcessingPayment -> {
@@ -644,12 +635,12 @@ class CardReaderPaymentController(
                 )
             }
 
-            is CardReaderPaymentState.CollectingPayment.BuiltInReaderCollectPaymentState ->
+            is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
                 _paymentState.value = state.copy(
                     cardReaderHint = cardReaderHint.toHintLabel(false)
                 )
 
-            is CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState ->
+            is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment ->
                 _paymentState.value = state.copy(
                     cardReaderHint = cardReaderHint.toHintLabel(false)
                 )

@@ -10,32 +10,20 @@ sealed class CardReaderPaymentOrRefundState {
 
         data object ReFetchingOrder : CardReaderPaymentState()
 
-        sealed class CollectingPayment(
+        sealed class ProcessingPayment(
             open val amountWithCurrencyLabel: String,
             @StringRes open val cardReaderHint: Int? = null,
         ) : CardReaderPaymentState() {
-            data class BuiltInReaderCollectPaymentState(
+            data class BuiltInReaderProcessingPayment(
                 override val amountWithCurrencyLabel: String,
-                override val cardReaderHint: Int? = null,
-            ) : CollectingPayment(amountWithCurrencyLabel, cardReaderHint)
-
-            data class ExternalReaderCollectPaymentState(
-                override val amountWithCurrencyLabel: String,
-                override val cardReaderHint: Int? = null,
-                val onCancel: (() -> Unit)
-            ) : CollectingPayment(amountWithCurrencyLabel, cardReaderHint)
-        }
-
-        sealed class ProcessingPayment(
-            open val amountWithCurrencyLabel: String,
-        ) : CardReaderPaymentState() {
-            data class BuiltInReaderProcessingPayment(override val amountWithCurrencyLabel: String) :
-                ProcessingPayment(amountWithCurrencyLabel)
+                @StringRes override val cardReaderHint: Int? = null,
+            ) : ProcessingPayment(amountWithCurrencyLabel, cardReaderHint)
 
             data class ExternalReaderProcessingPayment(
                 override val amountWithCurrencyLabel: String,
-                val onCancel: () -> Unit
-            ) : ProcessingPayment(amountWithCurrencyLabel)
+                val onCancel: () -> Unit,
+                @StringRes override val cardReaderHint: Int? = null,
+            ) : ProcessingPayment(amountWithCurrencyLabel, cardReaderHint)
         }
 
         data class PrintingReceipt(val amountWithCurrencyLabel: String) : CardReaderPaymentState()
