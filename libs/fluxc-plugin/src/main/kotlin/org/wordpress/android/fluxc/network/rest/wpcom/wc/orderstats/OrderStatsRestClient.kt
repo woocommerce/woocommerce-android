@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
@@ -51,12 +53,14 @@ class OrderStatsRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET call to `/wc-analytics/reports/revenue/stats`, retrieving data for the given
-     * WooCommerce [SiteModel].
+     * Fetches revenue stats for the given WooCommerce [SiteModel].
      *
-     * Does not send a `date_type` parameter, allowing the server to use the store's configured
-     * `woocommerce_date_type` setting (default: `date_paid`). This matches the behavior of the
-     * wp-admin Analytics dashboard, which also relies on the server-side default.
+     * Tries the WP.com analytics proxy endpoint first (`/wc/v3/woocommerce-analytics/proxy/...`)
+     * with `date_type=created`, which aligns the data with what wp-admin (CIAB) shows — including
+     * all order statuses (pending, checkout-draft, etc.) in the aggregation.
+     *
+     * Falls back to the local `/wc-analytics/reports/revenue/stats` endpoint if the proxy is
+     * unavailable (e.g., the `woocommerce-analytics` plugin is not active on the store).
      *
      * @param[site] the site to fetch stats data for
      * @param[granularity] one of 'hour', 'day', 'week', 'month', or 'year'
@@ -77,6 +81,80 @@ class OrderStatsRestClient @Inject constructor(
         endDate: String,
         perPage: Int,
         forceRefresh: Boolean = false,
+        revenueRangeId: String,
+    ): FetchRevenueStatsResponsePayload {
+        val proxyResult = tryFetchFromProxy(
+            site, granularity, startDate, endDate, revenueRangeId, forceRefresh
+        )
+        if (proxyResult != null) return proxyResult
+
+        return fetchFromLocalApi(
+            site, granularity, startDate, endDate, perPage, forceRefresh, revenueRangeId
+        )
+    }
+
+    /**
+     * Attempts to fetch revenue stats from the WP.com analytics proxy endpoint.
+     * Uses `date_type=created` to match the wp-admin CIAB dashboard behavior, which
+     * includes all order statuses (pending, checkout-draft, etc.) in the aggregation.
+     *
+     * Returns `null` if the proxy endpoint is unavailable so the caller can fall back.
+     */
+    @Suppress("LongParameterList")
+    private suspend fun tryFetchFromProxy(
+        site: SiteModel,
+        granularity: StatsGranularity,
+        startDate: String,
+        endDate: String,
+        revenueRangeId: String,
+        forceRefresh: Boolean,
+    ): FetchRevenueStatsResponsePayload? {
+        val params = mapOf(
+            "from" to startDate,
+            "to" to endDate,
+            "interval" to OrderStatsApiUnit.fromStatsGranularity(granularity).toString(),
+            "date_type" to "created",
+        )
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = PROXY_STATS_PATH,
+            params = params,
+            clazz = ProxyRevenueStatsApiResponse::class.java,
+            enableCaching = true,
+            forced = forceRefresh
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                try {
+                    response.data?.let {
+                        val model = mapProxyResponseToModel(
+                            it, site, granularity, startDate, endDate, revenueRangeId
+                        )
+                        FetchRevenueStatsResponsePayload(site, granularity, model)
+                    }
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    AppLog.e(AppLog.T.API, "Failed to parse proxy stats response, falling back", e)
+                    null
+                }
+            }
+            is WPAPIResponse.Error -> null
+        }
+    }
+
+    /**
+     * Fetches revenue stats from the local `/wc-analytics/reports/revenue/stats` endpoint.
+     * This is the original data source that queries the `wc_order_stats` table directly.
+     */
+    @Suppress("LongParameterList")
+    private suspend fun fetchFromLocalApi(
+        site: SiteModel,
+        granularity: StatsGranularity,
+        startDate: String,
+        endDate: String,
+        perPage: Int,
+        forceRefresh: Boolean,
         revenueRangeId: String,
     ): FetchRevenueStatsResponsePayload {
         val url = WOOCOMMERCE.reports.revenue.stats.pathV4Analytics
@@ -101,23 +179,24 @@ class OrderStatsRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                        val model = WCRevenueStatsModel(
-                            localSiteId = site.localId(),
-                            interval = granularity.toString(),
-                            data = it.intervals.toString(),
-                            total = it.totals.toString(),
-                            startDate = startDate,
-                            endDate = endDate,
-                            rangeId = revenueRangeId,
-                        )
+                    val model = WCRevenueStatsModel(
+                        localSiteId = site.localId(),
+                        interval = granularity.toString(),
+                        data = it.intervals.toString(),
+                        total = it.totals.toString(),
+                        startDate = startDate,
+                        endDate = endDate,
+                        rangeId = revenueRangeId,
+                    )
 
                     FetchRevenueStatsResponsePayload(site, granularity, model)
                 } ?: FetchRevenueStatsResponsePayload(
-                        OrderStatsError(type = OrderStatsErrorType.GENERIC_ERROR,
-                                message = "Success response with empty data"
-                        ),
-                        site,
-                        granularity
+                    OrderStatsError(
+                        type = OrderStatsErrorType.GENERIC_ERROR,
+                        message = "Success response with empty data"
+                    ),
+                    site,
+                    granularity
                 )
             }
 
@@ -126,6 +205,79 @@ class OrderStatsRestClient @Inject constructor(
                 FetchRevenueStatsResponsePayload(orderError, site, granularity)
             }
         }
+    }
+
+    /**
+     * Maps the WP.com analytics proxy response to the same [WCRevenueStatsModel] format used
+     * by the local API, so the rest of the data pipeline remains unchanged.
+     *
+     * The proxy uses different field names and string values:
+     * - `orders_no` (string) → `orders_count` (int)
+     * - `orders_value_net` (string) → `net_revenue` (double)
+     * - `time_interval` (string) → `interval` (string)
+     * - `average_order_value` (string) → `avg_order_value` (double)
+     * - `total_items` (string) → `num_items_sold` (int)
+     */
+    @Suppress("LongParameterList")
+    private fun mapProxyResponseToModel(
+        proxyResponse: ProxyRevenueStatsApiResponse,
+        site: SiteModel,
+        granularity: StatsGranularity,
+        startDate: String,
+        endDate: String,
+        revenueRangeId: String,
+    ): WCRevenueStatsModel {
+        val totalsJson = proxyResponse.summary?.let {
+            mapProxySummaryToTotals(it.asJsonObject)
+        } ?: JsonObject()
+
+        val intervalsJson = proxyResponse.data?.let {
+            mapProxyDataToIntervals(it.asJsonArray)
+        } ?: JsonArray()
+
+        return WCRevenueStatsModel(
+            localSiteId = site.localId(),
+            interval = granularity.toString(),
+            data = intervalsJson.toString(),
+            total = totalsJson.toString(),
+            startDate = startDate,
+            endDate = endDate,
+            rangeId = revenueRangeId,
+        )
+    }
+
+    private fun mapProxySummaryToTotals(summary: JsonObject): JsonObject {
+        return JsonObject().apply {
+            addProperty("orders_count", summary.getAsString("orders_no").toIntOrNull() ?: 0)
+            addProperty("net_revenue", summary.getAsString("orders_value_net").toDoubleOrNull() ?: 0.0)
+            addProperty("total_sales", summary.getAsString("total_sales").toDoubleOrNull() ?: 0.0)
+            addProperty("avg_order_value", summary.getAsString("average_order_value").toDoubleOrNull() ?: 0.0)
+            addProperty("num_items_sold", summary.getAsString("total_items").toIntOrNull() ?: 0)
+        }
+    }
+
+    private fun mapProxyDataToIntervals(data: JsonArray): JsonArray {
+        return JsonArray().apply {
+            data.forEach { element ->
+                val item = element.asJsonObject
+                add(JsonObject().apply {
+                    addProperty("interval", item.getAsString("time_interval"))
+                    add("subtotals", JsonObject().apply {
+                        addProperty("orders_count", item.getAsString("orders_no").toLongOrNull() ?: 0L)
+                        addProperty("net_revenue", item.getAsString("orders_value_net").toDoubleOrNull() ?: 0.0)
+                        addProperty("total_sales", item.getAsString("total_sales").toDoubleOrNull() ?: 0.0)
+                        addProperty(
+                            "avg_order_value",
+                            item.getAsString("average_order_value").toDoubleOrNull() ?: 0.0
+                        )
+                    })
+                })
+            }
+        }
+    }
+
+    private fun JsonObject.getAsString(key: String): String {
+        return get(key)?.let { if (it.isJsonNull) "" else it.asString } ?: ""
     }
 
     /**
@@ -256,5 +408,12 @@ class OrderStatsRestClient @Inject constructor(
             else -> OrderStatsErrorType.fromString(errorCode.orEmpty())
         }
         return OrderStatsError(orderStatsErrorType, message.orEmpty())
+    }
+
+    companion object {
+        // WP.com analytics proxy endpoint used by the wp-admin CIAB dashboard.
+        // Available on stores with the woocommerce-analytics plugin active.
+        private const val PROXY_STATS_PATH =
+            "/wc/v3/woocommerce-analytics/proxy/reports/orders/by-date"
     }
 }
