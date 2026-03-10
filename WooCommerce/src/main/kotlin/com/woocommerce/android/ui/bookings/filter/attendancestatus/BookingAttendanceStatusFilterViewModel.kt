@@ -22,7 +22,7 @@ class BookingAttendanceStatusFilterViewModel @AssistedInject constructor(
 
     private val _uiState = MutableStateFlow(
         BookingAttendanceStatusFilterUiState(
-            selectedStatus = initialStatuses?.values?.firstOrNull(),
+            selectedStatus = initialStatuses?.values?.singleOrNull(),
             onStatusSelected = ::onStatusSelected
         )
     )

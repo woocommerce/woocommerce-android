@@ -132,13 +132,10 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when attendance statuses saved, then flow emits them`() = testBlocking {
+    fun `when single attendance status saved, then flow emits it`() = testBlocking {
         setSite(5)
         val repository = BookingFilterRepository(dataStore, selectedSite)
-        val statuses = setOf(
-            BookingEntity.AttendanceStatus.Attended,
-            BookingEntity.AttendanceStatus.Unattended
-        )
+        val statuses = setOf(BookingEntity.AttendanceStatus.Attended)
 
         repository.save(
             BookingFilters(

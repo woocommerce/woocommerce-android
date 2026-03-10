@@ -149,7 +149,7 @@ class BookingsRestClient @Inject constructor(
             set("product", serviceEvents.values.joinToString(",") { it.productId.toString() })
         }
         if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
-            attendanceStatuses.values.firstOrNull()?.let {
+            attendanceStatuses.values.singleOrNull()?.let {
                 set("attendance_status", it.key)
             }
         }
