@@ -29,6 +29,7 @@ fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
+    onIssueRefund: (() -> Unit)? = null,
 ) {
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_payment_header)
@@ -55,6 +56,19 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
+            if (onIssueRefund != null) {
+                WCOutlinedButton(
+                    onClick = onIssueRefund,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    text = stringResource(id = R.string.booking_overflow_refund),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             WCOutlinedButton(
                 onClick = onViewOrder,
                 colors = ButtonDefaults.outlinedButtonColors(
