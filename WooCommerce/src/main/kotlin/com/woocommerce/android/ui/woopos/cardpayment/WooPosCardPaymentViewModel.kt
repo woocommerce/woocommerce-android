@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -124,8 +123,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
                         _state.value = buildPreparingState()
                         collectPayment()
                     }
-
-                    is CardReaderStatus.Reconnecting -> Unit
                 }
             }
         }
@@ -164,7 +161,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                         _state.value = buildPreparingState()
                     }
 
-                    is CardReaderPaymentState.ProcessingPayment -> {
+                    is CardReaderPaymentState.CollectingPayment -> {
                         _state.value = WooPosCardPaymentState.Collecting.ReadyForPayment(
                             title = resourceProvider.getString(
                                 R.string.woopos_totals_reader_ready_for_payment_title
@@ -177,6 +174,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                         )
                     }
 
+                    is CardReaderPaymentState.ProcessingPayment,
                     is CardReaderPaymentState.PaymentCapturing -> {
                         _state.value = WooPosCardPaymentState.PaymentInProgress(
                             title = resourceProvider.getString(
@@ -354,9 +352,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onConnectReaderClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
+        cardReaderFacade.connectToReader()
     }
 
     fun onCashPaymentClicked() {

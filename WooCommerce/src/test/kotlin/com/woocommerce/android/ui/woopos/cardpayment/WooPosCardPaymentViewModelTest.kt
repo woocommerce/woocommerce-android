@@ -127,12 +127,12 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits ProcessingPayment, then state is Collecting ReadyForPayment`() = runTest {
+    fun `given connected reader, when controller emits CollectingPayment, then state is Collecting ReadyForPayment`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
-            .ExternalReaderProcessingPayment(
+        controllerPaymentState.value = CardReaderPaymentState.CollectingPayment
+            .ExternalReaderCollectPaymentState(
                 amountWithCurrencyLabel = "$50.00",
                 onCancel = {}
             )
@@ -143,13 +143,14 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits PaymentCapturing, then state is PaymentInProgress`() = runTest {
+    fun `given connected reader, when controller emits ProcessingPayment, then state is PaymentInProgress`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.PaymentCapturing
-            .ExternalReaderPaymentCapturing(
+        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
+            .ExternalReaderProcessingPayment(
                 amountWithCurrencyLabel = "$50.00",
+                onCancel = {}
             )
         advanceUntilIdle()
 
@@ -250,16 +251,15 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given disconnected reader, when onConnectReaderClicked, then GoBack emitted`() = runTest {
+    fun `given disconnected reader, when onConnectReaderClicked, then connectToReader called`() = runTest {
         readerStatusFlow.value = CardReaderStatus.NotConnected()
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.navigationEvent.test {
-            viewModel.onConnectReaderClicked()
-            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-        }
+        viewModel.onConnectReaderClicked()
+
+        verify(cardReaderFacade).connectToReader()
     }
 
     @Test
