@@ -1459,6 +1459,7 @@ class WooPosOrdersViewModelTest {
         verify(dataSource).refreshOrderById(200L)
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `given order with refunds, when ViewRefundDetailsClicked, then RefundDetails dialog is shown with correct data`() = runTest {
         // GIVEN
