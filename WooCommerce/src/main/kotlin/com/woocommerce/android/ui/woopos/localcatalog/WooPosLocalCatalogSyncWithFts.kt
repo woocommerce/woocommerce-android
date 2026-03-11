@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -19,6 +21,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val ftsDao: WooPosSearchableFtsDao,
     private val productsDao: WooPosProductsDao,
     private val variationsDao: WooPosVariationsDao,
+    private val filterConfig: WooPosProductsTypesFilterConfig,
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
@@ -132,22 +135,25 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val productFtsEntities = products.map { it.toFtsEntity(siteIdString) }
+        val eligibleProducts = products.filter { it.isEligibleForFts() }
+        val eligibleVariations = variations.filter { it.isEligibleForFts() }
 
-        val productNamesMap = products.associate { it.remoteId.value to it.name }.toMutableMap()
+        val productFtsEntities = eligibleProducts.map { it.toFtsEntity(siteIdString) }
 
-        val missingParentIds = variations
+        val productNamesMap = eligibleProducts.associate { it.remoteId.value to it.name }.toMutableMap()
+
+        val missingParentIds = eligibleVariations
             .map { it.remoteProductId }
             .filter { it.value !in productNamesMap.keys }
             .distinct()
 
-        if (missingParentIds.isNotEmpty() && variations.isNotEmpty()) {
-            val localSiteId = variations.first().localSiteId
+        if (missingParentIds.isNotEmpty() && eligibleVariations.isNotEmpty()) {
+            val localSiteId = eligibleVariations.first().localSiteId
             val parentProducts = productsDao.getProductsByIds(localSiteId, missingParentIds)
             parentProducts.forEach { productNamesMap[it.remoteId.value] = it.name }
         }
 
-        val variationFtsEntities = variations.mapNotNull { variation ->
+        val variationFtsEntities = eligibleVariations.mapNotNull { variation ->
             val parentName = productNamesMap[variation.remoteProductId.value]
             if (parentName == null) {
                 logger.w(
@@ -167,13 +173,16 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val productFtsEntities = products.map { product ->
+        val eligibleProducts = products.filter { it.isEligibleForFts() }
+        val eligibleVariations = variations.filter { it.isEligibleForFts() }
+
+        val productFtsEntities = eligibleProducts.map { product ->
             product.toFtsEntity(siteIdString)
         }
 
-        val productNamesMap = products.associate { it.remoteId.value to it.name }
+        val productNamesMap = eligibleProducts.associate { it.remoteId.value to it.name }
 
-        val variationFtsEntities = variations.mapNotNull { variation ->
+        val variationFtsEntities = eligibleVariations.mapNotNull { variation ->
             val parentName = productNamesMap[variation.remoteProductId.value]
             if (parentName == null) {
                 logger.w(
@@ -227,6 +236,17 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
             ""
         }
     }
+
+    private val allowedStatus = filterConfig.filters[ProductFilterOption.STATUS]
+    private val allowedTypes = filterConfig.includeTypes.map { it.value }.toSet()
+    private val allowedDownloadable =
+        filterConfig.filters[ProductFilterOption.DOWNLOADABLE]?.toBoolean() ?: false
+
+    private fun WooPosProductEntity.isEligibleForFts(): Boolean =
+        status == allowedStatus && type in allowedTypes && downloadable == allowedDownloadable
+
+    private fun WooPosVariationEntity.isEligibleForFts(): Boolean =
+        status == allowedStatus && downloadable == allowedDownloadable
 
     private data class AttributeJson(
         val id: Long? = null,
