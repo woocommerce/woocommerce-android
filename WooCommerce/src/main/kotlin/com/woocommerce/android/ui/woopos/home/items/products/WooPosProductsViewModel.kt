@@ -282,8 +282,10 @@ class WooPosProductsViewModel @Inject constructor(
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
             val result = dataSource.loadMore()
+            val latestState = _viewState.value
+            if (latestState !is WooPosProductsViewState.Content) return@launch
             _viewState.value = if (result.isSuccess) {
-                appendNewProducts(currentState, result.getOrThrow()).also {
+                appendNewProducts(latestState, result.getOrThrow()).also {
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
                             source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
@@ -292,7 +294,7 @@ class WooPosProductsViewModel @Inject constructor(
                     )
                 }
             } else {
-                currentState.copy(paginationState = WooPosPaginationState.Error)
+                latestState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
     }
