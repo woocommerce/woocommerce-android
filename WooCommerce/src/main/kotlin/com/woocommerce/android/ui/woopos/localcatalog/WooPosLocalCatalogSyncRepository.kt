@@ -138,7 +138,9 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 variationsSynced = result.variationsSynced,
                 totalProducts = totalProducts,
                 totalVariations = totalVariations,
-                syncDurationMs = result.syncDurationMs
+                syncDurationMs = result.syncDurationMs,
+                generationDurationMs = result.generationDurationMs,
+                pollAttempts = result.pollAttempts
             )
         )
     }
@@ -161,7 +163,9 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 syncType = syncType,
                 errorContext = "WooPosLocalCatalogSyncRepository",
                 errorType = errorType,
-                errorDescription = result.error
+                errorDescription = result.error,
+                lastGenerationState = result.lastGenerationState,
+                pollAttempts = result.pollAttempts
             )
         )
     }

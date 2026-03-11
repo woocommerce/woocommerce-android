@@ -32,6 +32,10 @@ class LogFileWriter(
         get() = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.ROOT)
     private val mutex = Mutex()
 
+    private val logFiles: Array<File>
+        get() = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
+            ?: emptyArray()
+
     @Volatile
     private var cachedDiskSpace: Long = Long.MAX_VALUE
 
@@ -46,8 +50,8 @@ class LogFileWriter(
             return
         }
 
-        mutex.withLock {
-            withContext(dispatchers.io) {
+        withContext(dispatchers.io) {
+            mutex.withLock {
                 if (logFile.length() >= MAX_LOG_FILE_SIZE_BYTES) {
                     logFile.delete()
                     logFile.createNewFile()
@@ -61,12 +65,20 @@ class LogFileWriter(
         return getLogFile()
     }
 
+    suspend fun readFileContent(fileName: String): String? {
+        ensureDirectoryExists()
+        return withContext(dispatchers.io) {
+            mutex.withLock {
+                logFiles.find { it.name == fileName }
+                    ?.readText()
+            }
+        }
+    }
+
     suspend fun getLogFiles(): List<File> {
         ensureDirectoryExists()
         return withContext(dispatchers.io) {
-            logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
-                ?.sortedByDescending { it.lastModified() }
-                ?: emptyList()
+            logFiles.sortedByDescending { it.lastModified() }
         }
     }
 
@@ -112,12 +124,11 @@ class LogFileWriter(
 
     private suspend fun rotateLogFilesIfNeeded() {
         withContext(dispatchers.io) {
-            val logFiles = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
-                ?.sortedByDescending { it.lastModified() } ?: return@withContext
+            val sortedLogFiles = logFiles.sortedByDescending { it.lastModified() }
 
             mutex.withLock {
-                if (logFiles.size > maxLogFiles) {
-                    logFiles.takeLast(logFiles.size - maxLogFiles).forEach { file ->
+                if (sortedLogFiles.size > maxLogFiles) {
+                    sortedLogFiles.takeLast(sortedLogFiles.size - maxLogFiles).forEach { file ->
                         file.delete()
                     }
                 }
@@ -139,13 +150,10 @@ class LogFileWriter(
     private suspend fun deleteOldestLogFiles() {
         withContext(dispatchers.io) {
             mutex.withLock {
-                val logFiles = logsDirectory
-                    .listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
-                    ?.sortedByDescending { it.lastModified() }
-                    ?: return@withLock
+                val sortedLogFiles = logFiles.sortedByDescending { it.lastModified() }
 
-                if (logFiles.size > MIN_LOG_FILES_TO_KEEP) {
-                    logFiles.drop(MIN_LOG_FILES_TO_KEEP).forEach { it.delete() }
+                if (sortedLogFiles.size > MIN_LOG_FILES_TO_KEEP) {
+                    sortedLogFiles.drop(MIN_LOG_FILES_TO_KEEP).forEach { it.delete() }
                 }
             }
         }

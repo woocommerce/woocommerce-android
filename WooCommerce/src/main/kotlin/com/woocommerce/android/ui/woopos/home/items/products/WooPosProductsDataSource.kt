@@ -26,6 +26,8 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWith
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -56,23 +58,31 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     enum class SyncStrategy {
         REMOTE,
         LOCAL_CATALOG,
+        LOCAL_CATALOG_FILE,
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
+    private var isFileApproachEnabled: Boolean = false
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            localDbDataSource -> if (isFileApproachEnabled) {
+                SyncStrategy.LOCAL_CATALOG_FILE
+            } else {
+                SyncStrategy.LOCAL_CATALOG
+            }
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
     }
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+        isFileApproachEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
@@ -294,8 +304,14 @@ class WooPosProductsInDbDataSource @Inject constructor(
         val result = localCatalogSearchDataSource.searchProducts(query)
 
         result.fold(
-            onSuccess = { products ->
-                emit(SearchProductsResult.Local(products))
+            onSuccess = { dbSearchResult ->
+                emit(
+                    SearchProductsResult.Local(
+                        products = dbSearchResult.products,
+                        searchTimeMillis = dbSearchResult.searchTimeMillis,
+                        searchMethod = dbSearchResult.searchMethod,
+                    )
+                )
             },
             onFailure = { error ->
                 emit(SearchProductsResult.Remote(Result.failure(error), 0L))
@@ -607,7 +623,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
         val localProducts = searchProductsDataSource.searchLocalProducts(query)
         if (localProducts.isNotEmpty()) {
-            emit(SearchProductsResult.Local(localProducts))
+            emit(
+                SearchProductsResult.Local(
+                    products = localProducts,
+                    searchTimeMillis = 0L,
+                    searchMethod = "in_memory_cache",
+                )
+            )
         }
 
         var remoteResult: Result<List<WooPosProductModel>>

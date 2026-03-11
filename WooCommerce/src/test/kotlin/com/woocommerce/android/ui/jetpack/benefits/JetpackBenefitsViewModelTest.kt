@@ -11,6 +11,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -35,6 +37,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val fetchJetpackStatus: FetchJetpackStatus = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val wpComAccessToken: AccessToken = mock()
 
     private val user: User = mock()
@@ -42,13 +45,15 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     private lateinit var sut: JetpackBenefitsViewModel
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)).thenReturn(false)
         sut = JetpackBenefitsViewModel(
             savedState,
             selectedSiteMock,
             userEligibilityFetcher,
             analyticsTrackerWrapper,
             fetchJetpackStatus,
+            featureFlagRepository,
             wpComAccessToken
         )
     }

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.3
+We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.
+
 ## 24.2
 Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.
 

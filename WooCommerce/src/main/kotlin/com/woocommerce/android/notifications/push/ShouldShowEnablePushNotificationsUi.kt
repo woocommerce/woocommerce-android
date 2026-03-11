@@ -17,7 +17,8 @@ import javax.inject.Inject
 /**
  * Checks whether the "Enable Push Notifications" UI should be shown.
  *
- * This is part of the Woo Core push notifications system for app-password authenticated sites.
+ * This is part of the Woo Core push notifications system for non-Jetpack sites
+ * (app-password authenticated sites and Jetpack Connection Package sites).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShouldShowEnablePushNotificationsUi @Inject constructor(

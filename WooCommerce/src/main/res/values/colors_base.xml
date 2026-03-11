@@ -119,6 +119,7 @@
     <color name="tagView_bg">@color/tag_bg_other</color>
     <color name="tagView_text">@color/color_on_surface_high</color>
     <color name="tagView_border_bg">@android:color/transparent</color>
+    <color name="tag_border_booking_outlined">#E5E5EA</color>
     <color name="tag_bg_processing">@color/woo_celadon_5</color>
     <color name="tag_bg_failed">@color/woo_red_5</color>
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>

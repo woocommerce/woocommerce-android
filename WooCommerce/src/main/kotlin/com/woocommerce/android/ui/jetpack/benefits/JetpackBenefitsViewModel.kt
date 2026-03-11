@@ -17,6 +17,8 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -35,6 +37,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val fetchJetpackStatus: FetchJetpackStatus,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -47,11 +50,24 @@ class JetpackBenefitsViewModel @Inject constructor(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
+            isPushNotificationsBenefitVisible = !FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.default,
         )
     )
     val viewState = _viewState.asLiveData()
 
     private val isAppPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+
+    init {
+        launch {
+            _viewState.update {
+                it.copy(
+                    isPushNotificationsBenefitVisible = !featureFlagRepository.isEnabled(
+                        FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2
+                    )
+                )
+            }
+        }
+    }
 
     fun onInstallClick() = launch {
         when (selectedSite.connectionType) {
@@ -184,6 +200,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     data class ViewState(
         val isUsingJetpackCP: Boolean,
         val isLoadingDialogShown: Boolean,
+        val isPushNotificationsBenefitVisible: Boolean,
     )
 
     object StartJetpackActivationForJetpackCP : Event()

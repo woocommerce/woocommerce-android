@@ -378,7 +378,7 @@
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
     <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
-    <string name="my_store_widget_push_notifications_description">Connect your store to WordPress.com to get alerts for new orders and reviews.</string>
+    <string name="my_store_widget_push_notifications_description">Enable push notifications to stay on top of new orders and reviews.</string>
 
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
@@ -2314,6 +2314,7 @@
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_whats_new_icon_description">New feature icon image</string>
+    <string name="feature_announcement_dismiss">Not Now</string>
     <string name="settings_app_theme_title">Appearance</string>
     <string name="settings_app_theme_option_light">Light</string>
     <string name="settings_app_theme_option_dark">Dark</string>
@@ -2642,8 +2643,10 @@
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
-    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_connect">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_title_setup">Set up push notifications</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Please wait while we set up push notifications for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
@@ -2655,6 +2658,8 @@
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
     <string name="woo_push_notifications_connection_steps_retry">Try again</string>
     <string name="woo_push_notifications_connection_steps_generic_error">There was an error completing your request.\nPlease try again or contact support if this error continues.</string>
+    <string name="woo_push_notifications_connection_steps_error_plugin_update_required">Your current WooCommerce plugin version %1$s needs updating to fully connect your store to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_update_plugin">Update plugin</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3623,7 +3628,8 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
+    <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
@@ -3882,6 +3888,7 @@
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
+    <string name="woopos_orders_details_refunded_products_title">Refunded Products</string>
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
@@ -3921,6 +3928,7 @@
     <string name="woopos_bookings_details_location_label">Location</string>
     <string name="woopos_bookings_details_duration_label">Duration</string>
     <string name="woopos_bookings_details_customer_title">Customer</string>
+    <string name="woopos_bookings_details_customer_guest_badge">Guest</string>
     <string name="woopos_bookings_details_billing_address_label">Billing address</string>
     <string name="woopos_bookings_details_customer_note_label">Note</string>
     <string name="woopos_bookings_payment_status_paid">Paid</string>
@@ -3957,12 +3965,16 @@
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
     <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
-    <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
-    <string name="woopos_bookings_no_booking_selected">No booking selected.</string>
+    <string name="woopos_bookings_no_bookings_for_date">No bookings for this day</string>
+    <string name="woopos_bookings_no_bookings_for_date_message">Any bookings scheduled for this date will appear here.</string>
+    <string name="woopos_bookings_no_booking_selected">No booking selected</string>
     <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
     <string name="woopos_bookings_date_selector_next_day">Next day</string>
     <string name="woopos_bookings_loading_error_title">Unable to load bookings</string>
     <string name="woopos_bookings_loading_error_message">Please check your connection and try again.</string>
+    <string name="woopos_bookings_empty_image_description">No bookings</string>
+    <string name="woopos_bookings_pagination_error_title">Unable to load more bookings</string>
+    <string name="woopos_bookings_pagination_error_description">Please try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -3980,6 +3992,7 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_products_and_variations">Search products and variations</string>
     <string name="woopos_search_coupons">Search coupons</string>
     <string name="woopos_search_orders">Search orders</string>
     <string name="woopos_search_popular_items_title">Popular products</string>

@@ -28,7 +28,8 @@ internal class BookingDtoMapper @Inject constructor(
 
     suspend fun BookingDto.toEntity(
         localSiteId: LocalId,
-        orderEntity: OrderEntity?
+        orderEntity: OrderEntity?,
+        existingLocation: String? = null,
     ): BookingEntity = BookingEntity(
         id = RemoteId(id),
         localSiteId = localSiteId,
@@ -51,6 +52,7 @@ internal class BookingDtoMapper @Inject constructor(
         localTimezone = localTimezone,
         attendanceStatus = BookingEntity.AttendanceStatus.fromKey(attendanceStatus.orEmpty()),
         note = note.orEmpty(),
+        location = existingLocation,
         order = orderEntity?.toBookingOrderInfo(orderItemId) ?: BookingOrderInfo(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
