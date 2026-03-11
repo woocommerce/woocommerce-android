@@ -436,6 +436,7 @@ class WooPosOrdersViewModel @Inject constructor(
             val refundTotal = formatPrice(rowData.refund.amount, order.currency)
 
             val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
+            if (updatedState.selectedDetails?.id != cached.orderId) return@launch
             _state.value = updatedState.copy(
                 dialogState = WooPosOrdersState.Content.DialogState.RefundDetails(
                     label = rowData.label,
