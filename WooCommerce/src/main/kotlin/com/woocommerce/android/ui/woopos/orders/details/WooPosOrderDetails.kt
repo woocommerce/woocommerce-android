@@ -483,6 +483,15 @@ private fun OrdersTotals(
                 }
             }
 
+            breakdown.refundLoadError?.let { error ->
+                DividerWithSpacing()
+                WooPosText(
+                    text = error,
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+
             breakdown.netPayment?.let { netPayment ->
                 DividerWithSpacing()
                 TotalRowLine(

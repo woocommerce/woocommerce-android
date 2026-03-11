@@ -30,7 +30,13 @@ class WooPosRefundInfoBuilder @Inject constructor(
                 RefundInfo(rows, total)
             }
             is RefundsFetchResult.Error -> {
-                RefundInfo(emptyList(), BigDecimal.ZERO)
+                RefundInfo(
+                    emptyList(),
+                    BigDecimal.ZERO,
+                    refundLoadError = resourceProvider.getString(
+                        R.string.woopos_orders_details_refund_error
+                    )
+                )
             }
         }
     }
@@ -80,7 +86,8 @@ class WooPosRefundInfoBuilder @Inject constructor(
                     reason = row.reason,
                 )
             },
-            netPayment = netPayment
+            netPayment = netPayment,
+            refundLoadError = refundInfo.refundLoadError
         )
     }
 }
@@ -95,7 +102,8 @@ data class RefundRowData(
 
 data class RefundInfo(
     val refundRows: List<RefundRowData>,
-    val totalRefunded: BigDecimal
+    val totalRefunded: BigDecimal,
+    val refundLoadError: String? = null
 )
 
 private fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
