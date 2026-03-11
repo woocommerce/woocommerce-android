@@ -6,20 +6,20 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingAttendanceStatusFilterViewModelTest : BaseUnitTest() {
 
-    private var lastFilterResult: AttendanceStatuses? = null
+    private var lastFilterResult: BookingsFilterOption.AttendanceStatus? = null
 
     private fun createViewModel(
-        initialStatuses: AttendanceStatuses? = null
+        initialStatus: BookingsFilterOption.AttendanceStatus? = null
     ): BookingAttendanceStatusFilterViewModel {
         lastFilterResult = null
         return BookingAttendanceStatusFilterViewModel(
-            initialStatuses = initialStatuses,
+            initialStatus = initialStatus,
             onFilterChanged = { lastFilterResult = it },
             savedStateHandle = SavedStateHandle()
         )
@@ -36,14 +36,14 @@ class BookingAttendanceStatusFilterViewModelTest : BaseUnitTest() {
         // THEN
         val state = viewModel.uiState.getOrAwaitValue()
         assertThat(state.selectedStatus).isEqualTo(AttendanceStatus.Attended)
-        assertThat(lastFilterResult).isEqualTo(AttendanceStatuses(setOf(AttendanceStatus.Attended)))
+        assertThat(lastFilterResult).isEqualTo(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
     }
 
     @Test
     fun `given Attended selected, when Unattended is selected, then only Unattended is in the filter`() =
         testBlocking {
             // GIVEN
-            val viewModel = createViewModel(AttendanceStatuses(setOf(AttendanceStatus.Attended)))
+            val viewModel = createViewModel(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
 
             // WHEN
             viewModel.uiState.getOrAwaitValue().items[UNATTENDED_INDEX].onClick()
@@ -51,13 +51,13 @@ class BookingAttendanceStatusFilterViewModelTest : BaseUnitTest() {
             // THEN
             val state = viewModel.uiState.getOrAwaitValue()
             assertThat(state.selectedStatus).isEqualTo(AttendanceStatus.Unattended)
-            assertThat(lastFilterResult).isEqualTo(AttendanceStatuses(setOf(AttendanceStatus.Unattended)))
+            assertThat(lastFilterResult).isEqualTo(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Unattended))
         }
 
     @Test
     fun `given Attended selected, when Any is selected, then filter is cleared`() = testBlocking {
         // GIVEN
-        val viewModel = createViewModel(AttendanceStatuses(setOf(AttendanceStatus.Attended)))
+        val viewModel = createViewModel(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
 
         // WHEN
         viewModel.uiState.getOrAwaitValue().items[ANY_INDEX].onClick()
@@ -65,13 +65,13 @@ class BookingAttendanceStatusFilterViewModelTest : BaseUnitTest() {
         // THEN
         val state = viewModel.uiState.getOrAwaitValue()
         assertThat(state.selectedStatus).isNull()
-        assertThat(lastFilterResult).isEqualTo(AttendanceStatuses(emptySet()))
+        assertThat(lastFilterResult).isEqualTo(BookingsFilterOption.AttendanceStatus(null))
     }
 
     @Test
     fun `given Attended selected, when Attended is selected again, then Attended remains selected`() = testBlocking {
         // GIVEN
-        val viewModel = createViewModel(AttendanceStatuses(setOf(AttendanceStatus.Attended)))
+        val viewModel = createViewModel(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
 
         // WHEN
         viewModel.uiState.getOrAwaitValue().items[ATTENDED_INDEX].onClick()
@@ -79,7 +79,7 @@ class BookingAttendanceStatusFilterViewModelTest : BaseUnitTest() {
         // THEN
         val state = viewModel.uiState.getOrAwaitValue()
         assertThat(state.selectedStatus).isEqualTo(AttendanceStatus.Attended)
-        assertThat(lastFilterResult).isEqualTo(AttendanceStatuses(setOf(AttendanceStatus.Attended)))
+        assertThat(lastFilterResult).isEqualTo(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
     }
 
     companion object {

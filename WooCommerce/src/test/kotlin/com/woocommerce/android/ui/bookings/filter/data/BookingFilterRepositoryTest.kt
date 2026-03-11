@@ -135,16 +135,15 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
     fun `when single attendance status saved, then flow emits it`() = testBlocking {
         setSite(5)
         val repository = BookingFilterRepository(dataStore, selectedSite)
-        val statuses = setOf(BookingEntity.AttendanceStatus.Attended)
 
         repository.save(
             BookingFilters(
-                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(values = statuses)
+                attendanceStatus = BookingsFilterOption.AttendanceStatus(BookingEntity.AttendanceStatus.Attended)
             )
         )
         val emitted = repository.bookingFiltersFlow.first()
 
-        assertThat(emitted.attendanceStatuses.values).isEqualTo(statuses)
+        assertThat(emitted.attendanceStatus.value).isEqualTo(BookingEntity.AttendanceStatus.Attended)
     }
 
     @Test
@@ -170,32 +169,31 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
     fun `when saving empty attendance and service events, then values are cleared`() = testBlocking {
         setSite(7)
         val repository = BookingFilterRepository(dataStore, selectedSite)
-        val initialStatuses = setOf(BookingEntity.AttendanceStatus.Attended)
         val initialProducts = setOf(
             BookingsFilterOption.ProductInfo(productId = 33L, productName = "Pilates")
         )
         repository.save(
             BookingFilters(
-                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(initialStatuses),
+                attendanceStatus = BookingsFilterOption.AttendanceStatus(BookingEntity.AttendanceStatus.Attended),
                 serviceEvents = BookingsFilterOption.ServiceEvents(initialProducts)
             )
         )
         // Sanity check precondition
         val pre = repository.bookingFiltersFlow.first()
-        assertThat(pre.attendanceStatuses.values).isEqualTo(initialStatuses)
+        assertThat(pre.attendanceStatus.value).isEqualTo(BookingEntity.AttendanceStatus.Attended)
         assertThat(pre.serviceEvents.values).isEqualTo(initialProducts)
 
-        // WHEN clear by saving empty sets
+        // WHEN clear by saving defaults
         repository.save(
             BookingFilters(
-                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(emptySet()),
+                attendanceStatus = BookingsFilterOption.AttendanceStatus.DEFAULT,
                 serviceEvents = BookingsFilterOption.ServiceEvents(emptySet())
             )
         )
         val emitted = repository.bookingFiltersFlow.first()
 
         // THEN
-        assertThat(emitted.attendanceStatuses.values).isEmpty()
+        assertThat(emitted.attendanceStatus.value).isNull()
         assertThat(emitted.serviceEvents.values).isEmpty()
     }
 }

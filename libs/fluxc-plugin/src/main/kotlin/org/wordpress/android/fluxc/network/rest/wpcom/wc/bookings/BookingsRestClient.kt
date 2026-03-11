@@ -148,11 +148,7 @@ class BookingsRestClient @Inject constructor(
         if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) {
             set("product", serviceEvents.values.joinToString(",") { it.productId.toString() })
         }
-        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
-            attendanceStatuses.values.singleOrNull()?.let {
-                set("attendance_status", it.key)
-            }
-        }
+        attendanceStatus.value?.let { set("attendance_status", it.key) }
         if (excludedBookingStatuses != BookingsFilterOption.ExcludedBookingStatuses.DEFAULT) {
             excludedBookingStatuses.values.forEachIndexed { index, status ->
                 set("booking_status_exclude[$index]", status.key)

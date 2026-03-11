@@ -9,13 +9,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 
 @Composable
 fun BookingAttendanceStatusFilterRoute(
-    initialAttendanceStatuses: BookingsFilterOption.AttendanceStatuses?,
-    onAttendanceStatusesFilterChanged: (BookingsFilterOption.AttendanceStatuses) -> Unit,
+    initialAttendanceStatus: BookingsFilterOption.AttendanceStatus?,
+    onAttendanceStatusFilterChanged: (BookingsFilterOption.AttendanceStatus) -> Unit,
 ) {
     val viewModel =
         hiltViewModel<BookingAttendanceStatusFilterViewModel, BookingAttendanceStatusFilterViewModel.Factory>
         { factory ->
-            factory.create(initialAttendanceStatuses, onAttendanceStatusesFilterChanged)
+            factory.create(initialAttendanceStatus, onAttendanceStatusFilterChanged)
         }
     val uiState by viewModel.uiState.observeAsState()
     uiState?.let { BookingAttendanceStatusFilterPage(it) }
