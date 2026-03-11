@@ -52,6 +52,7 @@ class WooPosCardReaderConnectionController(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
 ) {
     private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(WooPosCardReaderConnectionState.Scanning)
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
@@ -81,7 +82,20 @@ class WooPosCardReaderConnectionController(
             val onboardingState = cardReaderOnboardingChecker.getOnboardingState()
             if (onboardingState !is CardReaderOnboardingState.OnboardingCompleted) {
                 logger.d("Onboarding not completed, state: $onboardingState")
-                emitEvent(ControllerEvent.OnboardingRequired(onboardingState))
+                when (
+                    val result = onboardingErrorMapper.map(
+                        state = onboardingState,
+                        onDismiss = { cancel() },
+                        onRetry = { startConnectionFlow() },
+                        onSkipPendingRequirements = { continueConnectionFlowAfterOnboarding() },
+                    )
+                ) {
+                    is WooPosOnboardingErrorMapper.Result.DialogError ->
+                        _state.value = result.error
+
+                    is WooPosOnboardingErrorMapper.Result.FullScreenRequired ->
+                        emitEvent(ControllerEvent.OnboardingRequired(onboardingState))
+                }
                 return@launch
             }
 

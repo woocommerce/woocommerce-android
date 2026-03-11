@@ -261,6 +261,25 @@ class WooPosCardReaderConnectionViewModelTest {
         verify(controller).onOnboardingCompleted()
     }
 
+    @Test
+    fun `given OnboardingError state, when onBackPressed, then calls controller cancel`() = runTest {
+        // GIVEN
+        setupControllerMocks()
+        controllerStateFlow.value = WooPosCardReaderConnectionState.OnboardingError(
+            title = "Test",
+            message = "Test message",
+            primaryButton = null,
+            onDismissClicked = {},
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onBackPressed()
+
+        // THEN
+        verify(controller).cancel()
+    }
+
     private fun setupControllerMocks() {
         whenever(controller.state).thenReturn(controllerStateFlow)
         whenever(controller.event).thenReturn(controllerEventFlow)
