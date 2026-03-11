@@ -230,8 +230,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         // We should pop the back stack to show the [OrderDetailsFragment].
                         findNavController().popBackStack()
                     } else {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
-                            findNavController().navigateSafely(this)
+                        val popped = findNavController().popBackStack(R.id.orders, false)
+                        if (!popped) {
+                            // orders destination is not in the backstack (e.g. when navigating
+                            // from Bookings), fall back to popping to OrderDetailFragment
+                            findNavController().popBackStack(R.id.orderDetailFragment, false)
                         }
                     }
                 }
