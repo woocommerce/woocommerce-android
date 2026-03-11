@@ -117,7 +117,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onContinueClick() {
-        val buttonLabel = if (_viewState.value is ViewState.UpdateRequired) {
+        val currentState = _viewState.value
+        val buttonLabel = if (currentState is ViewState.UpdateRequired) {
             BUTTON_LABEL_UPDATE_PLUGIN
         } else {
             BUTTON_LABEL_CONTINUE
@@ -125,8 +126,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         trackIntroductionButtonTap(buttonLabel)
         triggerEvent(
             NavigateToConnectionSteps(
-                isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
-                shouldAutoOpenUpdatePlugin = _viewState.value is ViewState.UpdateRequired
+                isSiteConnectedToJetpack = currentState != ViewState.NotConnected,
+                shouldAutoOpenUpdatePlugin = currentState is ViewState.UpdateRequired
             )
         )
     }
