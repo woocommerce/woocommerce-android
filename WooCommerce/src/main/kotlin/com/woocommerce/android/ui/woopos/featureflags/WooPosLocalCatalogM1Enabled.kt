@@ -5,7 +5,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import javax.inject.Inject
 
-@Suppress("unused")
 class WooPosLocalCatalogM1Enabled @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository
 ) {

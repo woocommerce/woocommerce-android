@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
@@ -14,6 +15,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import javax.inject.Inject
 
 class WooPosIsLocalCatalogSupported @Inject constructor(
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val featureFlagRepository: FeatureFlagRepository,
     private val prefsRepo: WooPosPreferencesRepository,
     private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
@@ -25,7 +27,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(localSiteId: LocalOrRemoteId.LocalId): Boolean {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1)) {
+        if (!wooPosLocalCatalogM1Enabled()) {
             return false.also {
                 wooPosLogWrapper.d("Local Catalog not supported: Feature flag disabled.")
             }
