@@ -127,8 +127,8 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "getProducts") {
             val products = posProductDao.getProducts(
                 localSiteId = siteId,
-                limit = pageSize.coerceAtMost(MAX_PAGE_SIZE),
-                offset = offset
+                limit = pageSize.coerceIn(1, MAX_PAGE_SIZE),
+                offset = offset.coerceAtLeast(0)
             )
             Result.success(products)
         }
