@@ -238,6 +238,7 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshProducts()).thenReturn(
             Result.success(
@@ -261,6 +262,7 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.refreshProducts()).thenReturn(
             Result.success(
                 PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
@@ -283,6 +285,7 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshVariations(123L)).thenReturn(
             Result.success(
@@ -306,6 +309,7 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
             Result.success(
                 PosLocalCatalogVariationSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
