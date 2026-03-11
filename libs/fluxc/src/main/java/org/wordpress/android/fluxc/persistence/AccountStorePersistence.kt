@@ -6,20 +6,25 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AccountStorePersistence @Inject constructor() {
+class AccountStorePersistence @Inject constructor(
+    private val database: WPAndroidDatabase,
+    private val accountMapper: AccountMapper,
+) {
+    private val accountDao get() = database.accountDao()
+
     fun getDefaultAccount(): AccountModel? = runBlocking {
-        AccountSqlUtils.getDefaultAccount()
+        accountDao.getDefaultAccount()?.let { accountMapper.toModel(it) }
     }
 
     fun insertOrUpdateDefaultAccount(account: AccountModel) = runBlocking {
-        AccountSqlUtils.insertOrUpdateDefaultAccount(account)
+        accountDao.upsert(accountMapper.toEntity(account))
     }
 
-    fun updateUsername(account: AccountModel, username: String) = runBlocking {
-        AccountSqlUtils.updateUsername(account, username)
+    fun updateUsername(username: String) = runBlocking {
+        accountDao.updateDefaultUsername(username)
     }
 
-    fun deleteAccount(account: AccountModel) = runBlocking {
-        AccountSqlUtils.deleteAccount(account)
+    fun deleteAccount() = runBlocking {
+        accountDao.deleteDefaultAccount()
     }
 }

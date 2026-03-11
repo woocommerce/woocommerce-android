@@ -2,18 +2,16 @@ package org.wordpress.android.fluxc.store;
 
 import android.content.Context;
 
-import com.yarolegovich.wellsql.WellSql;
-
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests;
 import org.wordpress.android.fluxc.model.AccountModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType;
@@ -21,28 +19,32 @@ import org.wordpress.android.fluxc.network.discovery.SelfHostedEndpointFinder;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.Authenticator;
+import org.wordpress.android.fluxc.persistence.AccountMapper;
 import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
-import org.wordpress.android.fluxc.persistence.AccountSqlUtils;
-import org.wordpress.android.fluxc.persistence.WellSqlConfig;
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType;
 
 import java.lang.reflect.Method;
 
+import androidx.test.core.app.ApplicationProvider;
+
 @RunWith(RobolectricTestRunner.class)
 public class AccountStoreTest {
+    @Rule
+    public WPDatabaseTestRule wpDatabaseRule = new WPDatabaseTestRule(ApplicationProvider.getApplicationContext());
+
     private Context mContext;
     private AccountStorePersistence mAccountStorePersistence;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application.getApplicationContext();
-
-        WellSqlConfig config = new SingleStoreWellSqlConfigForTests(mContext, AccountModel.class);
-        WellSql.init(config);
-        config.reset();
-        mAccountStorePersistence = new AccountStorePersistence();
+        mAccountStorePersistence = new AccountStorePersistence(
+                wpDatabaseRule.getDb(),
+                new AccountMapper()
+        );
     }
 
     @Test
@@ -50,11 +52,13 @@ public class AccountStoreTest {
         AccountModel testAccount = new AccountModel();
         testAccount.setPrimarySiteId(100);
         testAccount.setAboutMe("testAboutMe");
-        AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
                 mAccountStorePersistence);
-        Assert.assertEquals(testAccount, testStore.getAccount());
+        AccountModel loaded = testStore.getAccount();
+        Assert.assertEquals(testAccount.getPrimarySiteId(), loaded.getPrimarySiteId());
+        Assert.assertEquals(testAccount.getAboutMe(), loaded.getAboutMe());
     }
 
     @Test
@@ -72,13 +76,13 @@ public class AccountStoreTest {
     public void testIsSignedIn() {
         AccountModel testAccount = new AccountModel();
         testAccount.setVisibleSiteCount(0);
-        AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(false),
                 mAccountStorePersistence);
         Assert.assertFalse(testStore.hasAccessToken());
         testAccount.setVisibleSiteCount(1);
-        AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
                 getMockAuthenticator(), getMockAccessToken(true), mAccountStorePersistence);
         Assert.assertTrue(testStore.hasAccessToken());
@@ -90,7 +94,7 @@ public class AccountStoreTest {
         AccessToken testToken = new AccessToken(mContext);
         testToken.set("TESTTOKEN");
         testAccount.setUserId(24);
-        AccountSqlUtils.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), testToken,
                 mAccountStorePersistence);
@@ -100,7 +104,7 @@ public class AccountStoreTest {
         privateMethod.setAccessible(true);
         privateMethod.invoke(testStore);
         Assert.assertFalse(testStore.hasAccessToken());
-        Assert.assertNull(AccountSqlUtils.getAccountByLocalId(testAccount.getId()));
+        Assert.assertNull(mAccountStorePersistence.getDefaultAccount());
     }
 
     @Test

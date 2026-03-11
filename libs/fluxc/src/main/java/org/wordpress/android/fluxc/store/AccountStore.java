@@ -1065,7 +1065,7 @@ public class AccountStore extends Store {
 
     private void handlePushUsernameCompleted(AccountPushUsernameResponsePayload payload) {
         if (!payload.isError()) {
-            mAccountStorePersistence.updateUsername(getAccount(), payload.username);
+            mAccountStorePersistence.updateUsername(payload.username);
             getAccount().setUserName(payload.username);
         }
 
@@ -1133,7 +1133,7 @@ public class AccountStore extends Store {
 
     private void clearAccountAndAccessToken() {
         // Remove Account
-        mAccountStorePersistence.deleteAccount(mAccount);
+        mAccountStorePersistence.deleteAccount();
         mAccount.init();
         // Remove authentication token
         mAccessToken.set(null);
