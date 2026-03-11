@@ -1,8 +1,8 @@
 package org.wordpress.android.fluxc.store;
 
-import android.content.Context;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import junit.framework.Assert;
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,8 +57,8 @@ public class AccountStoreTest {
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
                 mAccountStorePersistence);
         AccountModel loaded = testStore.getAccount();
-        Assert.assertEquals(testAccount.getPrimarySiteId(), loaded.getPrimarySiteId());
-        Assert.assertEquals(testAccount.getAboutMe(), loaded.getAboutMe());
+        assertThat(loaded.getPrimarySiteId()).isEqualTo(testAccount.getPrimarySiteId());
+        assertThat(loaded.getAboutMe()).isEqualTo(testAccount.getAboutMe());
     }
 
     @Test
@@ -66,10 +66,10 @@ public class AccountStoreTest {
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
                 mAccountStorePersistence);
-        Assert.assertTrue(testStore.hasAccessToken());
+        assertThat(testStore.hasAccessToken()).isTrue();
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
                 getMockAuthenticator(), getMockAccessToken(false), mAccountStorePersistence);
-        Assert.assertFalse(testStore.hasAccessToken());
+        assertThat(testStore.hasAccessToken()).isFalse();
     }
 
     @Test
@@ -80,12 +80,12 @@ public class AccountStoreTest {
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(false),
                 mAccountStorePersistence);
-        Assert.assertFalse(testStore.hasAccessToken());
+        assertThat(testStore.hasAccessToken()).isFalse();
         testAccount.setVisibleSiteCount(1);
         mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
                 getMockAuthenticator(), getMockAccessToken(true), mAccountStorePersistence);
-        Assert.assertTrue(testStore.hasAccessToken());
+        assertThat(testStore.hasAccessToken()).isTrue();
     }
 
     @Test
@@ -98,27 +98,27 @@ public class AccountStoreTest {
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), testToken,
                 mAccountStorePersistence);
-        Assert.assertTrue(testStore.hasAccessToken());
-        // Signout is private (and it should remain private)
+        assertThat(testStore.hasAccessToken()).isTrue();
+        // Sign out is private (and it should remain private)
         Method privateMethod = AccountStore.class.getDeclaredMethod("signOut");
         privateMethod.setAccessible(true);
         privateMethod.invoke(testStore);
-        Assert.assertFalse(testStore.hasAccessToken());
-        Assert.assertNull(mAccountStorePersistence.getDefaultAccount());
+        assertThat(testStore.hasAccessToken()).isFalse();
+        assertThat(mAccountStorePersistence.getDefaultAccount()).isNull();
     }
 
     @Test
     public void testPayloadIsError() throws Exception {
         // AuthenticateErrorPayload masks the error field of its superclass (Payload)
         AuthenticateErrorPayload payload1 = new AuthenticateErrorPayload(AuthenticationErrorType.GENERIC_ERROR);
-        Assert.assertTrue(payload1.isError());
+        assertThat(payload1.isError()).isTrue();
         payload1.error = null;
-        Assert.assertFalse(payload1.isError());
+        assertThat(payload1.isError()).isFalse();
 
         AuthenticatePayload payload2 = new AuthenticatePayload("", "");
-        Assert.assertFalse(payload2.isError());
+        assertThat(payload2.isError()).isFalse();
         payload2.error = new BaseNetworkError(GenericErrorType.NETWORK_ERROR);
-        Assert.assertTrue(payload2.isError());
+        assertThat(payload2.isError()).isTrue();
     }
 
     private AccountRestClient getMockRestClient() {
