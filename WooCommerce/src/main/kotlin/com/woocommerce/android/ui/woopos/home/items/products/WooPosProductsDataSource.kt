@@ -301,8 +301,14 @@ class WooPosProductsInDbDataSource @Inject constructor(
         val result = localCatalogSearchDataSource.searchProducts(query)
 
         result.fold(
-            onSuccess = { products ->
-                emit(SearchProductsResult.Local(products))
+            onSuccess = { dbSearchResult ->
+                emit(
+                    SearchProductsResult.Local(
+                        products = dbSearchResult.products,
+                        searchTimeMillis = dbSearchResult.searchTimeMillis,
+                        searchMethod = dbSearchResult.searchMethod,
+                    )
+                )
             },
             onFailure = { error ->
                 emit(SearchProductsResult.Remote(Result.failure(error), 0L))
@@ -614,7 +620,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
         val localProducts = searchProductsDataSource.searchLocalProducts(query)
         if (localProducts.isNotEmpty()) {
-            emit(SearchProductsResult.Local(localProducts))
+            emit(
+                SearchProductsResult.Local(
+                    products = localProducts,
+                    searchTimeMillis = 0L,
+                    searchMethod = "in_memory_cache",
+                )
+            )
         }
 
         var remoteResult: Result<List<WooPosProductModel>>
