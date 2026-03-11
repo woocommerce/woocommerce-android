@@ -396,7 +396,7 @@ Fully Compose-based with no XML resource IDs. Identify by text labels: "Payments
 - "Reviews" → Reviews List
 - "Coupons" → Coupon List
 - "Customers" → Customer List
-- "Blaze Campaigns" → Blaze Campaign List
+- "Blaze" → Blaze Campaign List
 - "Settings" → Settings activity
 - "Subscriptions" → Subscriptions
 - "Google for WooCommerce" → Google Ads
