@@ -55,12 +55,12 @@ class OrderStatsRestClient @Inject constructor(
     /**
      * Fetches revenue stats for the given WooCommerce [SiteModel].
      *
-     * Tries the WP.com analytics proxy endpoint first (`/wc/v3/woocommerce-analytics/proxy/...`)
-     * with `date_type=created`, which aligns the data with what wp-admin (CIAB) shows — including
-     * all order statuses (pending, checkout-draft, etc.) in the aggregation.
+     * For CIAB (Creator in a Box) sites, tries the WP.com analytics proxy endpoint first
+     * (`/wc/v3/woocommerce-analytics/proxy/...`) with `date_type=created`, which aligns the data
+     * with what wp-admin shows — including all order statuses (pending, checkout-draft, etc.)
+     * in the aggregation. Falls back to the local API if the proxy is unavailable.
      *
-     * Falls back to the local `/wc-analytics/reports/revenue/stats` endpoint if the proxy is
-     * unavailable (e.g., the `woocommerce-analytics` plugin is not active on the store).
+     * For all other stores, uses the local `/wc-analytics/reports/revenue/stats` endpoint directly.
      *
      * @param[site] the site to fetch stats data for
      * @param[granularity] one of 'hour', 'day', 'week', 'month', or 'year'
@@ -83,18 +83,22 @@ class OrderStatsRestClient @Inject constructor(
         forceRefresh: Boolean = false,
         revenueRangeId: String,
     ): FetchRevenueStatsResponsePayload {
-        val proxyResult = tryFetchFromProxy(
-            site, granularity, startDate, endDate, revenueRangeId, forceRefresh
-        )
-        if (proxyResult != null) return proxyResult
+        if (site.isCIABSite()) {
+            val proxyResult = tryFetchFromProxy(
+                site, granularity, startDate, endDate, revenueRangeId, forceRefresh
+            )
+            if (proxyResult != null) return proxyResult
+        }
 
         return fetchFromLocalApi(
             site, granularity, startDate, endDate, perPage, forceRefresh, revenueRangeId
         )
     }
 
+    private fun SiteModel.isCIABSite() = isGardenSite && gardenName == CIAB_GARDEN_NAME
+
     /**
-     * Attempts to fetch revenue stats from the WP.com analytics proxy endpoint.
+     * Attempts to fetch revenue stats from the WP.com analytics proxy endpoint for CIAB sites.
      * Uses `date_type=created` to match the wp-admin CIAB dashboard behavior, which
      * includes all order statuses (pending, checkout-draft, etc.) in the aggregation.
      *
@@ -411,6 +415,8 @@ class OrderStatsRestClient @Inject constructor(
     }
 
     companion object {
+        private const val CIAB_GARDEN_NAME = "commerce"
+
         // WP.com analytics proxy endpoint used by the wp-admin CIAB dashboard.
         // Available on stores with the woocommerce-analytics plugin active.
         private const val PROXY_STATS_PATH =
