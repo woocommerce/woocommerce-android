@@ -76,7 +76,15 @@ fun WooPosItemList(
     ) {
         items(
             state.items,
-            key = { product -> product.id }
+            key = { item ->
+                when (item) {
+                    is Product.Simple -> "simple_${item.id}"
+                    is Product.Variable -> "variable_${item.id}"
+                    is Product.Variation -> "variation_${item.id}"
+                    is Product.VariationSearchResult -> "variation_search_${item.id}"
+                    is Coupon -> "coupon_${item.id}"
+                }
+            }
         ) { posItem ->
             val itemModifier = Modifier.then(if (animateItems) Modifier.animateItem() else Modifier)
 
