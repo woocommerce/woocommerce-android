@@ -112,7 +112,8 @@ sealed class WooPosOrdersState {
                     val taxes: String,
                     val shipping: String?,
                     val refunds: List<RefundRow>,
-                    val netPayment: String?
+                    val netPayment: String?,
+                    val refundLoadError: String? = null
                 )
             }
         }
