@@ -135,8 +135,12 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val eligibleProducts = products.filter { it.isEligibleForFts() }
-        val eligibleVariations = variations.filter { it.isEligibleForFts() }
+        val eligibleProducts = products
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteId }
+        val eligibleVariations = variations
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteVariationId }
 
         val productFtsEntities = eligibleProducts.map { it.toFtsEntity(siteIdString) }
 
@@ -173,8 +177,12 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val eligibleProducts = products.filter { it.isEligibleForFts() }
-        val eligibleVariations = variations.filter { it.isEligibleForFts() }
+        val eligibleProducts = products
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteId }
+        val eligibleVariations = variations
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteVariationId }
 
         val productFtsEntities = eligibleProducts.map { product ->
             product.toFtsEntity(siteIdString)
