@@ -37,6 +37,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         private const val BUTTON_LABEL_SUPPORT = "support"
         private const val STATE_NOT_CONNECTED = "not_connected"
         private const val STATE_UPDATE_REQUIRED = "update_required"
+        private const val STATE_CONNECTED = "connected"
         private const val ERROR_TYPE_NO_PERMISSION = "no_permission"
         private const val ERROR_TYPE_GENERIC = "generic"
     }
@@ -70,6 +71,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             when (_viewState.value) {
                 is ViewState.NotConnected -> trackIntroductionView(STATE_NOT_CONNECTED)
                 is ViewState.UpdateRequired -> trackIntroductionView(STATE_UPDATE_REQUIRED)
+                is ViewState.Connected -> trackIntroductionView(STATE_CONNECTED)
 
                 is ViewState.ForbiddenError -> trackIntroductionError(ERROR_TYPE_NO_PERMISSION)
 
@@ -106,7 +108,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private suspend fun checkWCVersion() {
         when (checkWCPluginSupport()) {
-            Compatible -> _viewState.value = ViewState.GenericError
+            Compatible -> _viewState.value = ViewState.Connected
             is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired ->
                 _viewState.value = ViewState.UpdateRequired
 
@@ -124,7 +126,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         triggerEvent(
             NavigateToConnectionSteps(
                 isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
-                shouldAutoOpenUpdatePlugin = true
+                shouldAutoOpenUpdatePlugin = _viewState.value is ViewState.UpdateRequired
             )
         )
     }
@@ -173,6 +175,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     sealed interface ViewState {
         data object Loading : ViewState
         data object NotConnected : ViewState
+        data object Connected : ViewState
         data object UpdateRequired : ViewState
         data object ForbiddenError : ViewState
         data object GenericError : ViewState
