@@ -573,6 +573,7 @@ class SiteRestClient @Inject constructor(
                 isJetpackActive,
                 isJetpackConnected,
                 isWordPressDotCom, // CHECKSTYLE IGNORE
+                isCommerceGarden,
                 urlAfterRedirects
             )
         }
