@@ -43,11 +43,11 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             POS_PRODUCTS_FTS,
             WOO_POS_CLIENT_SIDE_BANNER,
+            WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
 
             WOO_PUSH_NOTIFICATIONS_SYSTEM,
-            WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,
-            WOO_POS_LOCAL_CATALOG_FILE_APPROACH -> false
+            WOO_PUSH_NOTIFICATIONS_SYSTEM_M2 -> false
         }
     }
 }
