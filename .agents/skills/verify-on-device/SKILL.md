@@ -408,7 +408,7 @@ Fully Compose-based with no XML resource IDs. Identify by text labels: "Payments
 | **Primary** | `reviewsList` | Reviews RecyclerView |
 | Unread filter | `unread_filter_switch` | Toggle to filter unread |
 
-**Analytics Hub** — Fragment: `AnalyticsHubFragment` — Dashboard → "Analytics" or via More Menu
+**Analytics Hub** — Fragment: `AnalyticsHubFragment` — Dashboard → "View all store analytics"
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
