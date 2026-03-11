@@ -127,8 +127,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
         if (query.isEmpty()) {
             setEmptySearchQueryState()
         } else {
+            val isRemoteSearch = dataSource.getCurrentSyncStrategy() == SyncStrategy.REMOTE
             searchJob = viewModelScope.launch {
-                if (showLoadingState) {
+                if (showLoadingState && isRemoteSearch &&
+                    _viewState.value !is WooPosItemsSearchViewState.Content
+                ) {
                     _viewState.value = WooPosItemsSearchViewState.Loading
                 }
                 if (!skipDebounce) {
