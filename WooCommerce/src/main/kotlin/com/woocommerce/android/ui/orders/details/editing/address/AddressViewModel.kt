@@ -37,30 +37,20 @@ class AddressViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: WCDataStore,
     private val getLocations: GetLocations,
-    private val featureFlagRepository: FeatureFlagRepository,
+    featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
+    private val defaultViewState = ViewState(
+        isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2)
+    )
+
     @Suppress("OPT_IN_USAGE")
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, defaultViewState)
     private var viewState by viewStateData
-
-    init {
-        initDefaultViewState()
-    }
-
-    private fun initDefaultViewState() {
-        launch {
-            viewState = ViewState(
-                isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(
-                    FeatureFlag.BETTER_CUSTOMER_SEARCH_M2
-                )
-            )
-        }
-    }
 
     private val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
@@ -145,7 +135,7 @@ class AddressViewModel @Inject constructor(
      */
     fun onScreenDetached() {
         hasStarted = false
-        initDefaultViewState()
+        viewState = defaultViewState
     }
 
     private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
@@ -293,7 +283,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
-        initDefaultViewState()
+        viewState = defaultViewState
         initialize(initialState)
     }
 

@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store.mobile
 
+import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsError
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsRestClient
@@ -52,6 +53,10 @@ class FeatureFlagsStore @Inject constructor(
     // It will be the client's responsibility to decide which value to use.
     fun getFeatureFlagsByKey(key: String): List<FeatureFlag> {
         return featureFlagConfigDao.getFeatureFlag(key)
+    }
+
+    fun observeFeatureFlags(): Flow<List<FeatureFlag>> {
+        return featureFlagConfigDao.observeFeatureFlagList()
     }
 
     data class FeatureFlagsResult(

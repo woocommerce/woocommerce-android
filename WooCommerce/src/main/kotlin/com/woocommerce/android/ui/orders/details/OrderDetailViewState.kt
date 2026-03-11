@@ -18,9 +18,9 @@ data class OrderDetailViewState(
     val isProductListVisible: Boolean? = null,
     val isProductListMenuVisible: Boolean? = null,
     val wcShippingBannerVisible: Boolean? = null,
+    val isWcShippingBannerEnabled: Boolean = false,
     val isAIThankYouNoteButtonShown: Boolean = false,
     val isOrderDetailEmpty: Boolean = false,
-    val isWcShippingBannerEnabled: Boolean = false,
 ) : Parcelable {
     val isMarkOrderCompleteButtonVisible: Boolean?
         get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value)) {

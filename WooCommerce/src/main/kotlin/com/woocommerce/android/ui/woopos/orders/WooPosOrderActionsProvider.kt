@@ -6,7 +6,7 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import javax.inject.Inject
 
 class WooPosOrderActionsProvider @Inject constructor(private val featureFlagRepository: FeatureFlagRepository) {
-    suspend fun getAvailableActions(
+    fun getAvailableActions(
         order: Order
     ): List<WooPosOrdersState.OrderAction> {
         val isPosRefundsEnabled = featureFlagRepository.isEnabled(FeatureFlag.POS_REFUNDS)

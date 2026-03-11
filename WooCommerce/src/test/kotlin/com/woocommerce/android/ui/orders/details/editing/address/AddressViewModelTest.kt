@@ -56,7 +56,7 @@ class AddressViewModelTest : BaseUnitTest() {
     )
 
     @Before
-    fun setup() = testBlocking {
+    fun setup() {
         whenever(featureFlagRepository.isEnabled(any())).thenReturn(false)
         addressViewModel = AddressViewModel(
             savedStateHandle,
@@ -110,11 +110,10 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should reset view state when onScreenDetached is called`() = testBlocking {
+    fun `Should reset view state when onScreenDetached is called`() {
         addressViewModel.onScreenDetached()
         // Default view state is first emitted in the test setup (observeForever) and again on onScreenDetached.
         // That's why we're verifying if default view state was emitted 2 times.
-        // Note: initDefaultViewState runs in launch{}, so we need to let the coroutine complete
         verify(viewStateObserver, times(2)).onChanged(ViewState())
     }
 

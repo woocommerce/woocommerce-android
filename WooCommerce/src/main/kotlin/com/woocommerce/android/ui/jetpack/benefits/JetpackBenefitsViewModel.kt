@@ -37,7 +37,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val fetchJetpackStatus: FetchJetpackStatus,
-    private val featureFlagRepository: FeatureFlagRepository,
+    featureFlagRepository: FeatureFlagRepository,
     private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -50,24 +50,14 @@ class JetpackBenefitsViewModel @Inject constructor(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
-            isPushNotificationsBenefitVisible = !FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.default,
+            isPushNotificationsBenefitVisible = !featureFlagRepository.isEnabled(
+                FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2
+            ),
         )
     )
     val viewState = _viewState.asLiveData()
 
     private val isAppPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
-
-    init {
-        launch {
-            _viewState.update {
-                it.copy(
-                    isPushNotificationsBenefitVisible = !featureFlagRepository.isEnabled(
-                        FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2
-                    )
-                )
-            }
-        }
-    }
 
     fun onInstallClick() = launch {
         when (selectedSite.connectionType) {

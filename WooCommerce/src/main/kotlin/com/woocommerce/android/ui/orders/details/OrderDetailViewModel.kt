@@ -122,7 +122,7 @@ class OrderDetailViewModel @Inject constructor(
     private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
-    private val featureFlagRepository: FeatureFlagRepository,
+    featureFlagRepository: FeatureFlagRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
@@ -140,8 +140,12 @@ class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
+    private val defaultViewState = OrderDetailViewState(
+        isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
+    )
+
     // Do NOT store the ViewState in SavedState bundle - it can be easily recreated on process death.
-    val viewStateData = LiveDataDelegate(OrderDetailViewState())
+    val viewStateData = LiveDataDelegate(defaultViewState)
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -228,11 +232,6 @@ class OrderDetailViewModel @Inject constructor(
         productImageMap.subscribeToOnProductFetchedEvents(this)
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
-        }
-        launch {
-            viewState = viewState.copy(
-                isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
-            )
         }
         _productList.distinctUntilChanged().observeForever(productListObserver)
 

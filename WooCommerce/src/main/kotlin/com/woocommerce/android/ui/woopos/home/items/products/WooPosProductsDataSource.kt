@@ -67,11 +67,10 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
-    private var isFileApproachEnabled: Boolean = false
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> if (isFileApproachEnabled) {
+            localDbDataSource -> if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
                 SyncStrategy.LOCAL_CATALOG_FILE
             } else {
                 SyncStrategy.LOCAL_CATALOG
@@ -82,7 +81,6 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
-        isFileApproachEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource

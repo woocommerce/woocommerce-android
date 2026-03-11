@@ -1,24 +1,36 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
+import com.woocommerce.android.di.AppCoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FeatureFlagRepository @Inject constructor(
-    private val remoteFeatureFlagRepository: WPComRemoteFeatureFlagRepository
+    featureFlagsStore: FeatureFlagsStore,
+    @AppCoroutineScope appCoroutineScope: CoroutineScope,
 ) {
-    suspend fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
+    private val remoteFlagValues = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+
+    init {
+        appCoroutineScope.launch {
+            featureFlagsStore.observeFeatureFlags().collect { remoteFlags ->
+                remoteFlagValues.value = remoteFlags.associate { remoteFlag -> remoteFlag.key to remoteFlag.value }
+            }
+        }
+    }
+
+    fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
 
     private fun getOverrideValue(flag: FeatureFlag): Boolean? = try {
         AppPrefs.getFeatureFlagOverride(flag)
     } catch (_: UninitializedPropertyAccessException) {
         null
     }
-
-    private suspend fun getRemoteValue(key: String): Boolean? =
-        remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(key)
 
     fun setFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         AppPrefs.setFeatureFlagOverride(flag, enabled)
@@ -28,10 +40,10 @@ class FeatureFlagRepository @Inject constructor(
         AppPrefs.removeFeatureFlagOverride(flag)
     }
 
-    suspend fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
+    fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
         flag = flag,
         defaultValue = flag.default,
-        remoteValue = getRemoteValue(flag.remoteFlagKey),
+        remoteValue = remoteFlagValues.value[flag.remoteFlagKey],
         overrideValue = getOverrideValue(flag)
     )
 

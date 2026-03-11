@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.prefs.developer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +11,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -67,7 +63,6 @@ private fun DevFeatureFlagsScreenContent(
     onOverrideChange: (FeatureFlag, OverrideState) -> Unit
 ) {
     val flagStates = uiState.flagStates
-    val isLoading = uiState.isLoading
     val allFeatureFlags = remember { FeatureFlag.entries.toList() }
     var searchQuery by remember { mutableStateOf("") }
     val filteredFlags by remember(searchQuery) {
@@ -124,24 +119,15 @@ private fun DevFeatureFlagsScreenContent(
                     .padding(dimensionResource(id = R.dimen.major_100))
             )
 
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyColumn {
-                    items(filteredFlags, key = { it.name }) { flag ->
-                        flagStates[flag]?.let { state ->
-                            FeatureFlagItem(
-                                state = state,
-                                onOverrideChange = { overrideState ->
-                                    onOverrideChange(flag, overrideState)
-                                }
-                            )
-                        }
+            LazyColumn {
+                items(filteredFlags, key = { it.name }) { flag ->
+                    flagStates[flag]?.let { state ->
+                        FeatureFlagItem(
+                            state = state,
+                            onOverrideChange = { overrideState ->
+                                onOverrideChange(flag, overrideState)
+                            }
+                        )
                     }
                 }
             }
