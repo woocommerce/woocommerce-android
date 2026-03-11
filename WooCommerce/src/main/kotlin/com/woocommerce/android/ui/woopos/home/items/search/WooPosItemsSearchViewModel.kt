@@ -314,6 +314,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                         )
                     )
                 }
+
+                storeRecentSearch()
             }
 
             is WooPosItemSelectionViewState.Product.VariationSearchResult -> {
