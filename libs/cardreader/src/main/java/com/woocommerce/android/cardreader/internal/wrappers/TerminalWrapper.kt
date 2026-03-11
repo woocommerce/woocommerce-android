@@ -3,17 +3,20 @@ package com.woocommerce.android.cardreader.internal.wrappers
 import android.app.Application
 import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
+import com.stripe.stripeterminal.external.callable.DiscoveryListener
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
-import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
-import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
-import com.stripe.stripeterminal.external.models.ConfirmPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
-import com.stripe.stripeterminal.external.models.Refund
+import com.stripe.stripeterminal.external.models.RefundConfiguration
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
@@ -21,18 +24,10 @@ import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
-import com.stripe.stripeterminal.ktx.cancelPaymentIntent
-import com.stripe.stripeterminal.ktx.connectReader
-import com.stripe.stripeterminal.ktx.createPaymentIntent
-import com.stripe.stripeterminal.ktx.disconnectReader
-import com.stripe.stripeterminal.ktx.discoverReaders
-import com.stripe.stripeterminal.ktx.processPaymentIntent
-import com.stripe.stripeterminal.ktx.processRefund
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Injectable wrapper for Stripe's Terminal object.
@@ -45,7 +40,7 @@ internal class TerminalWrapper {
         logLevel: LogLevel,
         tokenProvider: ConnectionTokenProvider,
         listener: TerminalListener
-    ) = Terminal.init(application, logLevel, tokenProvider, listener, null)
+    ) = Terminal.initTerminal(application, logLevel, tokenProvider, listener)
 
     @RequiresPermission(
         anyOf = [
@@ -53,42 +48,51 @@ internal class TerminalWrapper {
             "android.permission.ACCESS_COARSE_LOCATION"
         ],
     )
-    fun discoverReaders(config: DiscoveryConfiguration): Flow<List<Reader>> =
-        Terminal.getInstance().discoverReaders(config)
+    fun discoverReaders(
+        config: DiscoveryConfiguration,
+        discoveryListener: DiscoveryListener,
+        callback: Callback
+    ): Cancelable = Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
 
-    suspend fun connectToReader(
+    fun connectToReader(
         reader: Reader,
-        configuration: ConnectionConfiguration.BluetoothConnectionConfiguration
-    ): Reader = Terminal.getInstance().connectReader(reader, configuration)
+        configuration: ConnectionConfiguration.BluetoothConnectionConfiguration,
+        callback: ReaderCallback
+    ) = Terminal.getInstance().connectReader(reader, configuration, callback)
 
-    suspend fun connectToMobile(
+    fun connectToMobile(
         reader: Reader,
-        configuration: ConnectionConfiguration.TapToPayConnectionConfiguration
-    ): Reader = Terminal.getInstance().connectReader(reader, configuration)
+        configuration: ConnectionConfiguration.TapToPayConnectionConfiguration,
+        callback: ReaderCallback
+    ) = Terminal.getInstance().connectReader(reader, configuration, callback)
 
-    suspend fun disconnectReader() = Terminal.getInstance().disconnectReader()
+    fun disconnectReader(callback: Callback) =
+        Terminal.getInstance().disconnectReader(callback)
 
-    fun clearCachedCredentials() {
-        Terminal.getInstance().clearCachedCredentials()
-    }
+    fun clearCachedCredentials() = Terminal.getInstance().clearCachedCredentials()
 
-    suspend fun createPaymentIntent(params: PaymentIntentParameters): PaymentIntent =
-        Terminal.getInstance().createPaymentIntent(params, null)
+    fun createPaymentIntent(params: PaymentIntentParameters, callback: PaymentIntentCallback) =
+        Terminal.getInstance().createPaymentIntent(params, callback)
 
-    suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
-        Terminal.getInstance().processPaymentIntent(
-            paymentIntent,
-            CollectPaymentIntentConfiguration.Builder().build(),
-            ConfirmPaymentIntentConfiguration.Builder().build()
-        )
+    fun collectPaymentMethod(
+        paymentIntent: PaymentIntent,
+        callback: PaymentIntentCallback
+    ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
 
-    suspend fun cancelPayment(paymentIntent: PaymentIntent): PaymentIntent =
-        Terminal.getInstance().cancelPaymentIntent(paymentIntent)
+    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback): Cancelable =
+        Terminal.getInstance().confirmPaymentIntent(paymentIntent, callback)
 
-    suspend fun processRefund(
+    fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
+        Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
+
+    fun refundPayment(
         refundParameters: RefundParameters,
-        refundConfiguration: CollectRefundConfiguration
-    ): Refund = Terminal.getInstance().processRefund(refundParameters, refundConfiguration)
+        refundConfiguration: RefundConfiguration,
+        callback: Callback
+    ) = Terminal.getInstance().collectRefundPaymentMethod(refundParameters, refundConfiguration, callback)
+
+    fun processRefund(callback: RefundCallback) =
+        Terminal.getInstance().confirmRefund(callback)
 
     fun installSoftwareUpdate() = Terminal.getInstance().installAvailableUpdate()
 
@@ -117,7 +121,12 @@ internal class TerminalWrapper {
 
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
-            .tapZone(TapToPayUxConfiguration.TapZone.Default)
+            .tapZone(
+                TapToPayUxConfiguration.TapZone.Manual.Builder()
+                    .indicator(TapToPayUxConfiguration.TapZoneIndicator.DEFAULT)
+                    .position(TapToPayUxConfiguration.TapZonePosition.Default)
+                    .build()
+            )
             .colors(
                 TapToPayUxConfiguration.ColorScheme.Builder()
                     .primary(Color.Resource(config.primaryColor))

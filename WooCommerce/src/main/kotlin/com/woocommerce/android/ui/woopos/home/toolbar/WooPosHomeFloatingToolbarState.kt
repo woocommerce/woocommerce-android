@@ -10,16 +10,7 @@ data class WooPosHomeFloatingToolbarState(
 ) {
     sealed class WooPosCardReaderStatus(@StringRes val title: Int) {
         data object NotConnected : WooPosCardReaderStatus(title = R.string.woopos_reader_disconnected)
-        data class Connected(
-            val batteryState: BatteryState = BatteryState.NOMINAL
-        ) : WooPosCardReaderStatus(title = R.string.woopos_reader_connected)
-        data object Reconnecting : WooPosCardReaderStatus(title = R.string.woopos_reader_reconnecting)
-    }
-
-    enum class BatteryState {
-        NOMINAL,
-        LOW,
-        CRITICAL
+        data object Connected : WooPosCardReaderStatus(title = R.string.woopos_reader_connected)
     }
 
     sealed class Menu {

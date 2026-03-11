@@ -39,7 +39,7 @@ enum class WooPosElevation(val value: Dp) {
 }
 
 @Composable
-private fun Dp.toAdaptivePadding(): Dp {
+fun Dp.toAdaptivePadding(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
         longestSide < 880.dp -> {

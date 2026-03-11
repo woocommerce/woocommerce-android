@@ -3,16 +3,12 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
-import com.woocommerce.android.cardreader.connection.event.BatteryStatus
-import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
@@ -28,9 +24,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,14 +34,8 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
-    controllerFactory: WooPosCardReaderConnectionControllerFactory,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) : ViewModel() {
-
-    private val controller: WooPosCardReaderConnectionController by lazy {
-        controllerFactory.create(viewModelScope)
-    }
-
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
             cardReaderStatus = WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected,
@@ -59,20 +46,10 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            cardReaderFacade.readerStatus.flatMapLatest { readerStatus ->
-                when (readerStatus) {
-                    is Connected -> cardReaderFacade.batteryStatus.map { batteryStatus ->
-                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
-                            batteryState = mapBatteryState(batteryStatus)
-                        )
-                    }
-                    is NotConnected, Connecting -> flowOf(
-                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
-                    )
-                    Reconnecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
-                }
-            }.collect { cardReaderStatus ->
-                _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
+            cardReaderFacade.readerStatus.collect {
+                _state.value = _state.value.copy(
+                    cardReaderStatus = mapCardReaderStatusToUiState(it)
+                )
             }
         }
     }
@@ -139,9 +116,9 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private fun handleOnCardReaderStatusClicked() {
         when (_state.value.cardReaderStatus) {
-            is WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
+            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
                 viewModelScope.launch {
-                    controller.disconnect()
+                    cardReaderFacade.disconnectFromReader()
                 }
             }
 
@@ -155,28 +132,15 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    viewModelScope.launch {
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
-                    }
+                    cardReaderFacade.connectToReader()
                 }
-            }
-
-            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting -> {
-                cardReaderFacade.cancelReconnection()
             }
         }
     }
 
-    private fun mapBatteryState(status: CardReaderBatteryStatus): WooPosHomeFloatingToolbarState.BatteryState {
-        return when (status) {
-            is CardReaderBatteryStatus.StatusChanged -> when (status.batteryStatus) {
-                BatteryStatus.CRITICAL -> WooPosHomeFloatingToolbarState.BatteryState.CRITICAL
-                BatteryStatus.LOW -> WooPosHomeFloatingToolbarState.BatteryState.LOW
-                BatteryStatus.NOMINAL, BatteryStatus.UNKNOWN -> WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
-            }
-            CardReaderBatteryStatus.Warning -> WooPosHomeFloatingToolbarState.BatteryState.LOW
-            CardReaderBatteryStatus.Unknown -> WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
-        }
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus) = when (status) {
+        is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
+        is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
     }
 
     private val toolbarMenuItems by lazy {

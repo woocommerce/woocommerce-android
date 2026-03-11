@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -29,17 +30,23 @@ import javax.inject.Inject
 class CardReaderStatusCheckerViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
-    @StoreManagementMode private val paymentsFlowTracker: PaymentsFlowTracker,
+    @StoreManagementMode storeManagementModePaymentsFlowTracker: PaymentsFlowTracker,
+    @PointOfSaleMode pointOfSaleModePaymentsFlowTracker: PaymentsFlowTracker,
     private val cardReaderManager: CardReaderManager,
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
+    private val paymentsFlowTracker: PaymentsFlowTracker
 
     override val _event = SingleLiveEvent<MultiLiveEvent.Event>()
     override val event: LiveData<MultiLiveEvent.Event> = _event
 
     init {
+        paymentsFlowTracker = when (arguments.cardReaderFlowParam) {
+            is CardReaderFlowParam.WooPosConnection -> pointOfSaleModePaymentsFlowTracker
+            else -> storeManagementModePaymentsFlowTracker
+        }
         launch {
             checkStatus()
         }
@@ -70,9 +77,7 @@ class CardReaderStatusCheckerViewModel
                     handleOnboardingStatus(param)
                 }
             }
-            CardReaderFlowParam.WooPosConnection -> {
-                error("WooPosConnection should not be used with CardReaderStatusCheckerViewModel")
-            }
+            is CardReaderFlowParam.WooPosConnection -> handleOnboardingStatus(param)
         }
     }
 

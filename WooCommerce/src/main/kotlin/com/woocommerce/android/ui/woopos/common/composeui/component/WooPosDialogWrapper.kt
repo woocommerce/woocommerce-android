@@ -33,14 +33,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
-private const val DEFAULT_WIDTH_FRACTION = 0.75f
-
 @Composable
 fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
-    widthFraction: Float = DEFAULT_WIDTH_FRACTION,
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
@@ -76,7 +73,7 @@ fun WooPosDialogWrapper(
                 shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
                 backgroundColor = MaterialTheme.colorScheme.surfaceBright,
                 elevation = WooPosElevation.Medium,
-                modifier = modifier.fillMaxWidth(widthFraction),
+                modifier = modifier.fillMaxWidth(0.75f),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)

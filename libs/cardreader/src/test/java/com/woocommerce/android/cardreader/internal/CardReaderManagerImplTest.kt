@@ -27,7 +27,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
-@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private lateinit var cardReaderManager: CardReaderManagerImpl

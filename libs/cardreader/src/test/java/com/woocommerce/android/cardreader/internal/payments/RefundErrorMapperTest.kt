@@ -16,7 +16,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
-@Suppress("DoNotMockDataClass")
 @RunWith(MockitoJUnitRunner::class)
 class RefundErrorMapperTest {
     private lateinit var mapper: RefundErrorMapper

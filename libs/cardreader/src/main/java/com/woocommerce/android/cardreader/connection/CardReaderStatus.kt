@@ -13,5 +13,4 @@ sealed class CardReaderStatus {
     }
     data class Connected(val cardReader: CardReader) : CardReaderStatus()
     data object Connecting : CardReaderStatus()
-    data object Reconnecting : CardReaderStatus()
 }

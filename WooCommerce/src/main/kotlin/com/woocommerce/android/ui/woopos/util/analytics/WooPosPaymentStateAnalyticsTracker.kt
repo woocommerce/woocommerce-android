@@ -13,12 +13,12 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> {
+                is CardReaderPaymentState.CollectingPayment -> {
                     analyticsData.readerReadyForPaymentTimestamp = System.currentTimeMillis()
                     trackReaderReadyForPayment()
                 }
 
-                is CardReaderPaymentState.PaymentCapturing -> {
+                is CardReaderPaymentState.ProcessingPayment -> {
                     analyticsData.cardTappedTimestamp = System.currentTimeMillis()
                 }
 
@@ -29,6 +29,8 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.LoadingData,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.ProcessingInteracRefund,
                 is CardReaderPaymentState.LoadingData,
+                is CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing,
+                is CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable,
                 is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable,

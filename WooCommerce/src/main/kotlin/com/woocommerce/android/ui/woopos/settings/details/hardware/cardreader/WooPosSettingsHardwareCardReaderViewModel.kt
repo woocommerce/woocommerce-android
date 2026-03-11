@@ -5,18 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_LEARN_MORE_ABOUT_PAYMENTS
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_STRIPE_LEARN_MORE_ABOUT_PAYMENTS
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -33,14 +28,8 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite,
-    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
-    controllerFactory: WooPosCardReaderConnectionControllerFactory,
+    private val selectedSite: SelectedSite
 ) : ViewModel() {
-
-    private val controller: WooPosCardReaderConnectionController by lazy {
-        controllerFactory.create(viewModelScope)
-    }
 
     private val _uiState = MutableStateFlow<WooPosSettingsHardwareCardReaderUiState>(
         WooPosSettingsHardwareCardReaderUiState.Disconnected
@@ -51,7 +40,6 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     val openUrl = _openUrl.asSharedFlow()
 
     private lateinit var softwareUpdateAvailabilityJob: Job
-    private var batteryStatusJob: Job? = null
     private var currentSoftwareUpdateAvailable = false
 
     init {
@@ -60,14 +48,12 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     fun onConnectClicked() {
-        viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(ChildToParentEvent.SettingsEvent.ShowCardReaderConnectionDialog)
-        }
+        cardReaderFacade.connectToReader()
     }
 
     fun onDisconnectClicked() {
         viewModelScope.launch {
-            controller.disconnect()
+            cardReaderFacade.disconnectFromReader()
         }
     }
 
@@ -87,9 +73,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     fun onUpdateClick() {
-        viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog)
-        }
+        cardReaderFacade.updateReader()
     }
 
     private fun listenForSoftwareUpdateAvailability() {
@@ -111,28 +95,11 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
         }
     }
 
-    private fun listenForBatteryStatus() {
-        if (batteryStatusJob?.isActive == true) return
-        batteryStatusJob = viewModelScope.launch {
-            cardReaderFacade.batteryStatus.collect { status ->
-                if (status is CardReaderBatteryStatus.StatusChanged) {
-                    val currentState = _uiState.value
-                    if (currentState is WooPosSettingsHardwareCardReaderUiState.Connected) {
-                        _uiState.value = currentState.copy(
-                            batteryLevel = status.batteryLevel
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     private fun observeCardReaderStatus() {
         viewModelScope.launch {
             cardReaderFacade.readerStatus.collect { status ->
                 _uiState.value = when (status) {
                     is CardReaderStatus.Connected -> {
-                        listenForBatteryStatus()
                         WooPosSettingsHardwareCardReaderUiState.Connected(
                             readerName = status.cardReader.id ?: resourceProvider.getString(
                                 R.string.woopos_settings_card_reader_unknown_reader
@@ -145,22 +112,11 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
 
                     is CardReaderStatus.Connecting,
                     is CardReaderStatus.NotConnected -> {
-                        cancelBatteryStatusJob()
                         currentSoftwareUpdateAvailable = false
                         WooPosSettingsHardwareCardReaderUiState.Disconnected
-                    }
-
-                    CardReaderStatus.Reconnecting -> {
-                        // Keep current state while SDK attempts to reconnect
-                        _uiState.value
                     }
                 }
             }
         }
-    }
-
-    private fun cancelBatteryStatusJob() {
-        batteryStatusJob?.cancel()
-        batteryStatusJob = null
     }
 }

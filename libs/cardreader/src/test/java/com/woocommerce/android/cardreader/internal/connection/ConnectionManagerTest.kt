@@ -1,11 +1,12 @@
 package com.woocommerce.android.cardreader.internal.connection
 
 import android.app.Application
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -46,7 +47,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
     }
     private val application: Application = mock()
-    private val logWrapper: LogWrapper = mock()
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
@@ -60,6 +60,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         val defaultReaderStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(terminalListenerImpl.readerStatus).thenReturn(defaultReaderStatus)
 
+        // uses the previously created mock objects
         connectionManager = ConnectionManager(
             terminalWrapper,
             bluetoothReaderListener,
@@ -67,7 +68,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             discoverReadersAction,
             terminalListenerImpl,
             application,
-            logWrapper,
         )
     }
 
@@ -246,7 +246,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val cardReader: CardReaderImpl = mock {
                 on { cardReader }.thenReturn(reader)
             }
-            whenever(terminalWrapper.connectToReader(any(), any())).thenReturn(mock())
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onSuccess(mock())
+            }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
@@ -268,7 +270,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { errorMessage }.thenReturn(message)
                 on { this.errorCode }.thenReturn(errorCode)
             }
-            whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer { throw exception }
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onFailure(exception)
+            }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
@@ -295,7 +299,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { errorMessage }.thenReturn(message)
                 on { this.errorCode }.thenReturn(errorCode)
             }
-            whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer { throw exception }
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onFailure(exception)
+            }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
@@ -316,7 +322,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val cardReader: CardReaderImpl = mock {
                 on { cardReader }.thenReturn(reader)
             }
-            whenever(terminalWrapper.connectToReader(any(), any())).thenReturn(reader)
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
+            }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
@@ -328,7 +336,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when disconnect succeeds, then status updated with not connected`() = testBlocking {
-        whenever(terminalWrapper.disconnectReader()).thenReturn(Unit)
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onSuccess()
+        }
 
         connectionManager.disconnectReader()
 
@@ -337,7 +347,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when disconnect succeeds, then true is returned`() = testBlocking {
-        whenever(terminalWrapper.disconnectReader()).thenReturn(Unit)
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onSuccess()
+        }
 
         val result = connectionManager.disconnectReader()
 
@@ -346,7 +358,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when disconnect fails, then false is returned`() = testBlocking {
-        whenever(terminalWrapper.disconnectReader()).thenAnswer { throw mock<TerminalException>() }
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onFailure(mock())
+        }
 
         val result = connectionManager.disconnectReader()
 
@@ -355,7 +369,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when disconnect fails, then false with not connected`() = testBlocking {
-        whenever(terminalWrapper.disconnectReader()).thenAnswer { throw mock<TerminalException>() }
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onFailure(mock())
+        }
 
         connectionManager.disconnectReader()
 

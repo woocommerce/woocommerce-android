@@ -95,7 +95,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateStatusUnknown() {
-        // Unknown is an idle state, not a failure - no need to track
+        tracker.trackSoftwareUpdateUnknownStatus()
     }
 
     private fun onUpdateSucceeded() {
