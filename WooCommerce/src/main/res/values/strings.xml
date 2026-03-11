@@ -3907,6 +3907,13 @@
     <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Booking info unavailable</string>
     <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · Jan 1, 2025, 12:00 AM - 1:00 AM</string>
+    <string name="woopos_orders_details_refund_label_numbered">Refund #%1$d</string>
+    <string name="woopos_orders_details_refund_view_details">View details</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Items subtotal (%d item)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Items subtotal (%d items)</string>
+    <string name="woopos_orders_details_refund_tax">Tax</string>
+    <string name="woopos_orders_details_refund_total">Refund total</string>
+    <string name="woopos_orders_details_refund_details_background">Refund details dialog background</string>
 
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
