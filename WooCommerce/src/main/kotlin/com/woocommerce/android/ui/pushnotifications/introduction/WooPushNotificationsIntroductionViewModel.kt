@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
-import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport.Result.Compatible
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -51,30 +50,33 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private fun fetchStatus() {
         launch {
-            checkIfJetpackIsConnected().fold(
-                onSuccess = { isConnected ->
-                    if (isConnected) {
-                        checkWCVersion()
-                    } else {
-                        _viewState.value = ViewState.NotConnected
+            val viewState = checkIfJetpackIsConnected()
+                .map { isConnected ->
+                    if (!isConnected) {
+                        return@map ViewState.NotConnected
                     }
-                },
-                onFailure = { exception ->
-                    _viewState.value = if (exception is JetpackForbiddenException) {
+
+                    when (checkWCPluginSupport()) {
+                        CheckWooPluginPushNotificationsSupport.Result.Compatible -> ViewState.Connected
+                        is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> ViewState.UpdateRequired
+                        CheckWooPluginPushNotificationsSupport.Result.Error -> ViewState.GenericError
+                    }
+                }
+                .getOrElse { exception ->
+                    if (exception is JetpackForbiddenException) {
                         ViewState.ForbiddenError
                     } else {
                         ViewState.GenericError
                     }
                 }
-            )
 
-            when (_viewState.value) {
+            _viewState.value = viewState
+
+            when (viewState) {
                 is ViewState.NotConnected -> trackIntroductionView(STATE_NOT_CONNECTED)
                 is ViewState.UpdateRequired -> trackIntroductionView(STATE_UPDATE_REQUIRED)
                 is ViewState.Connected -> trackIntroductionView(STATE_CONNECTED)
-
                 is ViewState.ForbiddenError -> trackIntroductionError(ERROR_TYPE_NO_PERMISSION)
-
                 is ViewState.GenericError -> trackIntroductionError(ERROR_TYPE_GENERIC)
                 is ViewState.Loading -> {}
             }
@@ -103,16 +105,6 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                 "Invalid state: WooPushNotificationsIntroductionViewModel should not be instantiated for sites " +
                     "with SiteConnectionType.Jetpack"
             )
-        }
-    }
-
-    private suspend fun checkWCVersion() {
-        when (checkWCPluginSupport()) {
-            Compatible -> _viewState.value = ViewState.Connected
-            is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired ->
-                _viewState.value = ViewState.UpdateRequired
-
-            CheckWooPluginPushNotificationsSupport.Result.Error -> _viewState.value = ViewState.GenericError
         }
     }
 
