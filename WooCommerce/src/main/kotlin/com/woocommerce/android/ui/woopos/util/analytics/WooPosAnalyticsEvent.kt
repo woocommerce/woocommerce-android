@@ -1028,6 +1028,60 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data class SearchResultsFetched(
+            val millisecondsSinceRequestSent: Long,
+            val resultsCount: Int,
+            val source: String,
+            val searchMethod: String,
+        ) : Event() {
+            override val name: String = "search_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
+                        "results_count" to resultsCount.toString(),
+                        "source" to source,
+                        "search_method" to searchMethod,
+                    )
+                )
+            }
+        }
+
+        data class FtsIndexBuilt(
+            val syncType: String,
+            val indexDurationMs: Long,
+            val productsIndexed: Int,
+        ) : Event() {
+            override val name: String = "fts_index_built"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "sync_type" to syncType,
+                        "index_duration_ms" to indexDurationMs.toString(),
+                        "products_indexed" to productsIndexed.toString(),
+                    )
+                )
+            }
+        }
+
+        data class SearchResultTapped(
+            val resultPosition: Int,
+            val resultType: String,
+        ) : Event() {
+            override val name: String = "pos_search_result_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "result_position" to resultPosition.toString(),
+                        "result_type" to resultType,
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {

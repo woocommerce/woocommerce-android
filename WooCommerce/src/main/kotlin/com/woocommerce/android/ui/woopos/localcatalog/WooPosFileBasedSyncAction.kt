@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.delay
@@ -20,6 +22,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val logger: WooPosLogWrapper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     companion object {
         private const val INITIAL_POLL_INTERVAL_MS = 3000L
@@ -212,11 +215,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 )
             }
 
-        syncWithFts.syncFtsForFullSync(
-            siteIdString = site.localId().value.toString(),
-            products = parsedData.products,
-            variations = parsedData.variations
-        )
+        syncFtsAndTrack(site, parsedData)
 
         catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
 
@@ -251,6 +250,23 @@ class WooPosFileBasedSyncAction @Inject constructor(
             ),
             lastModifiedDate = result.scheduledAt
         )
+    }
+
+    private suspend fun syncFtsAndTrack(site: SiteModel, parsedData: WooPosCatalogFileParser.ParsedCatalogData) {
+        val ftsSyncResult = syncWithFts.syncFtsForFullSync(
+            siteIdString = site.localId().value.toString(),
+            products = parsedData.products,
+            variations = parsedData.variations
+        )
+        ftsSyncResult?.let {
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.FtsIndexBuilt(
+                    syncType = "full",
+                    indexDurationMs = it.durationMs,
+                    productsIndexed = it.productsIndexed,
+                )
+            )
+        }
     }
 
     private fun <T> Result<T>.onFailureLog(context: String): Result<T> {

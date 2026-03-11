@@ -180,6 +180,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
         showLoadingState: Boolean
     ) {
         analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+        analyticsTracker.trackLocalSearchResults(
+            resultsCount = searchResult.products.size,
+            searchTimeMillis = searchResult.searchTimeMillis,
+            searchMethod = searchResult.searchMethod,
+        )
 
         if (searchResult.products.isEmpty()) {
             _viewState.value = if (showLoadingState) {
@@ -274,6 +279,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
         item: WooPosItemSelectionViewState,
         sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
     ) {
+        trackSearchResultTapped(item)
+
         when (item) {
             is WooPosItemSelectionViewState.Product.Simple -> {
                 viewModelScope.launch {
@@ -341,6 +348,24 @@ class WooPosItemsSearchViewModel @Inject constructor(
             )
         }
         storeRecentSearch()
+    }
+
+    private fun trackSearchResultTapped(item: WooPosItemSelectionViewState) {
+        val contentState = _viewState.value as? WooPosItemsSearchViewState.Content ?: return
+        val position = contentState.items.indexOfFirst { it.id == item.id }
+        if (position < 0) return
+
+        val resultType = when (item) {
+            is WooPosItemSelectionViewState.Product.VariationSearchResult -> "variation"
+            else -> "product"
+        }
+
+        viewModelScope.launch {
+            analyticsTracker.trackSearchResultTapped(
+                resultPosition = position,
+                resultType = resultType,
+            )
+        }
     }
 
     private fun storeRecentSearch() {

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -17,6 +19,7 @@ class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     suspend fun syncCatalog(
         site: SiteModel,
@@ -133,7 +136,7 @@ class WooPosSyncAction @Inject constructor(
             posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
             posLocalCatalogStore.upsertVariations(fetchResults.variations).getOrThrow()
 
-            if (isFullSync) {
+            val ftsSyncResult = if (isFullSync) {
                 syncWithFts.syncFtsForFullSync(siteIdString, allProducts, fetchResults.variations)
             } else {
                 val trashProductIds = fetchResults.trashProducts.map { it.remoteId }
@@ -142,6 +145,15 @@ class WooPosSyncAction @Inject constructor(
                     fetchResults.products,
                     fetchResults.variations,
                     fetchResults.productsToRemove + trashProductIds
+                )
+            }
+            ftsSyncResult?.let {
+                analyticsTracker.track(
+                    WooPosAnalyticsEvent.Event.FtsIndexBuilt(
+                        syncType = if (isFullSync) "full" else "incremental",
+                        indexDurationMs = it.durationMs,
+                        productsIndexed = it.productsIndexed,
+                    )
                 )
             }
         }.fold(
