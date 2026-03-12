@@ -3,8 +3,6 @@ package org.wordpress.android.fluxc.network;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.net.URI;
-
 import javax.inject.Inject;
 
 public class HTTPAuthManager {
@@ -25,17 +23,5 @@ public class HTTPAuthManager {
     // TODO: HTTP Basic Auth persistence was removed (AINFRA-540). This is a no-op.
     public void addHTTPAuthCredentials(@NonNull String username, @NonNull String password,
                                        @NonNull String url, @Nullable String realm) {
-    }
-
-    // TODO: Previously used by addHTTPAuthCredentials() to normalize URLs before persisting
-    //  to WellSQL. Kept for potential future use.
-    @SuppressWarnings("unused")
-    private String normalizeURL(String url) {
-        try {
-            URI uri = URI.create(url);
-            return uri.normalize().toString();
-        } catch (IllegalArgumentException e) {
-            return url;
-        }
     }
 }
