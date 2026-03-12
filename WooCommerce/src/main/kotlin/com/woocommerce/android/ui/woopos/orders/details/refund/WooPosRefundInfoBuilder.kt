@@ -22,7 +22,7 @@ class WooPosRefundInfoBuilder @Inject constructor(
         val atWord = resourceProvider.getString(R.string.date_time_connector)
         return when (refundResult) {
             is RefundsFetchResult.Success -> {
-                val sorted = refundResult.refunds.sortedBy { it.dateCreated }
+                val sorted = refundResult.refunds.sortedByDescending { it.dateCreated }
                 val rows = sorted.mapIndexed { index, refund ->
                     buildRefundRowData(refund, index + 1, order, atWord)
                 }
