@@ -606,54 +606,6 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `given a commerce garden site, when fetching site info, then isCommerceGarden is true`() = test {
-        val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        val siteInfoResponse = ConnectSiteInfoResponse().apply {
-            exists = true
-            isWordPress = true
-            hasJetpack = true
-            isJetpackActive = true
-            isJetpackConnected = true
-            isWordPressDotCom = false
-            isCommerceGarden = true
-            urlAfterRedirects = "https://example-garden-site.com"
-        }
-        initGetResponse(ConnectSiteInfoResponse::class.java, siteInfoResponse)
-
-        val result = restClient.fetchConnectSiteInfoSync("example-garden-site.com")
-
-        assertThat(result.error).isNull()
-        assertThat(result.isCommerceGarden).isTrue
-        assertThat(result.isWPCom).isFalse
-        urlUtilsMock.close()
-    }
-
-    @Test
-    fun `given a non-commerce-garden site, when fetching site info, then isCommerceGarden is false`() = test {
-        val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        val siteInfoResponse = ConnectSiteInfoResponse().apply {
-            exists = true
-            isWordPress = true
-            hasJetpack = true
-            isJetpackActive = true
-            isJetpackConnected = true
-            isWordPressDotCom = true
-            isCommerceGarden = false
-            urlAfterRedirects = "https://example.wordpress.com"
-        }
-        initGetResponse(ConnectSiteInfoResponse::class.java, siteInfoResponse)
-
-        val result = restClient.fetchConnectSiteInfoSync("example.wordpress.com")
-
-        assertThat(result.error).isNull()
-        assertThat(result.isCommerceGarden).isFalse
-        assertThat(result.isWPCom).isTrue
-        urlUtilsMock.close()
-    }
-
-    @Test
     fun `given a Jetpack site, when fetching site info, then fetch app passwords url from root endpoint`() = test {
         initSiteResponse(
             SiteWPComRestResponse().apply {

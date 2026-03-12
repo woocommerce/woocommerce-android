@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
@@ -1082,8 +1083,9 @@ class LoginActivity :
         show(currentFragment.childFragmentManager, tag)
     }
 
+    @VisibleForTesting
     @Parcelize
-    private data class ConnectSiteInfo(
+    internal data class ConnectSiteInfo(
         val isWPCom: Boolean,
         val isCommerceGarden: Boolean,
         val isJetpackConnected: Boolean,
