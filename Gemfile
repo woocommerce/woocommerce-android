@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'danger-dangermattic', git: 'https://github.com/Automattic/dangermattic.git', branch: 'iangmaia/add-llm-review-plugin'
+gem 'danger-dangermattic', '~> 1.2'
 gem 'fastlane', '~> 2.216'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 0.10'
 gem 'nokogiri'

@@ -41,6 +41,10 @@ pr_size_checker.check_diff_size(
 android_unit_test_checker.check_missing_tests
 
 # LLM-based code review (test)
+# Import plugin from dangermattic branch — CI linter only installs released gem versions from RubyGems
+danger.import_plugin('https://raw.githubusercontent.com/Automattic/dangermattic/iangmaia/add-llm-review-plugin/lib/dangermattic/plugins/common/llm_provider.rb')
+danger.import_plugin('https://raw.githubusercontent.com/Automattic/dangermattic/iangmaia/add-llm-review-plugin/lib/dangermattic/plugins/llm_reviewer.rb')
+
 llm_reviewer.review(
   model: 'claude-sonnet-4-6',
   provider: :anthropic,

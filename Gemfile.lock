@@ -1,14 +1,3 @@
-GIT
-  remote: https://github.com/Automattic/dangermattic.git
-  revision: d220cad831fce09aee4aa7c85247b0626998a1d8
-  branch: iangmaia/add-llm-review-plugin
-  specs:
-    danger-dangermattic (1.2.4)
-      danger (~> 9.5, >= 9.5.3)
-      danger-plugin-api (~> 1.0)
-      danger-rubocop (~> 0.13)
-      rubocop (~> 1.63)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -85,6 +74,11 @@ GEM
       octokit (>= 4.0)
       pstore (~> 0.1)
       terminal-table (>= 1, < 5)
+    danger-dangermattic (1.2.4)
+      danger (~> 9.4)
+      danger-plugin-api (~> 1.0)
+      danger-rubocop (~> 0.13)
+      rubocop (~> 1.63)
     danger-plugin-api (1.0.0)
       danger (> 2.0)
     danger-rubocop (0.13.0)
@@ -373,7 +367,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  danger-dangermattic!
+  danger-dangermattic (~> 1.2)
   faraday (~> 1.10, >= 1.10.5)
   fastlane (~> 2.216)
   fastlane-plugin-firebase_app_distribution (~> 0.10)
