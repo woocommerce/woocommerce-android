@@ -41,9 +41,17 @@ pr_size_checker.check_diff_size(
 android_unit_test_checker.check_missing_tests
 
 # LLM-based code review (test)
-# Import plugin from dangermattic branch — CI linter only installs released gem versions from RubyGems
-danger.import_plugin('https://raw.githubusercontent.com/Automattic/dangermattic/iangmaia/add-llm-review-plugin/lib/dangermattic/plugins/common/llm_provider.rb')
-danger.import_plugin('https://raw.githubusercontent.com/Automattic/dangermattic/iangmaia/add-llm-review-plugin/lib/dangermattic/plugins/llm_reviewer.rb')
+# Import plugin from dangermattic branch — CI linter only installs released gem versions from RubyGems.
+# LlmProvider is a plain Ruby class (not a Danger::Plugin), so we load it via require + tempfile.
+# LlmReviewer is a Danger::Plugin and can use import_plugin.
+require 'open-uri'
+require 'tempfile'
+llm_branch_base = 'https://raw.githubusercontent.com/Automattic/dangermattic/iangmaia/add-llm-review-plugin/lib/dangermattic/plugins'
+provider_tmp = Tempfile.new(['llm_provider', '.rb'])
+provider_tmp.write(URI.open("#{llm_branch_base}/common/llm_provider.rb").read) # rubocop:disable Security/Open
+provider_tmp.close
+require provider_tmp.path
+danger.import_plugin("#{llm_branch_base}/llm_reviewer.rb")
 
 llm_reviewer.review(
   model: 'claude-sonnet-4-6',
