@@ -38,6 +38,8 @@ class WooPosTabShouldBeVisible @Inject constructor(
             }
         }
 
+        featureFlagRepository.awaitRemoteFlagsLoaded()
+
         if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)) {
             appPrefs.clearPOSTabVisibilityForSite(site.id)
             return@withContext Result.success(false).also {
