@@ -365,7 +365,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site with incompatible WC version, when screen opens, then UpdateRequired state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup(isJetpackCPSite = true)
@@ -381,7 +381,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site with compatible WC version, when screen opens, then GenericError state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup(isJetpackCPSite = true)
@@ -397,7 +397,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site with WC plugin check error, when screen opens, then GenericError state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup(isJetpackCPSite = true)
@@ -413,7 +413,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when screen opens, then fetchJetpackStatus is not called`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup(isJetpackCPSite = true)
@@ -424,7 +424,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when continue is clicked, then isSiteConnectedToJetpack is true`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup(isJetpackCPSite = true)

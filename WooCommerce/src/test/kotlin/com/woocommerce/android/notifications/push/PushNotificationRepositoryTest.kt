@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport.Result
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +34,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
-import java.util.Locale
+import java.util.*
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
@@ -55,7 +54,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         on { data } doReturn flowOf(preferences)
     }
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke(forceRefresh = false) } doReturn Result.Compatible
+        onBlocking { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     private lateinit var sut: PushNotificationRepository
@@ -286,7 +285,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn("token-id-1")
-            doReturn(Result.Error).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+            doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
+                .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
 
@@ -321,7 +321,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn("token-id-1")
-            doReturn(Result.Error).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+            doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
+                .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
 
             val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
 
@@ -438,7 +439,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     }
 
     private suspend fun setupPluginCompatibility(isCompatible: Boolean) {
-        val result = if (isCompatible) Result.Compatible else Result.UpdateRequired(currentVersion = "9.0.0")
+        val result = if (isCompatible) {
+            CheckWooPluginPushNotificationsSupport.Result.Compatible
+        } else {
+            CheckWooPluginPushNotificationsSupport.Result.UpdateRequired(currentVersion = "9.0.0")
+        }
         doReturn(result).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
     }
 
