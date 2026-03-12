@@ -133,6 +133,8 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             is WooPosItemSelectionViewState.Product.Variation -> error("Variation item not supported in products list")
+            is WooPosItemSelectionViewState.Product.VariationSearchResult ->
+                error("VariationSearchResult item not supported in products list")
             is WooPosItemSelectionViewState.Coupon -> error("Coupon item isn't supported in products list")
         }
     }
@@ -393,6 +395,6 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private fun WooPosProductModel.isVariable() =
-        type == WooPosProductModel.WooPosProductType.VARIABLE ||
-            type == WooPosProductModel.WooPosProductType.VARIATION
+        type is WooPosProductModel.WooPosProductType.Variable ||
+            type is WooPosProductModel.WooPosProductType.Variation
 }

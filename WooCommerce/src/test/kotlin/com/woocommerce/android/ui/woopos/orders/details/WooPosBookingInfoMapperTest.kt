@@ -68,7 +68,7 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
     fun `given booking cached, when resolveBookingInfo, then returns Loaded`() = testBlocking {
         val booking = createBooking()
         whenever(bookingsRepository.getBooking(42L)).thenReturn(booking)
-        whenever(dateFormatter.formatShortDateInStoreTimeZone(any())).thenReturn("3/15/25")
+        whenever(dateFormatter.formatShortDate(any())).thenReturn("3/15/25")
         whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:00 AM-11:00 AM")
         whenever(
             resourceProvider.getString(
@@ -100,7 +100,7 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
     fun `given fetch succeeds, when fetchBookingInfo, then returns Loaded`() = testBlocking {
         val booking = createBooking()
         whenever(bookingsRepository.fetchBooking(42L)).thenReturn(Result.success(booking))
-        whenever(dateFormatter.formatShortDateInStoreTimeZone(any())).thenReturn("3/15/25")
+        whenever(dateFormatter.formatShortDate(any())).thenReturn("3/15/25")
         whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:00 AM-11:00 AM")
         whenever(
             resourceProvider.getString(

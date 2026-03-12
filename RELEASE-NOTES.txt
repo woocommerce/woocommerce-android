@@ -2,10 +2,21 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.4
+-----
+
+- [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
+- [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
+
+24.3
+-----
+- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
+
 24.2
 -----
 - Add support for signing in using passkeys for WordPress.com accounts during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/15379]
 - [*] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
+- [Internal] Enable Bookings MVP for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15445]
 
 24.1
 -----

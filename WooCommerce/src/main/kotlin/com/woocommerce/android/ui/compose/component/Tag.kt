@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,12 +28,15 @@ fun WCTag(
     textColor: Color = colorResource(id = R.color.tag_text_main),
     backgroundColor: Color = colorResource(R.color.tag_bg_main),
     textStyle: TextStyle = MaterialTheme.typography.caption,
-    fontWeight: FontWeight = FontWeight.Bold
+    fontWeight: FontWeight = FontWeight.Bold,
+    border: BorderStroke? = null,
 ) {
+    val shape = RoundedCornerShape(4.dp)
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(shape)
             .background(backgroundColor)
+            .then(if (border != null) Modifier.border(border = border, shape = shape) else Modifier)
             .padding(
                 horizontal = dimensionResource(id = R.dimen.minor_50),
             )

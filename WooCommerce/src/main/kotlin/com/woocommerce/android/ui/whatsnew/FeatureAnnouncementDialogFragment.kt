@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.whatsnew
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -40,7 +43,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
         viewModel.setAnnouncementData(navArgs.announcement)
         setupView(binding)
-        setupObservers()
+        setupObservers(binding)
     }
 
     override fun onStart() {
@@ -52,11 +55,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {
-        binding.closeFeatureAnnouncementButton.setOnClickListener {
-            viewModel.handleAnnouncementIsViewed()
-            findNavController().popBackStack()
-        }
-
         listAdapter = FeatureAnnouncementListAdapter()
         binding.featureList.adapter = listAdapter
         binding.featureList.layoutManager = LinearLayoutManager(activity)
@@ -68,13 +66,40 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         super.onDismiss(dialog)
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(binding: FeatureAnnouncementDialogFragmentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.announcement.takeIfNotEqualTo(old?.announcement) {
-                it?.let {
-                    listAdapter.submitList(it.features)
+                it?.let { announcement ->
+                    listAdapter.submitList(announcement.features)
+                    if (announcement.detailsUrl.isNotEmpty()) {
+                        binding.closeFeatureAnnouncementButton.text = getString(R.string.learn_more)
+                        binding.closeFeatureAnnouncementButton.setOnClickListener {
+                            openDetailsUrl(announcement.detailsUrl)
+                            findNavController().popBackStack()
+                        }
+                        binding.dismissFeatureAnnouncementButton.visibility = View.VISIBLE
+                        binding.dismissFeatureAnnouncementButton.setOnClickListener {
+                            findNavController().popBackStack()
+                        }
+                    } else {
+                        binding.dismissFeatureAnnouncementButton.visibility = View.GONE
+                        binding.dismissFeatureAnnouncementButton.setOnClickListener(null)
+                        binding.closeFeatureAnnouncementButton.text = getString(R.string.continue_button)
+                        binding.closeFeatureAnnouncementButton.setOnClickListener {
+                            findNavController().popBackStack()
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    private fun openDetailsUrl(url: String) {
+        runCatching {
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+            startActivity(intent)
+        }.onFailure {
+            WooLog.e(WooLog.T.UTILS, "Failed to open URL: $url", it)
         }
     }
 }

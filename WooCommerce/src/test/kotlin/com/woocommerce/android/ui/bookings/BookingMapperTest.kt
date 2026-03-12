@@ -4,8 +4,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
@@ -99,7 +99,7 @@ class BookingMapperTest : BaseUnitTest() {
         )
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
+        val model = mapper.run { booking.toBookingSummaryModel(PaymentStatus.UNPAID, AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(FORMATTED_DATE_TIME)
@@ -107,7 +107,8 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
         assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.Attended)
-        assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
+        assertThat(model.paymentStatus).isEqualTo(PaymentStatus.UNPAID)
+        assertThat(model.isCancelled).isFalse()
     }
 
     @Test
@@ -129,30 +130,65 @@ class BookingMapperTest : BaseUnitTest() {
             .format(start)
         val expectedTime = "$FORMATTED_TIME - $FORMATTED_TIME"
 
+        val locationStatus = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109")
+
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle, locationStatus = locationStatus)
+        }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
         assertThat(model.time).isEqualTo(expectedTime)
         assertThat(model.staff).isEqualTo(staffMemberStatus)
-        assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
+        assertThat(model.location).isEqualTo(locationStatus)
         assertThat(model.duration).isEqualTo("1 hour 30 minutes")
         assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
 
     @Test
-    fun `given booking with unknown status, when mapped, then preserves Unknown key`() {
+    fun `given no location, when mapped to appointment details model, then location is loading by default`() {
         // GIVEN
-        val booking = sampleBooking(status = BookingEntity.Status.Unknown("weird-status"))
+        val booking = sampleBooking()
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(BookingStaffMemberStatus.Loading, CancelStatus.Idle)
+        }
 
         // THEN
-        assertThat(model.status).isInstanceOf(BookingStatus.Unknown::class.java)
-        val unknown = model.status as BookingStatus.Unknown
-        assertThat(unknown.key).isEqualTo("weird-status")
+        assertThat(model.location).isEqualTo(BookingLocationStatus.Loading)
+    }
+
+    @Test
+    fun `given unavailable location, when mapped to appointment details model, then location is unavailable`() {
+        // GIVEN
+        val booking = sampleBooking()
+
+        // WHEN
+        val model = mapper.run {
+            booking.toAppointmentDetailsModel(
+                BookingStaffMemberStatus.Loading,
+                CancelStatus.Idle,
+                locationStatus = BookingLocationStatus.Unavailable
+            )
+        }
+
+        // THEN
+        assertThat(model.location).isEqualTo(BookingLocationStatus.Unavailable)
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to summary model, then isCancelled is true and attendance is null`() {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+
+        // WHEN
+        val model = mapper.run { booking.toBookingSummaryModel(PaymentStatus.UNPAID, AttendanceUpdateStatus.Idle) }
+
+        // THEN
+        assertThat(model.isCancelled).isTrue()
+        assertThat(model.attendanceStatus).isNull()
     }
 
     @Test
@@ -254,26 +290,15 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given on-hold order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
+    fun `given payment status, when mapped to summary model, then payment status is passed through`() {
         // GIVEN
-        val booking = sampleBooking().let { original ->
-            val paymentInfo = BookingPaymentInfo(
-                paymentMethodId = "cod",
-                paymentMethodTitle = "Cash on Delivery",
-                subtotal = BigDecimal("55.00"),
-                subtotalTax = BigDecimal("0.00"),
-                total = BigDecimal("55.00"),
-                totalTax = BigDecimal("0.00")
-            )
-            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "on-hold")
-            original.copy(order = orderWithPayment)
-        }
+        val booking = sampleBooking()
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
+        val model = mapper.run { booking.toBookingSummaryModel(PaymentStatus.PAID, AttendanceUpdateStatus.Idle) }
 
         // THEN
-        assertThat(model.status).isEqualTo(BookingStatus.PayOnSite)
+        assertThat(model.paymentStatus).isEqualTo(PaymentStatus.PAID)
     }
 
     @Test

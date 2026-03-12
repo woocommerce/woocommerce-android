@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
+import com.woocommerce.android.ui.woopos.orders.details.WooPosGetNonRefundedItems
+import com.woocommerce.android.ui.woopos.orders.details.WooPosGroupRefundedItems
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
@@ -31,11 +33,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
@@ -63,7 +67,9 @@ class WooPosOrdersViewModelTest {
     private lateinit var orderActionsProvider: WooPosOrderActionsProvider
     private lateinit var orderStatusMapper: WooPosOrderStatusMapper
 
-    private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
+    private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id).copy(
+        datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z")
+    )
 
     private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
         orders.associateWith { RefundsFetchResult.Success(emptyList()) }
@@ -83,6 +89,7 @@ class WooPosOrdersViewModelTest {
             refundInfoBuilder = refundInfoBuilder,
             orderActionsProvider = orderActionsProvider,
             bookingInfoMapper = bookingInfoMapper,
+            formatPrice = formatPrice,
         )
     }
 
@@ -110,11 +117,21 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Canceled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_orders_loading_error_message))
             .thenReturn("Please check your connection try again.")
+        whenever(resourceProvider.getString(eq(R.string.woopos_orders_details_refund_label_numbered), any()))
+            .thenAnswer { invocation ->
+                val index = invocation.arguments[1] as Int
+                "Refund #$index"
+            }
+        whenever(resourceProvider.getQuantityString(any(), any(), anyOrNull(), anyOrNull()))
+            .thenAnswer { invocation ->
+                val count = invocation.arguments[0] as Int
+                if (count == 1) "Items subtotal ($count item)" else "Items subtotal ($count items)"
+            }
     }
 
     private suspend fun setupMockBehaviors() {
@@ -144,6 +161,8 @@ class WooPosOrdersViewModelTest {
             refundInfoBuilder,
             orderActionsProvider,
             bookingInfoMapper,
+            WooPosGetNonRefundedItems(),
+            WooPosGroupRefundedItems(),
         )
         orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
     }
@@ -642,7 +661,9 @@ class WooPosOrdersViewModelTest {
         val selectedItemId = loadedItems.items.keys.single { it.isSelected }.id
         assertThat(selectedItemId).isEqualTo(2L)
         assertThat(content.selectedDetails?.id).isEqualTo(2L)
-        assertThat(content.selectedDetails?.lineItems).isNotEmpty
+        assertThat(content.selectedDetails?.lineItems).isInstanceOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded::class.java
+        )
         assertThat(content.selectedDetails?.total).isEqualTo("$106.00")
     }
 
@@ -776,7 +797,10 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.breakdown?.refunds).containsExactly("-$10.00", "-$5.00")
+        val refundRows = content.selectedDetails?.breakdown?.refunds
+        assertThat(refundRows).hasSize(2)
+        assertThat(refundRows?.map { it.amount }).containsExactly("-$10.00", "-$5.00")
+        assertThat(refundRows?.map { it.label }).containsExactly("Refund #1", "Refund #2")
         assertThat(content.selectedDetails?.breakdown?.netPayment).isNotNull()
     }
 
@@ -1261,9 +1285,51 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given non-completed order, when order details loaded, then Issue Refund action is absent`() = runTest {
+    fun `given pending order, when order details loaded, then Issue Refund and Email Receipt actions are absent`() = runTest {
         // GIVEN
         val testOrder = order(2).copy(status = Order.Status.Pending)
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given processing order, when order details loaded, then Email Receipt is available but Issue Refund is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(3).copy(status = Order.Status.Processing)
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given refunded order, when order details loaded, then Email Receipt is available but Issue Refund is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(4).copy(status = Order.Status.Refunded)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
@@ -1391,5 +1457,165 @@ class WooPosOrdersViewModelTest {
         assertThat(state.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
         assertThat(state.selectedDetails?.id).isEqualTo(200L)
         verify(dataSource).refreshOrderById(200L)
+    }
+
+    @Suppress("LongMethod")
+    @Test
+    fun `given order with refunds, when ViewRefundDetailsClicked, then RefundDetails dialog is shown with correct data`() = runTest {
+        // GIVEN
+        val testOrder = order(1).copy(
+            items = listOf(
+                Order.Item(
+                    itemId = 10L,
+                    productId = 100L,
+                    name = "Test Product",
+                    price = BigDecimal("10.00"),
+                    sku = "",
+                    quantity = 2f,
+                    subtotal = BigDecimal("20.00"),
+                    subtotalTax = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO,
+                    total = BigDecimal("20.00"),
+                    variationId = 0L,
+                    attributesList = emptyList(),
+                )
+            ),
+            paymentMethodTitle = "Cash"
+        )
+        val refund = Refund(
+            id = 1,
+            dateCreated = Date(),
+            amount = BigDecimal("10.00"),
+            reason = "Damaged",
+            automaticGatewayRefund = false,
+            items = listOf(
+                Refund.Item(
+                    productId = 100L,
+                    quantity = -1,
+                    orderItemId = 10L,
+                    total = BigDecimal("-10.00"),
+                    totalTax = BigDecimal("-1.00"),
+                )
+            ),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow {
+                emit(
+                    LoadOrdersResult.SuccessRemote(
+                        mapOf(testOrder to RefundsFetchResult.Success(listOf(refund)))
+                    )
+                )
+            }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(refundIndex = 0))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val dialogState = state.dialogState
+        assertThat(dialogState).isInstanceOf(WooPosOrdersState.Content.DialogState.RefundDetails::class.java)
+        val details = dialogState as WooPosOrdersState.Content.DialogState.RefundDetails
+        assertThat(details.label).isEqualTo("Refund #1")
+        assertThat(details.items).hasSize(1)
+        assertThat(details.items.first().name).isEqualTo("Test Product")
+        assertThat(details.paymentMethodTitle).isEqualTo("Cash")
+    }
+
+    @Test
+    fun `given RefundDetails dialog visible, when onRefundDetailsDialogDismissed, then dialog is hidden`() = runTest {
+        // GIVEN
+        val testOrder = order(1).copy(paymentMethodTitle = "Cash")
+        val refund = Refund(
+            id = 1,
+            dateCreated = Date(),
+            amount = BigDecimal("5.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = listOf(
+                Refund.Item(
+                    productId = 100L,
+                    quantity = -1,
+                    orderItemId = 10L,
+                    total = BigDecimal("-5.00"),
+                    totalTax = BigDecimal.ZERO,
+                )
+            ),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow {
+                emit(
+                    LoadOrdersResult.SuccessRemote(
+                        mapOf(testOrder to RefundsFetchResult.Success(listOf(refund)))
+                    )
+                )
+            }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(refundIndex = 0))
+        advanceUntilIdle()
+
+        assertThat((viewModel.state.value as WooPosOrdersState.Content).dialogState)
+            .isInstanceOf(WooPosOrdersState.Content.DialogState.RefundDetails::class.java)
+
+        // WHEN
+        viewModel.onRefundDetailsDialogDismissed()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(state.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
+    }
+
+    @Test
+    fun `given order with refunds, when ViewRefundDetailsClicked with invalid index, then state is unchanged`() = runTest {
+        // GIVEN
+        val testOrder = order(1)
+        val refund = Refund(
+            id = 1,
+            dateCreated = Date(),
+            amount = BigDecimal("5.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow {
+                emit(
+                    LoadOrdersResult.SuccessRemote(
+                        mapOf(testOrder to RefundsFetchResult.Success(listOf(refund)))
+                    )
+                )
+            }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val beforeState = viewModel.state.value as WooPosOrdersState.Content
+
+        // WHEN
+        viewModel.onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(refundIndex = 99))
+        advanceUntilIdle()
+
+        // THEN
+        val afterState = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(afterState.dialogState).isEqualTo(beforeState.dialogState)
     }
 }

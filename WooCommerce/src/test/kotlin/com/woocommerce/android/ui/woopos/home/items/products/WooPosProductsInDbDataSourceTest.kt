@@ -230,7 +230,7 @@ class WooPosProductsInDbDataSourceTest {
             name = name,
             sku = sku ?: "",
             globalUniqueId = "",
-            type = WooPosProductModel.WooPosProductType.SIMPLE,
+            type = WooPosProductModel.WooPosProductType.Simple,
             status = WooPosProductModel.WooPosProductStatus.PUBLISH,
             pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal.TEN),
             description = "",

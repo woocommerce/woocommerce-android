@@ -14,7 +14,17 @@ class WooPosOrderActionsProvider @Inject constructor() {
             if (isPosRefundsEnabled() && order.status == Order.Status.Completed) {
                 add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
             }
-            add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
+            if (order.status in PAID_ORDER_STATUSES) {
+                add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
+            }
         }
+    }
+
+    companion object {
+        private val PAID_ORDER_STATUSES = setOf(
+            Order.Status.Completed,
+            Order.Status.Processing,
+            Order.Status.Refunded,
+        )
     }
 }

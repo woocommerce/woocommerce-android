@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -91,11 +93,13 @@ fun WooPosOrderDetails(
 
         Spacer(Modifier.height(WooPosSpacing.Large.value))
 
-        OrdersProducts(lineItems = details.lineItems)
+        ProductsSection(lineItems = details.lineItems)
+
+        RefundedProductsSection(refundedLineItems = details.refundedLineItems)
 
         Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
-        OrdersTotals(details = details)
+        OrdersTotals(details = details, onUIEvent = onUIEvent)
     }
 }
 
@@ -161,11 +165,56 @@ private fun OrdersHeader(details: WooPosOrdersState.OrderDetailsViewState.Comput
 }
 
 @Composable
-private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>) {
+private fun ProductsSection(
+    lineItems: WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+) {
+    when (lineItems) {
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loading ->
+            ProductsShimmer(
+                title = stringResource(R.string.woopos_orders_details_products_title)
+            )
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded ->
+            if (lineItems.items.isNotEmpty()) {
+                OrdersProducts(
+                    title = stringResource(R.string.woopos_orders_details_products_title),
+                    lineItems = lineItems.items
+                )
+            }
+    }
+}
+
+@Composable
+private fun RefundedProductsSection(
+    refundedLineItems: WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+) {
+    when (refundedLineItems) {
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loading -> {
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+            ProductsShimmer(
+                title = stringResource(R.string.woopos_orders_details_refunded_products_title)
+            )
+        }
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded -> {
+            if (refundedLineItems.items.isNotEmpty()) {
+                Spacer(Modifier.height(WooPosSpacing.Medium.value))
+                OrdersProducts(
+                    title = stringResource(R.string.woopos_orders_details_refunded_products_title),
+                    lineItems = refundedLineItems.items
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrdersProducts(
+    title: String,
+    lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>
+) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
-                text = stringResource(R.string.woopos_orders_details_products_title),
+                text = title,
                 style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -176,6 +225,55 @@ private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewSta
                 OrderProductItem(row = item)
 
                 if (ind < lineItems.size - 1) {
+                    DividerWithSpacing()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductsShimmer(title: String) {
+    WooPosCard(shadowType = ShadowType.Soft) {
+        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+            WooPosText(
+                text = title,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+
+            repeat(2) { index ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = WooPosSpacing.Small.value),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    WooPosShimmerBox(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    )
+                    Spacer(Modifier.width(WooPosSpacing.Medium.value))
+                    Column(modifier = Modifier.weight(1f)) {
+                        WooPosShimmerBox(
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f)
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                        )
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                        WooPosShimmerBox(
+                            modifier = Modifier
+                                .fillMaxWidth(0.3f)
+                                .height(14.dp)
+                                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                        )
+                    }
+                }
+                if (index < 1) {
                     DividerWithSpacing()
                 }
             }
@@ -295,7 +393,10 @@ private fun BookingInfoContent(
 }
 
 @Composable
-private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Computed.Details) {
+private fun OrdersTotals(
+    details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit = {},
+) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -369,15 +470,26 @@ private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Comput
 
             if (breakdown.refunds.isNotEmpty()) {
                 DividerWithSpacing()
-                breakdown.refunds.forEachIndexed { index, refundAmount ->
-                    TotalRowLine(
-                        label = stringResource(R.string.woopos_orders_details_refunded_label),
-                        value = refundAmount
+                breakdown.refunds.forEachIndexed { index, refundRow ->
+                    RefundRowContent(
+                        refundRow = refundRow,
+                        onViewDetailsClicked = {
+                            onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
+                        }
                     )
                     if (index < breakdown.refunds.size - 1) {
                         DividerWithSpacing()
                     }
                 }
+            }
+
+            breakdown.refundLoadError?.let { error ->
+                DividerWithSpacing()
+                WooPosText(
+                    text = error,
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
 
             breakdown.netPayment?.let { netPayment ->
@@ -388,6 +500,58 @@ private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Comput
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun RefundRowContent(
+    refundRow: WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow,
+    onViewDetailsClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewDetailsClicked() }
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WooPosText(
+                text = refundRow.label,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.weight(1f))
+            WooPosText(
+                text = refundRow.amount,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosText(
+            text = refundRow.date,
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+        )
+
+        refundRow.reason?.let { reason ->
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+            WooPosText(
+                text = reason,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_orders_details_refund_view_details),
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+        )
     }
 }
 
@@ -470,41 +634,55 @@ fun WooPosOrderDetailsPreview() {
         dateTime = "Aug 28, 2025 at 10:31 AM",
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
-        lineItems = listOf(
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 101,
-                name = "Cup",
-                attributesDescription = null,
-                qtyAndUnitPrice = "2 x $4.00",
-                lineTotal = "$8.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 102,
-                name = "T-Shirt",
-                attributesDescription = "Blue, Large",
-                qtyAndUnitPrice = "1 x $10.00",
-                lineTotal = "$10.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 103,
-                name = "A vey tasty coffee that incidentally has a very long name " +
-                    "and should go over a few lines without overlapping anything",
-                attributesDescription = "Medium roast, Decaf",
-                qtyAndUnitPrice = "1 x $5.00",
-                lineTotal = "$5.00",
-                imageUrl = null
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                id = 104,
-                name = "Women's Haircut",
-                attributesDescription = null,
-                qtyAndUnitPrice = "1 x $55.00",
-                lineTotal = "$55.00",
-                imageUrl = null,
-                bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
-                    "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+        lineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(
+            listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 101,
+                    name = "Cup",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "2 x $4.00",
+                    lineTotal = "$8.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 102,
+                    name = "T-Shirt",
+                    attributesDescription = "Blue, Large",
+                    qtyAndUnitPrice = "1 x $10.00",
+                    lineTotal = "$10.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 103,
+                    name = "A very tasty coffee that incidentally has a very long name " +
+                        "and should go over a few lines without overlapping anything",
+                    attributesDescription = "Medium roast, Decaf",
+                    qtyAndUnitPrice = "1 x $5.00",
+                    lineTotal = "$5.00",
+                    imageUrl = null
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 104,
+                    name = "Women's Haircut",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "1 x $55.00",
+                    lineTotal = "$55.00",
+                    imageUrl = null,
+                    bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
+                        "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+                    )
+                )
+            )
+        ),
+        refundedLineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(
+            listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 101,
+                    name = "Cup",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "1 x $4.00",
+                    lineTotal = "-$4.00",
+                    imageUrl = null
                 )
             )
         ),
@@ -514,7 +692,20 @@ fun WooPosOrderDetailsPreview() {
             discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
-            refunds = listOf("-$3.00", "-$2.00"),
+            refunds = listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #1",
+                    amount = "-$3.00",
+                    date = "Aug 29, 2025 at 12:26 PM",
+                    reason = "Customer bought an extra item.",
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #2",
+                    amount = "-$2.00",
+                    date = "Aug 30, 2025 at 2:15 PM",
+                    reason = null,
+                ),
+            ),
             netPayment = "$13.00"
         ),
         total = "$18.00",

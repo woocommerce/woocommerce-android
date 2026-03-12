@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -28,7 +32,10 @@ class WooPosFileBasedSyncActionTest {
     private val catalogFileDownloader: WooPosCatalogFileDownloader = mock()
     private val catalogFileParser: WooPosCatalogFileParser = mock()
     private val syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
+    private val preferencesRepository: WooPosPreferencesRepository = mock()
+    private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val logger: WooPosLogWrapper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private lateinit var site: SiteModel
 
     private val defaultUrl = "https://example.com/catalog.json"
@@ -62,12 +69,17 @@ class WooPosFileBasedSyncActionTest {
 
     @Before
     fun setup() = runTest {
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(0)
+
         sut = WooPosFileBasedSyncAction(
             posLocalCatalogStore = posLocalCatalogStore,
             catalogFileDownloader = catalogFileDownloader,
             catalogFileParser = catalogFileParser,
             syncWithFts = syncWithFts,
-            logger = logger
+            preferencesRepository = preferencesRepository,
+            syncTimestampManager = syncTimestampManager,
+            logger = logger,
+            analyticsTracker = analyticsTracker,
         )
         site = SiteModel().apply {
             id = 1
@@ -352,6 +364,184 @@ class WooPosFileBasedSyncActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success::class.java)
+    }
+
+    @Test
+    fun `given accumulated poll attempts, when sync completes, then total attempts included in result`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(15)
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN - total = 15 accumulated + 1 current = 16
+        val syncResult = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success).result
+        assertThat(syncResult.pollAttempts).isEqualTo(16)
+    }
+
+    @Test
+    fun `given timeout occurs, when sync fails, then total poll attempts saved for next run`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(10)
+        givenCatalogGenerationNeverCompletes()
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 10 accumulated + 20 max attempts = 30
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 30)
+    }
+
+    @Test
+    fun `given generation duration available, when sync completes, then duration included in result`() = runTest {
+        // GIVEN
+        whenever(syncTimestampManager.calculateGenerationDuration(anyOrNull(), anyOrNull())).thenReturn(5000L)
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val syncResult = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success).result
+        assertThat(syncResult.generationDurationMs).isEqualTo(5000L)
+    }
+
+    @Test
+    fun `given timeout occurs during in_progress state, when sync fails, then last state included in failure`() = runTest {
+        // GIVEN
+        givenCatalogGenerationNeverCompletes()
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout::class.java)
+        val timeout = failure as PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout
+        assertThat(timeout.lastGenerationState).isEqualTo("in_progress")
+    }
+
+    @Test
+    fun `given timeout occurs, when sync fails, then poll attempts included in failure result`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(5)
+        givenCatalogGenerationNeverCompletes()
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN - 5 accumulated + 20 max = 25
+        val timeout = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+            as PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout
+        assertThat(timeout.pollAttempts).isEqualTo(25)
+    }
+
+    @Test
+    fun `given consecutive API failures, when sync fails, then poll attempts are persisted`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(5)
+        givenCatalogGenerationFailsConsecutively()
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 5 accumulated + 3 attempts (fails on 3rd consecutive)
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 8)
+    }
+
+    @Test
+    fun `given consecutive API failures, when sync fails, then poll attempts included in failure result`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(5)
+        givenCatalogGenerationFailsConsecutively()
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure.pollAttempts).isEqualTo(8)
+    }
+
+    @Test
+    fun `given file download fails, when syncing, then poll attempts are persisted`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(3)
+        givenFileDownloadFails("Download error")
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 3 accumulated + 1 current attempt
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 4)
+    }
+
+    @Test
+    fun `given file download fails, when syncing, then poll attempts and last state included in failure`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(3)
+        givenFileDownloadFails("Download error")
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure.pollAttempts).isEqualTo(4)
+        assertThat(failure.lastGenerationState).isEqualTo("completed")
+    }
+
+    @Test
+    fun `given file parsing fails, when syncing, then poll attempts are persisted`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(2)
+        givenFileParseFails("Parse error")
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 2 accumulated + 1 current attempt
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 3)
+    }
+
+    @Test
+    fun `given storing data fails, when syncing, then poll attempts are persisted`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(4)
+        givenStoreCatalogDataFails("Storage error")
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 4 accumulated + 1 current attempt
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 5)
+    }
+
+    @Test
+    fun `given storing data fails, when syncing, then poll attempts and last state included in failure`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(4)
+        givenStoreCatalogDataFails("Storage error")
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure.pollAttempts).isEqualTo(5)
+        assertThat(failure.lastGenerationState).isEqualTo("completed")
+    }
+
+    @Test
+    fun `given completed without URL, when syncing, then poll attempts are persisted`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(1)
+        givenCatalogGenerationCompletedWithoutUrl()
+
+        // WHEN
+        sut.syncCatalog(site)
+
+        // THEN - 1 accumulated + 1 current attempt
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 2)
     }
 
     private suspend fun givenCatalogGenerationCompleted() {
