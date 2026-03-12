@@ -21,7 +21,7 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
+            AND (:customerId IS NULL OR userId = :customerId)
             AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
@@ -97,7 +97,7 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
+            AND (:customerId IS NULL OR userId = :customerId)
             AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
