@@ -428,13 +428,11 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            skipItems(1) // Skip initial EmptySearchQuery state
-
-            advanceUntilIdle()
-
             val cachedState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(cachedState.items).hasSize(1)
             assertThat((cachedState.items[0] as Product.Simple).name).isEqualTo("Cached Product")
+
+            advanceUntilIdle()
 
             val remoteState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(remoteState.items).hasSize(1)

@@ -128,13 +128,16 @@ class WooPosItemsSearchViewModel @Inject constructor(
             setEmptySearchQueryState()
         } else {
             searchJob = viewModelScope.launch {
-                if (showLoadingState) {
-                    _viewState.value = WooPosItemsSearchViewState.Loading
-                }
-                if (!skipDebounce) {
+                val isRemoteSearch = dataSource.getCurrentSyncStrategy() == SyncStrategy.REMOTE
+                if (!skipDebounce && isRemoteSearch) {
                     delay(SEARCH_DEBOUNCING_TIME)
                 }
                 if (query != currentQuery.get()) return@launch
+                if (showLoadingState && isRemoteSearch &&
+                    _viewState.value !is WooPosItemsSearchViewState.Content
+                ) {
+                    _viewState.value = WooPosItemsSearchViewState.Loading
+                }
 
                 executeSearch(query, showLoadingState)
             }
@@ -314,6 +317,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                         )
                     )
                 }
+
+                storeRecentSearch()
             }
 
             is WooPosItemSelectionViewState.Product.VariationSearchResult -> {
