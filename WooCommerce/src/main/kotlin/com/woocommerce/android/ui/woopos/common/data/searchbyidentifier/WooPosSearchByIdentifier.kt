@@ -25,7 +25,7 @@ class WooPosSearchByIdentifier @Inject constructor(
 
         val localResult = localSearcher(identifier, syncStrategy)
         // When product not found in local catalog, immediately return "not found" to avoid unnecessary remote call
-        if (localResult.isSuccess || syncStrategy == WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG) {
+        if (localResult.isSuccess || syncStrategy != WooPosProductsDataSource.SyncStrategy.REMOTE) {
             return filterUnsupportedProductResult(localResult)
         }
 

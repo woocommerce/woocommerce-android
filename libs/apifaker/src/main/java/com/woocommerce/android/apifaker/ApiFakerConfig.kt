@@ -2,6 +2,7 @@ package com.woocommerce.android.apifaker
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.woocommerce.android.apifaker.db.EndpointDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,7 @@ internal class ApiFakerConfig @Inject constructor(
     )
 
     fun setStatus(enabled: Boolean) {
-        preferences.edit().putBoolean(PREFERENCE_KEY, enabled).apply()
+        preferences.edit { putBoolean(PREFERENCE_KEY, enabled) }
     }
 
     private fun SharedPreferences.prefFlow(key: String, defaultValue: Boolean) = callbackFlow {

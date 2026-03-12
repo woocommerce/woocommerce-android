@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -56,17 +57,23 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
 ) {
     enum class SyncStrategy {
         REMOTE,
         LOCAL_CATALOG,
+        LOCAL_CATALOG_FILE,
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            localDbDataSource -> if (fileApproachEnabled()) {
+                SyncStrategy.LOCAL_CATALOG_FILE
+            } else {
+                SyncStrategy.LOCAL_CATALOG
+            }
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
@@ -294,8 +301,14 @@ class WooPosProductsInDbDataSource @Inject constructor(
         val result = localCatalogSearchDataSource.searchProducts(query)
 
         result.fold(
-            onSuccess = { products ->
-                emit(SearchProductsResult.Local(products))
+            onSuccess = { dbSearchResult ->
+                emit(
+                    SearchProductsResult.Local(
+                        products = dbSearchResult.products,
+                        searchTimeMillis = dbSearchResult.searchTimeMillis,
+                        searchMethod = dbSearchResult.searchMethod,
+                    )
+                )
             },
             onFailure = { error ->
                 emit(SearchProductsResult.Remote(Result.failure(error), 0L))
@@ -607,7 +620,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
         val localProducts = searchProductsDataSource.searchLocalProducts(query)
         if (localProducts.isNotEmpty()) {
-            emit(SearchProductsResult.Local(localProducts))
+            emit(
+                SearchProductsResult.Local(
+                    products = localProducts,
+                    searchTimeMillis = 0L,
+                    searchMethod = "in_memory_cache",
+                )
+            )
         }
 
         var remoteResult: Result<List<WooPosProductModel>>

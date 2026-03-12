@@ -55,8 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -130,12 +130,19 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    EmptyView(
-                        state = state,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
-                            .fillMaxSize()
-                    )
+                    WCPullToRefreshBox(
+                        isRefreshing = state.contentState.loadingState ==
+                            BookingListLoadingState.Refreshing,
+                        onRefresh = state.contentState.onRefresh,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        EmptyView(
+                            state = state,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
@@ -504,7 +511,8 @@ private fun BookingListPreview() {
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
                                 attendanceStatus = BookingAttendanceStatus.Attended,
-                                status = BookingStatus.Paid,
+                                paymentStatus = PaymentStatus.PAID,
+                                isCancelled = false,
                                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                             )
                         )

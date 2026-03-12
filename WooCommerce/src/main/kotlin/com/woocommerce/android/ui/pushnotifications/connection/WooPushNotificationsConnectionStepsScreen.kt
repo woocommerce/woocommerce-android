@@ -113,7 +113,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 WordPressWooBadge()
 
                 Text(
-                    text = stringResource(id = R.string.woo_push_notifications_connection_steps_title),
+                    text = stringResource(id = viewState.titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 32.dp)
@@ -121,7 +121,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
 
                 Text(
                     text = annotatedStringRes(
-                        R.string.woo_push_notifications_connection_steps_body,
+                        viewState.bodyRes,
                         viewState.siteAddress
                     ),
                     modifier = Modifier.padding(top = 8.dp)
@@ -306,6 +306,8 @@ private fun WooPushNotificationsConnectionStepsPreview() {
     WooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
+                titleRes = R.string.woo_push_notifications_connection_steps_title_connect,
+                bodyRes = R.string.woo_push_notifications_connection_steps_body_connect,
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(
@@ -337,6 +339,8 @@ private fun WooPushNotificationsConnectionStepsPreviewError() {
     WooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
+                titleRes = R.string.woo_push_notifications_connection_steps_title_connect,
+                bodyRes = R.string.woo_push_notifications_connection_steps_body_connect,
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(

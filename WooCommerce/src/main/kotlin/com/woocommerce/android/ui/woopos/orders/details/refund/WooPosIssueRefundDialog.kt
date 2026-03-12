@@ -66,7 +66,8 @@ fun WooPosIssueRefundDialog(
     orderId: Long,
     onDismissRequest: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String? = null
+    refundReasonUpdate: String? = null,
+    disablePartialRefund: Boolean = false
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
@@ -115,7 +116,8 @@ fun WooPosIssueRefundDialog(
                 orderId = orderId,
                 viewModel = viewModel,
                 onNavigationEvent = onNavigationEvent,
-                onEvent = handleEvent
+                onEvent = handleEvent,
+                disablePartialRefund = disablePartialRefund
             )
             is WooPosRefundState.Error -> ErrorContent(currentState, handleEvent, handleDismiss)
             is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
@@ -134,7 +136,8 @@ private fun ContentStateHandler(
     orderId: Long,
     viewModel: WooPosRefundViewModel,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    onEvent: (WooPosRefundUIEvent) -> Unit
+    onEvent: (WooPosRefundUIEvent) -> Unit,
+    disablePartialRefund: Boolean = false
 ) {
     when (state.step) {
         WooPosRefundState.Content.RefundStep.SelectItems -> {
@@ -143,7 +146,8 @@ private fun ContentStateHandler(
                 onEvent = onEvent,
                 onContinue = {
                     viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-                }
+                },
+                disableItemSelection = disablePartialRefund
             )
         }
 
@@ -163,7 +167,8 @@ private fun ContentStateHandler(
                             initialReason = state.refundReason
                         )
                     )
-                }
+                },
+                showEditRefundButton = !disablePartialRefund
             )
         }
 
@@ -380,7 +385,12 @@ private fun RefundSuccessContent(
             WooPosOutlinedButton(
                 text = stringResource(R.string.woopos_receipt_button),
                 onClick = {
-                    onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(state.orderId))
+                    onNavigationEvent(
+                        WooPosNavigationEvent.OpenEmailReceipt(
+                            orderId = state.orderId,
+                            receiptAlreadySent = state.receiptSentMessage != null,
+                        )
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -392,7 +402,8 @@ private fun RefundSuccessContent(
 private fun SelectItemsContent(
     state: WooPosRefundState.Content,
     onEvent: (WooPosRefundUIEvent) -> Unit,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    disableItemSelection: Boolean = false
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         RefundDialogHeader()
@@ -400,7 +411,8 @@ private fun SelectItemsContent(
         ItemsHeaderRow(
             allItemsSelected = state.allItemsSelected,
             selectedCount = state.selectedItemIds.size,
-            onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) }
+            onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) },
+            enabled = !disableItemSelection
         )
 
         Divider()
@@ -416,7 +428,8 @@ private fun SelectItemsContent(
                 RefundableItemRow(
                     item = item,
                     isSelected = item.uniqueId in state.selectedItemIds,
-                    onItemClick = { onEvent(WooPosRefundUIEvent.ItemSelectionToggled(item.uniqueId)) }
+                    onItemClick = { onEvent(WooPosRefundUIEvent.ItemSelectionToggled(item.uniqueId)) },
+                    enabled = !disableItemSelection
                 )
                 if (index < state.refundableItems.lastIndex) {
                     Divider()
@@ -459,7 +472,8 @@ private fun RefundDialogHeader() {
 private fun ItemsHeaderRow(
     allItemsSelected: Boolean,
     selectedCount: Int,
-    onSelectAllToggled: () -> Unit
+    onSelectAllToggled: () -> Unit,
+    enabled: Boolean = true
 ) {
     val selectAllContentDescription = stringResource(R.string.order_refunds_items_select_all)
     Row(
@@ -471,6 +485,7 @@ private fun ItemsHeaderRow(
         Checkbox(
             checked = allItemsSelected,
             onCheckedChange = { onSelectAllToggled() },
+            enabled = enabled,
             modifier = Modifier
                 .size(32.dp)
                 .semantics {
@@ -504,23 +519,31 @@ private fun ItemsHeaderRow(
 private fun RefundableItemRow(
     item: WooPosRefundableItem,
     isSelected: Boolean,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.XSmall.value)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onItemClick
+            .then(
+                if (enabled) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onItemClick
+                    )
+                } else {
+                    Modifier
+                }
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(
             checked = isSelected,
             onCheckedChange = { onItemClick() },
+            enabled = enabled,
             modifier = Modifier
                 .size(32.dp)
                 .semantics {
@@ -568,7 +591,8 @@ private fun ReviewRefundContent(
     state: WooPosRefundState.Content,
     onContinue: () -> Unit,
     onEditRefund: () -> Unit,
-    onEditReason: () -> Unit
+    onEditReason: () -> Unit,
+    showEditRefundButton: Boolean = true
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         ReviewRefundHeader()
@@ -656,7 +680,8 @@ private fun ReviewRefundContent(
 
         ReviewActionButtons(
             onContinue = onContinue,
-            onEditRefund = onEditRefund
+            onEditRefund = onEditRefund,
+            showEditRefundButton = showEditRefundButton
         )
     }
 }
@@ -704,7 +729,8 @@ private fun ReviewSummaryRow(
 @Composable
 private fun ReviewActionButtons(
     onContinue: () -> Unit,
-    onEditRefund: () -> Unit
+    onEditRefund: () -> Unit,
+    showEditRefundButton: Boolean = true
 ) {
     Column(
         modifier = Modifier
@@ -717,11 +743,13 @@ private fun ReviewActionButtons(
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth()
         )
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_orders_edit_refund),
-            onClick = onEditRefund,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (showEditRefundButton) {
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_orders_edit_refund),
+                onClick = onEditRefund,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

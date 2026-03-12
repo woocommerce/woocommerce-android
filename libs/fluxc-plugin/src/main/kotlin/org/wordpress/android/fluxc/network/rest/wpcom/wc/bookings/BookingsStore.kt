@@ -36,7 +36,8 @@ class BookingsStore @Inject internal constructor(
         order: BookingsOrderOption
     ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page, query, filters, order)
+            val restFilters = filters.withInclusiveDateRangeOffset()
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, query, restFilters, order)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
@@ -46,11 +47,16 @@ class BookingsStore @Inject internal constructor(
                         return@withDefaultContext WooResult(ordersResult.error)
                     }
 
+                    val existingLocations = bookingsDao
+                        .getBookingsByIds(site.localId(), response.result.map { it.id })
+                        .associate { it.id.value to it.location }
+
                     val entities = response.result.map {
                         with(bookingDtoMapper) {
                             it.toEntity(
                                 localSiteId = site.localId(),
-                                orderEntity = ordersResult.model?.get(it.orderId)
+                                orderEntity = ordersResult.model?.get(it.orderId),
+                                existingLocation = existingLocations[it.id],
                             )
                         }
                     }
@@ -95,6 +101,13 @@ class BookingsStore @Inject internal constructor(
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
 
+    suspend fun getBookings(
+        site: SiteModel,
+        limit: Int? = null,
+        filters: BookingFilters? = null,
+        order: BookingsOrderOption
+    ): List<BookingEntity> = bookingsDao.getBookings(site.localId(), limit, filters, order)
+
     fun observeBookingCount(
         site: SiteModel
     ): Flow<Long> = bookingsDao.observeBookingsCount(site.localId())
@@ -127,10 +140,12 @@ class BookingsStore @Inject internal constructor(
                     if (orderResult?.isError == true) {
                         return@withDefaultContext WooResult(orderResult.error)
                     }
+                    val existingBooking = bookingsDao.getBooking(site.localId(), bookingId)
                     val entity = with(bookingDtoMapper) {
                         bookingDto.toEntity(
                             localSiteId = site.localId(),
                             orderEntity = orderResult?.model,
+                            existingLocation = existingBooking?.location,
                         )
                     }
                     bookingsDao.upsert(listOf(entity))
@@ -191,6 +206,33 @@ class BookingsStore @Inject internal constructor(
         site: SiteModel
     ): Flow<List<BookingResourceEntity>> = bookingsDao.observeResources(site.localId())
 
+    suspend fun fetchProductBookingLocation(
+        site: SiteModel,
+        productId: Long,
+        bookingId: Long? = null
+    ): WooResult<String?> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBookingLocation") {
+            if (bookingId != null) {
+                val existing = bookingsDao.getBooking(site.localId(), bookingId)
+                if (existing?.location != null) {
+                    return@withDefaultContext WooResult(existing.location)
+                }
+            }
+            val response = bookingsRestClient.fetchProductBookingLocation(site, productId)
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    val location = response.result.bookingLocation?.takeIf { it.isNotBlank() }
+                    if (bookingId != null) {
+                        bookingsDao.updateLocation(site.localId(), bookingId, location)
+                    }
+                    WooResult(location)
+                }
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,
@@ -247,10 +289,12 @@ class BookingsStore @Inject internal constructor(
         if (orderResult.isError) {
             return null
         } else {
+            val existingBooking = bookingsDao.getBooking(site.localId(), bookingDto.id)
             val entity = with(bookingDtoMapper) {
                 bookingDto.toEntity(
                     localSiteId = site.localId(),
                     orderEntity = orderResult.model,
+                    existingLocation = existingBooking?.location,
                 )
             }
             return entity
@@ -272,6 +316,7 @@ class BookingsStore @Inject internal constructor(
             bookingDto.toEntity(
                 localSiteId = site.localId(),
                 orderEntity = null,
+                existingLocation = storedBooking.location,
             ).copy(
                 // Preserve fields not returned by the API
                 order = storedBooking.order,
@@ -279,4 +324,13 @@ class BookingsStore @Inject internal constructor(
         }
         return entity
     }
+}
+
+private fun BookingFilters.withInclusiveDateRangeOffset(): BookingFilters {
+    return copy(
+        dateRange = dateRange.copy(
+            before = dateRange.before?.plusSeconds(1),
+            after = dateRange.after?.minusSeconds(1),
+        )
+    )
 }

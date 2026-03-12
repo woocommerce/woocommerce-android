@@ -11,7 +11,7 @@ fun generateWooPosProduct(
     status: WooPosProductModel.WooPosProductStatus = WooPosProductModel.WooPosProductStatus.PUBLISH,
     amount: String = "10.0",
     globalUniqueId: String = "",
-    productType: WooPosProductModel.WooPosProductType = WooPosProductModel.WooPosProductType.SIMPLE,
+    productType: WooPosProductModel.WooPosProductType = WooPosProductModel.WooPosProductType.Simple,
     isDownloadable: Boolean = false,
     images: List<WooPosProductModel.WooPosProductImage> = emptyList(),
     variationIds: List<Long> = emptyList(),

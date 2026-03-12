@@ -393,6 +393,44 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             assertThat(metadataCaptor.firstValue).containsKeys("app_version", "device_model", "os_version")
         }
 
+    @Test
+    fun `given wpcom disable fails with api code, when registration succeeds, then error code is tracked`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(WooResult(RETURNED_TOKEN))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(
+                    Result.failure(
+                        WpComPushNotificationStore.NotificationSettingsUpdateError(
+                            type = WpComPushNotificationStore.NotificationSettingErrorType.ApiError(
+                                apiErrorMessage = "forbidden",
+                                apiErrorCode = "rest_forbidden"
+                            )
+                        )
+                    )
+                )
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isSuccess).isTrue()
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = anyOrNull(),
+                errorCode = eq("rest_forbidden")
+            )
+        }
+
     private fun setupWpComRegistration(isRegistered: Boolean) {
         val deviceId = if (isRegistered) "device-id-123" else null
         whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))

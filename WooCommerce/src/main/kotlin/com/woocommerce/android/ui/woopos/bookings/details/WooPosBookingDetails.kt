@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.woopos.bookings.WooPosAttendanceBadge
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsUIEvent
 import com.woocommerce.android.ui.woopos.bookings.WooPosCancelledBadge
+import com.woocommerce.android.ui.woopos.bookings.WooPosGuestBadge
 import com.woocommerce.android.ui.woopos.bookings.WooPosPaymentStatusBadge
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -56,6 +57,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+
+private const val SHOW_PAYMENT_SECTION = false
 
 @Composable
 fun WooPosBookingDetails(
@@ -78,7 +81,11 @@ fun WooPosBookingDetails(
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
-                    bottom = 92.dp + WooPosSpacing.Large.value
+                    bottom = if (hasCollectButton) {
+                        92.dp + WooPosSpacing.Large.value + WooPosSpacing.Medium.value
+                    } else {
+                        WooPosSpacing.XLarge.value
+                    }
                 )
         ) {
             BookingHeader(details = details, onUIEvent = onUIEvent)
@@ -87,21 +94,24 @@ fun WooPosBookingDetails(
 
             BookingDetailsCard(details = details)
 
+            val attendanceSection = details.attendanceSection
+            if (attendanceSection is WooPosBookingsState.AttendanceSection.Visible) {
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+                BookingAttendanceSection(attendanceSection = attendanceSection, onUIEvent = onUIEvent)
+            }
+
             details.customerSection?.let { section ->
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
                 BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
             }
 
-            details.attendanceSection?.let { section ->
+            Spacer(Modifier.height(WooPosSpacing.Large.value))
+
+            @Suppress("KotlinConstantConditions")
+            if (SHOW_PAYMENT_SECTION) {
+                BookingPaymentCard(paymentSection = details.paymentSection)
                 Spacer(Modifier.height(WooPosSpacing.Large.value))
-                BookingAttendanceSection(attendanceSection = section, onUIEvent = onUIEvent)
             }
-
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
-
-            BookingPaymentCard(paymentSection = details.paymentSection)
-
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
 
             BookingNoteSection(bookingNote = details.bookingNote, onUIEvent = onUIEvent)
         }
@@ -126,14 +136,11 @@ fun WooPosBookingDetails(
                     )
             ) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = panelAlpha),
+                    color = WooPosTheme.colors.outlineVariant.copy(alpha = panelAlpha),
                     thickness = 0.5.dp,
                 )
                 WooPosButton(
-                    text = stringResource(
-                        R.string.woopos_bookings_details_collect_payment,
-                        details.paymentSection.collectPaymentLabel
-                    ),
+                    text = stringResource(R.string.card_reader_collect_payment),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -273,12 +280,20 @@ private fun BookingCustomerCard(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     WooPosCard(shadowType = ShadowType.Soft) {
-        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
-            WooPosText(
-                text = stringResource(R.string.woopos_bookings_details_customer_title),
-                style = WooPosTypography.BodyLarge,
-                fontWeight = FontWeight.Bold,
-            )
+        Column(Modifier.fillMaxWidth().padding(WooPosSpacing.Medium.value)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_bookings_details_customer_title),
+                    style = WooPosTypography.BodyXLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (customerSection.isGuest) {
+                    WooPosGuestBadge()
+                }
+            }
 
             customerSection.email?.let { email ->
                 Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -303,7 +318,7 @@ private fun BookingCustomerCard(
                 WooPosText(
                     text = stringResource(R.string.woopos_bookings_details_customer_note_label),
                     style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                 )
                 Spacer(Modifier.height(WooPosSpacing.Small.value))
                 WooPosText(
@@ -317,7 +332,7 @@ private fun BookingCustomerCard(
 
 @Composable
 private fun BookingAttendanceSection(
-    attendanceSection: WooPosBookingsState.AttendanceSection,
+    attendanceSection: WooPosBookingsState.AttendanceSection.Visible,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -372,7 +387,7 @@ private fun BookingPaymentCard(
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_payment_title),
                 style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -426,8 +441,8 @@ private fun BookingNoteSection(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     WooPosText(
                         text = stringResource(R.string.woopos_bookings_details_booking_note_title),
-                        style = WooPosTypography.BodyLarge,
-                        fontWeight = FontWeight.Bold,
+                        style = WooPosTypography.BodyXLarge,
+                        fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
                     WooPosOutlinedButtonSmall(
@@ -528,7 +543,10 @@ private fun CopyableRow(
 @Composable
 private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    HorizontalDivider(
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.5.dp,
+    )
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 
@@ -593,8 +611,9 @@ fun WooPosBookingDetailsPreview() {
             phone = "+1 742582943798",
             billingAddress = "238 Willow Creek Drive, Montgomery, AL 36109",
             note = "Prefers eco-friendly products, shorter length cuts",
+            isGuest = false,
         ),
-        attendanceSection = WooPosBookingsState.AttendanceSection(
+        attendanceSection = WooPosBookingsState.AttendanceSection.Visible(
             selection = WooPosBookingsState.AttendanceState.UNATTENDED,
         ),
         paymentSection = WooPosBookingsState.PaymentSection(

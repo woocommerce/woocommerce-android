@@ -3,10 +3,15 @@ package com.woocommerce.android.ui.pushnotifications.introduction
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport.Result.Compatible
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -22,8 +27,19 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchJetpackStatus: FetchJetpackStatus,
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val BUTTON_LABEL_CONTINUE = "continue"
+        private const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
+        private const val BUTTON_LABEL_NOT_NOW = "not_now"
+        private const val BUTTON_LABEL_SUPPORT = "support"
+        private const val STATE_NOT_CONNECTED = "not_connected"
+        private const val STATE_UPDATE_REQUIRED = "update_required"
+        private const val ERROR_TYPE_NO_PERMISSION = "no_permission"
+        private const val ERROR_TYPE_GENERIC = "generic"
+    }
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewState = _viewState.asLiveData()
@@ -34,32 +50,56 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private fun fetchStatus() {
         launch {
-            val site = selectedSite.get()
-
-            val result = fetchJetpackStatus(
-                site = site,
-                useApplicationPasswords = true
-            )
-
-            result.fold(
-                onSuccess = { response ->
-                    when (response) {
-                        is JetpackStatusFetchResponse.ConnectionForbidden -> {
-                            _viewState.value = ViewState.ForbiddenError
-                        }
-
-                        is JetpackStatusFetchResponse.Success -> {
-                            if (response.status.isSiteConnected) {
-                                checkWCVersion()
-                            } else {
-                                _viewState.value = ViewState.NotConnected
-                            }
-                        }
+            checkIfJetpackIsConnected().fold(
+                onSuccess = { isConnected ->
+                    if (isConnected) {
+                        checkWCVersion()
+                    } else {
+                        _viewState.value = ViewState.NotConnected
                     }
                 },
-                onFailure = {
-                    _viewState.value = ViewState.GenericError
+                onFailure = { exception ->
+                    _viewState.value = if (exception is JetpackForbiddenException) {
+                        ViewState.ForbiddenError
+                    } else {
+                        ViewState.GenericError
+                    }
                 }
+            )
+
+            when (_viewState.value) {
+                is ViewState.NotConnected -> trackIntroductionView(STATE_NOT_CONNECTED)
+                is ViewState.UpdateRequired -> trackIntroductionView(STATE_UPDATE_REQUIRED)
+
+                is ViewState.ForbiddenError -> trackIntroductionError(ERROR_TYPE_NO_PERMISSION)
+
+                is ViewState.GenericError -> trackIntroductionError(ERROR_TYPE_GENERIC)
+                is ViewState.Loading -> {}
+            }
+        }
+    }
+
+    private suspend fun checkIfJetpackIsConnected(): Result<Boolean> {
+        val site = selectedSite.get()
+        return when (site.connectionType) {
+            SiteConnectionType.ApplicationPasswords -> fetchJetpackStatus(
+                site = site,
+                useApplicationPasswords = true
+            ).mapCatching { response ->
+                when (response) {
+                    is JetpackStatusFetchResponse.Success -> response.status.isSiteConnected
+                    is JetpackStatusFetchResponse.ConnectionForbidden -> throw JetpackForbiddenException()
+                }
+            }
+
+            SiteConnectionType.JetpackConnectionPackage -> {
+                // The connection type is enough to determine that the site is connected to Jetpack
+                Result.success(true)
+            }
+
+            SiteConnectionType.Jetpack -> error(
+                "Invalid state: WooPushNotificationsIntroductionViewModel should not be instantiated for sites " +
+                    "with SiteConnectionType.Jetpack"
             )
         }
     }
@@ -69,42 +109,65 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             Compatible -> _viewState.value = ViewState.GenericError
             is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired ->
                 _viewState.value = ViewState.UpdateRequired
+
             CheckWooPluginPushNotificationsSupport.Result.Error -> _viewState.value = ViewState.GenericError
         }
     }
 
     fun onContinueClick() {
-        when (_viewState.value) {
-            ViewState.UpdateRequired -> {
-                triggerEvent(
-                    NavigateToConnectionSteps(
-                        isSiteConnectedToJetpack = true,
-                        shouldAutoOpenUpdatePlugin = true
-                    )
-                )
-            }
-            ViewState.NotConnected -> {
-                triggerEvent(
-                    NavigateToConnectionSteps(
-                        isSiteConnectedToJetpack = false,
-                        shouldAutoOpenUpdatePlugin = false
-                    )
-                )
-            }
-            else -> Unit
+        val buttonLabel = if (_viewState.value is ViewState.UpdateRequired) {
+            BUTTON_LABEL_UPDATE_PLUGIN
+        } else {
+            BUTTON_LABEL_CONTINUE
         }
+        trackIntroductionButtonTap(buttonLabel)
+        triggerEvent(
+            NavigateToConnectionSteps(
+                isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
+                shouldAutoOpenUpdatePlugin = true
+            )
+        )
     }
 
     fun onNotNowClick() {
+        trackIntroductionButtonTap(BUTTON_LABEL_NOT_NOW)
+        triggerEvent(Exit)
+    }
+
+    fun onCloseClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_CLOSE)
         triggerEvent(Exit)
     }
 
     fun onWhatIsWPComClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_LINK_TAP)
         triggerEvent(OpenUrlEvent(AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT))
     }
 
     fun onContactSupportClick() {
+        trackIntroductionButtonTap(BUTTON_LABEL_SUPPORT)
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
+    }
+
+    private fun trackIntroductionView(state: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW,
+            mapOf(AnalyticsTracker.KEY_STATE to state)
+        )
+    }
+
+    private fun trackIntroductionError(errorType: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR,
+            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to errorType)
+        )
+    }
+
+    private fun trackIntroductionButtonTap(buttonLabel: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP,
+            mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to buttonLabel)
+        )
     }
 
     sealed interface ViewState {
@@ -121,4 +184,5 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     ) : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
+    private class JetpackForbiddenException : Exception()
 }
