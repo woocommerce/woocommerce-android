@@ -40,6 +40,14 @@ pr_size_checker.check_diff_size(
 
 android_unit_test_checker.check_missing_tests
 
+# LLM-based code review (test)
+llm_reviewer.review(
+  model: 'claude-sonnet-4-6',
+  provider: :anthropic,
+  file_selector: ->(path) { path.end_with?('.kt', '.java') },
+  max_comments: 15
+)
+
 # skip remaining checks if the PR is still a Draft
 if github.pr_draft?
   message('This PR is still a Draft: some checks will be skipped.')
