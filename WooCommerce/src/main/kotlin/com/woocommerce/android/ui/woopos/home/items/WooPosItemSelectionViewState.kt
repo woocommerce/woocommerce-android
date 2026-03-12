@@ -4,14 +4,6 @@ sealed class WooPosItemSelectionViewState(
     open val id: Long,
     open val name: String
 ) {
-    val uniqueKey: String
-        get() = when (this) {
-            is Product.Simple -> "simple_$id"
-            is Product.Variable -> "variable_$id"
-            is Product.Variation -> "variation_$id"
-            is Product.VariationSearchResult -> "variation_search_$id"
-            is Coupon -> "coupon_$id"
-        }
     sealed class Product(
         override val id: Long,
         override val name: String,
