@@ -170,8 +170,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                                 R.string.woopos_totals_reader_ready_for_payment_title
                             ),
                             subtitle = resourceProvider.getString(
-                                paymentState.cardReaderHint
-                                    ?: R.string.woopos_totals_reader_ready_for_payment_subtitle
+                                R.string.woopos_totals_reader_ready_for_payment_subtitle
                             ),
                             orderTotals = orderTotals,
                         )
