@@ -64,6 +64,7 @@ fun WooPosCardPaymentScreen(
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
@@ -87,6 +88,7 @@ fun WooPosCardPaymentScreen(
     WooPosCardPaymentScreenContent(
         state = state,
         showCashPaymentButton = viewModel.showCashPaymentButton,
+        cartItems = cartItems,
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
         onConnectReaderClicked = viewModel::onConnectReaderClicked,
@@ -99,13 +101,59 @@ fun WooPosCardPaymentScreen(
 private fun WooPosCardPaymentScreenContent(
     state: WooPosCardPaymentState,
     showCashPaymentButton: Boolean,
+    cartItems: List<ReadOnlyCartItem>,
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
     onConnectReaderClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onCashPaymentClicked: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    if (cartItems.isNotEmpty()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            WooPosCardPaymentReadOnlyCart(
+                cartItems = cartItems,
+                onBackClicked = onBackClicked,
+                modifier = Modifier.weight(0.35f),
+            )
+            PaymentStatesContent(
+                state = state,
+                showCashPaymentButton = showCashPaymentButton,
+                showBackToolbar = false,
+                onRetryClicked = onRetryClicked,
+                onDismissClicked = onDismissClicked,
+                onConnectReaderClicked = onConnectReaderClicked,
+                onBackClicked = onBackClicked,
+                onCashPaymentClicked = onCashPaymentClicked,
+                modifier = Modifier.weight(0.65f),
+            )
+        }
+    } else {
+        PaymentStatesContent(
+            state = state,
+            showCashPaymentButton = showCashPaymentButton,
+            showBackToolbar = true,
+            onRetryClicked = onRetryClicked,
+            onDismissClicked = onDismissClicked,
+            onConnectReaderClicked = onConnectReaderClicked,
+            onBackClicked = onBackClicked,
+            onCashPaymentClicked = onCashPaymentClicked,
+        )
+    }
+}
+
+@Composable
+private fun PaymentStatesContent(
+    state: WooPosCardPaymentState,
+    showCashPaymentButton: Boolean,
+    showBackToolbar: Boolean,
+    onRetryClicked: () -> Unit,
+    onDismissClicked: () -> Unit,
+    onConnectReaderClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    onCashPaymentClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Initiating) {
             CardPaymentInitiating()
         }
@@ -137,7 +185,7 @@ private fun WooPosCardPaymentScreenContent(
                     onConnectReaderClicked = onConnectReaderClicked,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
-                    onBackClicked = onBackClicked,
+                    onBackClicked = if (showBackToolbar) onBackClicked else null,
                 )
             }
         }
@@ -152,6 +200,7 @@ private fun WooPosCardPaymentScreenContent(
             if (state is WooPosCardPaymentState.PaymentFailed) {
                 CardPaymentFailed(
                     state = state,
+                    showBackToolbar = showBackToolbar,
                     onRetryClicked = onRetryClicked,
                     onDismissClicked = onDismissClicked,
                     onBackClicked = onBackClicked,
@@ -289,7 +338,7 @@ private fun CardPaymentReaderDisconnected(
     onConnectReaderClicked: () -> Unit,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
-    onBackClicked: () -> Unit,
+    onBackClicked: (() -> Unit)?,
 ) {
     CardPaymentCenteredLayout(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
@@ -392,13 +441,14 @@ private fun CardPaymentInProgress(
 @Composable
 private fun CardPaymentFailed(
     state: WooPosCardPaymentState.PaymentFailed,
+    showBackToolbar: Boolean,
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
     onBackClicked: () -> Unit,
 ) {
     BackHandler { onBackClicked() }
     CardPaymentCenteredLayout(
-        onBackClicked = onBackClicked,
+        onBackClicked = if (showBackToolbar) onBackClicked else null,
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
@@ -570,6 +620,7 @@ fun CardPaymentInitiatingPreview() {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Initiating,
             showCashPaymentButton = false,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -590,6 +641,7 @@ fun CardPaymentPreparingReaderPreview() {
                 orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -610,6 +662,7 @@ fun CardPaymentReadyForPaymentPreview() {
                 orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -631,6 +684,7 @@ fun CardPaymentReaderDisconnectedPreview() {
                 orderTotals = previewOrderTotals(),
             ),
             showCashPaymentButton = true,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -650,6 +704,7 @@ fun CardPaymentInProgressPreview() {
                 subtitle = "$12.50",
             ),
             showCashPaymentButton = false,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -671,6 +726,7 @@ fun CardPaymentFailedWithRetryPreview() {
                 isDismissButtonVisible = true,
             ),
             showCashPaymentButton = false,
+            cartItems = emptyList(),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
@@ -692,6 +748,35 @@ fun CardPaymentFailedWithoutRetryPreview() {
                 isDismissButtonVisible = true,
             ),
             showCashPaymentButton = false,
+            cartItems = emptyList(),
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentBookingsWithCartPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.Preparing(
+                title = "Preparing reader",
+                subtitle = "Getting reader ready for payment",
+                orderTotals = previewOrderTotals(),
+            ),
+            showCashPaymentButton = true,
+            cartItems = listOf(
+                ReadOnlyCartItem(
+                    id = 1L,
+                    name = "Booking - Spa Treatment",
+                    formattedPrice = "$50.00",
+                    imageUrl = null,
+                ),
+            ),
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},

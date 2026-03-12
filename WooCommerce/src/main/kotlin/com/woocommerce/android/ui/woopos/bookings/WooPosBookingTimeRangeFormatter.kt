@@ -9,8 +9,16 @@ import javax.inject.Inject
 
 class WooPosBookingTimeRangeFormatter @Inject constructor() {
     fun format(start: Instant, end: Instant): String {
+        return formatInterval("jm", start, end)
+    }
+
+    fun formatWithDate(start: Instant, end: Instant): String {
+        return formatInterval("MMMdjm", start, end)
+    }
+
+    private fun formatInterval(skeleton: String, start: Instant, end: Instant): String {
         val locale = ULocale.getDefault()
-        val formatter = DateIntervalFormat.getInstance("jm", locale)
+        val formatter = DateIntervalFormat.getInstance(skeleton, locale)
         /**
          * the WooCommerce Bookings API returns Unix timestamps where the value represents site-local time encoded as
          * UTC (fake UTC). For example, an 11:00 AM Vilnius booking (UTC+2) has a timestamp that decodes

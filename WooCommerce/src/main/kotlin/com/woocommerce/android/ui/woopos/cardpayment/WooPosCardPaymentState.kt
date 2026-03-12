@@ -45,3 +45,11 @@ data class WooPosOrderTotalsViewState(
     val taxes: String,
     val total: String,
 )
+
+data class ReadOnlyCartItem(
+    val id: Long,
+    val name: String,
+    val formattedPrice: String,
+    val imageUrl: String?,
+    val subtitle: String? = null,
+)

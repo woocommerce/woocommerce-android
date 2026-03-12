@@ -7,14 +7,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
+import com.woocommerce.android.ui.woopos.bookings.WooPosBookingTimeRangeFormatter
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
@@ -46,17 +49,20 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
     private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
+    private val getProductById: WooPosGetProductById,
+    private val bookingsRepository: BookingsRepository,
+    private val bookingTimeRangeFormatter: WooPosBookingTimeRangeFormatter,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
-    private val source: CardPaymentSource = (savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] as? String)
-        ?.let { runCatching { CardPaymentSource.valueOf(it) }.getOrNull() }
-        ?: CardPaymentSource.CHECKOUT
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
 
     val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY] ?: false
+
+    private val _cartItems = MutableStateFlow<List<ReadOnlyCartItem>>(emptyList())
+    val cartItems: StateFlow<List<ReadOnlyCartItem>> = _cartItems.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
@@ -88,6 +94,22 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 isDismissButtonVisible = true,
             )
             return null
+        }
+
+        _cartItems.value = order.items.map { item ->
+            val product = getProductById(item.productId)
+            val timeRange = item.bookingId?.let { bookingId ->
+                bookingsRepository.getBooking(bookingId)?.let { booking ->
+                    bookingTimeRangeFormatter.formatWithDate(booking.start, booking.end)
+                }
+            }
+            ReadOnlyCartItem(
+                id = item.itemId,
+                name = item.name,
+                formattedPrice = priceFormat(item.total),
+                imageUrl = product?.firstImageUrl,
+                subtitle = timeRange,
+            )
         }
 
         return WooPosOrderTotalsViewState(
@@ -145,7 +167,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
-            allowCancelledStatus = source == CardPaymentSource.BOOKINGS,
+            allowCancelledStatus = true,
         )
         cardReaderPaymentController?.start()
         listenToPaymentState()
@@ -249,14 +271,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private suspend fun handlePaymentSuccessful() {
-        val successSource = when (source) {
-            CardPaymentSource.CHECKOUT -> PaymentSuccessSource.CARD_CHECKOUT
-            CardPaymentSource.BOOKINGS -> PaymentSuccessSource.CARD_BOOKINGS
-        }
         _navigationEvent.emit(
             WooPosNavigationEvent.OpenPaymentSuccess(
                 orderId = orderId,
-                source = successSource,
+                source = PaymentSuccessSource.CARD_BOOKINGS,
             )
         )
     }
@@ -339,15 +357,12 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun navigateBack() {
         viewModelScope.launch {
-            when (source) {
-                CardPaymentSource.BOOKINGS -> _navigationEvent.emit(
-                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
-                        true
-                    )
+            _navigationEvent.emit(
+                WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
+                    BOOKING_PAYMENT_FLOW_FINISHED_KEY,
+                    true
                 )
-                CardPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
+            )
         }
     }
 
@@ -357,12 +372,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onCashPaymentClicked() {
         cancelPayment()
-        val cashSource = when (source) {
-            CardPaymentSource.CHECKOUT -> CashPaymentSource.CHECKOUT
-            CardPaymentSource.BOOKINGS -> CashPaymentSource.BOOKINGS
-        }
         viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId, cashSource))
+            _navigationEvent.emit(
+                WooPosNavigationEvent.NavigateToCashPayment(orderId, CashPaymentSource.BOOKINGS)
+            )
         }
     }
 
