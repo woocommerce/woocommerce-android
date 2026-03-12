@@ -23,22 +23,30 @@ fun WooPosPaymentStatusBadge(paymentStatus: PaymentStatus) {
         PaymentStatus.FAILED -> stringResource(R.string.woopos_bookings_payment_status_failed)
         PaymentStatus.REFUNDED -> stringResource(R.string.woopos_bookings_payment_status_refunded)
         PaymentStatus.PARTIALLY_REFUNDED -> stringResource(R.string.woopos_bookings_payment_status_partially_refunded)
+        PaymentStatus.AUTHORIZED -> stringResource(R.string.woopos_bookings_payment_status_authorized)
+        PaymentStatus.AUTHORIZATION_VOIDED -> stringResource(
+            R.string.woopos_bookings_payment_status_authorization_voided
+        )
     }
 
     val bgColor = when (paymentStatus) {
         PaymentStatus.UNPAID,
-        PaymentStatus.FAILED -> WooPosTheme.colors.errorLowest
+        PaymentStatus.FAILED,
+        PaymentStatus.AUTHORIZED -> WooPosTheme.colors.errorLowest
         PaymentStatus.PAID,
         PaymentStatus.REFUNDED,
-        PaymentStatus.PARTIALLY_REFUNDED -> WooPosTheme.colors.disabledContainer
+        PaymentStatus.PARTIALLY_REFUNDED,
+        PaymentStatus.AUTHORIZATION_VOIDED -> WooPosTheme.colors.disabledContainer
     }
 
     val textColor = when (paymentStatus) {
         PaymentStatus.UNPAID,
-        PaymentStatus.FAILED -> WooPosTheme.colors.onErrorLowest
+        PaymentStatus.FAILED,
+        PaymentStatus.AUTHORIZED -> WooPosTheme.colors.onErrorLowest
         PaymentStatus.PAID,
         PaymentStatus.REFUNDED,
-        PaymentStatus.PARTIALLY_REFUNDED -> WooPosTheme.colors.onDefault
+        PaymentStatus.PARTIALLY_REFUNDED,
+        PaymentStatus.AUTHORIZATION_VOIDED -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(

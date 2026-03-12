@@ -3943,6 +3943,8 @@
     <string name="woopos_bookings_payment_status_failed">Failed</string>
     <string name="woopos_bookings_payment_status_refunded">Refunded</string>
     <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="woopos_bookings_payment_status_authorized">Authorized</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Authorization Voided</string>
     <string name="woopos_bookings_status_cancelled">Canceled</string>
     <string name="woopos_bookings_details_attendance_title">Attendance status</string>
     <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
@@ -4419,6 +4421,8 @@
     <string name="booking_payment_status_refunded">Refunded</string>
     <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
     <string name="booking_payment_status_failed">Failed</string>
+    <string name="booking_payment_status_authorized">Authorized</string>
+    <string name="booking_payment_status_authorization_voided">Authorization Voided</string>
     <string name="booking_attendance_status_attended">Attended</string>
     <string name="booking_attendance_status_unattended">Unattended</string>
     <string name="booking_mark_as_attended">Mark as attended</string>

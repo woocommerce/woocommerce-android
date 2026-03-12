@@ -113,6 +113,10 @@ data class WCMetaData(
     object AddOnsMetadataKeys {
         const val ADDONS_METADATA_KEY = "_product_addons"
     }
+
+    object PaymentMetadataKeys {
+        const val PAYMENT_STATUS = "_payment_status"
+    }
 }
 
 operator fun List<WCMetaData>.get(key: String) = firstOrNull { it.key == key }
