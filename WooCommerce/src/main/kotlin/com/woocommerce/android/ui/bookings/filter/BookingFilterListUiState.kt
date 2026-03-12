@@ -69,13 +69,7 @@ data class BookingFilterListUiState(
             }
 
             BookingFilterPage.AttendanceStatus -> {
-                updatedBookingFilters.attendanceStatuses.values.takeIf { it.isNotEmpty() }?.let { list ->
-                    if (list.size > 1) {
-                        UiString.UiStringText(list.size.toString())
-                    } else {
-                        UiString.UiStringRes(list.first().titleRes)
-                    }
-                }
+                updatedBookingFilters.attendanceStatus.value?.let { UiString.UiStringRes(it.titleRes) }
             }
 
             BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
@@ -151,7 +145,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
         is BookingsFilterOption.TeamMembers -> copy(teamMembers = bookingsFilterOption)
-        is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
+        is BookingsFilterOption.AttendanceStatus -> copy(attendanceStatus = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)

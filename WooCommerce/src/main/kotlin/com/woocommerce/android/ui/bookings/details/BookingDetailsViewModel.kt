@@ -15,11 +15,13 @@ import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -55,6 +57,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val orderDetailRepository: OrderDetailRepository,
     @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
 
@@ -118,7 +121,7 @@ class BookingDetailsViewModel @Inject constructor(
         attendanceUpdateStatus,
         loadingState,
         resource,
-        cancelStatusState,
+        cancelStatusState
     ) { booking, attendanceUpdate, loadingState, resource, cancelStatus ->
         if (booking != null) {
             bookingMapper.buildBookingUiState(
@@ -285,6 +288,19 @@ class BookingDetailsViewModel @Inject constructor(
         triggerEvent(NavigateToOrder(orderId))
     }
 
+    private fun issueRefund(orderId: Long) {
+        triggerEvent(NavigateToIssueRefund(orderId))
+    }
+
+    fun onRefundCompleted() {
+        bookingId?.let { fetchBooking(it) }
+        launch {
+            val orderId = booking.first()?.orderId?.takeIf { it != 0L } ?: return@launch
+            orderDetailRepository.fetchOrderById(orderId)
+            orderDetailRepository.fetchOrderRefunds(orderId)
+        }
+    }
+
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
         attendanceUpdateStatus: AttendanceUpdateStatus,
@@ -321,7 +337,15 @@ class BookingDetailsViewModel @Inject constructor(
                 onAttendanceStatusSelected(bookingId, targetStatus)
             },
             onViewOrderClicked = { openOrderDetails(orderId) },
-            onNoteClicked = { openBookingNote(bookingId) }
+            onNoteClicked = { openBookingNote(bookingId) },
+            onIssueRefundClicked = if (
+                (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PARTIALLY_REFUNDED) &&
+                orderId != 0L
+            ) {
+                { issueRefund(orderId) }
+            } else {
+                null
+            },
         )
     }
 
@@ -359,5 +383,6 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
+    data class NavigateToIssueRefund(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToBookingNote(val bookingId: Long) : MultiLiveEvent.Event()
 }

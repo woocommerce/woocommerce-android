@@ -36,6 +36,7 @@ data class BookingUiState(
     val onAttendanceToggle: () -> Unit = {},
     val onNoteClicked: () -> Unit = {},
     val onViewOrderClicked: () -> Unit = {},
+    val onIssueRefundClicked: (() -> Unit)? = null,
 )
 
 sealed interface BookingDetailsLoadingState {

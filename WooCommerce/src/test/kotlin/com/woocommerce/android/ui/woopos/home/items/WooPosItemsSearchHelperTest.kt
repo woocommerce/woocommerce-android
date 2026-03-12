@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -34,7 +33,6 @@ class WooPosItemsSearchHelperTest {
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val isFtsEnabled: IsPosProductsFtsEnabled = mock()
 
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
     private lateinit var searchHelper: WooPosItemsSearchHelper
@@ -44,7 +42,6 @@ class WooPosItemsSearchHelperTest {
         whenever(mockResourceProvider.getString(any())).thenReturn("Search products")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(flowOf())
         whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
-        whenever(isFtsEnabled.invoke()).thenReturn(false)
 
         viewStateFlow = MutableStateFlow(createContentState())
         searchHelper = WooPosItemsSearchHelper(
@@ -52,7 +49,6 @@ class WooPosItemsSearchHelperTest {
             childToParentEventSender = mockChildToParentEventSender,
             parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
             productsDataSource = productsDataSource,
-            isFtsEnabled = isFtsEnabled,
         )
     }
 

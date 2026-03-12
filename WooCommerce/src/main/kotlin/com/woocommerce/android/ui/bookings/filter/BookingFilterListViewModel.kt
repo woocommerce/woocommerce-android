@@ -151,7 +151,7 @@ class BookingFilterListViewModel @Inject constructor(
         if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) add("team_member")
         if (bookingType?.value != null) add("booking_type")
         if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) add("service_events")
-        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) add("attendance_status")
+        if (attendanceStatus != BookingsFilterOption.AttendanceStatus.DEFAULT) add("attendance_status")
         if (paymentStatus != null) add("payment_status")
         if (customer != null) add("customer")
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) add("date_time")

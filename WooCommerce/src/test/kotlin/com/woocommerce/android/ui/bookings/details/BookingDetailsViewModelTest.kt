@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.getOrAwaitValue
@@ -72,6 +73,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val orderDetailRepository = mock<OrderDetailRepository>()
 
     @Before
     fun setup() {
@@ -485,6 +487,76 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given booking is paid with order, when state observed, then refund callback is present`() = testBlocking {
+        // GIVEN
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
+        val viewModel = createViewModel()
+
+        // WHEN
+        val state = viewModel.state.getOrAwaitValue()
+
+        // THEN
+        assertThat(state.bookingUiState?.onIssueRefundClicked != null).isTrue()
+    }
+
+    @Test
+    fun `given booking is partially refunded with order, when state observed, then refund callback is present`() = testBlocking {
+        // GIVEN
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PARTIALLY_REFUNDED)
+        val viewModel = createViewModel()
+
+        // WHEN
+        val state = viewModel.state.getOrAwaitValue()
+
+        // THEN
+        assertThat(state.bookingUiState?.onIssueRefundClicked != null).isTrue()
+    }
+
+    @Test
+    fun `given booking is unpaid, when state observed, then refund callback is null`() = testBlocking {
+        // GIVEN
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+        val viewModel = createViewModel()
+
+        // WHEN
+        val state = viewModel.state.getOrAwaitValue()
+
+        // THEN
+        assertThat(state.bookingUiState?.onIssueRefundClicked == null).isTrue()
+    }
+
+    @Test
+    fun `given booking has no associated order, when state observed, then refund callback is null`() = testBlocking {
+        // GIVEN
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
+        bookingFlow.value = getSampleBooking(bookingId, orderId = 0L)
+        val viewModel = createViewModel()
+
+        // WHEN
+        val state = viewModel.state.getOrAwaitValue()
+
+        // THEN
+        assertThat(state.bookingUiState?.onIssueRefundClicked == null).isTrue()
+    }
+
+    @Test
+    fun `when refund button clicked, then NavigateToIssueRefund event is triggered with orderId`() = testBlocking {
+        // GIVEN
+        val orderId = 99L
+        bookingFlow.value = getSampleBooking(bookingId, orderId = orderId)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // WHEN
+        state.bookingUiState?.onIssueRefundClicked?.invoke()
+
+        // THEN
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(BookingDetailsViewModel.NavigateToIssueRefund(orderId))
+    }
+
+    @Test
     fun `when onAttendanceToggle called rapidly, then first request error is suppressed by cancellation`() =
         testBlocking {
             // GIVEN
@@ -519,13 +591,14 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            orderDetailRepository = orderDetailRepository,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }
     }
 
-    private fun getSampleBooking(id: Long, location: String? = null): Booking {
+    private fun getSampleBooking(id: Long, orderId: Long = id, location: String? = null): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id),
             localSiteId = LocalOrRemoteId.LocalId(1),
@@ -541,7 +614,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             dateCreated = Instant.now(),
             dateModified = Instant.now(),
             googleCalendarEventId = "",
-            orderId = id,
+            orderId = orderId,
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),

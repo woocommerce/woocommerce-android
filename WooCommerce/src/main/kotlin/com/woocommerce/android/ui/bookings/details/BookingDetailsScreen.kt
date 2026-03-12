@@ -158,6 +158,7 @@ private fun BookingDetailsContent(
         BookingPaymentSection(
             model = it,
             onViewOrder = booking.onViewOrderClicked,
+            onIssueRefund = booking.onIssueRefundClicked,
             modifier = Modifier.fillMaxWidth(),
         )
     }

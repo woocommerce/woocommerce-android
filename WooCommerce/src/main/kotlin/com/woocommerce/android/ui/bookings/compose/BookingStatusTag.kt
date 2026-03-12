@@ -49,14 +49,20 @@ private fun PaymentStatus.text(): String = when (this) {
     PaymentStatus.FAILED -> stringResource(R.string.booking_payment_status_failed)
     PaymentStatus.REFUNDED -> stringResource(R.string.booking_payment_status_refunded)
     PaymentStatus.PARTIALLY_REFUNDED -> stringResource(R.string.booking_payment_status_partially_refunded)
+    PaymentStatus.AUTHORIZED -> stringResource(R.string.booking_payment_status_authorized)
+    PaymentStatus.AUTHORIZATION_VOIDED -> stringResource(R.string.booking_payment_status_authorization_voided)
 }
 
 @Composable
 private fun PaymentStatus.backgroundColor(): Color = when (this) {
-    PaymentStatus.UNPAID -> colorResource(R.color.tag_bg_booking_yellow)
+    PaymentStatus.UNPAID,
+    PaymentStatus.AUTHORIZED -> colorResource(R.color.tag_bg_booking_yellow)
+
     PaymentStatus.PAID,
     PaymentStatus.REFUNDED,
-    PaymentStatus.PARTIALLY_REFUNDED -> Color.Transparent
+    PaymentStatus.PARTIALLY_REFUNDED,
+    PaymentStatus.AUTHORIZATION_VOIDED -> Color.Transparent
+
     PaymentStatus.FAILED -> colorResource(R.color.tagView_bg)
 }
 
@@ -64,8 +70,11 @@ private fun PaymentStatus.backgroundColor(): Color = when (this) {
 private fun PaymentStatus.textColor(): Color = when (this) {
     PaymentStatus.PAID,
     PaymentStatus.REFUNDED,
-    PaymentStatus.PARTIALLY_REFUNDED -> colorResource(R.color.color_on_surface_high)
+    PaymentStatus.PARTIALLY_REFUNDED,
+    PaymentStatus.AUTHORIZATION_VOIDED -> colorResource(R.color.color_on_surface_high)
+
     PaymentStatus.UNPAID,
+    PaymentStatus.AUTHORIZED,
     PaymentStatus.FAILED -> colorResource(R.color.tagView_text)
 }
 
@@ -73,8 +82,11 @@ private fun PaymentStatus.textColor(): Color = when (this) {
 private fun PaymentStatus.border(): BorderStroke? = when (this) {
     PaymentStatus.PAID,
     PaymentStatus.REFUNDED,
-    PaymentStatus.PARTIALLY_REFUNDED -> BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+    PaymentStatus.PARTIALLY_REFUNDED,
+    PaymentStatus.AUTHORIZATION_VOIDED -> BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+
     PaymentStatus.UNPAID,
+    PaymentStatus.AUTHORIZED,
     PaymentStatus.FAILED -> null
 }
 
