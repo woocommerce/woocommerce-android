@@ -238,6 +238,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(false).whenever(featureFlagRepository).isEnabled(any())
+        doReturn(flowOf(false)).whenever(featureFlagRepository).observeIsEnabled(any())
 
         val site = SiteModel().let {
             it.id = 1

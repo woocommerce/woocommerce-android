@@ -140,12 +140,12 @@ class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    private val defaultViewState = OrderDetailViewState(
-        isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
-    )
-
     // Do NOT store the ViewState in SavedState bundle - it can be easily recreated on process death.
-    val viewStateData = LiveDataDelegate(defaultViewState)
+    val viewStateData = LiveDataDelegate(
+        OrderDetailViewState(
+            isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
+        )
+    )
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -250,6 +250,13 @@ class OrderDetailViewModel @Inject constructor(
                     AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
                     mapOf(KEY_SHIPPING_LINES_COUNT to shippingLines.size)
                 )
+            }
+        }
+        launch {
+            featureFlagRepository.observeIsEnabled(FeatureFlag.WC_SHIPPING_BANNER).collect { isEnabled ->
+                if (viewState.isWcShippingBannerEnabled != isEnabled) {
+                    viewState = viewState.copy(isWcShippingBannerEnabled = isEnabled)
+                }
             }
         }
 
