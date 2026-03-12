@@ -69,13 +69,23 @@ class WooPosLocalCatalogStoreFtsTest {
     }
 
     @Test
-    fun `given blank query, when searching fts, then returns failure`() = runTest {
+    fun `given blank query, when searching fts, then returns empty list`() = runTest {
         // WHEN
         val result = store.searchProductsFts(siteId, "  ")
 
         // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEmpty()
+    }
+
+    @Test
+    fun `given symbol-only query, when searching fts, then returns empty list`() = runTest {
+        // WHEN
+        val result = store.searchProductsFts(siteId, "-!@#$")
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEmpty()
     }
 
     @Test
