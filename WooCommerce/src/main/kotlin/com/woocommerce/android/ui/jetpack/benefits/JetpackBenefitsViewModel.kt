@@ -59,6 +59,16 @@ class JetpackBenefitsViewModel @Inject constructor(
 
     private val isAppPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
+    init {
+        launch {
+            featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2).collect { isEnabled ->
+                _viewState.update { currentState ->
+                    currentState.copy(isPushNotificationsBenefitVisible = !isEnabled)
+                }
+            }
+        }
+    }
+
     fun onInstallClick() = launch {
         when (selectedSite.connectionType) {
             SiteConnectionType.JetpackConnectionPackage -> {
