@@ -13,6 +13,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 const val DATE_FORMAT_DAY = "yyyy-MM-dd"
+private const val DATE_FORMAT_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss"
 
 class RefundMapper @Inject constructor(private val gson: Gson) {
 
@@ -68,7 +69,12 @@ class RefundMapper @Inject constructor(private val gson: Gson) {
         if (date.isEmpty()) {
             return null
         }
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_DAY, Locale.ROOT)
-        return dateFormat.parse(date)
+        val dateTimeFormat = SimpleDateFormat(DATE_FORMAT_DATE_TIME, Locale.ROOT)
+        return try {
+            dateTimeFormat.parse(date)
+        } catch (_: java.text.ParseException) {
+            val dateFormat = SimpleDateFormat(DATE_FORMAT_DAY, Locale.ROOT)
+            dateFormat.parse(date)
+        }
     }
 }
