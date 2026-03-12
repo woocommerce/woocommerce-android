@@ -7,6 +7,7 @@
 
 - [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
 - [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
+- [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
 
 24.3
 -----
@@ -15,7 +16,6 @@
 24.2
 -----
 - Add support for signing in using passkeys for WordPress.com accounts during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/15379]
-- [*] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
 - [Internal] Enable Bookings MVP for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15445]
 
 24.1
