@@ -14,10 +14,13 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorVie
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
@@ -38,6 +41,7 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        whenever(featureFlagRepository.observeIsEnabled(any())).thenReturn(flowOf(false))
         viewModel = TaxRateSelectorViewModel(
             tracker,
             taxRateListHandler,

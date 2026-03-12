@@ -37,8 +37,9 @@ class TaxRateSelectorViewModel @Inject constructor(
     val viewState: StateFlow<ViewState> = combine(
         ratesListHandler.taxRatesFlow,
         isLoading,
-        autoRateSwitchState
-    ) { rates, isLoading, autoRateSwitchState ->
+        autoRateSwitchState,
+        featureFlagRepository.observeIsEnabled(FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE)
+    ) { rates, isLoading, autoRateSwitchState, isAutoTaxRateFeatureEnabled ->
         rates
             .filter { taxRate ->
                 hasAddress(taxRate)
@@ -55,9 +56,7 @@ class TaxRateSelectorViewModel @Inject constructor(
                     taxRates = it,
                     isLoading = isLoading,
                     isAutoRateEnabled = autoRateSwitchState,
-                    isAutoTaxRateFeatureEnabled = featureFlagRepository.isEnabled(
-                        FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE
-                    )
+                    isAutoTaxRateFeatureEnabled = isAutoTaxRateFeatureEnabled
                 )
             }
     }.toStateFlow(ViewState())
