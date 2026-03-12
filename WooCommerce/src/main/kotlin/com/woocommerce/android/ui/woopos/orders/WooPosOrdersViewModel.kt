@@ -242,10 +242,33 @@ class WooPosOrdersViewModel @Inject constructor(
     ) {
         sideLoadBookings(orderId, details)
 
-        if (details.actionsState !is WooPosOrdersState.OrderActionsState.Loading) return
+        if (details.actionsState !is WooPosOrdersState.OrderActionsState.Loading) {
+            ensureRefundDataCached(orderId, orderDetailsViewState, loadedItems)
+            return
+        }
 
         val order = getOrderForSideLoading(orderId, orderDetailsViewState, loadedItems) ?: return
         sideLoadActions(orderId, order)
+    }
+
+    private suspend fun ensureRefundDataCached(
+        orderId: Long,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
+        if (cachedRefundData?.orderId == orderId) return
+
+        val order = getOrderForSideLoading(orderId, orderDetailsViewState, loadedItems) ?: return
+        val refundsResult = retrieveOrderRefunds(order, forceRefresh = false).fold(
+            onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
+            onFailure = { RefundsFetchResult.Error }
+        )
+        val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
+        cachedRefundData = CachedRefundData(
+            orderId = orderId,
+            rows = refundInfo.refundRows,
+            order = order
+        )
     }
 
     private suspend fun getOrderForSideLoading(
