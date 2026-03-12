@@ -37,19 +37,15 @@ class AddressViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: WCDataStore,
     private val getLocations: GetLocations,
-    featureFlagRepository: FeatureFlagRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    private val defaultViewState = ViewState(
-        isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2)
-    )
-
     @Suppress("OPT_IN_USAGE")
-    val viewStateData = LiveDataDelegate(savedState, defaultViewState)
+    val viewStateData = LiveDataDelegate(savedState, defaultViewState())
     private var viewState by viewStateData
 
     private val countries: List<Location>
@@ -77,6 +73,16 @@ class AddressViewModel @Inject constructor(
 
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
     val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
+
+    init {
+        launch {
+            featureFlagRepository.observeIsEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2).collect { isEnabled ->
+                if (viewState.isBetterCustomerSearchEnabled != isEnabled) {
+                    viewState = viewState.copy(isBetterCustomerSearchEnabled = isEnabled)
+                }
+            }
+        }
+    }
 
     val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
@@ -135,8 +141,12 @@ class AddressViewModel @Inject constructor(
      */
     fun onScreenDetached() {
         hasStarted = false
-        viewState = defaultViewState
+        viewState = defaultViewState()
     }
+
+    private fun defaultViewState() = ViewState(
+        isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2)
+    )
 
     private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
         return when {
@@ -283,7 +293,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
-        viewState = defaultViewState
+        viewState = defaultViewState()
         initialize(initialState)
     }
 
@@ -295,7 +305,7 @@ class AddressViewModel @Inject constructor(
         val email: String? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
-        val isBetterCustomerSearchEnabled: Boolean = false,
+        val isBetterCustomerSearchEnabled: Boolean = FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.default,
     ) : Parcelable
 
     enum class AddressType {
