@@ -592,10 +592,9 @@ class WooPosCardPaymentViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
-            .ExternalReaderProcessingPayment(
+        controllerPaymentState.value = CardReaderPaymentState.PaymentCapturing
+            .ExternalReaderPaymentCapturing(
                 amountWithCurrencyLabel = "$50.00",
-                onCancel = {}
             )
         advanceUntilIdle()
 
