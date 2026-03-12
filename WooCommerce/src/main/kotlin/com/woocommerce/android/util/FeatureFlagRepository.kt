@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
@@ -17,7 +19,7 @@ class FeatureFlagRepository @Inject constructor(
     featureFlagsStore: FeatureFlagsStore,
     @AppCoroutineScope appCoroutineScope: CoroutineScope,
 ) {
-    private val remoteFlagValues = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    private val remoteFlagValues = MutableStateFlow<Map<String, Boolean>?>(null)
 
     init {
         appCoroutineScope.launch {
@@ -32,6 +34,10 @@ class FeatureFlagRepository @Inject constructor(
     fun observeIsEnabled(
         flag: FeatureFlag
     ): Flow<Boolean> = remoteFlagValues.map { isEnabled(flag) }.distinctUntilChanged()
+
+    suspend fun awaitRemoteFlagsLoaded() {
+        remoteFlagValues.filter { it != null }.first()
+    }
 
     private fun getOverrideValue(flag: FeatureFlag): Boolean? = try {
         AppPrefs.getFeatureFlagOverride(flag)
@@ -50,7 +56,7 @@ class FeatureFlagRepository @Inject constructor(
     fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
         flag = flag,
         defaultValue = flag.default,
-        remoteValue = remoteFlagValues.value[flag.remoteFlagKey],
+        remoteValue = remoteFlagValues.value?.get(flag.remoteFlagKey),
         overrideValue = getOverrideValue(flag)
     )
 
