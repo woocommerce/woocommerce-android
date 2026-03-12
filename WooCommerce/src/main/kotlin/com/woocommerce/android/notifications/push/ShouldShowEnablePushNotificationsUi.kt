@@ -26,14 +26,20 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository
 ) {
     operator fun invoke(): Flow<Boolean> {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)) return flowOf(false)
-        return selectedSite.observe()
-            .flatMapLatest { site ->
-                if (site == null || site.connectionType == SiteConnectionType.Jetpack) {
+        return featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)
+            .flatMapLatest { isFeatureEnabled ->
+                if (!isFeatureEnabled) {
                     flowOf(false)
                 } else {
-                    pushNotificationRegistrationStatus.observe(site.siteId).map { registrationStatus ->
-                        registrationStatus != Status.REGISTERED_WOO_ONLY && registrationStatus != Status.REGISTERED_BOTH
+                    selectedSite.observe().flatMapLatest { site ->
+                        if (site == null || site.connectionType == SiteConnectionType.Jetpack) {
+                            flowOf(false)
+                        } else {
+                            pushNotificationRegistrationStatus.observe(site.siteId).map { registrationStatus ->
+                                registrationStatus != Status.REGISTERED_WOO_ONLY &&
+                                    registrationStatus != Status.REGISTERED_BOTH
+                            }
+                        }
                     }
                 }
             }

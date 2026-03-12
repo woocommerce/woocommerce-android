@@ -3,7 +3,10 @@ package com.woocommerce.android.util
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.di.AppCoroutineScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
@@ -25,6 +28,10 @@ class FeatureFlagRepository @Inject constructor(
     }
 
     fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
+
+    fun observeIsEnabled(
+        flag: FeatureFlag
+    ): Flow<Boolean> = remoteFlagValues.map { isEnabled(flag) }.distinctUntilChanged()
 
     private fun getOverrideValue(flag: FeatureFlag): Boolean? = try {
         AppPrefs.getFeatureFlagOverride(flag)
