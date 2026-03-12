@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
@@ -39,14 +40,17 @@ class ObserveBookingsVisibility @Inject constructor(
         selectedSite.observe()
             .filterNotNull()
             .flatMapLatest { siteModel ->
-                observeBookingsVisibilityForSite(siteModel)
+                featureFlagRepository.observeIsEnabled(FeatureFlag.BOOKINGS_MVP).flatMapLatest { isBookingsMvpEnabled ->
+                    observeBookingsVisibilityForSite(siteModel, isBookingsMvpEnabled)
+                }
             }
 
-    private fun observeBookingsVisibilityForSite(siteModel: SiteModel): Flow<Boolean> = flow {
-        val isCIABSite = featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_MVP) && siteModel.isCIABSite()
-        if (!isCIABSite) {
-            emit(false)
-        } else {
+    private fun observeBookingsVisibilityForSite(siteModel: SiteModel, isBookingsMvpEnabled: Boolean): Flow<Boolean> {
+        if (!isBookingsMvpEnabled || !siteModel.isCIABSite()) {
+            return flowOf(false)
+        }
+
+        return flow {
             emitAll(
                 bookableProductCountFlow()
                     .combine(bookingsCountFlow()) { productCount, bookingCount ->
