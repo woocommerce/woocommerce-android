@@ -305,7 +305,7 @@ private fun CardReaderStatusButton(
         label = "IllustrationColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
+            is WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
             WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.alert
             WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
@@ -318,7 +318,7 @@ private fun CardReaderStatusButton(
         label = "BorderColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> Color.Transparent
+            is WooPosCardReaderStatus.Connected -> Color.Transparent
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colorScheme.primary
             WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
@@ -356,6 +356,11 @@ private fun CardReaderStatusButton(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
+
+                if (state is WooPosCardReaderStatus.Connected) {
+                    BatteryWarningIcon(batteryState = state.batteryState)
+                }
+
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
             }
         }
@@ -388,6 +393,29 @@ private fun Circle(
 }
 
 @Composable
+private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.BatteryState) {
+    when (batteryState) {
+        WooPosHomeFloatingToolbarState.BatteryState.NOMINAL -> { }
+        WooPosHomeFloatingToolbarState.BatteryState.LOW -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_low),
+                contentDescription = stringResource(R.string.woopos_battery_low),
+                tint = WooPosTheme.colors.alert,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        WooPosHomeFloatingToolbarState.BatteryState.CRITICAL -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_critical),
+                contentDescription = stringResource(R.string.woopos_battery_critical),
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
 private fun getToolbarAccessibilityLabels(
     cardReaderStatus: WooPosCardReaderStatus,
     menuCardDisabled: Boolean
@@ -397,7 +425,7 @@ private fun getToolbarAccessibilityLabels(
     )
 
     val cardReaderStatusContentDescription = when (cardReaderStatus) {
-        WooPosCardReaderStatus.Connected -> stringResource(
+        is WooPosCardReaderStatus.Connected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_connected_status_content_description
         )
 
@@ -475,7 +503,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
             WooPosHomeFloatingToolbarState(
-                cardReaderStatus = WooPosCardReaderStatus.Connected,
+                cardReaderStatus = WooPosCardReaderStatus.Connected(),
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
@@ -492,6 +520,38 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                         ),
                     )
                 ),
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryLow() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.LOW
+                ),
+                menu = Menu.Hidden
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryCritical() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.CRITICAL
+                ),
+                menu = Menu.Hidden
             )
         )
     }

@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.BatteryState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -14,6 +17,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -32,6 +36,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+        onBlocking { batteryStatus }.thenReturn(flowOf(CardReaderBatteryStatus.Unknown))
     }
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val networkStatus: WooPosNetworkStatus = mock()
@@ -61,7 +66,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected)
+            .isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
     }
 
     @Test
@@ -284,6 +289,92 @@ class WooPosHomeFloatingToolbarViewModelTest {
             // THEN
             verify(cardReaderFacade).cancelReconnection()
         }
+
+    @Test
+    fun `given connected with nominal battery, when initialized, then battery state should be NOMINAL`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+        whenever(cardReaderFacade.batteryStatus).thenReturn(
+            flowOf(CardReaderBatteryStatus.StatusChanged(0.8f, BatteryStatus.NOMINAL, false))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val status = viewModel.state.value.cardReaderStatus
+        assertThat(status).isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+        assertThat((status as WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected).batteryState)
+            .isEqualTo(BatteryState.NOMINAL)
+    }
+
+    @Test
+    fun `given connected with low battery, when initialized, then battery state should be LOW`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+        whenever(cardReaderFacade.batteryStatus).thenReturn(
+            flowOf(CardReaderBatteryStatus.StatusChanged(0.2f, BatteryStatus.LOW, false))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val status = viewModel.state.value.cardReaderStatus
+        assertThat(status).isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+        assertThat((status as WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected).batteryState)
+            .isEqualTo(BatteryState.LOW)
+    }
+
+    @Test
+    fun `given connected with critical battery, when initialized, then battery state should be CRITICAL`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+        whenever(cardReaderFacade.batteryStatus).thenReturn(
+            flowOf(CardReaderBatteryStatus.StatusChanged(0.05f, BatteryStatus.CRITICAL, false))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val status = viewModel.state.value.cardReaderStatus
+        assertThat(status).isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+        assertThat((status as WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected).batteryState)
+            .isEqualTo(BatteryState.CRITICAL)
+    }
+
+    @Test
+    fun `given connected with battery warning, when initialized, then battery state should be LOW`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+        whenever(cardReaderFacade.batteryStatus).thenReturn(flowOf(CardReaderBatteryStatus.Warning))
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val status = viewModel.state.value.cardReaderStatus
+        assertThat(status).isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+        assertThat((status as WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected).batteryState)
+            .isEqualTo(BatteryState.LOW)
+    }
+
+    @Test
+    fun `given connected with unknown battery, when initialized, then battery state should be NOMINAL`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+        whenever(cardReaderFacade.batteryStatus).thenReturn(flowOf(CardReaderBatteryStatus.Unknown))
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val status = viewModel.state.value.cardReaderStatus
+        assertThat(status).isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+        assertThat((status as WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected).batteryState)
+            .isEqualTo(BatteryState.NOMINAL)
+    }
 
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
