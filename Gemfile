@@ -3,7 +3,6 @@
 source 'https://rubygems.org'
 
 gem 'danger-dangermattic', '~> 1.2'
-gem 'txcontext', git: 'https://github.com/iangmaia/txcontext.git'
 gem 'fastlane', '~> 2.216'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 0.10'
 gem 'nokogiri'
