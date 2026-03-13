@@ -65,7 +65,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         )
         whenever(resourceProvider.getString(any())).thenReturn("at")
         whenever(refundInfoBuilder.buildRefundInfo(any(), any())).thenReturn(
-            RefundInfo(emptyList(), BigDecimal.ZERO)
+            RefundInfo(refundRows = emptyList(), totalRefunded = BigDecimal.ZERO)
         )
         whenever(refundInfoBuilder.buildTotalsBreakdown(any(), any())).thenReturn(
             TotalsBreakdown(

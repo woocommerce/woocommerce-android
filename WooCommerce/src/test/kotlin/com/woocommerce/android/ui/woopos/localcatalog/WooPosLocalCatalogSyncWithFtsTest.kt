@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +29,7 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     private val ftsDao: WooPosSearchableFtsDao = mock()
     private val productsDao: WooPosProductsDao = mock()
     private val variationsDao: WooPosVariationsDao = mock()
+    private val filterConfig = WooPosProductsTypesFilterConfig()
     private val gson = Gson()
     private val logger: WooPosLogWrapper = mock()
 
@@ -39,6 +41,7 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
             ftsDao = ftsDao,
             productsDao = productsDao,
             variationsDao = variationsDao,
+            filterConfig = filterConfig,
             gson = gson,
             logger = logger
         )
@@ -79,7 +82,7 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     fun `given products with variations, when syncFtsForFullSync, then includes parent name and attributes`() =
         testBlocking {
             // GIVEN
-            val products = listOf(createProduct(1, "Gant T-Shirt", "SKU-001", ""))
+            val products = listOf(createProduct(1, "Gant T-Shirt", "SKU-001", "", type = "variable"))
             val variations = listOf(
                 createVariation(
                     variationId = 10,
@@ -368,13 +371,17 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         id: Long,
         name: String,
         sku: String,
-        barcode: String
+        barcode: String,
+        type: String = "simple",
+        status: String = "publish"
     ) = WooPosProductEntity(
         localSiteId = LocalId(1),
         remoteId = RemoteId(id),
         name = name,
         sku = sku,
-        globalUniqueId = barcode
+        globalUniqueId = barcode,
+        type = type,
+        status = status
     )
 
     private fun createVariation(
@@ -382,13 +389,15 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         productId: Long,
         sku: String,
         barcode: String,
-        attributesJson: String
+        attributesJson: String,
+        status: String = "publish"
     ) = WooPosVariationEntity(
         localSiteId = LocalId(1),
         remoteProductId = RemoteId(productId),
         remoteVariationId = RemoteId(variationId),
         sku = sku,
         globalUniqueId = barcode,
-        attributesJson = attributesJson
+        attributesJson = attributesJson,
+        status = status
     )
 }

@@ -6,6 +6,7 @@
 -----
 
 - [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
+- [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
 
 24.3
 -----

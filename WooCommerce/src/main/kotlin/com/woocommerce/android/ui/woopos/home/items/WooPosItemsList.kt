@@ -76,7 +76,7 @@ fun WooPosItemList(
     ) {
         items(
             state.items,
-            key = { product -> product.id }
+            key = { item -> item.id }
         ) { posItem ->
             val itemModifier = Modifier.then(if (animateItems) Modifier.animateItem() else Modifier)
 
