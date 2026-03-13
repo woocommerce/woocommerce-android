@@ -3,19 +3,22 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
@@ -178,6 +181,7 @@ class WooMediaNetworkTest {
 
             sut.uploadMedia(jetpackSite, media)
 
+            val dispatchCaptor = argumentCaptor<FluxAction<*>>()
             verify(jetpackApplicationPasswordsErrorHandler).handleError(
                 eq(jetpackSite),
                 argThat {
@@ -185,7 +189,39 @@ class WooMediaNetworkTest {
                         volleyError?.networkResponse?.statusCode == 403
                 }
             )
-            verify(dispatcher, atLeastOnce()).dispatch(any())
+            verify(dispatcher, times(1)).dispatch(dispatchCaptor.capture())
+            val dispatchedPayload = dispatchCaptor.firstValue.payload as ProgressPayload
+            assertThat(dispatchedPayload.progress).isEqualTo(1f)
+            assertThat(dispatchedPayload.completed).isTrue()
+        }
+
+    @Test
+    fun `given supported jetpack site, when app passwords upload succeeds, then dispatch buffered progress`() =
+        runTest {
+            val media: MediaModel = mock {
+                on { id } doReturn 8
+            }
+            whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+            whenever(applicationPasswordsMediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+                flowOf(
+                    ProgressPayload(media, 0.4f, false, null),
+                    ProgressPayload(media, 1f, true, false)
+                )
+            )
+
+            sut.uploadMedia(jetpackSite, media)
+
+            val dispatchCaptor = argumentCaptor<FluxAction<*>>()
+            verify(dispatcher, times(2)).dispatch(dispatchCaptor.capture())
+            verify(wpComV2MediaRestClient, never()).getUploadMediaFlow(any(), any())
+            verify(jetpackApplicationPasswordsErrorHandler, never()).handleError(any(), any())
+
+            val payloads = dispatchCaptor.allValues.map { it.payload as ProgressPayload }
+            assertThat(payloads).hasSize(2)
+            assertThat(payloads[0].progress).isEqualTo(0.4f)
+            assertThat(payloads[0].completed).isFalse()
+            assertThat(payloads[1].progress).isEqualTo(1f)
+            assertThat(payloads[1].completed).isTrue()
         }
 
     private fun createMediaError(statusCode: Int, apiErrorCode: String): MediaError {
