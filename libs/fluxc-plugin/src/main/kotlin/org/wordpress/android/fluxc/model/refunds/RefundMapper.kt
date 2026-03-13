@@ -6,14 +6,14 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
+import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeParseException
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
-
-const val DATE_FORMAT_DAY = "yyyy-MM-dd"
-private const val DATE_FORMAT_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss"
 
 class RefundMapper @Inject constructor(private val gson: Gson) {
 
@@ -66,15 +66,13 @@ class RefundMapper @Inject constructor(private val gson: Gson) {
     }
 
     private fun fromFormattedDate(date: String): Date? {
-        if (date.isEmpty()) {
-            return null
-        }
-        val dateTimeFormat = SimpleDateFormat(DATE_FORMAT_DATE_TIME, Locale.ROOT)
+        if (date.isEmpty()) return null
         return try {
-            dateTimeFormat.parse(date)
-        } catch (_: java.text.ParseException) {
-            val dateFormat = SimpleDateFormat(DATE_FORMAT_DAY, Locale.ROOT)
-            dateFormat.parse(date)
+            val localDateTime = LocalDateTime.parse(date, DateUtils.DATE_TIME_FORMATTER)
+            Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        } catch (_: DateTimeParseException) {
+            val localDate = LocalDate.parse(date, DateUtils.DATE_FORMATTER)
+            Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
         }
     }
 }
