@@ -206,7 +206,7 @@ class WooPosSearchByIdentifierTest {
         runTest {
             // GIVEN
             whenever(productDataSource.getCurrentSyncStrategy())
-                .thenReturn(SyncStrategy.LOCAL_CATALOG)
+                .thenReturn(SyncStrategy.LOCAL_CATALOG_FILE)
             val identifier = "123456"
             whenever(
                 localSearcher(

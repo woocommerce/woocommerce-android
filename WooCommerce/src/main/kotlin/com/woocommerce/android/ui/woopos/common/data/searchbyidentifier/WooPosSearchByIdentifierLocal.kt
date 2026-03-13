@@ -25,7 +25,6 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         val siteId = selectedSite.get().localId()
 
         return when (syncStrategy) {
-            SyncStrategy.LOCAL_CATALOG,
             SyncStrategy.LOCAL_CATALOG_FILE -> searchInLocalCatalog(identifier, siteId)
             SyncStrategy.REMOTE -> searchInMemoryCache(identifier)
         }
