@@ -11,7 +11,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +54,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -505,7 +503,7 @@ private fun SelectItemsContent(
             ) {
                 repeat(2) { index ->
                     ShimmerItemRow()
-                    if (index < 2) {
+                    if (index < ) {
                         Divider()
                     }
                 }
@@ -922,29 +920,18 @@ private fun ConfirmRefundButtons(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
-        if (isProcessing) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = WooPosSpacing.Medium.value),
-                contentAlignment = Alignment.Center
-            ) {
-                WooPosCircularLoadingIndicator(
-                    modifier = Modifier.size(48.dp)
-                )
-            }
-        } else {
-            WooPosButton(
-                text = stringResource(R.string.woopos_orders_yes_proceed),
-                onClick = onConfirm,
-                modifier = Modifier.fillMaxWidth()
-            )
-            WooPosOutlinedButton(
-                text = stringResource(R.string.back),
-                onClick = onBack,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        WooPosButton(
+            text = stringResource(R.string.woopos_orders_yes_proceed),
+            onClick = onConfirm,
+            state = if (isProcessing) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
+            modifier = Modifier.fillMaxWidth()
+        )
+        WooPosOutlinedButton(
+            text = stringResource(R.string.back),
+            onClick = onBack,
+            state = if (isProcessing) WooPosButtonState.DISABLED else WooPosButtonState.ENABLED,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
