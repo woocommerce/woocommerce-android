@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -15,9 +13,6 @@ import javax.inject.Inject
 
 class WooPosIsLocalCatalogSupported @Inject constructor(
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
-    private val prefsRepo: WooPosPreferencesRepository,
-    private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val fetchWooVersion: FetchActiveWCPluginVersion,
     private val posTabShouldBeVisible: WooPosTabShouldBeVisible,
@@ -32,7 +27,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
-        if (!isSyncApproachSupported(localSiteId)) {
+        if (!isSyncApproachSupported()) {
             return false
         }
 
@@ -53,27 +48,13 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
         return true
     }
 
-    private suspend fun isSyncApproachSupported(
-        localSiteId: LocalOrRemoteId.LocalId
-    ): Boolean {
-        if (fileApproachEnabled()) {
-            if (!isFileBasedSyncSupported()) {
-                wooPosLogWrapper.d(
-                    "Local Catalog not supported: WooCommerce version does not support" +
-                        " file-based sync (requires $WC_FILE_BASED_SYNC_MIN_VERSION)."
-                )
-                return false
-            }
-        } else {
-            if (!isVariationsEndpointAvailable()) {
-                wooPosLogWrapper.d("Local Catalog not supported: Variations endpoint not available.")
-                return false
-            }
-
-            if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
-                wooPosLogWrapper.d("Local Catalog not supported: Periodic sync disabled.")
-                return false
-            }
+    private suspend fun isSyncApproachSupported(): Boolean {
+        if (!isFileBasedSyncSupported()) {
+            wooPosLogWrapper.d(
+                "Local Catalog not supported: WooCommerce version does not support" +
+                    " file-based sync (requires $WC_FILE_BASED_SYNC_MIN_VERSION)."
+            )
+            return false
         }
         return true
     }
