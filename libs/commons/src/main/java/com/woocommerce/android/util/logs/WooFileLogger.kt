@@ -126,7 +126,10 @@ class WooFileLogger(
             )
         }.onFailure {
             it.printStackTrace()
-            crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            if (it.message?.contains("ENOSPC") != true) {
+                // Report any error that is not due to disk space issues
+                crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            }
         }
     }
 
