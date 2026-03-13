@@ -16,9 +16,7 @@ import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration;
-import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
-import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
+import org.wordpress.android.fluxc.network.rest.wpapi.media.WooMediaNetwork;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType.Type;
@@ -405,29 +403,22 @@ public class MediaStore extends Store {
         }
     }
 
-    private final WPComV2MediaRestClient mWPComV2MediaRestClient;
-    private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
+    private final WooMediaNetwork mWooMediaNetwork;
     @NonNull private final RemoteMediaCache mRemoteMediaCache;
     @NonNull private final MediaCacheOperations mMediaCacheOperations;
     @NonNull private final MediaIdGenerator mMediaIdGenerator;
-
-    private final ApplicationPasswordsConfiguration mApplicationPasswordsConfiguration;
 
     @NonNull private final FluxCCrashLogger mCrashLogger;
 
     @Inject public MediaStore(
             Dispatcher dispatcher,
-            WPComV2MediaRestClient wpv2MediaRestClient,
-            ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
-            ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
+            WooMediaNetwork wooMediaNetwork,
             @NonNull FluxCCrashLogger crashLogger,
             @NonNull RemoteMediaCache remoteMediaCache,
             @NonNull MediaCacheOperations mediaCacheOperations,
             @NonNull MediaIdGenerator mediaIdGenerator) {
         super(dispatcher);
-        mWPComV2MediaRestClient = wpv2MediaRestClient;
-        mApplicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient;
-        mApplicationPasswordsConfiguration = applicationPasswordsConfiguration;
+        mWooMediaNetwork = wooMediaNetwork;
         mCrashLogger = crashLogger;
         mRemoteMediaCache = remoteMediaCache;
         mMediaCacheOperations = mediaCacheOperations;
@@ -598,12 +589,7 @@ public class MediaStore extends Store {
             MediaUtils.stripLocation(payload.media.getFilePath());
         }
 
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.uploadMedia(payload.site, payload.media);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, payload.media);
-        } else {
+        if (!mWooMediaNetwork.uploadMedia(payload.site, payload.media)) {
             reportXmlrpcTry();
         }
     }
@@ -614,12 +600,7 @@ public class MediaStore extends Store {
             String mimeTypeValue = payload.mimeType != null ? payload.mimeType.getValue() : null;
             offset = mMediaCacheOperations.getUploadedMediaCount(payload.site.getId(), mimeTypeValue);
         }
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
-        } else {
+        if (!mWooMediaNetwork.fetchMediaList(payload.site, payload.number, offset, payload.mimeType)) {
             reportXmlrpcTry();
         }
     }
@@ -630,12 +611,7 @@ public class MediaStore extends Store {
             mRemoteMediaCache.remove(payload.site.getId(), media.getMediaId());
         }
 
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.cancelUpload(media);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.cancelUpload(media);
-        } else {
+        if (!mWooMediaNetwork.cancelUpload(payload.site, media)) {
             reportXmlrpcTry();
         }
     }
