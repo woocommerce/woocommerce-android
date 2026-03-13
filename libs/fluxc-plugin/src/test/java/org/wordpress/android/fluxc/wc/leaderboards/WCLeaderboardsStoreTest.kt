@@ -2,9 +2,7 @@ package org.wordpress.android.fluxc.wc.leaderboards
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,9 +16,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -43,9 +38,7 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleLeaderboardsApiResponse
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleTopPerformerApiResponse
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.stubSite
-import java.io.IOException
 
-@Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCLeaderboardsStoreTest {
     private val leaderboardsRestClient: LeaderboardsRestClient = mock()
@@ -80,13 +73,6 @@ class WCLeaderboardsStoreTest {
         )
         prepareMocks()
         createStoreUnderTest()
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            SiteModel::class.java
-        )
-        WellSql.init(config)
-        config.reset()
     }
 
     @Test
@@ -246,12 +232,6 @@ class WCLeaderboardsStoreTest {
                     INVALIDATED_TOP_PERFORMER_ENTITY_LIST
                 )
         }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        WellSql.closeDb()
-    }
 
     private suspend fun givenCachedTopPerformers() {
         whenever(
