@@ -55,12 +55,10 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                 mode = BookingDetailsFragment.Mode.Empty
             ).toBundle()
         )
+
     override val activityAppBarStatus: AppBarStatus
-        get() = if (navArgs.showBottomNavigation) {
-            AppBarStatus.Hidden
-        } else {
-            AppBarStatus.Visible(hasShadow = false, hasDivider = true)
-        }
+        get() = AppBarStatus.Hidden
+
     override val shouldShowBottomNavigation: Boolean
         get() = navArgs.showBottomNavigation
 
