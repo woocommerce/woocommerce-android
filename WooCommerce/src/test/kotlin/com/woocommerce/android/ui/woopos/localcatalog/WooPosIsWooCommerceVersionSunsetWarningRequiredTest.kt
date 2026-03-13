@@ -138,5 +138,4 @@ class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
         // THEN
         assertThat(result).isTrue()
     }
-
 }

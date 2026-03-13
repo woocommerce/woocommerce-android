@@ -211,7 +211,7 @@ class WooPosSearchByIdentifierTest {
             whenever(
                 localSearcher(
                     identifier,
-                    syncStrategy = SyncStrategy.LOCAL_CATALOG
+                    syncStrategy = SyncStrategy.LOCAL_CATALOG_FILE
                 )
             ).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)

@@ -106,7 +106,7 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-suspend fun getWooVersionSunsetBannerDismissalTimestamp(): Long? {
+    suspend fun getWooVersionSunsetBannerDismissalTimestamp(): Long? {
         return dataStore.data.map { preferences ->
             preferences[wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey]
         }.first()
