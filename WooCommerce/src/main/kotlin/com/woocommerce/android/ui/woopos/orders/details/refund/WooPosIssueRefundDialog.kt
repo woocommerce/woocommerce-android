@@ -108,7 +108,8 @@ fun WooPosIssueRefundDialog(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val showCloseButton = (state as? WooPosRefundState.Content)?.showCloseButton ?: false
+    val showCloseButton = state is WooPosRefundState.Loading ||
+        (state as? WooPosRefundState.Content)?.showCloseButton ?: false
     WooPosDialogWrapper(
         isVisible = true,
         dialogBackgroundContentDescription = stringResource(
@@ -249,33 +250,6 @@ private fun ContentStateHandler(
 }
 
 @Composable
-private fun ShimmerHeaderRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = WooPosSpacing.Medium.value),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        WooPosShimmerBox(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        WooPosShimmerText(
-            text = "Select all items",
-            style = WooPosTypography.Caption.style,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-        WooPosShimmerText(
-            text = "0 selected",
-            style = WooPosTypography.Caption.style,
-        )
-    }
-}
-
-@Composable
 private fun ShimmerItemRow() {
     Row(
         modifier = Modifier
@@ -297,6 +271,7 @@ private fun ShimmerItemRow() {
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
         Column(
             modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
         ) {
             WooPosShimmerText(
                 text = "Product item name",
@@ -510,9 +485,7 @@ private fun SelectItemsContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         RefundDialogHeader()
 
-        if (isLoading) {
-            ShimmerHeaderRow()
-        } else {
+        if (!isLoading) {
             ItemsHeaderRow(
                 allItemsSelected = contentState?.allItemsSelected ?: false,
                 selectedCount = contentState?.selectedItemIds?.size ?: 0,
@@ -528,9 +501,9 @@ private fun SelectItemsContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = WooPosSpacing.Medium.value),
-                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
             ) {
-                repeat(3) { index ->
+                repeat(2) { index ->
                     ShimmerItemRow()
                     if (index < 2) {
                         Divider()
