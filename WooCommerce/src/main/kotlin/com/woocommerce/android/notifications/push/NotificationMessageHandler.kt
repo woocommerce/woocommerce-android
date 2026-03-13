@@ -96,7 +96,8 @@ class NotificationMessageHandler @Inject constructor(
         if (!isWooSiteVisible(notification.remoteSiteId)) {
             wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
             return
-        } else if (isRegisteredForWooPush) {
+        }
+        if (isRegisteredForWooPush) {
             if (notification.remoteNoteId > 0L) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
