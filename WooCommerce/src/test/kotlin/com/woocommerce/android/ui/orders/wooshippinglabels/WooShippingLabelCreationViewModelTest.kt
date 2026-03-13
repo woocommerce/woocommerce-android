@@ -1446,6 +1446,26 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when fedex pickup is requested, then OpenUrl event is triggered`() = testBlocking {
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(carrierId = "fedex")
+            )
+        )
+
+        createViewModel()
+
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onSchedulePickUpClicked()
+
+        assertThat(event).isEqualTo(OpenUrl("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"))
+    }
+
+    @Test
     fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
         val expectedPaperSize = WooShippingLabelPaperSize.A4
         given(observeAccountSettings()).willReturn(
