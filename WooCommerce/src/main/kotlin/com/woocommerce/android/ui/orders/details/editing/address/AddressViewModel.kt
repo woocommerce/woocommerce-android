@@ -305,7 +305,7 @@ class AddressViewModel @Inject constructor(
         val email: String? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
-        val isBetterCustomerSearchEnabled: Boolean = FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.default,
+        val isBetterCustomerSearchEnabled: Boolean = FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.localValue,
     ) : Parcelable
 
     enum class AddressType {

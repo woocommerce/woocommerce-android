@@ -4,24 +4,25 @@ package com.woocommerce.android.util
  * Feature flags control feature availability.
  *
  * - If overridden (debug builds) → use override value
- * - If remote has value for [remoteFlagKey] → use remote value
- * - Otherwise → use [default] value
+ * - If [localValue] is false → the feature stays disabled
+ * - If [localValue] is true and remote has a value for [remoteFlagKey] → use remote value
+ * - Otherwise → use [localValue]
  *
  * Access via [FeatureFlagRepository.isEnabled].
  */
 enum class FeatureFlag(
     val remoteFlagKey: String,
-    val default: Boolean = PackageUtils.isDebugBuild()
+    val localValue: Boolean = PackageUtils.isDebugBuild()
 ) {
     WC_SHIPPING_BANNER("wc_shipping_banner"),
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2"),
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate"),
-    BOOKINGS_MVP("bookings_mvp", default = true),
+    BOOKINGS_MVP("bookings_mvp", localValue = true),
     POS_REFUNDS("pos_refunds"),
     POS_BOOKINGS("pos_bookings"),
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH("woo_pos_local_catalog_file_approach"),
-    WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", default = false),
-    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", default = false),
+    WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", localValue = false),
+    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", localValue = false),
     WOO_POS_CLIENT_SIDE_BANNER("woo_pos_client_side_banner"),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks"),
     LOCAL_NOTIFICATION_STORE_CREATION_READY("woo_notification_store_creation_ready"),

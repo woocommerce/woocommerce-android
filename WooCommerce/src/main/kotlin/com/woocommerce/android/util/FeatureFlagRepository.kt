@@ -55,18 +55,18 @@ class FeatureFlagRepository @Inject constructor(
 
     fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
         flag = flag,
-        defaultValue = flag.default,
+        localValue = flag.localValue,
         remoteValue = remoteFlagValues.value?.get(flag.remoteFlagKey),
         overrideValue = getOverrideValue(flag)
     )
 
     data class FeatureFlagState(
         val flag: FeatureFlag,
-        val defaultValue: Boolean,
+        val localValue: Boolean,
         val remoteValue: Boolean?,
         val overrideValue: Boolean?
     ) {
         val effectiveValue: Boolean
-            get() = overrideValue ?: remoteValue ?: defaultValue
+            get() = overrideValue ?: (localValue && (remoteValue ?: true))
     }
 }

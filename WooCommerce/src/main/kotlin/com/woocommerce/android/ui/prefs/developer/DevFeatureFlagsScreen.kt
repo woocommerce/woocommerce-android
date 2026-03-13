@@ -188,7 +188,7 @@ private fun FeatureFlagItem(
                     colors = segmentedButtonColors,
                     modifier = Modifier.weight(1.5f)
                 ) {
-                    Text(getDefaultButtonText(state))
+                    Text(getSourceStateText(state))
                 }
 
                 // Disabled button
@@ -219,13 +219,15 @@ private fun FeatureFlagItem(
     }
 }
 
-private fun getDefaultButtonText(state: FeatureFlagState): String {
+private fun getSourceStateText(state: FeatureFlagState): String {
     fun getStateText(enabled: Boolean) = if (enabled) "Enabled" else "Disabled"
 
     val remoteValue = state.remoteValue
-    return if (remoteValue != null) {
+    return if (!state.localValue) {
+        "Local: ${getStateText(state.localValue)}"
+    } else if (remoteValue != null) {
         "Remote: ${getStateText(remoteValue)}"
     } else {
-        "Default: ${getStateText(state.defaultValue)}"
+        "Local: ${getStateText(state.localValue)}"
     }
 }

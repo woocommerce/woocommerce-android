@@ -67,7 +67,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given flag with default false, when getFlagState called, then defaultValue is false`() = testBlocking {
+    fun `given flag with local false, when getFlagState called, then localValue is false`() = testBlocking {
         // GIVEN
         val flag = FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM
 
@@ -75,37 +75,92 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
         val state = sut.getFlagState(flag)
 
         // THEN
-        assertThat(state.defaultValue).isFalse()
+        assertThat(state.localValue).isFalse()
     }
 
     @Test
-    fun `given various states, when effectiveValue accessed, then prioritizes override over remote over default`() {
-        // Override wins over everything
+    fun `given override is set, when effectiveValue accessed, then override wins over local and remote`() {
+        // GIVEN
         val stateWithOverride = FeatureFlagRepository.FeatureFlagState(
             flag = FeatureFlag.POS_REFUNDS,
-            defaultValue = false,
+            localValue = false,
             remoteValue = false,
             overrideValue = true
         )
-        assertThat(stateWithOverride.effectiveValue).isTrue()
 
-        // Remote wins over default when no override
-        val stateWithRemote = FeatureFlagRepository.FeatureFlagState(
+        // WHEN
+        val effectiveValue = stateWithOverride.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isTrue()
+    }
+
+    @Test
+    fun `given local is false and remote is true, when effectiveValue accessed, then local keeps feature disabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
             flag = FeatureFlag.POS_REFUNDS,
-            defaultValue = false,
+            localValue = false,
             remoteValue = true,
             overrideValue = null
         )
-        assertThat(stateWithRemote.effectiveValue).isTrue()
 
-        // Default used when no override and no remote
-        val stateWithDefault = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM,
-            defaultValue = false,
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isFalse()
+    }
+
+    @Test
+    fun `given local is true and remote is false, when effectiveValue accessed, then remote disables feature`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.POS_REFUNDS,
+            localValue = true,
+            remoteValue = false,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isFalse()
+    }
+
+    @Test
+    fun `given local is true and remote is true, when effectiveValue accessed, then feature stays enabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.POS_REFUNDS,
+            localValue = true,
+            remoteValue = true,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isTrue()
+    }
+
+    @Test
+    fun `given local is true and remote is null, when effectiveValue accessed, then local value is used`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.POS_REFUNDS,
+            localValue = true,
             remoteValue = null,
             overrideValue = null
         )
-        assertThat(stateWithDefault.effectiveValue).isFalse()
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isTrue()
     }
 
     private fun createRemoteFlag(key: String, value: Boolean) = FeatureFlagConfigDao.FeatureFlag(
