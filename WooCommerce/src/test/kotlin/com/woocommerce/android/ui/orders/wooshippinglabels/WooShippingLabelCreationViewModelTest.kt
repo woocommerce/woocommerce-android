@@ -71,6 +71,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -425,6 +426,27 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
         val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
+    }
+
+    @Test
+    fun `when selected origin address is refreshed, then update selected shipFrom`() = testBlocking {
+        val updatedOriginAddress = defaultOriginAddresses.first().copy(email = "updated@example.com")
+        val originAddressesFlow = MutableStateFlow(defaultOriginAddresses)
+        whenever(observeOriginAddresses.invoke()) doReturn originAddressesFlow
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        originAddressesFlow.value = listOf(updatedOriginAddress)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.shippingAddresses.first().shipFrom.email).isEqualTo(updatedOriginAddress.email)
     }
 
     @Test

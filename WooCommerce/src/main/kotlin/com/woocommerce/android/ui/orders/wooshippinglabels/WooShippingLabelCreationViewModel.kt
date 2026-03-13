@@ -877,9 +877,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun getSelectedOriginAddress(
         originAddresses: List<OriginShippingAddress>,
         selectedIndex: Int
-    ): OriginShippingAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom?.takeIf {
-        it != OriginShippingAddress.EMPTY
-    } ?: originAddresses.first()
+    ): OriginShippingAddress {
+        val selectedAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom
+            ?.takeIf { it != OriginShippingAddress.EMPTY }
+
+        return selectedAddress?.let { currentAddress ->
+            originAddresses.firstOrNull { it.id == currentAddress.id } ?: currentAddress
+        } ?: originAddresses.first()
+    }
 
     fun onSelectedShipmentChanged(index: Int) {
         if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
