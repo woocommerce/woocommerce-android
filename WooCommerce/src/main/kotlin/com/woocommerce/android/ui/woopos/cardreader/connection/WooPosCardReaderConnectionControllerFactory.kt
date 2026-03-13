@@ -28,6 +28,7 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     @PointOfSaleMode private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
 ) {
     fun create(scope: CoroutineScope): WooPosCardReaderConnectionController {
         return WooPosCardReaderConnectionController(
@@ -43,6 +44,7 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
             appPrefsWrapper = appPrefsWrapper,
             tracker = tracker,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            onboardingErrorMapper = onboardingErrorMapper,
         )
     }
 }

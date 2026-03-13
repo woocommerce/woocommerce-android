@@ -84,6 +84,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
                     currentState.onBackClicked()
                 }
             }
+            is WooPosCardReaderConnectionState.OnboardingError,
             is WooPosCardReaderConnectionState.BluetoothDisabled,
             is WooPosCardReaderConnectionState.Connected,
             WooPosCardReaderConnectionState.Connecting,

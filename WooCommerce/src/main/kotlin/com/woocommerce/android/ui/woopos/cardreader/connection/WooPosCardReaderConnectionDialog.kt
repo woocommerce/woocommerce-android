@@ -384,6 +384,15 @@ fun WooPosCardReaderConnectionDialogContent(
                         onCancelClicked = currentState.onCancelClicked,
                     )
                 }
+                is WooPosCardReaderConnectionState.OnboardingError -> {
+                    ErrorContent(
+                        title = currentState.title,
+                        message = currentState.message,
+                        onRetryClicked = currentState.primaryButton?.onClick,
+                        onCancelClicked = currentState.onDismissClicked,
+                        retryButtonLabel = currentState.primaryButton?.label,
+                    )
+                }
             }
         }
     }
@@ -566,6 +575,7 @@ private fun ErrorContent(
     message: String,
     onRetryClicked: (() -> Unit)?,
     onCancelClicked: () -> Unit,
+    retryButtonLabel: String? = null,
 ) {
     val context = LocalContext.current
     val linkColor = MaterialTheme.colorScheme.primary
@@ -594,7 +604,7 @@ private fun ErrorContent(
         if (onRetryClicked != null) {
             WooPosButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.woopos_card_reader_retry_button),
+                text = retryButtonLabel ?: stringResource(R.string.woopos_card_reader_retry_button),
                 onClick = onRetryClicked,
             )
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -1178,6 +1188,28 @@ fun WooPosCardReaderConnectionDialogInvalidPostalCodePreview() {
             isVisible = true,
             state = WooPosCardReaderConnectionState.InvalidPostalCode(
                 onCancelClicked = {},
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogOnboardingErrorPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.OnboardingError(
+                title = "Your account has pending requirements",
+                message = "There are pending requirements in your account." +
+                    " Please complete those requirements to keep accepting In-Person Payments.",
+                primaryButton = WooPosCardReaderConnectionState.OnboardingError.PrimaryButton(
+                    label = "Skip",
+                    onClick = {},
+                ),
+                onDismissClicked = {},
             ),
             onBackPressed = {},
             onDismiss = {},

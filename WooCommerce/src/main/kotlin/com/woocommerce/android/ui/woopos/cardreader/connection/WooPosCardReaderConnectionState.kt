@@ -132,4 +132,18 @@ sealed interface WooPosCardReaderConnectionState {
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = false
     }
+
+    data class OnboardingError(
+        val title: String,
+        val message: String,
+        val primaryButton: PrimaryButton?,
+        val onDismissClicked: () -> Unit,
+    ) : WooPosCardReaderConnectionState {
+        override val showCloseButton: Boolean = false
+
+        data class PrimaryButton(
+            val label: String,
+            val onClick: () -> Unit,
+        )
+    }
 }
