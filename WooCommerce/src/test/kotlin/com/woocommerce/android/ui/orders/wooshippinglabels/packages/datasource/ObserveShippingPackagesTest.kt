@@ -103,6 +103,55 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
         assertTrue(result.size == 1)
     }
 
+    @Test
+    fun `when invoke with fedex carrier packages, then return fedex carrier packages`() = testBlocking {
+        val shippingPackages = generatePackagesData().copy(
+            carrierPackageGroups = listOf(
+                WooShippingPackagesEntity.CarrierPackageGroups(
+                    carrierType = WooShippingPackagesEntity.CarrierType.FEDEX,
+                    packageGroups = listOf(
+                        WooShippingPackagesEntity.CarrierPackageGroup(
+                            description = "FedEx Express Packages",
+                            packages = listOf(
+                                WooShippingPackagesEntity.Package(
+                                    id = "FedExPak",
+                                    name = "Large Pak",
+                                    dimensions = "39.37 x 30.48 x 1.9",
+                                    weight = "0",
+                                    isLetter = true,
+                                    dimensionUnit = "cm",
+                                    weightUnit = "kg",
+                                    saved = false
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        val site = SiteModel().apply { id = 1 }
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(shippingPackages))
+
+        val result = observeShippingPackages().first() as PackagesState.Data
+
+        assertThat(result.carrierPackages[Carrier.FEDEX]).containsExactly(
+            CarrierPackageGroup(
+                groupName = "FedEx Express Packages",
+                packages = listOf(
+                    PackageData(
+                        id = "FedExPak",
+                        name = "Large Pak",
+                        dimensions = "39.37 x 30.48 x 1.9",
+                        weight = "0",
+                        isSelected = false,
+                        isLetter = true,
+                    )
+                )
+            )
+        )
+    }
+
     private fun generatePackagesData() = WooShippingPackagesEntity(
         localSiteId = LocalOrRemoteId.LocalId(1),
         storeOptions = WooShippingPackagesEntity.StoreOptions(
