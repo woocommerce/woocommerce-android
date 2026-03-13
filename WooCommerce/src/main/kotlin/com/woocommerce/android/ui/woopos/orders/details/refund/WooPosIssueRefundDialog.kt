@@ -52,11 +52,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -501,11 +501,8 @@ private fun SelectItemsContent(
                     .padding(vertical = WooPosSpacing.Medium.value),
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
             ) {
-                repeat(2) { index ->
+                repeat(2) {
                     ShimmerItemRow()
-                    if (index < ) {
-                        Divider()
-                    }
                 }
             }
         } else {
