@@ -126,7 +126,10 @@ class WooFileLogger(
             )
         }.onFailure {
             it.printStackTrace()
-            if (it.message?.contains("ENOSPC") != true) {
+            val isDiskSpaceError = it.message.orEmpty().let { msg ->
+                msg.contains("ENOSPC") || msg.contains("No space left on device", ignoreCase = true)
+            }
+            if (!isDiskSpaceError) {
                 // Report any error that is not due to disk space issues
                 crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
             }
