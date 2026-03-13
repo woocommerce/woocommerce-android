@@ -32,7 +32,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     companion object {
         const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = Int.MAX_VALUE
-        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = Int.MAX_VALUE
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
@@ -72,7 +71,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             modifiedAfterGmt = modifiedAfterGmt,
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
-            maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
         ).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
@@ -150,7 +148,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         site: SiteModel,
         pageSize: Int,
         maxPages: Int,
-        maxTotalItems: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
         val startTime = dateTimeProvider.now()
