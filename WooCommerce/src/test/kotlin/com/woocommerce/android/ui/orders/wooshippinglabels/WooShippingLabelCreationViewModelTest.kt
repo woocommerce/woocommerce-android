@@ -287,6 +287,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
         on { isPhoneValidForShippingLabel(any()) } doReturn true
+        on { isMissingOriginAddress(any()) } doReturn false
     }
 
     private val observeOriginAddresses: ObserveOriginAddresses = mock {
@@ -1023,6 +1024,33 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onPurchaseShippingLabel()
 
         assertThat(sut.snackbarData).matches { it?.message == R.string.woo_shipping_labels_purchase_error }
+    }
+
+    @Test
+    fun `when origin address is missing on purchase, then show edit origin snackbar`() = testBlocking {
+        whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(sut.snackbarData).matches {
+            it?.message == R.string.woo_shipping_labels_purchase_origin_address_error
+        }
+        verifyNoInteractions(purchaseShippingLabel)
     }
 
     @Test

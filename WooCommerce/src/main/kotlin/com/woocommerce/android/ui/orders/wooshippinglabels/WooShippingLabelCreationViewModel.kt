@@ -992,6 +992,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
+        if (addressValidationHelper.isMissingOriginAddress(selectedAddress.shipFrom)) {
+            snackbarData = ShippingLabelsSnackbarData(
+                message = R.string.woo_shipping_labels_purchase_origin_address_error,
+                actionLabel = R.string.edit,
+            ) { onEditOriginAddress(selectedAddress.shipFrom) }
+            return
+        }
+
         if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
             snackbarData = ShippingLabelsSnackbarData(
                 message = R.string.woo_shipping_labels_purchase_phone_error,
