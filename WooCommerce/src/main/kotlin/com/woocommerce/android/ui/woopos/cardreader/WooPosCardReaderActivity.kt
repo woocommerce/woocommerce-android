@@ -42,7 +42,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             R.id.woopos_card_reader_nav_host_fragment
         ) as NavHostFragment
 
-        val flowType = intent.parcelable<FlowType>(FLOW_TYPE_KEY)!!
+        val flowType = intent.parcelable<FlowType>(FLOW_TYPE_KEY)
+        if (flowType == null) {
+            finish()
+            return
+        }
         setupNavGraph(navHostFragment, flowType)
         observeResult(navHostFragment, flowType)
     }
