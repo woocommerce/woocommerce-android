@@ -8,11 +8,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
-import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
 import com.woocommerce.android.util.StringUtils
@@ -53,7 +53,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke() } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        onBlocking { invoke(forceRefresh = true) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
     private val stringUtils: StringUtils = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -205,7 +205,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     fun `given plugin check returns UpdateRequired, when CheckPluginCompatibility runs, then step is Error`() =
         testBlocking {
             setup {
-                whenever(checkWCPluginSupport())
+                whenever(checkWCPluginSupport(forceRefresh = true))
                     .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
             }
 
@@ -222,7 +222,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     fun `given plugin check returns Error, when CheckPluginCompatibility runs, then step is Error`() =
         testBlocking {
             setup {
-                whenever(checkWCPluginSupport())
+                whenever(checkWCPluginSupport(forceRefresh = true))
                     .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
             }
 
@@ -456,7 +456,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             isStoreAlreadyConnected = true,
             shouldAutoOpenUpdatePlugin = true
         ) {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
             whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
@@ -478,7 +478,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     fun `when onUpdatePluginClick, then NavigateToPluginUpdatePage is triggered`() = testBlocking {
         site.adminUrl = "https://coffeebeans.com/wp-admin/"
         setup {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
         }
 
