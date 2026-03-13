@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 
 import com.android.volley.NetworkResponse
 import com.android.volley.VolleyError
+import kotlinx.coroutines.Job
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
@@ -33,7 +34,7 @@ class WooMediaNetwork @Inject constructor(
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler
 ) {
-    private val currentUploads = ConcurrentHashMap<Int, kotlinx.coroutines.CoroutineScope>()
+    private val currentUploads = ConcurrentHashMap<Int, Job>()
 
     fun uploadMedia(site: SiteModel, media: MediaModel): Boolean {
         return when (site.origin) {
@@ -104,8 +105,7 @@ class WooMediaNetwork @Inject constructor(
     }
 
     private fun launchUpload(site: SiteModel, media: MediaModel) {
-        coroutineEngine.launch(AppLog.T.MEDIA, this, "Uploading media") {
-            currentUploads[media.id] = this
+        val uploadJob = coroutineEngine.launch(AppLog.T.MEDIA, this, "Uploading media") {
             try {
                 when (site.origin) {
                     SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
@@ -120,6 +120,7 @@ class WooMediaNetwork @Inject constructor(
                 currentUploads.remove(media.id)
             }
         }
+        currentUploads[media.id] = uploadJob
     }
 
     private suspend fun uploadForJetpackSite(site: SiteModel, media: MediaModel) {

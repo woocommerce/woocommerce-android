@@ -1,0 +1,204 @@
+package org.wordpress.android.fluxc.network.rest.wpapi.media
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
+import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient
+import org.wordpress.android.fluxc.store.MediaStore.FetchMediaListResponsePayload
+import org.wordpress.android.fluxc.store.MediaStore.MediaError
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
+import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
+import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.fluxc.utils.MimeType
+
+@RunWith(RobolectricTestRunner::class)
+class WooMediaNetworkTest {
+    private val dispatcher: Dispatcher = mock()
+    private val coroutineEngine = CoroutineEngine(Dispatchers.Unconfined, mock<AppLogWrapper>())
+    private val applicationPasswordsConfiguration = FakeApplicationPasswordsConfiguration()
+    private val applicationPasswordsMediaRestClient: ApplicationPasswordsMediaRestClient = mock()
+    private val wpComV2MediaRestClient: WPComV2MediaRestClient = mock()
+    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
+    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler = mock()
+
+    private val sut = WooMediaNetwork(
+        dispatcher = dispatcher,
+        coroutineEngine = coroutineEngine,
+        applicationPasswordsConfiguration = applicationPasswordsConfiguration,
+        applicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient,
+        wpComV2MediaRestClient = wpComV2MediaRestClient,
+        jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
+        jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler
+    )
+
+    private val jetpackSite = SiteModel().apply {
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        siteId = 123L
+        url = "https://example.com"
+    }
+
+    @Test
+    fun `given supported jetpack site, when fetching media list, then use app passwords first`() = runTest {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+        whenever(
+            applicationPasswordsMediaRestClient.executeFetchMediaList(
+                jetpackSite,
+                10,
+                0,
+                MimeType.Type.IMAGE
+            )
+        ).thenReturn(
+            FetchMediaListResponsePayload(
+                jetpackSite,
+                emptyList(),
+                false,
+                false,
+                MimeType.Type.IMAGE
+            )
+        )
+
+        sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+
+        verify(applicationPasswordsMediaRestClient).executeFetchMediaList(
+            jetpackSite,
+            10,
+            0,
+            MimeType.Type.IMAGE
+        )
+        verify(wpComV2MediaRestClient, never()).executeFetchMediaList(any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given supported jetpack site, when app passwords fetch fails and fallback succeeds, then flag site`() =
+        runTest {
+            whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+            whenever(
+                applicationPasswordsMediaRestClient.executeFetchMediaList(
+                    jetpackSite,
+                    20,
+                    5,
+                    MimeType.Type.IMAGE
+                )
+            ).thenReturn(
+                FetchMediaListResponsePayload(
+                    jetpackSite,
+                    createMediaError(statusCode = 500, apiErrorCode = "incorrect_password"),
+                    MimeType.Type.IMAGE
+                )
+            )
+            whenever(
+                wpComV2MediaRestClient.executeFetchMediaList(
+                    jetpackSite,
+                    20,
+                    5,
+                    MimeType.Type.IMAGE
+                )
+            ).thenReturn(
+                FetchMediaListResponsePayload(
+                    jetpackSite,
+                    emptyList(),
+                    false,
+                    true,
+                    MimeType.Type.IMAGE
+                )
+            )
+
+            sut.fetchMediaList(jetpackSite, 20, 5, MimeType.Type.IMAGE)
+
+            verify(jetpackApplicationPasswordsErrorHandler).handleError(
+                eq(jetpackSite),
+                argThat {
+                    errorCode == "incorrect_password" &&
+                        volleyError?.networkResponse?.statusCode == 500
+                }
+            )
+        }
+
+    @Test
+    fun `given unsupported jetpack site, when fetching media list, then skip app passwords`() = runTest {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(false)
+        whenever(
+            wpComV2MediaRestClient.executeFetchMediaList(
+                jetpackSite,
+                10,
+                0,
+                MimeType.Type.IMAGE
+            )
+        ).thenReturn(
+            FetchMediaListResponsePayload(
+                jetpackSite,
+                emptyList(),
+                false,
+                false,
+                MimeType.Type.IMAGE
+            )
+        )
+
+        sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+
+        verify(applicationPasswordsMediaRestClient, never()).executeFetchMediaList(any(), any(), any(), any())
+        verify(wpComV2MediaRestClient).executeFetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+    }
+
+    @Test
+    fun `given supported jetpack site, when app passwords upload fails and fallback succeeds, then flag site`() =
+        runTest {
+            val media: MediaModel = mock {
+                on { id } doReturn 7
+            }
+            whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+            whenever(applicationPasswordsMediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+                flowOf(
+                    ProgressPayload(media, 0.4f, false, null),
+                    ProgressPayload(media, 1f, false, createMediaError(statusCode = 403, apiErrorCode = "forbidden"))
+                )
+            )
+            whenever(wpComV2MediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+                flowOf(ProgressPayload(media, 1f, true, false))
+            )
+
+            sut.uploadMedia(jetpackSite, media)
+
+            verify(jetpackApplicationPasswordsErrorHandler).handleError(
+                eq(jetpackSite),
+                argThat {
+                    errorCode == "forbidden" &&
+                        volleyError?.networkResponse?.statusCode == 403
+                }
+            )
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+        }
+
+    private fun createMediaError(statusCode: Int, apiErrorCode: String): MediaError {
+        return MediaError(MediaErrorType.GENERIC_ERROR).apply {
+            this.statusCode = statusCode
+            this.apiErrorCode = apiErrorCode
+        }
+    }
+
+    private class FakeApplicationPasswordsConfiguration : ApplicationPasswordsConfiguration {
+        override val applicationName: String
+            get() = "WooCommerce"
+
+        override suspend fun isEnabledForJetpackAccess(): Boolean = true
+    }
+}
