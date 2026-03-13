@@ -10,3 +10,9 @@ steps:
     plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "WooCommerce/build/outputs/apk/**/*"
+
+notify:
+  - slack:
+      channels:
+        - "#android-core-notifs"
+      if: "build.state == 'failed'"
