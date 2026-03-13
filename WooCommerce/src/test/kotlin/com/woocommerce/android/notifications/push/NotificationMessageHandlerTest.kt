@@ -218,9 +218,9 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given woo push registered and site is hidden, when woo notification received, then skip it`() = runTest {
+    fun `given site is hidden, when notification received, then skip it`() = runTest {
         whenever(registrationStatus.invoke(any()))
-            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+            .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
         val mockNotificationsParser: NotificationsParser = mock {
             on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
                 remoteNoteId = 0L,
