@@ -28,8 +28,7 @@ class ClientSidePosBanner @Inject constructor(
     val bannerId: String = BANNER_ID
 
     @Suppress("ReturnCount")
-    suspend fun shouldShow(): Boolean {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CLIENT_SIDE_BANNER)) return false
+    fun shouldShow(): Boolean {
         if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)) return false
 
         val site = selectedSite.getIfExists() ?: return false

@@ -23,7 +23,6 @@ enum class FeatureFlag(
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH("woo_pos_local_catalog_file_approach"),
     WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", localValue = false),
     WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", localValue = false),
-    WOO_POS_CLIENT_SIDE_BANNER("woo_pos_client_side_banner"),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks"),
     LOCAL_NOTIFICATION_STORE_CREATION_READY("woo_notification_store_creation_ready"),
     LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES("woo_notification_1d_before_free_trial_expires"),
@@ -31,5 +30,5 @@ enum class FeatureFlag(
     WOO_POS("woo_pos"),
     APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites"),
     WOO_POS_LOCAL_CATALOG_M1("woo_pos_local_catalog_m1"),
-    WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
+    WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner", localValue = false),
 }
