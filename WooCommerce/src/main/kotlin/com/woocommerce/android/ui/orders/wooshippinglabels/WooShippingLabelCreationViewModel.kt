@@ -244,6 +244,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         noticeBannerUiState = noticeBanner?.copy(
                             onTapped = {
                                 when (noticeBanner.type) {
+                                    NoticeType.MISSING_ORIGIN_ADDRESS,
                                     NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
                                         shippingAddresses.value.getOrNull(selectedShipmentIndex)
                                             ?.shipFrom?.let { shipFrom ->

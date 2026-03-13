@@ -4255,6 +4255,7 @@
 
     <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
     <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Origin address missing or invalid</string>
     <string name="woo_shipping_address_notification_destination_missing_or_invalid">Destination address missing or invalid</string>
 
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
