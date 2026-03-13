@@ -277,6 +277,39 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         whenever(resourceProvider.getString(any(), any(), any())).thenReturn("AnyString")
     }
 
+    @Test
+    fun `given filters selected, when clear filters and recreate viewmodel, then filters remain cleared`() =
+        testBlocking {
+            // GIVEN
+            givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
+
+            // WHEN
+            viewModel.onClearFilters()
+            initViewModel() // simulate rotation by recreating with same SavedStateHandle
+
+            // THEN
+            val orderStatusFilter = currentCategoryList.find {
+                it.categoryKey == OrderListFilterCategory.ORDER_STATUS
+            }
+            assertThat(orderStatusFilter!!.orderFilterOptions)
+                .noneMatch { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }
+        }
+
+    @Test
+    fun `given filters cleared, when back pressed after rotation, then returns true`() =
+        testBlocking {
+            // GIVEN
+            givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
+            viewModel.onClearFilters()
+            initViewModel() // simulate rotation
+
+            // WHEN
+            val result = viewModel.onBackPressed()
+
+            // THEN
+            assertTrue(result)
+        }
+
     private companion object {
         const val DEFAULT_FILTER_TITLE = "Title"
         const val ANY_ORDER_STATUS_KEY = "OrderStatusOptionKey"

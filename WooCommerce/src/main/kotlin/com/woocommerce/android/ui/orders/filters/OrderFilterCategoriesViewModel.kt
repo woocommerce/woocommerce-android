@@ -99,6 +99,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
     fun onShowOrdersClicked() {
         saveFiltersSelection(_categories.list)
+        oldFilterSelection = _categories.list
+        savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
         trackFilterSelection()
         triggerEvent(OnShowOrders)
     }
@@ -116,6 +118,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             }
         )
         saveFiltersSelection(_categories.list)
+        oldFilterSelection = _categories.list
+        savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
     }
 
     fun onClearProductFilter() {
