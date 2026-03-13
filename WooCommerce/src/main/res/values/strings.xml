@@ -4508,4 +4508,13 @@
     <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
     <string name="woo_pos_promo_next_button">Next</string>
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
+
+    <!-- Translation Context Plugin Test Strings -->
+    <string name="test_order_action_save">Save</string>
+    <string name="test_order_status_processing">Processing</string>
+    <!-- Screen title -->
+    <string name="test_store_settings_title">Settings</string>
+    <string name="test_product_note_placeholder">Add a note</string>
+    <string name="test_shipping_label_close">Close</string>
+    <string name="test_order_draft_status">Draft</string>
 </resources>
