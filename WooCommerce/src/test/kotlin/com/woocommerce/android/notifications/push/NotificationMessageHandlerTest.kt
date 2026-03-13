@@ -82,6 +82,12 @@ class NotificationMessageHandlerTest {
     )
     private val orderNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(orderNotificationPayload)!!.toAppModel(resourceProvider)
+    private val orderNotificationSite2Payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
+        userId = accountModel.userId,
+        noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
+    )
+    private val orderNotificationSite2 = notificationsParser
+        .buildNotificationModelFromPayloadMap(orderNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val reviewNotificationPayload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
         userId = accountModel.userId
@@ -89,6 +95,12 @@ class NotificationMessageHandlerTest {
 
     private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
+    private val reviewNotificationSite2Payload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
+        userId = accountModel.userId,
+        noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
+    )
+    private val reviewNotificationSite2 = notificationsParser
+        .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
 
@@ -112,14 +124,18 @@ class NotificationMessageHandlerTest {
 
     @Before
     fun setUp() {
-        val visibleSite = mock<SiteModel> {
-            on { siteId } doReturn orderNotification.remoteSiteId
-        }
-        val visibleSite2 = mock<SiteModel> {
-            on { siteId } doReturn reviewNotification.remoteSiteId
+        val visibleSites = listOf(
+            orderNotification.remoteSiteId,
+            reviewNotification.remoteSiteId,
+            orderNotificationSite2.remoteSiteId,
+            reviewNotificationSite2.remoteSiteId
+        ).distinct().map { visibleSiteId ->
+            mock<SiteModel> {
+                on { siteId } doReturn visibleSiteId
+            }
         }
         getWooVisibleSites = mock {
-            onBlocking { invoke() } doReturn listOf(visibleSite, visibleSite2)
+            onBlocking { invoke() } doReturn visibleSites
         }
         createNotificationMessageHandler()
 
