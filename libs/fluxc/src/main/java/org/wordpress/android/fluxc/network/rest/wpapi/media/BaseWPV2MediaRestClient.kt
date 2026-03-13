@@ -60,7 +60,7 @@ abstract class BaseWPV2MediaRestClient(
 
     fun uploadMedia(site: SiteModel, media: MediaModel) {
         coroutineEngine.launch(MEDIA, this, "Upload Media using WPCom's v2 API") {
-            syncUploadMedia(site, media)
+            getUploadMediaFlow(site, media)
                 .onStart {
                     currentUploads[media.id] = this@launch
                 }
@@ -83,7 +83,7 @@ abstract class BaseWPV2MediaRestClient(
 
     fun fetchMediaList(site: SiteModel, number: Int, offset: Int, mimeType: MimeType.Type?) {
         coroutineEngine.launch(MEDIA, this, "Fetching Media using WPCom's v2 API") {
-            val payload = syncFetchMediaList(site, number, offset, mimeType)
+            val payload = executeFetchMediaList(site, number, offset, mimeType)
             dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
         }
     }
@@ -93,9 +93,26 @@ abstract class BaseWPV2MediaRestClient(
         media: MediaModel
     ) {
         coroutineEngine.launch(MEDIA, this, "Fetching Media using WPCom's v2 API") {
-            val payload = syncFetchMedia(site, media.mediaId)
+            val payload = executeFetchMedia(site, media.mediaId)
             dispatcher.dispatch(MediaActionBuilder.newFetchedMediaAction(payload))
         }
+    }
+
+    internal fun getUploadMediaFlow(site: SiteModel, media: MediaModel): Flow<ProgressPayload> {
+        return syncUploadMedia(site, media)
+    }
+
+    internal suspend fun executeFetchMedia(site: SiteModel, mediaId: Long): MediaPayload {
+        return syncFetchMedia(site, mediaId)
+    }
+
+    internal suspend fun executeFetchMediaList(
+        site: SiteModel,
+        perPage: Int,
+        offset: Int,
+        mimeType: MimeType.Type?
+    ): FetchMediaListResponsePayload {
+        return syncFetchMediaList(site, perPage, offset, mimeType)
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -175,6 +192,8 @@ abstract class BaseWPV2MediaRestClient(
                 val errorMessage = "Fail to fetch media. Response: $response"
                 AppLog.w(MEDIA, errorMessage)
                 val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
+                error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
+                error.apiErrorCode = response.error.errorCode
                 error.logMessage = errorMessage
                 MediaPayload(site, null, error)
             }
@@ -225,7 +244,9 @@ abstract class BaseWPV2MediaRestClient(
             is WPAPIResponse.Error -> {
                 val errorMessage = "could not parse Fetch all media response: $response"
                 AppLog.w(MEDIA, errorMessage)
-                val error = MediaError(MediaErrorType.PARSE_ERROR)
+                val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
+                error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
+                error.apiErrorCode = response.error.errorCode
                 error.logMessage = errorMessage
                 FetchMediaListResponsePayload(site, error, mimeType)
             }
@@ -260,6 +281,7 @@ abstract class BaseWPV2MediaRestClient(
                 mediaError.message = it
             }
             jsonBody.optString("code").takeIf { it.isNotEmpty() }?.let {
+                mediaError.apiErrorCode = it
                 mediaError.logMessage = it
             }
         } catch (e: JSONException) {
