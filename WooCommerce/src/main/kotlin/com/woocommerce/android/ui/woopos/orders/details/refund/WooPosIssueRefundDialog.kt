@@ -1,7 +1,13 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +53,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
@@ -109,23 +117,48 @@ fun WooPosIssueRefundDialog(
         onCloseClick = if (showCloseButton) handleDismiss else null,
         onDismissRequest = handleDismiss
     ) {
-        when (val currentState = state) {
-            is WooPosRefundState.Loading -> LoadingContent()
-            is WooPosRefundState.Content -> ContentStateHandler(
-                state = currentState,
-                orderId = orderId,
-                viewModel = viewModel,
-                onNavigationEvent = onNavigationEvent,
-                onEvent = handleEvent,
-                disablePartialRefund = disablePartialRefund
-            )
-            is WooPosRefundState.Error -> ErrorContent(currentState, handleEvent, handleDismiss)
-            is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
-            is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
-                state = currentState,
-                onDismissRequest = handleDismiss,
-                onNavigationEvent = onNavigationEvent
-            )
+        AnimatedContent(
+            targetState = state,
+            contentKey = { it::class },
+            transitionSpec = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 250,
+                        delayMillis = 200,
+                        easing = FastOutSlowInEasing
+                    )
+                ) togetherWith
+                    fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 200,
+                            easing = FastOutSlowInEasing
+                        )
+                    )
+            },
+            label = "refund_state_transition",
+        ) { animatedState ->
+            when (animatedState) {
+                is WooPosRefundState.Loading -> SelectItemsContent(
+                    state = animatedState,
+                    onEvent = {},
+                    onContinue = {},
+                )
+                is WooPosRefundState.Content -> ContentStateHandler(
+                    state = animatedState,
+                    orderId = orderId,
+                    viewModel = viewModel,
+                    onNavigationEvent = onNavigationEvent,
+                    onEvent = handleEvent,
+                    disablePartialRefund = disablePartialRefund
+                )
+                is WooPosRefundState.Error -> ErrorContent(animatedState, handleEvent, handleDismiss)
+                is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
+                is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
+                    state = animatedState,
+                    onDismissRequest = handleDismiss,
+                    onNavigationEvent = onNavigationEvent
+                )
+            }
         }
     }
 }
@@ -139,76 +172,142 @@ private fun ContentStateHandler(
     onEvent: (WooPosRefundUIEvent) -> Unit,
     disablePartialRefund: Boolean = false
 ) {
-    when (state.step) {
-        WooPosRefundState.Content.RefundStep.SelectItems -> {
-            SelectItemsContent(
-                state = state,
-                onEvent = onEvent,
-                onContinue = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-                },
-                disableItemSelection = disablePartialRefund
-            )
-        }
-
-        WooPosRefundState.Content.RefundStep.ReviewRefund -> {
-            ReviewRefundContent(
-                state = state,
-                onContinue = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
-                },
-                onEditRefund = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
-                },
-                onEditReason = {
-                    onNavigationEvent(
-                        WooPosNavigationEvent.OpenRefundReason(
-                            orderId = orderId,
-                            initialReason = state.refundReason
-                        )
+    AnimatedContent(
+        targetState = state.step,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(
+                    durationMillis = 250,
+                    delayMillis = 200,
+                    easing = FastOutSlowInEasing
+                )
+            ) togetherWith
+                fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 200,
+                        easing = FastOutSlowInEasing
                     )
-                },
-                showEditRefundButton = !disablePartialRefund
-            )
-        }
+                )
+        },
+        label = "refund_step_transition",
+    ) { step ->
+        when (step) {
+            WooPosRefundState.Content.RefundStep.SelectItems -> {
+                SelectItemsContent(
+                    state = state,
+                    onEvent = onEvent,
+                    onContinue = {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+                    },
+                    disableItemSelection = disablePartialRefund
+                )
+            }
 
-        WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
-            ConfirmRefundContent(
-                state = state,
-                isProcessing = false,
-                onConfirm = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
-                },
-                onBack = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
-                }
-            )
-        }
-        WooPosRefundState.Content.RefundStep.Processing -> {
-            ConfirmRefundContent(
-                state = state,
-                isProcessing = true,
-                onConfirm = {},
-                onBack = {}
-            )
+            WooPosRefundState.Content.RefundStep.ReviewRefund -> {
+                ReviewRefundContent(
+                    state = state,
+                    onContinue = {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+                    },
+                    onEditRefund = {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                    },
+                    onEditReason = {
+                        onNavigationEvent(
+                            WooPosNavigationEvent.OpenRefundReason(
+                                orderId = orderId,
+                                initialReason = state.refundReason
+                            )
+                        )
+                    },
+                    showEditRefundButton = !disablePartialRefund
+                )
+            }
+
+            WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
+                ConfirmRefundContent(
+                    state = state,
+                    isProcessing = false,
+                    onConfirm = {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+                    },
+                    onBack = {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+                    }
+                )
+            }
+            WooPosRefundState.Content.RefundStep.Processing -> {
+                ConfirmRefundContent(
+                    state = state,
+                    isProcessing = true,
+                    onConfirm = {},
+                    onBack = {}
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun LoadingContent() {
-    val loadingDescription = stringResource(R.string.woopos_orders_loading_refund_items)
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+private fun ShimmerHeaderRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = WooPosSpacing.Medium.value),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        WooPosCircularLoadingIndicator(
+        WooPosShimmerBox(
             modifier = Modifier
-                .size(48.dp)
-                .semantics {
-                    contentDescription = loadingDescription
-                }
+                .size(32.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
+        Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+        WooPosShimmerText(
+            text = "Select all items",
+            style = WooPosTypography.Caption.style,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+        WooPosShimmerText(
+            text = "0 selected",
+            style = WooPosTypography.Caption.style,
+        )
+    }
+}
+
+@Composable
+private fun ShimmerItemRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = WooPosSpacing.XSmall.value),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        WooPosShimmerBox(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        )
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
+        WooPosShimmerBox(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        )
+        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            WooPosShimmerText(
+                text = "Product item name",
+                style = WooPosTypography.BodyLarge.style,
+                fontWeight = FontWeight.Bold,
+            )
+            WooPosShimmerText(
+                text = "$18.00",
+                style = WooPosTypography.BodyMedium.style,
+            )
+        }
     }
 }
 
@@ -400,39 +499,62 @@ private fun RefundSuccessContent(
 
 @Composable
 private fun SelectItemsContent(
-    state: WooPosRefundState.Content,
+    state: WooPosRefundState,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onContinue: () -> Unit,
     disableItemSelection: Boolean = false
 ) {
+    val contentState = state as? WooPosRefundState.Content
+    val isLoading = state is WooPosRefundState.Loading
+
     Column(modifier = Modifier.fillMaxWidth()) {
         RefundDialogHeader()
 
-        ItemsHeaderRow(
-            allItemsSelected = state.allItemsSelected,
-            selectedCount = state.selectedItemIds.size,
-            onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) },
-            enabled = !disableItemSelection
-        )
+        if (isLoading) {
+            ShimmerHeaderRow()
+        } else {
+            ItemsHeaderRow(
+                allItemsSelected = contentState?.allItemsSelected ?: false,
+                selectedCount = contentState?.selectedItemIds?.size ?: 0,
+                onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) },
+                enabled = !disableItemSelection
+            )
+        }
 
         Divider()
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f, fill = false)
-                .fillMaxWidth()
-                .padding(vertical = WooPosSpacing.Medium.value),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-        ) {
-            itemsIndexed(state.refundableItems) { index, item ->
-                RefundableItemRow(
-                    item = item,
-                    isSelected = item.uniqueId in state.selectedItemIds,
-                    onItemClick = { onEvent(WooPosRefundUIEvent.ItemSelectionToggled(item.uniqueId)) },
-                    enabled = !disableItemSelection
-                )
-                if (index < state.refundableItems.lastIndex) {
-                    Divider()
+        if (isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = WooPosSpacing.Medium.value),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+            ) {
+                repeat(3) { index ->
+                    ShimmerItemRow()
+                    if (index < 2) {
+                        Divider()
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+                    .padding(vertical = WooPosSpacing.Medium.value),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+            ) {
+                itemsIndexed(contentState?.refundableItems ?: emptyList()) { index, item ->
+                    RefundableItemRow(
+                        item = item,
+                        isSelected = item.uniqueId in (contentState?.selectedItemIds ?: emptySet()),
+                        onItemClick = { onEvent(WooPosRefundUIEvent.ItemSelectionToggled(item.uniqueId)) },
+                        enabled = !disableItemSelection
+                    )
+                    if (index < (contentState?.refundableItems?.lastIndex ?: 0)) {
+                        Divider()
+                    }
                 }
             }
         }
@@ -442,7 +564,7 @@ private fun SelectItemsContent(
         WooPosButton(
             text = stringResource(R.string.continue_button),
             onClick = onContinue,
-            state = if (state.selectedItemIds.isNotEmpty()) {
+            state = if (!isLoading && contentState?.selectedItemIds?.isNotEmpty() == true) {
                 WooPosButtonState.ENABLED
             } else {
                 WooPosButtonState.DISABLED
