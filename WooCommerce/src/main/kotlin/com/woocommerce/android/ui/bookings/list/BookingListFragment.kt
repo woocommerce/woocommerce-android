@@ -135,6 +135,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                     )
                 }
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
 

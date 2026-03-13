@@ -86,7 +86,12 @@ fun BookingListScreen(state: BookingListViewState) {
         topBar = {
             Toolbar(
                 title = state.toolbarTitle.getText(),
-                navigationIcon = null,
+                navigationIcon = if (state.showBackButton) {
+                    ImageVector.vectorResource(R.drawable.ic_back_24dp)
+                } else {
+                    null
+                },
+                onNavigationButtonClick = state.onBackClick,
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
@@ -537,7 +542,9 @@ private fun BookingListPreview() {
                 searchState = BookingListSearchState(
                     query = null,
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }
@@ -571,7 +578,9 @@ private fun EmptyViewPreview() {
                 searchState = BookingListSearchState(
                     query = null,
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }
@@ -605,7 +614,9 @@ private fun EmptySearchResultsViewPreview() {
                 searchState = BookingListSearchState(
                     query = "Haircut",
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }
