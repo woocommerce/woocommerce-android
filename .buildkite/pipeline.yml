@@ -83,7 +83,7 @@ steps:
           - "WooCommerce/build/outputs/apk/**/*"
 
       - input: Create a Wear Prototype Build?
-        prompt: Share a Wear Prototype Build via Firebase App Distribution?
+        prompt: Share a Wear Prototype Build? (it will be uploaded to AWS S3)
         key: wear_prototype_build_triggered
       - label: ":amazon-s3: Wear Prototype Build"
         depends_on: wear_prototype_build_triggered
