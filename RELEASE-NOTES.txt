@@ -9,6 +9,7 @@
 - [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
 - [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
 - [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
+- [*] Fixed Woo Shipping label purchase flow when the origin address is missing required details [https://github.com/woocommerce/woocommerce-android/pull/15542]
 
 24.3
 -----
