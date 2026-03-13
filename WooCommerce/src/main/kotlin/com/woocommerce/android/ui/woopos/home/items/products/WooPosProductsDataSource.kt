@@ -200,31 +200,56 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) : WooPosProductsDataSourceInterface {
 
-    private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
-        val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
-        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
-
-        return posLocalCatalogStore.observeProducts(siteId)
-            .map { result ->
-                result.getOrNull()?.map { entity ->
-                    productMapper.fromEntity(entity)
-                } ?: emptyList()
-            }
-    }
+    private val offset = AtomicInteger(0)
+    private val canLoadMore = AtomicBoolean(false)
+    private val accumulatedProducts = mutableListOf<WooPosProductModel>()
 
     override fun fetchFirstProductsPage(
         forceRefresh: Boolean
-    ): Flow<ProductsResult> = getProductsFromDatabaseFlow()
-        .map { products ->
-            ProductsResult.Remote(Result.success(products))
-        }
-        .flowOn(Dispatchers.IO)
+    ): Flow<ProductsResult> = flow {
+        offset.set(0)
+        canLoadMore.set(false)
+        accumulatedProducts.clear()
+
+        val products = loadNextProductPage()
+        accumulatedProducts.addAll(products)
+
+        emit(ProductsResult.Remote(Result.success(accumulatedProducts.toList())))
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun loadMoreProducts(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
-        Result.success(emptyList())
+        if (!canLoadMore.get()) {
+            return@withContext Result.success(accumulatedProducts.toList())
+        }
+
+        val products = loadNextProductPage()
+        accumulatedProducts.addAll(products)
+
+        Result.success(accumulatedProducts.toList())
     }
 
-    override val hasMoreProductsPages: Boolean = false
+    override val hasMoreProductsPages: Boolean
+        get() = canLoadMore.get()
+
+    private suspend fun loadNextProductPage(): List<WooPosProductModel> {
+        val siteModel = selectedSite.getOrNull() ?: return emptyList()
+        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
+
+        val result = posLocalCatalogStore.getProducts(
+            siteId = siteId,
+            pageSize = PAGE_SIZE,
+            offset = offset.get()
+        )
+
+        val products: List<WooPosProductModel> = result.getOrNull()?.map { entity ->
+            productMapper.fromEntity(entity)
+        } ?: emptyList()
+
+        canLoadMore.set(products.size == PAGE_SIZE)
+        offset.addAndGet(PAGE_SIZE)
+
+        return products
+    }
 
     override suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
         val result = posLocalCatalogStore.getProduct(
@@ -321,6 +346,10 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     override val hasMoreSearchPages: Boolean
         get() = localCatalogSearchDataSource.hasMorePages
+
+    companion object {
+        private const val PAGE_SIZE = 25
+    }
 }
 
 class WooPosProductsRemoteDataSource @Inject constructor(

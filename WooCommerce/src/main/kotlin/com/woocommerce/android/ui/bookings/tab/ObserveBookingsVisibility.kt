@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.bookings.tab
 
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.extensions.onFirst
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository

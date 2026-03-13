@@ -188,7 +188,6 @@ private fun WooPosItemsSearchContent(
         modifier = modifier.padding(top = WooPosSpacing.Large.value),
         state = state,
         listState = listState,
-        animateItems = false,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },
         onEndOfProductsListReached = { onUIEvent(WooPosItemsSearchUiEvent.OnNextPageRequested) },
         onErrorWhilePaginating = {
