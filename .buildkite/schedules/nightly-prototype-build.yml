@@ -15,4 +15,4 @@ notify:
   - slack:
       channels:
         - "#android-core-notifs"
-      if: "build.state == 'failed'"
+    if: "build.state == 'failed'"
