@@ -50,7 +50,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         val site = SiteModel().apply { id = 123 }
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
+        whenever(isLocalCatalogSupported()).thenReturn(false)
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
@@ -125,7 +125,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
@@ -148,7 +148,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
@@ -175,7 +175,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN & THEN

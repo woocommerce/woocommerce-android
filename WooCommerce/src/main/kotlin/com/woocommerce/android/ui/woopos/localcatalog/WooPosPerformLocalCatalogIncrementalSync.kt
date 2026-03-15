@@ -40,7 +40,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
                 return@launch
             }
 
-            if (!isLocalCatalogSupported(site.localId())) {
+            if (!isLocalCatalogSupported()) {
                 wooPosLogWrapper.d("Skipping sync $reasonDescription: Local catalog not supported for site")
                 trackSyncSkipped(SyncSkipReason.LOCAL_CATALOG_DISABLED)
                 return@launch

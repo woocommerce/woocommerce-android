@@ -26,7 +26,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.Error("No site selected")
         }
 
-        if (!isLocalCatalogSupported(site.localId())) {
+        if (!isLocalCatalogSupported()) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }

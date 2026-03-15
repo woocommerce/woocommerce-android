@@ -56,7 +56,7 @@ class WooPosFullSyncStatusCheckerTest {
     fun setup() = runTest {
         val recentTimestamp = NOW - 1.days.inWholeMilliseconds
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(time.now()).thenReturn(NOW)
@@ -68,7 +68,7 @@ class WooPosFullSyncStatusCheckerTest {
     fun `given local catalog not supported, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
         runTest {
             // GIVEN
-            whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(false)
+            whenever(isLocalCatalogSupported()).thenReturn(false)
 
             val sut = createSut()
 

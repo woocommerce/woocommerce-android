@@ -14,7 +14,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 @ExperimentalCoroutinesApi
 class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
@@ -27,10 +26,6 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     private var posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
 
     private lateinit var isLocalCatalogSupported: WooPosIsLocalCatalogSupported
-
-    companion object {
-        private val SITE_ID = LocalOrRemoteId.LocalId(123)
-    }
 
     @Before
     fun setup() = testBlocking {
@@ -52,7 +47,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     @Test
     fun `given all conditions met, when check invoked, then returns true`() = testBlocking {
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isTrue()
@@ -64,7 +59,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
@@ -76,7 +71,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(getWooVersion()).thenReturn("10.4.9")
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
@@ -89,7 +84,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(fetchWooVersion()).thenReturn(null)
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
@@ -102,7 +97,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(fetchWooVersion()).thenReturn("10.5.0")
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isTrue()
@@ -114,7 +109,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(false))
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
@@ -128,7 +123,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         )
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
@@ -144,7 +139,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         )
 
         // WHEN
-        val result = isLocalCatalogSupported(SITE_ID)
+        val result = isLocalCatalogSupported()
 
         // THEN
         assertThat(result).isFalse()
