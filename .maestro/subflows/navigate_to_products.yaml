@@ -3,7 +3,6 @@ appId: com.woocommerce.android.dev
 ---
 - tapOn:
     id: "products"
-- extendedWaitUntil:
-    visible:
-      id: "productsRecycler"
+- assertVisible:
+    id: "productsRecycler"
     timeout: 15000

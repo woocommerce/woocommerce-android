@@ -24,7 +24,7 @@ tags:
 - tapOn: "Customers"
 
 # Wait for Customers screen to load
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Customer.*|.*customer.*|.*Search.*|.*No customers.*"
     timeout: 15000
     label: "Wait for Customers screen"
@@ -47,7 +47,7 @@ tags:
 - tapOn: "Inbox"
 
 # Wait for Inbox screen to load
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Inbox.*|.*inbox.*|.*notification.*|.*No messages.*|.*message.*"
     timeout: 15000
     label: "Wait for Inbox screen"

@@ -25,7 +25,7 @@ tags:
 - tapOn: ".*Google.*"
 
 # Wait for Google for Woo webview to load
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Google.*|.*campaign.*|.*Ads.*|.*google.*|.*Get started.*"
     timeout: 25000
     label: "Wait for Google for Woo webview"

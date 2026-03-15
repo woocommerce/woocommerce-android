@@ -91,7 +91,7 @@ tags:
 # Go back to products list
 - back
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "productsRecycler"
     timeout: 10000

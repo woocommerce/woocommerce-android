@@ -25,7 +25,7 @@ tags:
 - tapOn: "View Store"
 
 # Wait for webview or browser to load
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*store.*|.*Shop.*|.*cart.*|.*product.*"
     timeout: 20000
     label: "Wait for store webview to load"

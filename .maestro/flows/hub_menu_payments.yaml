@@ -28,7 +28,7 @@ tags:
 - tapOn: "Payments"
 
 # Wait for Payments screen to load
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Pay in Person.*|.*Card Reader.*|.*Tap to Pay.*|.*payment.*"
     timeout: 15000
     label: "Wait for Payments screen"

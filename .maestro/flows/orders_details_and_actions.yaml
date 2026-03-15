@@ -24,7 +24,7 @@ tags:
     label: "Tap first order in list"
 
 # Wait for order detail
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "orderDetail_container"
     timeout: 15000
@@ -83,7 +83,7 @@ tags:
 # Go back to orders list
 - back
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "ordersList"
     timeout: 10000

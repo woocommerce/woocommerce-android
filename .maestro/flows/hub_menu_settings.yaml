@@ -27,7 +27,7 @@ tags:
     index: 0
 
 # Wait for Settings preferences screen
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Update your preferences.*|.*Notifications.*|.*Theme.*|.*Help and support.*"
     timeout: 15000
     label: "Wait for Settings preferences screen"

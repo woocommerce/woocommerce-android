@@ -22,7 +22,7 @@ tags:
     label: "Tap Create Order FAB"
 
 # Wait for order creation screen (look for status or product sections)
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Order status.*|.*Products.*|.*Add products.*|.*Pending payment.*"
     timeout: 15000
     label: "Wait for order creation screen"
@@ -47,7 +47,7 @@ tags:
     commands:
       - tapOn: ".*Discard.*|.*discard.*"
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "ordersList"
     timeout: 10000

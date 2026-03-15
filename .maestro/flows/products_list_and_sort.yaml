@@ -34,7 +34,7 @@ tags:
 - scroll
 - scroll
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "productName"
     timeout: 10000

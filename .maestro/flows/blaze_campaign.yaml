@@ -28,7 +28,7 @@ tags:
 - tapOn: "Blaze"
 
 # Wait for Blaze screen to load (could be a list or campaign dashboard)
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Blaze.*|.*campaign.*|.*Campaign.*|.*Create.*|.*Promote.*"
     timeout: 20000
     label: "Wait for Blaze screen"

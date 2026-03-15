@@ -3,7 +3,6 @@ appId: com.woocommerce.android.dev
 ---
 - tapOn:
     id: "moreMenu"
-- extendedWaitUntil:
-    visible:
-      id: "more_menu_compose_view"
+- assertVisible:
+    id: "more_menu_compose_view"
     timeout: 10000

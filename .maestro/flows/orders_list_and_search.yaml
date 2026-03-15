@@ -33,7 +33,7 @@ tags:
 - scroll
 - scroll
 - scroll
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "orderNum"
     timeout: 10000
@@ -54,7 +54,7 @@ tags:
     id: "menu_search"
     label: "Open order search"
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "search_src_text"
     timeout: 10000
@@ -65,7 +65,7 @@ tags:
 - pressKey: Enter
 
 # Wait for search results
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "orderNum"
     timeout: 15000
@@ -77,7 +77,7 @@ tags:
 - back
 
 # Test filters button
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "ordersList"
     timeout: 10000

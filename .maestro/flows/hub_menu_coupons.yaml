@@ -26,7 +26,7 @@ tags:
 - tapOn: "Coupons"
 
 # Wait for Coupons screen
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*Coupon.*|.*coupon.*|.*No coupons yet.*"
     timeout: 15000
     label: "Wait for Coupons screen"

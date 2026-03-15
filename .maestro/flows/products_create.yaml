@@ -90,7 +90,7 @@ tags:
     commands:
       - tapOn: ".*Discard.*|.*discard.*"
 
-- extendedWaitUntil:
+- assertVisible:
     visible:
       id: "productsRecycler"
     timeout: 10000

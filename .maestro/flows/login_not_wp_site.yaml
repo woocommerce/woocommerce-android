@@ -41,7 +41,7 @@ tags:
     id: "bottom_button"
 
 # Verify error message appears
-- extendedWaitUntil:
+- assertVisible:
     visible: ".*not able to detect a WordPress site.*"
     timeout: 15000
     label: "Wait for 'not able to detect a WordPress site' error"
