@@ -216,12 +216,12 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
 
     private fun ciabSite(): SiteModel = SiteModel().apply {
         setIsGardenSite(true)
-        gardenName = "commerce"
+        gardenName = SiteModel.CIAB_GARDEN_NAME
     }
 
     private fun nonCiabSite(): SiteModel = SiteModel().apply {
         setIsGardenSite(false)
-        gardenName = "commerce"
+        gardenName = SiteModel.CIAB_GARDEN_NAME
     }
 
     private fun nonCommerceGardenSite(): SiteModel = SiteModel().apply {

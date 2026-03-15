@@ -28,12 +28,12 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current site is CIAB, when checking WooPayments support, then feature is supported`() {
+    fun `when checking WooPayments support, then feature is always supported`() {
         assertTrue(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments))
     }
 
     @Test
-    fun `given current site is CIAB, when checking POS support, then feature is supported`() {
+    fun `when checking POS support, then feature is always supported`() {
         assertTrue(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.POS))
     }
 
@@ -50,7 +50,7 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
     private fun createSite(isCIAB: Boolean): SiteModel {
         return SiteModel().apply {
             setIsGardenSite(isCIAB)
-            this.gardenName = if (isCIAB) CIABSiteGateKeeper.CIAB_GARDEN_NAME else null
+            this.gardenName = if (isCIAB) SiteModel.CIAB_GARDEN_NAME else null
         }
     }
 }
