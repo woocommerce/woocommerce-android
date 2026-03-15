@@ -30,47 +30,56 @@ env:
     id: "dashboard_container"
     label: "Dashboard container is visible"
 
-# Verify stats card is visible
+# Verify stats card via Compose testTag (DashboardStatsTestTags.DASHBOARD_STATS_CARD)
 - scrollUntilVisible:
     element:
-      id: "my_store_stats_container"
+      id: "dashboard_stats_card"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to stats container"
+    label: "Scroll to stats card"
 
-# Verify chart is rendered
 - assertVisible:
-    id: "chart"
-    label: "Stats chart is visible"
+    id: "dashboard_stats_card"
+    label: "Stats card is visible"
 
 # Verify key stat labels are present
 - assertVisible: "Revenue"
 
 - takeScreenshot: dashboard_stats_overview
 
-# Test date range switching - tap on the range dropdown button via accessibility text
+# Test date range switching via Compose testTag (DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON)
+- tapOn:
+    id: "stats_range_dropdown_button"
+    optional: true
+    label: "Tap date range dropdown"
+
 - runFlow:
     when:
-      visible: ".*Change date range.*"
+      visible:
+        id: "stats_range_dropdown_menu"
     commands:
-      - tapOn: ".*Change date range.*"
       - runFlow:
           when:
             visible: "This Week"
           commands:
             - tapOn: "This Week"
-      - extendedWaitUntil:
-          visible:
-            id: "chart"
+      - assertVisible:
+          id: "dashboard_stats_card"
           timeout: 10000
 
 - takeScreenshot: dashboard_stats_week
 
-# Scroll down to see top performers (Compose text label)
+# Scroll down to top performers via Compose testTag (DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
 - scrollUntilVisible:
-    element: "Top performers"
+    element:
+      id: "dashboard_top_performers_card"
     direction: DOWN
     timeout: 15000
+    label: "Scroll to top performers card"
+
+- assertVisible:
+    id: "dashboard_top_performers_card"
+    label: "Top performers card is visible"
 
 - takeScreenshot: dashboard_top_performers
 
