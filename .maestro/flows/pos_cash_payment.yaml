@@ -28,9 +28,8 @@ tags:
           label: "Tap POS tab"
 
       # Wait for POS products to load
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_product_item"
+      - assertVisible:
+          id: "woo_pos_product_item"
           timeout: 20000
           label: "Wait for POS products to load"
 
@@ -49,21 +48,31 @@ tags:
           label: "Add third product to cart"
           optional: true
 
+      # Validate cart has items via JavaScript
+      - copyTextFrom:
+          id: "woo_pos_cart_items_count"
+          optional: true
+      - evalScript: |
+          if (maestro.copiedText) {
+              var count = parseInt(maestro.copiedText, 10);
+              if (isNaN(count) || count < 1) {
+                  throw new Error('Cart should have at least 1 item, found: ' + maestro.copiedText);
+              }
+          }
+
       - takeScreenshot: pos_cart
 
       # Proceed to checkout
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_checkout_button"
+      - assertVisible:
+          id: "woo_pos_checkout_button"
           timeout: 10000
       - tapOn:
           id: "woo_pos_checkout_button"
           label: "Tap Checkout"
 
       # Wait for totals/payment screen
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_cash_payment_button"
+      - assertVisible:
+          id: "woo_pos_cash_payment_button"
           timeout: 15000
           label: "Wait for payment options"
 
@@ -75,18 +84,16 @@ tags:
           label: "Select Cash payment"
 
       # Complete cash payment
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_complete_payment_button"
+      - assertVisible:
+          id: "woo_pos_complete_payment_button"
           timeout: 10000
       - tapOn:
           id: "woo_pos_complete_payment_button"
           label: "Complete payment"
 
       # Verify payment success
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_new_order_button"
+      - assertVisible:
+          id: "woo_pos_new_order_button"
           timeout: 15000
           label: "Wait for payment success screen"
 

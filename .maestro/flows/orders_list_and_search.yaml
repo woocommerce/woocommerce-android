@@ -29,13 +29,22 @@ tags:
     id: "orderNum"
     label: "At least one order number is visible"
 
+# Validate order number format via JavaScript
+- copyTextFrom:
+    id: "orderNum"
+    index: 0
+- evalScript: |
+    var text = maestro.copiedText;
+    if (!text || text.trim() === '') {
+        throw new Error('Order number text is empty');
+    }
+
 # Test pagination - scroll down to load more orders
 - scroll
 - scroll
 - scroll
 - assertVisible:
-    visible:
-      id: "orderNum"
+    id: "orderNum"
     timeout: 10000
     label: "Wait for more orders to load after scrolling"
 
@@ -55,8 +64,7 @@ tags:
     label: "Open order search"
 
 - assertVisible:
-    visible:
-      id: "search_src_text"
+    id: "search_src_text"
     timeout: 10000
 
 - tapOn:
@@ -64,10 +72,9 @@ tags:
 - inputText: "1"
 - pressKey: Enter
 
-# Wait for search results
+# Wait for search results and validate we got results
 - assertVisible:
-    visible:
-      id: "orderNum"
+    id: "orderNum"
     timeout: 15000
     label: "Wait for search results"
 
@@ -78,8 +85,7 @@ tags:
 
 # Test filters button
 - assertVisible:
-    visible:
-      id: "ordersList"
+    id: "ordersList"
     timeout: 10000
 
 - runFlow:
@@ -90,8 +96,8 @@ tags:
       - tapOn:
           id: "btn_order_filter"
           label: "Open order filters"
-      - extendedWaitUntil:
-          visible: "Order status"
+      - assertVisible:
+          text: "Order status"
           timeout: 10000
           label: "Wait for filter screen"
       - takeScreenshot: orders_filters

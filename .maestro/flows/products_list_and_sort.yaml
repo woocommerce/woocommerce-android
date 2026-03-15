@@ -27,6 +27,16 @@ tags:
     id: "productName"
     label: "At least one product name is visible"
 
+# Validate first product has a non-empty name via JavaScript
+- copyTextFrom:
+    id: "productName"
+    index: 0
+- evalScript: |
+    var name = maestro.copiedText;
+    if (!name || name.trim() === '') {
+        throw new Error('Product name is empty — list may not have loaded properly');
+    }
+
 - takeScreenshot: products_list
 
 # Test pagination - scroll down
@@ -35,8 +45,7 @@ tags:
 - scroll
 
 - assertVisible:
-    visible:
-      id: "productName"
+    id: "productName"
     timeout: 10000
     label: "Products still visible after scrolling (pagination)"
 
@@ -59,9 +68,8 @@ tags:
       - tapOn:
           id: "btn_product_sorting"
           label: "Open product sorting"
-      - extendedWaitUntil:
-          visible:
-            id: "sortingItem_name"
+      - assertVisible:
+          id: "sortingItem_name"
           timeout: 10000
           label: "Wait for sort options"
       - takeScreenshot: products_sort_options
@@ -69,9 +77,8 @@ tags:
           id: "sortingItem_name"
           index: 0
           label: "Select first sort option"
-      - extendedWaitUntil:
-          visible:
-            id: "productsRecycler"
+      - assertVisible:
+          id: "productsRecycler"
           timeout: 10000
           label: "Wait for sorted product list"
 
@@ -82,9 +89,8 @@ tags:
     id: "menu_search"
     label: "Open product search"
 
-- extendedWaitUntil:
-    visible:
-      id: "search_src_text"
+- assertVisible:
+    id: "search_src_text"
     timeout: 10000
 
 - tapOn:
@@ -93,9 +99,8 @@ tags:
 - pressKey: Enter
 
 # Wait for search results
-- extendedWaitUntil:
-    visible:
-      id: "productInfoContainer"
+- assertVisible:
+    id: "productInfoContainer"
     timeout: 15000
     label: "Wait for product search results"
 
@@ -114,8 +119,8 @@ tags:
       - tapOn:
           id: "btn_product_filter"
           label: "Open product filters"
-      - extendedWaitUntil:
-          visible: "Stock status"
+      - assertVisible:
+          text: "Stock status"
           timeout: 10000
           label: "Wait for filter screen"
       - takeScreenshot: products_filters
