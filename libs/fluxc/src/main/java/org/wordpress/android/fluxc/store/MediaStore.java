@@ -12,7 +12,6 @@ import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.action.MediaAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
-import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
@@ -29,7 +28,6 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -408,18 +406,14 @@ public class MediaStore extends Store {
     @NonNull private final MediaCacheOperations mMediaCacheOperations;
     @NonNull private final MediaIdGenerator mMediaIdGenerator;
 
-    @NonNull private final FluxCCrashLogger mCrashLogger;
-
     @Inject public MediaStore(
             Dispatcher dispatcher,
             WooMediaNetwork wooMediaNetwork,
-            @NonNull FluxCCrashLogger crashLogger,
             @NonNull RemoteMediaCache remoteMediaCache,
             @NonNull MediaCacheOperations mediaCacheOperations,
             @NonNull MediaIdGenerator mediaIdGenerator) {
         super(dispatcher);
         mWooMediaNetwork = wooMediaNetwork;
-        mCrashLogger = crashLogger;
         mRemoteMediaCache = remoteMediaCache;
         mMediaCacheOperations = mediaCacheOperations;
         mMediaIdGenerator = mediaIdGenerator;
@@ -589,9 +583,7 @@ public class MediaStore extends Store {
             MediaUtils.stripLocation(payload.media.getFilePath());
         }
 
-        if (!mWooMediaNetwork.uploadMedia(payload.site, payload.media)) {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.uploadMedia(payload.site, payload.media);
     }
 
     private void performFetchMediaList(@NonNull FetchMediaListPayload payload) {
@@ -600,9 +592,7 @@ public class MediaStore extends Store {
             String mimeTypeValue = payload.mimeType != null ? payload.mimeType.getValue() : null;
             offset = mMediaCacheOperations.getUploadedMediaCount(payload.site.getId(), mimeTypeValue);
         }
-        if (!mWooMediaNetwork.fetchMediaList(payload.site, payload.number, offset, payload.mimeType)) {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
     }
 
     private void performCancelUpload(@NonNull CancelMediaPayload payload) {
@@ -611,9 +601,7 @@ public class MediaStore extends Store {
             mRemoteMediaCache.remove(payload.site.getId(), media.getMediaId());
         }
 
-        if (!mWooMediaNetwork.cancelUpload(payload.site, media)) {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.cancelUpload(payload.site, media);
     }
 
     private void handleMediaUploaded(@NonNull ProgressPayload payload) {
@@ -693,7 +681,4 @@ public class MediaStore extends Store {
         emitChange(mediaChange);
     }
 
-    private void reportXmlrpcTry() {
-        mCrashLogger.sendReport(null, Collections.emptyMap(), "Requested MediaStore XMLRPC connection. This should not happen.");
-    }
 }

@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.media
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient
@@ -32,6 +34,7 @@ import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.MimeType
+import java.security.GeneralSecurityException
 
 @RunWith(RobolectricTestRunner::class)
 class WooMediaNetworkTest {
@@ -59,34 +62,26 @@ class WooMediaNetworkTest {
         url = "https://example.com"
     }
 
+    private val wpapiSite = SiteModel().apply {
+        origin = SiteModel.ORIGIN_WPAPI
+        siteId = 456L
+        url = "https://direct.example.com"
+    }
+
+    // region Fetch media list – Jetpack
+
     @Test
     fun `given supported jetpack site, when fetching media list, then use app passwords first`() = runTest {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
         whenever(
-            applicationPasswordsMediaRestClient.fetchMediaList(
-                jetpackSite,
-                10,
-                0,
-                MimeType.Type.IMAGE
-            )
+            applicationPasswordsMediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
         ).thenReturn(
-            FetchMediaListResponsePayload(
-                jetpackSite,
-                emptyList(),
-                false,
-                false,
-                MimeType.Type.IMAGE
-            )
+            FetchMediaListResponsePayload(jetpackSite, emptyList(), false, false, MimeType.Type.IMAGE)
         )
 
         sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
 
-        verify(applicationPasswordsMediaRestClient).fetchMediaList(
-            jetpackSite,
-            10,
-            0,
-            MimeType.Type.IMAGE
-        )
+        verify(applicationPasswordsMediaRestClient).fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
         verify(wpComV2MediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
     }
 
@@ -95,12 +90,7 @@ class WooMediaNetworkTest {
         runTest {
             whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
             whenever(
-                applicationPasswordsMediaRestClient.fetchMediaList(
-                    jetpackSite,
-                    20,
-                    5,
-                    MimeType.Type.IMAGE
-                )
+                applicationPasswordsMediaRestClient.fetchMediaList(jetpackSite, 20, 5, MimeType.Type.IMAGE)
             ).thenReturn(
                 FetchMediaListResponsePayload(
                     jetpackSite,
@@ -109,20 +99,9 @@ class WooMediaNetworkTest {
                 )
             )
             whenever(
-                wpComV2MediaRestClient.fetchMediaList(
-                    jetpackSite,
-                    20,
-                    5,
-                    MimeType.Type.IMAGE
-                )
+                wpComV2MediaRestClient.fetchMediaList(jetpackSite, 20, 5, MimeType.Type.IMAGE)
             ).thenReturn(
-                FetchMediaListResponsePayload(
-                    jetpackSite,
-                    emptyList(),
-                    false,
-                    true,
-                    MimeType.Type.IMAGE
-                )
+                FetchMediaListResponsePayload(jetpackSite, emptyList(), false, true, MimeType.Type.IMAGE)
             )
 
             sut.fetchMediaList(jetpackSite, 20, 5, MimeType.Type.IMAGE)
@@ -140,20 +119,9 @@ class WooMediaNetworkTest {
     fun `given unsupported jetpack site, when fetching media list, then skip app passwords`() = runTest {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(false)
         whenever(
-            wpComV2MediaRestClient.fetchMediaList(
-                jetpackSite,
-                10,
-                0,
-                MimeType.Type.IMAGE
-            )
+            wpComV2MediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
         ).thenReturn(
-            FetchMediaListResponsePayload(
-                jetpackSite,
-                emptyList(),
-                false,
-                false,
-                MimeType.Type.IMAGE
-            )
+            FetchMediaListResponsePayload(jetpackSite, emptyList(), false, false, MimeType.Type.IMAGE)
         )
 
         sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
@@ -161,6 +129,100 @@ class WooMediaNetworkTest {
         verify(applicationPasswordsMediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
         verify(wpComV2MediaRestClient).fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
     }
+
+    @Test
+    fun `given jetpack access disabled, when fetching media list, then use wpcom client directly`() = runTest {
+        applicationPasswordsConfiguration.jetpackAccessEnabled = false
+        whenever(
+            wpComV2MediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+        ).thenReturn(
+            FetchMediaListResponsePayload(jetpackSite, emptyList(), false, false, MimeType.Type.IMAGE)
+        )
+
+        sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+
+        verify(applicationPasswordsMediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
+        verify(wpComV2MediaRestClient).fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+    }
+
+    @Test
+    fun `given supported jetpack site, when app passwords fetch throws GeneralSecurityException, then fallback`() =
+        runTest {
+            whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+            whenever(
+                applicationPasswordsMediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+            ).thenAnswer { throw GeneralSecurityException("keystore error") }
+            whenever(
+                wpComV2MediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+            ).thenReturn(
+                FetchMediaListResponsePayload(jetpackSite, emptyList(), false, false, MimeType.Type.IMAGE)
+            )
+
+            sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+
+            verify(wpComV2MediaRestClient).fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+            verify(jetpackApplicationPasswordsErrorHandler).handleError(
+                eq(jetpackSite),
+                argThat {
+                    errorCode == ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
+                }
+            )
+        }
+
+    @Test
+    fun `given supported jetpack site, when both fetch paths fail, then do not flag site`() = runTest {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+        whenever(
+            applicationPasswordsMediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+        ).thenReturn(
+            FetchMediaListResponsePayload(
+                jetpackSite,
+                createMediaError(statusCode = 500, apiErrorCode = "server_error"),
+                MimeType.Type.IMAGE
+            )
+        )
+        whenever(
+            wpComV2MediaRestClient.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+        ).thenReturn(
+            FetchMediaListResponsePayload(
+                jetpackSite,
+                createMediaError(statusCode = 502, apiErrorCode = "bad_gateway"),
+                MimeType.Type.IMAGE
+            )
+        )
+
+        sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+
+        verify(jetpackApplicationPasswordsErrorHandler, never()).handleError(any(), any())
+    }
+
+    // endregion
+
+    // region Fetch media list – WPAPI
+
+    @Test
+    fun `given WPAPI site, when fetching media list, then use app passwords client`() = runTest {
+        whenever(
+            applicationPasswordsMediaRestClient.fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
+        ).thenReturn(
+            FetchMediaListResponsePayload(wpapiSite, emptyList(), false, false, MimeType.Type.IMAGE)
+        )
+
+        sut.fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
+
+        verify(applicationPasswordsMediaRestClient).fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
+        verify(wpComV2MediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given WPAPI site with direct access disabled, when fetching media list, then throw`() {
+        applicationPasswordsConfiguration.directAccessEnabled = false
+        sut.fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
+    }
+
+    // endregion
+
+    // region Upload – Jetpack
 
     @Test
     fun `given supported jetpack site, when app passwords upload fails and fallback succeeds, then flag site`() =
@@ -181,7 +243,6 @@ class WooMediaNetworkTest {
 
             sut.uploadMedia(jetpackSite, media)
 
-            val dispatchCaptor = argumentCaptor<FluxAction<*>>()
             verify(jetpackApplicationPasswordsErrorHandler).handleError(
                 eq(jetpackSite),
                 argThat {
@@ -189,14 +250,19 @@ class WooMediaNetworkTest {
                         volleyError?.networkResponse?.statusCode == 403
                 }
             )
-            verify(dispatcher, times(1)).dispatch(dispatchCaptor.capture())
-            val dispatchedPayload = dispatchCaptor.firstValue.payload as ProgressPayload
-            assertThat(dispatchedPayload.progress).isEqualTo(1f)
-            assertThat(dispatchedPayload.completed).isTrue()
+
+            val dispatchCaptor = argumentCaptor<FluxAction<*>>()
+            verify(dispatcher, times(2)).dispatch(dispatchCaptor.capture())
+            val payloads = dispatchCaptor.allValues.map { it.payload as ProgressPayload }
+            // First dispatch: progress from app passwords attempt
+            assertThat(payloads[0].progress).isEqualTo(0.4f)
+            // Second dispatch: completed from fallback
+            assertThat(payloads[1].progress).isEqualTo(1f)
+            assertThat(payloads[1].completed).isTrue()
         }
 
     @Test
-    fun `given supported jetpack site, when app passwords upload succeeds, then dispatch buffered progress`() =
+    fun `given supported jetpack site, when app passwords upload succeeds, then dispatch all progress`() =
         runTest {
             val media: MediaModel = mock {
                 on { id } doReturn 8
@@ -224,6 +290,114 @@ class WooMediaNetworkTest {
             assertThat(payloads[1].completed).isTrue()
         }
 
+    @Test
+    fun `given jetpack access disabled, when uploading, then use wpcom client directly`() = runTest {
+        applicationPasswordsConfiguration.jetpackAccessEnabled = false
+        val media: MediaModel = mock {
+            on { id } doReturn 9
+        }
+        whenever(wpComV2MediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
+            flowOf(ProgressPayload(media, 1f, true, false))
+        )
+
+        sut.uploadMedia(jetpackSite, media)
+
+        verify(applicationPasswordsMediaRestClient, never()).uploadMedia(any(), any())
+        verify(wpComV2MediaRestClient).uploadMedia(jetpackSite, media)
+    }
+
+    @Test
+    fun `given supported jetpack site, when app passwords upload throws GeneralSecurityException, then fallback`() =
+        runTest {
+            val media: MediaModel = mock {
+                on { id } doReturn 10
+            }
+            whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+            whenever(applicationPasswordsMediaRestClient.uploadMedia(jetpackSite, media))
+                .thenReturn(flow { throw GeneralSecurityException("keystore error") })
+            whenever(wpComV2MediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
+                flowOf(ProgressPayload(media, 1f, true, false))
+            )
+
+            sut.uploadMedia(jetpackSite, media)
+
+            verify(wpComV2MediaRestClient).uploadMedia(jetpackSite, media)
+            verify(jetpackApplicationPasswordsErrorHandler).handleError(
+                eq(jetpackSite),
+                argThat {
+                    errorCode == ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
+                }
+            )
+        }
+
+    @Test
+    fun `given supported jetpack site, when both upload paths fail, then do not flag site`() = runTest {
+        val media: MediaModel = mock {
+            on { id } doReturn 11
+        }
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
+        whenever(applicationPasswordsMediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
+            flowOf(ProgressPayload(media, 1f, false, createMediaError(statusCode = 500, apiErrorCode = "error")))
+        )
+        whenever(wpComV2MediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
+            flowOf(ProgressPayload(media, 1f, false, createMediaError(statusCode = 502, apiErrorCode = "error")))
+        )
+
+        sut.uploadMedia(jetpackSite, media)
+
+        verify(jetpackApplicationPasswordsErrorHandler, never()).handleError(any(), any())
+    }
+
+    // endregion
+
+    // region Upload – WPAPI
+
+    @Test
+    fun `given WPAPI site, when uploading media, then use app passwords client`() = runTest {
+        val media: MediaModel = mock {
+            on { id } doReturn 12
+        }
+        whenever(applicationPasswordsMediaRestClient.uploadMedia(wpapiSite, media)).thenReturn(
+            flowOf(ProgressPayload(media, 1f, true, false))
+        )
+
+        sut.uploadMedia(wpapiSite, media)
+
+        verify(applicationPasswordsMediaRestClient).uploadMedia(wpapiSite, media)
+        verify(wpComV2MediaRestClient, never()).uploadMedia(any(), any())
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given WPAPI site with direct access disabled, when uploading, then throw`() {
+        applicationPasswordsConfiguration.directAccessEnabled = false
+        val media: MediaModel = mock()
+        sut.uploadMedia(wpapiSite, media)
+    }
+
+    // endregion
+
+    // region Cancel upload
+
+    @Test
+    fun `when cancelling upload, then dispatch cancelled action`() {
+        val media: MediaModel = mock {
+            on { id } doReturn 13
+        }
+
+        sut.cancelUpload(jetpackSite, media)
+
+        verify(dispatcher).dispatch(any())
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `given unsupported origin, when cancelling upload, then throw`() {
+        val site = SiteModel().apply { origin = 999 }
+        val media: MediaModel = mock()
+        sut.cancelUpload(site, media)
+    }
+
+    // endregion
+
     private fun createMediaError(statusCode: Int, apiErrorCode: String): MediaError {
         return MediaError(MediaErrorType.GENERIC_ERROR).apply {
             this.statusCode = statusCode
@@ -232,9 +406,11 @@ class WooMediaNetworkTest {
     }
 
     private class FakeApplicationPasswordsConfiguration : ApplicationPasswordsConfiguration {
-        override val applicationName: String
-            get() = "WooCommerce"
+        override val applicationName: String = "WooCommerce"
+        var directAccessEnabled: Boolean = true
+        var jetpackAccessEnabled: Boolean = true
 
-        override suspend fun isEnabledForJetpackAccess(): Boolean = true
+        override fun isEnabledForDirectAccess(): Boolean = directAccessEnabled
+        override suspend fun isEnabledForJetpackAccess(): Boolean = jetpackAccessEnabled
     }
 }

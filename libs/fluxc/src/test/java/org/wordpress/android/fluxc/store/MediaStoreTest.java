@@ -14,7 +14,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.action.MediaAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
-import org.wordpress.android.fluxc.logging.FakeCrashLogging;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.WooMediaNetwork;
@@ -41,7 +40,6 @@ public class MediaStoreTest {
     @SuppressWarnings("KotlinInternalInJava")
     private final MediaStore mMediaStore = new MediaStore(new Dispatcher(),
             mWooMediaNetwork,
-            FakeCrashLogging.INSTANCE,
             mRemoteMediaCache,
             mMediaCacheOperations,
             new FakeMediaIdGenerator()
@@ -267,7 +265,6 @@ public class MediaStoreTest {
             file.getParentFile().mkdirs();
             file.createNewFile();
             MediaModel media = generateMediaFromPath(1, 10L, file.getPath());
-            Mockito.when(mWooMediaNetwork.uploadMedia(site, media)).thenReturn(true);
 
             mMediaStore.onAction(new Action<>(
                     MediaAction.UPLOAD_MEDIA,
@@ -286,8 +283,6 @@ public class MediaStoreTest {
     public void givenFetchMediaListAction_whenHandled_thenDelegateToWooMediaNetwork() {
         SiteModel site = getTestSiteWithLocalId(5);
         site.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        Mockito.when(mWooMediaNetwork.fetchMediaList(site, 10, 0, MimeType.Type.IMAGE)).thenReturn(true);
-
         mMediaStore.onAction(new Action<>(
                 MediaAction.FETCH_MEDIA_LIST,
                 new MediaStore.FetchMediaListPayload(site, 10, false, MimeType.Type.IMAGE)
@@ -301,8 +296,6 @@ public class MediaStoreTest {
         SiteModel site = getTestSiteWithLocalId(5);
         site.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
         MediaModel media = generateMediaFromPath(5, 11L, "/test/test_image.jpg");
-        Mockito.when(mWooMediaNetwork.cancelUpload(site, media)).thenReturn(true);
-
         mMediaStore.onAction(new Action<>(
                 MediaAction.CANCEL_MEDIA_UPLOAD,
                 new MediaStore.CancelMediaPayload(site, media, false)
