@@ -29,7 +29,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     @Test
     fun `given remote is true, when getFlagState called, then remoteValue is true`() = testBlocking {
         // GIVEN
-        val flag = FeatureFlag.POS_REFUNDS
+        val flag = FeatureFlag.WC_SHIPPING_BANNER
         remoteFlags.value = listOf(createRemoteFlag(flag.remoteFlagKey, true))
         advanceUntilIdle()
 
@@ -43,7 +43,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     @Test
     fun `given remote is false, when getFlagState called, then remoteValue is false`() = testBlocking {
         // GIVEN
-        val flag = FeatureFlag.POS_REFUNDS
+        val flag = FeatureFlag.WC_SHIPPING_BANNER
         remoteFlags.value = listOf(createRemoteFlag(flag.remoteFlagKey, false))
         advanceUntilIdle()
 
@@ -57,7 +57,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     @Test
     fun `given remote is null, when getFlagState called, then remoteValue is null`() = testBlocking {
         // GIVEN
-        val flag = FeatureFlag.POS_REFUNDS
+        val flag = FeatureFlag.WC_SHIPPING_BANNER
 
         // WHEN
         val state = sut.getFlagState(flag)
@@ -82,7 +82,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given override is set, when effectiveValue accessed, then override wins over local and remote`() {
         // GIVEN
         val stateWithOverride = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.POS_REFUNDS,
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = false,
             remoteValue = false,
             overrideValue = true
@@ -99,7 +99,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given local is false and remote is true, when effectiveValue accessed, then local keeps feature disabled`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.POS_REFUNDS,
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = false,
             remoteValue = true,
             overrideValue = null
@@ -116,7 +116,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given local is true and remote is false, when effectiveValue accessed, then remote disables feature`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.POS_REFUNDS,
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = true,
             remoteValue = false,
             overrideValue = null
@@ -133,7 +133,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given local is true and remote is true, when effectiveValue accessed, then feature stays enabled`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.POS_REFUNDS,
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = true,
             remoteValue = true,
             overrideValue = null
@@ -150,7 +150,7 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given local is true and remote is null, when effectiveValue accessed, then local value is used`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.POS_REFUNDS,
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = true,
             remoteValue = null,
             overrideValue = null

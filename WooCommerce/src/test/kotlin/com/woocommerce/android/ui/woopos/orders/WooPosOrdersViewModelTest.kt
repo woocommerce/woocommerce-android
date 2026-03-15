@@ -22,8 +22,6 @@ import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -49,8 +47,7 @@ import java.util.Locale
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosOrdersViewModelTest {
 
-    @Rule
-    @JvmField
+    @Rule @JvmField
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val dataSource: WooPosOrdersDataSource = mock()
@@ -150,12 +147,10 @@ class WooPosOrdersViewModelTest {
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
     }
 
-    private suspend fun setupMappers() {
+    private fun setupMappers() {
         orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
         refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
-        val featureFlagRepository: FeatureFlagRepository = mock()
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.POS_REFUNDS)).thenReturn(true)
-        orderActionsProvider = WooPosOrderActionsProvider(featureFlagRepository)
+        orderActionsProvider = WooPosOrderActionsProvider()
         orderDetailsMapper = WooPosOrderDetailsMapper(
             resourceProvider,
             getProductById,
