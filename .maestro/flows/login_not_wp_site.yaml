@@ -1,5 +1,8 @@
 # Smoke Test: Login - Not a WordPress site
 # P2 ref: Login > Not a WP site (use "Google.com" or any non-WordPress site)
+#
+# Note: The onFlowStart hook will log in first, but this flow clears
+# state and manages its own login flow to test the error case.
 appId: com.woocommerce.android.dev
 name: "Login - Not a WordPress site error"
 tags:
@@ -28,6 +31,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "button_login_store"
+    retryTapIfNoChange: true
 
 # Enter a non-WordPress site URL
 - extendedWaitUntil:
@@ -39,10 +43,11 @@ tags:
 - inputText: "google.com"
 - tapOn:
     id: "bottom_button"
+    retryTapIfNoChange: true
 
 # Verify error message appears
 - assertVisible:
-    visible: ".*not able to detect a WordPress site.*"
+    text: ".*not able to detect a WordPress site.*"
     timeout: 15000
     label: "Wait for 'not able to detect a WordPress site' error"
 

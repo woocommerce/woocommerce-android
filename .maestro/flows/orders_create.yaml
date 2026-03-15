@@ -19,6 +19,7 @@ tags:
 # Tap Create Order FAB
 - tapOn:
     id: "createOrderButton"
+    retryTapIfNoChange: true
     label: "Tap Create Order FAB"
 
 # Wait for order creation screen (look for status or product sections)

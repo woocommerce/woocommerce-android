@@ -19,6 +19,7 @@ tags:
 # Tap Add Product button
 - tapOn:
     id: "addProductButton"
+    retryTapIfNoChange: true
     label: "Tap Add Product"
 
 # Wait for creation options sheet or product type selection

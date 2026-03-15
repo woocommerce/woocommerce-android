@@ -27,6 +27,7 @@ appId: com.woocommerce.android.dev
     timeout: 15000
 - tapOn:
     id: "button_login_store"
+    retryTapIfNoChange: true
 
 # Enter store URL
 - extendedWaitUntil:
@@ -38,6 +39,7 @@ appId: com.woocommerce.android.dev
 - inputText: ${WOO_STORE_URL}
 - tapOn:
     id: "bottom_button"
+    retryTapIfNoChange: true
 
 # Enter email address
 - extendedWaitUntil:
@@ -49,6 +51,7 @@ appId: com.woocommerce.android.dev
 - inputText: ${WOO_EMAIL}
 - tapOn:
     id: "login_continue_button"
+    retryTapIfNoChange: true
 
 # Dismiss Google Password Manager if it appears
 - runFlow:
@@ -83,6 +86,7 @@ appId: com.woocommerce.android.dev
 - inputText: ${WOO_PASSWORD}
 - tapOn:
     id: "bottom_button"
+    retryTapIfNoChange: true
 
 # Wait for dashboard to load (or privacy dialog)
 - extendedWaitUntil:
