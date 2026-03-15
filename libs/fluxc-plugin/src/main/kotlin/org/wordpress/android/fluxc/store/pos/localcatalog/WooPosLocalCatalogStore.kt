@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOSEntity
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
@@ -27,12 +28,25 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val coroutineEngine: CoroutineEngine,
     private val posProductDao: WooPosProductsDao,
     private val posVariationsDao: WooPosVariationsDao,
+    private val posFtsDao: WooPosSearchableFtsDao,
     private val headersParser: HeadersParser,
     private val database: WCAndroidDatabase,
 ) {
-    private companion object {
+    companion object {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val MAX_PAGE_SIZE = 100
+
+        private val UNICODE61_SEPARATORS = Regex("[^\\p{L}\\p{N}]+")
+
+        // Split on the same boundaries as the unicode61 tokenizer (non-letter, non-digit)
+        // so that queries like "t-shirt" or "SKU-1234" match the indexed tokens.
+        fun formatFtsQuery(rawQuery: String): String {
+            return rawQuery
+                .trim()
+                .split(UNICODE61_SEPARATORS)
+                .filter { it.isNotBlank() }
+                .joinToString(" ") { "$it*" }
+        }
     }
 
     /**
@@ -98,6 +112,28 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets a paginated list of products from the local database.
+     *
+     * @param [siteId] The local site ID
+     * @param [pageSize] The number of results to return
+     * @param [offset] The offset for pagination
+     * @return Result containing the list of products or error
+     */
+    suspend fun getProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosProductEntity>> =
+        coroutineEngine.withDefaultContext(API, this, "getProducts") {
+            val products = posProductDao.getProducts(
+                localSiteId = siteId,
+                limit = pageSize.coerceIn(1, MAX_PAGE_SIZE),
+                offset = offset.coerceAtLeast(0)
+            )
+            Result.success(products)
+        }
+
+    /**
      * Searches products in the local database by name, SKU, or global unique ID.
      *
      * @param [siteId] The local site ID
@@ -120,6 +156,69 @@ class WooPosLocalCatalogStore @Inject constructor(
                 offset = offset
             )
             Result.success(products)
+        }
+
+    suspend fun searchProductsFts(
+        siteId: LocalOrRemoteId.LocalId,
+        searchQuery: String,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosFtsSearchResult>> =
+        coroutineEngine.withDefaultContext(API, this, "searchProductsFts") {
+            val ftsQuery = formatFtsQuery(searchQuery)
+            if (ftsQuery.isBlank()) {
+                return@withDefaultContext Result.success(emptyList())
+            }
+
+            val ftsResults = posFtsDao.search(
+                localSiteId = siteId.value.toString(),
+                query = ftsQuery,
+                limit = pageSize.coerceAtMost(MAX_PAGE_SIZE),
+                offset = offset
+            )
+
+            if (ftsResults.isEmpty()) {
+                return@withDefaultContext Result.success(emptyList())
+            }
+
+            val productIds = ftsResults
+                .filter { it.parentProductId.isBlank() }
+                .map { LocalOrRemoteId.RemoteId(it.itemId.toLong()) }
+            val variationIds = ftsResults
+                .filter { it.parentProductId.isNotBlank() }
+                .map { LocalOrRemoteId.RemoteId(it.itemId.toLong()) }
+
+            // Batch-fetch full entities in 2 queries (products + variations) instead of
+            // fetching one-by-one per FTS result, to avoid N separate DB hits.
+            val productsMap = if (productIds.isNotEmpty()) {
+                posProductDao.getProductsByIds(siteId, productIds)
+                    .associateBy { it.remoteId.value }
+            } else {
+                emptyMap()
+            }
+
+            val variationsMap = if (variationIds.isNotEmpty()) {
+                posVariationsDao.getVariationsByIds(siteId, variationIds)
+                    .associateBy { it.remoteVariationId.value }
+            } else {
+                emptyMap()
+            }
+
+            val results = ftsResults.mapNotNull { ftsEntity ->
+                val itemId = ftsEntity.itemId.toLong()
+                if (ftsEntity.parentProductId.isBlank()) {
+                    productsMap[itemId]?.let { WooPosFtsSearchResult.Product(it) }
+                } else {
+                    variationsMap[itemId]?.let {
+                        WooPosFtsSearchResult.Variation(
+                            entity = it,
+                            parentProductName = ftsEntity.name,
+                        )
+                    }
+                }
+            }
+
+            Result.success(results)
         }
 
     /**

@@ -76,7 +76,7 @@ fun WooPosItemList(
     ) {
         items(
             state.items,
-            key = { product -> product.id }
+            key = { item -> item.id }
         ) { posItem ->
             val itemModifier = Modifier.then(if (animateItems) Modifier.animateItem() else Modifier)
 
@@ -99,6 +99,14 @@ fun WooPosItemList(
 
                 is Product.Variation -> {
                     VariationItem(
+                        modifier = itemModifier,
+                        item = posItem,
+                        onItemClicked = onItemClicked
+                    )
+                }
+
+                is Product.VariationSearchResult -> {
+                    VariationSearchResultItem(
                         modifier = itemModifier,
                         item = posItem,
                         onItemClicked = onItemClicked
@@ -195,6 +203,25 @@ private fun VariationItem(
 }
 
 @Composable
+private fun VariationSearchResultItem(
+    modifier: Modifier = Modifier,
+    item: Product.VariationSearchResult,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_variation_item_content_description,
+        item.parentProductName,
+        item.price
+    )
+    WooPosProductCard(
+        modifier = modifier,
+        itemContentDescription = itemContentDescription,
+        onItemClicked = onItemClicked,
+        item = item
+    )
+}
+
+@Composable
 private fun CouponItem(
     modifier: Modifier = Modifier,
     item: Coupon,
@@ -268,8 +295,12 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
             ),
         verticalArrangement = Arrangement.Center
     ) {
+        val title = when (item) {
+            is Product.VariationSearchResult -> item.parentProductName
+            else -> item.name
+        }
         WooPosText(
-            text = item.name,
+            text = title,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -280,6 +311,7 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
             is Product.Simple -> SimpleProductDetails(item = item)
             is Product.Variable -> VariableProductDetails()
             is Product.Variation -> VariationProductDetails(item = item)
+            is Product.VariationSearchResult -> VariationSearchResultDetails(item = item)
         }
     }
 }
@@ -428,6 +460,23 @@ fun VariationProductDetails(item: Product.Variation) {
 }
 
 @Composable
+private fun VariationSearchResultDetails(item: Product.VariationSearchResult) {
+    WooPosText(
+        text = item.name,
+        style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+    WooPosText(
+        text = item.price,
+        style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
+    )
+}
+
+@Composable
 fun WooPosItemsLoadingIndicator(
     modifier: Modifier = Modifier,
     itemsCount: Int = 10
@@ -545,6 +594,14 @@ fun ItemListPreview() {
                         listOf()
                     ),
                     Product.Variation(3, "Variation", "$10", "", 0),
+                    Product.VariationSearchResult(
+                        id = 6,
+                        name = "Blue - Medium",
+                        price = "$15.00",
+                        imageUrl = "",
+                        productId = 1,
+                        parentProductName = "Premium T-Shirt",
+                    ),
                     Coupon(
                         id = 4,
                         name = "Coupon",

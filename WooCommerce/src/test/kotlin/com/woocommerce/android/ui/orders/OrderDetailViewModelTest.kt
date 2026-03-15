@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -145,6 +146,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val paymentReceiptHelper: PaymentReceiptHelper = mock {
         onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
         onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
@@ -222,7 +224,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
-                mock(),
+                featureFlagRepository,
                 paymentReceiptHelper,
                 analyticsTracker,
                 refreshShippingMethods,
@@ -235,6 +237,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(false).whenever(featureFlagRepository).isEnabled(any())
+        doReturn(flowOf(false)).whenever(featureFlagRepository).observeIsEnabled(any())
 
         val site = SiteModel().let {
             it.id = 1

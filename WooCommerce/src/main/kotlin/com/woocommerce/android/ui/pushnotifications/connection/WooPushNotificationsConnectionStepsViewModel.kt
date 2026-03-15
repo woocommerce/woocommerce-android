@@ -13,7 +13,9 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +27,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -33,8 +34,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.JetpackStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
@@ -42,6 +43,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val pushNotificationRepository: PushNotificationRepository,
     private val jetpackActivationRepository: JetpackActivationRepository,
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val stringUtils: StringUtils,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
@@ -49,6 +51,28 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private val siteAddress = getSiteAddress()
     private val navArgs by savedStateHandle.navArgs<WooPushNotificationsConnectionStepsFragmentArgs>()
+
+    private val visibleStepTypes = StepType.entries.filter {
+        it != StepType.ConnectStore || !navArgs.isSiteConnectedToJetpack
+    }
+
+    private val titleRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_title_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_title_connect
+    }
+
+    private val bodyRes = if (navArgs.isSiteConnectedToJetpack) {
+        R.string.woo_push_notifications_connection_steps_body_setup
+    } else {
+        R.string.woo_push_notifications_connection_steps_body_connect
+    }
+
+    private var hasAutoOpenedUpdate: Boolean
+        get() = savedState.get<Boolean>(KEY_HAS_AUTO_OPENED_UPDATE) ?: false
+        set(value) {
+            savedState[KEY_HAS_AUTO_OPENED_UPDATE] = value
+        }
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -58,9 +82,11 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     val viewState = combine(
         currentStep,
-        flowOf(StepType.entries.toList())
+        flowOf(visibleStepTypes)
     ) { currentStep, stepTypes ->
         ViewState(
+            titleRes = titleRes,
+            bodyRes = bodyRes,
             siteAddress = siteAddress,
             steps = stepTypes.map { stepType ->
                 Step(
@@ -103,6 +129,15 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
     }
 
+    fun onUpdatePluginClick() {
+        val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PLUGIN_UPDATE_PATH)
+        triggerEvent(NavigateToPluginUpdatePage(url))
+    }
+
+    fun onPluginUpdateWebViewDismissed() {
+        onRetryClick()
+    }
+
     private fun startNextStep() {
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
@@ -115,24 +150,56 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 when (step.type) {
                     StepType.ConnectStore -> connectStoreToJetpack()
 
-                    StepType.CheckPluginCompatibility -> {
-                        delay(1.seconds)
-                        markCurrentStepAsCompleted()
-                        advanceToNextStep()
-                    }
+                    StepType.CheckPluginCompatibility -> checkPluginCompatibility()
 
                     StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
     }
 
-    private suspend fun connectStoreToJetpack() {
-        if (navArgs.isSiteConnectedToJetpack) {
-            markCurrentStepAsCompleted()
-            advanceToNextStep()
+    private suspend fun checkPluginCompatibility() {
+        if (navArgs.shouldAutoOpenUpdatePlugin && !hasAutoOpenedUpdate) {
+            hasAutoOpenedUpdate = true
+            // Not using mark markCurrentStepAsFailed as we don't want to track this as failure.
+            currentStep.update { current ->
+                current.copy(
+                    state = StepState.Error(
+                        UiString.UiStringRes(R.string.woo_push_notifications_connection_steps_generic_error)
+                    )
+                )
+            }
+            val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PLUGIN_UPDATE_PATH)
+            triggerEvent(NavigateToPluginUpdatePage(url))
             return
         }
 
+        when (val result = checkWCPluginSupport(forceRefresh = true)) {
+            CheckWooPluginPushNotificationsSupport.Result.Compatible -> {
+                markCurrentStepAsCompleted()
+                advanceToNextStep()
+            }
+
+            is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
+                markCurrentStepAsFailed(
+                    message = UiString.UiStringRes(
+                        R.string.woo_push_notifications_connection_steps_error_plugin_update_required,
+                        listOf(UiString.UiStringText(result.currentVersion))
+                    ),
+                    error = Exception("Plugin update required."),
+                    errorType = StepState.ErrorType.PLUGIN_UPDATE_REQUIRED
+                )
+            }
+
+            CheckWooPluginPushNotificationsSupport.Result.Error -> {
+                markCurrentStepAsFailed(
+                    messageRes = R.string.woo_push_notifications_connection_steps_generic_error,
+                    error = Exception("Plugin check failed.")
+                )
+            }
+        }
+    }
+
+    private suspend fun connectStoreToJetpack() {
         jetpackActivationRepository.registerSite(
             site = selectedSite.get(),
             useApplicationPasswords = true
@@ -145,42 +212,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 markCurrentStepAsFailed(resolveConnectionErrorMessage(error), error)
             }
         )
-    }
-
-    private fun markCurrentStepAsCompleted() {
-        trackFlowSuccess(currentStep.value.type)
-        currentStep.update { it.copy(state = StepState.Success) }
-    }
-
-    private fun markCurrentStepAsFailed(@StringRes messageRes: Int, error: Throwable? = null) {
-        trackFlowError(currentStep.value.type, error)
-        currentStep.update { current ->
-            current.copy(state = StepState.Error(messageRes))
-        }
-    }
-
-    private fun resolveConnectionErrorMessage(error: Throwable): Int {
-        return if ((error as? OnChangedException)
-                ?.error
-                ?.let { it as? JetpackStore.JetpackError }
-                ?.errorCode == ERROR_CODE_FORBIDDEN
-        ) {
-            R.string.woo_push_notifications_connection_steps_error_connection_permission_message
-        } else {
-            R.string.woo_push_notifications_connection_steps_generic_error
-        }
-    }
-
-    @Suppress("unused")
-    private fun advanceToNextStep() {
-        currentStep.update { current ->
-            val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
-            if (nextType != null) {
-                Step(type = nextType, state = StepState.Ongoing)
-            } else {
-                current.copy(state = StepState.Success)
-            }
-        }
     }
 
     private suspend fun registerPushNotifications() {
@@ -200,6 +231,52 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error, error)
             }
         )
+    }
+
+    private fun markCurrentStepAsCompleted() {
+        trackFlowSuccess(currentStep.value.type)
+        currentStep.update { it.copy(state = StepState.Success) }
+    }
+
+    private fun markCurrentStepAsFailed(
+        @StringRes messageRes: Int,
+        error: Throwable? = null,
+        errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
+    ) = markCurrentStepAsFailed(UiString.UiStringRes(messageRes), error, errorType)
+
+    private fun markCurrentStepAsFailed(
+        message: UiString,
+        error: Throwable? = null,
+        errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
+    ) {
+        trackFlowError(currentStep.value.type, error)
+        currentStep.update { current ->
+            current.copy(state = StepState.Error(message, errorType))
+        }
+    }
+
+    private fun resolveConnectionErrorMessage(error: Throwable): Int {
+        return if ((error as? OnChangedException)
+                ?.error
+                ?.let { it as? JetpackStore.JetpackError }
+                ?.errorCode == ERROR_CODE_FORBIDDEN
+        ) {
+            R.string.woo_push_notifications_connection_steps_error_connection_permission_message
+        } else {
+            R.string.woo_push_notifications_connection_steps_generic_error
+        }
+    }
+
+    private fun advanceToNextStep() {
+        currentStep.update { current ->
+            val currentIndex = visibleStepTypes.indexOf(current.type)
+            val nextType = visibleStepTypes.getOrNull(currentIndex + 1)
+            if (nextType != null) {
+                Step(type = nextType, state = StepState.Ongoing)
+            } else {
+                current.copy(state = StepState.Success)
+            }
+        }
     }
 
     private fun trackFlowSuccess(stepType: StepType) {
@@ -248,6 +325,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         is OnChangedException -> {
             (error as? JetpackStore.JetpackError)?.let { it::class.simpleName } ?: javaClass.simpleName
         }
+
         is WooException -> error.type.name
         else -> javaClass.simpleName
     }
@@ -258,11 +336,17 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     data class ViewState(
+        @StringRes val titleRes: Int,
+        @StringRes val bodyRes: Int,
         val siteAddress: String,
         val steps: List<Step>
     ) {
         val isDone = steps.all { it.state == StepState.Success }
         val isError = steps.any { it.state is StepState.Error }
+        val isPluginUpdateRequired = steps.first { it.type == StepType.CheckPluginCompatibility }
+            .let {
+                it.state is StepState.Error && it.state.errorType == StepState.ErrorType.PLUGIN_UPDATE_REQUIRED
+            }
     }
 
     @Parcelize
@@ -295,11 +379,18 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         data object Success : StepState
 
         @Parcelize
-        data class Error(val errorMessage: UiString) : StepState {
-            constructor(message: String) : this(UiString.UiStringText(message))
-            constructor(@StringRes messageRes: Int) : this(UiString.UiStringRes(messageRes))
+        data class Error(
+            val errorMessage: UiString,
+            val errorType: ErrorType = ErrorType.GENERIC_ERROR
+        ) : StepState
+
+        enum class ErrorType {
+            GENERIC_ERROR,
+            PLUGIN_UPDATE_REQUIRED
         }
     }
+
+    data class NavigateToPluginUpdatePage(val url: String) : Event()
 
     companion object {
         private const val ERROR_CODE_FORBIDDEN = 403
@@ -314,6 +405,12 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         private const val BUTTON_LABEL_SUPPORT = "support"
 
         @VisibleForTesting
+        internal const val WC_PLUGIN_UPDATE_PATH =
+            "plugin-install.php?tab=plugin-information&plugin=woocommerce"
+
+        @VisibleForTesting
         internal const val KEY_CURRENT_STEP = "woo-push-connection-current-step"
+
+        private const val KEY_HAS_AUTO_OPENED_UPDATE = "woo-push-has-auto-opened-update"
     }
 }

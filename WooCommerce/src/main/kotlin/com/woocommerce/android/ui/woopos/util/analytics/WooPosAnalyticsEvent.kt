@@ -530,21 +530,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val variationsSynced: Int,
             val totalProducts: Int,
             val totalVariations: Int,
-            val syncDurationMs: Long
+            val syncDurationMs: Long,
+            val generationDurationMs: Long? = null,
+            val pollAttempts: Int? = null
         ) : Event() {
             override val name: String = "local_catalog_sync_completed"
 
             init {
-                addProperties(
-                    mapOf(
-                        SyncType.SYNC_TYPE to syncType.toString(),
-                        "products_synced" to productsSynced.toString(),
-                        "variations_synced" to variationsSynced.toString(),
-                        "total_products" to totalProducts.toString(),
-                        "total_variations" to totalVariations.toString(),
-                        "sync_duration_ms" to syncDurationMs.toString()
-                    )
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString(),
+                    "products_synced" to productsSynced.toString(),
+                    "variations_synced" to variationsSynced.toString(),
+                    "total_products" to totalProducts.toString(),
+                    "total_variations" to totalVariations.toString(),
+                    "sync_duration_ms" to syncDurationMs.toString()
                 )
+                generationDurationMs?.let { properties["generation_duration_ms"] = it.toString() }
+                pollAttempts?.let { properties["poll_attempts"] = it.toString() }
+                addProperties(properties)
             }
         }
 
@@ -552,19 +555,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val syncType: SyncType,
             val errorContext: String,
             val errorType: SyncErrorType,
-            val errorDescription: String
+            val errorDescription: String,
+            val lastGenerationState: String? = null,
+            val pollAttempts: Int? = null
         ) : Event() {
             override val name: String = "local_catalog_sync_failed"
 
             init {
-                addProperties(
-                    mapOf(
-                        SyncType.SYNC_TYPE to syncType.toString(),
-                        "error_context" to errorContext,
-                        SyncErrorType.ERROR_TYPE to errorType.toString(),
-                        "error_description" to errorDescription
-                    )
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString(),
+                    "error_context" to errorContext,
+                    SyncErrorType.ERROR_TYPE to errorType.toString(),
+                    "error_description" to errorDescription
                 )
+                lastGenerationState?.let { properties["last_generation_state"] = it }
+                pollAttempts?.let { properties["poll_attempts"] = it.toString() }
+                addProperties(properties)
             }
         }
 
@@ -1022,6 +1028,60 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data class SearchResultsFetched(
+            val millisecondsSinceRequestSent: Long,
+            val resultsCount: Int,
+            val source: String,
+            val searchMethod: String,
+        ) : Event() {
+            override val name: String = "search_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
+                        "results_count" to resultsCount.toString(),
+                        "source" to source,
+                        "search_method" to searchMethod,
+                    )
+                )
+            }
+        }
+
+        data class FtsIndexBuilt(
+            val syncType: String,
+            val indexDurationMs: Long,
+            val productsIndexed: Int,
+        ) : Event() {
+            override val name: String = "fts_index_built"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "sync_type" to syncType,
+                        "index_duration_ms" to indexDurationMs.toString(),
+                        "products_indexed" to productsIndexed.toString(),
+                    )
+                )
+            }
+        }
+
+        data class SearchResultTapped(
+            val resultPosition: Int,
+            val resultType: String,
+        ) : Event() {
+            override val name: String = "pos_search_result_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "result_position" to resultPosition.toString(),
+                        "result_type" to resultType,
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
@@ -1286,5 +1346,6 @@ internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
         SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+        SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }

@@ -122,7 +122,7 @@ class OrderDetailViewModel @Inject constructor(
     private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
-    private val featureFlagRepository: FeatureFlagRepository,
+    featureFlagRepository: FeatureFlagRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
@@ -141,7 +141,11 @@ class OrderDetailViewModel @Inject constructor(
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
     // Do NOT store the ViewState in SavedState bundle - it can be easily recreated on process death.
-    val viewStateData = LiveDataDelegate(OrderDetailViewState())
+    val viewStateData = LiveDataDelegate(
+        OrderDetailViewState(
+            isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
+        )
+    )
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -229,11 +233,6 @@ class OrderDetailViewModel @Inject constructor(
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
-        launch {
-            viewState = viewState.copy(
-                isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
-            )
-        }
         _productList.distinctUntilChanged().observeForever(productListObserver)
 
         if (navArgs.startPaymentFlow) {
@@ -251,6 +250,13 @@ class OrderDetailViewModel @Inject constructor(
                     AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
                     mapOf(KEY_SHIPPING_LINES_COUNT to shippingLines.size)
                 )
+            }
+        }
+        launch {
+            featureFlagRepository.observeIsEnabled(FeatureFlag.WC_SHIPPING_BANNER).collect { isEnabled ->
+                if (viewState.isWcShippingBannerEnabled != isEnabled) {
+                    viewState = viewState.copy(isWcShippingBannerEnabled = isEnabled)
+                }
             }
         }
 

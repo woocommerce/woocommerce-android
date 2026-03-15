@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jitm.clientside
 import android.content.Context
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,7 +11,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -51,6 +54,17 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given client banner feature flag is disabled, when shouldShow called, then returns false`() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)).thenReturn(false)
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isFalse()
+        verify(featureFlagRepository).isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)
+        verify(selectedSite, never()).getIfExists()
+    }
+
+    @Test
     fun `given tablet device, when shouldShow called, then returns false`() = testBlocking {
         setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(true)
@@ -88,6 +102,18 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         sut.onDismiss()
 
         verify(dismissalStorage).hideBanner("woo_pos_client_banner")
+    }
+
+    @Test
+    fun `given all conditions met, when shouldShow called, then checks the client banner feature flag`() = testBlocking {
+        val site = setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+
+        sut.shouldShow()
+
+        verify(featureFlagRepository).isEnabled(eq(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER))
     }
 
     private fun setupValidSite(): SiteModel {

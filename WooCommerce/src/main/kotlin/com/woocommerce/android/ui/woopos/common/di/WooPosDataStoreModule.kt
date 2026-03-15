@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.common.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.woopos.util.ext.dataStore
 import dagger.Module
 import dagger.Provides
@@ -17,6 +19,7 @@ object WooPosDataStoreModule {
 
     @Provides
     @Singleton
+    @DataStoreQualifier(DataStoreType.WOO_POS)
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
     }

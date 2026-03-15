@@ -120,12 +120,24 @@ private fun SyncingCatalog(
                 )
             }
 
-            Text(
-                text = stringResource(R.string.woopos_home_syncing_catalog_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                color = WooPosTheme.colors.onSurfaceVariantLowest
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+            ) {
+                Text(
+                    text = stringResource(R.string.woopos_home_syncing_catalog_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                )
+                Text(
+                    text = stringResource(R.string.woopos_home_syncing_catalog_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
         }
     }
 }

@@ -6,12 +6,14 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isVersionAtLeast
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport.Result.Compatible
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,20 +26,19 @@ import javax.inject.Inject
 class WooPushNotificationsIntroductionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchJetpackStatus: FetchJetpackStatus,
-    private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion,
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.6.0" // TODO CHECK CORRECT VERSION LATER
-        const val BUTTON_LABEL_CONTINUE = "continue"
-        const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
-        const val BUTTON_LABEL_NOT_NOW = "not_now"
-        const val BUTTON_LABEL_SUPPORT = "support"
-        const val STATE_NOT_CONNECTED = "not_connected"
-        const val STATE_UPDATE_REQUIRED = "update_required"
-        const val ERROR_TYPE_NO_PERMISSION = "no_permission"
-        const val ERROR_TYPE_GENERIC = "generic"
+        private const val BUTTON_LABEL_CONTINUE = "continue"
+        private const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
+        private const val BUTTON_LABEL_NOT_NOW = "not_now"
+        private const val BUTTON_LABEL_SUPPORT = "support"
+        private const val STATE_NOT_CONNECTED = "not_connected"
+        private const val STATE_UPDATE_REQUIRED = "update_required"
+        private const val ERROR_TYPE_NO_PERMISSION = "no_permission"
+        private const val ERROR_TYPE_GENERIC = "generic"
     }
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -49,30 +50,21 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private fun fetchStatus() {
         launch {
-            val site = selectedSite.get()
-
-            val result = fetchJetpackStatus(
-                site = site,
-                useApplicationPasswords = true
-            )
-
-            result.fold(
-                onSuccess = { response ->
-                    when (response) {
-                        is JetpackStatusFetchResponse.ConnectionForbidden -> {
-                            _viewState.value = ViewState.ForbiddenError
-                        }
-
-                        is JetpackStatusFetchResponse.Success -> {
-                            if (response.status.isSiteConnected) {
-                                checkWCVersion()
-                            } else {
-                                _viewState.value = ViewState.NotConnected
-                            }
-                        }
+            checkIfJetpackIsConnected().fold(
+                onSuccess = { isConnected ->
+                    if (isConnected) {
+                        checkWCVersion()
+                    } else {
+                        _viewState.value = ViewState.NotConnected
                     }
                 },
-                onFailure = { _viewState.value = ViewState.GenericError }
+                onFailure = { exception ->
+                    _viewState.value = if (exception is JetpackForbiddenException) {
+                        ViewState.ForbiddenError
+                    } else {
+                        ViewState.GenericError
+                    }
+                }
             )
 
             when (_viewState.value) {
@@ -87,16 +79,38 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkWCVersion() {
-        val wcVersion = fetchActiveWCPluginVersion() ?: run {
-            _viewState.value = ViewState.GenericError
-            return
-        }
+    private suspend fun checkIfJetpackIsConnected(): Result<Boolean> {
+        val site = selectedSite.get()
+        return when (site.connectionType) {
+            SiteConnectionType.ApplicationPasswords -> fetchJetpackStatus(
+                site = site,
+                useApplicationPasswords = true
+            ).mapCatching { response ->
+                when (response) {
+                    is JetpackStatusFetchResponse.Success -> response.status.isSiteConnected
+                    is JetpackStatusFetchResponse.ConnectionForbidden -> throw JetpackForbiddenException()
+                }
+            }
 
-        if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
-            _viewState.value = ViewState.GenericError
-        } else {
-            _viewState.value = ViewState.UpdateRequired
+            SiteConnectionType.JetpackConnectionPackage -> {
+                // The connection type is enough to determine that the site is connected to Jetpack
+                Result.success(true)
+            }
+
+            SiteConnectionType.Jetpack -> error(
+                "Invalid state: WooPushNotificationsIntroductionViewModel should not be instantiated for sites " +
+                    "with SiteConnectionType.Jetpack"
+            )
+        }
+    }
+
+    private suspend fun checkWCVersion() {
+        when (checkWCPluginSupport(forceRefresh = true)) {
+            Compatible -> _viewState.value = ViewState.GenericError
+            is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired ->
+                _viewState.value = ViewState.UpdateRequired
+
+            CheckWooPluginPushNotificationsSupport.Result.Error -> _viewState.value = ViewState.GenericError
         }
     }
 
@@ -107,7 +121,12 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             BUTTON_LABEL_CONTINUE
         }
         trackIntroductionButtonTap(buttonLabel)
-        triggerEvent(NavigateToConnectionSteps(isSiteConnectedToJetpack = _viewState.value !is ViewState.NotConnected))
+        triggerEvent(
+            NavigateToConnectionSteps(
+                isSiteConnectedToJetpack = _viewState.value != ViewState.NotConnected,
+                shouldAutoOpenUpdatePlugin = true
+            )
+        )
     }
 
     fun onNotNowClick() {
@@ -160,8 +179,10 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     data class NavigateToConnectionSteps(
-        val isSiteConnectedToJetpack: Boolean
+        val isSiteConnectedToJetpack: Boolean,
+        val shouldAutoOpenUpdatePlugin: Boolean
     ) : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
+    private class JetpackForbiddenException : Exception()
 }

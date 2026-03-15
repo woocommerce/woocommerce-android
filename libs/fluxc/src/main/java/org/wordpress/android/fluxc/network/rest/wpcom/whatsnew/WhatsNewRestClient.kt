@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.whatsnew
 
 import android.content.Context
+import androidx.core.os.ConfigurationCompat
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
@@ -16,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewResponse.Announcement
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -34,7 +36,8 @@ class WhatsNewRestClient @Inject constructor(
 
         val params = mapOf(
                 "app_id" to WhatsNewAppId.WOO_ANDROID.id.toString(),
-                "app_version" to versionName
+                "app_version" to versionName,
+                "_locale" to getAppLocale().toString()
         )
 
         val response = wpComGsonRequestBuilder.syncGetRequest(
@@ -68,6 +71,7 @@ class WhatsNewRestClient @Inject constructor(
                     minimumAppVersion = announce.minimumAppVersion,
                     maximumAppVersion = announce.maximumAppVersion,
                     appVersionTargets = announce.appVersionTargets ?: emptyList(),
+                    detailsUrl = announce.detailsUrl.orEmpty(),
                     isLocalized = announce.isLocalized,
                     features = announce.features.map {
                         WhatsNewAnnouncementFeature(
@@ -90,7 +94,7 @@ class WhatsNewRestClient @Inject constructor(
             val minimumAppVersion: String,
             val maximumAppVersion: String,
             val appVersionTargets: List<String>?,
-            val detailsUrl: String,
+            val detailsUrl: String? = null,
             val isLocalized: Boolean,
             val responseLocale: String,
             val features: List<Feature>
@@ -107,4 +111,10 @@ class WhatsNewRestClient @Inject constructor(
     class WhatsNewFetchedPayload(
         val whatsNewItems: List<WhatsNewAnnouncementModel>? = null
     ) : Payload<BaseNetworkError>()
+
+    private fun getAppLocale(): Locale {
+        return mAppContext?.resources?.configuration
+            ?.let { ConfigurationCompat.getLocales(it).get(0) }
+            ?: Locale.getDefault()
+    }
 }

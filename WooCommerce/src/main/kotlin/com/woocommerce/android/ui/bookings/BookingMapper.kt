@@ -8,6 +8,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -69,6 +70,7 @@ class BookingMapper @Inject constructor(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
         attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
+        locationStatus: BookingLocationStatus = BookingLocationStatus.Loading,
     ): BookingAppointmentDetailsModel {
         val duration = Duration.between(start, end)
             .normalizeDuration()
@@ -77,8 +79,7 @@ class BookingMapper @Inject constructor(
             date = detailsDateFormatter.format(start),
             time = "${dateFormatter.formatTime(start)} - ${dateFormatter.formatTime(end)}",
             staff = staffMemberStatus,
-            // TODO replace mocked values when available from API
-            location = "238 Willow Creek Drive, Montgomery AL 36109",
+            location = locationStatus,
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
             duration = duration,

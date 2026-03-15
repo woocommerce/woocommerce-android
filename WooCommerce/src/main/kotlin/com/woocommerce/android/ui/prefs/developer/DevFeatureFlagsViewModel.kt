@@ -24,40 +24,37 @@ class DevFeatureFlagsViewModel @Inject constructor(
     private var initialValues: Map<FeatureFlag, Boolean> = emptyMap()
 
     init {
-        loadFlagStates()
+        viewModelScope.launch {
+            featureFlagRepository.awaitRemoteFlagsLoaded()
+            loadFlagStates()
+        }
     }
 
     private fun loadFlagStates() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val states = FeatureFlag.entries.associateWith { flag -> featureFlagRepository.getFlagState(flag) }
-            if (initialValues.isEmpty()) initialValues = states.mapValues { it.value.effectiveValue }
-            _uiState.update { it.copy(flagStates = states, isLoading = false) }
+        val states = FeatureFlag.entries.associateWith { flag -> featureFlagRepository.getFlagState(flag) }
+        if (initialValues.isEmpty()) initialValues = states.mapValues { it.value.effectiveValue }
+        _uiState.update {
+            it.copy(
+                flagStates = states,
+                hasChanges = states.any { (flag, state) ->
+                    state.effectiveValue != initialValues[flag]
+                }
+            )
         }
     }
 
     fun setOverride(flag: FeatureFlag, state: OverrideState) {
-        viewModelScope.launch {
-            when (state) {
-                OverrideState.DEFAULT -> featureFlagRepository.removeFlagOverride(flag)
-                OverrideState.ENABLED -> featureFlagRepository.setFlagOverride(flag, true)
-                OverrideState.DISABLED -> featureFlagRepository.setFlagOverride(flag, false)
-            }
-            val newState = featureFlagRepository.getFlagState(flag)
-            val updatedFlagStates = _uiState.value.flagStates + (flag to newState)
-            val hasChanges = updatedFlagStates.any { (flag, state) -> state.effectiveValue != initialValues[flag] }
-            _uiState.update { currentState ->
-                currentState.copy(
-                    flagStates = updatedFlagStates,
-                    hasChanges = hasChanges
-                )
-            }
+        when (state) {
+            OverrideState.DEFAULT -> featureFlagRepository.removeFlagOverride(flag)
+            OverrideState.ENABLED -> featureFlagRepository.setFlagOverride(flag, true)
+            OverrideState.DISABLED -> featureFlagRepository.setFlagOverride(flag, false)
         }
+
+        loadFlagStates()
     }
 
     data class UiState(
         val flagStates: Map<FeatureFlag, FeatureFlagState> = emptyMap(),
-        val isLoading: Boolean = true,
         val hasChanges: Boolean = false
     )
 }

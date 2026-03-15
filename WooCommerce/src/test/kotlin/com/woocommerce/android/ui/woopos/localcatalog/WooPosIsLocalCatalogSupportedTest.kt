@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
@@ -21,6 +22,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 @ExperimentalCoroutinesApi
 class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
+    private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private var featureFlagRepository: FeatureFlagRepository = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var getWooVersion: GetWooCorePluginCachedVersion = mock()
@@ -37,7 +39,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1)).thenReturn(true)
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(true)
         whenever(getWooVersion()).thenReturn("10.5.0")
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(true))
@@ -51,6 +53,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         )
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
+            wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
             featureFlagRepository = featureFlagRepository,
             prefsRepo = preferencesRepository,
             isVariationsEndpointAvailable = variationsEndpointChecker,
@@ -74,7 +77,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     @Test
     fun `given feature flag disabled, when check invoked, then returns false`() = testBlocking {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1)).thenReturn(false)
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
 
         // WHEN
         val result = isLocalCatalogSupported(SITE_ID)

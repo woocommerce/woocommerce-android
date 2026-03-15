@@ -76,6 +76,7 @@ class WCOrderStore @Inject internal constructor(
 ) : Store(dispatcher) {
     companion object {
         const val NUM_ORDERS_PER_FETCH = 15
+        private const val IDS_QUERY_CHUNK_SIZE = 200
     }
 
     class FetchOrderListPayload(
@@ -429,6 +430,15 @@ class WCOrderStore @Inject internal constructor(
      */
     suspend fun getOrderByIdAndSite(orderId: Long, site: SiteModel): OrderEntity? {
         return ordersDaoDecorator.getOrder(orderId, site.localId())
+    }
+
+    suspend fun getOrdersByIdsAndSite(orderIds: List<Long>, site: SiteModel): List<OrderEntity> {
+        if (orderIds.isEmpty()) return emptyList()
+        return coroutineEngine.withDefaultContext(API, this, "getOrdersByIdsAndSite") {
+            orderIds.chunked(IDS_QUERY_CHUNK_SIZE).flatMap { orderIdsChunk ->
+                ordersDaoDecorator.getOrdersForSiteByRemoteIds(site.localId(), orderIdsChunk)
+            }
+        }
     }
 
     /**

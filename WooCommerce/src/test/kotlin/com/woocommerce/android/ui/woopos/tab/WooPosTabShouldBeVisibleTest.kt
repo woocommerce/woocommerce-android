@@ -47,6 +47,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(isScreenSizeAllowed()).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(true)
+        whenever(featureFlagRepository.awaitRemoteFlagsLoaded()).thenReturn(Unit)
         whenever(appPrefs.isPOSTabVisibleForSite(any())).thenReturn(false)
         val siteSettings = buildSiteSettings()
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))

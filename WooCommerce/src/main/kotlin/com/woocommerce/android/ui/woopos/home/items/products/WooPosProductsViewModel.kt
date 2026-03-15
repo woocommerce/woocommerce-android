@@ -133,6 +133,8 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             is WooPosItemSelectionViewState.Product.Variation -> error("Variation item not supported in products list")
+            is WooPosItemSelectionViewState.Product.VariationSearchResult ->
+                error("VariationSearchResult item not supported in products list")
             is WooPosItemSelectionViewState.Coupon -> error("Coupon item isn't supported in products list")
         }
     }
@@ -280,8 +282,10 @@ class WooPosProductsViewModel @Inject constructor(
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
             val result = dataSource.loadMore()
+            val latestState = _viewState.value
+            if (latestState !is WooPosProductsViewState.Content) return@launch
             _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState().also {
+                appendNewProducts(latestState, result.getOrThrow()).also {
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
                             source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
@@ -290,9 +294,21 @@ class WooPosProductsViewModel @Inject constructor(
                     )
                 }
             } else {
-                currentState.copy(paginationState = WooPosPaginationState.Error)
+                latestState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
+    }
+
+    private suspend fun appendNewProducts(
+        currentState: WooPosProductsViewState.Content,
+        allProducts: List<WooPosProductModel>,
+    ): WooPosProductsViewState.Content {
+        val newItems = allProducts.drop(currentState.items.size)
+            .map { it.toItemSelectionViewState() }
+        return currentState.copy(
+            items = currentState.items + newItems,
+            paginationState = WooPosPaginationState.None,
+        )
     }
 
     private fun onSimpleProductClicked(product: WooPosItemSelectionViewState.Product.Simple) {
@@ -324,6 +340,7 @@ class WooPosProductsViewModel @Inject constructor(
                         when (syncResult.value) {
                             is PosLocalCatalogSyncResult.Success -> {
                                 _viewState.value = hidePTRIndicator()
+                                loadProducts(forceRefreshProducts = false)
                             }
                             is PosLocalCatalogSyncResult.Failure -> {
                                 handlePTRError(isNetworkError = isNetworkError(syncResult.value))
@@ -393,6 +410,6 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private fun WooPosProductModel.isVariable() =
-        type == WooPosProductModel.WooPosProductType.VARIABLE ||
-            type == WooPosProductModel.WooPosProductType.VARIATION
+        type is WooPosProductModel.WooPosProductType.Variable ||
+            type is WooPosProductModel.WooPosProductType.Variation
 }

@@ -22,7 +22,7 @@ interface BookingsDao {
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
-            AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
@@ -45,13 +45,29 @@ interface BookingsDao {
         customerId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
+        attendanceStatus: String?,
         excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
+
+    @Suppress("LongParameterList")
+    @Query(DEFAULT_SELECT_QUERY)
+    suspend fun getBookings(
+        localSiteId: LocalId,
+        limit: Int?,
+        startDateBefore: Long?,
+        startDateAfter: Long?,
+        customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
+        attendanceStatus: String?,
+        excludedBookingStatuses: List<String>,
+        productIds: List<Long>,
+        productIdsSize: Int,
+        order: BookingsOrderOption
+    ): List<BookingEntity>
 
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     fun observeBooking(localSiteId: LocalId, bookingId: Long): Flow<BookingEntity?>
@@ -82,7 +98,7 @@ interface BookingsDao {
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
-            AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
@@ -96,8 +112,7 @@ interface BookingsDao {
         customerId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
+        attendanceStatus: String?,
         excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
@@ -111,7 +126,6 @@ interface BookingsDao {
         keepIds: List<Long>
     ) {
         val resourceIdsKeySet = filters.teamMembers.values.map { it.value }
-        val attendanceStatusKeySet = filters.attendanceStatuses.values.map { it.key }
         val excludedBookingStatusKeySet = filters.excludedBookingStatuses.values.map { it.key }
         val productIds = filters.serviceEvents.values.map { it.productId }
 
@@ -122,8 +136,7 @@ interface BookingsDao {
             customerId = filters.customer?.customerId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
-            attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            attendanceStatus = filters.attendanceStatus.value?.key,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
@@ -157,7 +170,6 @@ interface BookingsDao {
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
-        val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
         val excludedBookingStatusKeySet = filters?.excludedBookingStatuses?.values?.map { it.key }.orEmpty()
         val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
@@ -168,8 +180,32 @@ interface BookingsDao {
             customerId = filters?.customer?.customerId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
-            attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            attendanceStatus = filters?.attendanceStatus?.value?.key,
+            excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
+            productIds = productIds,
+            productIdsSize = productIds.size,
+            order = order
+        )
+    }
+
+    suspend fun getBookings(
+        localSiteId: LocalId,
+        limit: Int? = null,
+        filters: BookingFilters? = null,
+        order: BookingsOrderOption
+    ): List<BookingEntity> {
+        val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
+        val excludedBookingStatusKeySet = filters?.excludedBookingStatuses?.values?.map { it.key }.orEmpty()
+        val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
+        return getBookings(
+            localSiteId = localSiteId,
+            limit = limit,
+            startDateBefore = filters?.dateRange?.before?.epochSecond,
+            startDateAfter = filters?.dateRange?.after?.epochSecond,
+            customerId = filters?.customer?.customerId,
+            resourceIds = resourceIdsKeySet.toList(),
+            resourceIdsSize = resourceIdsKeySet.size,
+            attendanceStatus = filters?.attendanceStatus?.value?.key,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
@@ -179,6 +215,12 @@ interface BookingsDao {
 
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     suspend fun getBooking(localSiteId: LocalId, bookingId: Long): BookingEntity?
+
+    @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id IN (:bookingIds)")
+    suspend fun getBookingsByIds(localSiteId: LocalId, bookingIds: List<Long>): List<BookingEntity>
+
+    @Query("UPDATE Bookings SET location = :location WHERE localSiteId = :localSiteId AND id = :bookingId")
+    suspend fun updateLocation(localSiteId: LocalId, bookingId: Long, location: String?)
 
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
     fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>

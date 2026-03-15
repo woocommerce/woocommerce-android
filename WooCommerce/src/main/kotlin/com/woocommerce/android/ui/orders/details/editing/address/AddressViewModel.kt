@@ -45,22 +45,8 @@ class AddressViewModel @Inject constructor(
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
     @Suppress("OPT_IN_USAGE")
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, defaultViewState())
     private var viewState by viewStateData
-
-    init {
-        initDefaultViewState()
-    }
-
-    private fun initDefaultViewState() {
-        launch {
-            viewState = ViewState(
-                isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(
-                    FeatureFlag.BETTER_CUSTOMER_SEARCH_M2
-                )
-            )
-        }
-    }
 
     private val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
@@ -87,6 +73,16 @@ class AddressViewModel @Inject constructor(
 
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
     val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
+
+    init {
+        launch {
+            featureFlagRepository.observeIsEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2).collect { isEnabled ->
+                if (viewState.isBetterCustomerSearchEnabled != isEnabled) {
+                    viewState = viewState.copy(isBetterCustomerSearchEnabled = isEnabled)
+                }
+            }
+        }
+    }
 
     val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
@@ -145,8 +141,12 @@ class AddressViewModel @Inject constructor(
      */
     fun onScreenDetached() {
         hasStarted = false
-        initDefaultViewState()
+        viewState = defaultViewState()
     }
+
+    private fun defaultViewState() = ViewState(
+        isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2)
+    )
 
     private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
         return when {
@@ -293,7 +293,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
-        initDefaultViewState()
+        viewState = defaultViewState()
         initialize(initialState)
     }
 
@@ -305,7 +305,7 @@ class AddressViewModel @Inject constructor(
         val email: String? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
-        val isBetterCustomerSearchEnabled: Boolean = false,
+        val isBetterCustomerSearchEnabled: Boolean = FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.localValue,
     ) : Parcelable
 
     enum class AddressType {

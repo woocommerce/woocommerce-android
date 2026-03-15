@@ -1,24 +1,49 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
+import com.woocommerce.android.di.AppCoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FeatureFlagRepository @Inject constructor(
-    private val remoteFeatureFlagRepository: WPComRemoteFeatureFlagRepository
+    featureFlagsStore: FeatureFlagsStore,
+    @AppCoroutineScope appCoroutineScope: CoroutineScope,
 ) {
-    suspend fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
+    private val remoteFlagValues = MutableStateFlow<Map<String, Boolean>?>(null)
+
+    init {
+        appCoroutineScope.launch {
+            featureFlagsStore.observeFeatureFlags().collect { remoteFlags ->
+                remoteFlagValues.value = remoteFlags.associate { remoteFlag -> remoteFlag.key to remoteFlag.value }
+            }
+        }
+    }
+
+    fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
+
+    fun observeIsEnabled(
+        flag: FeatureFlag
+    ): Flow<Boolean> = remoteFlagValues.map { isEnabled(flag) }.distinctUntilChanged()
+
+    suspend fun awaitRemoteFlagsLoaded() {
+        remoteFlagValues.filter { it != null }.first()
+    }
 
     private fun getOverrideValue(flag: FeatureFlag): Boolean? = try {
         AppPrefs.getFeatureFlagOverride(flag)
     } catch (_: UninitializedPropertyAccessException) {
         null
     }
-
-    private suspend fun getRemoteValue(key: String): Boolean? =
-        remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(key)
 
     fun setFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         AppPrefs.setFeatureFlagOverride(flag, enabled)
@@ -28,20 +53,20 @@ class FeatureFlagRepository @Inject constructor(
         AppPrefs.removeFeatureFlagOverride(flag)
     }
 
-    suspend fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
+    fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
         flag = flag,
-        defaultValue = flag.default,
-        remoteValue = getRemoteValue(flag.remoteFlagKey),
+        localValue = flag.localValue,
+        remoteValue = remoteFlagValues.value?.get(flag.remoteFlagKey),
         overrideValue = getOverrideValue(flag)
     )
 
     data class FeatureFlagState(
         val flag: FeatureFlag,
-        val defaultValue: Boolean,
+        val localValue: Boolean,
         val remoteValue: Boolean?,
         val overrideValue: Boolean?
     ) {
         val effectiveValue: Boolean
-            get() = overrideValue ?: remoteValue ?: defaultValue
+            get() = overrideValue ?: (localValue && (remoteValue ?: true))
     }
 }

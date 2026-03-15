@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsMode
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
@@ -157,6 +158,7 @@ private fun BookingDetailsContent(
         BookingPaymentSection(
             model = it,
             onViewOrder = booking.onViewOrderClicked,
+            onIssueRefund = booking.onIssueRefundClicked,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -256,7 +258,7 @@ private fun BookingDetailsPreview() {
                         date = "Monday, 05 July 2025",
                         time = "11:00 am - 12:00 pm",
                         staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
-                        location = "238 Willow Creek Drive, Montgomery AL 36109",
+                        location = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109"),
                         duration = "60 min",
                         cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,
