@@ -63,7 +63,7 @@ class WooMediaNetworkTest {
     fun `given supported jetpack site, when fetching media list, then use app passwords first`() = runTest {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
         whenever(
-            applicationPasswordsMediaRestClient.executeFetchMediaList(
+            applicationPasswordsMediaRestClient.fetchMediaList(
                 jetpackSite,
                 10,
                 0,
@@ -81,13 +81,13 @@ class WooMediaNetworkTest {
 
         sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
 
-        verify(applicationPasswordsMediaRestClient).executeFetchMediaList(
+        verify(applicationPasswordsMediaRestClient).fetchMediaList(
             jetpackSite,
             10,
             0,
             MimeType.Type.IMAGE
         )
-        verify(wpComV2MediaRestClient, never()).executeFetchMediaList(any(), any(), any(), any())
+        verify(wpComV2MediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
     }
 
     @Test
@@ -95,7 +95,7 @@ class WooMediaNetworkTest {
         runTest {
             whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
             whenever(
-                applicationPasswordsMediaRestClient.executeFetchMediaList(
+                applicationPasswordsMediaRestClient.fetchMediaList(
                     jetpackSite,
                     20,
                     5,
@@ -109,7 +109,7 @@ class WooMediaNetworkTest {
                 )
             )
             whenever(
-                wpComV2MediaRestClient.executeFetchMediaList(
+                wpComV2MediaRestClient.fetchMediaList(
                     jetpackSite,
                     20,
                     5,
@@ -140,7 +140,7 @@ class WooMediaNetworkTest {
     fun `given unsupported jetpack site, when fetching media list, then skip app passwords`() = runTest {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(false)
         whenever(
-            wpComV2MediaRestClient.executeFetchMediaList(
+            wpComV2MediaRestClient.fetchMediaList(
                 jetpackSite,
                 10,
                 0,
@@ -158,8 +158,8 @@ class WooMediaNetworkTest {
 
         sut.fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
 
-        verify(applicationPasswordsMediaRestClient, never()).executeFetchMediaList(any(), any(), any(), any())
-        verify(wpComV2MediaRestClient).executeFetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
+        verify(applicationPasswordsMediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
+        verify(wpComV2MediaRestClient).fetchMediaList(jetpackSite, 10, 0, MimeType.Type.IMAGE)
     }
 
     @Test
@@ -169,13 +169,13 @@ class WooMediaNetworkTest {
                 on { id } doReturn 7
             }
             whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
-            whenever(applicationPasswordsMediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+            whenever(applicationPasswordsMediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
                 flowOf(
                     ProgressPayload(media, 0.4f, false, null),
                     ProgressPayload(media, 1f, false, createMediaError(statusCode = 403, apiErrorCode = "forbidden"))
                 )
             )
-            whenever(wpComV2MediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+            whenever(wpComV2MediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
                 flowOf(ProgressPayload(media, 1f, true, false))
             )
 
@@ -202,7 +202,7 @@ class WooMediaNetworkTest {
                 on { id } doReturn 8
             }
             whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(jetpackSite)).thenReturn(true)
-            whenever(applicationPasswordsMediaRestClient.getUploadMediaFlow(jetpackSite, media)).thenReturn(
+            whenever(applicationPasswordsMediaRestClient.uploadMedia(jetpackSite, media)).thenReturn(
                 flowOf(
                     ProgressPayload(media, 0.4f, false, null),
                     ProgressPayload(media, 1f, true, false)
@@ -213,7 +213,7 @@ class WooMediaNetworkTest {
 
             val dispatchCaptor = argumentCaptor<FluxAction<*>>()
             verify(dispatcher, times(2)).dispatch(dispatchCaptor.capture())
-            verify(wpComV2MediaRestClient, never()).getUploadMediaFlow(any(), any())
+            verify(wpComV2MediaRestClient, never()).uploadMedia(any(), any())
             verify(jetpackApplicationPasswordsErrorHandler, never()).handleError(any(), any())
 
             val payloads = dispatchCaptor.allValues.map { it.payload as ProgressPayload }

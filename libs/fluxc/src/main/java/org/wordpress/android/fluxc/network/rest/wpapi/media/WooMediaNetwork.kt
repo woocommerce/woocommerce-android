@@ -67,7 +67,7 @@ class WooMediaNetwork @Inject constructor(
                         this,
                         "Fetching media list via Application Passwords"
                     ) {
-                        val payload = applicationPasswordsMediaRestClient.executeFetchMediaList(
+                        val payload = applicationPasswordsMediaRestClient.fetchMediaList(
                             site,
                             number,
                             offset,
@@ -109,7 +109,7 @@ class WooMediaNetwork @Inject constructor(
             try {
                 when (site.origin) {
                     SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
-                        dispatchUploadFlow(applicationPasswordsMediaRestClient.getUploadMediaFlow(site, media))
+                        dispatchUploadFlow(applicationPasswordsMediaRestClient.uploadMedia(site, media))
                     }
 
                     SiteModel.ORIGIN_WPCOM_REST -> {
@@ -127,12 +127,13 @@ class WooMediaNetwork @Inject constructor(
         if (!applicationPasswordsConfiguration.isEnabledForJetpackAccess() ||
             !jetpackApplicationPasswordsSupport.supportsAppPasswords(site)
         ) {
-            dispatchUploadFlow(wpComV2MediaRestClient.getUploadMediaFlow(site, media))
+            dispatchUploadFlow(wpComV2MediaRestClient.uploadMedia(site, media))
             return
         }
 
         var appPasswordsError: MediaError? = null
-        applicationPasswordsMediaRestClient.getUploadMediaFlow(site, media).collect { payload ->
+
+        applicationPasswordsMediaRestClient.uploadMedia(site, media).collect { payload ->
             if (payload.isError) {
                 appPasswordsError = payload.error
             } else {
@@ -140,12 +141,11 @@ class WooMediaNetwork @Inject constructor(
             }
         }
 
-        if (appPasswordsError == null) {
-            return
-        }
+        // if app passwords succeeded, exit
+        if (appPasswordsError == null) return
 
         var fallbackSucceeded = false
-        wpComV2MediaRestClient.getUploadMediaFlow(site, media).collect { payload ->
+        wpComV2MediaRestClient.uploadMedia(site, media).collect { payload ->
             if (payload.completed && !payload.isError && !payload.canceled) {
                 fallbackSucceeded = true
             }
@@ -169,10 +169,10 @@ class WooMediaNetwork @Inject constructor(
         if (!applicationPasswordsConfiguration.isEnabledForJetpackAccess() ||
             !jetpackApplicationPasswordsSupport.supportsAppPasswords(site)
         ) {
-            return wpComV2MediaRestClient.executeFetchMediaList(site, number, offset, mimeType)
+            return wpComV2MediaRestClient.fetchMediaList(site, number, offset, mimeType)
         }
 
-        val appPasswordsPayload = applicationPasswordsMediaRestClient.executeFetchMediaList(
+        val appPasswordsPayload = applicationPasswordsMediaRestClient.fetchMediaList(
             site,
             number,
             offset,
@@ -182,7 +182,7 @@ class WooMediaNetwork @Inject constructor(
             return appPasswordsPayload
         }
 
-        val fallbackPayload = wpComV2MediaRestClient.executeFetchMediaList(site, number, offset, mimeType)
+        val fallbackPayload = wpComV2MediaRestClient.fetchMediaList(site, number, offset, mimeType)
         if (!fallbackPayload.isError) {
             jetpackApplicationPasswordsErrorHandler.handleError(
                 site,
