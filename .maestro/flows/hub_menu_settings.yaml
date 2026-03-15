@@ -28,7 +28,7 @@ tags:
 
 # Wait for Settings preferences screen
 - assertVisible:
-    visible: ".*Update your preferences.*|.*Notifications.*|.*Theme.*|.*Help and support.*"
+    text: "Help and support"
     timeout: 15000
     label: "Wait for Settings preferences screen"
 

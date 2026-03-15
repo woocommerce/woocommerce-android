@@ -115,7 +115,7 @@ tags:
           id: "btn_product_filter"
           label: "Open product filters"
       - extendedWaitUntil:
-          visible: ".*Stock status.*|.*filter.*|.*Filter.*|.*Product type.*"
+          visible: "Stock status"
           timeout: 10000
           label: "Wait for filter screen"
       - takeScreenshot: products_filters

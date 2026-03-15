@@ -91,7 +91,7 @@ tags:
           id: "btn_order_filter"
           label: "Open order filters"
       - extendedWaitUntil:
-          visible: ".*filter.*|.*Filter.*|.*Order status.*"
+          visible: "Order status"
           timeout: 10000
           label: "Wait for filter screen"
       - takeScreenshot: orders_filters

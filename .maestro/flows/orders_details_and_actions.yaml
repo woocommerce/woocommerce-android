@@ -60,7 +60,7 @@ tags:
 
 # Scroll to see order notes section and add a note
 - scrollUntilVisible:
-    element: ".*Add a note.*|.*ORDER NOTES.*|.*Add note.*"
+    element: "Add a note"
     direction: DOWN
     timeout: 15000
     label: "Scroll to order notes section"
@@ -68,7 +68,7 @@ tags:
 
 - runFlow:
     when:
-      visible: ".*Add a note.*|.*Add note.*"
+      visible: "Add a note"
     commands:
       - tapOn: ".*Add a note.*|.*Add note.*"
       - extendedWaitUntil:

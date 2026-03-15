@@ -17,16 +17,16 @@ tags:
 
 # Find and tap Google for Woo
 - scrollUntilVisible:
-    element: ".*Google.*"
+    element: "Google for WooCommerce"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Google for Woo in hub menu"
 
-- tapOn: ".*Google.*"
+- tapOn: "Google for WooCommerce"
 
-# Wait for Google for Woo webview to load
-- assertVisible:
-    visible: ".*Google.*|.*campaign.*|.*Ads.*|.*google.*|.*Get started.*"
+# Wait for Google for Woo webview to load — generous timeout for webview
+- extendedWaitUntil:
+    visible: ".*Google.*|.*Get started.*"
     timeout: 25000
     label: "Wait for Google for Woo webview"
 

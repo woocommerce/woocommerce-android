@@ -27,9 +27,9 @@ tags:
 
 - tapOn: "Blaze"
 
-# Wait for Blaze screen to load (could be a list or campaign dashboard)
+# Wait for Blaze screen to load
 - assertVisible:
-    visible: ".*Blaze.*|.*campaign.*|.*Campaign.*|.*Create.*|.*Promote.*"
+    text: "Blaze"
     timeout: 20000
     label: "Wait for Blaze screen"
 
@@ -38,13 +38,11 @@ tags:
 # Try to create a campaign
 - runFlow:
     when:
-      visible: ".*Create.*campaign.*|.*Promote.*|.*Create Campaign.*"
+      visible: "Create campaign"
     commands:
-      - tapOn:
-          text: ".*Create.*campaign.*|.*Promote.*|.*Create Campaign.*"
-          optional: true
+      - tapOn: "Create campaign"
       - extendedWaitUntil:
-          visible: ".*campaign.*|.*product.*|.*select.*|.*Blaze.*"
+          visible: ".*"
           timeout: 20000
           label: "Wait for campaign creation flow"
           optional: true

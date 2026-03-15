@@ -29,7 +29,7 @@ tags:
 
 # Wait for Payments screen to load
 - assertVisible:
-    visible: ".*Pay in Person.*|.*Card Reader.*|.*Tap to Pay.*|.*payment.*"
+    text: "Pay in Person"
     timeout: 15000
     label: "Wait for Payments screen"
 
@@ -43,17 +43,15 @@ tags:
 # Look for Order Card Reader
 - runFlow:
     when:
-      visible: ".*Order Card Reader.*"
+      visible: "Order Card Reader"
     commands:
-      - tapOn:
-          text: ".*Order Card Reader.*"
-          optional: true
+      - tapOn: "Order Card Reader"
       - takeScreenshot: hub_payments_order_reader
       - back
 
 # Look for Card Reader Manuals
 - scrollUntilVisible:
-    element: ".*Card Reader Manuals.*|.*Manuals.*"
+    element: "Card Reader Manuals"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Card Reader Manuals"
@@ -61,11 +59,9 @@ tags:
 
 - runFlow:
     when:
-      visible: ".*Card Reader Manuals.*|.*Manuals.*"
+      visible: "Card Reader Manuals"
     commands:
-      - tapOn:
-          text: ".*Card Reader Manuals.*|.*Manuals.*"
-          optional: true
+      - tapOn: "Card Reader Manuals"
       - takeScreenshot: hub_payments_manuals
       - back
 

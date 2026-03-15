@@ -24,11 +24,10 @@ tags:
 
 - tapOn: "View Store"
 
-# Wait for webview or browser to load
-- assertVisible:
-    visible: ".*store.*|.*Shop.*|.*cart.*|.*product.*"
+# Wait for webview or browser to load — use a generous timeout since webviews are slow
+- extendedWaitUntil:
+    visible: ".*"
     timeout: 20000
-    label: "Wait for store webview to load"
     optional: true
 
 - takeScreenshot: hub_view_store
@@ -47,7 +46,7 @@ tags:
     file: ../subflows/navigate_to_more_menu.yaml
 
 - scrollUntilVisible:
-    element: ".*Admin.*|.*WooCommerce Admin.*"
+    element: "Admin"
     direction: DOWN
     timeout: 15000
     label: "Scroll to WC Admin"
@@ -55,13 +54,12 @@ tags:
 
 - runFlow:
     when:
-      visible: ".*Admin.*"
+      visible: "Admin"
     commands:
-      - tapOn: ".*Admin.*"
+      - tapOn: "Admin"
       - extendedWaitUntil:
-          visible: ".*admin.*|.*WooCommerce.*|.*Dashboard.*|.*Orders.*"
+          visible: ".*"
           timeout: 20000
-          label: "Wait for admin webview"
           optional: true
       - takeScreenshot: hub_wc_admin
       - back
@@ -73,10 +71,8 @@ tags:
 # The store name/switcher is typically at the top of the More Menu
 - runFlow:
     when:
-      visible: ".*switch.*|.*Switch.*|.*Change store.*"
+      visible: "Switch store"
     commands:
-      - tapOn:
-          text: ".*switch.*|.*Switch.*|.*Change store.*"
-          optional: true
+      - tapOn: "Switch store"
       - takeScreenshot: hub_change_store
       - back

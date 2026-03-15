@@ -24,14 +24,14 @@ tags:
 
 # Wait for order creation screen (look for status or product sections)
 - assertVisible:
-    visible: ".*Order status.*|.*Products.*|.*Add products.*|.*Pending payment.*"
+    visible: "Order status"
     timeout: 15000
     label: "Wait for order creation screen"
 
 - takeScreenshot: order_create_empty
 
 # Verify key sections are visible
-- assertVisible: ".*Products.*|.*Add products.*"
+- assertVisible: "Products"
 
 # Scroll down to see more sections
 - scroll
@@ -44,9 +44,9 @@ tags:
 # Handle discard dialog
 - runFlow:
     when:
-      visible: ".*Discard.*|.*discard.*"
+      visible: "Discard"
     commands:
-      - tapOn: ".*Discard.*|.*discard.*"
+      - tapOn: "Discard"
 
 - assertVisible:
     visible:

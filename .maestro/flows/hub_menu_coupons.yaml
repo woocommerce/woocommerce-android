@@ -25,9 +25,9 @@ tags:
 
 - tapOn: "Coupons"
 
-# Wait for Coupons screen
+# Wait for Coupons screen — look for the title or empty state
 - assertVisible:
-    visible: ".*Coupon.*|.*coupon.*|.*No coupons yet.*"
+    text: "Coupons"
     timeout: 15000
     label: "Wait for Coupons screen"
 
@@ -36,13 +36,14 @@ tags:
 # Try to create a coupon if the FAB or add button is available
 - runFlow:
     when:
-      visible: ".*Add.*|.*Create.*"
+      visible:
+        id: ".*addCoupon.*"
     commands:
       - tapOn:
-          text: ".*Add.*|.*Create.*"
+          id: ".*addCoupon.*"
           optional: true
       - extendedWaitUntil:
-          visible: ".*Coupon code.*|.*Discount type.*|.*coupon.*"
+          visible: "Coupon code"
           timeout: 15000
           label: "Wait for coupon creation screen"
       - takeScreenshot: hub_coupon_create
@@ -50,9 +51,9 @@ tags:
       # Handle discard dialog if present
       - runFlow:
           when:
-            visible: ".*Discard.*|.*discard.*"
+            visible: "Discard"
           commands:
-            - tapOn: ".*Discard.*|.*discard.*"
+            - tapOn: "Discard"
 
 # Go back
 - back
