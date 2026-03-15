@@ -117,6 +117,21 @@ steps:
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
 
+      - input: Run Maestro smoke tests?
+        prompt: Run Maestro E2E smoke tests on an emulator? Requires MAESTRO_WOO_* secrets.
+        key: maestro_tests_triggered
+      - label: ":maestro: Maestro smoke tests"
+        depends_on: maestro_tests_triggered
+        command: .buildkite/commands/run-maestro-tests.sh
+        plugins:
+          - $CI_TOOLKIT
+          - $TEST_COLLECTOR :
+              <<: *test_collector_common_params
+              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_MAESTRO_TESTS"
+        artifact_paths:
+          - ".maestro/report.xml"
+          - ".maestro/*.maestro-screenshots/**/*"
+
 
   - label: "🐘 Populate Gradle build cache"
     command: .buildkite/commands/gradle-cache-build.sh

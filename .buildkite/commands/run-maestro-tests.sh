@@ -1,0 +1,44 @@
+#!/bin/bash -eu
+
+# Run Maestro smoke tests against a wasabi debug build on an emulator.
+#
+# Prerequisites:
+#   - Maestro CLI installed on the agent
+#   - Android emulator running
+#   - MAESTRO_WOO_EMAIL, MAESTRO_WOO_PASSWORD, MAESTRO_WOO_STORE_URL secrets set
+#
+# This is an on-demand step (manual trigger) since it requires a running
+# emulator and test store credentials.
+
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --job-type validation; then
+  echo "Skipping Maestro tests — no relevant changes"
+  exit 0
+fi
+
+echo "--- :hammer: Building and installing wasabi debug APK"
+"$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
+./gradlew :WooCommerce:installWasabiDebug
+
+echo "--- :maestro: Running Maestro smoke tests"
+set +e
+maestro test \
+  --format junit \
+  --output .maestro/report.xml \
+  --include-tags=smoke \
+  .maestro/
+MAESTRO_EXIT_STATUS=$?
+set -e
+
+if [[ "$MAESTRO_EXIT_STATUS" -ne 0 ]]; then
+  echo "^^^ +++"
+  echo "Maestro smoke tests failed!"
+fi
+
+echo "--- 🚦 Collecting results"
+mkdir -p WooCommerce/build/buildkite-test-analytics
+if [[ -f .maestro/report.xml ]]; then
+  cp .maestro/report.xml WooCommerce/build/buildkite-test-analytics/maestro-report.xml
+fi
+
+exit $MAESTRO_EXIT_STATUS
