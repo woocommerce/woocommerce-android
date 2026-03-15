@@ -38,11 +38,12 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
 
     fun setup(
         fallbackButton: MagicLinkFallbackButton,
-        requestEmailAtStart: Boolean = true
+        requestEmailAtStart: Boolean = true,
+        jetpackStatus: JetpackStatus = JetpackStatus
     ) {
         viewModel = WPComLoginMagicLinkRequestViewModel(
             WPComLoginMagicLinkRequestFragmentArgs(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus),
+                jetpackStatus = jetpackStatus,
                 emailOrUsername = EMAIL,
                 fallbackButton = fallbackButton,
                 requestAtStart = requestEmailAtStart,
@@ -114,7 +115,7 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             WPComLoginMagicLinkRequestViewModel.ShowPasswordScreen(
                 emailOrUsername = EMAIL,
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
+                jetpackStatus = JetpackStatus
             )
         )
     }
@@ -129,8 +130,9 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
 
         assertThat(event).isEqualTo(
             WPComLoginMagicLinkRequestViewModel.ShowUsernameScreen(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
+                jetpackStatus = JetpackStatus
             )
         )
     }
+
 }

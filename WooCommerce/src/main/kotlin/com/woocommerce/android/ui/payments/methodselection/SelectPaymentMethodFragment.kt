@@ -230,9 +230,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         // We should pop the back stack to show the [OrderDetailsFragment].
                         findNavController().popBackStack()
                     } else {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
-                            findNavController().navigateSafely(this)
-                        }
+                        findNavController().popBackStack(R.id.orderDetailFragment, true)
                     }
                 }
 

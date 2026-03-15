@@ -10,7 +10,14 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.util.AppLog
+import java.time.DateTimeException
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
 
 class WooPosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
@@ -24,6 +31,11 @@ class WooPosProductRestClient @Inject constructor(
         private const val VARIATIONS_FIELDS = "id,parent_id,description,sku,global_unique_id,status,price," +
             "regular_price,sale_price,date_modified,stock_quantity,stock_status,manage_stock," +
             "backordered,attributes,image,downloadable,name,type"
+
+        private val SECONDS_PER_HOUR = 1.hours.inWholeSeconds
+
+        private val API_DATE_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
     }
 
     suspend fun fetchProducts(
@@ -38,7 +50,7 @@ class WooPosProductRestClient @Inject constructor(
         val params = buildBaseParams(
             pageSize = pageSize,
             page = page,
-            modifiedAfter = modifiedAfter,
+            modifiedAfter = modifiedAfter?.let { adjustUtcToSiteLocalTime(it, site.timezone) },
             fields = PRODUCT_FIELDS,
             includeStatus = includeStatus,
             posProductsOnly = posProductsOnly
@@ -74,7 +86,7 @@ class WooPosProductRestClient @Inject constructor(
             pageSize = pageSize,
             page = page,
             fields = VARIATIONS_FIELDS,
-            modifiedAfter = modifiedAfter,
+            modifiedAfter = modifiedAfter?.let { adjustUtcToSiteLocalTime(it, site.timezone) },
             posProductsOnly = posProductsOnly
         )
 
@@ -150,5 +162,28 @@ class WooPosProductRestClient @Inject constructor(
 
     private fun statusListToString(statuses: List<CoreProductStatus>): String {
         return statuses.joinToString(",") { it.value }
+    }
+
+    /**
+     * The WooCommerce REST API compares `modified_after` against `date_modified`, which is stored
+     * in the site's local timezone. Since our stored timestamps are in UTC (from server response
+     * headers), we must convert to site-local time before sending. Without this, sites with
+     * negative UTC offsets will miss recently modified products because the UTC value is always
+     * ahead of their local `date_modified`.
+     */
+    internal fun adjustUtcToSiteLocalTime(utcDateString: String, siteGmtOffset: String?): String {
+        val offsetHours = siteGmtOffset?.toDoubleOrNull() ?: return utcDateString
+        if (offsetHours == 0.0) return utcDateString
+
+        return try {
+            val offsetSeconds = (offsetHours * SECONDS_PER_HOUR).toInt()
+            val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds)
+            val utcInstant = LocalDateTime.parse(utcDateString, API_DATE_FORMATTER)
+                .toInstant(ZoneOffset.UTC)
+            API_DATE_FORMATTER.withZone(zoneOffset).format(utcInstant)
+        } catch (e: DateTimeException) {
+            AppLog.e(AppLog.T.API, "Error adjusting UTC to site-local time- falling back to UTC.", e)
+            utcDateString
+        }
     }
 }

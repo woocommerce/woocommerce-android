@@ -6,8 +6,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Locale
 import javax.inject.Inject
 
@@ -31,6 +33,11 @@ class WooPosDateFormatter @Inject constructor(
         val timePattern = if (is24HourFormat()) "HH:mm" else "h:mm a"
         return DateTimeFormatter.ofPattern("MMM d, yyyy 'at' $timePattern", Locale.getDefault())
     }
+
+    fun formatShortDate(instant: Instant): String =
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+            .withZone(ZoneOffset.UTC)
+            .format(instant)
 
     /**
      * Formats the older of two timestamps (products and variations) into a user-friendly string.

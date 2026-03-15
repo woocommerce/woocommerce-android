@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,6 +56,7 @@ fun BookingAttendanceStatusTag(
                     text = state.text(),
                     backgroundColor = state.backgroundColor(),
                     textColor = state.textColor(),
+                    border = state.border(),
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
                         .onSizeChanged {
@@ -74,7 +76,7 @@ sealed interface BookingAttendanceStatus {
 }
 
 @Composable
-fun BookingAttendanceStatus?.text(): String {
+private fun BookingAttendanceStatus?.text(): String {
     return when (this) {
         BookingAttendanceStatus.Attended -> stringResource(R.string.booking_attendance_status_attended)
         BookingAttendanceStatus.Unattended -> stringResource(R.string.booking_attendance_status_unattended)
@@ -83,20 +85,27 @@ fun BookingAttendanceStatus?.text(): String {
 }
 
 @Composable
-fun BookingAttendanceStatus.backgroundColor(): Color {
-    return when (this) {
-        BookingStatus.Cancelled -> R.color.tag_bg_booking_cancelled
-        else -> R.color.tagView_bg
-    }.let { colorResource(it) }
+private fun BookingAttendanceStatus.backgroundColor(): Color = if (isOutlined()) {
+    Color.Transparent
+} else {
+    colorResource(R.color.tagView_bg)
 }
 
 @Composable
-fun BookingAttendanceStatus.textColor(): Color {
-    return when (this) {
-        BookingStatus.Cancelled -> R.color.tag_text_booking_cancelled
-        else -> R.color.tagView_text
-    }.let { colorResource(it) }
+private fun BookingAttendanceStatus.textColor(): Color = if (isOutlined()) {
+    colorResource(R.color.color_on_surface_high)
+} else {
+    colorResource(R.color.tagView_text)
 }
+
+@Composable
+private fun BookingAttendanceStatus.border(): BorderStroke? = if (isOutlined()) {
+    BorderStroke(1.dp, colorResource(R.color.tag_border_booking_outlined))
+} else {
+    null
+}
+
+private fun BookingAttendanceStatus.isOutlined(): Boolean = this == BookingAttendanceStatus.Attended
 
 @Preview
 @Composable

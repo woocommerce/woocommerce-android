@@ -15,14 +15,12 @@ install_gems
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
-echo "--- :mag: Retrieving app selection from metadata"
-APP_TO_BUILD="$(buildkite-agent meta-data get "app-to-build")"
+APP_TO_BUILD="${1:?Usage: prototype-build.sh <WooCommerce|WooCommerce-Wear>}"
 echo "Selected app: ${APP_TO_BUILD}"
 
-echo "--- :hammer_and_wrench: Building and uploading to Firebase App Distribution"
-if [[ "${APP_TO_BUILD}" == "Both" ]]; then
-  bundle exec fastlane build_and_upload_prototype_build app:"WooCommerce"
-  bundle exec fastlane build_and_upload_prototype_build app:"WooCommerce-Wear"
+if [ "${APP_TO_BUILD}" == "WooCommerce" ]; then
+  echo "--- :hammer_and_wrench: Building and uploading to Firebase App Distribution"
 else
-  bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"
+  echo "--- :hammer_and_wrench: Building and uploading to S3"
 fi
+bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"

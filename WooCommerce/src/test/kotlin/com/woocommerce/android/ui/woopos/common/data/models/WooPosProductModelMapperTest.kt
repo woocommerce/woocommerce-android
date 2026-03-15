@@ -27,7 +27,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         assertThat(result.name).isEqualTo("Test Product")
         assertThat(result.sku).isEqualTo("TEST-SKU")
         assertThat(result.globalUniqueId).isEqualTo("global-123")
-        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.Simple)
         assertThat(result.status).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
         assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)
         val salePricing = result.pricing as WooPosProductModel.WooPosPricing.SalePricing
@@ -219,16 +219,15 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
     @Test
     fun `given different product types, when mapping to model, then types are parsed correctly`() {
         val testCases = mapOf(
-            "simple" to WooPosProductModel.WooPosProductType.SIMPLE,
-            "variable" to WooPosProductModel.WooPosProductType.VARIABLE,
-            "grouped" to WooPosProductModel.WooPosProductType.GROUPED,
-            "external" to WooPosProductModel.WooPosProductType.EXTERNAL,
-            "variation" to WooPosProductModel.WooPosProductType.VARIATION,
-            "subscription" to WooPosProductModel.WooPosProductType.SUBSCRIPTION,
-            "variable-subscription" to WooPosProductModel.WooPosProductType.VARIABLE_SUBSCRIPTION,
-            "bundle" to WooPosProductModel.WooPosProductType.BUNDLE,
-            "composite" to WooPosProductModel.WooPosProductType.COMPOSITE,
-            "unknown" to WooPosProductModel.WooPosProductType.CUSTOM
+            "simple" to WooPosProductModel.WooPosProductType.Simple,
+            "variable" to WooPosProductModel.WooPosProductType.Variable,
+            "grouped" to WooPosProductModel.WooPosProductType.Grouped,
+            "external" to WooPosProductModel.WooPosProductType.External,
+            "subscription" to WooPosProductModel.WooPosProductType.Subscription,
+            "variable-subscription" to WooPosProductModel.WooPosProductType.VariableSubscription,
+            "bundle" to WooPosProductModel.WooPosProductType.Bundle,
+            "composite" to WooPosProductModel.WooPosProductType.Composite,
+            "unknown" to WooPosProductModel.WooPosProductType.Custom
         )
 
         testCases.forEach { (typeString, expectedType) ->
@@ -303,10 +302,10 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
 
     @Test
     fun `when mapProductType is called with type strings, then returns correct product types`() {
-        assertThat(mapper.mapProductType("simple")).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
-        assertThat(mapper.mapProductType("SIMPLE")).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
-        assertThat(mapper.mapProductType("variable")).isEqualTo(WooPosProductModel.WooPosProductType.VARIABLE)
-        assertThat(mapper.mapProductType("unknown")).isEqualTo(WooPosProductModel.WooPosProductType.CUSTOM)
+        assertThat(mapper.mapProductType("simple")).isEqualTo(WooPosProductModel.WooPosProductType.Simple)
+        assertThat(mapper.mapProductType("SIMPLE")).isEqualTo(WooPosProductModel.WooPosProductType.Simple)
+        assertThat(mapper.mapProductType("variable")).isEqualTo(WooPosProductModel.WooPosProductType.Variable)
+        assertThat(mapper.mapProductType("unknown")).isEqualTo(WooPosProductModel.WooPosProductType.Custom)
     }
 
     @Test

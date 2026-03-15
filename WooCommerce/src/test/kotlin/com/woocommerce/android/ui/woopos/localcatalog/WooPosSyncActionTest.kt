@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -32,10 +33,11 @@ class WooPosSyncActionTest {
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
+    private var analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSyncAction(posLocalCatalogStore, logger, syncWithFts)
+        sut = WooPosSyncAction(posLocalCatalogStore, logger, syncWithFts, analyticsTracker)
         site = SiteModel().apply {
             id = 1
             siteId = 123L

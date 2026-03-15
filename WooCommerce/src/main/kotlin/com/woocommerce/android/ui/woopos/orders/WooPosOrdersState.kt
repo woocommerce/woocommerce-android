@@ -56,13 +56,35 @@ sealed class WooPosOrdersState {
                 val customerEmail: String?,
                 val status: PosOrderStatus,
 
-                val lineItems: List<LineItemRow>,
+                val lineItems: LineItemsState = LineItemsState.Loading,
+                val refundedLineItems: LineItemsState = LineItemsState.Loading,
                 val breakdown: TotalsBreakdown,
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
                 val actionsState: OrderActionsState
             ) {
+                @Immutable
+                sealed interface LineItemsState {
+                    @Immutable
+                    data object Loading : LineItemsState
+
+                    @Immutable
+                    data class Loaded(val items: List<LineItemRow>) : LineItemsState
+                }
+
+                @Immutable
+                sealed interface BookingInfo {
+                    @Immutable
+                    data class Loading(val bookingId: Long) : BookingInfo
+
+                    @Immutable
+                    data class Loaded(val text: String) : BookingInfo
+
+                    @Immutable
+                    data class Error(val text: String) : BookingInfo
+                }
+
                 @Immutable
                 data class LineItemRow(
                     val id: Long,
@@ -71,6 +93,15 @@ sealed class WooPosOrdersState {
                     val qtyAndUnitPrice: String,
                     val lineTotal: String,
                     val imageUrl: String?,
+                    val bookingInfo: BookingInfo? = null,
+                )
+
+                @Immutable
+                data class RefundRow(
+                    val label: String,
+                    val amount: String,
+                    val date: String,
+                    val reason: String?,
                 )
 
                 @Immutable
@@ -80,8 +111,9 @@ sealed class WooPosOrdersState {
                     val discountCode: String?,
                     val taxes: String,
                     val shipping: String?,
-                    val refunds: List<String>,
-                    val netPayment: String?
+                    val refunds: List<RefundRow>,
+                    val netPayment: String?,
+                    val refundLoadError: String? = null
                 )
             }
         }
@@ -120,6 +152,16 @@ sealed class WooPosOrdersState {
             data object Hidden : DialogState()
             data class IssueRefund(
                 val orderId: Long
+            ) : DialogState()
+
+            data class RefundDetails(
+                val label: String,
+                val items: List<OrderDetailsViewState.Computed.Details.LineItemRow>,
+                val itemsSubtotalLabel: String,
+                val itemsSubtotalAmount: String,
+                val tax: String,
+                val refundTotal: String,
+                val paymentMethodTitle: String?,
             ) : DialogState()
         }
     }

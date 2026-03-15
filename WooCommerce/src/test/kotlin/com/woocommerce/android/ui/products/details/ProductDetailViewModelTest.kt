@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -1515,7 +1514,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(
             SiteModel().apply {
                 setIsGardenSite(true)
-                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+                gardenName = SiteModel.CIAB_GARDEN_NAME
             }
         )
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
@@ -1545,7 +1544,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel().apply {
                     setIsGardenSite(true)
-                    gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+                    gardenName = SiteModel.CIAB_GARDEN_NAME
                 }
             )
             savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))

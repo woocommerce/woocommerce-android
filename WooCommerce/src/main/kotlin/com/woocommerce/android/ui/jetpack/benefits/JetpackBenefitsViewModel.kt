@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -47,6 +48,7 @@ class JetpackBenefitsViewModel @Inject constructor(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
+            isPushNotificationsBenefitVisible = !FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.isEnabled(),
         )
     )
     val viewState = _viewState.asLiveData()
@@ -184,6 +186,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     data class ViewState(
         val isUsingJetpackCP: Boolean,
         val isLoadingDialogShown: Boolean,
+        val isPushNotificationsBenefitVisible: Boolean,
     )
 
     object StartJetpackActivationForJetpackCP : Event()

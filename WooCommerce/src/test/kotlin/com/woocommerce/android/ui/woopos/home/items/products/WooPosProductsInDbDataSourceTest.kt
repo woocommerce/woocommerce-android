@@ -9,13 +9,13 @@ import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWithFts
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -87,8 +87,8 @@ class WooPosProductsInDbDataSourceTest {
         val productEntity = createProductEntity(remoteId = 123L, name = "Test Product")
         val productModel = createProductModel(remoteId = 123L, name = "Test Product")
 
-        whenever(posLocalCatalogStore.observeProducts(any()))
-            .thenReturn(flowOf(Result.success(listOf(productEntity))))
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.success(listOf(productEntity)))
         whenever(mapper.fromEntity(productEntity))
             .thenReturn(productModel)
 
@@ -113,8 +113,8 @@ class WooPosProductsInDbDataSourceTest {
         val model1 = createProductModel(remoteId = 1L, name = "Apple iPhone", sku = "ABC123")
         val model2 = createProductModel(remoteId = 2L, name = "Samsung Galaxy", sku = "XYZ789")
 
-        whenever(posLocalCatalogStore.observeProducts(any()))
-            .thenReturn(flowOf(Result.success(listOf(product1, product2))))
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.success(listOf(product1, product2)))
         whenever(mapper.fromEntity(product1)).thenReturn(model1)
         whenever(mapper.fromEntity(product2)).thenReturn(model2)
 
@@ -152,8 +152,8 @@ class WooPosProductsInDbDataSourceTest {
     @Test
     fun `given db error, when fetchFirstProductsPage called, then returns empty list`() = runTest {
         // Given
-        whenever(posLocalCatalogStore.observeProducts(any()))
-            .thenReturn(flowOf(Result.failure(Exception("DB Error"))))
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.failure(Exception("DB Error")))
 
         // When
         val results = sut.fetchFirstProductsPage(forceRefresh = false).toList()
@@ -169,19 +169,92 @@ class WooPosProductsInDbDataSourceTest {
     }
 
     @Test
-    fun `when loadMore called, then returns empty list`() = runTest {
+    fun `given full first page, when hasMoreProductsPages checked, then returns true`() = runTest {
+        // Given
+        val entities = (1..25).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val models = (1..25).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.success(entities))
+        entities.zip(models).forEach { (entity, model) ->
+            whenever(mapper.fromEntity(entity)).thenReturn(model)
+        }
+
         // When
+        sut.fetchFirstProductsPage(forceRefresh = false).toList()
+
+        // Then
+        assertThat(sut.hasMoreProductsPages).isTrue()
+    }
+
+    @Test
+    fun `given partial first page, when hasMoreProductsPages checked, then returns false`() = runTest {
+        // Given
+        val entities = (1..10).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val models = (1..10).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.success(entities))
+        entities.zip(models).forEach { (entity, model) ->
+            whenever(mapper.fromEntity(entity)).thenReturn(model)
+        }
+
+        // When
+        sut.fetchFirstProductsPage(forceRefresh = false).toList()
+
+        // Then
+        assertThat(sut.hasMoreProductsPages).isFalse()
+    }
+
+    @Test
+    fun `given full first page, when loadMoreProducts called, then returns accumulated products`() = runTest {
+        // Given
+        val firstPageEntities = (1..25).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val firstPageModels = (1..25).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+
+        // Second page partial
+        val secondPageEntities = (26..40).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val secondPageModels = (26..40).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+
+        whenever(posLocalCatalogStore.getProducts(any(), eq(25), eq(0)))
+            .thenReturn(Result.success(firstPageEntities))
+        whenever(posLocalCatalogStore.getProducts(any(), eq(25), eq(25)))
+            .thenReturn(Result.success(secondPageEntities))
+
+        (firstPageEntities + secondPageEntities).zip(firstPageModels + secondPageModels)
+            .forEach { (entity, model) ->
+                whenever(mapper.fromEntity(entity)).thenReturn(model)
+            }
+
+        // When
+        sut.fetchFirstProductsPage(forceRefresh = false).toList()
         val result = sut.loadMoreProducts()
 
         // Then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).isEmpty()
+        assertThat(result.getOrThrow()).hasSize(40)
+        assertThat(result.getOrThrow()).containsAll(firstPageModels + secondPageModels)
     }
 
     @Test
-    fun `when hasMorePages called, then returns false`() {
+    fun `given no more pages, when loadMoreProducts called, then returns current accumulated products`() = runTest {
+        // Given
+        val entities = (1..10).map { createProductEntity(remoteId = it.toLong(), name = "Product $it") }
+        val models = (1..10).map { createProductModel(remoteId = it.toLong(), name = "Product $it") }
+
+        whenever(posLocalCatalogStore.getProducts(any(), any(), any()))
+            .thenReturn(Result.success(entities))
+        entities.zip(models).forEach { (entity, model) ->
+            whenever(mapper.fromEntity(entity)).thenReturn(model)
+        }
+
+        // When
+        sut.fetchFirstProductsPage(forceRefresh = false).toList()
+        val result = sut.loadMoreProducts()
+
         // Then
-        assertThat(sut.hasMoreProductsPages).isFalse()
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).hasSize(10)
     }
 
     private fun createProductEntity(
@@ -230,7 +303,7 @@ class WooPosProductsInDbDataSourceTest {
             name = name,
             sku = sku ?: "",
             globalUniqueId = "",
-            type = WooPosProductModel.WooPosProductType.SIMPLE,
+            type = WooPosProductModel.WooPosProductType.Simple,
             status = WooPosProductModel.WooPosProductStatus.PUBLISH,
             pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal.TEN),
             description = "",

@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.Reusable
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -47,6 +48,42 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
 
     fun fromEntities(entities: List<WooPosProductEntity>): List<WooPosProductModel> {
         return entities.map { fromEntity(it) }
+    }
+
+    fun fromVariationEntity(entity: WooPosVariationEntity, parentProductName: String): WooPosProductModel {
+        return WooPosProductModel(
+            remoteId = entity.remoteVariationId.value,
+            parentId = entity.remoteProductId.value,
+            name = entity.variationName,
+            sku = entity.sku,
+            globalUniqueId = entity.globalUniqueId,
+            type = WooPosProductModel.WooPosProductType.Variation,
+            parentProductName = parentProductName,
+            status = mapProductStatus(entity.status),
+            pricing = mapPricing(
+                parsePriceOrNull(entity.price),
+                parsePriceOrNull(entity.regularPrice),
+                parsePriceOrNull(entity.salePrice),
+                entity.salePrice.isNotBlank()
+            ),
+            description = entity.description,
+            shortDescription = "",
+            isDownloadable = entity.downloadable,
+            images = if (entity.imageUrl.isNotBlank()) {
+                listOf(
+                    WooPosProductModel.WooPosProductImage(
+                        id = 0,
+                        url = entity.imageUrl,
+                        name = "",
+                        alt = null
+                    )
+                )
+            } else {
+                emptyList()
+            },
+            attributes = parseAttributes(entity.attributesJson),
+            lastModified = entity.dateModified,
+        )
     }
 
     private fun parsePriceOrNull(priceString: String): BigDecimal? {
@@ -253,16 +290,16 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
 
     fun mapProductType(type: String): WooPosProductModel.WooPosProductType {
         return when (type.lowercase()) {
-            "simple" -> WooPosProductModel.WooPosProductType.SIMPLE
-            "variable" -> WooPosProductModel.WooPosProductType.VARIABLE
-            "grouped" -> WooPosProductModel.WooPosProductType.GROUPED
-            "external" -> WooPosProductModel.WooPosProductType.EXTERNAL
-            "variation" -> WooPosProductModel.WooPosProductType.VARIATION
-            "subscription" -> WooPosProductModel.WooPosProductType.SUBSCRIPTION
-            "variable-subscription" -> WooPosProductModel.WooPosProductType.VARIABLE_SUBSCRIPTION
-            "bundle" -> WooPosProductModel.WooPosProductType.BUNDLE
-            "composite" -> WooPosProductModel.WooPosProductType.COMPOSITE
-            else -> WooPosProductModel.WooPosProductType.CUSTOM
+            "simple" -> WooPosProductModel.WooPosProductType.Simple
+            "variable" -> WooPosProductModel.WooPosProductType.Variable
+            "grouped" -> WooPosProductModel.WooPosProductType.Grouped
+            "external" -> WooPosProductModel.WooPosProductType.External
+            "variation" -> WooPosProductModel.WooPosProductType.Variation
+            "subscription" -> WooPosProductModel.WooPosProductType.Subscription
+            "variable-subscription" -> WooPosProductModel.WooPosProductType.VariableSubscription
+            "bundle" -> WooPosProductModel.WooPosProductType.Bundle
+            "composite" -> WooPosProductModel.WooPosProductType.Composite
+            else -> WooPosProductModel.WooPosProductType.Custom
         }
     }
 

@@ -3,50 +3,55 @@ package com.woocommerce.android.ui.woopos.cardpayment
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -64,6 +69,19 @@ fun WooPosCardPaymentScreen(
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
     }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> viewModel.onScreenResumed()
+                Lifecycle.Event.ON_PAUSE -> viewModel.onScreenPaused()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     BackHandler { viewModel.onBackClicked() }
 
     WooPosCardPaymentScreenContent(
@@ -72,8 +90,6 @@ fun WooPosCardPaymentScreen(
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
         onConnectReaderClicked = viewModel::onConnectReaderClicked,
-        onDoneClicked = viewModel::onDoneClicked,
-        onEmailReceiptClicked = viewModel::onEmailReceiptClicked,
         onBackClicked = viewModel::onBackClicked,
         onCashPaymentClicked = viewModel::onCashPaymentClicked,
     )
@@ -86,8 +102,6 @@ private fun WooPosCardPaymentScreenContent(
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
     onConnectReaderClicked: () -> Unit,
-    onDoneClicked: () -> Unit,
-    onEmailReceiptClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -123,6 +137,7 @@ private fun WooPosCardPaymentScreenContent(
                     onConnectReaderClicked = onConnectReaderClicked,
                     showCashPaymentButton = showCashPaymentButton,
                     onCashPaymentClicked = onCashPaymentClicked,
+                    onBackClicked = onBackClicked,
                 )
             }
         }
@@ -140,16 +155,6 @@ private fun WooPosCardPaymentScreenContent(
                     onRetryClicked = onRetryClicked,
                     onDismissClicked = onDismissClicked,
                     onBackClicked = onBackClicked,
-                )
-            }
-        }
-
-        StateChangeAnimated(visible = state is WooPosCardPaymentState.PaymentSuccess) {
-            if (state is WooPosCardPaymentState.PaymentSuccess) {
-                CardPaymentSuccess(
-                    state = state,
-                    onDoneClicked = onDoneClicked,
-                    onEmailReceiptClicked = onEmailReceiptClicked,
                 )
             }
         }
@@ -185,35 +190,45 @@ private fun CardPaymentPreparingReader(
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-            WooPosText(
-                text = state.title,
-                style = WooPosTypography.BodyLarge,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            WooPosText(
-                text = state.subtitle,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        CashPaymentButton(
-            showCashPaymentButton = showCashPaymentButton,
-            onCashPaymentClicked = onCashPaymentClicked,
-        )
-    }
+    CardPaymentCenteredLayout(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier.size(256.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                }
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+                WooPosText(
+                    text = state.title,
+                    style = WooPosTypography.BodyLarge,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                WooPosText(
+                    text = state.subtitle,
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
+        },
+        buttons = {
+            if (showCashPaymentButton) {
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(604.dp),
+                    text = stringResource(R.string.woopos_cash_payment_title),
+                    onClick = onCashPaymentClicked,
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -222,63 +237,50 @@ private fun CardPaymentReadyForPayment(
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            val tapCardAnimation by rememberLottieComposition(
-                LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
-            )
-            LottieAnimation(
-                modifier = Modifier.size(256.dp),
-                composition = tapCardAnimation,
-                clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
-                iterations = LottieConstants.IterateForever,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-            WooPosText(
-                text = state.title,
-                style = WooPosTypography.BodyLarge,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            WooPosText(
-                text = state.subtitle,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
-            )
-        }
-        CashPaymentButton(
-            showCashPaymentButton = showCashPaymentButton,
-            onCashPaymentClicked = onCashPaymentClicked,
-        )
-    }
-}
-
-@Composable
-private fun BoxScope.CashPaymentButton(
-    showCashPaymentButton: Boolean,
-    onCashPaymentClicked: () -> Unit,
-) {
-    if (showCashPaymentButton) {
-        WooPosOutlinedButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = WooPosSpacing.Huge.value)
-                .height(80.dp)
-                .width(604.dp),
-            text = stringResource(R.string.woopos_cash_payment_title),
-            onClick = onCashPaymentClicked,
-        )
-    }
+    CardPaymentCenteredLayout(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val tapCardAnimation by rememberLottieComposition(
+                    LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
+                )
+                LottieAnimation(
+                    modifier = Modifier.size(256.dp),
+                    composition = tapCardAnimation,
+                    clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
+                    iterations = LottieConstants.IterateForever,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+                WooPosText(
+                    text = state.title,
+                    style = WooPosTypography.BodyLarge,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                WooPosText(
+                    text = state.subtitle,
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+                )
+            }
+        },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
+        },
+        buttons = {
+            if (showCashPaymentButton) {
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(604.dp),
+                    text = stringResource(R.string.woopos_cash_payment_title),
+                    onClick = onCashPaymentClicked,
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -287,56 +289,56 @@ private fun CardPaymentReaderDisconnected(
     onConnectReaderClicked: () -> Unit,
     showCashPaymentButton: Boolean,
     onCashPaymentClicked: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            modifier = Modifier.padding(WooPosSpacing.XLarge.value),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            Image(
-                modifier = Modifier.size(140.dp),
-                imageVector = WooPosIcons.CardReaderNotConnected,
-                contentDescription = stringResource(
-                    id = R.string.woopos_reader_not_connected_description
-                ),
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
-            WooPosText(
-                text = state.title,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-            WooPosText(
-                text = state.subtitle,
-                style = WooPosTypography.BodyLarge,
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
+    CardPaymentCenteredLayout(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+        onBackClicked = onBackClicked,
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    modifier = Modifier.size(140.dp),
+                    imageVector = WooPosIcons.CardReaderNotConnected,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_reader_not_connected_description
+                    ),
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+                WooPosText(
+                    text = state.title,
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                WooPosText(
+                    text = state.subtitle,
+                    style = WooPosTypography.BodyLarge,
+                )
+            }
+        },
+        summary = {
+            CardPaymentOrderSummary(totals = state.orderTotals)
+        },
+        buttons = {
             WooPosButton(
                 text = state.actionButtonLabel,
                 onClick = onConnectReaderClicked,
                 modifier = Modifier
-                    .fillMaxWidth(0.5f)
                     .height(80.dp)
+                    .width(604.dp)
             )
-        }
-        CashPaymentButton(
-            showCashPaymentButton = showCashPaymentButton,
-            onCashPaymentClicked = onCashPaymentClicked,
-        )
-    }
+            if (showCashPaymentButton) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(604.dp),
+                    text = stringResource(R.string.woopos_cash_payment_title),
+                    onClick = onCashPaymentClicked,
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -395,143 +397,306 @@ private fun CardPaymentFailed(
     onBackClicked: () -> Unit,
 ) {
     BackHandler { onBackClicked() }
+    CardPaymentCenteredLayout(
+        onBackClicked = onBackClicked,
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    modifier = Modifier.size(84.dp),
+                    imageVector = WooPosIcons.ErrorX,
+                    contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+                    tint = WooPosTheme.colors.unspecified,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+                WooPosText(
+                    text = state.title,
+                    style = WooPosTypography.BodyXLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                WooPosText(
+                    text = state.subtitle,
+                    style = WooPosTypography.BodyLarge,
+                )
+            }
+        },
+        summary = null,
+        buttons = {
+            if (state.actionButtonLabel != null) {
+                WooPosButton(
+                    text = state.actionButtonLabel,
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(604.dp),
+                    onClick = onRetryClicked,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            }
+            if (state.isDismissButtonVisible) {
+                WooPosOutlinedButton(
+                    modifier = Modifier.width(604.dp),
+                    text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
+                    onClick = onDismissClicked,
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun CardPaymentCenteredLayout(
+    modifier: Modifier = Modifier,
+    onBackClicked: (() -> Unit)? = null,
+    content: @Composable (() -> Unit),
+    summary: @Composable (() -> Unit)?,
+    buttons: @Composable (() -> Unit),
+) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = WooPosSpacing.Huge.value),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
-        Icon(
-            modifier = Modifier.size(84.dp),
-            imageVector = WooPosIcons.ErrorX,
-            contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
-            tint = WooPosTheme.colors.unspecified,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosText(
-            text = state.title,
-            style = WooPosTypography.BodyXLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        WooPosText(
-            text = state.subtitle,
-            style = WooPosTypography.BodyLarge,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosButton(
-            text = state.retryButtonLabel,
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp),
-            onClick = onRetryClicked,
-        )
-        if (state.isDismissButtonVisible) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-            WooPosOutlinedButton(
-                modifier = Modifier.width(604.dp),
-                text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
-                onClick = onDismissClicked,
+        if (onBackClicked != null) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.payment),
+                onBackClicked = onBackClicked,
             )
         }
-        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
+
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .defaultMinSize(minHeight = maxHeight)
+                    .padding(vertical = WooPosSpacing.XXXLarge.value),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                content()
+                if (summary != null) {
+                    summary()
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    buttons()
+                }
+            }
+        }
     }
 }
 
-@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
-private fun CardPaymentSuccess(
-    state: WooPosCardPaymentState.PaymentSuccess,
-    onDoneClicked: () -> Unit,
-    onEmailReceiptClicked: () -> Unit,
+private fun CardPaymentOrderSummary(
+    totals: WooPosOrderTotalsViewState,
+    modifier: Modifier = Modifier,
 ) {
-    val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = modifier
+            .fillMaxWidth(0.4f)
+            .padding(WooPosSpacing.Large.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        val hugeSpacing = WooPosSpacing.Huge.value
-        val mediumSpacing = WooPosSpacing.Medium.value
-        val marginBetweenButtonAndText by animateDpAsState(
-            targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
-                hugeSpacing
-            } else {
-                mediumSpacing
-            },
-            label = "Check mark size"
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_subtotal_label),
+            value = totals.subtotal,
         )
-        val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
-        val textsMargin = WooPosSpacing.Small.value
 
-        ConstraintLayout {
-            val (icon, title, message, buttonDone, buttonEmailReceipts) = createRefs()
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            WooPosSuccessCheckmark(
-                contentDescription = stringResource(R.string.woopos_payment_successful_label),
-                onAnimationStageChanged = { stage -> animationStage.value = stage },
-                modifier = Modifier
-                    .constrainAs(icon) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(title.top, margin = checkMarkIconMargin)
-                    }
+        totals.discount?.let {
+            OrderSummaryRow(
+                label = stringResource(R.string.woopos_payment_discount_label),
+                value = it,
             )
 
-            WooPosText(
-                text = stringResource(R.string.woopos_payment_successful_label),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.constrainAs(title) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(message.top, margin = textsMargin)
-                }
-            )
-
-            WooPosText(
-                text = state.orderTotalText,
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(message) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(buttonDone.top, margin = marginBetweenButtonAndText)
-                }
-            )
-
-            val marginBetweenButtons = WooPosSpacing.Medium.value
-            WooPosButton(
-                modifier = Modifier
-                    .constrainAs(buttonDone) {
-                        bottom.linkTo(buttonEmailReceipts.top, margin = marginBetweenButtons)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .height(80.dp)
-                    .width(604.dp),
-                onClick = onDoneClicked,
-                text = stringResource(R.string.woopos_card_payment_done_button)
-            )
-
-            WooPosOutlinedButton(
-                modifier = Modifier
-                    .constrainAs(buttonEmailReceipts) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .height(80.dp)
-                    .width(604.dp),
-                onClick = onEmailReceiptClicked,
-                text = stringResource(R.string.woopos_receipt_button)
-            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_tax_label),
+            value = totals.taxes,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        OrderSummaryRow(
+            label = stringResource(R.string.woopos_payment_total_label),
+            value = totals.total,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun OrderSummaryRow(
+    label: String,
+    value: String,
+    style: WooPosTypography = WooPosTypography.BodyLarge,
+    fontWeight: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        WooPosText(
+            text = label,
+            style = style,
+            fontWeight = fontWeight,
+        )
+        WooPosText(
+            text = value,
+            style = style,
+            fontWeight = fontWeight,
+        )
+    }
+}
+
+private fun previewOrderTotals() = WooPosOrderTotalsViewState(
+    subtotal = "$10.00",
+    discount = "-$2.00",
+    taxes = "$1.50",
+    total = "$9.50",
+)
+
+@WooPosPreview
+@Composable
+fun CardPaymentInitiatingPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Initiating,
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentPreparingReaderPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.Preparing(
+                title = "Preparing reader",
+                subtitle = "$12.50",
+                orderTotals = previewOrderTotals(),
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentReadyForPaymentPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.ReadyForPayment(
+                title = "Ready for payment",
+                subtitle = "Tap, insert, or swipe to pay $12.50",
+                orderTotals = previewOrderTotals(),
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentReaderDisconnectedPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.ReaderDisconnected(
+                title = "Reader disconnected",
+                subtitle = "Please reconnect your card reader",
+                actionButtonLabel = "Connect reader",
+                orderTotals = previewOrderTotals(),
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentInProgressPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentInProgress(
+                title = "Processing payment",
+                subtitle = "$12.50",
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentFailedWithRetryPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentFailed(
+                title = "Payment failed",
+                subtitle = "Please try again",
+                actionButtonLabel = "Try again",
+                isDismissButtonVisible = true,
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun CardPaymentFailedWithoutRetryPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentFailed(
+                title = "Payment failed",
+                subtitle = "Please try again",
+                actionButtonLabel = null,
+                isDismissButtonVisible = true,
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
     }
 }

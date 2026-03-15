@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
-import com.woocommerce.android.NavGraphPushNotificationsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -23,7 +22,6 @@ import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.Show2F
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
-import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowPushNotificationsConnectionSteps
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -31,7 +29,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -67,7 +64,6 @@ class WPComLoginPasswordFragment : BaseFragment() {
                 is ShowMagicLinkScreen -> navigateToMagicLinkScreen(event)
                 is ShowJetpackActivationScreen -> navigateToJetpackActivationScreen(event)
                 is ShowJetpackCPInstallationScreen -> navigateToJetpackCPInstallationScreen()
-                is ShowPushNotificationsConnectionSteps -> navigateToPushNotificationsConnectionSteps()
                 is GoToStore -> goToStore()
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -80,9 +76,12 @@ class WPComLoginPasswordFragment : BaseFragment() {
         findNavController().navigateSafely(
             WPComLoginPasswordFragmentDirections
                 .actionWPComLoginPasswordFragmentToWPComLogin2FAFragment(
-                    wpComLoginMode = event.wpComLoginMode,
+                    jetpackStatus = event.jetpackStatus,
                     emailOrUsername = event.emailOrUsername,
-                    password = event.password
+                    password = event.password,
+                    userId = event.userId,
+                    webauthnNonce = event.webauthnNonce,
+                    supportedAuthTypes = event.supportedAuthTypes.toTypedArray()
                 )
         )
     }
@@ -101,17 +100,11 @@ class WPComLoginPasswordFragment : BaseFragment() {
             WPComLoginPasswordFragmentDirections
                 .actionWPComLoginPasswordFragmentToWPComLoginMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
-                    wpComLoginMode = event.wpComLoginMode,
-                    fallbackButton = MagicLinkFallbackButton.Password,
-                    requestAtStart = true,
+                    jetpackStatus = event.jetpackStatus,
+                    fallbackButton = event.magicLinkFallbackButton,
+                    requestAtStart = event.requestAtStart,
                     isNewWpComAccount = false
                 )
-        )
-    }
-
-    private fun navigateToPushNotificationsConnectionSteps() {
-        findNavController().navigateSafely(
-            NavGraphPushNotificationsDirections.actionGlobalToWooPushNotificationsConnectionStepsFragment()
         )
     }
 

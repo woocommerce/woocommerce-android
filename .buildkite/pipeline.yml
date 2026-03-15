@@ -66,29 +66,30 @@ steps:
 
   ########################################
   - group: "🚀 Prototype Build"
+    # Mobile Prototype Builds are on-demand on `trunk`, but always built on PRs
+    # WearOS Prototype Builds are on-demand both on `trunk` and PRs
     steps:
-      - input: Build Prototype?
-        prompt: Select which app to build and distribute via Firebase App Distribution
-        key: prototype_build_triggered
-        fields:
-          - select: "App to Build"
-            key: "app-to-build"
-            hint: "Which WooCommerce app should be built? 📱"
-            required: true
-            default: "WooCommerce"
-            options:
-              - label: "📱 WooCommerce Mobile"
-                value: "WooCommerce"
-              - label: "⌚️ WooCommerce Wear"
-                value: "WooCommerce-Wear"
-              - label: "📱⌚️ Both"
-                value: "Both"
-      - label: ":firebase: Prototype Build"
-        depends_on: prototype_build_triggered
-        command: .buildkite/commands/prototype-build.sh
+      - input: Create a Mobile Prototype Build?
+        prompt: Share a Mobile Prototype Build via Firebase App Distribution?
+        key: mobile_prototype_build_triggered
+        if: build.branch == "trunk"
+      - label: ":firebase: Mobile Prototype Build"
+        # Buildkite considers this implicitly satisfied if `depends_on` step is skipped due to `if:` condition, so this will run unconditionally on PRs
+        # https://buildkite.com/docs/pipelines/configure/dependencies#how-skipped-steps-affect-dependencies
+        depends_on: mobile_prototype_build_triggered
+        command: .buildkite/commands/prototype-build.sh WooCommerce
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "WooCommerce/build/outputs/apk/**/*"
+
+      - input: Create a Wear Prototype Build?
+        prompt: Share a Wear Prototype Build? (it will be uploaded to AWS S3)
+        key: wear_prototype_build_triggered
+      - label: ":amazon-s3: Wear Prototype Build"
+        depends_on: wear_prototype_build_triggered
+        command: .buildkite/commands/prototype-build.sh WooCommerce-Wear
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
           - "WooCommerce-Wear/build/outputs/apk/**/*"
 
   ########################################

@@ -9,10 +9,11 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -22,6 +23,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -29,6 +31,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -54,7 +57,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)
@@ -66,17 +69,26 @@ class WooPosCardPaymentViewModelTest {
     private val uiStringParser: UiStringParser = mock {
         on { asString(any()) }.thenReturn("parsed error")
     }
-    private val priceFormat: WooPosFormatPrice = mock()
-    private val totalsRepository: WooPosTotalsRepository = mock()
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
+    private val cardPaymentRepository: WooPosCardPaymentRepository = mock()
+    private val priceFormat: WooPosFormatPrice = mock {
+        onBlocking { invoke(any<BigDecimal>()) } doReturn "$0.00"
+    }
+
+    private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(
+        productsTotal = BigDecimal.TEN,
+        discountTotal = BigDecimal.ZERO,
+        totalTax = BigDecimal.ONE,
+        total = BigDecimal.TEN,
+    )
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
 
     @Before
-    fun setUp() = runTest {
-        val order = Order.getEmptyOrder(Date(), Date()).copy(total = BigDecimal("50.00"))
-        whenever(totalsRepository.getOrderById(any())).thenReturn(order)
-        whenever(priceFormat(any<BigDecimal>())).thenReturn("$50.00")
+    fun setUp() {
+        runBlocking {
+            whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(testOrder)
+        }
     }
 
     private fun createViewModel(
@@ -98,9 +110,9 @@ class WooPosCardPaymentViewModelTest {
             networkStatus = networkStatus,
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
-            priceFormat = priceFormat,
-            totalsRepository = totalsRepository,
             analyticsTracker = analyticsTracker,
+            cardPaymentRepository = cardPaymentRepository,
+            priceFormat = priceFormat,
         )
     }
 
@@ -147,21 +159,47 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits PaymentSuccessful, then state is PaymentSuccess`() = runTest {
-        viewModel = createViewModel()
+    fun `given connected reader, when controller emits PaymentSuccessful, then OpenPaymentSuccess nav event emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenPaymentSuccess::class.java)
+            val successEvent = event as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(successEvent.source).isEqualTo(PaymentSuccessSource.CARD_BOOKINGS)
+        }
+    }
+
+    @Test
+    fun `given CHECKOUT source, when controller emits PaymentSuccessful, then OpenPaymentSuccess with CARD_CHECKOUT`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
         advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenPaymentSuccess::class.java)
+            val successEvent = event as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(successEvent.source).isEqualTo(PaymentSuccessSource.CARD_CHECKOUT)
+        }
     }
 
     @Test
@@ -243,8 +281,8 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given collecting state, when onBackClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel()
+    fun `given CHECKOUT source and collecting state, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
@@ -256,45 +294,18 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given BOOKINGS source, when onDoneClicked, then GoBackWithResult emitted`() = runTest {
+    fun `given BOOKINGS source, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted`() = runTest {
         viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
+            viewModel.onBackClicked()
 
             val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBackWithResult::class.java)
-            val resultEvent = event as WooPosNavigationEvent.GoBackWithResult
-            assertThat(resultEvent.key).isEqualTo(BOOKING_CARD_PAYMENT_SUCCESS_KEY)
-            assertThat(resultEvent.value).isEqualTo(true)
-        }
-    }
-
-    @Test
-    fun `given CHECKOUT source, when onDoneClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
-
-            val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBack::class.java)
-        }
-    }
-
-    @Test
-    fun `when onEmailReceiptClicked, then OpenEmailReceipt emitted`() = runTest {
-        viewModel = createViewModel(orderId = 42L)
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            viewModel.onEmailReceiptClicked()
-
-            val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenEmailReceipt::class.java)
-            assertThat((event as WooPosNavigationEvent.OpenEmailReceipt).orderId).isEqualTo(42L)
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+            val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+            assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
+            assertThat(navEvent.value).isEqualTo(true)
         }
     }
 
@@ -310,20 +321,44 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        controllerEventFlow.emit(
-            CardReaderPaymentEvent.ShowErrorMessage(
-                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-    }
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
+
+    @Test
+    fun `given controller emits ShowPaymentErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowPaymentErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
 
     @Test
     fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
@@ -331,17 +366,6 @@ class WooPosCardPaymentViewModelTest {
         advanceUntilIdle()
 
         verify(analyticsTracker).trackPaymentStates(any())
-    }
-
-    @Test
-    fun `when onEmailReceiptClicked, then trackEmailReceiptTapped called`() = runTest {
-        viewModel = createViewModel(orderId = 42L)
-        advanceUntilIdle()
-
-        viewModel.onEmailReceiptClicked()
-        advanceUntilIdle()
-
-        verify(analyticsTracker).trackEmailReceiptTapped()
     }
 
     @Test
@@ -375,9 +399,9 @@ class WooPosCardPaymentViewModelTest {
             networkStatus = networkStatus,
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
-            priceFormat = priceFormat,
-            totalsRepository = totalsRepository,
             analyticsTracker = analyticsTracker,
+            cardPaymentRepository = cardPaymentRepository,
+            priceFormat = priceFormat,
         )
         advanceUntilIdle()
 
@@ -417,6 +441,74 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
+    fun `given BOOKINGS source and order already paid error, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                viewModel.onBackClicked()
+
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+                val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+                assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
+                assertThat(navEvent.value).isEqualTo(true)
+            }
+        }
+
+    @Test
+    fun `given BOOKINGS source and order already paid error, when onDismissClicked, then NavigateBackToBookingsAfterPayment emitted`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                viewModel.onDismissClicked()
+
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+                val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+                assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
+                assertThat(navEvent.value).isEqualTo(true)
+            }
+        }
+
+    @Test
+    fun `given CHECKOUT source and order already paid error, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        controllerEventFlow.emit(
+            CardReaderPaymentEvent.ShowErrorMessage(
+                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onBackClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBack::class.java)
+        }
+    }
+
+    @Test
     fun `given BOOKINGS source, when onCashPaymentClicked, then payment is cancelled`() = runTest {
         viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()
@@ -426,5 +518,125 @@ class WooPosCardPaymentViewModelTest {
 
         verify(paymentController).onBackPressed()
         verify(paymentController).stop()
+    }
+
+    @Test
+    fun `given payment cancelled by cash navigation, when screen resumed, then payment restarts`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentClicked()
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.Collecting.Preparing::class.java)
+    }
+
+    @Test
+    fun `given reader disconnected after cash navigation, when screen resumed, then payment does not restart`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            viewModel.onCashPaymentClicked()
+            advanceUntilIdle()
+
+            readerStatusFlow.value = CardReaderStatus.NotConnected()
+            advanceUntilIdle()
+
+            viewModel.onScreenResumed()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value)
+                .isInstanceOf(WooPosCardPaymentState.Collecting.ReaderDisconnected::class.java)
+        }
+
+    @Test
+    fun `given payment failed, when screen resumed, then payment is not restarted`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentFailed
+            .ExternalReaderFailedPayment.Cancelable(
+                errorType = PaymentFlowError.Generic,
+                amountWithCurrencyLabel = "$50.00",
+                onCancel = {},
+                onRetry = {},
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `given collecting state, when screen paused, then payment is cancelled`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onScreenPaused()
+        advanceUntilIdle()
+
+        verify(paymentController).onBackPressed()
+        verify(paymentController).stop()
+    }
+
+    @Test
+    fun `given payment in progress, when screen paused, then payment is not cancelled`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
+            .ExternalReaderProcessingPayment(
+                amountWithCurrencyLabel = "$50.00",
+                onCancel = {}
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenPaused()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentInProgress::class.java)
+    }
+
+    @Test
+    fun `given order without discount, when init, then orderTotals discount is null`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.Collecting
+        assertThat(state.orderTotals.discount).isNull()
+    }
+
+    @Test
+    fun `given order with discount, when init, then orderTotals discount has negative prefix`() = runTest {
+        val orderWithDiscount = testOrder.copy(discountTotal = BigDecimal(5))
+        whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(orderWithDiscount)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.Collecting
+        assertThat(state.orderTotals.discount).startsWith("-")
+    }
+
+    @Test
+    fun `given order load fails, when init, then state is PaymentFailed`() = runTest {
+        whenever(cardPaymentRepository.fetchOrGetOrder(any())).thenReturn(null)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+        val failedState = viewModel.state.value as WooPosCardPaymentState.PaymentFailed
+        assertThat(failedState.isDismissButtonVisible).isTrue()
     }
 }

@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
-import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowPushNotificationsConnectionSteps
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,17 +41,6 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given push notifications setup, when login succeeds, then navigate to connection steps`() = testBlocking {
-        val viewModel = createViewModel()
-        val events = viewModel.event.captureValues()
-
-        val result = viewModel.onLoginSuccess(WPComLoginMode.PushNotificationsSetup)
-
-        assertThat(result.isSuccess).isTrue()
-        assertThat(events.last()).isEqualTo(ShowPushNotificationsConnectionSteps)
-    }
-
-    @Test
     fun `given jetpack setup with user not connected, when login succeeds, then show activation screen`() =
         testBlocking {
             val jetpackStatus = JetpackStatus(
@@ -65,7 +53,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(
@@ -88,7 +76,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(GoToStore)
@@ -106,7 +94,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(ShowJetpackCPInstallationScreen)

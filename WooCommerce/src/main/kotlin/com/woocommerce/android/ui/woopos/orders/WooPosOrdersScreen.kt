@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
@@ -101,6 +102,7 @@ fun WooPosOrdersScreen(
 
     WooPosOrdersScreen(
         state = state,
+        isSingleOrderMode = viewModel.isSingleOrderMode,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = viewModel::onRefresh,
@@ -113,6 +115,7 @@ fun WooPosOrdersScreen(
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
         onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
+        onRefundDetailsDialogDismissed = viewModel::onRefundDetailsDialogDismissed,
         onNavigationEvent = onNavigationEvent,
         refundReasonUpdate = refundReasonResult
     )
@@ -122,6 +125,7 @@ fun WooPosOrdersScreen(
 @Composable
 private fun WooPosOrdersScreen(
     state: WooPosOrdersState,
+    isSingleOrderMode: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -134,6 +138,7 @@ private fun WooPosOrdersScreen(
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
+    onRefundDetailsDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
 ) {
@@ -144,17 +149,24 @@ private fun WooPosOrdersScreen(
             .fillMaxSize()
     ) {
         when (state) {
-            is WooPosOrdersState.Content -> OrdersContent(
-                state = state,
-                scrollToTopEvent = scrollToTopEvent,
-                onRefresh = onRefresh,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
-                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent,
-                onSearchErrorRetry = onSearchErrorRetry,
-                onUIEvent = onUIEvent
-            )
+            is WooPosOrdersState.Content -> if (isSingleOrderMode) {
+                SingleOrderDetails(
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
+            } else {
+                OrdersListWithDetails(
+                    state = state,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    onOrderSelected = onOrderSelected,
+                    onEndOfOrdersListReached = onEndOfOrdersListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onSearchEvent = onSearchEvent,
+                    onSearchErrorRetry = onSearchErrorRetry,
+                    onUIEvent = onUIEvent
+                )
+            }
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
                 onActionClicked = onOrdersEmptyActionClicked,
@@ -166,12 +178,34 @@ private fun WooPosOrdersScreen(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersState.Loading -> WooPosOrdersLoadingScreen()
+            is WooPosOrdersState.Loading -> if (isSingleOrderMode) {
+                OrderDetailsLoadingPane(
+                    showOrderNumber = false,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            bottom = WooPosSpacing.XLarge.value
+                        )
+                )
+            } else {
+                WooPosOrdersLoadingScreen()
+            }
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {
+            val toolbarTitle = if (isSingleOrderMode) {
+                val orderNumber = (state as? WooPosOrdersState.Content)
+                    ?.selectedDetails?.number.orEmpty()
+                stringResource(R.string.woopos_order_title, orderNumber)
+            } else {
+                stringResource(R.string.woopos_orders_title)
+            }
             WooPosToolbar(
-                titleText = stringResource(R.string.woopos_orders_title),
+                titleText = toolbarTitle,
                 onBackClicked = onBackClicked,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -189,6 +223,12 @@ private fun WooPosOrdersScreen(
                         refundReasonUpdate = refundReasonUpdate
                     )
                 }
+                is WooPosOrdersState.Content.DialogState.RefundDetails -> {
+                    WooPosRefundDetailsDialog(
+                        dialogState = dialogState,
+                        onDismissRequest = onRefundDetailsDialogDismissed,
+                    )
+                }
                 WooPosOrdersState.Content.DialogState.Hidden -> Unit
             }
         }
@@ -196,7 +236,50 @@ private fun WooPosOrdersScreen(
 }
 
 @Composable
-private fun OrdersContent(
+private fun OrderDetailsPane(
+    state: WooPosOrdersState.Content,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    showOrderNumber: Boolean = true,
+) {
+    Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
+        when {
+            state.selectedDetails != null -> {
+                WooPosOrderDetails(
+                    modifier = Modifier.fillMaxHeight(),
+                    details = state.selectedDetails,
+                    showOrderNumber = showOrderNumber,
+                    onUIEvent = onUIEvent
+                )
+            }
+            state.items is WooPosOrdersState.Content.Items.Searching -> {
+                OrderDetailsLoadingPane(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .statusBarsPadding()
+                        .padding(
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            top = WooPosSpacing.XLarge.value,
+                            bottom = WooPosSpacing.XLarge.value
+                        )
+                )
+            }
+            else -> {
+                WooPosEmptyScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    icon = WooPosIcons.OrdersEmpty,
+                    title = stringResource(R.string.woopos_orders_no_order_selected),
+                    message = "",
+                    contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrdersListWithDetails(
     state: WooPosOrdersState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
@@ -223,45 +306,26 @@ private fun OrdersContent(
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceBright)
         )
-
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when {
-                state.selectedDetails != null -> {
-                    WooPosOrderDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = state.selectedDetails,
-                        onUIEvent = onUIEvent
-                    )
-                }
-                state.items is WooPosOrdersState.Content.Items.Searching -> {
-                    OrderDetailsLoadingPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(
-                                start = WooPosSpacing.Medium.value,
-                                end = WooPosSpacing.Medium.value,
-                                top = WooPosSpacing.XLarge.value,
-                                bottom = WooPosSpacing.XLarge.value
-                            )
-                    )
-                }
-                else -> {
-                    WooPosEmptyScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
-                        title = stringResource(R.string.woopos_orders_no_order_selected),
-                        message = "",
-                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                    )
-                }
-            }
-        }
+        OrderDetailsPane(
+            state = state,
+            onUIEvent = onUIEvent,
+            showOrderNumber = true,
+            modifier = Modifier.weight(0.7f)
+        )
     }
+}
+
+@Composable
+private fun SingleOrderDetails(
+    state: WooPosOrdersState.Content,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+) {
+    OrderDetailsPane(
+        state = state,
+        onUIEvent = onUIEvent,
+        showOrderNumber = false,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -625,6 +689,7 @@ fun WooPosOrdersScreenPreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
+            onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -662,6 +727,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
+            onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -699,6 +765,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
+            onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -725,12 +792,13 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
+            onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {},
         )
     }
 }
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "LongMethod")
 private fun sampleOrderDetails(
     id: Long = 1L,
     number: String = "#014"
@@ -740,39 +808,55 @@ private fun sampleOrderDetails(
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
-    lineItems = listOf(
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 101,
-            name = "Cup",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $8.50",
-            lineTotal = "$15.00",
-            imageUrl = null
-        ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 102,
-            name = "Coffee Container",
-            attributesDescription = "Blue, Large",
-            qtyAndUnitPrice = "1 x $10.00",
-            lineTotal = "$8.00",
-            imageUrl = null
-        ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            id = 103,
-            name = "Paper Filter",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $4.50",
-            lineTotal = "$8.00",
-            imageUrl = null
+    lineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(
+        listOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 101,
+                name = "Cup",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $8.50",
+                lineTotal = "$15.00",
+                imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 102,
+                name = "Coffee Container",
+                attributesDescription = "Blue, Large",
+                qtyAndUnitPrice = "1 x $10.00",
+                lineTotal = "$8.00",
+                imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 103,
+                name = "Paper Filter",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $4.50",
+                lineTotal = "$8.00",
+                imageUrl = null
+            )
         )
     ),
+    refundedLineItems = WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState.Loaded(emptyList()),
     breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",
         discount = "-$5.00",
         discountCode = "8qew4mnq",
         taxes = "$0.00",
         shipping = null,
-        refunds = listOf("-$3.00", "-$2.00"),
+        refunds = listOf(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                label = "Refund #1",
+                amount = "-$3.00",
+                date = "Aug 29, 2025 at 12:26 PM",
+                reason = "Customer bought an extra item.",
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                label = "Refund #2",
+                amount = "-$2.00",
+                date = "Aug 30, 2025 at 2:15 PM",
+                reason = null,
+            ),
+        ),
         netPayment = "$12.00"
     ),
     total = "$17.00",

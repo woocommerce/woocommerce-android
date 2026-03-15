@@ -87,6 +87,10 @@ data class WCMetaData(
         const val BUNDLED_ITEM_ID = "_bundled_item_id"
     }
 
+    object BookingMetadataKeys {
+        const val BOOKING_ID = "_booking_id"
+    }
+
     object OrderAttributionInfoKeys {
         const val SOURCE_TYPE = "_wc_order_attribution_source_type"
         const val CAMPAIGN = "_wc_order_attribution_utm_campaign"
@@ -108,6 +112,10 @@ data class WCMetaData(
 
     object AddOnsMetadataKeys {
         const val ADDONS_METADATA_KEY = "_product_addons"
+    }
+
+    object PaymentMetadataKeys {
+        const val PAYMENT_STATUS = "_payment_status"
     }
 }
 

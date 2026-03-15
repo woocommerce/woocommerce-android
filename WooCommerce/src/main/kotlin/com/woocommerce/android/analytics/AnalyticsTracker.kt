@@ -8,7 +8,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
-import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -247,6 +246,7 @@ class AnalyticsTracker private constructor(
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
         const val KEY_TAP = "tap"
+        const val KEY_BUTTON_LABEL = "button_label"
         const val KEY_FAILURE = "failure"
         const val KEY_SCANNING_SOURCE = "source"
         const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
