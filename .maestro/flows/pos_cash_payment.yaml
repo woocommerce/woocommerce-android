@@ -15,20 +15,9 @@ name: "POS - Cash payment flow"
 tags:
   - smoke
   - pos
-env:
-  WOO_EMAIL: ${WOO_EMAIL}
-  WOO_PASSWORD: ${WOO_PASSWORD}
-  WOO_STORE_URL: ${WOO_STORE_URL}
 ---
-# Login
-- runFlow:
-    file: ../subflows/login.yaml
-    env:
-      WOO_EMAIL: ${WOO_EMAIL}
-      WOO_PASSWORD: ${WOO_PASSWORD}
-      WOO_STORE_URL: ${WOO_STORE_URL}
-
 # Navigate to POS tab (only available on tablets with POS enabled)
+# Login handled by onFlowStart hook
 - runFlow:
     when:
       visible:

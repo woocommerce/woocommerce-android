@@ -1,6 +1,9 @@
 # Smoke Test: Successful Login via Store Address
 # P2 ref: Login > Jetpack (site address + WP.com credentials)
 #
+# This flow manages its own login (the onFlowStart hook login will be
+# overridden by clearState in the login subflow called here).
+#
 # Prerequisites:
 #   - WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD env vars set
 #
@@ -11,19 +14,8 @@ name: "Login - Successful store login"
 tags:
   - smoke
   - login
-env:
-  WOO_EMAIL: ${WOO_EMAIL}
-  WOO_PASSWORD: ${WOO_PASSWORD}
-  WOO_STORE_URL: ${WOO_STORE_URL}
 ---
-- runFlow:
-    file: ../subflows/login.yaml
-    env:
-      WOO_EMAIL: ${WOO_EMAIL}
-      WOO_PASSWORD: ${WOO_PASSWORD}
-      WOO_STORE_URL: ${WOO_STORE_URL}
-
-# Verify we landed on the Dashboard
+# Verify we landed on the Dashboard (login was handled by onFlowStart hook)
 - assertVisible:
     id: "dashboard"
     label: "Verify Dashboard tab is visible after login"

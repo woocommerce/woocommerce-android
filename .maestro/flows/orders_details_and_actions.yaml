@@ -12,20 +12,8 @@ name: "Orders - Detail view and actions"
 tags:
   - smoke
   - orders
-env:
-  WOO_EMAIL: ${WOO_EMAIL}
-  WOO_PASSWORD: ${WOO_PASSWORD}
-  WOO_STORE_URL: ${WOO_STORE_URL}
 ---
-# Login
-- runFlow:
-    file: ../subflows/login.yaml
-    env:
-      WOO_EMAIL: ${WOO_EMAIL}
-      WOO_PASSWORD: ${WOO_PASSWORD}
-      WOO_STORE_URL: ${WOO_STORE_URL}
-
-# Navigate to Orders
+# Navigate to Orders (login handled by onFlowStart hook)
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 

@@ -12,20 +12,8 @@ name: "Products - Product detail view"
 tags:
   - smoke
   - products
-env:
-  WOO_EMAIL: ${WOO_EMAIL}
-  WOO_PASSWORD: ${WOO_PASSWORD}
-  WOO_STORE_URL: ${WOO_STORE_URL}
 ---
-# Login
-- runFlow:
-    file: ../subflows/login.yaml
-    env:
-      WOO_EMAIL: ${WOO_EMAIL}
-      WOO_PASSWORD: ${WOO_PASSWORD}
-      WOO_STORE_URL: ${WOO_STORE_URL}
-
-# Navigate to Products
+# Navigate to Products (login handled by onFlowStart hook)
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 

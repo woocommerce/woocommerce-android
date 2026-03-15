@@ -1,5 +1,6 @@
 # Reusable login subflow
 # Logs into the WooCommerce app with store URL + email + password.
+# Called automatically via onFlowStart hook in config.yaml.
 #
 # Required env vars: WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD
 appId: com.woocommerce.android.dev

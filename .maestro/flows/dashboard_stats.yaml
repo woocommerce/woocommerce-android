@@ -12,20 +12,8 @@ name: "Dashboard - Stats and analytics"
 tags:
   - smoke
   - dashboard
-env:
-  WOO_EMAIL: ${WOO_EMAIL}
-  WOO_PASSWORD: ${WOO_PASSWORD}
-  WOO_STORE_URL: ${WOO_STORE_URL}
 ---
-# Login first
-- runFlow:
-    file: ../subflows/login.yaml
-    env:
-      WOO_EMAIL: ${WOO_EMAIL}
-      WOO_PASSWORD: ${WOO_PASSWORD}
-      WOO_STORE_URL: ${WOO_STORE_URL}
-
-# Verify dashboard container loads
+# Verify dashboard container loads (login handled by onFlowStart hook)
 - assertVisible:
     id: "dashboard_container"
     label: "Dashboard container is visible"
