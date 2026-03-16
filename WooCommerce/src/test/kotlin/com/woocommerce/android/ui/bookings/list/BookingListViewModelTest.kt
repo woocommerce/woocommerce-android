@@ -363,6 +363,54 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given Today tab, when filters are changed, then bookings are refetched with filters`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = anyOrNull(),
+            filters = argThat { customer == customerFilter },
+            sortBy = any()
+        )
+    }
+
+    @Test
+    fun `given Upcoming tab, when filters are changed, then bookings are refetched with filters`() = testBlocking {
+        // GIVEN
+        setup()
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.Upcoming)
+        advanceUntilIdle()
+
+        // WHEN
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = anyOrNull(),
+            filters = argThat {
+                customer == customerFilter &&
+                    excludedBookingStatuses == BookingsFilterOption.ExcludedBookingStatuses(
+                        setOf(BookingEntity.Status.Cancelled, BookingEntity.Status.Complete)
+                    )
+            },
+            sortBy = any()
+        )
+    }
+
+    @Test
     fun `given enabled filters, when controls state is observed, then enabledFiltersCount is correct`() = testBlocking {
         // GIVEN
         setup()

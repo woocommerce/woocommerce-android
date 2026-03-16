@@ -6,13 +6,13 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -56,7 +56,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                         return@map ViewState.NotConnected
                     }
 
-                    when (checkWCPluginSupport()) {
+                    when (checkWCPluginSupport(forceRefresh = true)) {
                         CheckWooPluginPushNotificationsSupport.Result.Compatible -> ViewState.Connected
                         is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> ViewState.UpdateRequired
                         CheckWooPluginPushNotificationsSupport.Result.Error -> ViewState.GenericError

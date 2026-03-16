@@ -112,6 +112,28 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets a paginated list of products from the local database.
+     *
+     * @param [siteId] The local site ID
+     * @param [pageSize] The number of results to return
+     * @param [offset] The offset for pagination
+     * @return Result containing the list of products or error
+     */
+    suspend fun getProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosProductEntity>> =
+        coroutineEngine.withDefaultContext(API, this, "getProducts") {
+            val products = posProductDao.getProducts(
+                localSiteId = siteId,
+                limit = pageSize.coerceIn(1, MAX_PAGE_SIZE),
+                offset = offset.coerceAtLeast(0)
+            )
+            Result.success(products)
+        }
+
+    /**
      * Searches products in the local database by name, SKU, or global unique ID.
      *
      * @param [siteId] The local site ID
@@ -145,9 +167,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "searchProductsFts") {
             val ftsQuery = formatFtsQuery(searchQuery)
             if (ftsQuery.isBlank()) {
-                return@withDefaultContext Result.failure(
-                    IllegalArgumentException("Search query is blank after formatting")
-                )
+                return@withDefaultContext Result.success(emptyList())
             }
 
             val ftsResults = posFtsDao.search(

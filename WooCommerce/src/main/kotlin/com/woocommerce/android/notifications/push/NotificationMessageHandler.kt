@@ -15,6 +15,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -25,7 +26,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,7 +40,7 @@ class NotificationMessageHandler @Inject constructor(
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
-    private val siteStore: SiteStore,
+    private val getWooVisibleSites: GetWooVisibleSites,
     private val selectedSite: SelectedSite,
     private val workManagerScheduler: WorkManagerScheduler
 ) {
@@ -93,13 +93,13 @@ class NotificationMessageHandler @Inject constructor(
         val pushUserId = messageData[PUSH_ARG_USER]
 
         // We need to filter out duplicate notifications from the WPCOM system
+        if (!isWooSiteVisible(notification.remoteSiteId)) {
+            wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
+            return
+        }
         if (isRegisteredForWooPush) {
             if (notification.remoteNoteId > 0L) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
-                return
-            }
-            if (siteStore.visibleSites.none { it.siteId == notification.remoteSiteId }) {
-                wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
                 return
             }
         } else if (!accountStore.hasAccessToken()) {
@@ -117,6 +117,10 @@ class NotificationMessageHandler @Inject constructor(
 
         dispatchBackgroundEvents(notificationModel)
         handleWooNotification(notification)
+    }
+
+    private fun isWooSiteVisible(siteId: Long): Boolean = runBlocking {
+        getWooVisibleSites().any { it.siteId == siteId }
     }
 
     private fun dispatchBackgroundEvents(notificationModel: NotificationModel) {

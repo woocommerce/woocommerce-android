@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.test.runTest
@@ -34,6 +35,7 @@ class WooPosFileBasedSyncActionTest {
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val logger: WooPosLogWrapper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private lateinit var site: SiteModel
 
     private val defaultUrl = "https://example.com/catalog.json"
@@ -76,7 +78,8 @@ class WooPosFileBasedSyncActionTest {
             syncWithFts = syncWithFts,
             preferencesRepository = preferencesRepository,
             syncTimestampManager = syncTimestampManager,
-            logger = logger
+            logger = logger,
+            analyticsTracker = analyticsTracker,
         )
         site = SiteModel().apply {
             id = 1
