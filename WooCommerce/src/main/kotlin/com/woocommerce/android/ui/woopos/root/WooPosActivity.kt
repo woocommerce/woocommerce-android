@@ -7,11 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.common.composeui.LocalIsPhoneMode
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
@@ -20,6 +22,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+private const val PHONE_MAX_SMALLEST_WIDTH_DP = 600
 
 @AndroidEntryPoint
 class WooPosActivity : AppCompatActivity() {
@@ -41,7 +45,13 @@ class WooPosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        val isPhone = resources.configuration.smallestScreenWidthDp < PHONE_MAX_SMALLEST_WIDTH_DP
+        requestedOrientation = if (isPhone) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
 
         lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
@@ -49,8 +59,10 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosPeriodicSyncFacade)
 
         setContent {
-            WooPosTheme {
-                WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
+            CompositionLocalProvider(LocalIsPhoneMode provides isPhone) {
+                WooPosTheme {
+                    WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
+                }
             }
         }
     }

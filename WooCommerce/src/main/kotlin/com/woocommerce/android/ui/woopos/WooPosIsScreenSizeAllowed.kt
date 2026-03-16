@@ -32,7 +32,7 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
     }
 
     private companion object {
-        const val MIN_SCREEN_SHORT_SIZE_DP = 674
-        const val MIN_SCREEN_LONG_SIZE_DP = 800
+        const val MIN_SCREEN_SHORT_SIZE_DP = 320
+        const val MIN_SCREEN_LONG_SIZE_DP = 480
     }
 }

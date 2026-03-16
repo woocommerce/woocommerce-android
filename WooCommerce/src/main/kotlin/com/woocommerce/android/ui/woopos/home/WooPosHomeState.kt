@@ -13,6 +13,9 @@ data class WooPosHomeState(
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
         @Parcelize
+        data object PhoneProductsBrowsing : ScreenPositionState()
+
+        @Parcelize
         data object Cart : ScreenPositionState()
 
         @Parcelize

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.WooPosIsPhoneMode
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
@@ -31,6 +32,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
+    private val isPhoneMode: WooPosIsPhoneMode,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -38,7 +40,11 @@ class WooPosHomeViewModel @Inject constructor(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = ScreenPositionState.Cart,
+            screenPositionState = if (isPhoneMode()) {
+                ScreenPositionState.PhoneProductsBrowsing
+            } else {
+                ScreenPositionState.Cart
+            },
             dialogState = DialogState.Hidden,
         )
     )
@@ -65,6 +71,12 @@ class WooPosHomeViewModel @Inject constructor(
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> handleSystemBackClicked()
+
+            WooPosHomeUIEvent.CartFabClicked -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+            }
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
@@ -97,6 +109,21 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun handleSystemBackClicked() {
         when (_state.value.screenPositionState) {
+            ScreenPositionState.PhoneProductsBrowsing -> {
+                when (_state.value.dialogState) {
+                    DialogState.Hidden -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.ExitConfirmationDialog
+                        )
+                    }
+                    else -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.Hidden
+                        )
+                    }
+                }
+            }
+
             ScreenPositionState.Checkout.CartWithTotals -> {
                 _state.value = _state.value.copy(
                     screenPositionState = ScreenPositionState.Cart
@@ -114,16 +141,22 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             is ScreenPositionState.Cart -> {
-                when (_state.value.dialogState) {
-                    DialogState.Hidden -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.ExitConfirmationDialog
-                        )
-                    }
-                    else -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.Hidden
-                        )
+                if (isPhoneMode()) {
+                    _state.value = _state.value.copy(
+                        screenPositionState = ScreenPositionState.PhoneProductsBrowsing
+                    )
+                } else {
+                    when (_state.value.dialogState) {
+                        DialogState.Hidden -> {
+                            _state.value = _state.value.copy(
+                                dialogState = DialogState.ExitConfirmationDialog
+                            )
+                        }
+                        else -> {
+                            _state.value = _state.value.copy(
+                                dialogState = DialogState.Hidden
+                            )
+                        }
                     }
                 }
             }
@@ -159,9 +192,14 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OnNewTransactionStarted -> {
-                        if (_state.value.screenPositionState !is ScreenPositionState.Cart) {
+                        val targetState = if (isPhoneMode()) {
+                            ScreenPositionState.PhoneProductsBrowsing
+                        } else {
+                            ScreenPositionState.Cart
+                        }
+                        if (_state.value.screenPositionState != targetState) {
                             _state.value = _state.value.copy(
-                                screenPositionState = ScreenPositionState.Cart
+                                screenPositionState = targetState
                             )
                         }
                     }

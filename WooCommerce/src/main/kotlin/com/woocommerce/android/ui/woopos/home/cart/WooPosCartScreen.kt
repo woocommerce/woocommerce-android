@@ -91,11 +91,14 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemoved
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosCartScreen(modifier: Modifier = Modifier) {
+fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
+    onPhoneBackClick: (() -> Unit)? = null,
+) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
+        WooPosCartScreen(modifier, it, onPhoneBackClick, viewModel::onUIEvent)
     }
 }
 
@@ -104,6 +107,7 @@ fun WooPosCartScreen(modifier: Modifier = Modifier) {
 private fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
+    onPhoneBackClick: (() -> Unit)? = null,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     ConstraintLayout(
@@ -119,9 +123,13 @@ private fun WooPosCartScreen(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            toolbar = state.toolbar,
+            toolbar = if (onPhoneBackClick != null) {
+                state.toolbar.copy(backIconVisible = true)
+            } else {
+                state.toolbar
+            },
             onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-            onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+            onBackClicked = { onPhoneBackClick?.invoke() ?: onUIEvent(WooPosCartUIEvent.BackClicked) },
         )
 
         when (state.body) {

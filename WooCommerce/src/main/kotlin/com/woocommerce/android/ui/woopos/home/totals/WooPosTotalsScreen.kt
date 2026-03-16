@@ -44,6 +44,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.LocalIsPhoneMode
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -235,17 +236,19 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        if (!LocalIsPhoneMode.current) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-                .padding(bottom = WooPosSpacing.XLarge.value)
-                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
-        )
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
+                    .padding(bottom = WooPosSpacing.XLarge.value)
+                    .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+            )
+        }
     }
 }
 
@@ -322,23 +325,26 @@ private fun ReaderDisconnected(
             text = status.subtitle,
             style = WooPosTypography.BodyLarge,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosButton(
-            text = status.actionButtonLabel,
-            onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(80.dp)
-        )
+        if (!LocalIsPhoneMode.current) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+            WooPosButton(
+                text = status.actionButtonLabel,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(80.dp)
+            )
+        }
     }
 }
 
 @Composable
 private fun TotalsGrid(totals: Totals.Visible) {
+    val gridWidthFraction = if (LocalIsPhoneMode.current) 1f else 0.5f
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .fillMaxWidth(gridWidthFraction),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

@@ -62,11 +62,12 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
-fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
+fun WooPosFloatingToolbar(modifier: Modifier = Modifier, isCompact: Boolean = false) {
     val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),
+        isCompact = isCompact,
     ) { uiEvent ->
         viewModel.onUiEvent(uiEvent)
     }
@@ -76,6 +77,7 @@ fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
 private fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
     state: State<WooPosHomeFloatingToolbarState>,
+    isCompact: Boolean = false,
     onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit,
 ) {
     val cardReaderStatus = state.value.cardReaderStatus
@@ -110,6 +112,7 @@ private fun WooPosFloatingToolbar(
                             },
                         cardReaderStatus = cardReaderStatus,
                         menuCardDisabled = false,
+                        isCompact = isCompact,
                         onUIEvent = onUIEvent
                     )
                 }
@@ -123,6 +126,7 @@ private fun WooPosFloatingToolbar(
                             },
                         cardReaderStatus = cardReaderStatus,
                         menuCardDisabled = true,
+                        isCompact = isCompact,
                         onUIEvent = onUIEvent
                     )
 
@@ -152,6 +156,7 @@ private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
+    isCompact: Boolean = false,
     onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit
 ) {
     val labels = getToolbarAccessibilityLabels(cardReaderStatus, menuCardDisabled)
@@ -173,6 +178,7 @@ private fun Toolbar(
                 },
             state = cardReaderStatus,
             menuCardDisabled = menuCardDisabled,
+            isCompact = isCompact,
         ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
@@ -192,6 +198,7 @@ private fun Toolbar(
                     stateDescription = labels.floatingToolbarPopUpMenuStateDescription
                 },
             menuCardDisabled = menuCardDisabled,
+            isCompact = isCompact,
         ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked) }
     }
 }
@@ -200,9 +207,11 @@ private fun Toolbar(
 private fun MenuButtonWithPopUpMenu(
     modifier: Modifier,
     menuCardDisabled: Boolean,
+    isCompact: Boolean = false,
     onClick: () -> Unit
 ) {
     val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
+    val buttonSize = if (isCompact) 56.dp else 80.dp
     WooPosCard(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -212,7 +221,7 @@ private fun MenuButtonWithPopUpMenu(
         TextButton(
             modifier = Modifier
                 .semantics { contentDescription = menuContentDescription }
-                .size(80.dp),
+                .size(buttonSize),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
             colors = ButtonDefaults.textButtonColors(
@@ -292,6 +301,7 @@ private fun CardReaderStatusButton(
     modifier: Modifier,
     state: WooPosCardReaderStatus,
     menuCardDisabled: Boolean,
+    isCompact: Boolean = false,
     onClick: () -> Unit
 ) {
     val transition = updateTransition(
@@ -327,9 +337,10 @@ private fun CardReaderStatusButton(
         }
     }
 
+    val cardHeight = if (isCompact) 56.dp else 80.dp
     WooPosCard(
         modifier = modifier
-            .height(80.dp),
+            .height(cardHeight),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -345,21 +356,37 @@ private fun CardReaderStatusButton(
                 onClick = onClick,
                 modifier = Modifier
                     .padding(WooPosSpacing.Small.value)
-                    .border(
-                        width = 2.dp,
-                        color = borderColor,
-                        shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
+                    .then(
+                        if (!isCompact) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = borderColor,
+                                shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
+                            )
+                        } else {
+                            Modifier
+                        }
                     )
                     .height(40.dp),
             ) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                Circle(size = 14.dp, color = illustrationColor)
-                Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-                ReaderStatusText(
-                    modifier = Modifier.animateContentSize(),
-                    title = title,
+                Spacer(
+                    modifier = Modifier.width(
+                        if (isCompact) WooPosSpacing.Small.value else WooPosSpacing.Medium.value
+                    )
                 )
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                Circle(size = 14.dp, color = illustrationColor)
+                if (!isCompact) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                    ReaderStatusText(
+                        modifier = Modifier.animateContentSize(),
+                        title = title,
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.width(
+                        if (isCompact) WooPosSpacing.Small.value else WooPosSpacing.Medium.value
+                    )
+                )
             }
         }
     }

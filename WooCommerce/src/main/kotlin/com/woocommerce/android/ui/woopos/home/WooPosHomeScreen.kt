@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.common.composeui.LocalIsPhoneMode
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -82,6 +83,11 @@ private fun WooPosHomeScreen(
         onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
     }
 
+    if (LocalIsPhoneMode.current) {
+        WooPosPhoneHomeScreen(state = state, onHomeUIEvent = onHomeUIEvent)
+        return
+    }
+
     val current = LocalConfiguration.current
     val screenWidthDp = remember { current.screenWidthDp.dp }
     val cartWidthDp = remember(screenWidthDp) { screenWidthDp * .35f }
@@ -91,6 +97,7 @@ private fun WooPosHomeScreen(
     val productsWidthAnimatedDp by animateDpAsState(
         when (state.screenPositionState) {
             is WooPosHomeState.ScreenPositionState.Cart,
+            WooPosHomeState.ScreenPositionState.PhoneProductsBrowsing,
             WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> productsWidthDp
 
             WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals -> productsWidthDp - cartWidthDp
@@ -102,6 +109,7 @@ private fun WooPosHomeScreen(
         when (state.screenPositionState) {
             is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals -> screenWidthDp
             is WooPosHomeState.ScreenPositionState.Cart,
+            WooPosHomeState.ScreenPositionState.PhoneProductsBrowsing,
             WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> totalsWidthDp
         },
         label = "totalsWidthAnimatedDp"
@@ -137,6 +145,7 @@ private fun WooPosHomeScreen(
                 },
                 enabled = (
                     state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
+                        state.screenPositionState is WooPosHomeState.ScreenPositionState.PhoneProductsBrowsing ||
                         state.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
                     ) && state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
             )
@@ -237,7 +246,8 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState.Scr
     LaunchedEffect(state) {
         val animationSpec = spring<Float>(dampingRatio = 0.8f, stiffness = 200f)
         when (state) {
-            is WooPosHomeState.ScreenPositionState.Cart ->
+            is WooPosHomeState.ScreenPositionState.Cart,
+            is WooPosHomeState.ScreenPositionState.PhoneProductsBrowsing ->
                 scrollState.animateScrollTo(
                     0,
                     animationSpec = animationSpec
