@@ -52,20 +52,26 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         return "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
     }
 
-    fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener = {}) {
+    fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener? = null) {
         when (mode) {
             Mode.OrderEdit -> {
+                val listener = requireNotNull(editOrderStatusClickListener) {
+                    "editOrderStatusClickListener must be provided when mode is OrderEdit"
+                }
                 binding.orderStatusEditImage.isVisible = true
                 with(binding.orderStatusContainer) {
                     isClickable = true
                     isFocusable = true
-                    setOnClickListener(editOrderStatusClickListener)
+                    setOnClickListener(listener)
                 }
             }
             Mode.ReadOnly -> {
                 binding.orderStatusEditImage.isVisible = false
-                binding.orderStatusContainer.isClickable = false
-                binding.orderStatusContainer.isFocusable = false
+                with(binding.orderStatusContainer) {
+                    isClickable = false
+                    isFocusable = false
+                    setOnClickListener(null)
+                }
             }
         }
     }
