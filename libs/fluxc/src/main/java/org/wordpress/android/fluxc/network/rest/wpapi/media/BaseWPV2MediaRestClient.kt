@@ -175,6 +175,8 @@ abstract class BaseWPV2MediaRestClient(
                 val errorMessage = "Fail to fetch media. Response: $response"
                 AppLog.w(MEDIA, errorMessage)
                 val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
+                error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
+                error.apiErrorCode = response.error.errorCode
                 error.logMessage = errorMessage
                 MediaPayload(site, null, error)
             }
@@ -225,7 +227,9 @@ abstract class BaseWPV2MediaRestClient(
             is WPAPIResponse.Error -> {
                 val errorMessage = "could not parse Fetch all media response: $response"
                 AppLog.w(MEDIA, errorMessage)
-                val error = MediaError(MediaErrorType.PARSE_ERROR)
+                val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
+                error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
+                error.apiErrorCode = response.error.errorCode
                 error.logMessage = errorMessage
                 FetchMediaListResponsePayload(site, error, mimeType)
             }
@@ -260,6 +264,7 @@ abstract class BaseWPV2MediaRestClient(
                 mediaError.message = it
             }
             jsonBody.optString("code").takeIf { it.isNotEmpty() }?.let {
+                mediaError.apiErrorCode = it
                 mediaError.logMessage = it
             }
         } catch (e: JSONException) {

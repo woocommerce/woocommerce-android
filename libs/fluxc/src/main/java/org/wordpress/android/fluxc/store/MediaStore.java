@@ -163,6 +163,7 @@ public class MediaStore extends Store {
         @NonNull public MediaErrorType type;
         @Nullable public MediaErrorSubType mErrorSubType;
         @Nullable public String message;
+        @Nullable public String apiErrorCode;
         public int statusCode;
         @Nullable public String logMessage;
 
