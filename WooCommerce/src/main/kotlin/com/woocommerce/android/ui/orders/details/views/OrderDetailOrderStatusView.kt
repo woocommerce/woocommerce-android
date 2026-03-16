@@ -37,7 +37,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         binding.orderStatusSubtitle.text = getFormattedDate(order.dateCreated)
 
         when (mode) {
-            Mode.OrderEdit -> {
+            Mode.OrderEdit, Mode.ReadOnly -> {
                 binding.orderStatusHeader.text =
                     order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
@@ -63,13 +63,13 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             Mode.OrderCreation -> {
                 date.getMediumDate(context)
             }
-            Mode.OrderEdit -> {
+            Mode.OrderEdit, Mode.ReadOnly -> {
                 "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
             }
         }
     }
 
-    fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener) {
+    fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener = {}) {
         this.mode = mode
         when (mode) {
             Mode.OrderEdit -> {
@@ -86,10 +86,15 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                     setOnClickListener(editOrderStatusClickListener)
                 }
             }
+            Mode.ReadOnly -> {
+                binding.orderStatusEditImage.isVisible = false
+                binding.orderStatusContainer.isClickable = false
+                binding.orderStatusContainer.isFocusable = false
+            }
         }
     }
 
     enum class Mode {
-        OrderCreation, OrderEdit
+        OrderCreation, OrderEdit, ReadOnly
     }
 }
