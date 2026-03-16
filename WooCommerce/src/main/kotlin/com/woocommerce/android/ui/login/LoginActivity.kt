@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
@@ -623,7 +624,7 @@ class LoginActivity :
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
-        if (result.hasJetpack || connectSiteInfo?.isWPCom == true) {
+        if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
@@ -882,7 +883,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.isWPCom == false)
+            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.shouldUseWPComAuth == false)
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -997,6 +998,7 @@ class LoginActivity :
             event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
+                    isCommerceGarden = it.isCommerceGarden,
                     isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
@@ -1081,10 +1083,15 @@ class LoginActivity :
         show(currentFragment.childFragmentManager, tag)
     }
 
+    @VisibleForTesting
     @Parcelize
-    private data class ConnectSiteInfo(
+    internal data class ConnectSiteInfo(
         val isWPCom: Boolean,
+        val isCommerceGarden: Boolean,
         val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
-    ) : Parcelable
+    ) : Parcelable {
+        val shouldUseWPComAuth: Boolean
+            get() = isWPCom || isCommerceGarden
+    }
 }

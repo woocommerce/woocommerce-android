@@ -344,7 +344,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         return RevenueStatsUiModel(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
-            totalSales = totals?.totalSales,
+            netRevenue = totals?.netRevenue,
             currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
             rangeId = rangeId
         )
@@ -355,7 +355,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
             StatsIntervalUiModel(
                 it.interval,
                 it.subtotals?.ordersCount,
-                it.subtotals?.totalSales
+                it.subtotals?.netRevenue
             )
         }
 
@@ -399,7 +399,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
         val totalOrdersCount: Int? = null,
-        val totalSales: Double? = null,
+        val netRevenue: Double? = null,
         val currencyCode: String?,
         val rangeId: String
     )

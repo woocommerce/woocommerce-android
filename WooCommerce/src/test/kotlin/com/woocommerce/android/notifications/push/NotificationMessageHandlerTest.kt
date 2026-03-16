@@ -12,6 +12,7 @@ import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORD
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
@@ -43,7 +44,6 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,7 +72,7 @@ class NotificationMessageHandlerTest {
         }
     }
     private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
-    private val siteStore: SiteStore = mock()
+    private lateinit var getWooVisibleSites: GetWooVisibleSites
     private val selectedSite: SelectedSite = mock {
         on { exists() }.thenReturn(true)
     }
@@ -82,6 +82,12 @@ class NotificationMessageHandlerTest {
     )
     private val orderNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(orderNotificationPayload)!!.toAppModel(resourceProvider)
+    private val orderNotificationSite2Payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
+        userId = accountModel.userId,
+        noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
+    )
+    private val orderNotificationSite2 = notificationsParser
+        .buildNotificationModelFromPayloadMap(orderNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val reviewNotificationPayload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
         userId = accountModel.userId
@@ -89,11 +95,18 @@ class NotificationMessageHandlerTest {
 
     private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
+    private val reviewNotificationSite2Payload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
+        userId = accountModel.userId,
+        noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
+    )
+    private val reviewNotificationSite2 = notificationsParser
+        .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
 
-    @Before
-    fun setUp() {
+    private fun createNotificationMessageHandler(
+        notificationsParser: NotificationsParser = this.notificationsParser
+    ) {
         notificationMessageHandler = NotificationMessageHandler(
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
@@ -103,24 +116,33 @@ class NotificationMessageHandlerTest {
             wooLog = wooLog,
             dispatcher = dispatcher,
             resourceProvider = resourceProvider,
-            siteStore = siteStore,
+            getWooVisibleSites = getWooVisibleSites,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
         )
+    }
+
+    @Before
+    fun setUp() {
+        val visibleSites = listOf(
+            orderNotification.remoteSiteId,
+            reviewNotification.remoteSiteId,
+            orderNotificationSite2.remoteSiteId,
+            reviewNotificationSite2.remoteSiteId
+        ).distinct().map { visibleSiteId ->
+            mock<SiteModel> {
+                on { siteId } doReturn visibleSiteId
+            }
+        }
+        getWooVisibleSites = mock {
+            onBlocking { invoke() } doReturn visibleSites
+        }
+        createNotificationMessageHandler()
 
         doReturn(true).whenever(accountStore).hasAccessToken()
         doReturn(accountModel).whenever(accountStore).account
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
         doReturn(emptyList<ActiveNotificationData>()).whenever(notificationBuilder).getActiveNotifications()
-
-        // Mock visibleSites to include both order and review notification site IDs
-        val visibleSite = mock<SiteModel> {
-            on { siteId } doReturn orderNotification.remoteSiteId
-        }
-        val visibleSite2 = mock<SiteModel> {
-            on { siteId } doReturn reviewNotification.remoteSiteId
-        }
-        doReturn(listOf(visibleSite, visibleSite2)).whenever(siteStore).visibleSites
     }
 
     @Test
@@ -189,6 +211,47 @@ class NotificationMessageHandlerTest {
         verify(wooLog).d(
             eq(WooLog.T.NOTIFICATIONS),
             eq("Skipping WPCOM notification, already registered with Woo Core")
+        )
+        verifyNoInteractions(dispatcher)
+    }
+
+    @Test
+    fun `given woo push registered and site is visible, when woo notification received, then process it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+        val mockNotificationsParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_ORDER
+            )
+        }
+        createNotificationMessageHandler(mockNotificationsParser)
+
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(dispatcher, atLeastOnce()).dispatch(any())
+    }
+
+    @Test
+    fun `given site is hidden, when notification received, then skip it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        val mockNotificationsParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_ORDER
+            )
+        }
+        createNotificationMessageHandler(mockNotificationsParser)
+        whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(wooLog).w(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Skipping notification, site ${orderNotification.remoteSiteId} is not visible")
         )
         verifyNoInteractions(dispatcher)
     }

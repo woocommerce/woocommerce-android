@@ -4,9 +4,11 @@
 
 24.4
 -----
+- [*] Shipping Labels: Add FedEx carrier support to package selection [https://github.com/woocommerce/woocommerce-android/pull/15533]
+- [Woo POS] We added Refunds feature to Point of Sale [https://github.com/woocommerce/woocommerce-android/pull/15510]
 - [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
 - [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
-- [*] Shipping Labels: Add FedEx carrier support to package selection [https://github.com/woocommerce/woocommerce-android/pull/15533]
+- [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
 
 24.3
 -----
