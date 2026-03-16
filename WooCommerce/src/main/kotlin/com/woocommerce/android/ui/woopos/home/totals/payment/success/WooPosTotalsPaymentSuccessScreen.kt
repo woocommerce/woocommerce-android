@@ -6,8 +6,10 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -110,7 +112,9 @@ fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(80.dp)
-                    .width(604.dp)
+                    .widthIn(max = 604.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
                     .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
@@ -124,7 +128,9 @@ fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(80.dp)
-                    .width(604.dp),
+                    .widthIn(max = 604.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value),
                 onClick = onReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button)
             )

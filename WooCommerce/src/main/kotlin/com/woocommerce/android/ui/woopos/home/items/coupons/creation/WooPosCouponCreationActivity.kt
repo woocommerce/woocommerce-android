@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,7 +28,11 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupTopAndBottomInsets()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        if (isWooPosPhoneLayout()) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_coupon_creation_nav_host_fragment

@@ -19,3 +19,10 @@ fun Context.getScreenHeightDp(): Int {
 }
 
 fun Context.getLongestScreenSideDp() = maxOf(getScreenWidthDp(), getScreenHeightDp()).dp
+
+fun Context.isWooPosPhoneLayout(): Boolean {
+    val shortSide = minOf(getScreenWidthDp(), getScreenHeightDp())
+    return shortSide < PHONE_MAX_SHORT_SIDE_DP
+}
+
+private const val PHONE_MAX_SHORT_SIDE_DP = 674

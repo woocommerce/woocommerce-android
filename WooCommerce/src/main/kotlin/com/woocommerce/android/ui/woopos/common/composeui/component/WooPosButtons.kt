@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosButton(
@@ -53,7 +54,7 @@ fun WooPosButton(
 ) {
     Button(
         modifier = modifier,
-        height = 80.dp,
+        height = 80.dp.toAdaptiveComponentSize(),
         loadingIndicatorSize = 32.dp,
         textStyle = WooPosTypography.BodyLarge,
         text = text,
@@ -106,7 +107,7 @@ fun WooPosOutlinedButton(
     }
     Button(
         modifier = modifier,
-        height = 80.dp,
+        height = 80.dp.toAdaptiveComponentSize(),
         loadingIndicatorSize = 32.dp,
         textStyle = WooPosTypography.BodyLarge,
         text = text,

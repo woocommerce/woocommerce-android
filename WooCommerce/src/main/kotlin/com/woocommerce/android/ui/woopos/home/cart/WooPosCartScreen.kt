@@ -82,6 +82,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -512,9 +513,9 @@ private fun ProductItem(
             WooPosItemImage(
                 imageUrl = item.imageUrl,
                 modifier = Modifier
-                    .width(96.dp)
+                    .width(96.dp.toAdaptiveComponentSize())
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
                 placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                 placeholderIconSize = 36.dp
             )
@@ -614,9 +615,9 @@ private fun CouponItem(
                             is CouponValidationState.Valid -> WooPosTheme.colors.success
                         }
                     )
-                    .width(96.dp)
+                    .width(96.dp.toAdaptiveComponentSize())
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -708,7 +709,7 @@ private fun LoadingItem(
     )
     WooPosCard(
         modifier = modifier
-            .height(96.dp)
+            .height(96.dp.toAdaptiveComponentSize())
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -721,7 +722,7 @@ private fun LoadingItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(96.dp.toAdaptiveComponentSize())
             ) {
                 WooPosShimmerBox(
                     modifier = Modifier.fillMaxSize()
@@ -786,9 +787,9 @@ private fun ErrorItem(
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.error)
-                    .width(96.dp)
+                    .width(96.dp.toAdaptiveComponentSize())
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
                 contentAlignment = Alignment.Center
             ) {
                 Image(

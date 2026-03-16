@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -327,8 +327,8 @@ private fun ReaderDisconnected(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(80.dp)
+                .widthIn(max = 450.dp)
+                .fillMaxWidth()
         )
     }
 }
@@ -338,7 +338,8 @@ private fun TotalsGrid(totals: Totals.Visible) {
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .widthIn(max = 450.dp)
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -428,7 +429,7 @@ private fun TotalsLoading() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .height(24.dp)
-                    .width(332.dp)
+                    .fillMaxWidth(0.8f)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -437,7 +438,7 @@ private fun TotalsLoading() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .height(24.dp)
-                    .width(332.dp)
+                    .fillMaxWidth(0.8f)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -446,7 +447,7 @@ private fun TotalsLoading() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .height(40.dp)
-                    .width(332.dp)
+                    .fillMaxWidth(0.8f)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }

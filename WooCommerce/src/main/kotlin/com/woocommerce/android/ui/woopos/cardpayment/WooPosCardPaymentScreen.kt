@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -222,7 +222,9 @@ private fun CardPaymentPreparingReader(
                 WooPosOutlinedButton(
                     modifier = Modifier
                         .height(80.dp)
-                        .width(604.dp),
+                        .widthIn(max = 604.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
                 )
@@ -274,7 +276,9 @@ private fun CardPaymentReadyForPayment(
                 WooPosOutlinedButton(
                     modifier = Modifier
                         .height(80.dp)
-                        .width(604.dp),
+                        .widthIn(max = 604.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
                 )
@@ -325,14 +329,18 @@ private fun CardPaymentReaderDisconnected(
                 onClick = onConnectReaderClicked,
                 modifier = Modifier
                     .height(80.dp)
-                    .width(604.dp)
+                    .widthIn(max = 604.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
             )
             if (showCashPaymentButton) {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     modifier = Modifier
                         .height(80.dp)
-                        .width(604.dp),
+                        .widthIn(max = 604.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
                 )
@@ -427,14 +435,19 @@ private fun CardPaymentFailed(
                     text = state.actionButtonLabel,
                     modifier = Modifier
                         .height(80.dp)
-                        .width(604.dp),
+                        .widthIn(max = 604.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     onClick = onRetryClicked,
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             }
             if (state.isDismissButtonVisible) {
                 WooPosOutlinedButton(
-                    modifier = Modifier.width(604.dp),
+                    modifier = Modifier
+                        .widthIn(max = 604.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
                     onClick = onDismissClicked,
                 )
@@ -491,7 +504,8 @@ private fun CardPaymentOrderSummary(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth(0.4f)
+            .widthIn(max = 450.dp)
+            .fillMaxWidth()
             .padding(WooPosSpacing.Large.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
