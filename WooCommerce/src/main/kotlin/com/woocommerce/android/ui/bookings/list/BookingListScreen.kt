@@ -86,7 +86,8 @@ fun BookingListScreen(state: BookingListViewState) {
         topBar = {
             Toolbar(
                 title = state.toolbarTitle.getText(),
-                navigationIcon = if (state.showBackButton) {
+                // When search is active, the SearchSection already shows a back button
+                navigationIcon = if (state.showBackButton && !state.searchState.isSearchActive) {
                     ImageVector.vectorResource(R.drawable.ic_back_24dp)
                 } else {
                     null
