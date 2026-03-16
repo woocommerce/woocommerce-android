@@ -25,8 +25,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailOrderStatusBinding.inflate(LayoutInflater.from(ctx), this)
 
-    private var mode: Mode = Mode.OrderEdit
-
     fun updateStatus(orderStatus: OrderStatus) {
         binding.orderStatusOrderTags.contentDescription =
             context.getString(R.string.orderstatus_contentDesc_withStatus, orderStatus.label)
@@ -35,16 +33,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
     fun updateOrder(order: Order) {
         binding.orderStatusSubtitle.text = getFormattedDate(order.dateCreated)
-
-        when (mode) {
-            Mode.OrderEdit, Mode.ReadOnly -> {
-                binding.orderStatusHeader.text =
-                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
-            }
-            Mode.OrderCreation -> {
-                binding.orderStatusHeader.isVisible = false
-            }
-        }
+        binding.orderStatusHeader.text =
+            order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
 
         updatePosTag(order)
     }
@@ -59,30 +49,16 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     private fun getFormattedDate(date: Date): String {
-        return when (mode) {
-            Mode.OrderCreation -> {
-                date.getMediumDate(context)
-            }
-            Mode.OrderEdit, Mode.ReadOnly -> {
-                "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
-            }
-        }
+        return "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
     }
 
     fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener = {}) {
-        this.mode = mode
         when (mode) {
             Mode.OrderEdit -> {
                 binding.orderStatusEditImage.isVisible = true
                 with(binding.orderStatusContainer) {
                     isClickable = true
                     isFocusable = true
-                    setOnClickListener(editOrderStatusClickListener)
-                }
-            }
-            Mode.OrderCreation -> {
-                with(binding.orderStatusEditImage) {
-                    isVisible = true
                     setOnClickListener(editOrderStatusClickListener)
                 }
             }
@@ -95,6 +71,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     enum class Mode {
-        OrderCreation, OrderEdit, ReadOnly
+        OrderEdit, ReadOnly
     }
 }
