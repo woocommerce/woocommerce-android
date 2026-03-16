@@ -2,15 +2,11 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -18,9 +14,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
-import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -31,22 +25,16 @@ import org.wordpress.android.fluxc.store.MediaStore.MediaError
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.MediaStore.MediaPayload
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
-import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.MimeType
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
 import java.io.IOException
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Named
 
 abstract class BaseWPV2MediaRestClient(
-    private val dispatcher: Dispatcher,
-    private val coroutineEngine: CoroutineEngine,
     @Named("regular") private val okHttpClient: OkHttpClient,
     private val gson: Gson
 ) {
-    private val currentUploads = ConcurrentHashMap<Int, CoroutineScope>()
-
     protected abstract fun WPAPIEndpoint.getFullUrl(site: SiteModel): String
 
     protected abstract suspend fun getAuthorizationHeader(site: SiteModel): String
@@ -58,48 +46,8 @@ abstract class BaseWPV2MediaRestClient(
         clazz: Class<T>
     ): WPAPIResponse<T>
 
-    fun uploadMedia(site: SiteModel, media: MediaModel) {
-        coroutineEngine.launch(MEDIA, this, "Upload Media using WPCom's v2 API") {
-            syncUploadMedia(site, media)
-                .onStart {
-                    currentUploads[media.id] = this@launch
-                }
-                .onCompletion {
-                    currentUploads.remove(media.id)
-                }
-                .collect { payload ->
-                    dispatcher.dispatch(MediaActionBuilder.newUploadedMediaAction(payload))
-                }
-        }
-    }
-
-    fun cancelUpload(media: MediaModel) {
-        currentUploads[media.id]?.let { scope ->
-            scope.cancel()
-            val payload = ProgressPayload(media, 0f, false, true)
-            dispatcher.dispatch(MediaActionBuilder.newCanceledMediaUploadAction(payload))
-        }
-    }
-
-    fun fetchMediaList(site: SiteModel, number: Int, offset: Int, mimeType: MimeType.Type?) {
-        coroutineEngine.launch(MEDIA, this, "Fetching Media using WPCom's v2 API") {
-            val payload = syncFetchMediaList(site, number, offset, mimeType)
-            dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
-        }
-    }
-
-    fun fetchMedia(
-        site: SiteModel,
-        media: MediaModel
-    ) {
-        coroutineEngine.launch(MEDIA, this, "Fetching Media using WPCom's v2 API") {
-            val payload = syncFetchMedia(site, media.mediaId)
-            dispatcher.dispatch(MediaActionBuilder.newFetchedMediaAction(payload))
-        }
-    }
-
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun syncUploadMedia(site: SiteModel, media: MediaModel): Flow<ProgressPayload> {
+    fun uploadMedia(site: SiteModel, media: MediaModel): Flow<ProgressPayload> {
         fun ProducerScope<ProgressPayload>.handleFailure(media: MediaModel, error: MediaError) {
             val payload = ProgressPayload(media, 1f, false, error)
             trySendBlocking(payload)
@@ -161,7 +109,7 @@ abstract class BaseWPV2MediaRestClient(
         }
     }
 
-    private suspend fun syncFetchMedia(site: SiteModel, mediaId: Long): MediaPayload {
+    suspend fun fetchMedia(site: SiteModel, mediaId: Long): MediaPayload {
         val url = WPAPI.media.id(mediaId)
         val response = executeGetGsonRequest(
             site,
@@ -201,7 +149,7 @@ abstract class BaseWPV2MediaRestClient(
         }
     }
 
-    private suspend fun syncFetchMediaList(
+    suspend fun fetchMediaList(
         site: SiteModel,
         perPage: Int,
         offset: Int,

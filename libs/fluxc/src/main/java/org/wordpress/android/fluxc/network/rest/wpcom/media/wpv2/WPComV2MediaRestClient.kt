@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2
 
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -11,20 +10,17 @@ import org.wordpress.android.fluxc.network.rest.wpapi.media.BaseWPV2MediaRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
-import org.wordpress.android.fluxc.tools.CoroutineEngine
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class WPComV2MediaRestClient @Inject constructor(
-    dispatcher: Dispatcher,
-    coroutineEngine: CoroutineEngine,
     @Named("regular") okHttpClient: OkHttpClient,
     private val accessToken: AccessToken,
     private val wpComNetwork: WPComNetwork,
     gson: Gson
-) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient, gson) {
+) : BaseWPV2MediaRestClient(okHttpClient, gson) {
     override fun WPAPIEndpoint.getFullUrl(site: SiteModel): String = getWPComUrl(site.siteId)
 
     override suspend fun getAuthorizationHeader(site: SiteModel): String = "Bearer ${accessToken.get()}"
