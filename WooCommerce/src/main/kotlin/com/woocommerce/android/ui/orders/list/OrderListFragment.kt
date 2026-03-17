@@ -127,17 +127,9 @@ class OrderListFragment :
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
-    private val selectionPredicate by lazy {
-        MutableMultipleSelectionPredicate<Long>(
-            // The only option we support with multi-select is order status editing, so disable multi-select
-            // if the feature is not supported
-            maxSelectionCount = if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
-                OrderListViewModel.BULK_UPDATE_COUNT_LIMIT
-            } else {
-                0
-            }
-        )
-    }
+    private val selectionPredicate = MutableMultipleSelectionPredicate<Long>(
+        maxSelectionCount = OrderListViewModel.BULK_UPDATE_COUNT_LIMIT
+    )
     private val viewModel: OrderListViewModel by viewModels()
     private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
@@ -258,7 +250,12 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        addSelectionTracker()
+
+        if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
+            // The only option we support with multi-select is order status editing, so disable multi-select
+            // if the feature is not supported
+            addSelectionTracker()
+        }
     }
 
     private fun addSelectionTracker() {
