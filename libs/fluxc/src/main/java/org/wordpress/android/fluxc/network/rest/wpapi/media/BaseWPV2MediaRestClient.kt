@@ -120,7 +120,7 @@ abstract class BaseWPV2MediaRestClient(
 
         return when (response) {
             is WPAPIResponse.Error -> {
-                val errorMessage = "Fail to fetch media. Response: $response"
+                val errorMessage = "Failed to fetch media. Response: $response"
                 AppLog.w(MEDIA, errorMessage)
                 val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
                 error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
@@ -173,7 +173,7 @@ abstract class BaseWPV2MediaRestClient(
 
         return when (response) {
             is WPAPIResponse.Error -> {
-                val errorMessage = "could not parse Fetch all media response: $response"
+                val errorMessage = "Failed to fetch media list. Response: $response"
                 AppLog.w(MEDIA, errorMessage)
                 val error = MediaError(MediaErrorType.fromBaseNetworkError(response.error))
                 error.statusCode = response.error.volleyError?.networkResponse?.statusCode ?: 0
