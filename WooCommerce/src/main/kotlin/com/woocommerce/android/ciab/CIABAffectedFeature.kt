@@ -12,5 +12,6 @@ enum class CIABAffectedFeature {
     GiftCardEditing,
     ProductsStockDashboardCard,
     Onboarding,
+    OrderStatusEditing,
     POS
 }
