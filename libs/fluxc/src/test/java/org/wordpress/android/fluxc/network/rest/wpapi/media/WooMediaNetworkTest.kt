@@ -7,9 +7,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -19,7 +20,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
@@ -35,6 +36,7 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.MimeType
 import java.security.GeneralSecurityException
+import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
 
 @RunWith(RobolectricTestRunner::class)
 class WooMediaNetworkTest {
@@ -45,6 +47,7 @@ class WooMediaNetworkTest {
     private val wpComV2MediaRestClient: WPComV2MediaRestClient = mock()
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler = mock()
+    private val crashLogger: FluxCCrashLogger = mock()
 
     private val sut = WooMediaNetwork(
         dispatcher = dispatcher,
@@ -53,7 +56,8 @@ class WooMediaNetworkTest {
         applicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient,
         wpComV2MediaRestClient = wpComV2MediaRestClient,
         jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
-        jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler
+        jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler,
+        crashLogger = crashLogger
     )
 
     private val jetpackSite = SiteModel().apply {
@@ -208,11 +212,14 @@ class WooMediaNetworkTest {
         verify(wpComV2MediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given WPAPI site with direct access disabled, when fetching media list, then throw`() {
-        applicationPasswordsConfiguration.directAccessEnabled = false
-        sut.fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
-    }
+    @Test
+    fun `given WPAPI site with direct access disabled, when fetching media list, then report xmlrpc try`() =
+        runTest {
+            applicationPasswordsConfiguration.directAccessEnabled = false
+            sut.fetchMediaList(wpapiSite, 10, 0, MimeType.Type.IMAGE)
+            verify(crashLogger).sendReport(anyOrNull(), any(), any())
+            verify(applicationPasswordsMediaRestClient, never()).fetchMediaList(any(), any(), any(), any())
+        }
 
     @Test
     fun `given supported jetpack site, when app passwords upload fails and fallback succeeds, then flag site`() =
@@ -353,33 +360,32 @@ class WooMediaNetworkTest {
         verify(wpComV2MediaRestClient, never()).uploadMedia(any(), any())
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given WPAPI site with direct access disabled, when uploading, then throw`() {
+    @Test
+    fun `given WPAPI site with direct access disabled, when uploading, then report xmlrpc try`() = runTest {
         applicationPasswordsConfiguration.directAccessEnabled = false
         val media: MediaModel = mock()
         sut.uploadMedia(wpapiSite, media)
+        verify(crashLogger).sendReport(anyOrNull(), any(), any())
+        verify(applicationPasswordsMediaRestClient, never()).uploadMedia(any(), any())
     }
 
     @Test
-    fun `when cancelling upload, then dispatch cancelled action with zero progress`() {
+    fun `given no active upload, when cancelling upload, then do not dispatch`() {
         val media: MediaModel = mock {
             on { id } doReturn 13
         }
 
         sut.cancelUpload(jetpackSite, media)
 
-        val captor = argumentCaptor<FluxAction<*>>()
-        verify(dispatcher).dispatch(captor.capture())
-        val payload = captor.firstValue.payload as ProgressPayload
-        assertThat(payload.canceled).isTrue()
-        assertThat(payload.progress).isEqualTo(0f)
+        verify(dispatcher, never()).dispatch(any())
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `given unsupported origin, when cancelling upload, then throw`() {
+    @Test
+    fun `given unsupported origin, when cancelling upload, then report xmlrpc try`() {
         val site = SiteModel().apply { origin = 999 }
         val media: MediaModel = mock()
         sut.cancelUpload(site, media)
+        verify(crashLogger).sendReport(anyOrNull(), any(), any())
     }
 
     private fun createMediaError(statusCode: Int, apiErrorCode: String): MediaError {

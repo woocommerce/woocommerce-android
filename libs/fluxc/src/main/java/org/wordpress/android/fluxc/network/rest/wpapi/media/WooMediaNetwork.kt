@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.MimeType
 import org.wordpress.android.util.AppLog
 import java.security.GeneralSecurityException
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,55 +38,56 @@ class WooMediaNetwork @Inject constructor(
     private val applicationPasswordsMediaRestClient: ApplicationPasswordsMediaRestClient,
     private val wpComV2MediaRestClient: WPComV2MediaRestClient,
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
-    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler
+    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler,
+    private val crashLogger: FluxCCrashLogger
 ) {
     private val currentUploads = ConcurrentHashMap<Int, Job>()
 
     fun uploadMedia(site: SiteModel, media: MediaModel) {
-        when (site.origin) {
-            SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
-                requireDirectAccessEnabled()
-                launchUpload(site, media)
-            }
-
-            SiteModel.ORIGIN_WPCOM_REST -> {
-                launchUpload(site, media)
-            }
-
-            else -> throw unsupportedOrigin(site)
+        if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+            launchUpload(site, media, useAppPasswords = false)
+        } else if (site.origin == SiteModel.ORIGIN_WPAPI
+            && applicationPasswordsConfiguration.isEnabledForDirectAccess()
+        ) {
+            launchUpload(site, media, useAppPasswords = true)
+        } else {
+            reportXmlrpcTry()
         }
     }
 
     fun fetchMediaList(site: SiteModel, number: Int, offset: Int, mimeType: MimeType.Type?) {
-        when (site.origin) {
-            SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
-                requireDirectAccessEnabled()
-                coroutineEngine.launch(AppLog.T.MEDIA, this, "Fetching media list") {
-                    val payload = applicationPasswordsMediaRestClient.fetchMediaList(
-                        site, number, offset, mimeType
-                    )
-                    dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
-                }
+        if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+            coroutineEngine.launch(AppLog.T.MEDIA, this, "Fetching media list for Jetpack site") {
+                val payload = fetchMediaListWithJetpackFallback(site, number, offset, mimeType)
+                dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
             }
-
-            SiteModel.ORIGIN_WPCOM_REST -> {
-                coroutineEngine.launch(AppLog.T.MEDIA, this, "Fetching media list for Jetpack site") {
-                    val payload = fetchMediaListWithJetpackFallback(site, number, offset, mimeType)
-                    dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
-                }
+        } else if (site.origin == SiteModel.ORIGIN_WPAPI
+            && applicationPasswordsConfiguration.isEnabledForDirectAccess()
+        ) {
+            coroutineEngine.launch(AppLog.T.MEDIA, this, "Fetching media list") {
+                val payload = applicationPasswordsMediaRestClient.fetchMediaList(
+                    site, number, offset, mimeType
+                )
+                dispatcher.dispatch(MediaActionBuilder.newFetchedMediaListAction(payload))
             }
-
-            else -> throw unsupportedOrigin(site)
+        } else {
+            reportXmlrpcTry()
         }
     }
 
     fun cancelUpload(site: SiteModel, media: MediaModel) {
-        when (site.origin) {
-            SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> requireDirectAccessEnabled()
-            SiteModel.ORIGIN_WPCOM_REST -> { /* no precondition */ }
-            else -> throw unsupportedOrigin(site)
+        if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+            performCancelUpload(media)
+        } else if (site.origin == SiteModel.ORIGIN_WPAPI
+            && applicationPasswordsConfiguration.isEnabledForDirectAccess()
+        ) {
+            performCancelUpload(media)
+        } else {
+            reportXmlrpcTry()
         }
+    }
 
+    private fun performCancelUpload(media: MediaModel) {
         val job = currentUploads.remove(media.id)
         if (job != null) {
             job.cancel()
@@ -93,17 +96,13 @@ class WooMediaNetwork @Inject constructor(
         }
     }
 
-    private fun launchUpload(site: SiteModel, media: MediaModel) {
+    private fun launchUpload(site: SiteModel, media: MediaModel, useAppPasswords: Boolean) {
         val uploadJob = coroutineEngine.launch(AppLog.T.MEDIA, this, "Uploading media") {
             try {
-                when (site.origin) {
-                    SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
-                        dispatchUploadFlow(applicationPasswordsMediaRestClient.uploadMedia(site, media))
-                    }
-
-                    SiteModel.ORIGIN_WPCOM_REST -> {
-                        uploadForJetpackSite(site, media)
-                    }
+                if (useAppPasswords) {
+                    dispatchUploadFlow(applicationPasswordsMediaRestClient.uploadMedia(site, media))
+                } else {
+                    uploadForJetpackSite(site, media)
                 }
             } finally {
                 currentUploads.remove(media.id)
@@ -198,14 +197,13 @@ class WooMediaNetwork @Inject constructor(
         }
     }
 
-    private fun requireDirectAccessEnabled() {
-        check(applicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            "Application Passwords are not enabled for direct access"
-        }
+    private fun reportXmlrpcTry() {
+        crashLogger.sendReport(
+            null,
+            Collections.emptyMap(),
+            "Requested MediaStore XMLRPC connection. This should not happen."
+        )
     }
-
-    private fun unsupportedOrigin(site: SiteModel) =
-        IllegalArgumentException("Unsupported site origin: ${site.origin}")
 
     private fun createKeystoreEncryptionError() = MediaError(MediaErrorType.GENERIC_ERROR).apply {
         apiErrorCode = ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
