@@ -91,9 +91,12 @@ class WooMediaNetwork @Inject constructor(
     }
 
     private fun performCancelUpload(media: MediaModel) {
-        currentUploads.remove(media.id)?.cancel()
-        val payload = ProgressPayload(media, 0f, false, true)
-        dispatcher.dispatch(MediaActionBuilder.newCanceledMediaUploadAction(payload))
+        val job = currentUploads.remove(media.id)
+        if (job != null) {
+            job.cancel()
+            val payload = ProgressPayload(media, 0f, false, true)
+            dispatcher.dispatch(MediaActionBuilder.newCanceledMediaUploadAction(payload))
+        }
     }
 
     private fun reportXmlrpcTry() {
