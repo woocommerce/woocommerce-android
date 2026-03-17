@@ -10,8 +10,9 @@ data class BookingListViewState(
     val controlsState: BookingListControlsState,
     val sortBottomSheetState: BookingListSortBottomSheetState?,
     val searchState: BookingListSearchState,
+    val showBackButton: Boolean,
+    val onBackClick: () -> Unit
 ) {
-
     val toolbarTitle: UiString
         get() = if (searchState.isSearchActive) {
             UiString.UiStringText("")
