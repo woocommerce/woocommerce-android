@@ -1,13 +1,13 @@
 package org.wordpress.android.fluxc.store;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.wordpress.android.fluxc.media.MediaTestUtils.generateMediaFromPath;
 import static org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
@@ -25,6 +25,9 @@ import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class MediaStoreTest {
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     private final RemoteMediaCache mRemoteMediaCache = new RemoteMediaCache();
     private final MediaCacheOperations mMediaCacheOperations = new MediaCacheOperations(mRemoteMediaCache);
     private final WooMediaNetwork mWooMediaNetwork = Mockito.mock(WooMediaNetwork.class);
@@ -257,26 +260,18 @@ public class MediaStoreTest {
     }
 
     @Test
-    public void givenUploadAction_whenHandled_thenDelegateToWooMediaNetwork() {
+    public void givenUploadAction_whenHandled_thenDelegateToWooMediaNetwork() throws Exception {
         SiteModel site = new SiteModel();
         site.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        File file = new File("build/test-image.jpg");
-        try {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-            MediaModel media = generateMediaFromPath(1, 10L, file.getPath());
+        File file = temporaryFolder.newFile("test-image.jpg");
+        MediaModel media = generateMediaFromPath(1, 10L, file.getPath());
 
-            mMediaStore.onAction(new Action<>(
-                    MediaAction.UPLOAD_MEDIA,
-                    new MediaStore.UploadMediaPayload(site, media, false)
-            ));
+        mMediaStore.onAction(new Action<>(
+                MediaAction.UPLOAD_MEDIA,
+                new MediaStore.UploadMediaPayload(site, media, false)
+        ));
 
-            Mockito.verify(mWooMediaNetwork).uploadMedia(site, media);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            file.delete();
-        }
+        Mockito.verify(mWooMediaNetwork).uploadMedia(site, media);
     }
 
     @Test
