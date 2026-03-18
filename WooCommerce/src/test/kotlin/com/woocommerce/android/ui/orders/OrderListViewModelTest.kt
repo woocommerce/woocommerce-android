@@ -5,6 +5,7 @@ import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -78,6 +79,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
@@ -121,6 +123,12 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val shouldUpdateOrdersList = mock<ShouldUpdateOrdersList>()
     private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
     private val orderListItemDataSource = mock<OrderListItemDataSource>()
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
+        @Suppress("UNCHECKED_CAST")
+        on { mapOrderStatusOptionsList(any()) } doAnswer {
+            it.arguments[0] as Map<String, WCOrderStatusModel>
+        }
+    }
 
     @Before
     fun setup() = testBlocking {
@@ -174,7 +182,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         shouldUpdateOrdersList = shouldUpdateOrdersList,
         observeOrdersListLastUpdate = observeOrdersListLastUpdate,
         dataSourceLazyProvider = { orderListItemDataSource },
-        ciabOrderStatusMapper = mock(),
+        ciabOrderStatusMapper = ciabOrderStatusMapper,
     )
 
     @Test
