@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.util.Locale
 
@@ -37,6 +38,9 @@ class OrderStatusTag(private val orderStatus: OrderStatus) : ITag(orderStatus.st
             }
             CoreOrderStatus.REFUNDED.value -> {
                 config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_other)
+            }
+            CIABOrderStatusMapper.OPEN_KEY -> {
+                config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_processing)
             }
             else -> {
                 config.bgColor = ContextCompat.getColor(context, R.color.tagView_bg)
