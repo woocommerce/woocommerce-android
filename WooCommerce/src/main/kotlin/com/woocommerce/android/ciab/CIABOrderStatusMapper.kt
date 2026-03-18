@@ -45,7 +45,7 @@ class CIABOrderStatusMapper @Inject constructor(
         if (!ciabSiteGateKeeper.isCurrentSiteCIAB()) return options
 
         val openOptions = options.filter { it.key in OPEN_CORE_KEYS }
-        val otherOptions = options.filter { it.key !in OPEN_CORE_KEYS }
+        val otherOptions = options.filter { it.key !in OPEN_CORE_KEYS && it.key !in HIDDEN_KEYS }
 
         if (openOptions.isEmpty()) return otherOptions
 
@@ -70,6 +70,7 @@ class CIABOrderStatusMapper @Inject constructor(
 
     companion object {
         const val OPEN_KEY = "open"
+        private const val CHECKOUT_DRAFT_KEY = "checkout-draft"
 
         @VisibleForTesting
         val OPEN_CORE_KEYS = setOf(
@@ -78,5 +79,8 @@ class CIABOrderStatusMapper @Inject constructor(
             CoreOrderStatus.ON_HOLD.value,
             CoreOrderStatus.FAILED.value
         )
+
+        @VisibleForTesting
+        val HIDDEN_KEYS = setOf(CHECKOUT_DRAFT_KEY)
     }
 }

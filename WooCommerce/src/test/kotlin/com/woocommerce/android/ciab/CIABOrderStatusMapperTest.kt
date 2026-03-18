@@ -51,8 +51,6 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         sut = CIABOrderStatusMapper(ciabSiteGateKeeper, resourceProvider)
     }
 
-    // region mapOrderStatusOptionsList
-
     @Test
     fun `given site is not CIAB, when mapOrderStatusOptionsList, then returns input unchanged`() {
         // GIVEN
@@ -88,10 +86,6 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         assertThat(result["cancelled"]).isEqualTo(defaultStatusMap["cancelled"])
         assertThat(result["refunded"]).isEqualTo(defaultStatusMap["refunded"])
     }
-
-    // endregion
-
-    // region mapOrderStatus
 
     @Test
     fun `given site is not CIAB, when mapOrderStatus, then returns input unchanged`() {
@@ -129,10 +123,6 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(status)
     }
-
-    // endregion
-
-    // region mapFilterOptions
 
     @Test
     fun `given site is not CIAB, when mapFilterOptions, then returns input unchanged`() {
@@ -173,9 +163,40 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         assertThat(openOption.isSelected).isTrue()
     }
 
-    // endregion
+    @Test
+    fun `given site is CIAB, when mapFilterOptions with checkout-draft, then excludes checkout-draft`() {
+        // GIVEN
+        val optionsWithDraft = defaultFilterOptions + OrderStatusOption(
+            key = "checkout-draft",
+            label = "Draft",
+            statusCount = 2,
+            isSelected = false
+        )
 
-    // region resolveFilterKeys
+        // WHEN
+        val result = sut.mapFilterOptions(optionsWithDraft)
+
+        // THEN
+        assertThat(result.none { it.key == "checkout-draft" }).isTrue()
+    }
+
+    @Test
+    fun `given site is not CIAB, when mapFilterOptions with checkout-draft, then keeps checkout-draft`() {
+        // GIVEN
+        given(ciabSiteGateKeeper.isCurrentSiteCIAB()).willReturn(false)
+        val optionsWithDraft = defaultFilterOptions + OrderStatusOption(
+            key = "checkout-draft",
+            label = "Draft",
+            statusCount = 2,
+            isSelected = false
+        )
+
+        // WHEN
+        val result = sut.mapFilterOptions(optionsWithDraft)
+
+        // THEN
+        assertThat(result.any { it.key == "checkout-draft" }).isTrue()
+    }
 
     @Test
     fun `given site is not CIAB, when resolveFilterKeys, then returns input unchanged`() {
@@ -207,6 +228,4 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         // THEN
         assertThat(result).containsExactly("completed", "cancelled")
     }
-
-    // endregion
 }
