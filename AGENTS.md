@@ -4,8 +4,8 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Cross-Tool Instructions
 
-- Use `LOCAL_AGENT_NOTES.md` for repository-local AI preferences when present
-- `CLAUDE.local.md` may point to `LOCAL_AGENT_NOTES.md` for backward compatibility
+- Use `LOCAL_AGENT_NOTES.md` or `CLAUDE.local.md` for repository-local AI preferences when present
+- `CLAUDE.local.md` is supported for backward compatibility
 
 ## Repository Layout
 
