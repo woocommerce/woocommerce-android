@@ -227,6 +227,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
+                ciabOrderStatusMapper = mock(),
             )
         )
     }

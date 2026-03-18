@@ -173,7 +173,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         dateUtils = mock(),
         shouldUpdateOrdersList = shouldUpdateOrdersList,
         observeOrdersListLastUpdate = observeOrdersListLastUpdate,
-        dataSourceLazyProvider = { orderListItemDataSource }
+        dataSourceLazyProvider = { orderListItemDataSource },
+        ciabOrderStatusMapper = mock(),
     )
 
     @Test
