@@ -903,7 +903,7 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY, R.id.orders) {
             selectedOrder.selectOrder(-1L)
             viewModel.loadOrders()
         }
