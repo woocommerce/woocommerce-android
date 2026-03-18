@@ -11,40 +11,31 @@ internal abstract class AccountDao {
         const val DEFAULT_ACCOUNT_LOCAL_ID = 1
     }
 
-    suspend fun getDefaultAccount(): AccountEntity? =
-        getAccountById(DEFAULT_ACCOUNT_LOCAL_ID)
-
     @Query(
         """
         SELECT * FROM AccountEntity
-        WHERE id = :id
+        WHERE id = $DEFAULT_ACCOUNT_LOCAL_ID
         """
     )
-    protected abstract suspend fun getAccountById(id: Int): AccountEntity?
+    abstract suspend fun getDefaultAccount(): AccountEntity?
 
     @Upsert
     abstract suspend fun upsert(account: AccountEntity)
-
-    suspend fun updateDefaultUsername(username: String): Int =
-        updateUsername(DEFAULT_ACCOUNT_LOCAL_ID, username)
 
     @Query(
         """
         UPDATE AccountEntity
         SET userName = :username
-        WHERE id = :id
+        WHERE id = $DEFAULT_ACCOUNT_LOCAL_ID
         """
     )
-    protected abstract suspend fun updateUsername(id: Int, username: String): Int
-
-    suspend fun deleteDefaultAccount(): Int =
-        deleteAccount(DEFAULT_ACCOUNT_LOCAL_ID)
+    abstract suspend fun updateDefaultUsername(username: String): Int
 
     @Query(
         """
         DELETE FROM AccountEntity
-        WHERE id = :id
+        WHERE id = $DEFAULT_ACCOUNT_LOCAL_ID
         """
     )
-    protected abstract suspend fun deleteAccount(id: Int): Int
+    abstract suspend fun deleteDefaultAccount(): Int
 }
