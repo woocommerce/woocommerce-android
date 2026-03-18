@@ -36,12 +36,13 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.MimeType
 import java.security.GeneralSecurityException
+import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
 
 @RunWith(RobolectricTestRunner::class)
 class WooMediaNetworkTest {
     private val dispatcher: Dispatcher = mock()
-    private val coroutineEngine = CoroutineEngine(Dispatchers.Unconfined, mock<AppLogWrapper>())
+    private val coroutineEngine = initCoroutineEngine()
     private val applicationPasswordsConfiguration = FakeApplicationPasswordsConfiguration()
     private val applicationPasswordsMediaRestClient: ApplicationPasswordsMediaRestClient = mock()
     private val wpComV2MediaRestClient: WPComV2MediaRestClient = mock()
