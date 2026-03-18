@@ -1,5 +1,6 @@
 package com.woocommerce.android.ciab
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
@@ -70,6 +71,7 @@ class CIABOrderStatusMapper @Inject constructor(
     companion object {
         const val OPEN_KEY = "open"
 
+        @VisibleForTesting
         val OPEN_CORE_KEYS = setOf(
             CoreOrderStatus.PENDING.value,
             CoreOrderStatus.PROCESSING.value,

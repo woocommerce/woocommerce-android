@@ -23,6 +23,10 @@ class GetOrderStatusFilterOptions @Inject constructor(
                 }
             }
         }
+        val selectedFilterKeys = ciabOrderStatusMapper.resolveFilterKeys(
+            orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
+        )
+
         val options = orderStatus.values
             .toList()
             .map {
@@ -30,16 +34,9 @@ class GetOrderStatusFilterOptions @Inject constructor(
                     key = it.statusKey,
                     label = it.label,
                     statusCount = it.statusCount,
-                    isSelected = checkIfSelected(it.statusKey)
+                    isSelected = it.statusKey in selectedFilterKeys
                 )
             }
         return ciabOrderStatusMapper.mapFilterOptions(options)
-    }
-
-    private fun checkIfSelected(filterKey: String): Boolean {
-        val savedKeys = orderFiltersRepository
-            .getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
-        if (filterKey in savedKeys) return true
-        return filterKey in ciabOrderStatusMapper.resolveFilterKeys(savedKeys)
     }
 }
