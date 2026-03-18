@@ -1,65 +1,51 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2
 
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.IOException
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.action.MediaAction.UPLOADED_MEDIA
-import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
-import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
-import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import java.io.File
-import java.util.concurrent.CountDownLatch
 
 @RunWith(RobolectricTestRunner::class)
 class WPComV2MediaRestClientTest {
     private val accessToken: AccessToken = mock()
     private val okHttpClient: OkHttpClient = mock()
-    private val dispatcher: Dispatcher = mock()
     private val wpComNetwork: WPComNetwork = mock()
     private val gson: Gson = Gson()
     private val mockedCall: Call = mock()
-    private lateinit var countDownLatch: CountDownLatch
     private lateinit var restClient: WPComV2MediaRestClient
-
-    private lateinit var dispatchedPayload: ProgressPayload
 
     @Before
     fun setup() {
         restClient = WPComV2MediaRestClient(
-            dispatcher = dispatcher,
-            coroutineEngine = initCoroutineEngine(),
             okHttpClient = okHttpClient,
             accessToken = accessToken,
             wpComNetwork = wpComNetwork,
             gson = gson
         )
-        EventBus.getDefault().register(this)
     }
 
     @Test
-    fun `emit success action when upload finishes`() {
+    fun `when upload finishes, then emit success payload`() {
         createFileThenRunTest {
             whenever(okHttpClient.newCall(any())).thenReturn(mockedCall)
             whenever(mockedCall.enqueue(any())).then {
@@ -73,42 +59,40 @@ class WPComV2MediaRestClientTest {
                         on { isSuccessful } doReturn true
                     }
                 )
-                countDownLatch.countDown()
             }
 
-            countDownLatch = CountDownLatch(1)
-            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg"))
+            val payloads = runBlocking {
+                restClient.uploadMedia(
+                    SiteModel(),
+                    MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg")
+                ).toList()
+            }
 
-            countDownLatch.await()
-
-            verify(dispatcher).dispatch(argThat {
-                type == UPLOADED_MEDIA && (payload as ProgressPayload).completed
-            })
+            assertThat(payloads.last().completed).isTrue()
         }
     }
 
     @Test
-    fun `emit failure action when upload fails`() {
+    fun `when upload fails, then emit failure payload`() {
         createFileThenRunTest {
             whenever(okHttpClient.newCall(any())).thenReturn(mockedCall)
             whenever(mockedCall.enqueue(any())).then {
                 (it.arguments.first() as Callback).onFailure(mock(), IOException())
-                countDownLatch.countDown()
             }
 
-            countDownLatch = CountDownLatch(1)
-            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg"))
+            val payloads = runBlocking {
+                restClient.uploadMedia(
+                    SiteModel(),
+                    MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg")
+                ).toList()
+            }
 
-            countDownLatch.await()
-
-            verify(dispatcher).dispatch(argThat {
-                type == UPLOADED_MEDIA && (payload as ProgressPayload).error != null
-            })
+            assertThat(payloads.last().error).isNotNull()
         }
     }
 
     @Test
-    fun `emit failure action when we can't parse the response`() {
+    fun `when response cannot be parsed, then emit failure payload`() {
         createFileThenRunTest {
             whenever(okHttpClient.newCall(any())).thenReturn(mockedCall)
             whenever(mockedCall.enqueue(any())).then {
@@ -119,17 +103,16 @@ class WPComV2MediaRestClientTest {
                         on { isSuccessful } doReturn true
                     }
                 )
-                countDownLatch.countDown()
             }
 
-            countDownLatch = CountDownLatch(1)
-            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg"))
+            val payloads = runBlocking {
+                restClient.uploadMedia(
+                    SiteModel(),
+                    MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg")
+                ).toList()
+            }
 
-            countDownLatch.await()
-
-            verify(dispatcher).dispatch(argThat {
-                type == UPLOADED_MEDIA && (payload as ProgressPayload).error != null
-            })
+            assertThat(payloads.last().error).isNotNull()
         }
     }
 
@@ -140,13 +123,6 @@ class WPComV2MediaRestClientTest {
             test()
         } finally {
             file.delete()
-        }
-    }
-
-    @Subscribe
-    fun onAction(action: Action<*>) {
-        if (action.type == UPLOADED_MEDIA) {
-            dispatchedPayload = action.payload as ProgressPayload
         }
     }
 }
