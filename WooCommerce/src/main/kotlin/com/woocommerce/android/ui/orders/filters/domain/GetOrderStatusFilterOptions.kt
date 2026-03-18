@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.filters.domain
 
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -9,7 +10,8 @@ import javax.inject.Inject
 
 class GetOrderStatusFilterOptions @Inject constructor(
     private val orderListRepository: OrderListRepository,
-    private val orderFiltersRepository: OrderFiltersRepository
+    private val orderFiltersRepository: OrderFiltersRepository,
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper
 ) {
     suspend operator fun invoke(): List<OrderStatusOption> {
         var orderStatus = orderListRepository.getCachedOrderStatusOptions()
@@ -21,7 +23,7 @@ class GetOrderStatusFilterOptions @Inject constructor(
                 }
             }
         }
-        return orderStatus.values
+        val options = orderStatus.values
             .toList()
             .map {
                 OrderStatusOption(
@@ -31,6 +33,7 @@ class GetOrderStatusFilterOptions @Inject constructor(
                     isSelected = checkIfSelected(it.statusKey)
                 )
             }
+        return ciabOrderStatusMapper.mapFilterOptions(options)
     }
 
     private fun checkIfSelected(filterKey: String): Boolean =
