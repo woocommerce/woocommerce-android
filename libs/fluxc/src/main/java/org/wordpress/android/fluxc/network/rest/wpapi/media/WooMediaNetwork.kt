@@ -232,8 +232,8 @@ class WooMediaNetwork @Inject constructor(
 
     private fun errorTypeFrom(error: MediaError): GenericErrorType {
         return when (error.statusCode) {
-            401 -> GenericErrorType.NOT_AUTHENTICATED
-            403 -> GenericErrorType.AUTHORIZATION_REQUIRED
+            401 -> GenericErrorType.AUTHORIZATION_REQUIRED
+            403 -> GenericErrorType.NOT_AUTHENTICATED
             404 -> GenericErrorType.NOT_FOUND
             408 -> GenericErrorType.TIMEOUT
             in 500..599 -> GenericErrorType.SERVER_ERROR
