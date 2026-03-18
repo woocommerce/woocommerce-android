@@ -2,6 +2,13 @@
 
 This file provides guidance to AI agents when working with code in this repository.
 
+## Cross-Tool Instructions
+
+- `AGENTS.md` is the canonical shared instruction file for AI agents in this repository
+- `LOCAL_AGENT_NOTES.md` is the neutral shared file for repository-local AI preferences
+- If `LOCAL_AGENT_NOTES.md` exists, treat it as additional repository-local preferences and follow it unless it conflicts with higher-priority system, developer, or user instructions
+- When a tool does not auto-load `LOCAL_AGENT_NOTES.md`, agents should read it explicitly before doing substantial work
+
 ## Repository Layout
 
 ```
