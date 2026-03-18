@@ -20,7 +20,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
@@ -30,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filter

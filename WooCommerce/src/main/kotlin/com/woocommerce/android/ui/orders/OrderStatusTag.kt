@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.util.Locale
 
