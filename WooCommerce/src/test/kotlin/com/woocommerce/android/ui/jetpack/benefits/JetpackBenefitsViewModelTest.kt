@@ -48,8 +48,6 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)).thenReturn(false)
-        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2))
-            .thenReturn(flowOf(false))
         sut = JetpackBenefitsViewModel(
             savedState,
             selectedSiteMock,

@@ -74,16 +74,6 @@ class AddressViewModel @Inject constructor(
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
     val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
 
-    init {
-        launch {
-            featureFlagRepository.observeIsEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2).collect { isEnabled ->
-                if (viewState.isBetterCustomerSearchEnabled != isEnabled) {
-                    viewState = viewState.copy(isBetterCustomerSearchEnabled = isEnabled)
-                }
-            }
-        }
-    }
-
     val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
         viewStateData.liveData.map { it.addressSelectionStates[AddressType.SHIPPING]?.address }
