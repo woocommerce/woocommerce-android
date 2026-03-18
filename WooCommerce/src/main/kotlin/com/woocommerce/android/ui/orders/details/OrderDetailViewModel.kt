@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -124,7 +125,8 @@ class OrderDetailViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
-    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -753,7 +755,9 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun updateOrderState() {
         val order = awaitOrder()
-        val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+        val orderStatus = ciabOrderStatusMapper.mapOrderStatus(
+            orderDetailRepository.getOrderStatus(order.status.value)
+        )
         viewState = viewState.copy(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
