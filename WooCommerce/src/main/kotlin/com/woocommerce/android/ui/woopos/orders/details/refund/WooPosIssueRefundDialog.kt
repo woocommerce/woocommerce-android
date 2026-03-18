@@ -257,7 +257,7 @@ private fun ShimmerItemRow() {
     ) {
         WooPosShimmerBox(
             modifier = Modifier
-                .size(32.dp)
+                .size(24.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
@@ -272,7 +272,7 @@ private fun ShimmerItemRow() {
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
         ) {
             WooPosShimmerText(
-                text = "Product item name",
+                text = "Product item name placeholder",
                 style = WooPosTypography.BodyLarge.style,
                 fontWeight = FontWeight.Bold,
             )
@@ -501,8 +501,11 @@ private fun SelectItemsContent(
                     .padding(vertical = WooPosSpacing.Medium.value),
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
             ) {
-                repeat(2) {
+                repeat(2) { index ->
                     ShimmerItemRow()
+                    if (index < 1) {
+                        Divider()
+                    }
                 }
             }
         } else {
