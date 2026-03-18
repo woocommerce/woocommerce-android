@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
@@ -120,6 +121,7 @@ class OrderListViewModel @Inject constructor(
     private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
     private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate,
     private val dataSourceLazyProvider: Lazy<OrderListItemDataSource>,
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
@@ -212,7 +214,9 @@ class OrderListViewModel @Inject constructor(
         launch {
             // Populate any cached order status options immediately since we use this
             // value in many different places in the order list view.
-            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+            _orderStatusOptions.value = ciabOrderStatusMapper.mapOrderStatusOptionsList(
+                orderListRepository.getCachedOrderStatusOptions()
+            )
 
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
@@ -335,7 +339,9 @@ class OrderListViewModel @Inject constructor(
         launch(dispatchers.main) {
             // Fetch and load order status options
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+                SUCCESS -> _orderStatusOptions.value = ciabOrderStatusMapper.mapOrderStatusOptionsList(
+                    orderListRepository.getCachedOrderStatusOptions()
+                )
                 else -> {
                     /* do nothing */
                 }
