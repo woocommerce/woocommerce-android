@@ -34,6 +34,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -1631,5 +1632,38 @@ class WooPosOrdersViewModelTest {
         // THEN
         val afterState = viewModel.state.value as WooPosOrdersState.Content
         assertThat(afterState.dialogState).isEqualTo(beforeState.dialogState)
+    }
+
+    @Test
+    fun `given refund dialog dismissed for order A, when order B selected before refresh completes, then order B remains selected`() = runTest {
+        // GIVEN
+        val orderA = order(100)
+        val orderB = order(200)
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(orderA, orderB))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat((viewModel.state.value as WooPosOrdersState.Content).selectedDetails?.id).isEqualTo(100L)
+
+        viewModel.onIssueRefundButtonClicked(100L)
+
+        whenever(dataSource.refreshOrderById(100L)).thenReturn(Result.success(orderA))
+        whenever(retrieveOrderRefunds.invoke(any(), any())).doSuspendableAnswer {
+            delay(5000)
+            Result.success(emptyList<Refund>())
+        }
+
+        // WHEN
+        viewModel.onIssueRefundDialogDismissed()
+
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
+        viewModel.onOrderSelected(200L)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(state.selectedDetails?.id).isEqualTo(200L)
     }
 }

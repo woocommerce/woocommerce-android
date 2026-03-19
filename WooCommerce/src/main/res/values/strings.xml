@@ -2640,6 +2640,8 @@
     <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
     <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
     <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Get push notifications for your store</string>
+    <string name="woo_push_notifications_introduction_connected_body">You\'re one step away from getting notifications for new orders, reviews and more.</string>
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
@@ -3901,7 +3903,7 @@
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
-    <string name="woopos_orders_details_net_payment_label">Net Payment</string>
+    <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
     <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
@@ -4255,6 +4257,7 @@
 
     <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
     <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Origin address missing or invalid</string>
     <string name="woo_shipping_address_notification_destination_missing_or_invalid">Destination address missing or invalid</string>
 
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
@@ -4267,6 +4270,7 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Unable to purchase shipping label. Please complete the origin address.</string>
     <string name="woo_shipping_labels_purchase_phone_error">Unable to purchase shipping label. Please add a valid phone number to the shipping address.</string>
     <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
