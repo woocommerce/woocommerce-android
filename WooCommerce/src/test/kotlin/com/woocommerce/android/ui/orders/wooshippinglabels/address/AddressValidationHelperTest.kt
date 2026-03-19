@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -167,4 +168,42 @@ class AddressValidationHelperTest : BaseUnitTest() {
         val result = sut.validatePhoneNumber("+1 (555) 123-4567")
         assertThat(result).isNull()
     }
+
+    @Test
+    fun `when origin email is empty, then isMissingOriginAddress returns true`() {
+        val result = sut.isMissingOriginAddress(defaultOriginAddress.copy(email = ""))
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `when origin phone is empty, then isMissingOriginAddress returns true`() {
+        val result = sut.isMissingOriginAddress(defaultOriginAddress.copy(phone = ""))
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `when required origin fields are present, then isMissingOriginAddress returns false`() {
+        val result = sut.isMissingOriginAddress(defaultOriginAddress)
+
+        assertThat(result).isFalse()
+    }
+
+    private val defaultOriginAddress = OriginShippingAddress(
+        id = "1",
+        company = "Company",
+        firstName = "John",
+        lastName = "Doe",
+        email = "john@example.com",
+        address1 = "123 Main St",
+        address2 = "",
+        city = "City",
+        state = "CA",
+        postcode = "12345",
+        country = "US",
+        phone = "1234567890",
+        isDefault = true,
+        isVerified = true
+    )
 }
