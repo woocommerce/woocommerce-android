@@ -124,9 +124,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
     private val orderListItemDataSource = mock<OrderListItemDataSource>()
     private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
-        @Suppress("UNCHECKED_CAST")
         on { mapOrderStatusOptionsList(any()) } doAnswer {
-            it.arguments[0] as Map<String, WCOrderStatusModel>
+            it.getArgument<Map<String, WCOrderStatusModel>>(0)
         }
     }
 
