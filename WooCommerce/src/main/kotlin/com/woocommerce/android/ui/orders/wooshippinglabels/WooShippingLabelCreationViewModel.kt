@@ -996,7 +996,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             snackbarData = ShippingLabelsSnackbarData(
                 message = R.string.woo_shipping_labels_purchase_origin_address_error,
                 actionLabel = R.string.edit,
-            ) { onEditOriginAddress(selectedAddress.shipFrom) }
+            ) {
+                snackbarData = null
+                onEditOriginAddress(selectedAddress.shipFrom)
+            }
             return
         }
 
@@ -1004,7 +1007,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             snackbarData = ShippingLabelsSnackbarData(
                 message = R.string.woo_shipping_labels_purchase_phone_error,
                 actionLabel = R.string.edit,
-            ) { onEditDestinationAddress(selectedAddress.shipTo) }
+            ) {
+                snackbarData = null
+                onEditDestinationAddress(selectedAddress.shipTo)
+            }
             return
         }
 
@@ -1073,7 +1079,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 snackbarData = ShippingLabelsSnackbarData(
                     message = R.string.woo_shipping_labels_purchase_phone_error,
                     actionLabel = R.string.edit,
-                ) { onEditDestinationAddress(selectedAddress.shipTo) }
+                ) {
+                    snackbarData = null
+                    onEditDestinationAddress(selectedAddress.shipTo)
+                }
             }
             else -> {
                 analyticsTracker.track(
@@ -1083,7 +1092,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 snackbarData = ShippingLabelsSnackbarData(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
-                ) { onPurchaseShippingLabel() }
+                ) {
+                    snackbarData = null
+                    onPurchaseShippingLabel()
+                }
             }
         }
     }
