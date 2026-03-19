@@ -95,10 +95,12 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     val viewState = selectedFilter.flatMapLatest { status ->
         refreshTrigger.map { Pair(status, it) }
     }.transformLatest { (filterStatus, refresh) ->
-        val statusFilter = filterStatus
+        val statusFilters = filterStatus
             .takeIf { it != DEFAULT_FILTER_OPTION_STATUS }
-            ?.let { Order.Status.fromValue(it) }
-        val hasOrders = orderListRepository.hasOrdersLocally(statusFilter)
+            ?.let { ciabOrderStatusMapper.resolveFilterKeys(listOf(it)) }
+            ?.map { Order.Status.fromValue(it) }
+            ?: emptyList()
+        val hasOrders = orderListRepository.hasOrdersLocally(statusFilters)
         if (refresh.isForced || !hasOrders) {
             emit(ViewState.Loading)
             trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
@@ -108,7 +110,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 orderListRepository.observeTopOrders(
                     count = MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD,
                     isForced = refresh.isForced,
-                    statusFilter = statusFilter
+                    statusFilters = statusFilters
                 ),
                 statusOptions
             ) { result, statusOptions ->
