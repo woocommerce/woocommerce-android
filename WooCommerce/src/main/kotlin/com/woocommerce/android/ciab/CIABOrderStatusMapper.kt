@@ -21,7 +21,7 @@ class CIABOrderStatusMapper @Inject constructor(
         val openLabel = resourceProvider.getString(R.string.ciab_order_status_open)
         return statusMap.mapValues { (key, model) ->
             if (key in OPEN_CORE_KEYS) {
-                WCOrderStatusModel(statusKey = OPEN_KEY, label = openLabel)
+                model.copy(statusKey = OPEN_KEY, label = openLabel)
             } else {
                 model
             }

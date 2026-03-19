@@ -69,11 +69,12 @@ class CIABOrderStatusMapperTest : BaseUnitTest() {
         val result = sut.mapOrderStatusOptionsList(defaultStatusMap)
 
         // THEN
-        val expectedOpenModel = WCOrderStatusModel(statusKey = "open", label = openLabel)
-        assertThat(result["pending"]).isEqualTo(expectedOpenModel)
-        assertThat(result["processing"]).isEqualTo(expectedOpenModel)
-        assertThat(result["on-hold"]).isEqualTo(expectedOpenModel)
-        assertThat(result["failed"]).isEqualTo(expectedOpenModel)
+        for (key in CIABOrderStatusMapper.OPEN_CORE_KEYS) {
+            val original = defaultStatusMap[key]!!
+            assertThat(result[key]).isEqualTo(
+                original.copy(statusKey = "open", label = openLabel)
+            )
+        }
     }
 
     @Test
