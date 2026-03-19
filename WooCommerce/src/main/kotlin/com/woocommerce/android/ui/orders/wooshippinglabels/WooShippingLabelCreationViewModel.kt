@@ -993,24 +993,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
         if (addressValidationHelper.isMissingOriginAddress(selectedAddress.shipFrom)) {
-            snackbarData = ShippingLabelsSnackbarData(
-                message = R.string.woo_shipping_labels_purchase_origin_address_error,
-                actionLabel = R.string.edit,
-            ) {
-                snackbarData = null
-                onEditOriginAddress(selectedAddress.shipFrom)
-            }
+            showPurchaseOriginAddressErrorSnackbar(selectedAddress.shipFrom)
             return
         }
 
         if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
-            snackbarData = ShippingLabelsSnackbarData(
-                message = R.string.woo_shipping_labels_purchase_phone_error,
-                actionLabel = R.string.edit,
-            ) {
-                snackbarData = null
-                onEditDestinationAddress(selectedAddress.shipTo)
-            }
+            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             return
         }
 
@@ -1056,6 +1044,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    private fun showPurchaseOriginAddressErrorSnackbar(originAddress: OriginShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_origin_address_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditOriginAddress(originAddress)
+        }
+    }
+
+    private fun showPurchasePhoneErrorSnackbar(destinationAddress: DestinationShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_phone_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditDestinationAddress(destinationAddress)
+        }
+    }
+
     private fun handlePurchaseFailure(
         exception: Throwable,
         selectedShipmentIndex: Int,
@@ -1075,13 +1083,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
                     mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to "invalid_phone")
                 )
-                snackbarData = ShippingLabelsSnackbarData(
-                    message = R.string.woo_shipping_labels_purchase_phone_error,
-                    actionLabel = R.string.edit,
-                ) {
-                    snackbarData = null
-                    onEditDestinationAddress(selectedAddress.shipTo)
-                }
+                showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             }
 
             else -> {
