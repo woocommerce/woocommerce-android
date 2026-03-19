@@ -53,13 +53,12 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
     }
 
     private val featureFlagRepository: FeatureFlagRepository = mock()
-    private val bookingsMvpEnabled = MutableStateFlow(true)
     private lateinit var sut: ObserveBookingsVisibility
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
-        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.BOOKINGS_MVP)).thenReturn(bookingsMvpEnabled)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_MVP)).thenReturn(true)
         sut = ObserveBookingsVisibility(
             productListRepository = productListRepository,
             bookingsRepository = bookingsRepository,

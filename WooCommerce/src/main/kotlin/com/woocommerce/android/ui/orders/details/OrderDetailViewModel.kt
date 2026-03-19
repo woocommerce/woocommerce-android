@@ -252,13 +252,6 @@ class OrderDetailViewModel @Inject constructor(
                 )
             }
         }
-        launch {
-            featureFlagRepository.observeIsEnabled(FeatureFlag.WC_SHIPPING_BANNER).collect { isEnabled ->
-                if (viewState.isWcShippingBannerEnabled != isEnabled) {
-                    viewState = viewState.copy(isWcShippingBannerEnabled = isEnabled)
-                }
-            }
-        }
 
         updateViewStateOnOrderChange()
     }

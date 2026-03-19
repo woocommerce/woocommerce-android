@@ -8,6 +8,6 @@ import javax.inject.Inject
 class WooPosLocalCatalogM1Enabled @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository
 ) {
-    suspend operator fun invoke(): Boolean =
+    operator fun invoke(): Boolean =
         featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1) && AppPrefs.wooPosLocalCatalogEnabled
 }

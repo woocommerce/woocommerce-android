@@ -15,7 +15,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -48,8 +47,6 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2)).thenReturn(false)
-        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2))
-            .thenReturn(flowOf(false))
         sut = JetpackBenefitsViewModel(
             savedState,
             selectedSiteMock,
