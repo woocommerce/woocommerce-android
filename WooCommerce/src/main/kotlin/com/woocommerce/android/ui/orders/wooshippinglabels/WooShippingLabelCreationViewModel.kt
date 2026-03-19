@@ -1065,13 +1065,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedShipmentIndex,
             shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
         )
-        when {
-            exception is WooException &&
-                exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+        when (exception) {
+            is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
                 triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
             }
-            exception is WooException &&
-                exception.error.message?.contains("phone", ignoreCase = true) == true -> {
+
+            is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
                     mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to "invalid_phone")
@@ -1084,6 +1083,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     onEditDestinationAddress(selectedAddress.shipTo)
                 }
             }
+
             else -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
