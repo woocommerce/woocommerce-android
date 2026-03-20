@@ -1,0 +1,2 @@
+24.3:
+Abbiamo migliorato la stabilità di Scelta siti risolvendo un problema che poteva causare un arresto anomalo durante il reinserimento di un sito precedentemente nascosto. Questo aggiornamento rende il ritorno ai negozi nascosti più fluido e affidabile.

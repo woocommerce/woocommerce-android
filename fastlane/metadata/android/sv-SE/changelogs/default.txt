@@ -1,0 +1,2 @@
+24.3:
+Vi har förbättrat webbplatsväljarens stabilitet genom att åtgärda en krasch som kunde uppstå när en tidigare dold webbplats lades till igen. Den här uppdateringen gör det smidigare och mer tillförlitligt att växla tillbaka till dolda butiker.

@@ -1,0 +1,2 @@
+24.3:
+We hebben de stabiliteit van de sitekiezer verbeterd door een crash te verhelpen die kon optreden bij het opnieuw toevoegen van een eerder verborgen site. Deze update maakt het terugschakelen naar verborgen winkels soepeler en betrouwbaarder.

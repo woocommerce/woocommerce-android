@@ -1,0 +1,2 @@
+24.3:
+Site Seçici'de, daha önce gizli olan bir siteyi yeniden eklerken meydana gelebilecek bir çökmeyi düzelterek kararlılığı iyileştirdik. Bu güncelleme gizli mağazalara geri dönmeyi daha sorunsuz ve daha güvenilir hale getirir.

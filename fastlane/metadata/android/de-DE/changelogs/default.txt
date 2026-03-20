@@ -1,0 +1,2 @@
+24.3:
+Wir haben die Stabilität der Website-Auswahl verbessert, indem wir einen Absturz behoben haben, der beim erneuten Hinzufügen einer zuvor ausgeblendeten Website auftreten konnte. Dadurch ist der Wechsel zu ausgeblendeten Shops reibungsloser und zuverlässiger.
