@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 09:56:34+0000
+Translation-Revision-Date: 2026-03-20 10:17:13+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -43,7 +43,7 @@ Language: ja_JP
     <string name="woopos_bookings_cancel_dialog_keep">いえ、そのままにしておいてください</string>
     <string name="woopos_bookings_cancel_dialog_confirm">はい、ご予約をキャンセルいたします。</string>
     <string name="woopos_bookings_cancel_dialog_email_notice">お客様にはメールにてご連絡いたします。</string>
-    <string name="woopos_bookings_cancel_dialog_message">ご予約番号#1$s様、%2$s様、%3$s日、%4$s時、%5$s分のご予約はキャンセルとなります。</string>
+    <string name="woopos_bookings_cancel_dialog_message">ご予約番号#%1$s様、%2$s様、%3$s日、%4$s時、%5$s分のご予約はキャンセルとなります。</string>
     <string name="woopos_bookings_cancel_dialog_title">この予約をキャンセルしますか？</string>
     <string name="woopos_bookings_cancel_menu_item">ご予約をキャンセルいたします</string>
     <string name="woopos_bookings_details_copy_phone">携帯電話のコピー</string>
