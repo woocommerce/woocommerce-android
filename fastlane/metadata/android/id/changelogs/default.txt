@@ -1,2 +1,0 @@
-24.3:
-Kami telah meningkatkan stabilitas di Pemilih Situs dengan memperbaiki crash yang mungkin terjadi saat menambahkan ulang situs yang sebelumnya tersembunyi. Dengan pembaruan ini, peralihan kembali ke toko-toko yang tersembunyi menjadi lebih lancar dan andal.

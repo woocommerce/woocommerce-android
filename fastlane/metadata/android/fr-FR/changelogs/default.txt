@@ -1,2 +1,0 @@
-24.3 :
-Nous avons amélioré la stabilité du sélecteur de sites en corrigeant un plantage qui pouvait survenir lors de la réintégration d’un site précédemment masqué. Cette mise à jour rend le retour aux boutiques masquées plus fluide et plus fiable.
