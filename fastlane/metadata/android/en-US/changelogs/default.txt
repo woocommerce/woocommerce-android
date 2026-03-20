@@ -1,1 +1,6 @@
-We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.
+- [Woo POS] We added Refunds feature to Point of Sale [https://github.com/woocommerce/woocommerce-android/pull/15510]
+
+- [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
+- [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
+- [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
+- [*] Fixed Woo Shipping label purchase flow when the origin address is missing required details [https://github.com/woocommerce/woocommerce-android/pull/15542]
