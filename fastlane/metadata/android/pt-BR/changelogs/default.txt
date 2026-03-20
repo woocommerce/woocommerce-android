@@ -1,0 +1,2 @@
+24.3:
+Melhoramos a estabilidade no seletor de sites corrigindo uma falha que podia acontecer ao adicionar novamente um site que estava oculto. Com esta atualização, voltar para lojas ocultas ficou mais tranquilo e confiável.
