@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 16:55:56+0000
+Translation-Revision-Date: 2026-03-20 10:43:36+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
@@ -43,7 +43,7 @@ Language: sv_SE
     <string name="woopos_bookings_cancel_dialog_keep">Nej, behåll det</string>
     <string name="woopos_bookings_cancel_dialog_confirm">Ja, avbryt bokning</string>
     <string name="woopos_bookings_cancel_dialog_email_notice">Kunden kommer bli aviserad via e-post.</string>
-    <string name="woopos_bookings_cancel_dialog_message">Bokning #%1$s för %2$s den %3$s kl. %4$s kommer att avbrytas.</string>
+    <string name="woopos_bookings_cancel_dialog_message">Bokning #%1$s för %2$s den %3$s kl. %4$s för %5$s kommer att avbrytas.</string>
     <string name="woopos_bookings_cancel_dialog_title">Avbryt denna bokning?</string>
     <string name="woopos_bookings_cancel_menu_item">Avbryt bokning</string>
     <string name="woopos_bookings_details_copy_phone">Kopiera telefon</string>

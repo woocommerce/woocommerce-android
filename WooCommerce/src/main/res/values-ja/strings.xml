@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 10:17:13+0000
+Translation-Revision-Date: 2026-03-20 10:35:12+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -79,7 +79,7 @@ Language: ja_JP
     <string name="woopos_bookings_details_attendance_attended">出席いたしました</string>
     <string name="woopos_orders_details_booking_info_shimmer_placeholder">予約番号 #000 · 2025年1月1日 午前0時00分～午前1時00分</string>
     <string name="woopos_orders_details_booking_info_error">ご予約情報につきましては、現在ご利用いただけません。</string>
-    <string name="woopos_orders_details_booking_info">ご予約番号 #1$d · %2$s様、%3$s様</string>
+    <string name="woopos_orders_details_booking_info">ご予約番号 #%1$d · %2$s様、%3$s様</string>
     <string name="woopos_card_payment_done_button">完了いたしました</string>
     <string name="woo_pos_payment_failed_go_back">戻る</string>
     <string name="woopos_receipt_sent_to_customer">%1$s様宛に領収書をお送りいたしました。</string>
