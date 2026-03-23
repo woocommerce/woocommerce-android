@@ -1,6 +1,5 @@
 # Reusable login subflow
 # Logs into the WooCommerce app with store URL + email + password.
-# Called automatically via onFlowStart hook in config.yaml.
 #
 # Required env vars: WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD
 appId: com.woocommerce.android.dev
@@ -37,6 +36,7 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${WOO_STORE_URL}
+- hideKeyboard
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
@@ -44,11 +44,12 @@ appId: com.woocommerce.android.dev
 # Enter email address
 - extendedWaitUntil:
     visible:
-      id: "input"
+      id: "login_continue_button"
     timeout: 15000
 - tapOn:
     id: "input"
 - inputText: ${WOO_EMAIL}
+- hideKeyboard
 - tapOn:
     id: "login_continue_button"
     retryTapIfNoChange: true
@@ -84,6 +85,7 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${WOO_PASSWORD}
+- hideKeyboard
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
