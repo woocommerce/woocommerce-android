@@ -1,6 +1,5 @@
 # Smoke Test: Blaze - Campaign creation flow
 # P2 ref: Hub menu > Blaze > Create Campaign
-# Also: Blaze section - trigger campaign creation and verify the webview loads
 #
 # Verifies:
 #   - Blaze option accessible from More Menu
@@ -14,7 +13,11 @@ tags:
   - blaze
   - hub_menu
 ---
-# Navigate to More Menu (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
@@ -28,10 +31,9 @@ tags:
 - tapOn: "Blaze"
 
 # Wait for Blaze screen to load
-- assertVisible:
-    text: "Blaze"
+- extendedWaitUntil:
+    visible: "Blaze"
     timeout: 20000
-    label: "Wait for Blaze screen"
 
 - takeScreenshot: blaze_screen
 

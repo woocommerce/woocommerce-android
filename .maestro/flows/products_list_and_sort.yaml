@@ -14,7 +14,11 @@ tags:
   - smoke
   - products
 ---
-# Navigate to Products (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to Products
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
@@ -44,10 +48,10 @@ tags:
 - scroll
 - scroll
 
-- assertVisible:
-    id: "productName"
+- extendedWaitUntil:
+    visible:
+      id: "productName"
     timeout: 10000
-    label: "Products still visible after scrolling (pagination)"
 
 - takeScreenshot: products_list_scrolled
 
@@ -68,19 +72,19 @@ tags:
       - tapOn:
           id: "btn_product_sorting"
           label: "Open product sorting"
-      - assertVisible:
-          id: "sortingItem_name"
+      - extendedWaitUntil:
+          visible:
+            id: "sortingItem_name"
           timeout: 10000
-          label: "Wait for sort options"
       - takeScreenshot: products_sort_options
       - tapOn:
           id: "sortingItem_name"
           index: 0
           label: "Select first sort option"
-      - assertVisible:
-          id: "productsRecycler"
+      - extendedWaitUntil:
+          visible:
+            id: "productsRecycler"
           timeout: 10000
-          label: "Wait for sorted product list"
 
 - takeScreenshot: products_sorted
 
@@ -89,8 +93,9 @@ tags:
     id: "menu_search"
     label: "Open product search"
 
-- assertVisible:
-    id: "search_src_text"
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
     timeout: 10000
 
 - tapOn:
@@ -99,10 +104,10 @@ tags:
 - pressKey: Enter
 
 # Wait for search results
-- assertVisible:
-    id: "productInfoContainer"
+- extendedWaitUntil:
+    visible:
+      id: "productInfoContainer"
     timeout: 15000
-    label: "Wait for product search results"
 
 - takeScreenshot: products_search_results
 
@@ -119,9 +124,8 @@ tags:
       - tapOn:
           id: "btn_product_filter"
           label: "Open product filters"
-      - assertVisible:
-          text: "Stock status"
+      - extendedWaitUntil:
+          visible: "Stock status"
           timeout: 10000
-          label: "Wait for filter screen"
       - takeScreenshot: products_filters
       - back

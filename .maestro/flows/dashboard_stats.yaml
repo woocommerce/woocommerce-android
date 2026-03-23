@@ -13,7 +13,11 @@ tags:
   - smoke
   - dashboard
 ---
-# Verify dashboard container loads (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Verify dashboard container loads
 - assertVisible:
     id: "dashboard_container"
     label: "Dashboard container is visible"
@@ -51,8 +55,9 @@ tags:
             visible: "This Week"
           commands:
             - tapOn: "This Week"
-      - assertVisible:
-          id: "dashboard_stats_card"
+      - extendedWaitUntil:
+          visible:
+            id: "dashboard_stats_card"
           timeout: 10000
 
 - takeScreenshot: dashboard_stats_week

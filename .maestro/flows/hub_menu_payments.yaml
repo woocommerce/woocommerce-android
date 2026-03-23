@@ -5,7 +5,6 @@
 #   - Payments section accessible from More Menu
 #   - Pay in Person toggle visible
 #   - Order Card Reader option visible
-#   - Manage Card Reader option visible
 #   - Card Reader Manuals option visible
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Payments"
@@ -14,7 +13,11 @@ tags:
   - payments
   - hub_menu
 ---
-# Navigate to More Menu (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
@@ -28,10 +31,9 @@ tags:
 - tapOn: "Payments"
 
 # Wait for Payments screen to load
-- assertVisible:
-    text: "Pay in Person"
+- extendedWaitUntil:
+    visible: "Pay in Person"
     timeout: 15000
-    label: "Wait for Payments screen"
 
 - takeScreenshot: hub_payments_screen
 

@@ -10,7 +10,11 @@ tags:
   - smoke
   - hub_menu
 ---
-# Navigate to More Menu (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
@@ -24,10 +28,9 @@ tags:
 - tapOn: "Customers"
 
 # Wait for Customers screen to load
-- assertVisible:
-    text: "Customers"
+- extendedWaitUntil:
+    visible: "Customers"
     timeout: 15000
-    label: "Wait for Customers screen"
 
 - takeScreenshot: hub_customers
 
@@ -47,10 +50,9 @@ tags:
 - tapOn: "Inbox"
 
 # Wait for Inbox screen to load
-- assertVisible:
-    text: "Inbox"
+- extendedWaitUntil:
+    visible: "Inbox"
     timeout: 15000
-    label: "Wait for Inbox screen"
 
 - takeScreenshot: hub_inbox
 

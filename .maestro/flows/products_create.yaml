@@ -12,7 +12,11 @@ tags:
   - smoke
   - products
 ---
-# Navigate to Products (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to Products
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
@@ -42,7 +46,7 @@ tags:
     commands:
       - tapOn: ".*Simple physical product.*"
 
-# Wait for product detail/creation form using "GOT IT" tooltip or "Write with AI" or editText
+# Wait for product detail/creation form
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Write with AI.*|.*Describe your product.*"
     timeout: 20000
@@ -91,8 +95,7 @@ tags:
     commands:
       - tapOn: "Discard"
 
-- assertVisible:
+- extendedWaitUntil:
     visible:
       id: "productsRecycler"
     timeout: 10000
-    label: "Wait to return to products list"

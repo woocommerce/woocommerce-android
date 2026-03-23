@@ -11,7 +11,11 @@ tags:
   - google_for_woo
   - hub_menu
 ---
-# Navigate to More Menu (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
@@ -24,7 +28,7 @@ tags:
 
 - tapOn: "Google for WooCommerce"
 
-# Wait for Google for Woo webview to load — generous timeout for webview
+# Wait for Google for Woo webview to load
 - extendedWaitUntil:
     visible: ".*Google.*|.*Get started.*"
     timeout: 25000

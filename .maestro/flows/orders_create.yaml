@@ -12,7 +12,11 @@ tags:
   - smoke
   - orders
 ---
-# Navigate to Orders (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to Orders
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
@@ -23,10 +27,9 @@ tags:
     label: "Tap Create Order FAB"
 
 # Wait for order creation screen (look for status or product sections)
-- assertVisible:
+- extendedWaitUntil:
     visible: "Order status"
     timeout: 15000
-    label: "Wait for order creation screen"
 
 - takeScreenshot: order_create_empty
 
@@ -48,8 +51,7 @@ tags:
     commands:
       - tapOn: "Discard"
 
-- assertVisible:
+- extendedWaitUntil:
     visible:
       id: "ordersList"
     timeout: 10000
-    label: "Wait to return to orders list"

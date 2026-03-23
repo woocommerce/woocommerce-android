@@ -11,7 +11,11 @@ tags:
   - smoke
   - hub_menu
 ---
-# Navigate to More Menu (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
@@ -24,7 +28,7 @@ tags:
 
 - tapOn: "View Store"
 
-# Wait for webview or browser to load — use a generous timeout since webviews are slow
+# Wait for webview or browser to load
 - extendedWaitUntil:
     visible: ".*"
     timeout: 20000

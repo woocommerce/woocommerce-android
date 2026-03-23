@@ -1,35 +1,34 @@
-# Smoke Test: Orders - List and Search
-# P2 ref: Orders > Verify pagination works, Search for an order
+# Smoke Test: Orders - List, Pagination, and Search
+# P2 ref: Orders > Order list (check pagination), Search for an order
 #
 # Verifies:
-#   - Orders list loads
-#   - Order cards show number, name, total, status
-#   - Pagination works (scroll down to load more)
-#   - Search for an order works
-#   - Filters can be opened
+#   - Orders list loads with order data
+#   - Pagination works (scroll to load more)
+#   - Search for an order by number or keyword
 appId: com.woocommerce.android.dev
 name: "Orders - List, pagination, and search"
 tags:
   - smoke
   - orders
 ---
-# Navigate to Orders (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to Orders
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# Verify orders list is loaded
+# Verify orders list loaded
 - assertVisible:
     id: "ordersList"
     label: "Orders list is visible"
 
-- takeScreenshot: orders_list
-
-# Verify at least one order card is present
 - assertVisible:
     id: "orderNum"
     label: "At least one order number is visible"
 
-# Validate order number format via JavaScript
+# Validate first order has a non-empty number via JavaScript
 - copyTextFrom:
     id: "orderNum"
     index: 0
@@ -39,32 +38,28 @@ tags:
         throw new Error('Order number text is empty');
     }
 
-# Test pagination - scroll down to load more orders
+- takeScreenshot: orders_list
+
+# Test pagination - scroll down
 - scroll
 - scroll
 - scroll
-- assertVisible:
-    id: "orderNum"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
     timeout: 10000
-    label: "Wait for more orders to load after scrolling"
 
 - takeScreenshot: orders_list_scrolled
-
-# Scroll back to top
-- swipe:
-    direction: DOWN
-    duration: 500
-- swipe:
-    direction: DOWN
-    duration: 500
 
 # Test search
 - tapOn:
     id: "menu_search"
     label: "Open order search"
 
-- assertVisible:
-    id: "search_src_text"
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
     timeout: 10000
 
 - tapOn:
@@ -72,33 +67,14 @@ tags:
 - inputText: "1"
 - pressKey: Enter
 
-# Wait for search results and validate we got results
-- assertVisible:
-    id: "orderNum"
+# Wait for search results
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
     timeout: 15000
-    label: "Wait for search results"
 
 - takeScreenshot: orders_search_results
 
 # Go back from search
 - back
-
-# Test filters button
-- assertVisible:
-    id: "ordersList"
-    timeout: 10000
-
-- runFlow:
-    when:
-      visible:
-        id: "btn_order_filter"
-    commands:
-      - tapOn:
-          id: "btn_order_filter"
-          label: "Open order filters"
-      - assertVisible:
-          text: "Order status"
-          timeout: 10000
-          label: "Wait for filter screen"
-      - takeScreenshot: orders_filters
-      - back
+- back

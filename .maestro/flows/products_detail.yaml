@@ -13,7 +13,11 @@ tags:
   - smoke
   - products
 ---
-# Navigate to Products (login handled by onFlowStart hook)
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Navigate to Products
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
@@ -24,7 +28,6 @@ tags:
     label: "Tap first product"
 
 # Wait for product detail screen
-# The "Write with AI" tooltip or the Describe/Price text indicates the screen loaded
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
     timeout: 25000
@@ -91,8 +94,7 @@ tags:
 # Go back to products list
 - back
 
-- assertVisible:
+- extendedWaitUntil:
     visible:
       id: "productsRecycler"
     timeout: 10000
-    label: "Wait to return to products list"

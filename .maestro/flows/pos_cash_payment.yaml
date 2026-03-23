@@ -16,8 +16,11 @@ tags:
   - smoke
   - pos
 ---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
 # Navigate to POS tab (only available on tablets with POS enabled)
-# Login handled by onFlowStart hook
 - runFlow:
     when:
       visible:
@@ -28,10 +31,10 @@ tags:
           label: "Tap POS tab"
 
       # Wait for POS products to load
-      - assertVisible:
-          id: "woo_pos_product_item"
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_product_item"
           timeout: 20000
-          label: "Wait for POS products to load"
 
       - takeScreenshot: pos_products
 
@@ -63,18 +66,19 @@ tags:
       - takeScreenshot: pos_cart
 
       # Proceed to checkout
-      - assertVisible:
-          id: "woo_pos_checkout_button"
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_checkout_button"
           timeout: 10000
       - tapOn:
           id: "woo_pos_checkout_button"
           label: "Tap Checkout"
 
       # Wait for totals/payment screen
-      - assertVisible:
-          id: "woo_pos_cash_payment_button"
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_cash_payment_button"
           timeout: 15000
-          label: "Wait for payment options"
 
       - takeScreenshot: pos_totals
 
@@ -84,18 +88,19 @@ tags:
           label: "Select Cash payment"
 
       # Complete cash payment
-      - assertVisible:
-          id: "woo_pos_complete_payment_button"
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_complete_payment_button"
           timeout: 10000
       - tapOn:
           id: "woo_pos_complete_payment_button"
           label: "Complete payment"
 
       # Verify payment success
-      - assertVisible:
-          id: "woo_pos_new_order_button"
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_new_order_button"
           timeout: 15000
-          label: "Wait for payment success screen"
 
       - assertVisible:
           id: "woo_pos_success_checkmark_icon"
