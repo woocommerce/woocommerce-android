@@ -46,10 +46,9 @@ tags:
     retryTapIfNoChange: true
 
 # Verify error message appears
-- assertVisible:
-    text: ".*not able to detect a WordPress site.*"
+- extendedWaitUntil:
+    visible: ".*not able to detect a WordPress site.*"
     timeout: 15000
-    label: "Wait for 'not able to detect a WordPress site' error"
 
 # Verify the recovery buttons are present
 - assertVisible: "Try another store"

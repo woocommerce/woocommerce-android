@@ -3,6 +3,7 @@ appId: com.woocommerce.android.dev
 ---
 - tapOn:
     id: "dashboard"
-- assertVisible:
-    id: "dashboard_container"
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
     timeout: 10000
