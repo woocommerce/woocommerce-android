@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: Toko & POS
