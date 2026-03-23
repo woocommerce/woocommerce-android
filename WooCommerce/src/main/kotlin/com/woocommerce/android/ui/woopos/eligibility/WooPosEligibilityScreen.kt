@@ -7,10 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -34,6 +32,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.util.ChromeCustomTabUtils
+
+private const val CONTENT_WIDTH_FRACTION = 0.6f
+private const val BUTTON_WIDTH_FRACTION = 0.5f
 
 @Composable
 fun WooPosEligibilityScreen(
@@ -104,7 +105,7 @@ fun WooPosEligibilityScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
 
         suggestionText?.let { text ->
@@ -112,11 +113,14 @@ fun WooPosEligibilityScreen(
                 text = text,
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.width(547.dp)
+                modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION)
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         }
+
+        val buttonModifier = Modifier
+            .fillMaxWidth(BUTTON_WIDTH_FRACTION)
 
         when (retryState) {
             is WooPosEligibilityRetryState.RetryableIneligible -> {
@@ -124,7 +128,7 @@ fun WooPosEligibilityScreen(
                     text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
                     onClick = onRetry,
                     state = WooPosButtonState.ENABLED,
-                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                    modifier = buttonModifier,
                 )
             }
 
@@ -133,7 +137,7 @@ fun WooPosEligibilityScreen(
                     text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
                     onClick = onRetry,
                     state = WooPosButtonState.LOADING,
-                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                    modifier = buttonModifier,
                 )
             }
 
@@ -146,7 +150,7 @@ fun WooPosEligibilityScreen(
                         ChromeCustomTabUtils.launchUrl(context, retryState.learnMoreUrl.toString())
                     },
                     state = WooPosButtonState.ENABLED,
-                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                    modifier = buttonModifier,
                 )
             }
 
@@ -157,7 +161,7 @@ fun WooPosEligibilityScreen(
 
         WooPosOutlinedButton(
             text = stringResource(id = R.string.woopos_eligibility_exit_pos_label),
-            modifier = Modifier.size(width = 366.dp, height = 80.dp)
+            modifier = buttonModifier,
         ) {
             onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
         }
