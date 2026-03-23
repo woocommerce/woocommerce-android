@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun WooPosEligibilityScreen(
@@ -47,7 +50,8 @@ fun WooPosEligibilityScreen(
     WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
         retryState = retryState,
-        onRetry = { viewModel.retryEligibilityCheckTapped() }
+        onRetry = { viewModel.retryEligibilityCheckTapped() },
+        onLearnMoreTapped = { viewModel.learnMoreTapped() },
     )
 }
 
@@ -56,6 +60,7 @@ fun WooPosEligibilityScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     retryState: WooPosEligibilityRetryState,
     onRetry: () -> Unit,
+    onLearnMoreTapped: () -> Unit,
 ) {
     LaunchedEffect(retryState) {
         if (retryState is WooPosEligibilityRetryState.Eligible) {
@@ -65,6 +70,17 @@ fun WooPosEligibilityScreen(
 
     BackHandler {
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
+    }
+
+    val title = when (retryState) {
+        is WooPosEligibilityRetryState.Ineligible -> retryState.title
+        else -> null
+    }
+
+    val suggestionText = when (retryState) {
+        is WooPosEligibilityRetryState.Ineligible -> retryState.suggestionText
+        is WooPosEligibilityRetryState.Loading -> retryState.suggestionText
+        is WooPosEligibilityRetryState.Eligible -> null
     }
 
     Column(
@@ -81,18 +97,14 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        WooPosText(
-            text = stringResource(R.string.woopos_eligibility_screen_unable_to_load),
-            style = WooPosTypography.Heading,
-            textAlign = TextAlign.Center
-        )
+        title?.let {
+            WooPosText(
+                text = it,
+                style = WooPosTypography.Heading,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        val suggestionText = when (retryState) {
-            is WooPosEligibilityRetryState.Ineligible -> retryState.suggestionText
-            is WooPosEligibilityRetryState.Loading -> retryState.suggestionText
-            is WooPosEligibilityRetryState.Eligible -> null
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
         suggestionText?.let { text ->
@@ -106,16 +118,40 @@ fun WooPosEligibilityScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         }
 
-        WooPosButton(
-            text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
-            onClick = onRetry,
-            state = if (retryState is WooPosEligibilityRetryState.Loading) {
-                WooPosButtonState.LOADING
-            } else {
-                WooPosButtonState.ENABLED
-            },
-            modifier = Modifier.size(width = 366.dp, height = 80.dp)
-        )
+        when (retryState) {
+            is WooPosEligibilityRetryState.RetryableIneligible -> {
+                WooPosButton(
+                    text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
+                    onClick = onRetry,
+                    state = WooPosButtonState.ENABLED,
+                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                )
+            }
+
+            is WooPosEligibilityRetryState.Loading -> {
+                WooPosButton(
+                    text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
+                    onClick = onRetry,
+                    state = WooPosButtonState.LOADING,
+                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                )
+            }
+
+            is WooPosEligibilityRetryState.CiabPlanUpgradeRequired -> {
+                val context = LocalContext.current
+                WooPosButton(
+                    text = stringResource(id = R.string.woopos_eligibility_learn_more_label),
+                    onClick = {
+                        onLearnMoreTapped()
+                        ChromeCustomTabUtils.launchUrl(context, retryState.learnMoreUrl.toString())
+                    },
+                    state = WooPosButtonState.ENABLED,
+                    modifier = Modifier.size(width = 366.dp, height = 80.dp)
+                )
+            }
+
+            is WooPosEligibilityRetryState.Eligible -> { /* navigating away */ }
+        }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
@@ -130,16 +166,37 @@ fun WooPosEligibilityScreen(
 
 @WooPosPreview
 @Composable
-fun WooPosEligibilityScreenPreview() {
+fun WooPosEligibilityScreenRetryablePreview() {
     WooPosTheme {
         WooPosEligibilityScreen(
             onNavigationEvent = {},
-            retryState = WooPosEligibilityRetryState.Ineligible(
-                "The POS system is not available for your store's currency. " +
+            retryState = WooPosEligibilityRetryState.RetryableIneligible(
+                title = "Unable to load",
+                suggestionText = "The POS system is not available for your store's currency. " +
                     "In United States, it currently supports only USD. " +
-                    "Please check your store currency settings or contact support for assistance."
+                    "Please check your store currency settings or contact support for assistance.",
             ),
-            onRetry = {}
+            onRetry = {},
+            onLearnMoreTapped = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosEligibilityCiabPreview() {
+    WooPosTheme {
+        WooPosEligibilityScreen(
+            onNavigationEvent = {},
+            retryState = WooPosEligibilityRetryState.CiabPlanUpgradeRequired(
+                title = "Pro plan required",
+                suggestionText = "Accept payments in person for just 2.70% + \$0.10 per transaction. " +
+                    "Upgrade to Pro to access tap-to-pay on your phone and our full " +
+                    "Point of Sale system with real-time inventory and order syncing.",
+                learnMoreUrl = Uri.parse("https://wordpress.com/setup/woo-hosted-plans/"),
+            ),
+            onRetry = {},
+            onLearnMoreTapped = {},
         )
     }
 }

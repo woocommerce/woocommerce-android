@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.eligibility
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.net.Uri
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
@@ -19,7 +21,22 @@ import javax.inject.Inject
 sealed interface WooPosEligibilityRetryState {
     data class Loading(val suggestionText: String?) : WooPosEligibilityRetryState
     object Eligible : WooPosEligibilityRetryState
-    data class Ineligible(val suggestionText: String) : WooPosEligibilityRetryState
+
+    sealed interface Ineligible : WooPosEligibilityRetryState {
+        val title: String
+        val suggestionText: String
+    }
+
+    data class RetryableIneligible(
+        override val title: String,
+        override val suggestionText: String,
+    ) : Ineligible
+
+    data class CiabPlanUpgradeRequired(
+        override val title: String,
+        override val suggestionText: String,
+        val learnMoreUrl: Uri,
+    ) : Ineligible
 }
 
 @HiltViewModel
@@ -27,8 +44,9 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val canBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val tracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
+    private val selectedSite: SelectedSite,
     private val getCountryName: WooPosGetStoreCountryName,
-    private val getCountryCode: WooPosGetStoreCountryCode
+    private val getCountryCode: WooPosGetStoreCountryCode,
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState>(WooPosEligibilityRetryState.Loading(null))
@@ -38,15 +56,15 @@ class WooPosEligibilityViewModel @Inject constructor(
 
     suspend fun initialize(reason: WooPosLaunchability.NonLaunchabilityReason) {
         currentReason = reason
-        val suggestionText = getSuggestionText(reason)
-        _retryState.value = WooPosEligibilityRetryState.Ineligible(suggestionText)
+        _retryState.value = buildIneligibleState(reason)
         tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(reason))
     }
 
     fun retryEligibilityCheckTapped() {
         viewModelScope.launch {
             trackIneligibleRetryTapped()
-            val currentSuggestionText = (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
+            val currentSuggestionText =
+                (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
             _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
 
             val result = canBeLaunchedInTab(forceRefresh = true)
@@ -58,11 +76,50 @@ class WooPosEligibilityViewModel @Inject constructor(
                 }
                 is WooPosLaunchability.NotLaunchable -> {
                     currentReason = result.reason
-                    val suggestionText = getSuggestionText(result.reason)
                     tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(result.reason))
-                    WooPosEligibilityRetryState.Ineligible(suggestionText)
+                    buildIneligibleState(result.reason)
                 }
             }
+        }
+    }
+
+    fun learnMoreTapped() {
+        val reason = currentReason ?: return
+        viewModelScope.launch {
+            tracker.track(WooPosAnalyticsEvent.Event.IneligibleUILearnMoreTapped(reason))
+        }
+    }
+
+    private suspend fun buildIneligibleState(
+        reason: WooPosLaunchability.NonLaunchabilityReason
+    ): WooPosEligibilityRetryState.Ineligible {
+        val suggestionText = getSuggestionText(reason)
+        return when (reason) {
+            WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> {
+                WooPosEligibilityRetryState.CiabPlanUpgradeRequired(
+                    title = resourceProvider.getString(R.string.woopos_eligibility_ciab_title),
+                    suggestionText = suggestionText,
+                    learnMoreUrl = buildLearnMoreUrl(),
+                )
+            }
+            else -> {
+                WooPosEligibilityRetryState.RetryableIneligible(
+                    title = resourceProvider.getString(R.string.woopos_eligibility_screen_unable_to_load),
+                    suggestionText = suggestionText,
+                )
+            }
+        }
+    }
+
+    private fun buildLearnMoreUrl(): Uri {
+        val siteUrl = selectedSite.getOrNull()?.url
+        val siteSlug = siteUrl
+            ?.removePrefix("https://")
+            ?.removePrefix("http://")
+        return if (siteSlug != null) {
+            Uri.parse("$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug")
+        } else {
+            Uri.parse(CIAB_LEARN_MORE_BASE_URL)
         }
     }
 
@@ -96,6 +153,8 @@ class WooPosEligibilityViewModel @Inject constructor(
                     resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
                 }
             }
+            WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired ->
+                resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
@@ -105,5 +164,9 @@ class WooPosEligibilityViewModel @Inject constructor(
     private suspend fun trackIneligibleRetryTapped() {
         val reason = currentReason ?: return
         tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped(reason))
+    }
+
+    companion object {
+        private const val CIAB_LEARN_MORE_BASE_URL = "https://wordpress.com/setup/woo-hosted-plans/"
     }
 }

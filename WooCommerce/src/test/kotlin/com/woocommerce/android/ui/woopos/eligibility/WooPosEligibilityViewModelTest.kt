@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -29,6 +30,7 @@ class WooPosEligibilityViewModelTest {
     private val canBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
     private val mockResourceProvider: ResourceProvider = mock()
+    private val mockSelectedSite: SelectedSite = mock()
     private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
     private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
 
@@ -103,8 +105,9 @@ class WooPosEligibilityViewModelTest {
             canBeLaunchedInTab,
             tracker,
             mockResourceProvider,
+            mockSelectedSite,
             mockStoreCountryProvider,
-            mockStoreCountryCodeProvider
+            mockStoreCountryCodeProvider,
         )
 
         // WHEN
@@ -124,8 +127,9 @@ class WooPosEligibilityViewModelTest {
             canBeLaunchedInTab,
             tracker,
             mockResourceProvider,
+            mockSelectedSite,
             mockStoreCountryProvider,
-            mockStoreCountryCodeProvider
+            mockStoreCountryCodeProvider,
         )
 
         sut.initialize(reason)
@@ -150,8 +154,9 @@ class WooPosEligibilityViewModelTest {
             canBeLaunchedInTab,
             tracker,
             mockResourceProvider,
+            mockSelectedSite,
             mockStoreCountryProvider,
-            mockStoreCountryCodeProvider
+            mockStoreCountryCodeProvider,
         )
 
         sut.initialize(initialReason)
@@ -173,8 +178,9 @@ class WooPosEligibilityViewModelTest {
             canBeLaunchedInTab,
             mockAnalyticsTracker,
             mockResourceProvider,
+            mockSelectedSite,
             mockStoreCountryProvider,
-            mockStoreCountryCodeProvider
+            mockStoreCountryCodeProvider,
         )
     }
 }

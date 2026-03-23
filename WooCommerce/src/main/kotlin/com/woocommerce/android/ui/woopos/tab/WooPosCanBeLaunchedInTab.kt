@@ -45,6 +45,10 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
                 reason = WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
+        getCiabPlanNonLaunchabilityReason(site)?.let {
+            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
+        }
+
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
         getNonLaunchabilityReasonFromVersionAndFeatureSwitch(forceRefresh, cachedPositive)?.let {
@@ -164,12 +168,25 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
+    private fun getCiabPlanNonLaunchabilityReason(
+        site: SiteModel
+    ): WooPosLaunchability.NonLaunchabilityReason? {
+        if (!site.isCIABSite) return null
+        if (CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)) return null
+        return WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
+    }
+
     companion object {
         const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
 
         private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
         private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
+
+        private val CIAB_PRO_PLAN_SLUGS = setOf(
+            "woo_hosted_pro_plan_monthly",
+            "woo_hosted_pro_plan_yearly",
+        )
     }
 }
 
@@ -184,6 +201,7 @@ sealed class WooPosLaunchability {
         FeatureSwitchDisabled,
         UnsupportedCurrency,
         NoSiteSelected,
-        UnknownNoPositiveCache
+        UnknownNoPositiveCache,
+        CiabPlanUpgradeRequired,
     }
 }
