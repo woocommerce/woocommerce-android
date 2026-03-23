@@ -40,7 +40,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.auth.Authenticator.Token;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.Authenticator.TwoFactorResponse;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnToken;
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType;
-import org.wordpress.android.fluxc.persistence.AccountSqlUtils;
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 
@@ -767,14 +767,16 @@ public class AccountStore extends Store {
     private AccountModel mAccount;
     private AccessToken mAccessToken;
     private SelfHostedEndpointFinder mSelfHostedEndpointFinder;
+    private AccountStorePersistence mAccountStorePersistence;
 
     @Inject public AccountStore(Dispatcher dispatcher, AccountRestClient accountRestClient,
                         SelfHostedEndpointFinder selfHostedEndpointFinder, Authenticator authenticator,
-                        AccessToken accessToken) {
+                        AccessToken accessToken, AccountStorePersistence accountPersistenceStore) {
         super(dispatcher);
         mAuthenticator = authenticator;
         mAccountRestClient = accountRestClient;
         mSelfHostedEndpointFinder = selfHostedEndpointFinder;
+        mAccountStorePersistence = accountPersistenceStore;
         mAccount = loadAccount();
         mAccessToken = accessToken;
     }
@@ -1063,7 +1065,7 @@ public class AccountStore extends Store {
 
     private void handlePushUsernameCompleted(AccountPushUsernameResponsePayload payload) {
         if (!payload.isError()) {
-            AccountSqlUtils.updateUsername(getAccount(), payload.username);
+            mAccountStorePersistence.updateUsername(payload.username);
             getAccount().setUserName(payload.username);
         }
 
@@ -1131,7 +1133,7 @@ public class AccountStore extends Store {
 
     private void clearAccountAndAccessToken() {
         // Remove Account
-        AccountSqlUtils.deleteAccount(mAccount);
+        mAccountStorePersistence.deleteAccount();
         mAccount.init();
         // Remove authentication token
         mAccessToken.set(null);
@@ -1190,7 +1192,7 @@ public class AccountStore extends Store {
     private void updateDefaultAccount(AccountModel accountModel, AccountAction cause) {
         // Update memory instance
         mAccount = accountModel;
-        AccountSqlUtils.insertOrUpdateDefaultAccount(accountModel);
+        mAccountStorePersistence.insertOrUpdateDefaultAccount(accountModel);
         OnAccountChanged accountChanged = new OnAccountChanged();
         accountChanged.accountInfosChanged = true;
         accountChanged.causeOfChange = cause;
@@ -1198,7 +1200,7 @@ public class AccountStore extends Store {
     }
 
     private AccountModel loadAccount() {
-        AccountModel account = AccountSqlUtils.getDefaultAccount();
+        AccountModel account = mAccountStorePersistence.getDefaultAccount();
         return account == null ? new AccountModel() : account;
     }
 

@@ -8,7 +8,6 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,7 +26,6 @@ import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
@@ -46,6 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
@@ -78,27 +77,25 @@ class WCProductStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(RuntimeEnvironment.application.applicationContext)
+    val wcDatabaseRule = DatabaseTestRule(RuntimeEnvironment.application.applicationContext)
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(RuntimeEnvironment.application.applicationContext)
 
     @Before
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(
-                SiteModel::class.java,
-                AccountModel::class.java
-            )
-        )
+        val config = SingleStoreWellSqlConfigForTests(appContext, listOf(SiteModel::class.java))
         WellSql.init(config)
         config.reset()
 
-        productsDao = databaseRule.db.productsDao
-        productsVariationsDao = databaseRule.db.productVariationsDao
+        productsDao = wcDatabaseRule.db.productsDao
+        productsVariationsDao = wcDatabaseRule.db.productVariationsDao
 
         val productStorageHelper = ProductStorageHelper(
             productsDao = productsDao,
-            metaDataDao = databaseRule.db.metaDataDao
+            metaDataDao = wcDatabaseRule.db.metaDataDao
         )
         productStore = WCProductStore(
             Dispatcher(),
@@ -109,10 +106,10 @@ class WCProductStoreTest {
             coroutineEngine = initCoroutineEngine(),
             productsDao = productsDao,
             productVariationsDao = productsVariationsDao,
-            productCategoriesDao = databaseRule.db.productCategoriesDao,
-            productTagsDao = databaseRule.db.productTagsDao,
-            productShippingClassesDao = databaseRule.db.productShippingClassesDao,
-            productReviewsDao = databaseRule.db.productReviewsDao,
+            productCategoriesDao = wcDatabaseRule.db.productCategoriesDao,
+            productTagsDao = wcDatabaseRule.db.productTagsDao,
+            productShippingClassesDao = wcDatabaseRule.db.productShippingClassesDao,
+            productReviewsDao = wcDatabaseRule.db.productReviewsDao,
         )
     }
 
@@ -378,7 +375,7 @@ class WCProductStoreTest {
 
     @Test
     fun `given product review exists, when fetch product review, then local database updated`() = runTest {
-        val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
+        val site = insertTestAccountAndSiteIntoDb()
         val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy(
             localSiteId = site.localId()
         )
@@ -475,7 +472,7 @@ class WCProductStoreTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
             productsDao.upsertProduct(product)
-            val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
+            val site = insertTestAccountAndSiteIntoDb()
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -528,7 +525,7 @@ class WCProductStoreTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
             productsDao.upsertProduct(product)
-            val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
+            val site = insertTestAccountAndSiteIntoDb()
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -881,8 +878,7 @@ class WCProductStoreTest {
         ).isNull()
     }
 
-    @After
-    fun tearDown() {
-        // DatabaseTestRule handles closing the database
-    }
+    /* HELPER */
+
+    private fun insertTestAccountAndSiteIntoDb() = SiteTestUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
 }
