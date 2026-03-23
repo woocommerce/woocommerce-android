@@ -75,7 +75,8 @@ fun WooPosEligibilityScreen(
 
     val title = when (retryState) {
         is WooPosEligibilityRetryState.Ineligible -> retryState.title
-        else -> null
+        is WooPosEligibilityRetryState.Loading,
+        is WooPosEligibilityRetryState.Eligible -> null
     }
 
     val suggestionText = when (retryState) {
