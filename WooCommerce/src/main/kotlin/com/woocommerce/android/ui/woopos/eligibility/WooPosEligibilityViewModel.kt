@@ -116,6 +116,7 @@ class WooPosEligibilityViewModel @Inject constructor(
         val siteSlug = siteUrl
             ?.removePrefix("https://")
             ?.removePrefix("http://")
+            ?.trimEnd('/')
         return if (siteSlug != null) {
             Uri.parse("$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug")
         } else {
