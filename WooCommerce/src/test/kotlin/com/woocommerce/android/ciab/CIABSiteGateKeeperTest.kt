@@ -28,11 +28,11 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current site is CIAB, when checking WooPayments support, then feature is unsupported`() {
+    fun `given current site is CIAB, when checking InPersonPayments support, then feature is unsupported`() {
         val site = createSite(isCIAB = true)
         given(selectedSite.getOrNull()).willReturn(site)
 
-        assertFalse(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments))
+        assertFalse(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments))
     }
 
     @Test

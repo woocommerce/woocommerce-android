@@ -508,7 +508,7 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Payments) {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
             }
         ).merge()
             .map { update ->

@@ -117,7 +117,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.WooPayments) } doReturn true
+        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
     }
 
     @Test
@@ -1200,7 +1200,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given WooPayments unsupported by CIAB, when view model initialized, then hide IPP learn more link`() =
         testBlocking {
             // GIVEN
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)).thenReturn(false)
+            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)).thenReturn(false)
 
             // WHEN
             val viewModel = initViewModel(Payment(1L, ORDER))

@@ -177,7 +177,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     containsHtml = true
                 ),
                 onClick = ::onLearnMoreIppClicked,
-                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
             )
         )
     }
