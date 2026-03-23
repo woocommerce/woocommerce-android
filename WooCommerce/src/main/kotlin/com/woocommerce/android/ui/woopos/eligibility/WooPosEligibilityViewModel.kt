@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -118,9 +119,9 @@ class WooPosEligibilityViewModel @Inject constructor(
             ?.removePrefix("http://")
             ?.trimEnd('/')
         return if (siteSlug != null) {
-            Uri.parse("$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug")
+            "$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug".toUri()
         } else {
-            Uri.parse(CIAB_LEARN_MORE_BASE_URL)
+            CIAB_LEARN_MORE_BASE_URL.toUri()
         }
     }
 

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -197,7 +197,7 @@ fun WooPosEligibilityCiabPreview() {
                 suggestionText = "Accept payments in person for just 2.70% + \$0.10 per transaction. " +
                     "Upgrade to Pro to access tap-to-pay on your phone and our full " +
                     "Point of Sale system with real-time inventory and order syncing.",
-                learnMoreUrl = Uri.parse("https://wordpress.com/setup/woo-hosted-plans/"),
+                learnMoreUrl = "https://wordpress.com/setup/woo-hosted-plans/".toUri(),
             ),
             onRetry = {},
             onLearnMoreTapped = {},
