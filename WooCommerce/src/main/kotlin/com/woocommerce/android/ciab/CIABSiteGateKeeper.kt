@@ -8,8 +8,7 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
         feature: CIABAffectedFeature
     ): Boolean {
         return when (feature) {
-            CIABAffectedFeature.POS,
-            CIABAffectedFeature.WooPayments -> true
+            CIABAffectedFeature.POS -> true
 
             else -> !isCurrentSiteCIAB()
         }
