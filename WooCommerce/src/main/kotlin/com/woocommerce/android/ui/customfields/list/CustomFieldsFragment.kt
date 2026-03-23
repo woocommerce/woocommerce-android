@@ -9,6 +9,7 @@ import androidx.compose.material.SnackbarResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.BaseFragment
@@ -88,6 +89,7 @@ class CustomFieldsFragment : BaseFragment() {
     }
 
     private fun openEditor(field: CustomFieldUiModel?) {
+        if (findNavController().currentDestination?.id != R.id.customFieldsFragment) return
         findNavController().navigate(
             CustomFieldsFragmentDirections.actionCustomFieldsFragmentToCustomFieldsEditorFragment(
                 parentItemId = viewModel.parentItemId,
