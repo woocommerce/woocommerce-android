@@ -101,11 +101,13 @@ android {
 
         resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
 
-        packagingOptions {
-            exclude 'META-INF/gradle/incremental.annotation.processors'
-            exclude("META-INF/*.kotlin_module")
-            pickFirst 'META-INF/AL2.0'
-            pickFirst 'META-INF/LGPL2.1'
+        packaging {
+            resources {
+                excludes += 'META-INF/gradle/incremental.annotation.processors'
+                excludes += 'META-INF/*.kotlin_module'
+                pickFirsts += 'META-INF/AL2.0'
+                pickFirsts += 'META-INF/LGPL2.1'
+            }
         }
 
         resConfigs(
@@ -117,6 +119,7 @@ android {
         buildConfig = true
         compose = true
         viewBinding = true
+        resValues = true
     }
 
     compileOptions {
@@ -158,7 +161,7 @@ android {
             // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
             // but we don't obfuscate the bytecode.
             minifyEnabled = true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
@@ -180,7 +183,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         checkDependencies = true
     }
 

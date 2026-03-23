@@ -63,6 +63,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = true
     }
     packaging {
         resources {
@@ -120,7 +121,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         checkDependencies = false
     }
 }

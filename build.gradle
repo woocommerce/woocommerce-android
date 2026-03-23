@@ -61,7 +61,7 @@ allprojects {
 subprojects {
     plugins.withType(com.android.build.gradle.AppPlugin) {
         android {
-            lintOptions {
+            lint {
                 sarifReport = gradle.ext.isCi
                 baseline file("lint-baseline.xml")
             }
