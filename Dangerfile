@@ -63,8 +63,9 @@ danger.import_plugin("#{branch_base}/common/inline_markdown_poster.rb")
 danger.import_plugin("#{branch_base}/translation_context_checker.rb")
 
 translation_context_checker.check_context_suggestions(
-  translations: 'WooCommerce/src/main/res/values/strings.xml',
+  discovery_mode: :translations,
   source_paths: ['WooCommerce/src/main/kotlin/'],
+  translation_paths: 'WooCommerce/src/main/res/values/strings.xml',
   provider: :anthropic,
   model: 'claude-sonnet-4-6',
   report_type: :warning,
