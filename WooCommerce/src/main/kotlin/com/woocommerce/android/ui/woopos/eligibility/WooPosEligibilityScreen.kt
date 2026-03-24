@@ -197,7 +197,7 @@ fun WooPosEligibilityCiabPreview() {
                 title = "Pro plan required",
                 suggestionText = "Accept payments in person for just 2.70% + \$0.10 per transaction. " +
                     "Upgrade to Pro to access tap-to-pay on your phone and our full " +
-                    "Point of Sale system with real-time inventory and order syncing.",
+                    "point of sale system with real-time inventory and order syncing.",
                 learnMoreUrl = "https://wordpress.com/setup/woo-hosted-plans/".toUri(),
             ),
             onRetry = {},
