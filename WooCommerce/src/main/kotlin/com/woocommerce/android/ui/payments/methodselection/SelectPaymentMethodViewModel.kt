@@ -531,7 +531,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     fun onResumed() {
         if (!hasOpenedCiabLearnMore) return
         hasOpenedCiabLearnMore = false
-        launch { showPaymentState() }
+        launch {
+            wooCommerceStore.fetchWooCommerceSite(selectedSite.get())
+            showPaymentState()
+        }
     }
 
     companion object {

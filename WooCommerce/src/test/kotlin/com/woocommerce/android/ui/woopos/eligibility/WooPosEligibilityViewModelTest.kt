@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -31,6 +32,7 @@ class WooPosEligibilityViewModelTest {
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockSelectedSite: SelectedSite = mock()
+    private val mockWooCommerceStore: WooCommerceStore = mock()
     private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
     private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
 
@@ -106,6 +108,7 @@ class WooPosEligibilityViewModelTest {
             tracker,
             mockResourceProvider,
             mockSelectedSite,
+            mockWooCommerceStore,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -128,6 +131,7 @@ class WooPosEligibilityViewModelTest {
             tracker,
             mockResourceProvider,
             mockSelectedSite,
+            mockWooCommerceStore,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -155,6 +159,7 @@ class WooPosEligibilityViewModelTest {
             tracker,
             mockResourceProvider,
             mockSelectedSite,
+            mockWooCommerceStore,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -179,6 +184,7 @@ class WooPosEligibilityViewModelTest {
             mockAnalyticsTracker,
             mockResourceProvider,
             mockSelectedSite,
+            mockWooCommerceStore,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )

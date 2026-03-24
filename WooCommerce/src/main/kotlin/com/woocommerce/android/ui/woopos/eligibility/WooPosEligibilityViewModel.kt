@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
@@ -46,6 +47,7 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val tracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore,
     private val getCountryName: WooPosGetStoreCountryName,
     private val getCountryCode: WooPosGetStoreCountryCode,
 ) : ViewModel() {
@@ -89,6 +91,7 @@ class WooPosEligibilityViewModel @Inject constructor(
                 (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
             _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
 
+            selectedSite.getOrNull()?.let { wooCommerceStore.fetchWooCommerceSite(it) }
             val result = canBeLaunchedInTab(forceRefresh = true)
 
             _retryState.value = when (result) {
