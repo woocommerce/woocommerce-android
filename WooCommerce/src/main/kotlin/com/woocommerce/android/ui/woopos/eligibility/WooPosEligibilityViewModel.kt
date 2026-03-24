@@ -54,6 +54,7 @@ class WooPosEligibilityViewModel @Inject constructor(
     val retryState: StateFlow<WooPosEligibilityRetryState> = _retryState
 
     private var currentReason: WooPosLaunchability.NonLaunchabilityReason? = null
+    private var hasOpenedLearnMore = false
 
     suspend fun initialize(reason: WooPosLaunchability.NonLaunchabilityReason) {
         currentReason = reason
@@ -64,6 +65,26 @@ class WooPosEligibilityViewModel @Inject constructor(
     fun retryEligibilityCheckTapped() {
         viewModelScope.launch {
             trackIneligibleRetryTapped()
+        }
+        recheckEligibility()
+    }
+
+    fun learnMoreTapped() {
+        hasOpenedLearnMore = true
+        val reason = currentReason ?: return
+        viewModelScope.launch {
+            tracker.track(WooPosAnalyticsEvent.Event.IneligibleUILearnMoreTapped(reason))
+        }
+    }
+
+    fun onResumed() {
+        if (!hasOpenedLearnMore) return
+        hasOpenedLearnMore = false
+        recheckEligibility()
+    }
+
+    private fun recheckEligibility() {
+        viewModelScope.launch {
             val currentSuggestionText =
                 (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
             _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
@@ -81,13 +102,6 @@ class WooPosEligibilityViewModel @Inject constructor(
                     buildIneligibleState(result.reason)
                 }
             }
-        }
-    }
-
-    fun learnMoreTapped() {
-        val reason = currentReason ?: return
-        viewModelScope.launch {
-            tracker.track(WooPosAnalyticsEvent.Event.IneligibleUILearnMoreTapped(reason))
         }
     }
 
