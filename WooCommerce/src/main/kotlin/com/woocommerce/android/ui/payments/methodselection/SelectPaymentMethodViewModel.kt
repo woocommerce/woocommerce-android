@@ -92,6 +92,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
 
+    private var hasOpenedCiabLearnMore = false
+
     init {
         checkStatus()
     }
@@ -491,6 +493,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun onCiabLearnMoreClicked() {
+        hasOpenedCiabLearnMore = true
         val siteUrl = selectedSite.getOrNull()?.url
         val siteSlug = siteUrl
             ?.removePrefix("https://")
@@ -524,6 +527,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
         withContext(dispatchers.io) {
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
         }
+
+    fun onResumed() {
+        if (!hasOpenedCiabLearnMore) return
+        hasOpenedCiabLearnMore = false
+        launch { showPaymentState() }
+    }
 
     companion object {
         private const val DELAY_MS = 1L
