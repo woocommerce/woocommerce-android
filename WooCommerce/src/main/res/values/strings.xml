@@ -4034,6 +4034,7 @@
     <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
     <string name="woopos_eligibility_ciab_title">Pro plan required</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accept payments in person for just 2.70% + $0.10 per transaction. &lt;b&gt;Upgrade to Pro&lt;/b&gt; to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
     <string name="woopos_eligibility_learn_more_label">Learn More</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>

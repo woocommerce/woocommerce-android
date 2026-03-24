@@ -487,8 +487,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 onClick = ::onLearnMoreIppClicked,
             )
             isCiab -> {
-                val body = resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
-                    .replace("Upgrade to Pro", "<b>Upgrade to Pro</b>")
+                val body = resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade_html)
                 val learnMore = resourceProvider.getString(R.string.woopos_eligibility_learn_more_label)
                 Success.LearnMoreIpp.CiabUpgrade(
                     text = UiStringText("$body <a href=''>$learnMore</a>", containsHtml = true),
