@@ -27,10 +27,24 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
         return !CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)
     }
 
+    fun buildPlanUpgradeUrl(): String {
+        val siteUrl = selectedSite.getOrNull()?.url
+        val siteSlug = siteUrl
+            ?.removePrefix("https://")
+            ?.removePrefix("http://")
+            ?.trimEnd('/')
+        return if (siteSlug != null) {
+            "$LEARN_MORE_BASE_URL?siteSlug=$siteSlug"
+        } else {
+            LEARN_MORE_BASE_URL
+        }
+    }
+
     companion object {
         val CIAB_PRO_PLAN_SLUGS = setOf(
             "woo_hosted_pro_plan_monthly",
             "woo_hosted_pro_plan_yearly",
         )
+        private const val LEARN_MORE_BASE_URL = "https://wordpress.com/setup/woo-hosted-plans/"
     }
 }

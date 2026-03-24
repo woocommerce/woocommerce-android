@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -33,6 +34,7 @@ class WooPosEligibilityViewModelTest {
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockSelectedSite: SelectedSite = mock()
     private val mockWooCommerceStore: WooCommerceStore = mock()
+    private val mockCiabSiteGateKeeper: CIABSiteGateKeeper = mock()
     private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
     private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
 
@@ -109,6 +111,7 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
+            mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -132,6 +135,7 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
+            mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -160,6 +164,7 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
+            mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )
@@ -185,6 +190,7 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
+            mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
         )

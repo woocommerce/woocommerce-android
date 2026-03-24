@@ -500,17 +500,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun onCiabLearnMoreClicked() {
         hasOpenedCiabLearnMore = true
-        val siteUrl = selectedSite.getOrNull()?.url
-        val siteSlug = siteUrl
-            ?.removePrefix("https://")
-            ?.removePrefix("http://")
-            ?.trimEnd('/')
-        val url = if (siteSlug != null) {
-            "$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug"
-        } else {
-            CIAB_LEARN_MORE_BASE_URL
-        }
-        triggerEvent(OpenGenericWebView(url))
+        triggerEvent(OpenGenericWebView(ciabSiteGateKeeper.buildPlanUpgradeUrl()))
     }
 
     private fun onLearnMoreIppClicked() {
@@ -549,6 +539,5 @@ class SelectPaymentMethodViewModel @Inject constructor(
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
         private const val SOURCE = "payment_methods"
-        private const val CIAB_LEARN_MORE_BASE_URL = "https://wordpress.com/setup/woo-hosted-plans/"
     }
 }

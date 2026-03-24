@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -48,6 +49,7 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val getCountryName: WooPosGetStoreCountryName,
     private val getCountryCode: WooPosGetStoreCountryCode,
 ) : ViewModel() {
@@ -130,16 +132,7 @@ class WooPosEligibilityViewModel @Inject constructor(
     }
 
     private fun buildLearnMoreUrl(): Uri {
-        val siteUrl = selectedSite.getOrNull()?.url
-        val siteSlug = siteUrl
-            ?.removePrefix("https://")
-            ?.removePrefix("http://")
-            ?.trimEnd('/')
-        return if (siteSlug != null) {
-            "$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug".toUri()
-        } else {
-            CIAB_LEARN_MORE_BASE_URL.toUri()
-        }
+        return ciabSiteGateKeeper.buildPlanUpgradeUrl().toUri()
     }
 
     private suspend fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
@@ -183,9 +176,5 @@ class WooPosEligibilityViewModel @Inject constructor(
     private suspend fun trackIneligibleRetryTapped() {
         val reason = currentReason ?: return
         tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped(reason))
-    }
-
-    companion object {
-        private const val CIAB_LEARN_MORE_BASE_URL = "https://wordpress.com/setup/woo-hosted-plans/"
     }
 }
