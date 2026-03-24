@@ -331,6 +331,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        viewModel.onResumed()
     }
 
     override fun onStop() {
