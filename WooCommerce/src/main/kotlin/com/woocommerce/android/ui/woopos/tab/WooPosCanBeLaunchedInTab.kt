@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
@@ -173,7 +174,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         site: SiteModel
     ): WooPosLaunchability.NonLaunchabilityReason? {
         if (!site.isCIABSite) return null
-        if (CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)) return null
+        if (CIABSiteGateKeeper.CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)) return null
         return WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
     }
 
@@ -183,11 +184,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
         private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
-
-        private val CIAB_PRO_PLAN_SLUGS = setOf(
-            "woo_hosted_pro_plan_monthly",
-            "woo_hosted_pro_plan_yearly",
-        )
     }
 }
 
