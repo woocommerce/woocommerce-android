@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
@@ -18,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 sealed interface WooPosEligibilityRetryState {
