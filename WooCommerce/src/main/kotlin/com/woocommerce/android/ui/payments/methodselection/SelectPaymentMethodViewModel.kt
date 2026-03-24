@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
@@ -44,6 +45,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,7 +82,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -484,8 +487,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 onClick = ::onLearnMoreIppClicked,
             )
             isCiab -> Success.LearnMoreIpp.CiabUpgrade(
-                text = UiStringRes(R.string.woopos_eligibility_reason_ciab_plan_upgrade),
-                learnMoreLabel = UiStringRes(R.string.woopos_eligibility_learn_more_label),
+                text = UiStringText(resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)),
+                learnMoreLabel = UiStringText(resourceProvider.getString(R.string.woopos_eligibility_learn_more_label)),
                 onLearnMoreClick = ::onCiabLearnMoreClicked,
             )
             else -> Success.LearnMoreIpp.Hidden

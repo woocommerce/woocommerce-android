@@ -1230,7 +1230,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
-            ciabSiteGateKeeper = ciabSiteGateKeeper
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
+            resourceProvider = mock()
         )
     }
 
