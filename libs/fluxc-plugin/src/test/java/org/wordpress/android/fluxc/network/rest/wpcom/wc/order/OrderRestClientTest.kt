@@ -371,7 +371,7 @@ class OrderRestClientTest {
         ).thenReturn(mockResponse)
 
         // When
-        orderRestClient.sendOrderPOSSpecificReceipt(testSite, orderId, email, forceEmailUpdate = true)
+        orderRestClient.sendOrderPOSSpecificReceipt(testSite, orderId, email, forceEmailUpdate = true, templateId = null)
 
         // Then
         val bodyCaptor = argumentCaptor<Map<String, Any>>()
