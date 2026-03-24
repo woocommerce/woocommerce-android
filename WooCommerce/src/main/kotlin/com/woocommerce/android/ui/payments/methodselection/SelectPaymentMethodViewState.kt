@@ -37,7 +37,6 @@ sealed class SelectPaymentMethodViewState {
 
             data class CiabUpgrade(
                 val text: UiString,
-                val learnMoreLabel: UiString,
                 val onLearnMoreClick: () -> Unit,
             ) : LearnMoreIpp
 

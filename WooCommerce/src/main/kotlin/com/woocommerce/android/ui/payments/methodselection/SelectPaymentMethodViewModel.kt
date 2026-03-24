@@ -486,11 +486,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 isVisible = true,
                 onClick = ::onLearnMoreIppClicked,
             )
-            isCiab -> Success.LearnMoreIpp.CiabUpgrade(
-                text = UiStringText(resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)),
-                learnMoreLabel = UiStringText(resourceProvider.getString(R.string.woopos_eligibility_learn_more_label)),
-                onLearnMoreClick = ::onCiabLearnMoreClicked,
-            )
+            isCiab -> {
+                val body = resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
+                val learnMore = resourceProvider.getString(R.string.woopos_eligibility_learn_more_label)
+                Success.LearnMoreIpp.CiabUpgrade(
+                    text = UiStringText("$body <a href=''>$learnMore</a>", containsHtml = true),
+                    onLearnMoreClick = ::onCiabLearnMoreClicked,
+                )
+            }
             else -> Success.LearnMoreIpp.Hidden
         }
     }
