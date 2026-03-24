@@ -917,7 +917,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
+        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
@@ -934,7 +934,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
+        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1207,7 +1207,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val state = (viewModel.viewStateData.value as Success).learnMoreIpp
-            assertThat(state.isVisible).isFalse()
+            assertThat(state).isInstanceOf(Success.LearnMoreIpp.Hidden::class.java)
         }
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
