@@ -9,7 +9,7 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     ): Boolean {
         return when (feature) {
             CIABAffectedFeature.POS -> true
-
+            CIABAffectedFeature.InPersonPayments -> !isCurrentSiteNonProCIAB()
             else -> !isCurrentSiteCIAB()
         }
     }
@@ -20,4 +20,17 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
 
     fun isCurrentSiteCIAB(): Boolean =
         selectedSite.getOrNull()?.isCIABSite() ?: false
+
+    private fun isCurrentSiteNonProCIAB(): Boolean {
+        val site = selectedSite.getOrNull() ?: return false
+        if (!site.isCIABSite()) return false
+        return !CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)
+    }
+
+    companion object {
+        val CIAB_PRO_PLAN_SLUGS = setOf(
+            "woo_hosted_pro_plan_monthly",
+            "woo_hosted_pro_plan_yearly",
+        )
+    }
 }
