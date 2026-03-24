@@ -171,14 +171,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return Success(
             orderTotal = formatOrderTotal(order.total),
             rows = rows,
-            learnMoreIpp = Success.LearnMoreIpp(
-                label = UiStringRes(
-                    R.string.card_reader_connect_learn_more,
-                    containsHtml = true
-                ),
-                onClick = ::onLearnMoreIppClicked,
-                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
-            )
+            learnMoreIpp = buildLearnMoreIppState()
         )
     }
 
@@ -478,6 +471,39 @@ class SelectPaymentMethodViewModel @Inject constructor(
             WOO_POS -> AnalyticsTracker.VALUE_WOO_POS_PAYMENTS_FLOW
         }
 
+    private fun buildLearnMoreIppState(): Success.LearnMoreIpp {
+        val ippSupported = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
+        val isCiab = ciabSiteGateKeeper.isCurrentSiteCIAB()
+
+        return when {
+            ippSupported -> Success.LearnMoreIpp.Standard(
+                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+                isVisible = true,
+                onClick = ::onLearnMoreIppClicked,
+            )
+            isCiab -> Success.LearnMoreIpp.CiabUpgrade(
+                text = UiStringRes(R.string.woopos_eligibility_reason_ciab_plan_upgrade),
+                learnMoreLabel = UiStringRes(R.string.woopos_eligibility_learn_more_label),
+                onLearnMoreClick = ::onCiabLearnMoreClicked,
+            )
+            else -> Success.LearnMoreIpp.Hidden
+        }
+    }
+
+    private fun onCiabLearnMoreClicked() {
+        val siteUrl = selectedSite.getOrNull()?.url
+        val siteSlug = siteUrl
+            ?.removePrefix("https://")
+            ?.removePrefix("http://")
+            ?.trimEnd('/')
+        val url = if (siteSlug != null) {
+            "$CIAB_LEARN_MORE_BASE_URL?siteSlug=$siteSlug"
+        } else {
+            CIAB_LEARN_MORE_BASE_URL
+        }
+        triggerEvent(OpenGenericWebView(url))
+    }
+
     private fun onLearnMoreIppClicked() {
         paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
@@ -505,5 +531,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
         private const val SOURCE = "payment_methods"
+        private const val CIAB_LEARN_MORE_BASE_URL = "https://wordpress.com/setup/woo-hosted-plans/"
     }
 }

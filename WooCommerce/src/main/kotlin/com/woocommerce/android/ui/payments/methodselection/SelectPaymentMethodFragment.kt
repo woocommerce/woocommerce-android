@@ -123,10 +123,20 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             binding.container.addView(MaterialDivider(requireContext()))
         }
 
-        with(binding.learnMoreIppPaymentMethodsTv) {
-            learnMore.setOnClickListener { state.learnMoreIpp.onClick.invoke() }
-            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
-            learnMore.isVisible = state.learnMoreIpp.isVisible
+        when (val footer = state.learnMoreIpp) {
+            is Success.LearnMoreIpp.Standard -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = footer.isVisible
+                binding.learnMoreIppPaymentMethodsTv.learnMore.setOnClickListener { footer.onClick() }
+                UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, footer.label)
+            }
+            is Success.LearnMoreIpp.CiabUpgrade -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = true
+                UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, footer.text)
+                binding.learnMoreIppPaymentMethodsTv.learnMore.setOnClickListener { footer.onLearnMoreClick() }
+            }
+            is Success.LearnMoreIpp.Hidden -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = false
+            }
         }
     }
 
