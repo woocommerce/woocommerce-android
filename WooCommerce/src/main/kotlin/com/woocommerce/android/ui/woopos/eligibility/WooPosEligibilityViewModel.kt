@@ -93,7 +93,9 @@ class WooPosEligibilityViewModel @Inject constructor(
                 (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
             _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
 
-            selectedSite.getOrNull()?.let { wooCommerceStore.fetchWooCommerceSite(it) }
+            selectedSite.getOrNull()?.let { site ->
+                wooCommerceStore.fetchWooCommerceSite(site).model?.let { selectedSite.set(it) }
+            }
             val result = canBeLaunchedInTab(forceRefresh = true)
 
             _retryState.value = when (result) {

@@ -528,7 +528,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
         if (!hasOpenedCiabLearnMore) return
         hasOpenedCiabLearnMore = false
         launch {
-            wooCommerceStore.fetchWooCommerceSite(selectedSite.get())
+            wooCommerceStore.fetchWooCommerceSite(selectedSite.get()).model?.let {
+                selectedSite.set(it)
+            }
             showPaymentState()
         }
     }
