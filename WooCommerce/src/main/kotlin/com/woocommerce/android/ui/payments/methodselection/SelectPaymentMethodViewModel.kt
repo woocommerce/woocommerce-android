@@ -510,8 +510,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onLearnMoreIppClicked() {
         paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
-            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                url = learnMoreUrlProvider.provideLearnMoreUrlFor(
+            OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
                     LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
                 )
             )
