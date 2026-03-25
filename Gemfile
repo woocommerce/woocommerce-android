@@ -5,7 +5,6 @@ source 'https://rubygems.org'
 gem 'danger-dangermattic', '~> 1.2'
 gem 'fastlane', '~> 2.216'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 0.10'
-gem 'i18n-context-generator', '~> 0.4'
 gem 'nokogiri'
 gem 'rubocop', '~> 1.65'
 
