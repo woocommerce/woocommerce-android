@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderH
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToChangeDueCalculatorScreen
-import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodCurrencyMissMatchLog
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
@@ -920,7 +919,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
+        assertThat(viewModel.event.value)
+            .isInstanceOf(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView::class.java)
     }
 
     @Test
@@ -938,7 +938,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
-            OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+            )
         )
     }
 

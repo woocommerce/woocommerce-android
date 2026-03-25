@@ -500,14 +500,18 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun onCiabLearnMoreClicked() {
         hasOpenedCiabLearnMore = true
-        triggerEvent(OpenGenericWebView(ciabSiteGateKeeper.buildPlanUpgradeUrl()))
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = ciabSiteGateKeeper.buildPlanUpgradeUrl()
+            )
+        )
     }
 
     private fun onLearnMoreIppClicked() {
         paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
-            OpenGenericWebView(
-                learnMoreUrlProvider.provideLearnMoreUrlFor(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = learnMoreUrlProvider.provideLearnMoreUrlFor(
                     LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
                 )
             )
