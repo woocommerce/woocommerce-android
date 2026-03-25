@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui.component.webview
+package com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosWebViewViewModel @Inject constructor(
+class WooPosAuthenticatedWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val webViewAuthenticator: WebViewAuthenticator,
     val userAgent: UserAgent,

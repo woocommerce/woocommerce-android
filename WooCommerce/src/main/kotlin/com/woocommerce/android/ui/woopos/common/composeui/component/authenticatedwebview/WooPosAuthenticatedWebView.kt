@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui.component.webview
+package com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.woopos.bookings.bookingsScreen
 import com.woocommerce.android.ui.woopos.bookings.note.bookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.cardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
-import com.woocommerce.android.ui.woopos.common.composeui.component.webview.webViewScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.webViewScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.eligibilityScreen

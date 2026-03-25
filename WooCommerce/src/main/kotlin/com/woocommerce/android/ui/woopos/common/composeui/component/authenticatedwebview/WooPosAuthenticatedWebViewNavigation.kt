@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui.component.webview
+package com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -50,7 +50,7 @@ fun NavGraphBuilder.webViewScreen(
             entry.arguments?.getString(WEBVIEW_TITLE_KEY).orEmpty(),
             "UTF-8"
         )
-        val viewModel: WooPosWebViewViewModel = hiltViewModel()
+        val viewModel: WooPosAuthenticatedWebViewViewModel = hiltViewModel()
         WooPosAuthenticatedWebView(
             url = url,
             title = title,
