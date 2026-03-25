@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
@@ -35,7 +34,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
-import com.woocommerce.android.util.ChromeCustomTabUtils
 
 private const val CONTENT_WIDTH_FRACTION = 0.6f
 private const val BUTTON_WIDTH_FRACTION = 0.5f
@@ -158,12 +156,15 @@ fun WooPosEligibilityScreen(
             }
 
             is WooPosEligibilityRetryState.CiabPlanUpgradeRequired -> {
-                val context = LocalContext.current
                 WooPosButton(
                     text = stringResource(id = R.string.woopos_eligibility_learn_more_label),
                     onClick = {
                         onLearnMoreTapped()
-                        ChromeCustomTabUtils.launchUrl(context, retryState.learnMoreUrl.toString())
+                        onNavigationEvent(
+                            WooPosNavigationEvent.OpenWebView(
+                                url = retryState.learnMoreUrl.toString()
+                            )
+                        )
                     },
                     state = WooPosButtonState.ENABLED,
                     modifier = buttonModifier,
