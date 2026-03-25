@@ -500,6 +500,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun onCiabLearnMoreClicked() {
         hasOpenedCiabLearnMore = true
+        paymentsFlowTracker.trackIPPLearnMoreClicked(CIAB_UPGRADE_SOURCE)
         triggerEvent(
             MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
                 url = ciabSiteGateKeeper.buildPlanUpgradeUrl()
@@ -545,5 +546,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
         private const val SOURCE = "payment_methods"
+        private const val CIAB_UPGRADE_SOURCE = "ciab_upgrade"
     }
 }
