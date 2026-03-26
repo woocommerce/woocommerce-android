@@ -138,6 +138,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
+                    localCatalogSyncRepository.syncLocalCatalogIncremental(selectedSite.get())
                     loadCatalogStatus()
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
