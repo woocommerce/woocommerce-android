@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -55,18 +56,21 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
-    fun `given POS is eligible on retry, should update state to Eligible`() = runTest {
+    fun `given POS is eligible on retry, when retry tapped, then navigation event is emitted`() = runTest {
         // GIVEN
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
         val sut = createSut()
         sut.initialize(WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
+        val navigated = mutableListOf<Unit>()
+        val job = launch { sut.navigateToPos.collect { navigated.add(it) } }
 
         // WHEN
         sut.retryEligibilityCheckTapped()
+        advanceUntilIdle()
 
         // THEN
-        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
-        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Eligible)
+        assertThat(navigated).hasSize(1)
+        job.cancel()
     }
 
     @Test
@@ -203,7 +207,7 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
-    fun `given learn more tapped, when onResumed and becomes eligible, then state is Eligible`() = runTest {
+    fun `given learn more tapped, when onResumed and becomes eligible, then navigation is emitted`() = runTest {
         mockUriParse().use {
             // GIVEN
             val reason = WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
@@ -211,6 +215,8 @@ class WooPosEligibilityViewModelTest {
             whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
             val sut = createSut()
             sut.initialize(reason)
+            val navigated = mutableListOf<Unit>()
+            val job = launch { sut.navigateToPos.collect { navigated.add(it) } }
 
             // WHEN
             sut.learnMoreTapped()
@@ -218,7 +224,8 @@ class WooPosEligibilityViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Eligible)
+            assertThat(navigated).hasSize(1)
+            job.cancel()
         }
     }
 
