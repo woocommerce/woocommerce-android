@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
+import android.net.Uri
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
@@ -18,6 +19,8 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -180,6 +183,49 @@ class WooPosEligibilityViewModelTest {
         // THEN
         verify(tracker).track(IneligibleUIRetryTapped(initialReason))
         verify(tracker).track(IneligibleUIShown(retryReason))
+    }
+
+    @Test
+    fun `given CIAB plan upgrade reason, when initialized, then state is CiabPlanUpgradeRequired`() = runTest {
+        mockUriParse().use {
+            // GIVEN
+            val reason = WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
+            whenever(mockCiabSiteGateKeeper.buildPlanUpgradeUrl()).thenReturn("https://example.com")
+            val sut = createSut()
+
+            // WHEN
+            sut.initialize(reason)
+
+            // THEN
+            assertThat(sut.retryState.value)
+                .isInstanceOf(WooPosEligibilityRetryState.CiabPlanUpgradeRequired::class.java)
+        }
+    }
+
+    @Test
+    fun `given learn more tapped, when onResumed and becomes eligible, then state is Eligible`() = runTest {
+        mockUriParse().use {
+            // GIVEN
+            val reason = WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
+            whenever(mockCiabSiteGateKeeper.buildPlanUpgradeUrl()).thenReturn("https://example.com")
+            whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
+            val sut = createSut()
+            sut.initialize(reason)
+
+            // WHEN
+            sut.learnMoreTapped()
+            sut.onResumed()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Eligible)
+        }
+    }
+
+    private fun mockUriParse(): MockedStatic<Uri> {
+        return mockStatic(Uri::class.java).apply {
+            `when`<Uri> { Uri.parse(any()) }.thenReturn(mock())
+        }
     }
 
     private suspend fun createSut(): WooPosEligibilityViewModel {
