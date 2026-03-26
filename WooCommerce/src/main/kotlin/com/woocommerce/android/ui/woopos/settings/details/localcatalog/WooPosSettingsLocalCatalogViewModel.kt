@@ -140,6 +140,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 is PosLocalCatalogSyncResult.Success -> {
                     localCatalogSyncRepository.syncLocalCatalogIncremental(selectedSite.get())
                     loadCatalogStatus()
+                    childToParentEventSender.sendToParent(ChildToParentEvent.RefreshProductList)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }

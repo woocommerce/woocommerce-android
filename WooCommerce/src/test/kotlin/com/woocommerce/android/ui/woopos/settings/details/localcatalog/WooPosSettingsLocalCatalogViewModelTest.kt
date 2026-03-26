@@ -323,6 +323,20 @@ class WooPosSettingsLocalCatalogViewModelTest {
     }
 
     @Test
+    fun `given full sync succeeds, when runFullCatalogSync called, then product list refresh is requested`() = runTest {
+        // GIVEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        verify(childToParentEventSender).sendToParent(ChildToParentEvent.RefreshProductList)
+    }
+
+    @Test
     fun `given full sync succeeds, when runFullCatalogSync called, then incremental sync is also run`() = runTest {
         // GIVEN
         sut = createViewModel()
