@@ -2,9 +2,14 @@ package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
+import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -12,14 +17,39 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosSettingsStoreViewModel @Inject constructor(
     private val storeRepository: WooPosSettingsStoreRepository,
-    private val receiptRepository: WooPosSettingsReceiptRepository
+    private val receiptRepository: WooPosSettingsReceiptRepository,
+    private val selectedSite: SelectedSite,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsStoreState())
     val state: StateFlow<WooPosSettingsStoreState> = _state.asStateFlow()
 
+    private val _openEditReceiptEvent = MutableSharedFlow<EditReceiptTarget>()
+    val openEditReceiptEvent: SharedFlow<EditReceiptTarget> = _openEditReceiptEvent.asSharedFlow()
+
     init {
         loadStoreData()
         loadReceiptData()
+    }
+
+    fun onEditReceiptClicked() {
+        viewModelScope.launch {
+            val url = buildReceiptSettingsUrl()
+            _openEditReceiptEvent.emit(EditReceiptTarget(url))
+        }
+    }
+
+    fun onScreenResumed() {
+        loadReceiptData()
+    }
+
+    private fun buildReceiptSettingsUrl(): String {
+        val siteUrl = selectedSite.get().url.trimEnd('/')
+        return if (ciabSiteGateKeeper.isCurrentSiteCIAB()) {
+            "$siteUrl$CIAB_POS_SETTINGS_PATH"
+        } else {
+            "$siteUrl$POS_SETTINGS_PATH"
+        }
     }
 
     private fun loadStoreData() {
@@ -33,6 +63,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
 
     private fun loadReceiptData() {
         viewModelScope.launch {
+            _state.value = _state.value.copy(receiptState = WooPosSettingsStoreState.ReceiptState.Loading)
             val receiptResult = receiptRepository.getReceiptInfo()
             val newReceiptState = when (receiptResult) {
                 is WooPosReceiptDataResult.Success -> {
@@ -50,5 +81,13 @@ class WooPosSettingsStoreViewModel @Inject constructor(
 
             _state.value = _state.value.copy(receiptState = newReceiptState)
         }
+    }
+
+    data class EditReceiptTarget(val url: String)
+
+    private companion object {
+        const val POS_SETTINGS_PATH = "/wp-admin/admin.php?page=wc-settings&tab=point-of-sale"
+        const val CIAB_POS_SETTINGS_PATH =
+            "/wp-admin/admin.php?page=next-admin&p=%2Fwoocommerce%2Fsettings%2Fpayments%2Fpos"
     }
 }
