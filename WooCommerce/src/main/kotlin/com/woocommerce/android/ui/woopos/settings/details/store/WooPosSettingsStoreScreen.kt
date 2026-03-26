@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +18,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -28,6 +29,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -212,13 +214,11 @@ private fun ReceiptInformationSection(
             ) {
                 StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
                 Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = onEditClicked) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_settings_receipt_edit_button),
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                WooPosIconButton(
+                    icon = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
+                    contentDescription = stringResource(R.string.woopos_settings_receipt_edit_button),
+                    onClick = onEditClicked
+                )
             }
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
