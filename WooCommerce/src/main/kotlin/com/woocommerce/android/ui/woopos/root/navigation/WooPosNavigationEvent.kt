@@ -42,4 +42,8 @@ sealed class WooPosNavigationEvent {
         val orderId: Long,
         val source: PaymentSuccessSource,
     ) : WooPosNavigationEvent()
+    data class OpenWebView(
+        val url: String,
+        val title: String = "",
+    ) : WooPosNavigationEvent()
 }

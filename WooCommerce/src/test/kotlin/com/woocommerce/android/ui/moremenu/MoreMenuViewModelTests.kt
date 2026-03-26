@@ -504,7 +504,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given CIAB reports payments disabled, when building state, then payments button is hidden`() = testBlocking {
         // GIVEN
         setup {
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments))
+            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments))
                 .thenReturn(false)
         }
 
