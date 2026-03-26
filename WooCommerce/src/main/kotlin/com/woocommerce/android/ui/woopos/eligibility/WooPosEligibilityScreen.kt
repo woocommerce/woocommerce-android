@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -60,11 +64,16 @@ fun WooPosEligibilityScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    var isNavigatingAway by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.navigateToPos.collect {
+            isNavigatingAway = true
             onNavigationEvent(WooPosNavigationEvent.OpenSplashScreen)
         }
     }
+
+    if (isNavigatingAway) return
 
     val retryState = viewModel.retryState.collectAsState().value ?: return
     WooPosEligibilityScreen(
