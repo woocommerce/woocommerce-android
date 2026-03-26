@@ -56,6 +56,7 @@ class WooPosEligibilityViewModelTest {
         // GIVEN
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
         val sut = createSut()
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
 
         // WHEN
         sut.retryEligibilityCheckTapped()

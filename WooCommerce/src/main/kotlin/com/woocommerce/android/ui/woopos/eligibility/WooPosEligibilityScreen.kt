@@ -60,7 +60,7 @@ fun WooPosEligibilityScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val retryState = viewModel.retryState.collectAsState().value
+    val retryState = viewModel.retryState.collectAsState().value ?: return
     WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
         retryState = retryState,
@@ -88,7 +88,7 @@ fun WooPosEligibilityScreen(
 
     val title = when (retryState) {
         is WooPosEligibilityRetryState.Ineligible -> retryState.title
-        is WooPosEligibilityRetryState.Loading,
+        is WooPosEligibilityRetryState.Loading -> retryState.title
         is WooPosEligibilityRetryState.Eligible -> null
     }
 
@@ -146,7 +146,8 @@ fun WooPosEligibilityScreen(
                 )
             }
 
-            is WooPosEligibilityRetryState.Loading -> {
+            is WooPosEligibilityRetryState.Loading,
+            is WooPosEligibilityRetryState.Eligible -> {
                 WooPosButton(
                     text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
                     onClick = onRetry,
@@ -170,8 +171,6 @@ fun WooPosEligibilityScreen(
                     modifier = buttonModifier,
                 )
             }
-
-            is WooPosEligibilityRetryState.Eligible -> { /* navigating away */ }
         }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

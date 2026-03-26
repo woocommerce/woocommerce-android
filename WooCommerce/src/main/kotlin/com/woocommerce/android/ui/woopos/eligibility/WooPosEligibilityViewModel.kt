@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 sealed interface WooPosEligibilityRetryState {
-    data class Loading(val suggestionText: String?) : WooPosEligibilityRetryState
+    data class Loading(val title: String, val suggestionText: String) : WooPosEligibilityRetryState
     object Eligible : WooPosEligibilityRetryState
 
     sealed interface Ineligible : WooPosEligibilityRetryState {
@@ -54,8 +54,8 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val getCountryCode: WooPosGetStoreCountryCode,
 ) : ViewModel() {
 
-    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState>(WooPosEligibilityRetryState.Loading(null))
-    val retryState: StateFlow<WooPosEligibilityRetryState> = _retryState
+    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
+    val retryState: StateFlow<WooPosEligibilityRetryState?> = _retryState
 
     private var currentReason: WooPosLaunchability.NonLaunchabilityReason? = null
     private var hasOpenedLearnMore = false
@@ -89,9 +89,11 @@ class WooPosEligibilityViewModel @Inject constructor(
 
     private fun recheckEligibility() {
         viewModelScope.launch {
-            val currentSuggestionText =
-                (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
-            _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
+            val currentState = _retryState.value as WooPosEligibilityRetryState.Ineligible
+            _retryState.value = WooPosEligibilityRetryState.Loading(
+                title = currentState.title,
+                suggestionText = currentState.suggestionText,
+            )
 
             selectedSite.getOrNull()?.let { site ->
                 wooCommerceStore.fetchWooCommerceSite(site).model?.let { selectedSite.set(it) }
