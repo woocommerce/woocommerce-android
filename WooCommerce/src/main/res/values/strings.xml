@@ -4092,6 +4092,7 @@
     <string name="woopos_settings_store_phone_label">Phone number</string>
     <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
+    <string name="woopos_settings_receipt_edit_button">Edit</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>

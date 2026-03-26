@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,9 +11,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,16 +29,32 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun WooPosSettingsStoreScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosSettingsStoreViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.openEditReceiptEvent.collectLatest { target ->
+            onNavigationEvent(
+                WooPosNavigationEvent.OpenWebView(
+                    url = target.url,
+                    title = ""
+                )
+            )
+        }
+    }
+
     WooPosSettingsStoreScreen(
         state = state,
+        onEditReceiptClicked = viewModel::onEditReceiptClicked,
         modifier = modifier
     )
 }
@@ -42,6 +62,7 @@ fun WooPosSettingsStoreScreen(
 @Composable
 private fun WooPosSettingsStoreScreen(
     state: WooPosSettingsStoreState,
+    onEditReceiptClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -72,7 +93,10 @@ private fun WooPosSettingsStoreScreen(
 
             is WooPosSettingsStoreState.ReceiptState.Success -> {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                ReceiptInformationSection(receiptState.receiptInfo)
+                ReceiptInformationSection(
+                    receiptInfo = receiptState.receiptInfo,
+                    onEditClicked = onEditReceiptClicked
+                )
             }
         }
     }
@@ -155,7 +179,10 @@ private fun ReceiptLoadingSection() {
 }
 
 @Composable
-private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.ReceiptInfo) {
+private fun ReceiptInformationSection(
+    receiptInfo: WooPosSettingsStoreState.ReceiptInfo,
+    onEditClicked: () -> Unit
+) {
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -164,7 +191,20 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
         Column(
             modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
-            StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
+                Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = onEditClicked) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_settings_receipt_edit_button),
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
