@@ -1,13 +1,16 @@
 ---
 name: verify-on-device
-description: Build, install, and visually verify the app on an Android emulator or device
+description: Build, install, and visually verify the app on an Android emulator or device. Use when testing UI changes on emulator, verifying a build works, navigating app screens on device, taking screenshots for verification, running POS checkout/payment flows on device, or checking visual state after code changes. Covers both main app (Dashboard, Orders, Products) and POS (Point of Sale) navigation.
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
+context: fork
 user-invocable: true
 ---
 
 # Verify on Device
 
 Build, install, and visually verify the app on an Android emulator or physical device using mobile-mcp.
+
+**Task:** $ARGUMENTS
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
 
@@ -19,9 +22,15 @@ Build, install, and visually verify the app on an Android emulator or physical d
 1. Call `mobile_list_elements_on_screen` to get elements with their **device-pixel coordinates**
 2. Compute tap target as the **center** of the element's bounding rect: `tap_x = x + width/2`, `tap_y = y + height/2`
 3. Call `mobile_click_on_screen_at_coordinates` with those computed coordinates
-4. Call `mobile_take_screenshot` AFTER tapping to visually confirm the result
+4. Confirm the action worked by calling `mobile_list_elements_on_screen` again (see "Waiting for Screen Transitions")
 
-Only use `mobile_take_screenshot` for **visual verification** — never for deriving coordinates.
+**Verification priority (cheapest first):**
+1. **Logcat tracking events** -- zero context cost. Use when a known event exists (see navigation reference files)
+2. **Element list check** -- call `mobile_list_elements_on_screen` to confirm expected elements appeared
+3. **`mobile_save_screenshot`** -- saves to disk without loading into context. Use ONLY when user explicitly requests visual evidence
+4. **`mobile_take_screenshot`** -- loads image into context, very expensive. Use ONLY for diagnosis when both above fail
+
+**Do NOT take screenshots routinely.** Never after taps, never at milestones unless the user asked for screenshots. Never for deriving coordinates.
 
 ## Waiting for Screen Transitions
 
@@ -104,6 +113,37 @@ When `mobile_list_elements_on_screen` does not return the element you expect, it
 
 **Compose vs View elements:** View-based screens have stable `com.woocommerce.android.dev:id/*` identifiers. Compose-based screens (Dashboard cards, Settings, newer screens) may lack resource IDs — rely on `contentDescription` or display text instead.
 
+## Logcat Event Verification
+
+Use ADB logcat to verify actions completed successfully instead of arbitrary sleeps. This complements visual verification by confirming that the expected analytics event fired.
+
+**Pattern -- clear logcat, perform action, wait for event:**
+
+```bash
+# 1. Clear old logs
+adb -s <device_id> logcat -c
+# 2. Perform action via mobile-mcp (tap product, tap checkout, etc.)
+# 3. Wait for confirmation event
+adb -s <device_id> shell "timeout 5 logcat | grep -m1 'EVENT_NAME'"
+```
+
+**When to use:**
+- After taps that trigger analytics events (checkout, payment, add-to-cart)
+- To confirm navigation completed (screen-loaded events)
+- To verify background operations finished
+
+**When NOT to use:**
+- Steps without tracking events (menu animations, dialogs) — use `mobile_list_elements_on_screen` polling instead
+- When you need to verify visual state — use screenshots
+
+**Debug -- view recent tracking events:**
+
+```bash
+adb -s <device_id> logcat -d | grep "Tracked:" | tail -10
+```
+
+See the navigation reference files for domain-specific tracking events (especially [POS tracking events](references/pos-navigation.md#tracking-events-for-logcat-verification)).
+
 ## Fresh Install vs. Upgrade
 
 - **Fresh install** (app not previously installed, or after `mobile_uninstall_app`): Always shows the login screen. The agent cannot proceed past login without user credentials.
@@ -168,6 +208,11 @@ adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce
 
 Do NOT use `mobile_launch_app` — it launches the default launcher intent which may not always resolve to `MainActivity`.
 
+**For POS:** Launch directly into POS with:
+```bash
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
+
 ### 8. Handle Post-Launch Dialogs
 
 Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
@@ -187,11 +232,13 @@ Use `--size 720x1280` to keep the file small. The recording runs in the backgrou
 
 Navigate as needed per the user's request. After each navigation action:
 1. Wait for the screen to stabilize (see "Waiting for Screen Transitions").
-2. Verify you arrived at the expected screen using the Key Screen Identifiers table.
-3. Take a screenshot with `mobile_save_screenshot` as evidence.
+2. Verify using the cheapest method available:
+   - **Preferred:** Check logcat for the expected tracking event (see navigation reference files)
+   - **Fallback:** Call `mobile_list_elements_on_screen` and check for expected identifiers
+3. Only take screenshots if the user explicitly requested them.
 
-If the expected screen identifier is NOT present after retries:
-1. Take a screenshot with `mobile_take_screenshot`.
+If the expected screen is NOT reached after retries:
+1. Take a screenshot with `mobile_take_screenshot` for diagnosis (last resort).
 2. Call `mobile_list_elements_on_screen` and identify which screen you are actually on.
 3. Report to the user: "Navigation to [target] failed. Currently on [detected screen]."
 
@@ -205,8 +252,6 @@ sleep 2
 adb -s <device_id> pull /sdcard/_agent_rec.mp4 ./verification_recording.mp4
 adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
 ```
-
-**Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
 
 ### 12. Report Results
 
@@ -318,200 +363,37 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 - All am broadcast commands must include -p com.woocommerce.android.dev — without it, Android 8.0+ silently drops the broadcast.
 - All actions log results to logcat under the `WCApiFaker` tag — use `adb logcat -s WCApiFaker -d` to check feedback.
 
-## WooCommerce Navigation Reference
+## Navigation References
 
-All resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's theme.
+The app has two distinct navigation domains with different architectures. Consult the appropriate reference file for screen identifiers, feature trees, and navigation flows:
 
-### Global Elements (Always Present)
+- **[Main App](references/main-app-navigation.md)**: Dashboard, Orders, Products, Settings, Menu -- Fragment navigation with XML nav graphs inside `MainActivity`
+- **[POS](references/pos-navigation.md)**: Point of Sale -- separate `WooPosActivity`, pure Compose navigation, landscape-only split-pane layout
 
-These elements exist across all screens within `MainActivity`.
+### Quick Domain Detection
 
-| Element | Resource ID | Notes |
-|---------|------------|-------|
-| Bottom Navigation Bar | `bottom_nav` | Visible on top-level screens, hidden on detail screens |
-| Toolbar | `toolbar` | Material toolbar, shows screen title |
-| Navigation Host | `nav_host_fragment_main` | Container for all fragments |
-| Offline Bar | `offline_bar` | Visible only when device is offline |
+| Indicator | Domain | Reference |
+|-----------|--------|-----------|
+| `MainActivity` in foreground | Main App | `references/main-app-navigation.md` |
+| `WooPosActivity` in foreground | POS | `references/pos-navigation.md` |
+| Bottom navigation bar visible | Main App | |
+| Landscape split-pane layout | POS | |
+| `bottom_nav` in element identifiers | Main App | |
 
-### Bottom Navigation Tabs
+To check which Activity is in foreground:
 
-The bottom bar can show up to 6 tabs depending on store configuration (max 5 shown at once).
+```bash
+adb -s <device_id> shell dumpsys activity top | head -5
+```
 
-| Tab | Resource ID | Label | Target Screen |
-|-----|------------|-------|---------------|
-| My Store | `dashboard` | "My store" | Dashboard |
-| Orders | `orders` | "Orders" | Orders List |
-| Products | `products` | "Products" | Products List |
-| Bookings | `bookings` | "Bookings" | Bookings List (only if extension active) |
-| Point of Sale | `point_of_sale` | "Point of Sale" | POS (only if enabled) |
-| Menu | `moreMenu` | "Menu" | More Menu |
-
-To navigate between tabs, find the target tab by its `identifier`, compute center coordinates, and tap. The active tab has `selected: true` in the accessibility tree.
-
-### Common Navigation Patterns
+### Common Navigation Patterns (Both Domains)
 
 - **Go back:** Call `mobile_press_button` with button `BACK`. This is the most reliable way to navigate back.
-- **Dismiss the soft keyboard:** Call `mobile_press_button` with `BACK`. This only dismisses the keyboard; it does NOT navigate back. If you need to navigate back AND the keyboard is visible, press BACK twice: once to dismiss keyboard, once to navigate.
+- **Dismiss the soft keyboard:** Call `mobile_press_button` with `BACK`. This only dismisses the keyboard; it does NOT navigate back. If you need to navigate back AND the keyboard is visible, press BACK twice.
 - **Pull to refresh:** Use `mobile_swipe_on_screen` with direction `down` from the middle of the screen.
 - **Scroll down a list:** Use `mobile_swipe_on_screen` with direction `up` (swipe up to scroll down).
 - **Open a list item:** Find the item in `mobile_list_elements_on_screen` by its text or identifier, compute center coordinates, and tap.
-- **Toolbar back arrow:** Look for elements in the toolbar area (`com.woocommerce.android.dev:id/toolbar`). If the back arrow is not exposed as a separate element, use `mobile_press_button` with `BACK` instead.
-
-### Screen Identifiers
-
-Use these to confirm which screen is displayed after navigation. After navigating, call `mobile_list_elements_on_screen` and look for the **Primary Identifier**.
-
-#### Top-Level Screens
-
-**Dashboard (My Store)** — Fragment: `DashboardFragment` — Tap `dashboard` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `dashboard_container` | ComposeView hosting dashboard cards |
-| Stats card | testTag: `dashboard_stats_card` | Revenue/visitors stats |
-| Top performers | testTag: `dashboard_top_performers_card` | Top-performing products |
-| Date range dropdown | testTag: `stats_range_dropdown_button` | Date range selector |
-
-**Orders List** — Fragment: `OrderListFragment` — Tap `orders` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `order_list_view` | Order list RecyclerView |
-| Filters card | `order_filters_card` | Status filter chips |
-| Create order FAB | `createOrderButton` | contentDescription: "Create order" |
-
-**Products List** — Fragment: `ProductListFragment` — Tap `products` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `productsRecycler` | Products RecyclerView |
-| Add product FAB | `addProductButton` | contentDescription: "Add product" |
-| Sort/filter card | `products_sort_filter_card` | Filter/sort controls |
-| Empty view | `empty_view` | Shown when no products match |
-
-**More Menu** — Fragment: `MoreMenuFragment` — Tap `moreMenu` bottom tab
-
-Fully Compose-based with no XML resource IDs. Identify by text labels: "Payments", "Settings", "Coupons", etc. Common menu items:
-- "Payments" → Payments Hub
-- "Reviews" → Reviews List
-- "Coupons" → Coupon List
-- "Customers" → Customer List
-- "Blaze" → Blaze Campaign List
-- "Settings" → Settings activity
-- "Subscriptions" → Subscriptions
-- "Google for WooCommerce" → Google Ads
-
-**Reviews List** — Fragment: `ReviewListFragment` — Menu tab → "Reviews"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `reviewsList` | Reviews RecyclerView |
-| Unread filter | `unread_filter_switch` | Toggle to filter unread |
-
-**Analytics Hub** — Fragment: `AnalyticsHubFragment` — Dashboard → "View all store analytics"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `analyticsRefreshLayout` | SwipeRefreshLayout |
-| Date range selector | `analyticsDateSelectorCard` | Date range picker card |
-| Analytics cards | `cards` | RecyclerView with metric cards |
-
-#### Detail Screens
-
-**Order Detail** — Fragment: `OrderDetailFragment` — Orders tab → tap any order row
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `orderDetail_container` | Main content container |
-| Order status | `orderDetail_orderStatus` | Status card at top |
-| Product list | `orderDetail_productList` | Products in the order |
-| Payment info | `orderDetail_paymentInfo` | Payment details card |
-| Customer info | `orderDetail_customerInfo` | Customer details card |
-| Refunds info | `orderDetail_refundsInfo` | Visible if refunds exist |
-| Notes list | `orderDetail_noteList` | Order notes section |
-| Trash button | `orderDetail_trash` | Move to trash |
-
-**Product Detail** — Fragment: `ProductDetailFragment` — Products tab → tap any product row
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `productDetail_root` | Root CoordinatorLayout |
-| Toolbar | `productDetailToolbar` | Shows product name |
-| Image gallery | `imageGallery` | Product image carousel |
-| Product cards | `cardsRecyclerView` | Product detail cards |
-
-**Review Detail** — Fragment: `ReviewDetailFragment` — Reviews → tap any review row
-
-Identify by `fragment_review_detail` layout elements.
-
-#### Settings Screens
-
-Settings is a separate Activity (`AppSettingsActivity`). Use `adb shell dumpsys activity top` to confirm. Items are identified by text labels.
-
-| Screen | Fragment | Nav Path |
-|--------|----------|----------|
-| Main Settings | `MainSettingsFragment` | Menu → "Settings" |
-| Privacy Settings | `PrivacySettingsFragment` | Settings → "Privacy settings" |
-| Experimental features | `BetaFeaturesFragment` | Settings → "Experimental features" |
-| Developer Options | `DeveloperOptionsFragment` | Settings → "Developer options" (debug only) |
-| Manage Notifications | OS Notification Settings | Settings → Manage Notifications |
-| Account Settings | `AccountSettingsFragment` | Settings → Account section |
-| About | `UnifiedAboutScreenActivity` | Settings → "About" |
-| Plugins | `PluginsFragment` | Settings → "Plugins" |
-
-#### Payments & Commerce
-
-**Payments Hub** — Fragment: `PaymentsHubFragment` — Menu tab → "Payments"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `paymentsHubRv` | Payments options RecyclerView |
-| Loading indicator | `paymentsHubLoading` | LinearProgressIndicator |
-
-**Coupon List** — Fragment: `CouponListFragment` — Menu tab → "Coupons"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `couponsComposeView` | ComposeView hosting coupon list |
-| Add coupon FAB | `add_coupon_button` | Floating action button |
-
-### Compose Test Tags
-
-These are stable test tags applied via `Modifier.testTag()`. They appear in the accessibility tree as resource IDs.
-
-**Dashboard** (defined in `DashboardStatsTestTags`):
-`dashboard_stats_card`, `dashboard_top_performers_card`, `stats_range_dropdown_button`, `stats_range_dropdown_menu`
-
-**POS** (defined in `WooPosTestTags`):
-`woo_pos_product_item`, `woo_pos_checkout_button`, `woo_pos_cash_payment_button`, `woo_pos_complete_payment_button`, `woo_pos_new_order_button`, `woo_pos_success_checkmark_icon`, `woo_pos_cart_items_count`
-
-### Navigation Flows
-
-Step-by-step paths for reaching common screens from the Dashboard.
-
-```
-Orders List:       Tap bottom nav "orders" tab
-Order Detail:      Orders List → tap any order row → wait for orderDetail_container
-Order Creation:    Orders List → tap createOrderButton (FAB)
-Order Filters:     Orders List → tap filter chip in order_filters_card
-
-Products List:     Tap bottom nav "products" tab
-Product Detail:    Products List → tap any product row → wait for productDetail_root
-Product Creation:  Products List → tap addProductButton (FAB) → select product type
-Product Search:    Products List → tap search icon in toolbar → type in search field
-
-Settings:          Menu tab → tap "Settings" (opens AppSettingsActivity)
-Privacy Settings:  Settings → tap "Privacy settings"
-Experimental Features:     Settings → tap "Experimental features"
-Developer Options: Settings → tap "Developer options" (debug builds only)
-
-Payments Hub:      Menu tab → tap "Payments"
-Coupon List:       Menu tab → tap "Coupons"
-Reviews List:      Menu tab → tap "Reviews"
-Analytics Hub:     Dashboard → tap "View all store analytics"
-Customer List:     Menu tab → tap "Customers"
-Blaze:             Menu tab → tap "Blaze"
-```
+- **Toolbar back arrow:** Look for elements in the toolbar area. If the back arrow is not exposed as a separate element, use `mobile_press_button` with `BACK` instead.
 
 ## Error Recovery
 
