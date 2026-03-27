@@ -4,6 +4,7 @@
 
 24.5
 -----
+- [*] Fixed shipping address showing billing address data when selecting a registered customer during order creation [https://github.com/woocommerce/woocommerce-android/pull/15575]
 
 
 24.4
