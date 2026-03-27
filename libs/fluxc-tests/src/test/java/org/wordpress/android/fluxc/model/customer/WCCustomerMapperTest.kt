@@ -22,28 +22,28 @@ class WCCustomerMapperTest {
         val site = SiteModel().apply { id = siteId }
 
         val billing = CustomerDTO.Billing(
-            address1 = "address1",
-            address2 = "address2",
-            city = "city",
-            company = "company",
-            country = "country",
-            email = "email",
-            firstName = "firstName",
-            lastName = "lastName",
-            phone = "phone",
-            postcode = "postcode",
-            state = "state"
+            address1 = "billingAddress1",
+            address2 = "billingAddress2",
+            city = "billingCity",
+            company = "billingCompany",
+            country = "billingCountry",
+            email = "billingEmail",
+            firstName = "billingFirstName",
+            lastName = "billingLastName",
+            phone = "billingPhone",
+            postcode = "billingPostcode",
+            state = "billingState"
         )
         val shipping = CustomerDTO.Shipping(
-            address1 = "address1",
-            address2 = "address2",
-            city = "city",
-            company = "company",
-            country = "country",
-            firstName = "firstName",
-            lastName = "lastName",
-            postcode = "postcode",
-            state = "state"
+            address1 = "shippingAddress1",
+            address2 = "shippingAddress2",
+            city = "shippingCity",
+            company = "shippingCompany",
+            country = "shippingCountry",
+            firstName = "shippingFirstName",
+            lastName = "shippingLastName",
+            postcode = "shippingPostcode",
+            state = "shippingState"
         )
         val response = CustomerDTO(
             avatarUrl = "avatarUrl",
@@ -80,27 +80,27 @@ class WCCustomerMapperTest {
             assertEquals("role", role)
             assertEquals("username", username)
 
-            assertEquals("address1", shippingAddress1)
-            assertEquals("address2", shippingAddress2)
-            assertEquals("city", shippingCity)
-            assertEquals("company", shippingCompany)
-            assertEquals("country", shippingCountry)
-            assertEquals("firstName", shippingFirstName)
-            assertEquals("lastName", shippingLastName)
-            assertEquals("postcode", shippingPostcode)
-            assertEquals("state", shippingState)
+            assertEquals("shippingAddress1", shippingAddress1)
+            assertEquals("shippingAddress2", shippingAddress2)
+            assertEquals("shippingCity", shippingCity)
+            assertEquals("shippingCompany", shippingCompany)
+            assertEquals("shippingCountry", shippingCountry)
+            assertEquals("shippingFirstName", shippingFirstName)
+            assertEquals("shippingLastName", shippingLastName)
+            assertEquals("shippingPostcode", shippingPostcode)
+            assertEquals("shippingState", shippingState)
 
-            assertEquals("address1", billingAddress1)
-            assertEquals("address2", billingAddress2)
-            assertEquals("city", billingCity)
-            assertEquals("company", billingCompany)
-            assertEquals("country", billingCountry)
-            assertEquals("firstName", billingFirstName)
-            assertEquals("lastName", billingLastName)
-            assertEquals("postcode", billingPostcode)
-            assertEquals("state", billingState)
-            assertEquals("email", billingEmail)
-            assertEquals("phone", billingPhone)
+            assertEquals("billingAddress1", billingAddress1)
+            assertEquals("billingAddress2", billingAddress2)
+            assertEquals("billingCity", billingCity)
+            assertEquals("billingCompany", billingCompany)
+            assertEquals("billingCountry", billingCountry)
+            assertEquals("billingFirstName", billingFirstName)
+            assertEquals("billingLastName", billingLastName)
+            assertEquals("billingPostcode", billingPostcode)
+            assertEquals("billingState", billingState)
+            assertEquals("billingEmail", billingEmail)
+            assertEquals("billingPhone", billingPhone)
         }
     }
 
@@ -121,27 +121,27 @@ class WCCustomerMapperTest {
             role = "role",
             username = "username",
 
-            billingAddress1 = "address1",
-            billingAddress2 = "address2",
-            billingCity = "city",
-            billingCompany = "company",
-            billingCountry = "country",
-            billingEmail = "email",
-            billingFirstName = "firstName",
-            billingLastName = "lastName",
-            billingPhone = "phone",
-            billingPostcode = "postcode",
-            billingState = "state",
+            billingAddress1 = "billingAddress1",
+            billingAddress2 = "billingAddress2",
+            billingCity = "billingCity",
+            billingCompany = "billingCompany",
+            billingCountry = "billingCountry",
+            billingEmail = "billingEmail",
+            billingFirstName = "billingFirstName",
+            billingLastName = "billingLastName",
+            billingPhone = "billingPhone",
+            billingPostcode = "billingPostcode",
+            billingState = "billingState",
 
-            shippingAddress1 = "address1",
-            shippingAddress2 = "address2",
-            shippingCity = "city",
-            shippingCompany = "company",
-            shippingCountry = "country",
-            shippingFirstName = "firstName",
-            shippingLastName = "lastName",
-            shippingPostcode = "postcode",
-            shippingState = "state",
+            shippingAddress1 = "shippingAddress1",
+            shippingAddress2 = "shippingAddress2",
+            shippingCity = "shippingCity",
+            shippingCompany = "shippingCompany",
+            shippingCountry = "shippingCountry",
+            shippingFirstName = "shippingFirstName",
+            shippingLastName = "shippingLastName",
+            shippingPostcode = "shippingPostcode",
+            shippingState = "shippingState",
         )
 
         // when
@@ -161,27 +161,27 @@ class WCCustomerMapperTest {
             assertNull(role)
             assertEquals("username", username)
 
-            assertEquals("address1", shipping?.address1)
-            assertEquals("address2", shipping?.address2)
-            assertEquals("city", shipping?.city)
-            assertEquals("company", shipping?.company)
-            assertEquals("country", shipping?.country)
-            assertEquals("firstName", shipping?.firstName)
-            assertEquals("lastName", shipping?.lastName)
-            assertEquals("postcode", shipping?.postcode)
-            assertEquals("state", shipping?.state)
+            assertEquals("shippingAddress1", shipping?.address1)
+            assertEquals("shippingAddress2", shipping?.address2)
+            assertEquals("shippingCity", shipping?.city)
+            assertEquals("shippingCompany", shipping?.company)
+            assertEquals("shippingCountry", shipping?.country)
+            assertEquals("shippingFirstName", shipping?.firstName)
+            assertEquals("shippingLastName", shipping?.lastName)
+            assertEquals("shippingPostcode", shipping?.postcode)
+            assertEquals("shippingState", shipping?.state)
 
-            assertEquals("address1", billing?.address1)
-            assertEquals("address2", billing?.address2)
-            assertEquals("city", billing?.city)
-            assertEquals("company", billing?.company)
-            assertEquals("country", billing?.country)
-            assertEquals("firstName", billing?.firstName)
-            assertEquals("lastName", billing?.lastName)
-            assertEquals("postcode", billing?.postcode)
-            assertEquals("state", billing?.state)
-            assertEquals("email", billing?.email)
-            assertEquals("phone", billing?.phone)
+            assertEquals("billingAddress1", billing?.address1)
+            assertEquals("billingAddress2", billing?.address2)
+            assertEquals("billingCity", billing?.city)
+            assertEquals("billingCompany", billing?.company)
+            assertEquals("billingCountry", billing?.country)
+            assertEquals("billingFirstName", billing?.firstName)
+            assertEquals("billingLastName", billing?.lastName)
+            assertEquals("billingPostcode", billing?.postcode)
+            assertEquals("billingState", billing?.state)
+            assertEquals("billingEmail", billing?.email)
+            assertEquals("billingPhone", billing?.phone)
         }
     }
 
