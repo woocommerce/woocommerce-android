@@ -11,19 +11,23 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class WooShippingRatesDomainMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val featureFlagRepository: FeatureFlagRepository
 ) {
     operator fun invoke(
         rates: List<WooShippingRateOptionsModel>,
         currencyCode: String?
     ): Map<CarrierUI, List<ShippingRateUI>> {
         return rates.groupBy { it.defaultRate.carrier }
+            .filterKeys(::isCarrierEnabled)
             .map { (carrier, models) ->
                 getCarrier(carrier) to models
                     .map { getShippingRate(it, resourceProvider, currencyCode) }
@@ -47,6 +51,13 @@ class WooShippingRatesDomainMapper @Inject constructor(
                 selectedRate.options.getValue(it).rate
             }
         )
+    }
+
+    private fun isCarrierEnabled(carrier: WooShippingCarrier): Boolean {
+        return when (carrier) {
+            WooShippingCarrier.FEDEX -> featureFlagRepository.isEnabled(FeatureFlag.WOO_SHIPPING_FEDEX)
+            else -> true
+        }
     }
 
     private fun getCarrier(carrier: WooShippingCarrier): CarrierUI {
