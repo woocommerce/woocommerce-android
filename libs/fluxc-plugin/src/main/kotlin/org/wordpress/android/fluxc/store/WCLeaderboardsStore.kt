@@ -3,16 +3,20 @@ package org.wordpress.android.fluxc.store
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.leaderboards.WCCategoryLeaderboardsMapper
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.CATEGORIES
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
+import org.wordpress.android.fluxc.persistence.dao.TopPerformerCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerCategoryEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
@@ -26,8 +30,10 @@ class WCLeaderboardsStore @Inject constructor(
     private val restClient: LeaderboardsRestClient,
     private val productStore: WCProductStore,
     private val mapper: WCProductLeaderboardsMapper,
+    private val categoryMapper: WCCategoryLeaderboardsMapper,
     private val coroutineEngine: CoroutineEngine,
     private val topPerformersDao: TopPerformerProductsDao,
+    private val topPerformerCategoriesDao: TopPerformerCategoriesDao,
     private val reportsRestClient: ReportsRestClient,
     private val wooCommerceStore: WooCommerceStore
 ) {
@@ -148,6 +154,98 @@ class WCLeaderboardsStore @Inject constructor(
             response.isError -> WooResult(response.error)
             response.result != null -> WooResult(response.result.toList())
             else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
+    fun observeTopPerformerCategories(
+        site: SiteModel,
+        datePeriod: String
+    ): Flow<List<TopPerformerCategoryEntity>> =
+        topPerformerCategoriesDao
+            .observeTopPerformerCategories(site.localId(), datePeriod)
+            .distinctUntilChanged()
+
+    suspend fun getCachedTopPerformerCategories(
+        site: SiteModel,
+        datePeriod: String
+    ): List<TopPerformerCategoryEntity> =
+        topPerformerCategoriesDao.getTopPerformerCategoriesFor(site.localId(), datePeriod)
+
+    suspend fun fetchTopPerformerCategories(
+        site: SiteModel,
+        startDate: String,
+        endDate: String,
+        quantity: Int = 5,
+    ): WooResult<List<TopPerformerCategoryEntity>> {
+        val period = DateUtils.getDatePeriod(startDate, endDate)
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchCategoryLeaderboards") {
+            fetchAllLeaderboards(
+                site = site,
+                startDate = startDate,
+                endDate = endDate,
+                quantity = quantity,
+                addProductsPath = false,
+                forceRefresh = true,
+                interval = ""
+            )
+                .model
+                ?.firstOrNull { it.type == CATEGORIES }
+                ?.run {
+                    categoryMapper.mapTopPerformerCategoriesEntity(
+                        response = this,
+                        site = site,
+                        datePeriod = period
+                    )
+                }
+                ?.let {
+                    topPerformerCategoriesDao.updateTopPerformerCategoriesFor(
+                        localSiteId = site.localId(),
+                        datePeriod = period,
+                        topPerformerCategories = it
+                    )
+                    WooResult(it)
+                } ?: WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
+    suspend fun fetchTopPerformerProductsByCategory(
+        site: SiteModel,
+        startDate: String,
+        endDate: String,
+        categoryId: Long,
+        quantity: Int = 5,
+    ): WooResult<List<TopPerformerProductEntity>> {
+        val response = reportsRestClient.fetchTopPerformerProductsByCategory(
+            site = site,
+            startDate = startDate,
+            endDate = endDate,
+            categoryId = categoryId,
+            quantity = quantity
+        )
+
+        return when {
+            response.isError -> WooResult(response.error)
+            response.result != null -> {
+                val period = DateUtils.getDatePeriod(startDate, endDate)
+                val currency = wooCommerceStore.getSiteSettings(site)?.currencyCode ?: ""
+                val topPerformers = response.result.map { item ->
+                    mapper.mapTopPerformerProductsEntity(item, site, period, currency)
+                }
+                WooResult(topPerformers)
+            }
+            else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
+    fun invalidateTopPerformerCategories(site: SiteModel) {
+        coroutineEngine.launch(AppLog.T.DB, this, "Invalidating top performer categories") {
+            val invalidatedCategories =
+                topPerformerCategoriesDao.getTopPerformerCategoriesForSite(site.localId())
+                    .map { it.copy(millisSinceLastUpdated = 0) }
+            topPerformerCategoriesDao.updateTopPerformerCategoriesForSite(
+                site.localId(),
+                invalidatedCategories
+            )
         }
     }
 
