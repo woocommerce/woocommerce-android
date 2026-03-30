@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.connectivitytool
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
@@ -20,6 +22,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -29,6 +33,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     private lateinit var wordPressConnectionCheck: WordPressConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
     private lateinit var storeOrdersCheck: StoreOrdersCheckUseCase
+    private lateinit var selectedSite: SelectedSite
 
     @Before
     fun setUp() {
@@ -36,16 +41,23 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         wordPressConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
+        selectedSite = mock()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
+        createViewModel()
+    }
+
+    private fun createViewModel() {
         sut = ConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wordPressConnectionCheck = wordPressConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
             analyticsTrackerWrapper = mock(),
+            selectedSite = selectedSite,
             savedState = SavedStateHandle()
         )
     }
@@ -177,5 +189,62 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(events).isEqualTo(listOf(OpenSupportRequest))
+    }
+
+    @Test
+    fun `given app password site, when checks run, then WordPress check is skipped`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        verify(wordPressConnectionCheck, never()).invoke()
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then isCheckFinished is true`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+        val stateEvents = mutableListOf<Boolean>()
+        sut.isCheckFinished.observeForever { stateEvents.add(it) }
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        assertThat(stateEvents.last()).isTrue()
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then shouldDisplaySummary is true`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+        var latestState: ConnectivityToolViewModel.ViewState? = null
+        sut.viewState.observeForever { latestState = it }
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        assertThat(latestState?.shouldDisplaySummary).isTrue()
+    }
+
+    @Test
+    fun `given app password site, when viewState is observed, then isWordPressCheckVisible is false`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+
+        // WHEN
+        var latestState: ConnectivityToolViewModel.ViewState? = null
+        sut.viewState.observeForever { latestState = it }
+
+        // THEN
+        assertThat(latestState?.isWordPressCheckVisible).isFalse()
     }
 }

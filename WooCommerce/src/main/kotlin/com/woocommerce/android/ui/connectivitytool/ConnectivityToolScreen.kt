@@ -60,6 +60,7 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
         wordpressConnectionCheckData = viewState?.wordPressCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
         storeOrdersCheckData = viewState?.ordersCheckData,
+        isWordPressCheckVisible = viewState?.isWordPressCheckVisible ?: true,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onReturnClick = viewModel::onReturnClicked
     )
@@ -73,6 +74,7 @@ fun ConnectivityToolScreen(
     wordpressConnectionCheckData: WordPressConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
     storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
+    isWordPressCheckVisible: Boolean,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -98,7 +100,9 @@ fun ConnectivityToolScreen(
         }
 
         ConnectivityCheckCard(internetConnectionCheckData)
-        ConnectivityCheckCard(wordpressConnectionCheckData)
+        if (isWordPressCheckVisible) {
+            ConnectivityCheckCard(wordpressConnectionCheckData)
+        }
         ConnectivityCheckCard(storeConnectionCheckData)
         ConnectivityCheckCard(storeOrdersCheckData)
 
@@ -320,6 +324,7 @@ fun ConnectivityToolScreenPreview() {
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
             ),
+            isWordPressCheckVisible = true,
             onContactSupportClicked = {},
             onReturnClick = {}
         )

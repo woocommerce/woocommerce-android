@@ -10,6 +10,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
@@ -48,8 +50,11 @@ class ConnectivityToolViewModel @Inject constructor(
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val isAppPasswordSite: Boolean
+        get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
     private val stateMachine = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetCheck
@@ -89,14 +94,20 @@ class ConnectivityToolViewModel @Inject constructor(
         storeCheckFlow,
         ordersCheckFlow
     ) { internet, wordpress, store, orders ->
-        ViewState(internet, wordpress, store, orders)
+        ViewState(
+            internetCheckData = internet,
+            wordPressCheckData = wordpress,
+            storeCheckData = store,
+            ordersCheckData = orders,
+            isWordPressCheckVisible = !isAppPasswordSite
+        )
     }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
     private val nextStep
         get() = when (stateMachine.value) {
-            InternetCheck -> WordPressCheck
+            InternetCheck -> if (isAppPasswordSite) StoreCheck else WordPressCheck
             WordPressCheck -> StoreCheck
             StoreCheck -> StoreOrdersCheck
             StoreOrdersCheck -> Finished
@@ -235,11 +246,12 @@ class ConnectivityToolViewModel @Inject constructor(
         val internetCheckData: InternetConnectivityCheckData,
         val wordPressCheckData: WordPressConnectivityCheckData,
         val storeCheckData: StoreConnectivityCheckData,
-        val ordersCheckData: StoreOrdersConnectivityCheckData
+        val ordersCheckData: StoreOrdersConnectivityCheckData,
+        val isWordPressCheckVisible: Boolean = true
     ) {
         val shouldDisplaySummary: Boolean
             get() = internetCheckData.connectivityCheckStatus is Success &&
-                wordPressCheckData.connectivityCheckStatus is Success &&
+                (wordPressCheckData.connectivityCheckStatus is Success || !isWordPressCheckVisible) &&
                 storeCheckData.connectivityCheckStatus is Success &&
                 ordersCheckData.connectivityCheckStatus is Success
     }
