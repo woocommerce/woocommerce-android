@@ -26,21 +26,21 @@ mkdir -p "$OUT_DIR"
 OUT_FILE="$OUT_DIR/${LANG_CODE}.json"
 
 # Extract all strings to a temp file
-ALL_STRINGS_FILE=$(mktemp /tmp/strings_all_XXXXXX.json)
+ALL_STRINGS_FILE=$(mktemp /tmp/strings_all_XXXXXX)
 "$PYTHON" "$SCRIPT_DIR/parse_strings.py" extract "$STRINGS_XML" > "$ALL_STRINGS_FILE"
 
 # Extract keys to a temp file for batch usage lookup
-KEYS_FILE=$(mktemp /tmp/string_keys_XXXXXX.txt)
+KEYS_FILE=$(mktemp /tmp/string_keys_XXXXXX)
 "$PYTHON" "$SCRIPT_DIR/parse_strings.py" extract-keys "$STRINGS_XML" > "$KEYS_FILE"
 
 # Run batch usage lookup for all strings in one pass
 echo "[$LLM/$LANG_CODE] running batch context lookup ..."
-CONTEXT_JSON_FILE=$(mktemp /tmp/context_XXXXXX.json)
+CONTEXT_JSON_FILE=$(mktemp /tmp/context_XXXXXX)
 bash "$FIND_USAGE_SCRIPT" --batch "$KEYS_FILE" > "$CONTEXT_JSON_FILE"
 echo "[$LLM/$LANG_CODE] context lookup done"
 
 # Merge context into the strings array
-STRINGS_WITH_CONTEXT_FILE=$(mktemp /tmp/strings_ctx_XXXXXX.json)
+STRINGS_WITH_CONTEXT_FILE=$(mktemp /tmp/strings_ctx_XXXXXX)
 "$PYTHON" - "$ALL_STRINGS_FILE" "$CONTEXT_JSON_FILE" "$STRINGS_WITH_CONTEXT_FILE" <<'PYEOF'
 import json, sys
 
@@ -120,7 +120,7 @@ for CHUNK_FILE in "$CHUNKS_DIR"/chunk_*.json; do
             continue
         }
     elif [ "$LLM" = "codex" ]; then
-        CODEX_OUT=$(mktemp /tmp/codex_output_XXXXXX.txt)
+        CODEX_OUT=$(mktemp /tmp/codex_output_XXXXXX)
         codex exec -o "$CODEX_OUT" "$PROMPT" 2>/dev/null && LLM_RESPONSE=$(cat "$CODEX_OUT") || {
             echo "[WARN] chunk $CHUNK_INDEX failed — skipping" >&2
             rm -f "$CODEX_OUT"
