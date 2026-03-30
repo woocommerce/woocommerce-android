@@ -1465,6 +1465,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     enum class Carrier(val pickupUrl: String) {
         USPS("https://tools.usps.com/schedule-pickup-steps.htm"),
+        FEDEX("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"),
         UPS("https://wwwapps.ups.com/pickup/request"),
         DHL("https://mydhl.express.dhl/us/en/schedule-pickup.html#/schedule-pickup#label-reference");
 
@@ -1472,6 +1473,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             fun fromCarrierId(carrierId: String): Carrier? {
                 return when (carrierId) {
                     "usps" -> USPS
+                    "fedex" -> FEDEX
                     "ups" -> UPS
                     "dhlexpress" -> DHL
                     else -> null
