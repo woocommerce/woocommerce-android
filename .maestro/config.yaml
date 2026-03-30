@@ -37,3 +37,5 @@ executionOrder:
     - flows/google_for_woo.yaml
     - flows/login_not_wp_site.yaml
     - flows/login_wrong_credentials.yaml
+    - flows/login_not_woo_store.yaml
+    - flows/login_wrong_account.yaml

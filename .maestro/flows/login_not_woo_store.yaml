@@ -1,0 +1,103 @@
+# Smoke Test: Login - Not a WooCommerce store
+# P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
+#
+# Tests that the app shows an appropriate error when logging into a
+# WordPress.com site that does not have WooCommerce installed.
+#
+# Required env vars: WOO_NOT_WOO_STORE_URL, WOO_NOT_WOO_EMAIL, WOO_NOT_WOO_PASSWORD
+appId: com.woocommerce.android.dev
+name: "Login - Not a WooCommerce store error"
+tags:
+  - smoke
+  - login
+---
+- launchApp:
+    clearState: true
+
+# Wait for app to finish loading after clearState
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+# Skip carousel if shown
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Tap "Enter your store address"
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+# Enter the non-WooCommerce store URL
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_NOT_WOO_STORE_URL}
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Enter email
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 15000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_NOT_WOO_EMAIL}
+- tapOn:
+    id: "login_continue_button"
+    retryTapIfNoChange: true
+
+# Dismiss Google Password Manager if it appears
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+# Handle Magic Link screen
+- runFlow:
+    when:
+      visible:
+        id: "login_enter_password"
+    commands:
+      - tapOn:
+          id: "login_enter_password"
+
+# Dismiss Google Password Manager again if it appears on password screen
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+# Enter password
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_NOT_WOO_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Verify error: the site does not have WooCommerce
+- extendedWaitUntil:
+    visible: ".*WooCommerce.*|.*not a WooCommerce.*|.*does not have WooCommerce.*"
+    timeout: 30000
+
+- takeScreenshot: login_not_woo_store
