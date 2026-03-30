@@ -339,8 +339,10 @@ in the report. Not to be confused with raw Levenshtein distance (lower = closer)
 1. **AI translation quality for CJK languages** - Japanese, Korean, Chinese may have
    lower scores due to fundamentally different grammar. The experiment will surface this.
 
-2. **Claude/Codex CLI availability on CI** - Buildkite `mac-metal` agents may not have
-   these CLIs installed. May need to use API calls instead for production.
+2. **CI API access** - `ANTHROPIC_API_KEY` is already available as a Buildkite
+   organization secret (used by `claude-summarize` plugin for build analysis).
+   Production integration uses the Anthropic Python SDK directly, not CLI tools.
+   Experiment scripts use CLI tools locally for convenience.
 
 3. **Context window limits** - 3,800 strings may not fit in one prompt. Chunking needed.
 

@@ -6,7 +6,9 @@
 
 **Architecture:** Shell scripts orchestrate Claude/Codex CLI calls for translation. Python scripts handle XML parsing, metrics computation (sacrebleu), and report generation (Plotly). Integration touches Fastlane lanes and Buildkite pipelines. All code lives on `hack/ai-translations` branch under `scripts/ai-translations/`.
 
-**Tech Stack:** Bash, Python 3.14 (sacrebleu, plotly, Levenshtein), Claude CLI, Codex CLI, Fastlane (Ruby), Buildkite YAML
+**Tech Stack:** Bash, Python 3.14 (sacrebleu, plotly, Levenshtein, anthropic), Claude CLI, Codex CLI (experiment only), Fastlane (Ruby), Buildkite YAML
+
+**CI API Access:** `ANTHROPIC_API_KEY` already exists as a Buildkite organization secret (used by `claude-summarize#v1.1.0` plugin for build failure analysis). Production scripts use the Anthropic Python SDK. Experiment scripts use local CLI tools.
 
 ---
 
@@ -62,6 +64,7 @@ sacrebleu>=2.3.0
 plotly>=5.18.0
 python-Levenshtein>=0.25.0
 kaleido>=0.2.1
+anthropic>=0.40.0
 ```
 
 - [ ] **Step 2: Add results dir to .gitignore**
@@ -592,6 +595,8 @@ git commit -m "Add AI translation evaluation report"
 - [ ] **Step 1: Write translate.sh**
 
 This is the production-ready script that translates only new/changed strings.
+Uses the **Anthropic Python SDK** (not CLI) so it works on CI where `ANTHROPIC_API_KEY`
+is already available as a Buildkite organization secret.
 
 Arguments: `[--previous-tag TAG]` (defaults to latest release tag)
 
@@ -605,9 +610,10 @@ Flow:
    python3 ../experiment/parse_strings.py extract WooCommerce/src/main/res/values/strings.xml > /tmp/current.json
    ```
 3. Compute diff: new keys and changed values
-4. For each new/changed string, get code usage context via `find_string_usage.sh`
+4. Batch-grep codebase for usage context of all new/changed strings
 5. Build prompt using contextual template
-6. Call Claude CLI to translate to all 16 languages
+6. Call Anthropic API via Python SDK (`anthropic.Anthropic().messages.create()`)
+   to translate to all 16 languages. Uses `ANTHROPIC_API_KEY` env var.
 7. Output per-language JSON files to a temp directory
 
 Usage:
