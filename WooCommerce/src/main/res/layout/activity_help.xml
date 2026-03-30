@@ -84,6 +84,15 @@
                 app:optionValue="@string/support_system_status_report_detail"
                 android:visibility="gone" />
 
+            <View style="@style/Woo.Divider"/>
+
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/advancedLoggingToggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionTitle="@string/support_advanced_error_logging"
+                app:toggleOptionDesc="@string/support_advanced_error_logging_detail" />
+
         </LinearLayout>
     </ScrollView>
 
