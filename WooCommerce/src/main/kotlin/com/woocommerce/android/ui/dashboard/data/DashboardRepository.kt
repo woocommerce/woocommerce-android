@@ -134,7 +134,8 @@ class DashboardRepository @Inject constructor(
                 status = when (type) {
                     DashboardWidget.Type.STATS,
                     DashboardWidget.Type.ORDERS,
-                    DashboardWidget.Type.POPULAR_PRODUCTS -> siteOrdersState
+                    DashboardWidget.Type.POPULAR_PRODUCTS,
+                    DashboardWidget.Type.TOP_CATEGORIES -> siteOrdersState
 
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.PUSH_NOTIFICATIONS -> pushNotificationsWidgetStatus

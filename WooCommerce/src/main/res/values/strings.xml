@@ -360,6 +360,12 @@
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
 
+    <string name="category">Category</string>
+    <string name="dashboard_top_categories_items_sold">Items sold</string>
+    <string name="dashboard_top_categories_net_sales">Net sales</string>
+    <string name="dashboard_top_categories_empty">No categories found</string>
+    <string name="dashboard_top_categories_products_title">Products in %s</string>
+
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
     <string name="dashboard_action_view_all_messages">View all messages</string>
@@ -383,6 +389,7 @@
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top performers</string>
+    <string name="my_store_widget_top_categories_title">Top categories</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_orders_title">Most recent orders</string>
     <string name="my_store_widget_reviews_title">Most recent reviews</string>

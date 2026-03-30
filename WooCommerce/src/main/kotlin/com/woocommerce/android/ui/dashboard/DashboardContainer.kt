@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.dashboard.pushnotifications.DashboardPushNotif
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
+import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesWidgetCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
 
@@ -265,6 +266,11 @@ private fun ConfigurableWidgetCard(
         }
 
         DashboardWidget.Type.POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.TOP_CATEGORIES -> DashboardTopCategoriesWidgetCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )

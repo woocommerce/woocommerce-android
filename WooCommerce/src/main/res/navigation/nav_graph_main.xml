@@ -90,6 +90,9 @@
         <action
             android:id="@+id/action_dashboard_to_wooPushNotificationsIntroductionDialog"
             app:destination="@id/nav_graph_push_notifications" />
+        <action
+            android:id="@+id/action_dashboard_to_categoryProductsFragment"
+            app:destination="@id/categoryProductsFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -639,6 +642,23 @@
         android:id="@+id/inboxFragment"
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment" />
+    <fragment
+        android:id="@+id/categoryProductsFragment"
+        android:name="com.woocommerce.android.ui.dashboard.topcategories.categoryproducts.CategoryProductsFragment"
+        android:label="CategoryProductsFragment">
+        <argument
+            android:name="categoryId"
+            app:argType="long" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+        <argument
+            android:name="startDateMillis"
+            app:argType="long" />
+        <argument
+            android:name="endDateMillis"
+            app:argType="long" />
+    </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
         android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"

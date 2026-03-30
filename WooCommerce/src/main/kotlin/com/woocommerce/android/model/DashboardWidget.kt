@@ -42,6 +42,10 @@ data class DashboardWidget(
             titleResource = R.string.my_store_widget_top_products_title,
             trackingIdentifier = "top_performers"
         ),
+        TOP_CATEGORIES(
+            titleResource = R.string.my_store_widget_top_categories_title,
+            trackingIdentifier = "top_categories"
+        ),
         BLAZE(
             titleResource = R.string.my_store_widget_blaze_title,
             trackingIdentifier = "blaze"
