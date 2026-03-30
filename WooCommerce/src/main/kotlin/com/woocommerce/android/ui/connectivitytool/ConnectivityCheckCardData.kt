@@ -70,6 +70,20 @@ sealed class ConnectivityCheckCardData(
         retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
+
+    @Parcelize
+    data class StoreProductsConnectivityCheckData(
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null,
+        @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
+    ) : Parcelable, ConnectivityCheckCardData(
+        title = R.string.orderlist_connectivity_tool_store_products_check_title,
+        suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
+        icon = R.drawable.ic_product,
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
+        readMoreAction = readMoreAction
+    )
 }
 
 @Parcelize
