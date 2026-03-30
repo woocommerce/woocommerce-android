@@ -56,7 +56,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns GENERIC_ERROR, then emit GENERIC Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN)))
 
         // WHEN
@@ -72,7 +72,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns TIMEOUT, then emit TIMEOUT Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true))
             .thenReturn(WooResult(WooError(WooErrorType.TIMEOUT, UNKNOWN)))
 
         // WHEN
@@ -88,7 +88,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns INVALID_RESPONSE, then emit PARSE Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true))
             .thenReturn(WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN)))
 
         // WHEN
@@ -105,7 +105,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true))
             .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
 
         // WHEN
