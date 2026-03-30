@@ -165,7 +165,8 @@ class AnalyticsUpdateDataStore @Inject constructor(
         ORDERS,
         BUNDLES,
         GIFT_CARDS,
-        GOOGLE_ADS
+        GOOGLE_ADS,
+        TOP_PERFORMER_CATEGORIES
     }
 }
 
