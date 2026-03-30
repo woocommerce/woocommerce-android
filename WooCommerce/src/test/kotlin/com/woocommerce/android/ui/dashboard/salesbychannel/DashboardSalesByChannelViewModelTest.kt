@@ -35,7 +35,6 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.quality.Strictness
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -71,9 +70,9 @@ class DashboardSalesByChannelViewModelTest : BaseUnitTest() {
             invoke(any(), any<com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData>())
         } doReturn flowOf(null)
     }
-    private val resourceProvider: ResourceProvider = mock(strictness = Strictness.LENIENT)
+    private val resourceProvider: ResourceProvider = mock(lenient = true)
     private val getSalesByChannel: GetSalesByChannel = mock()
-    private val currencyFormatter: CurrencyFormatter = mock(strictness = Strictness.LENIENT)
+    private val currencyFormatter: CurrencyFormatter = mock(lenient = true)
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -90,7 +89,7 @@ class DashboardSalesByChannelViewModelTest : BaseUnitTest() {
     private val customDateRangeDataStore: SalesByChannelCustomDateRangeDataStore = mock {
         on { dateRange } doReturn customRangeFlow
     }
-    private val dateFormatter: DashboardDateRangeFormatter = mock(strictness = Strictness.LENIENT)
+    private val dateFormatter: DashboardDateRangeFormatter = mock(lenient = true)
 
     private lateinit var viewModel: DashboardSalesByChannelViewModel
 
