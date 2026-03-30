@@ -23,8 +23,8 @@ reducing the minimum number of builds per release from 2 to 1.
 
 ### Current Release Flow (from Releases V2 scenario)
 
-The release is managed through `mc.a8c.com/releases-v2` which triggers Buildkite pipelines.
-The scenario config lives at `wpcom-trunk/wp-content/lib/a8c/releases-v2/config/scenarios/wcandroid.php`.
+The release is managed through `the internal Releases V2 tool` which triggers Buildkite pipelines.
+The scenario config lives at `the Releases V2 scenario config for WCAndroid`.
 
 **Milestones:**
 
@@ -224,7 +224,7 @@ Split into: `promote_to_production` (Play Store promotion) + `finalize_release` 
 
 **5. Releases V2 scenario — update wcandroid.php**
 
-Located at: `wpcom-trunk/wp-content/lib/a8c/releases-v2/config/scenarios/wcandroid.php`
+Located at: `the Releases V2 scenario config for WCAndroid`
 
 Changes:
 - Code Freeze milestone: add "AI Translate Strings" Buildkite button

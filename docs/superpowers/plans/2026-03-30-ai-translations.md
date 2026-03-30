@@ -295,14 +295,14 @@ Flow:
 3. For each chunk, substitute into `prompts/naive.txt` template
 4. Call `claude` or `codex` CLI with the prompt (pipe via stdin)
    - Claude: `echo "$PROMPT" | claude --print --no-input`
-   - Codex: `echo "$PROMPT" | codex --full-auto --quiet`
+   - Codex: `codex exec "$PROMPT"`
 5. Parse JSON response, merge chunks
 6. Save to `results/translations/naive/{llm}/{lang_code}.json`
 
 - [ ] **Step 2: Write translate_contextual.sh**
 
 Same arguments and flow as naive, but:
-1. For each string, call `find_string_usage.sh` to get code context
+1. Run `find_string_usage.sh --batch` to get context for ALL strings in one pass
 2. Build JSON with context: `{key, value, context: "Used in: ..."}`
 3. Use `prompts/contextual.txt` template
 4. Same LLM call pattern
@@ -653,23 +653,31 @@ Arguments: `--translations-dir /tmp/ai-translations/ --res-dir WooCommerce/src/m
 
 For each language JSON file in the translations dir:
 1. Map language code to Android locale dir (e.g., `pt-br` → `values-pt-rBR`)
-2. Read existing `values-{locale}/strings.xml`
-3. For each translated string:
+2. **Validate** the translation JSON before merging:
+   - All format placeholders (`%1$s`, `%d`, etc.) from the English string must be present
+   - All HTML tags must be balanced
+   - JSON must contain the same keys as the input (no missing, no duplicates)
+   - XML output must be well-formed (parse test)
+   - For plurals: required quantity forms must be present for the target language
+   - Log warnings for any strings that fail validation (skip those, keep existing translation)
+3. Read existing `values-{locale}/strings.xml`
+4. Also update legacy locale dirs: copy `values-he` → `values-iw`, `values-id` → `values-in`
+5. For each validated translated string:
    - If key exists: update the value
    - If key is new: insert at the same position as in the English file
-4. Write the updated XML, preserving:
+6. Write the updated XML, preserving:
    - XML declaration and encoding
    - GlotPress comment headers (update Translation-Revision-Date)
    - Existing string ordering
    - `tools:` namespace attributes
 
-Language code to Android locale mapping:
+Language code to Android locale mapping (includes legacy dirs):
 ```python
 LOCALE_MAP = {
-    "ar": "ar", "de": "de", "es": "es", "fr": "fr",
-    "he": "he", "id": "id", "it": "it", "ja": "ja",
-    "ko": "ko", "nl": "nl", "pt-br": "pt-rBR", "ru": "ru",
-    "sv": "sv", "tr": "tr", "zh-cn": "zh-rCN", "zh-tw": "zh-rTW"
+    "ar": ["ar"], "de": ["de"], "es": ["es"], "fr": ["fr"],
+    "he": ["he", "iw"], "id": ["id", "in"], "it": ["it"], "ja": ["ja"],
+    "ko": ["ko"], "nl": ["nl"], "pt-br": ["pt-rBR"], "ru": ["ru"],
+    "sv": ["sv"], "tr": ["tr"], "zh-cn": ["zh-rCN"], "zh-tw": ["zh-rTW"]
 }
 ```
 
