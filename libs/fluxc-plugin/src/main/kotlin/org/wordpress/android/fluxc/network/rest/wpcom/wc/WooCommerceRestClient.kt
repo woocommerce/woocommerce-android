@@ -60,6 +60,16 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         return response.toWooPayload { it.toList() }
     }
 
+    suspend fun fetchSiteSettingsAdvanced(site: SiteModel): WooPayload<List<SiteSettingsResponse>> {
+        val url = WOOCOMMERCE.settings.group("advanced").pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<SiteSettingsResponse>::class.java
+        )
+        return response.toWooPayload { it.toList() }
+    }
+
     suspend fun fetchSiteSettingsProducts(site: SiteModel): WooPayload<List<SiteSettingsResponse>> {
         val url = WOOCOMMERCE.settings.products.pathV3
         val response = wooNetwork.executeGetGsonRequest(

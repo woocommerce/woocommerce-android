@@ -220,6 +220,26 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun isOrderAttributionAvailable(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "isOrderAttributionAvailable") {
+            val response = wcCoreRestClient.fetchSiteSettingsAdvanced(site)
+            when {
+                response.isError -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                response.result != null -> {
+                    val settings = response.result
+                    val attributionEnabled = settings
+                        .firstOrNull { it.id == "woocommerce_feature_order_attribution_enabled" }
+                        ?.value?.asString == "yes"
+                    val hposEnabled = settings
+                        .firstOrNull { it.id == "woocommerce_custom_orders_table_enabled" }
+                        ?.value?.asString == "yes"
+                    WooResult(attributionEnabled && hposEnabled)
+                }
+                else -> WooResult(false)
+            }
+        }
+    }
+
     suspend fun fetchSystemPlugins(site: SiteModel): WooResult<List<SystemPluginModel>> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSystemPlugins") {
             val response = systemRestClient.fetchInstalledPlugins(site)
