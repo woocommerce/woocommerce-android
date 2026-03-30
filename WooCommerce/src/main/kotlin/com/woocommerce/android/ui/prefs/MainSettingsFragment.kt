@@ -228,6 +228,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
         }
 
+        binding.optionTroubleshootConnection.isVisible = presenter.isTroubleshootConnectionVisible
+        binding.optionTroubleshootConnection.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SETTINGS_TROUBLESHOOT_CONNECTION_TAPPED)
+            findNavController()
+                .navigateSafely(R.id.action_mainSettingsFragment_to_connectivityToolFragment)
+        }
+
         binding.optionSitePlugins.setOnClickListener {
             findNavController()
                 .navigateSafely(
@@ -331,6 +338,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
             binding.optionDomain.isVisible ||
             binding.optionStoreName.isVisible ||
-            binding.optionEnablePushNotifications.isVisible
+            binding.optionEnablePushNotifications.isVisible ||
+            binding.optionTroubleshootConnection.isVisible
     }
 }
