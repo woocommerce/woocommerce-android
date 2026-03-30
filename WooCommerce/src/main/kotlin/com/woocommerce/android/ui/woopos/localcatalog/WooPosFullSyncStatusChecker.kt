@@ -2,10 +2,11 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val prefsRepo: WooPosPreferencesRepository,
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val time: DateTimeProvider,
 ) {
@@ -40,7 +41,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
         val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
 
-        if (!fileApproachEnabled()) {
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
             val catalogTooLarge = checkCatalogSizeIfNeeded(productCount, variationsCount, site)
             if (catalogTooLarge != null) return catalogTooLarge
         }
@@ -68,6 +69,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 )
                 WooPosFullSyncRequirement.NotRequired(lastFullSyncTimestamp)
             }
+
             else -> {
                 if (!networkStatus.isConnected()) {
                     wooPosLogWrapper.d(

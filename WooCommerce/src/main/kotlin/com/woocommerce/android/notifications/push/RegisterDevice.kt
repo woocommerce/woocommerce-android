@@ -6,6 +6,7 @@ import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -15,6 +16,7 @@ class RegisterDevice @Inject constructor(
     private val accountStore: AccountStore,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val pushNotificationRepository: PushNotificationRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val selectedSite: SelectedSite
 ) {
     suspend operator fun invoke(mode: Mode) {
@@ -24,8 +26,8 @@ class RegisterDevice @Inject constructor(
             IF_NEEDED -> {
                 when (pushRegistrationStatus) {
                     Status.UNREGISTERED -> sendToken()
-                    Status.REGISTERED_WPCOM_ONLY -> if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-                        sendToken()
+                    Status.REGISTERED_WPCOM_ONLY -> {
+                        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM)) sendToken()
                     }
 
                     Status.REGISTERED_WOO_ONLY,
@@ -41,7 +43,7 @@ class RegisterDevice @Inject constructor(
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
         if (token.isNotEmpty()) {
-            if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM)) {
                 selectedSite.getIfExists()?.let { site ->
                     pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site)
                 }

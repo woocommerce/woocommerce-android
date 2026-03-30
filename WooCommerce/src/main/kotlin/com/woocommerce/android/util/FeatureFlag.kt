@@ -1,53 +1,37 @@
 package com.woocommerce.android.util
 
-import android.content.Context
-import com.woocommerce.android.AppPrefs
-
 /**
- * "Feature flags" are used to hide in-progress features from release versions
+ * Feature flags control feature availability.
+ *
+ * - If overridden (debug builds) → use override value
+ * - If [localValue] is false → the feature stays disabled
+ * - If [localValue] is true and remote has a value for [remoteFlagKey] → use remote value
+ * - Otherwise → use [localValue]
+ *
+ * Access via [FeatureFlagRepository.isEnabled].
  */
-enum class FeatureFlag {
-    DB_DOWNGRADE,
-    WC_SHIPPING_BANNER,
-    BETTER_CUSTOMER_SEARCH_M2,
-    ORDER_CREATION_AUTO_TAX_RATE,
-    BOOKINGS_MVP,
-    POS_PRODUCTS_FTS,
-    WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
-    WOO_PUSH_NOTIFICATIONS_SYSTEM,
-    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,
-    WOO_POS_CLIENT_SIDE_BANNER,
-    AGE_ELIGIBILITY_CHECKS;
-
-    fun isEnabled(context: Context? = null): Boolean {
-        if (PackageUtils.isDebugBuild()) {
-            return try {
-                AppPrefs.isFeatureFlagOverrideEnabled(this, getDefaultValue(context))
-            } catch (_: UninitializedPropertyAccessException) {
-                getDefaultValue(context)
-            }
-        }
-        return getDefaultValue(context)
-    }
-
-    fun getDefaultValue(context: Context? = null): Boolean {
-        return when (this) {
-            DB_DOWNGRADE -> {
-                PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
-            }
-
-            BOOKINGS_MVP -> true
-
-            WC_SHIPPING_BANNER,
-            BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            POS_PRODUCTS_FTS,
-            WOO_POS_CLIENT_SIDE_BANNER,
-            WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
-            AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
-
-            WOO_PUSH_NOTIFICATIONS_SYSTEM,
-            WOO_PUSH_NOTIFICATIONS_SYSTEM_M2 -> false
-        }
-    }
+enum class FeatureFlag(
+    val remoteFlagKey: String,
+    val localValue: Boolean = true
+) {
+    BOOKINGS_MVP("bookings_mvp"),
+    LOCAL_NOTIFICATION_STORE_CREATION_READY("woo_notification_store_creation_ready"),
+    LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES("woo_notification_1d_before_free_trial_expires"),
+    LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES("woo_notification_1d_after_free_trial_expires"),
+    WOO_POS("woo_pos"),
+    APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites"),
+    WOO_POS_LOCAL_CATALOG_M1("woo_pos_local_catalog_m1"),
+    WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
+    WC_SHIPPING_BANNER("wc_shipping_banner", localValue = PackageUtils.isDebugBuild()),
+    BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2", localValue = PackageUtils.isDebugBuild()),
+    ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate", localValue = PackageUtils.isDebugBuild()),
+    POS_PRODUCTS_FTS("pos_products_fts", localValue = PackageUtils.isDebugBuild()),
+    POS_BOOKINGS("pos_bookings", localValue = PackageUtils.isDebugBuild()),
+    WOO_POS_LOCAL_CATALOG_FILE_APPROACH(
+        "woo_pos_local_catalog_file_approach",
+        localValue = PackageUtils.isDebugBuild()
+    ),
+    AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
+    WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", localValue = false),
+    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", localValue = false),
 }

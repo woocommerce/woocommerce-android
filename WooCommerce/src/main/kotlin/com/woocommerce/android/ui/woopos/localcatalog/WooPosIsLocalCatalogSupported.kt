@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 class WooPosIsLocalCatalogSupported @Inject constructor(
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val prefsRepo: WooPosPreferencesRepository,
     private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
     private val getWooVersion: GetWooCorePluginCachedVersion,
@@ -56,7 +57,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
     private suspend fun isSyncApproachSupported(
         localSiteId: LocalOrRemoteId.LocalId
     ): Boolean {
-        if (fileApproachEnabled()) {
+        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
             if (!isFileBasedSyncSupported()) {
                 wooPosLogWrapper.d(
                     "Local Catalog not supported: WooCommerce version does not support" +

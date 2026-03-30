@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -15,18 +16,18 @@ class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
-    private val isLocalCatalogFileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var sut: WooPosIsWooCommerceVersionSunsetWarningRequired
 
     @Before
-    fun setup() {
-        whenever(isLocalCatalogFileApproachEnabled()).thenReturn(true)
+    fun setup() = runTest {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(true)
         sut = WooPosIsWooCommerceVersionSunsetWarningRequired(
             getWooCoreVersion = getWooCoreVersion,
             preferencesRepository = preferencesRepository,
             dateTimeProvider = dateTimeProvider,
-            isLocalCatalogFileApproachEnabled = isLocalCatalogFileApproachEnabled
+            featureFlagRepository = featureFlagRepository
         )
     }
 
@@ -146,7 +147,9 @@ class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
     @Test
     fun `given local catalog feature flag disabled, when invoked, then returns false`() = runTest {
         // GIVEN
-        whenever(isLocalCatalogFileApproachEnabled()).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(
+            false
+        )
         whenever(getWooCoreVersion()).thenReturn("10.4.0")
         whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
 

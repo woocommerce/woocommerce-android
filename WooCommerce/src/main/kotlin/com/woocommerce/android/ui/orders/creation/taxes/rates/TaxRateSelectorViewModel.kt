@@ -6,6 +6,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -25,6 +27,7 @@ class TaxRateSelectorViewModel @Inject constructor(
     private val getTaxRateLabel: GetTaxRateLabel,
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val prefs: AppPrefs,
+    featureFlagRepository: FeatureFlagRepository,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private val args: TaxRateSelectorFragmentArgs by savedState.navArgs()
@@ -48,7 +51,14 @@ class TaxRateSelectorViewModel @Inject constructor(
                 )
             }
             .let {
-                ViewState(taxRates = it, isLoading = isLoading, isAutoRateEnabled = autoRateSwitchState)
+                ViewState(
+                    taxRates = it,
+                    isLoading = isLoading,
+                    isAutoRateEnabled = autoRateSwitchState,
+                    isAutoTaxRateFeatureEnabled = featureFlagRepository.isEnabled(
+                        FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE
+                    )
+                )
             }
     }.toStateFlow(ViewState())
 
@@ -109,7 +119,8 @@ class TaxRateSelectorViewModel @Inject constructor(
         val taxRates: List<TaxRateUiModel> = emptyList(),
         val isLoading: Boolean = false,
         val isEmpty: Boolean = taxRates.isEmpty() && !isLoading,
-        val isAutoRateEnabled: Boolean = false
+        val isAutoRateEnabled: Boolean = false,
+        val isAutoTaxRateFeatureEnabled: Boolean = false
     ) : Parcelable
 
     @Parcelize

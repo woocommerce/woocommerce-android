@@ -70,6 +70,8 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -120,6 +122,7 @@ class OrderDetailViewModel @Inject constructor(
     private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
+    featureFlagRepository: FeatureFlagRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
@@ -138,7 +141,11 @@ class OrderDetailViewModel @Inject constructor(
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
     // Do NOT store the ViewState in SavedState bundle - it can be easily recreated on process death.
-    val viewStateData = LiveDataDelegate(OrderDetailViewState())
+    val viewStateData = LiveDataDelegate(
+        OrderDetailViewState(
+            isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
+        )
+    )
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
