@@ -1,17 +1,17 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,8 +23,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderConnectivityToolViewModelTest : BaseUnitTest() {
-    private lateinit var sut: OrderConnectivityToolViewModel
+class ConnectivityToolViewModelTest : BaseUnitTest() {
+    private lateinit var sut: ConnectivityToolViewModel
     private lateinit var internetConnectionCheck: InternetConnectionCheckUseCase
     private lateinit var wordPressConnectionCheck: WordPressConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
@@ -40,7 +40,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
-        sut = OrderConnectivityToolViewModel(
+        sut = ConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wordPressConnectionCheck = wordPressConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,

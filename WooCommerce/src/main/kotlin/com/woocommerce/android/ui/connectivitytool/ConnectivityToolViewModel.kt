@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -10,23 +10,23 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.WordPressCheck
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.Finished
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.WordPressCheck
+import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderConnectivityToolViewModel @Inject constructor(
+class ConnectivityToolViewModel @Inject constructor(
     private val internetConnectionCheck: InternetConnectionCheckUseCase,
     private val wordPressConnectionCheck: WordPressConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,

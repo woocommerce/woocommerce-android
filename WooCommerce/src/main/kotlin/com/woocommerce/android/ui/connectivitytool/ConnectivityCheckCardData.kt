@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 

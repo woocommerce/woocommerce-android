@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -39,21 +39,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
 
 @Composable
-fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
+fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
 
-    OrderConnectivityToolScreen(
+    ConnectivityToolScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         internetConnectionCheckData = viewState?.internetCheckData,
@@ -66,7 +66,7 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
 }
 
 @Composable
-fun OrderConnectivityToolScreen(
+fun ConnectivityToolScreen(
     shouldEnableContactSupportButton: Boolean,
     shouldDisplaySummarySection: Boolean,
     internetConnectionCheckData: InternetConnectivityCheckData?,
@@ -302,9 +302,9 @@ fun ResultIcon(
 
 @Preview
 @Composable
-fun OrderConnectivityToolScreenPreview() {
+fun ConnectivityToolScreenPreview() {
     WooThemeWithBackground {
-        OrderConnectivityToolScreen(
+        ConnectivityToolScreen(
             shouldEnableContactSupportButton = true,
             shouldDisplaySummarySection = true,
             internetConnectionCheckData = InternetConnectivityCheckData(
