@@ -12,9 +12,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.WCStatsAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCGiftCardStats
@@ -25,6 +28,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerCategoryEntity
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -347,4 +352,154 @@ class StatsRepositoryTests : BaseUnitTest() {
         assertThat(result.error).isNull()
         assertThat(result.model).isEqualTo(expectedResult)
     }
+
+    // region Top Performer Categories
+
+    @Test
+    fun `when fetching top categories with force refresh, then fetch from store`() = testBlocking {
+        val categories = listOf(
+            TopPerformerCategoryEntity(
+                localSiteId = LocalId(1),
+                datePeriod = "2024-01-25-2024-01-25",
+                categoryId = RemoteId(42),
+                name = "Clothing",
+                quantity = 10,
+                currency = "USD",
+                total = 250.0,
+                millisSinceLastUpdated = System.currentTimeMillis()
+            )
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.getCachedTopPerformerCategories(any(), any())).thenReturn(categories)
+        whenever(wcLeaderboardsStore.fetchTopPerformerCategories(any(), any(), any(), any()))
+            .thenReturn(WooResult(categories))
+
+        val result = sut.fetchTopPerformerCategories(
+            forceRefresh = true,
+            range = defaultRange,
+            quantity = 5
+        )
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `when fetching top categories with empty cache, then fetch from store`() = testBlocking {
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.getCachedTopPerformerCategories(any(), any())).thenReturn(emptyList())
+        whenever(wcLeaderboardsStore.fetchTopPerformerCategories(any(), any(), any(), any()))
+            .thenReturn(WooResult(emptyList()))
+
+        val result = sut.fetchTopPerformerCategories(
+            forceRefresh = false,
+            range = defaultRange,
+            quantity = 5
+        )
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `when fetching top categories fails, then return failure`() = testBlocking {
+        val error = WooError(
+            type = WooErrorType.GENERIC_ERROR,
+            original = BaseRequest.GenericErrorType.UNKNOWN,
+            message = "Network error"
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.getCachedTopPerformerCategories(any(), any())).thenReturn(emptyList())
+        whenever(wcLeaderboardsStore.fetchTopPerformerCategories(any(), any(), any(), any()))
+            .thenReturn(WooResult(error))
+
+        val result = sut.fetchTopPerformerCategories(
+            forceRefresh = true,
+            range = defaultRange,
+            quantity = 5
+        )
+
+        assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `when cached categories are fresh and not forced, then skip fetch`() = testBlocking {
+        val freshCategories = listOf(
+            TopPerformerCategoryEntity(
+                localSiteId = LocalId(1),
+                datePeriod = "2024-01-25-2024-01-25",
+                categoryId = RemoteId(42),
+                name = "Clothing",
+                quantity = 10,
+                currency = "USD",
+                total = 250.0,
+                millisSinceLastUpdated = System.currentTimeMillis()
+            )
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.getCachedTopPerformerCategories(any(), any())).thenReturn(freshCategories)
+
+        val result = sut.fetchTopPerformerCategories(
+            forceRefresh = false,
+            range = defaultRange,
+            quantity = 5
+        )
+
+        assertThat(result.isSuccess).isTrue()
+        verify(wcLeaderboardsStore, never()).fetchTopPerformerCategories(any(), any(), any(), any())
+    }
+
+    @Test
+    fun `when fetching products by category succeeds, then return product list`() = testBlocking {
+        val products = listOf(
+            TopPerformerProductEntity(
+                localSiteId = LocalId(1),
+                datePeriod = "2024-01-25-2024-01-25",
+                productId = RemoteId(101),
+                name = "T-Shirt",
+                imageUrl = "https://example.com/img.png",
+                quantity = 5,
+                currency = "USD",
+                total = 75.0,
+                millisSinceLastUpdated = System.currentTimeMillis()
+            )
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.fetchTopPerformerProductsByCategory(any(), any(), any(), any(), any()))
+            .thenReturn(WooResult(products))
+
+        val result = sut.fetchTopPerformerProductsByCategory(
+            range = defaultRange,
+            categoryId = 42,
+            quantity = 20
+        )
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(products)
+    }
+
+    @Test
+    fun `when fetching products by category fails, then return failure`() = testBlocking {
+        val error = WooError(
+            type = WooErrorType.GENERIC_ERROR,
+            original = BaseRequest.GenericErrorType.UNKNOWN,
+            message = "Network error"
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcLeaderboardsStore.fetchTopPerformerProductsByCategory(any(), any(), any(), any(), any()))
+            .thenReturn(WooResult(error))
+
+        val result = sut.fetchTopPerformerProductsByCategory(
+            range = defaultRange,
+            categoryId = 42,
+            quantity = 20
+        )
+
+        assertThat(result.isFailure).isTrue()
+    }
+
+    // endregion
 }
