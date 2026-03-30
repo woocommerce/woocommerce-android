@@ -77,10 +77,10 @@ When measured by similarity to existing human translations:
 |----------------|----------|----------|-----------------|
 | **Codex, naive** | **60.6** | **73.8** | **0.846** |
 | Codex, contextual | 60.4 | 73.4 | 0.845 |
-| Claude, naive | 57.0 | 71.3 | 0.829 |
-| Claude, contextual | 56.8 | 70.2 | 0.821 |
+| Claude, naive | 56.4 | 70.8 | 0.828 |
+| Claude, contextual | 56.3 | 69.8 | 0.821 |
 
-Claude also failed completely on Chinese Simplified (returned empty output), while Codex handled all 16 languages without issues.
+All 16 languages across all 4 combos. Claude needed smaller chunks for Chinese Simplified (50 strings per chunk instead of 300) to avoid output truncation.
 
 ### Adding code context does not help
 
