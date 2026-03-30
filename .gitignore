@@ -129,6 +129,7 @@ google-upload-credentials.json
 
 .grepai/
 
-# Maestro test artifacts (screenshots, reports)
+# Maestro test artifacts (screenshots, reports) and local credentials
 report.xml
 *.maestro-screenshots/
+.maestro/.env
