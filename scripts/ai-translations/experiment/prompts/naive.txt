@@ -1,0 +1,13 @@
+Translate the following Android string resources from English to {LANGUAGE}.
+
+Return a JSON array of objects. For regular strings: {"key": "...", "value": "..."}.
+For plurals: {"key": "...", "type": "plurals", "items": {"one": "...", "other": "...", ...}}.
+For plurals, provide ALL the plural forms that {LANGUAGE} requires
+(e.g., Arabic needs: zero, one, two, few, many, other).
+
+Keep all format placeholders like %1$s, %1$d, %s, %d exactly as they are.
+Keep all HTML tags like <b>, </b>, <br> exactly as they are.
+Do not translate string content that looks like a URL, email, or technical identifier.
+
+Input strings:
+{STRINGS_JSON}
