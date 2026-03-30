@@ -32,6 +32,6 @@ enum class FeatureFlag(
         localValue = PackageUtils.isDebugBuild()
     ),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
-    WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", localValue = false),
-    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2("woo_push_notifications_system_m2", localValue = false),
+    WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1", localValue = false),
+    WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2("woo_self_driven_push_notifications_m2", localValue = false),
 }

@@ -46,7 +46,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2)).thenReturn(false)
         sut = JetpackBenefitsViewModel(
             savedState,
             selectedSiteMock,
@@ -78,99 +78,103 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     // 3. User returns to site and installs and connects Jetpack,
     // 4. User comes back to app and uses the Jetpack Benefits dialog to install Jetpack.
     @Test
-    fun `given REST API login and Jetpack is already activated, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
-        // Given
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = true,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
-        )
-        givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(
-            FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus)
-        )
-
-        // When
-        sut.onInstallClick()
-
-        // Then
-        assertThat(sut.event.value).isEqualTo(
-            JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
-                selectedSiteMock.get().url,
-                jetpackStatus
+    fun `given REST API login and Jetpack is already activated, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() =
+        testBlocking {
+            // Given
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
             )
-        )
-    }
+            givenConnectionType(SiteConnectionType.ApplicationPasswords)
+            givenJetpackFetchResult(
+                FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus)
+            )
+
+            // When
+            sut.onInstallClick()
+
+            // Then
+            assertThat(sut.event.value).isEqualTo(
+                JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
+                    selectedSiteMock.get().url,
+                    jetpackStatus
+                )
+            )
+        }
 
     @Test
-    fun `given REST API login and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
-        // Given
-        givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
-        givenUserEligibility(user, UserRole.Editor)
+    fun `given REST API login and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() =
+        testBlocking {
+            // Given
+            givenConnectionType(SiteConnectionType.ApplicationPasswords)
+            givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
+            givenUserEligibility(user, UserRole.Editor)
 
-        // When
-        sut.onInstallClick()
+            // When
+            sut.onInstallClick()
 
-        // Then
-        assertThat(sut.event.value).isEqualTo(
-            JetpackBenefitsViewModel.OpenJetpackEligibilityError(
-                user.username,
-                user.roles.first().value
+            // Then
+            assertThat(sut.event.value).isEqualTo(
+                JetpackBenefitsViewModel.OpenJetpackEligibilityError(
+                    user.username,
+                    user.roles.first().value
+                )
             )
-        )
-    }
+        }
 
     @Test
-    fun `given REST API login and Jetpack is not installed while user role is eligible, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
-        // Given
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = false,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
-                blogId = null
+    fun `given REST API login and Jetpack is not installed while user role is eligible, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() =
+        testBlocking {
+            // Given
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = false,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                    blogId = null
+                )
             )
-        )
-        givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
-        givenUserEligibility(user, UserRole.Administrator)
+            givenConnectionType(SiteConnectionType.ApplicationPasswords)
+            givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
+            givenUserEligibility(user, UserRole.Administrator)
 
-        // When
-        sut.onInstallClick()
+            // When
+            sut.onInstallClick()
 
-        // Then
-        assertThat(sut.event.value).isEqualTo(
-            JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
-                selectedSiteMock.get().url,
-                jetpackStatus
+            // Then
+            assertThat(sut.event.value).isEqualTo(
+                JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
+                    selectedSiteMock.get().url,
+                    jetpackStatus
+                )
             )
-        )
-    }
+        }
 
     @Test
-    fun `given REST API login and Jetpack is not installed while user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
-        // Given
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = false,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
-                blogId = null
+    fun `given REST API login and Jetpack is not installed while user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() =
+        testBlocking {
+            // Given
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = false,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                    blogId = null
+                )
             )
-        )
-        givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
-        givenUserEligibility(user, UserRole.Editor)
+            givenConnectionType(SiteConnectionType.ApplicationPasswords)
+            givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
+            givenUserEligibility(user, UserRole.Editor)
 
-        // When
-        sut.onInstallClick()
+            // When
+            sut.onInstallClick()
 
-        // Then
-        assertThat(sut.event.value).isEqualTo(
-            JetpackBenefitsViewModel.OpenJetpackEligibilityError(
-                user.username,
-                user.roles.first().value
+            // Then
+            assertThat(sut.event.value).isEqualTo(
+                JetpackBenefitsViewModel.OpenJetpackEligibilityError(
+                    user.username,
+                    user.roles.first().value
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `when user dismisses the dialog, then wpcom access token is cleared`() {
