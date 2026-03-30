@@ -111,8 +111,13 @@ Key details from the actual file format:
 - XML declaration: `<?xml version="1.0" encoding="UTF-8"?>`
 - Root: `<resources xmlns:tools="http://schemas.android.com/tools">`
 - Translated files have GlotPress comment headers (lines 2-7 with Translation-Revision-Date, Language, etc.)
-- Some strings have `translatable="false"` — skip these
-- Some strings have `content_override="true"` — skip these too
+- Skip strings with `translatable="false"` attribute
+- Do NOT skip `content_override="true"` strings — some are translatable (e.g., `enter_site_address`)
+  Only skip if also marked `translatable="false"`
+- Handle `<plurals>` elements — they have `<item quantity="one">` / `<item quantity="other">` etc.
+  Different languages have different plural forms (Arabic: 6, Russian: 3, English: 2).
+  Output plurals as `{key, type: "plurals", items: {quantity: value}}` in JSON
+- Skip `<string-array>` elements (all are `translatable="false"` in this project)
 - HTML entities like `&lt;b&gt;` must be preserved as-is
 - String values can contain `%1$s`, `%1$d` format placeholders — preserve these
 
@@ -172,18 +177,21 @@ This script greps the codebase for how a string resource is used (button, title,
 
 - [ ] **Step 1: Write find_string_usage.sh**
 
-Takes a string key (e.g., `order_detail_title`) and outputs code snippets where it's used.
+Two modes:
+1. **Single key**: `./find_string_usage.sh order_detail_title` — outputs code snippets for one key
+2. **Batch mode**: `./find_string_usage.sh --batch keys.txt` — greps for ALL keys in one pass,
+   outputs a JSON map of `{key: "context snippet"}`. This is critical for performance —
+   grepping 3,800 keys one-by-one would take hours.
+
+Batch mode approach:
+- Build a single regex alternation: `R\.string\.(key1|key2|key3|...)` (split into chunks if too long)
+- Run one `grep -rn` pass over `WooCommerce/src/main/kotlin/` and `WooCommerce/src/main/res/`
+- Parse output to map each match back to its string key
+- Limit to 3 matches per key (enough for context, not overwhelming)
 
 Search patterns:
 - `R.string.{key}` in Kotlin/Java files
 - `@string/{key}` in XML layout files
-- Limit output to 5 most relevant matches (first line of each match + surrounding context)
-
-Usage:
-```bash
-./find_string_usage.sh order_detail_title
-# Output: file:line snippets showing how the string is used
-```
 
 - [ ] **Step 2: Test with a known string**
 
@@ -218,7 +226,12 @@ The naive prompt gives minimal instructions — just translate:
 
 ```
 Translate the following Android string resources from English to {LANGUAGE}.
-Return ONLY a JSON array of objects with "key" and "value" fields.
+
+Return a JSON array of objects. For regular strings: {"key": "...", "value": "..."}.
+For plurals: {"key": "...", "type": "plurals", "items": {"one": "...", "other": "...", ...}}.
+For plurals, provide ALL the plural forms that {LANGUAGE} requires
+(e.g., Arabic needs: zero, one, two, few, many, other).
+
 Keep all format placeholders like %1$s, %1$d, %s, %d exactly as they are.
 Keep all HTML tags like <b>, </b>, <br> exactly as they are.
 Do not translate string content that looks like a URL, email, or technical identifier.
@@ -242,8 +255,11 @@ IMPORTANT GUIDELINES:
 4. Do not translate URLs, emails, or technical identifiers.
 5. Use the code context below each string to understand where it appears in the UI
    (e.g., button label, dialog title, error message) and translate accordingly.
+6. For plurals, provide ALL the plural forms that {LANGUAGE} requires
+   (e.g., Arabic needs: zero, one, two, few, many, other).
 
-Return ONLY a JSON array of objects with "key" and "value" fields.
+Return a JSON array of objects. For regular strings: {"key": "...", "value": "..."}.
+For plurals: {"key": "...", "type": "plurals", "items": {"one": "...", "other": "...", ...}}.
 
 Input strings with context:
 {STRINGS_WITH_CONTEXT_JSON}
@@ -560,7 +576,7 @@ open results/report.html
 - [ ] **Step 5: Commit the report**
 
 ```bash
-git add results/report.html
+git add -f results/report.html
 git commit -m "Add AI translation evaluation report"
 ```
 
@@ -681,7 +697,8 @@ git commit -m "Add translation merger for values-*/strings.xml files"
 
 - [ ] **Step 1: Add Fastlane lane to Fastfile**
 
-Add after the existing `download_translations` lane (~line 475):
+Add after the existing `download_translations` lane (~line 475).
+Must follow existing lane patterns: accept `skip_confirm` parameter, call `configure_apply`.
 
 ```ruby
 #####################################################################################
@@ -690,25 +707,28 @@ Add after the existing `download_translations` lane (~line 475):
 # This lane translates new/changed strings using AI and updates the strings.xml files
 # -----------------------------------------------------------------------------------
 # Usage:
-# bundle exec fastlane ai_translate_strings
+# bundle exec fastlane ai_translate_strings skip_confirm:true
 #####################################################################################
 desc 'Translate new/changed strings using AI and update the strings.xml files'
-lane :ai_translate_strings do
+lane :ai_translate_strings do |skip_confirm: false|
   ensure_git_status_clean
   ensure_git_branch_is_release_branch!
 
   UI.important("Translating strings using AI for release: #{release_version_current}")
+  UI.user_error!("Terminating as requested.") unless skip_confirm || UI.confirm('Do you want to continue?')
+
+  configure_apply(force: is_ci)
 
   # Run the AI translation script
-  sh('bash', '../scripts/ai-translations/integrate/translate.sh')
+  sh('bash', File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'translate.sh'))
 
   # Merge translations into strings.xml files
-  sh('python3', '../scripts/ai-translations/integrate/merge_translations.py',
+  sh('python3', File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'merge_translations.py'),
      '--translations-dir', '/tmp/ai-translations/',
-     '--res-dir', '../WooCommerce/src/main/res/')
+     '--res-dir', File.join(Dir.pwd, '..', 'WooCommerce', 'src', 'main', 'res'))
 
-  # Commit the changes
-  git_add(path: 'WooCommerce/src/main/res/values-*/')
+  # Stage and commit
+  sh('git', 'add', 'WooCommerce/src/main/res/values-*/')
   git_commit(
     path: 'WooCommerce/src/main/res/values-*/',
     message: "Update translations using AI for #{release_version_current}",
@@ -749,6 +769,7 @@ steps:
         queue: "mac-metal"
     retry:
       manual:
+        reason: If release jobs fail, you should always re-trigger the task from Releases V2 rather than retrying the individual job from Buildkite
         allowed: false
 ```
 
@@ -761,52 +782,75 @@ git commit -m "Add AI translation Fastlane lane and Buildkite pipeline"
 
 ---
 
-### Task 14: Releases V2 Scenario Update (Proposal)
+### Task 14: Release Changes Analysis Document
 
 **Files:**
-- Document proposed changes (not modifiable from this repo)
+- Create: `scripts/ai-translations/docs/release-changes-analysis.md`
 
-- [ ] **Step 1: Write proposed changes for wcandroid.php**
+This is the thorough analysis of ALL changes needed to achieve the single-build
+optimization (Option C: Play Store track promotion). We build this document, not the changes.
 
-Create `scripts/ai-translations/docs/releases-v2-proposed-changes.md` documenting exactly what needs to change in `wpcom-trunk/wp-content/lib/a8c/releases-v2/config/scenarios/wcandroid.php`:
+- [ ] **Step 1: Write release-changes-analysis.md**
 
-1. **Code Freeze milestone — add AI Translate step after Complete Code Freeze:**
-   ```php
-   Task::buildkite(
-       'Press the button to translate new strings using AI.',
-       'This will call <code>bundle exec fastlane ai_translate_strings</code> on CI, which will:<ul>'
-       . '<li>Identify new/changed strings since the previous release</li>'
-       . '<li>Translate them to all 16 supported languages using AI</li>'
-       . '<li>Merge translations into the localized <code>strings.xml</code> files</li>'
-       . '<li>Commit and push to the <code>release/%version%</code> branch</li>'
-       . '</ul>',
-       new Buildkite_Action(
-           'woocommerce-android',
-           'release/%version%',
-           [
-               'PIPELINE' => 'release-pipelines/ai-translate-strings.yml',
-               'RELEASE_VERSION' => '%version%',
-               'BUILDKITE_MESSAGE' => 'AI Translate Strings',
-           ]
-       )
-   )->retryable(),
-   ```
+Structure — for each required change, document:
+- What needs to change (specific file, function, line numbers)
+- Why it needs to change
+- What breaks if we don't change it
+- Proposed solution
 
-2. **Play Store Submission milestone — remove Download Translations + Finalize rebuild:**
-   - Remove the "Download Release Translations" Buildkite task
-   - Replace "Finalize Release" with a simpler task that just closes the milestone and creates GitHub release (no version rename, no rebuild)
-   - The "Test and Submit Build" section would use the existing beta build
+Changes to document:
 
-3. **Versioning — remove RC suffix:**
-   - Update `start_code_freeze` Buildkite action description to reflect no `-rc-N` naming
-   - Update all Slack messages to not reference `rc-1`
-   - `new_beta_release` would only bump build code, not version name
+**1. Version naming — drop RC suffix**
+- File: `fastlane/Fastfile`, `start_code_freeze` lane
+- Current: sets version to `X.Y-rc-1` via `beta_version_next`
+- Change: set version to `X.Y` directly, use build code for iteration
+- Dependency: `Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter`
+  in `fastlane-plugin-wpmreleasetoolkit` gem (source: github.com/wordpress-mobile/release-toolkit)
+
+**2. Build routing — decouple from version name**
+- File: `fastlane/Fastfile`, `build_and_upload_google_play` lane (~line 650)
+- Current: `beta_version?(version_name_current)` checks for `-rc-` → routes to beta track
+- Problem: without `-rc-`, first build routes to production at 10% rollout
+- Solution: pass explicit `track` parameter via env var through `trigger_release_build`
+
+**3. Beta iteration without RC**
+- File: `fastlane/Fastfile`, `new_beta_release` lane (~line 338)
+- Current: `beta_version_next` parses `X.Y-rc-1` → `X.Y-rc-2`
+- Problem: parsing fails without `-rc-` suffix
+- Solution: just increment build code, skip version name change
+
+**4. Finalize release — split into admin + promote**
+- File: `fastlane/Fastfile`, `finalize_release` lane (~line 519)
+- Current responsibilities: version rename + build code bump + trigger build +
+  backmerge PR + remove branch protection + close milestone
+- Split: `promote_to_production` (Play Store track promotion) +
+  `finalize_release` (admin: backmerge, milestone, branch protection, no build)
+
+**5. Releases V2 scenario**
+- File: `wpcom-trunk/wp-content/lib/a8c/releases-v2/config/scenarios/wcandroid.php`
+- Add "AI Translate Strings" Buildkite button to Code Freeze milestone
+  (include proposed PHP code for the Task::buildkite() entry)
+- Change "Play Store Submission" milestone to remove Download Translations + Finalize,
+  replace with Promote + Admin Finalize
+- Update Slack messages to remove `rc-1` references
+- Note: requires wpcom deploy, coordinate with Apps Infrastructure team
+
+**6. Release toolkit gem changes**
+- Repo: github.com/wordpress-mobile/release-toolkit
+- `RCNotationVersionFormatter` — no longer used for this product
+- `beta_version?` / `beta_version_next` — need alternative for non-RC products
+- Impact assessment: is this WCAndroid-specific or does it affect other mobile apps?
+
+**7. Deferred items**
+- Play Store metadata translations (app title, description, release notes)
+- Wear OS translations
+- `freeze_strings_for_translation` step relevance
 
 - [ ] **Step 2: Commit**
 
 ```bash
-git add scripts/ai-translations/docs/releases-v2-proposed-changes.md
-git commit -m "Document proposed Releases V2 scenario changes"
+git add scripts/ai-translations/docs/release-changes-analysis.md
+git commit -m "Add thorough release changes analysis document"
 ```
 
 ---
@@ -821,9 +865,12 @@ git commit -m "Document proposed Releases V2 scenario changes"
 - [ ] **Step 1: Write the pitch document**
 
 Structure:
-1. **Problem** — Current release requires 2 builds minimum due to GlotPress translation delay. Each release cycle loses 1-2 days waiting for translations.
+1. **Problem** — Current release requires 2 builds minimum due to GlotPress translation
+   delay. Each release cycle loses 1-2 days waiting for translations.
 
-2. **Solution** — AI-translate strings at code freeze time. Use final version name from the start. Eliminate the guaranteed translation rebuild.
+2. **Solution** — AI-translate strings at code freeze time. Eliminate the translation wait.
+   With additional changes (documented in release-changes-analysis.md), eliminate the
+   rebuild entirely by using Play Store track promotion.
 
 3. **Evidence** — Link to experiment report (`results/report.html`). Summarize headline metrics:
    - Average BLEU/chrF scores across all languages
@@ -831,28 +878,33 @@ Structure:
    - Best strategy + LLM combination
    - Any languages with notably lower quality
 
-4. **Process comparison** — Current vs proposed release flow (embed diagrams or ASCII art).
-   - Current: Code Freeze → Beta (no translations) → Wait 1-2 days → Download translations → Finalize (rebuild) → Submit
-   - Proposed: Code Freeze → AI Translate (minutes) → Build (with translations) → Test → Promote → Submit
+4. **Process comparison** — Current vs proposed release flow.
+   Include the visual diagrams (reference the HTML visuals we created during brainstorming
+   or embed ASCII art versions).
 
 5. **Impact** — Quantify savings:
    - Time: ~1-2 days per release x 26 releases/year = 26-52 days of calendar time
    - Builds: eliminate 1 guaranteed build per release = 26 builds/year
-   - Cost: GlotPress translation costs (document if available) vs LLM API costs
-   - Engineering time: release manager time spent managing the extra build cycle
+   - Cost: GlotPress translation costs vs LLM API costs per release
+   - Engineering time: release manager hours managing the extra build cycle
 
-6. **Implementation status** — Link to branch `hack/ai-translations`, list PRs and files.
+6. **What we built** — Link to branch `hack/ai-translations`:
+   - Working translation experiment with results
+   - Working production translation scripts
+   - Fastlane lane + Buildkite pipeline (ready to integrate)
+   - Thorough analysis of all remaining changes needed
 
-7. **Risks and mitigations**
+7. **What's left to ship it** — Reference release-changes-analysis.md:
+   - Version naming changes (Fastfile + release-toolkit)
+   - Build routing changes (Fastfile)
+   - Releases V2 scenario update (requires wpcom deploy)
+   - CI setup (Claude CLI on mac-metal agents or API key)
+   - One real release trial run
+
+8. **Risks and mitigations**
    - Quality for specific languages → show per-language data
    - CLI availability on CI → can use API as fallback
-   - Cross-team impact (version naming) → WCAndroid-specific change, no impact on other apps
-
-8. **Next steps** — What needs to happen to ship this:
-   - Apps Infra team review of Releases V2 changes
-   - Release toolkit changes for version naming
-   - CI setup (install Claude CLI on mac-metal agents)
-   - One real release trial run
+   - Version naming is a convention change → WCAndroid-specific, documented path forward
 
 - [ ] **Step 2: Commit**
 

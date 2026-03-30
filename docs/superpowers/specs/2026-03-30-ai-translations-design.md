@@ -146,70 +146,125 @@ scripts/ai-translations/
 
 ## Phase 2: Release Pipeline Integration
 
-### Proposed Release Flow
+### Hack Week Scope
 
-1. **Code Freeze** - Create `release/X.Y` branch, use final version name `X.Y` from the start
+Phase 2 has two scopes:
+- **Build** the AI translation scripts and Fastlane/Buildkite integration (working code)
+- **Document** all required changes to achieve the full single-build optimization
+
+We do NOT need to implement all the version naming and build routing changes during
+hack week. The goal is to prove the concept works and provide a thorough analysis of
+what needs to change to ship it.
+
+### Proposed Release Flow (Target State)
+
+Use Play Store track promotion to eliminate rebuilds entirely:
+
+1. **Start Code Freeze** - Create `release/X.Y` branch, version name `X.Y` from the start
    (no `-rc-N` suffix), bump build code
-2. **AI Translate** - Translate new/changed strings immediately (minutes, not days)
-3. **Complete Code Freeze** - Freeze strings, trigger Build (version `X.Y`, code 736)
-   — this build already has translations and final version name
-4. **Internal Testing** - Publish to internal/beta Play Store track, smoke test
-5. **Bug Fix** (only if needed) - Fix, bump build code only (`X.Y`, code 737), new build
-6. **Play Store Submission** - Promote existing build to production track (no rebuild)
-7. **Release** - Publish GitHub release, 10% rollout
-8. **Increase Rollout** - Check Sentry, go to 100%
+2. **AI Translate Strings** - Translate new/changed strings immediately (~minutes)
+3. **Complete Code Freeze** - Freeze strings, trigger Build (`X.Y`, code 736)
+   — uploaded to internal/beta Play Store track
+4. **Internal Testing** - Smoke test from beta track
+5. **Bug Fix** (only if needed) - Fix, bump build code (`X.Y`, code 737), new build to beta
+6. **Promote to Production** - Promote the tested build from beta → production track
+   (same binary, no rebuild)
+7. **Finalize** (admin only) - Close milestone, remove branch protection, backmerge PR,
+   publish GitHub release
+8. **Increase Rollout** - Check Sentry, 10% → 100%
 
-### What Changes
+### What This Eliminates
 
-**Eliminated steps:**
-- "Download Release Translations" Buildkite pipeline and Fastlane lane
-- "Finalize Release" rebuild (version rename + translation inclusion)
-- 1-2 day wait for GlotPress
-- Manual "check GlotPress translation progress" verification
+- 1-2 day wait for GlotPress translators
+- "Download Release Translations" step
+- "Finalize Release" rebuild (currently triggers a new build just for version rename)
+- RC naming convention (no more `-rc-1`, `-rc-2`)
 
-**Versioning change:**
-- Current: `X.Y-rc-1` → `X.Y-rc-2` → ... → `X.Y` (name changes, forces rebuild)
-- Proposed: `X.Y` from the start, only build code increments (736, 737, ...)
-- RC tracking becomes informal (build code identifies iteration)
+### Required Changes (Documented, Not All Implemented in Hack Week)
 
-### New Files
+**1. Version naming — drop RC suffix**
 
-**`scripts/ai-translations/translate.sh`** - Production translation script:
+`start_code_freeze` currently sets version to `X.Y-rc-1`. Must set `X.Y` directly.
+
+Affected code:
+- `fastlane/Fastfile` `start_code_freeze` lane — version bump logic
+- `Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter` — no longer used
+- `version.properties` format — no more `-rc-N` suffix
+
+**2. Build routing — decouple from version name**
+
+`build_and_upload_google_play` (Fastfile ~line 650) uses `beta_version?(version_name_current)`
+which checks for `-rc-` in the version name to decide beta vs production track.
+Without RC, this routes ALL builds to production. Must change to explicit track parameter.
+
+Options:
+- Pass `track` parameter through `trigger_release_build` → environment variable → lane
+- Or use a `release_stage` property in `version.properties` separate from `versionName`
+
+**3. Beta iteration — replace RC incrementing**
+
+`new_beta_release` calls `beta_version_next` which uses `RCNotationVersionFormatter` to
+parse `X.Y-rc-1` → `X.Y-rc-2`. Without RC, just increment build code.
+
+Affected code:
+- `fastlane/Fastfile` `new_beta_release` lane (~line 338)
+- `beta_version_next` helper function
+- `RCNotationVersionFormatter` in release-toolkit gem
+
+**4. Finalize release — strip build trigger, keep admin tasks**
+
+`finalize_release` currently does 5 things:
+1. ~~Changes version from `X.Y-rc-N` to `X.Y`~~ (not needed — already `X.Y`)
+2. ~~Bumps build code~~ (not needed — no version change)
+3. ~~Triggers final build~~ (not needed — promote existing build instead)
+4. Creates backmerge PR ← keep
+5. Removes branch protection, closes milestone ← keep
+
+Split into: `promote_to_production` (Play Store promotion) + `finalize_release` (admin only).
+
+**5. Releases V2 scenario — update wcandroid.php**
+
+Located at: `wpcom-trunk/wp-content/lib/a8c/releases-v2/config/scenarios/wcandroid.php`
+
+Changes:
+- Code Freeze milestone: add "AI Translate Strings" Buildkite button
+- Play Store Submission: replace "Download Translations" + "Finalize Release" with
+  "Promote to Production" + "Finalize (admin)"
+- Update all Slack messages (remove `rc-1` references)
+- Update descriptions to reflect new flow
+
+**6. Play Store metadata translations (deferred)**
+
+Current flow also translates Play Store listings (app title, description, release notes)
+via GlotPress. These go to `fastlane/metadata/android/<locale>/` directories. Can be
+added to AI translation as a separate batch but deferred from hack week.
+
+**7. Wear OS translations (deferred)**
+
+`WooCommerce-Wear/` currently has no translated `values-*` directories. Out of scope.
+
+### What We Actually Build in Hack Week
+
+**New files:**
+
+`scripts/ai-translations/integrate/translate.sh` — Production translation script:
 1. Diff `strings.xml` against previous release tag to find new/changed strings
-2. For each new string, grep codebase for usage context
-3. Call Claude CLI to translate to all 16 languages (contextual strategy)
-4. Output translated strings as XML fragments
+2. Batch-grep codebase for usage context (not per-string, one pass)
+3. Call Claude CLI to translate to all 16 languages
+4. Output per-language JSON files
 
-**`scripts/ai-translations/merge_translations.py`** - Merge AI translations:
+`scripts/ai-translations/integrate/merge_translations.py` — Merge AI translations:
 1. Read existing `values-*/strings.xml` files
-2. Insert/update translated strings
-3. Preserve XML formatting and non-translatable strings
+2. Insert/update translated strings, preserve formatting
+3. Handle locale mapping (`pt-br` → `values-pt-rBR`) and legacy dirs (`values-in`/`values-iw`)
 
-**`.buildkite/release-pipelines/ai-translate-strings.yml`** - Buildkite pipeline:
-- Same pattern as `download-release-translations.yml`
-- Agent queue: `mac-metal`
-- Calls new Fastlane lane
+`.buildkite/release-pipelines/ai-translate-strings.yml` — Buildkite pipeline
 
-### Modified Files
+`fastlane/Fastfile` — New `ai_translate_strings` lane (follows existing lane patterns:
+accepts `skip_confirm`, calls `configure_apply`, commits and pushes)
 
-**`fastlane/Fastfile`:**
-- New lane `ai_translate_strings` - calls `translate.sh` + `merge_translations.py`,
-  commits and pushes
-- Modify `start_code_freeze` - use final version name (no rc suffix)
-- Remove or simplify `finalize_release` - no version rename, just close milestone
-  and create GitHub release
-- Remove `download_release_translations` lane (or keep as fallback)
-
-**`wpcom-trunk/.../scenarios/wcandroid.php`** (Releases V2):
-- Add "AI Translate Strings" Buildkite button to Code Freeze milestone
-- Remove "Download Release Translations" button from Play Store Submission
-- Replace "Finalize Release" button with a simpler "Promote Build" task
-- Update descriptions and Slack messages (no more rc-N references)
-
-**Release toolkit considerations:**
-- `RCNotationVersionFormatter` would no longer be used for this product
-- `start_code_freeze` needs to set final version name directly
-- `MarketingVersionCalculator` may need adjustment
+`scripts/ai-translations/docs/release-changes-analysis.md` — Thorough analysis of all
+required changes listed above, with code references, line numbers, and impact assessment
 
 ---
 
@@ -218,15 +273,16 @@ scripts/ai-translations/
 ### Data to Collect
 
 **Time savings:**
-- Current: 1-2 day wait for translations + ~30 min for finalize build + ~30 min testing the new build
-- Proposed: ~5-10 minutes for AI translation (runs during code freeze)
-- Per release: ~1-2 days saved
+- Current: 1-2 day wait for translations + ~30 min finalize build + ~30 min testing
+- Proposed: ~5-10 minutes for AI translation at code freeze time
+- Per release: ~1-2 days of calendar time saved
 - Per year (biweekly releases, ~26/year): ~26-52 days of calendar time saved
+- Build elimination: 1 guaranteed build per release = ~26 builds/year saved
 
 **Cost savings:**
-- GlotPress translation costs (if paid per-string or per-project)
-- Engineering time spent waiting and managing the extra build
-- CI/CD costs for the eliminated build
+- GlotPress translation costs (if paid)
+- Engineering time managing the extra build cycle
+- CI/CD compute costs for eliminated builds
 
 **Quality evidence:**
 - Link to Phase 1 experiment report
@@ -237,10 +293,11 @@ scripts/ai-translations/
 
 `scripts/ai-translations/docs/ai-translations-pitch.md` containing:
 - Problem statement with current flow diagram
-- Proposed solution with new flow diagram
+- Proposed solution with new flow diagram (Phase 2a: AI translation, Phase 2b: single build)
 - Quality evidence (embedded charts or links to report)
 - Time and cost analysis
-- Implementation status (links to branch, PRs)
+- Required changes analysis (what needs to change and where)
+- Implementation status (links to branch, working code)
 - Risks and mitigations
 
 ---
@@ -248,11 +305,32 @@ scripts/ai-translations/
 ## Branch Strategy
 
 All work lives on `hack/ai-translations` branch. Structure:
-- Experiment scripts and evaluate scripts are committed to the branch
-- Results directory is gitignored
-- Generated report HTML is committed for easy sharing
-- Integration changes (Fastlane, Buildkite) are committed as working proposals
-- Pitch document is the final deliverable
+- Experiment scripts and evaluate scripts — committed (working code)
+- Integration scripts — committed (working code)
+- Results directory — gitignored (except `report.html` committed via `git add -f`)
+- Release changes analysis — committed (documentation)
+- Pitch document — committed (final deliverable)
+
+---
+
+## Parsing Requirements
+
+The string parser (`parse_strings.py`) must handle:
+- `<string>` elements — the bulk of translations
+- `<plurals>` elements — language-specific plural forms (Arabic has 6, Russian has 3, etc.)
+- Skip `translatable="false"` strings only (do NOT blanket-skip `content_override="true"` —
+  some `content_override` strings are translatable)
+- Skip `<string-array>` elements (currently all non-translatable in this project)
+- Preserve format placeholders (`%1$s`, `%1$d`, `%s`, `%d`)
+- Preserve HTML entities (`&lt;b&gt;`, `&lt;/b&gt;`, CDATA sections)
+
+---
+
+## Metrics Note
+
+The implementation uses `Levenshtein.ratio()` which returns a similarity score (0-1,
+higher = more similar to human translation). This is labeled "Levenshtein Similarity"
+in the report. Not to be confused with raw Levenshtein distance (lower = closer).
 
 ---
 
@@ -262,17 +340,21 @@ All work lives on `hack/ai-translations` branch. Structure:
    lower scores due to fundamentally different grammar. The experiment will surface this.
 
 2. **Claude/Codex CLI availability on CI** - Buildkite `mac-metal` agents may not have
-   these CLIs installed. May need to use API calls instead for the production integration.
+   these CLIs installed. May need to use API calls instead for production.
 
-3. **Context window limits** - 3,800 strings may not fit in one prompt. Chunking strategy
-   handles this but needs testing.
+3. **Context window limits** - 3,800 strings may not fit in one prompt. Chunking needed.
 
-4. **Releases V2 changes** - Modifying the scenario file requires a deploy to wpcom.
-   Need to coordinate with Apps Infrastructure team.
+4. **Plural forms** - Arabic has 6 plural forms, Russian has 3, etc. The AI must generate
+   the correct number of variants per language. Post-translation validation needed.
 
-5. **Version naming convention** - Dropping RC suffix is a cross-team convention change.
-   Other WP mobile apps use the same pattern. This proposal is WCAndroid-specific but
-   could set precedent.
+5. **Format string safety** - Mistranslated format strings (`%1$s`, `%d`) cause runtime
+   crashes. Validation must verify all placeholders are preserved.
 
-6. **Play Store metadata translations** - Current flow also translates Play Store listings
-   (title, description, release notes). AI translation should cover these too.
+6. **Initial full translation** - First run translates all ~3,800 strings (no previous
+   baseline). Subsequent runs are incremental (only new/changed strings).
+
+7. **LLM output validation** - LLM may return malformed JSON, skip strings, or duplicate
+   entries. Merge script must validate: same keys in/out, XML well-formedness.
+
+8. **Releases V2 changes require wpcom deploy** - Scenario file changes need coordination
+   with Apps Infrastructure team.
