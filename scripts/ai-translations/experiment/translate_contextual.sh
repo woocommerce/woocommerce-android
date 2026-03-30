@@ -6,8 +6,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PYTHON="$SCRIPT_DIR/../../venv/bin/python3"
-STRINGS_XML="$SCRIPT_DIR/../../../WooCommerce/src/main/res/values/strings.xml"
+PYTHON="$SCRIPT_DIR/../venv/bin/python3"
+STRINGS_XML="$SCRIPT_DIR/../../WooCommerce/src/main/res/values/strings.xml"
 PROMPT_TEMPLATE="$SCRIPT_DIR/prompts/contextual.txt"
 FIND_USAGE_SCRIPT="$SCRIPT_DIR/find_string_usage.sh"
 
@@ -21,7 +21,7 @@ LANG_NAME="$1"
 LANG_CODE="$2"
 LLM="$3"
 
-OUT_DIR="$SCRIPT_DIR/../../results/translations/contextual/$LLM"
+OUT_DIR="$SCRIPT_DIR/../results/translations/contextual/$LLM"
 mkdir -p "$OUT_DIR"
 OUT_FILE="$OUT_DIR/${LANG_CODE}.json"
 
