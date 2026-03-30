@@ -17,6 +17,7 @@ import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.LAST_UPDATE
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABELS_DATA
 import com.woocommerce.android.datastore.DataStoreType.SITE_PICKER_WOO_VISIBLE_SITES
+import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_CATEGORIES
 import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
@@ -120,6 +121,25 @@ class DataStoreModule {
         },
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent("Corrupted data store. DataStore Type: ${TOP_PERFORMER_PRODUCTS.name}")
+            CustomDateRange.getDefaultInstance()
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
+        serializer = CustomDateRangeSerializer
+    )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(TOP_PERFORMER_CATEGORIES)
+    fun provideTopCategoriesCustomDateRangeDataStore(
+        appContext: Context,
+        crashLogging: CrashLogging,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<CustomDateRange> = DataStoreFactory.create(
+        produceFile = {
+            appContext.preferencesDataStoreFile("top_categories_custom_date_range_configuration")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            crashLogging.recordEvent("Corrupted data store. DataStore Type: ${TOP_PERFORMER_CATEGORIES.name}")
             CustomDateRange.getDefaultInstance()
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
