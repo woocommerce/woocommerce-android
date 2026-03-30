@@ -15,6 +15,7 @@ import com.woocommerce.android.datastore.DataStoreType.BOOKINGS_FILTERS
 import com.woocommerce.android.datastore.DataStoreType.COUPONS
 import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.LAST_UPDATE
+import com.woocommerce.android.datastore.DataStoreType.SALES_BY_CHANNEL
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABELS_DATA
 import com.woocommerce.android.datastore.DataStoreType.SITE_PICKER_WOO_VISIBLE_SITES
 import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_CATEGORIES
@@ -140,6 +141,25 @@ class DataStoreModule {
         },
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent("Corrupted data store. DataStore Type: ${TOP_PERFORMER_CATEGORIES.name}")
+            CustomDateRange.getDefaultInstance()
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
+        serializer = CustomDateRangeSerializer
+    )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(SALES_BY_CHANNEL)
+    fun provideSalesByChannelCustomDateRangeDataStore(
+        appContext: Context,
+        crashLogging: CrashLogging,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<CustomDateRange> = DataStoreFactory.create(
+        produceFile = {
+            appContext.preferencesDataStoreFile("sales_by_channel_custom_date_range_configuration")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            crashLogging.recordEvent("Corrupted data store. DataStore Type: ${SALES_BY_CHANNEL.name}")
             CustomDateRange.getDefaultInstance()
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),

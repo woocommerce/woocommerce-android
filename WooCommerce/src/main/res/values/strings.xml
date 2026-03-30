@@ -366,6 +366,10 @@
     <string name="dashboard_top_categories_empty">No categories found</string>
     <string name="dashboard_top_categories_products_title">Products in %s</string>
 
+    <string name="my_store_widget_sales_by_channel_title">Sales by channel</string>
+    <string name="dashboard_sales_by_channel_empty">No channel data available</string>
+    <string name="dashboard_sales_by_channel_analytics_inactive_title">Unable to load sales by channel</string>
+
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
     <string name="dashboard_action_view_all_messages">View all messages</string>

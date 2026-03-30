@@ -135,7 +135,8 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.STATS,
                     DashboardWidget.Type.ORDERS,
                     DashboardWidget.Type.POPULAR_PRODUCTS,
-                    DashboardWidget.Type.TOP_CATEGORIES -> siteOrdersState
+                    DashboardWidget.Type.TOP_CATEGORIES,
+                    DashboardWidget.Type.SALES_BY_CHANNEL -> siteOrdersState
 
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.PUSH_NOTIFICATIONS -> pushNotificationsWidgetStatus

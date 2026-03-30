@@ -113,6 +113,7 @@ object AppPrefs {
         ACTIVE_STATS_GRANULARITY,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
         ACTIVE_TOP_CATEGORIES_GRANULARITY,
+        ACTIVE_SALES_BY_CHANNEL_GRANULARITY,
         DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
@@ -1008,6 +1009,12 @@ object AppPrefs {
     }
 
     fun getActiveTopCategoriesTab() = getString(DeletablePrefKey.ACTIVE_TOP_CATEGORIES_GRANULARITY)
+
+    fun setActiveSalesByChannelTab(selectionName: String) {
+        setString(DeletablePrefKey.ACTIVE_SALES_BY_CHANNEL_GRANULARITY, selectionName)
+    }
+
+    fun getActiveSalesByChannelTab() = getString(DeletablePrefKey.ACTIVE_SALES_BY_CHANNEL_GRANULARITY)
 
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)

@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.pushnotifications.DashboardPushNotificationsCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
+import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelWidgetCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesWidgetCard
@@ -318,6 +319,11 @@ private fun ConfigurableWidgetCard(
                 modifier = modifier
             )
         }
+
+        DashboardWidget.Type.SALES_BY_CHANNEL -> DashboardSalesByChannelWidgetCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
     }
 }
 

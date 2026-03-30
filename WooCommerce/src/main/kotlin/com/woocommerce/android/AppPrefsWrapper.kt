@@ -243,6 +243,12 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun getActiveTopCategoriesTab() = AppPrefs.getActiveTopCategoriesTab()
 
+    fun setActiveSalesByChannelTab(selectionName: String) {
+        AppPrefs.setActiveSalesByChannelTab(selectionName)
+    }
+
+    fun getActiveSalesByChannelTab() = AppPrefs.getActiveSalesByChannelTab()
+
     fun getActiveCouponsTab() = AppPrefs.getActiveCouponsTab()
 
     fun setActiveCouponsTab(selectionName: String) {

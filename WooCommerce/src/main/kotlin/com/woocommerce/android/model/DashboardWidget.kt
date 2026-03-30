@@ -73,6 +73,10 @@ data class DashboardWidget(
         GOOGLE_ADS(
             titleResource = R.string.my_store_widget_google_ads_title,
             trackingIdentifier = "google_ads",
+        ),
+        SALES_BY_CHANNEL(
+            titleResource = R.string.my_store_widget_sales_by_channel_title,
+            trackingIdentifier = "sales_by_channel",
         );
 
         companion object {
