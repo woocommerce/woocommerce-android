@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTIVITY_TEST
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_INTERNET
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_ORDERS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_PRODUCTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_WP_COM
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_INTERNET
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CONNECTIVITY_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
