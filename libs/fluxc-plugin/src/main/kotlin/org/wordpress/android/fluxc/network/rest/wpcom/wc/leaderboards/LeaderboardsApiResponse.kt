@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards
 
 import org.wordpress.android.fluxc.network.Response
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.CATEGORIES
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.UNKNOWN
 
@@ -17,6 +18,13 @@ class LeaderboardsApiResponse : Response {
         rows
                 ?.takeIf { type == PRODUCTS }
                 ?.map { LeaderboardProductItem(it) }
+                ?.toList()
+    }
+
+    val categories by lazy {
+        rows
+                ?.takeIf { type == CATEGORIES }
+                ?.map { LeaderboardCategoryItem(it) }
                 ?.toList()
     }
 

@@ -89,6 +89,9 @@ interface WCDatabaseModule {
 
         @Provides fun provideTopPerformerProductsDao(database: WCAndroidDatabase) = database.topPerformerProductsDao
 
+        @Provides
+        fun provideTopPerformerCategoriesDao(database: WCAndroidDatabase) = database.topPerformerCategoriesDao
+
         @Provides fun provideTaxBasedOnDao(database: WCAndroidDatabase) = database.taxBasedOnSettingDao
 
         @Provides fun provideTaxRateDao(database: WCAndroidDatabase) = database.taxRateDao
