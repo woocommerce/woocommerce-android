@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerCategoryEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -295,6 +296,70 @@ class StatsRepository @Inject constructor(
     private fun List<TopPerformerProductEntity>.expired(): Boolean =
         any { topPerformerProductEntity ->
             System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
+        }
+
+    suspend fun getTopPerformerCategories(
+        startDate: String,
+        endDate: String
+    ): List<TopPerformerCategoryEntity> {
+        val siteModel = selectedSite.get()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
+        return wcLeaderboardsStore.getCachedTopPerformerCategories(siteModel, datePeriod)
+    }
+
+    suspend fun fetchTopPerformerCategories(
+        forceRefresh: Boolean,
+        range: StatsTimeRange,
+        quantity: Int
+    ): Result<Unit> {
+        val siteModel = selectedSite.get()
+        val startDate = range.start.formatToYYYYmmDDhhmmss()
+        val endDate = range.end.formatToYYYYmmDDhhmmss()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
+        val cachedCategories = wcLeaderboardsStore.getCachedTopPerformerCategories(
+            site = siteModel,
+            datePeriod = datePeriod
+        )
+        return if (forceRefresh || cachedCategories.isEmpty() || cachedCategories.categoriesExpired()) {
+            val result = wcLeaderboardsStore.fetchTopPerformerCategories(
+                site = siteModel,
+                startDate = startDate,
+                endDate = endDate,
+                quantity = quantity
+            )
+            when {
+                result.isError -> Result.failure(WooException(result.error))
+                else -> Result.success(Unit)
+            }
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    suspend fun fetchTopPerformerProductsByCategory(
+        range: StatsTimeRange,
+        categoryId: Long,
+        quantity: Int
+    ): Result<List<TopPerformerProductEntity>> {
+        val siteModel = selectedSite.get()
+        val startDate = range.start.formatToYYYYmmDDhhmmss()
+        val endDate = range.end.formatToYYYYmmDDhhmmss()
+        val result = wcLeaderboardsStore.fetchTopPerformerProductsByCategory(
+            site = siteModel,
+            startDate = startDate,
+            endDate = endDate,
+            categoryId = categoryId,
+            quantity = quantity
+        )
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(result.model ?: emptyList())
+        }
+    }
+
+    private fun List<TopPerformerCategoryEntity>.categoriesExpired(): Boolean =
+        any { category ->
+            System.currentTimeMillis() - category.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
         }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
