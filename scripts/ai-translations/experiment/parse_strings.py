@@ -76,10 +76,15 @@ def _extract_entries(xml_text: str) -> list[dict]:
     return entries
 
 
-def cmd_extract(xml_path: str) -> None:
+def cmd_extract_to_list(xml_path: str) -> list:
+    """Extract entries and return as a Python list (for import by other scripts)."""
     with open(xml_path, "r", encoding="utf-8") as f:
         xml_text = f.read()
-    entries = _extract_entries(xml_text)
+    return _extract_entries(xml_text)
+
+
+def cmd_extract(xml_path: str) -> None:
+    entries = cmd_extract_to_list(xml_path)
     json.dump(entries, sys.stdout, ensure_ascii=False, indent=2)
     sys.stdout.write("\n")
 
