@@ -112,21 +112,27 @@ for CHUNK_FILE in "$CHUNKS_DIR"/chunk_*.json; do
 
     RESULT_FILE="$RESULTS_DIR/result_$(printf '%04d' $CHUNK_INDEX).json"
 
+    # Write prompt to a temp file (avoids shell quoting/size issues)
+    PROMPT_FILE=$(mktemp /tmp/prompt_XXXXXX)
+    printf '%s' "$PROMPT" > "$PROMPT_FILE"
+
     # Call the LLM
     LLM_RESPONSE=""
     if [ "$LLM" = "claude" ]; then
-        LLM_RESPONSE=$(echo "$PROMPT" | claude --print --no-input 2>/dev/null) || {
+        LLM_RESPONSE=$(cat "$PROMPT_FILE" | claude -p --no-session-persistence 2>/dev/null) || {
             echo "[WARN] chunk $CHUNK_INDEX failed — skipping" >&2
+            rm -f "$PROMPT_FILE"
             continue
         }
+        rm -f "$PROMPT_FILE"
     elif [ "$LLM" = "codex" ]; then
         CODEX_OUT=$(mktemp /tmp/codex_output_XXXXXX)
-        codex exec -o "$CODEX_OUT" "$PROMPT" 2>/dev/null && LLM_RESPONSE=$(cat "$CODEX_OUT") || {
+        codex exec -o "$CODEX_OUT" "$(cat "$PROMPT_FILE")" 2>/dev/null && LLM_RESPONSE=$(cat "$CODEX_OUT") || {
             echo "[WARN] chunk $CHUNK_INDEX failed — skipping" >&2
-            rm -f "$CODEX_OUT"
+            rm -f "$CODEX_OUT" "$PROMPT_FILE"
             continue
         }
-        rm -f "$CODEX_OUT"
+        rm -f "$CODEX_OUT" "$PROMPT_FILE"
     else
         echo "Error: unknown LLM '$LLM'. Supported: claude, codex" >&2
         exit 1
