@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PYTHON="$SCRIPT_DIR/../venv/bin/python3"
-STRINGS_XML="$SCRIPT_DIR/../../WooCommerce/src/main/res/values/strings.xml"
+STRINGS_XML="$SCRIPT_DIR/../../../WooCommerce/src/main/res/values/strings.xml"
 PROMPT_TEMPLATE="$SCRIPT_DIR/prompts/contextual.txt"
 FIND_USAGE_SCRIPT="$SCRIPT_DIR/find_string_usage.sh"
 
