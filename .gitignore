@@ -128,3 +128,6 @@ google-upload-credentials.json
 **/.codex/**/*.local.*
 
 .grepai/
+
+# AI translations experiment results
+scripts/ai-translations/results/
