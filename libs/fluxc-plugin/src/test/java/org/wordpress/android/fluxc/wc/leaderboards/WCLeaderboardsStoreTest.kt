@@ -19,6 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.leaderboards.WCCategoryLeaderboardsMapper
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -28,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
+import org.wordpress.android.fluxc.persistence.dao.TopPerformerCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
@@ -45,7 +47,9 @@ class WCLeaderboardsStoreTest {
     private val reportsRestClient: ReportsRestClient = mock()
     private lateinit var productStore: WCProductStore
     private var mapper: WCProductLeaderboardsMapper = spy()
+    private val categoryMapper: WCCategoryLeaderboardsMapper = mock()
     private val topPerformersDao: TopPerformerProductsDao = mock()
+    private val topPerformerCategoriesDao: TopPerformerCategoriesDao = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
     @Rule
@@ -269,8 +273,10 @@ class WCLeaderboardsStoreTest {
             leaderboardsRestClient,
             productStore,
             mapper,
+            categoryMapper,
             initCoroutineEngine(),
             topPerformersDao,
+            topPerformerCategoriesDao,
             reportsRestClient,
             wooCommerceStore
         )
