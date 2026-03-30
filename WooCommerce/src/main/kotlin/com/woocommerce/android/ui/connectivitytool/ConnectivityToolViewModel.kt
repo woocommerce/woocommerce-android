@@ -229,7 +229,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startProductsCheck() {
         val startTime = System.currentTimeMillis()
         storeProductsCheck().onEach { status ->
-            trackChanges(status, AnalyticsTracker.VALUE_PRODUCTS, startTime)
+            trackChanges(status, AnalyticsTracker.VALUE_CONNECTIVITY_PRODUCTS, startTime)
             status.startNextCheck()
             productsCheckFlow.update {
                 if (status is Failure) {

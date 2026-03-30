@@ -201,6 +201,20 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when storeProductsCheck fails, then isCheckFinished is true`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<Boolean>()
+        whenever(storeProductsCheck()).thenReturn(flowOf(Failure()))
+        sut.isCheckFinished.observeForever { stateEvents.add(it) }
+
+        // When
+        sut.startConnectionChecks()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, false, true))
+    }
+
+    @Test
     fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event`() {
         // Given
         val events = mutableListOf<MultiLiveEvent.Event>()
