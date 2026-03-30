@@ -1,0 +1,136 @@
+package com.woocommerce.android.ui.connectivitytool.useCases
+
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.FailureType
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCProductStore
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class StoreProductsCheckUseCaseTest : BaseUnitTest() {
+    private lateinit var sut: StoreProductsCheckUseCase
+    private lateinit var productStore: WCProductStore
+    private lateinit var selectedSite: SelectedSite
+
+    @Before
+    fun setUp() {
+        productStore = mock()
+        selectedSite = mock()
+        sut = StoreProductsCheckUseCase(productStore, selectedSite)
+    }
+
+    @Test
+    fun `when fetchProducts returns success, then emit Success`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(
+            productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true)
+        ).thenReturn(WooResult(true))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
+    }
+
+    @Test
+    fun `when fetchProducts returns GENERIC_ERROR, then emit GENERIC Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(productStore.fetchProducts(selectedSite.get()))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
+    }
+
+    @Test
+    fun `when fetchProducts returns TIMEOUT, then emit TIMEOUT Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(productStore.fetchProducts(selectedSite.get()))
+            .thenReturn(WooResult(WooError(WooErrorType.TIMEOUT, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.TIMEOUT)))
+    }
+
+    @Test
+    fun `when fetchProducts returns INVALID_RESPONSE, then emit PARSE Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(productStore.fetchProducts(selectedSite.get()))
+            .thenReturn(WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.PARSE)))
+    }
+
+    @Test
+    fun `given Jetpack site, when fetchProducts returns API_NOT_FOUND, then emit JETPACK Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
+        whenever(productStore.fetchProducts(selectedSite.get()))
+            .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.JETPACK)))
+    }
+
+    @Test
+    fun `given app-password site, when fetchProducts returns API_NOT_FOUND, then emit GENERIC Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        whenever(productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true))
+            .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
+    }
+}

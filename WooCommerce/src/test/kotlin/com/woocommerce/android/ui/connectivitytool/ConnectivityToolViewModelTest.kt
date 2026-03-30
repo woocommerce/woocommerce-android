@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.Ope
 import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -33,6 +34,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     private lateinit var wpComConnectionCheck: WPComConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
     private lateinit var storeOrdersCheck: StoreOrdersCheckUseCase
+    private lateinit var storeProductsCheck: StoreProductsCheckUseCase
     private lateinit var selectedSite: SelectedSite
 
     @Before
@@ -41,11 +43,13 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         wpComConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
+        storeProductsCheck = mock()
         selectedSite = mock()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         createViewModel()
     }
@@ -56,6 +60,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             wpComConnectionCheck = wpComConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
+            storeProductsCheck = storeProductsCheck,
             analyticsTrackerWrapper = mock(),
             selectedSite = selectedSite,
             savedState = SavedStateHandle()
@@ -142,7 +147,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, true))
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, false, true))
     }
 
     @Test
@@ -176,6 +181,23 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false))
+    }
+
+    @Test
+    fun `when storeProductsCheck use case starts, then update ViewState as expected`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
+        sut.viewState
+            .map { it.productsCheckData }
+            .distinctUntilChanged()
+            .observeForever { stateEvents.add(it.connectivityCheckStatus) }
+
+        // When
+        sut.startConnectionChecks()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
     }
 
     @Test
