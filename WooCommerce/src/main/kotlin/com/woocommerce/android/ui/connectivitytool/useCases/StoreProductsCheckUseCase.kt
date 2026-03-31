@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Succe
 import com.woocommerce.android.ui.connectivitytool.FailureType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -23,14 +24,14 @@ class StoreProductsCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        productStore.fetchProducts(site = selectedSite.get(), forceRefresh = true)
+        productStore.fetchProducts(selectedSite.get())
             .takeIf { it.isError }
             ?.parseError()
             ?.let { emit(it) }
             ?: emit(Success)
     }
 
-    private fun WooResult<Boolean>.parseError() =
+    private fun WooResult<List<WCProductModel>>.parseError() =
         when (error.type) {
             WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
             WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
