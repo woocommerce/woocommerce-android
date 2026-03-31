@@ -2,7 +2,7 @@
 
 ## Goal
 
-I wanted to find out if AI-generated translations are good enough to replace human translators for WooCommerce Android app strings. The app currently has ~3,800 translatable strings across 16 languages, all managed through GlotPress with human translators.
+I wanted to find out if AI-generated translations are good enough to replace human translators for WooCommerce Android app strings. The app has ~3,800 translatable strings across 16 languages, currently managed through GlotPress with human translators.
 
 ## Experiment Setup
 
@@ -14,21 +14,23 @@ I wanted to find out if AI-generated translations are good enough to replace hum
 - **Claude** (Haiku 4.5) via Claude Code CLI
 - **Codex** (GPT-5.4) via Codex CLI
 
+I used Haiku for Claude because it is the fastest and cheapest model in the Claude family. If the cheapest model already produces good translations, stronger models would do at least as well.
+
 **Translation strategies:**
 - **Naive** -- just ask to translate with no extra instructions beyond preserving placeholders and HTML
 - **Contextual** -- same as naive but also grep the codebase for each string's usage (button label? dialog title? error message?) and ask the LLM to keep translations short for mobile UI
 
-**How the experiment ran:** A Python script extracted strings from `strings.xml`, split them into chunks, sent each chunk to the LLM CLI, and collected the JSON responses. All runs used the CLI tools locally (not the API). API calls would be faster since they skip CLI startup overhead.
+**How the experiment ran:** A Python script extracted strings from `strings.xml`, split them into chunks, sent each chunk to the LLM CLI, and collected the JSON responses. All runs used the CLI tools locally (not the API). API calls would be faster since they skip CLI startup overhead — the `ANTHROPIC_API_KEY` is already available in our Buildkite CI secrets (used by the `claude-summarize` build analysis plugin).
 
 ## How I Measured Quality
 
-### Similarity metrics (AI translation vs existing human translation)
+### Similarity metrics (AI vs existing human translation)
 
 These metrics measure how close the AI output is to the existing human translation. They do not tell us which is better -- only how similar they are.
 
-- **BLEU** (0-100): counts how many word sequences (1-4 words) match between the two translations. Higher means more overlap. Standard metric in machine translation research. Limitation: penalizes valid alternative word choices, especially in CJK languages where word segmentation differs.
+- **BLEU** (0-100): counts how many word sequences (1-4 words) match between the two translations. Higher means more overlap. Standard metric in machine translation research. Known limitation: penalizes valid alternative word choices, especially in CJK languages where word segmentation differs.
 
-- **chrF** (0-100): similar idea but works at the character level instead of words. More reliable for languages with rich morphology (German, Russian, Turkish) and for CJK scripts.
+- **chrF** (0-100): similar to BLEU but works at the character level instead of words. More reliable for languages with rich morphology (German, Russian, Turkish) and for CJK scripts.
 
 - **Levenshtein similarity** (0-1): measures how many character edits (insert, delete, replace) are needed to turn one string into the other, normalized by length. 1.0 means identical, 0.0 means completely different.
 
@@ -40,34 +42,42 @@ Similarity metrics assume human translations are the gold standard. But human tr
 - Show the judge the English original + two translations labeled "A" and "B"
 - Randomly assign which is AI and which is human (the judge does not know)
 - Ask: which is better for a mobile app UI? Consider accuracy, naturalness, and length
-- The judge was Claude Haiku 4.5
+
+To make sure the results are not biased by the judge model, I ran this evaluation **twice with different judges**: once with Claude (Haiku 4.5) and once with Codex (GPT-5.4). The Codex judge evaluated translations made by Codex -- if there were self-preference bias, Codex-as-judge would unfairly favor Codex translations. Both judges agreed.
 
 ## Results
 
 ### AI translations are preferred over human ones
 
-In the blind A/B evaluation, **AI was preferred 2x more often than human** across all 16 languages. Not a single language had human translations winning overall.
+Both judges independently reached the same conclusion: **AI translations are preferred roughly 2-3x more often than human ones.**
 
-| Language | AI Preferred | Human Preferred | Tie | AI Win Rate |
-|----------|-------------|----------------|-----|-------------|
-| Hebrew | 33 | 4 | 13 | **66%** |
-| Turkish | 23 | 6 | 21 | **46%** |
-| Japanese | 23 | 14 | 13 | **46%** |
-| Chinese (Simplified) | 21 | 13 | 16 | **42%** |
-| Russian | 21 | 13 | 16 | **42%** |
-| French | 20 | 8 | 22 | **40%** |
-| Chinese (Traditional) | 20 | 11 | 19 | **40%** |
-| Portuguese (Brazil) | 19 | 7 | 24 | **38%** |
-| Korean | 19 | 14 | 17 | **38%** |
-| Italian | 18 | 7 | 25 | **36%** |
-| Arabic | 18 | 10 | 22 | **36%** |
-| Spanish | 16 | 4 | 30 | **32%** |
-| Dutch | 16 | 12 | 22 | **32%** |
-| Swedish | 13 | 6 | 31 | **26%** |
-| German | 12 | 11 | 27 | **24%** |
-| Indonesian | 12 | 7 | 31 | **24%** |
-| | | | | |
-| **Total (800 judged)** | **304 (38%)** | **147 (18%)** | **349 (44%)** | |
+| Judge | AI Preferred | Human Preferred | Tie |
+|-------|-------------|----------------|-----|
+| **Claude (Haiku 4.5)** | **304 / 800 (38%)** | 147 / 800 (18%) | 349 (44%) |
+| **Codex (GPT-5.4)** | **296 / 700 (42%)** | 104 / 700 (15%) | 300 (43%) |
+
+Per-language breakdown (Claude judge, sorted by AI win rate):
+
+| Language | AI Preferred | Human Preferred | Tie |
+|----------|-------------|----------------|-----|
+| Hebrew | 33 | 4 | 13 |
+| Turkish | 23 | 6 | 21 |
+| Japanese | 23 | 14 | 13 |
+| Chinese (Simplified) | 21 | 13 | 16 |
+| Russian | 21 | 13 | 16 |
+| French | 20 | 8 | 22 |
+| Chinese (Traditional) | 20 | 11 | 19 |
+| Portuguese (Brazil) | 19 | 7 | 24 |
+| Korean | 19 | 14 | 17 |
+| Italian | 18 | 7 | 25 |
+| Arabic | 18 | 10 | 22 |
+| Spanish | 16 | 4 | 30 |
+| Dutch | 16 | 12 | 22 |
+| Swedish | 13 | 6 | 31 |
+| German | 12 | 11 | 27 |
+| Indonesian | 12 | 7 | 31 |
+
+No language had human translations winning overall.
 
 ### Codex produces better translations than Claude
 
@@ -80,17 +90,25 @@ When measured by similarity to existing human translations:
 | Claude, naive | 56.4 | 70.8 | 0.828 |
 | Claude, contextual | 56.3 | 69.8 | 0.821 |
 
-All 16 languages across all 4 combos. Claude needed smaller chunks for Chinese Simplified (50 strings per chunk instead of 300) to avoid output truncation.
+All 16 languages, all 4 combos. Claude needed smaller chunks for Chinese Simplified (50 strings per chunk instead of 300) to avoid output truncation.
 
 ### Adding code context does not help
 
-I expected that giving the LLM information about where each string appears in the code (button, title, error message) would improve translations. It did not. Naive and contextual strategies scored almost identically, but contextual was ~40% slower because of the codebase grep.
+I expected that giving the LLM information about where each string is used in code (button, title, error message) would improve translations. It did not. Naive and contextual strategies scored almost identically, but contextual was ~40% slower because of the codebase grep.
 
 | | Naive | Contextual |
 |--|-------|------------|
 | Avg BLEU (Codex) | **60.6** | 60.4 |
 | Avg chrF (Codex) | **73.8** | 73.4 |
 | Time per language (Claude CLI) | ~108s | ~170s |
+
+However, the naive prompt did not include any length instructions. A potential improvement is adding a simple "keep translations short for mobile UI" instruction without the code context grep -- that would combine the speed of naive with the length awareness of contextual. This is worth testing in a follow-up.
+
+### A key advantage: the prompt is the spec
+
+One thing this experiment made clear is that AI translation quality can be improved just by adjusting the prompt. Want shorter translations? Add a line. Want to use specific brand terminology? Add a glossary. Want to match a certain tone? Describe it.
+
+With human translators, this kind of adjustment requires writing documentation, training sessions, and hoping for consistency across 16 language teams. With AI, it is a single line change applied to every language at once.
 
 ### Per-language quality (best combo: naive/Codex)
 
@@ -117,7 +135,7 @@ BLEU scores are lower for CJK and RTL languages. This is a known limitation of t
 
 ### Timing
 
-All times below are using local CLI tools. API calls would be faster (no CLI process startup overhead per call).
+All times below are using local CLI tools. API calls would be faster (no CLI process startup per call).
 
 | What | Time |
 |------|------|
@@ -134,8 +152,10 @@ A typical release adds 20-50 new strings. Translating 50 strings to all 16 langu
 
 - **Branch:** `hack/ai-translations` in `woocommerce/woocommerce-android`
 - **Scripts:** `scripts/ai-translations/` (parser, translation scripts, metrics, judge, report generator)
+- **Translation models:** Claude Haiku 4.5, Codex GPT-5.4
+- **Judge models:** Claude Haiku 4.5 (800 evaluations), Codex GPT-5.4 (700 evaluations)
 - **Sample:** 300 strings randomly selected from 3,829 translatable strings (deterministic seed=42)
-- **Blind judge:** 50 strings per language, random A/B assignment (seed=42), judged by Claude Haiku 4.5
+- **Blind judge:** 50 strings per language, random A/B assignment (seed=42)
 - **Metrics libraries:** sacrebleu (BLEU, chrF), python-Levenshtein (similarity)
 - **Total experiment runs:** 64 (2 strategies x 2 LLMs x 16 languages)
-- **Total blind judge evaluations:** 800 (50 strings x 16 languages)
+- **Total blind judge evaluations:** 1,500 (800 by Claude + 700 by Codex)

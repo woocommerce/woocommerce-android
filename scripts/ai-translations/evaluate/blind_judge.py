@@ -19,15 +19,32 @@ sys.path.insert(0, str(SCRIPT_DIR.parent / "experiment"))
 from parse_strings import cmd_extract_to_list
 
 
-def call_claude(prompt, model=None):
-    cmd = ["claude", "-p", "--no-session-persistence"]
-    if model:
-        cmd.extend(["--model", model])
-    try:
-        result = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=300)
-        return result.stdout
-    except Exception as e:
-        return ""
+def call_llm(prompt, judge_llm="claude", model=None):
+    if judge_llm == "codex":
+        out_file = tempfile.NamedTemporaryFile(suffix='.txt', delete=False).name
+        try:
+            subprocess.run(
+                ["codex", "exec", "-o", out_file, prompt],
+                capture_output=True, text=True, timeout=300
+            )
+            if os.path.exists(out_file):
+                with open(out_file) as f:
+                    return f.read()
+            return ""
+        except Exception:
+            return ""
+        finally:
+            if os.path.exists(out_file):
+                os.unlink(out_file)
+    else:
+        cmd = ["claude", "-p", "--no-session-persistence"]
+        if model:
+            cmd.extend(["--model", model])
+        try:
+            result = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=300)
+            return result.stdout
+        except Exception:
+            return ""
 
 
 def extract_json_array(text):
@@ -52,7 +69,7 @@ def extract_json_array(text):
 
 
 def run_blind_judge(lang_code, lang_name, ai_translations, human_translations,
-                    english_strings, sample_size, seed, model):
+                    english_strings, sample_size, seed, model, judge_llm="claude"):
     """Run blind A/B comparison for one language."""
 
     # Build lookup maps
@@ -120,8 +137,8 @@ Return a JSON array with one object per entry:
 Translations to evaluate:
 {entries_text}"""
 
-    print(f"  [{lang_code}] Calling judge ({len(sampled_keys)} strings)...")
-    response = call_claude(prompt, model)
+    print(f"  [{lang_code}] Calling {judge_llm} judge ({len(sampled_keys)} strings)...")
+    response = call_llm(prompt, judge_llm=judge_llm, model=model)
     verdicts = extract_json_array(response)
 
     if not verdicts:
@@ -190,6 +207,7 @@ def main():
     parser.add_argument("--sample-size", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--model", default=None)
+    parser.add_argument("--judge-llm", choices=["claude", "codex"], default="claude")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -226,7 +244,8 @@ def main():
 
         result = run_blind_judge(
             lang_code, lang_name, ai_translations, human_translations,
-            english_strings, args.sample_size, args.seed, args.model
+            english_strings, args.sample_size, args.seed, args.model,
+            judge_llm=args.judge_llm
         )
         all_results.append(result)
 
