@@ -40,6 +40,7 @@ internal class BookingDtoMapper @Inject constructor(
         cost = cost,
         currency = currency,
         customerId = customerId,
+        userId = userId,
         productId = productId,
         resourceId = resourceId,
         dateCreated = Instant.ofEpochSecond(dateCreated),

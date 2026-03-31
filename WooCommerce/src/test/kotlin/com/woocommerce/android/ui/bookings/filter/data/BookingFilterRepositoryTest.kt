@@ -84,7 +84,7 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         val repository = BookingFilterRepository(dataStore, selectedSite)
         val before = Instant.parse("2025-01-02T00:00:00Z")
         val after = Instant.parse("2025-01-01T00:00:00Z")
-        val customer = BookingsFilterOption.Customer(customerId = 7L, customerName = "Alice")
+        val customer = BookingsFilterOption.Customer(userId = 7L, customerName = "Alice")
         val toSave = BookingFilters(
             customer = customer,
             dateRange = BookingsFilterOption.DateRange(before = before, after = after)
