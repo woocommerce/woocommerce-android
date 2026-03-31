@@ -79,9 +79,18 @@ Per-language breakdown (Claude judge, sorted by AI win rate):
 
 No language had human translations winning overall.
 
-### Codex produces better translations than Claude
+### Both LLMs beat human translations, Codex slightly ahead
 
-When measured by similarity to existing human translations:
+I ran the blind judge on both Claude and Codex translations (all 16 languages, 50 strings each):
+
+| Translator | AI Preferred | Human Preferred | Tie |
+|------------|-------------|----------------|-----|
+| **Codex (GPT-5.4)** | **304/800 (38%)** | 147/800 (18%) | 349 (44%) |
+| Claude (Haiku 4.5) | 288/800 (36%) | 180/800 (22%) | 332 (42%) |
+
+Both beat human translations. Codex is slightly ahead - preferred 2.1x over human vs 1.6x for Claude.
+
+Similarity metrics confirm the same ranking:
 
 | LLM + Strategy | Avg BLEU | Avg chrF | Avg Levenshtein |
 |----------------|----------|----------|-----------------|
@@ -159,7 +168,7 @@ A typical release adds 20-50 new strings. Translating 50 strings to all 16 langu
 - **Blind judge:** 50 strings per language, random A/B assignment (seed=42)
 - **Metrics libraries:** sacrebleu (BLEU, chrF), python-Levenshtein (similarity)
 - **Total experiment runs:** 64 (2 strategies x 2 LLMs x 16 languages)
-- **Total blind judge evaluations:** 1,500 (800 by Claude + 700 by Codex)
+- **Total blind judge evaluations:** 2,300 (both LLMs' translations judged by both Claude and Codex judges)
 
 ## Conclusion
 
