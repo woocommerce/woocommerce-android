@@ -6,9 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -16,6 +14,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -38,25 +37,19 @@ import org.wordpress.android.util.UrlUtils
 import kotlin.test.assertNotNull
 
 @Suppress("UnitTestNamingRule")
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class SiteRestClientTest {
-    @Mock
-    private lateinit var dispatcher: Dispatcher
+    private val dispatcher: Dispatcher = mock()
 
-    @Mock
-    private lateinit var wpComGsonRequestBuilder: WPComGsonRequestBuilder
+    private val wpComGsonRequestBuilder: WPComGsonRequestBuilder = mock()
 
-    @Mock
-    private lateinit var jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder
+    private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder = mock()
 
-    @Mock
-    private lateinit var requestQueue: RequestQueue
+    private val requestQueue: RequestQueue = mock()
 
-    @Mock
-    private lateinit var accessToken: AccessToken
+    private val accessToken: AccessToken = mock()
 
-    @Mock
-    private lateinit var userAgent: UserAgent
+    private val userAgent: UserAgent = mock()
 
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>

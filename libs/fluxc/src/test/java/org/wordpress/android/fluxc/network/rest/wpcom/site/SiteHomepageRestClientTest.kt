@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.site
 
+import android.annotation.SuppressLint
 import com.android.volley.RequestQueue
 import com.android.volley.VolleyError
 import org.assertj.core.api.Assertions.assertThat
@@ -7,8 +8,6 @@ import org.assertj.core.api.MapAssert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -16,6 +15,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteHomepageSettings
 import org.wordpress.android.fluxc.model.SiteHomepageSettings.Posts
@@ -33,14 +33,15 @@ import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteHomepageRestClient.UpdateHomepageResponse
 import org.wordpress.android.fluxc.test
 
-@RunWith(MockitoJUnitRunner::class)
+@Suppress("UnitTestNamingRule")
+@RunWith(RobolectricTestRunner::class)
 class SiteHomepageRestClientTest {
-    @Mock private lateinit var dispatcher: Dispatcher
-    @Mock private lateinit var wpComGsonRequestBuilder: WPComGsonRequestBuilder
-    @Mock private lateinit var site: SiteModel
-    @Mock private lateinit var requestQueue: RequestQueue
-    @Mock private lateinit var accessToken: AccessToken
-    @Mock private lateinit var userAgent: UserAgent
+    private val dispatcher: Dispatcher = mock()
+    private val wpComGsonRequestBuilder: WPComGsonRequestBuilder = mock()
+    private val site: SiteModel = mock()
+    private val requestQueue: RequestQueue = mock()
+    private val accessToken: AccessToken = mock()
+    private val userAgent: UserAgent = mock()
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var restClient: SiteHomepageRestClient
@@ -145,6 +146,7 @@ class SiteHomepageRestClientTest {
         Unit
     }
 
+    @SuppressLint("DoNotMockDataClass")
     private suspend fun initHomepageResponse(
         data: UpdateHomepageResponse? = null,
         error: WPComGsonNetworkError? = null

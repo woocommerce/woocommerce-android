@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.site
+package org.wordpress.android.fluxc.network.xmlrpc.site
 
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
@@ -23,8 +23,8 @@ import org.wordpress.android.fluxc.network.HTTPAuthManager
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder
-import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.concurrent.CountDownLatch

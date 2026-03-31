@@ -5,8 +5,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
@@ -14,11 +13,9 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.util.Date
 
 class OrderMapperTest {
-    @Mock
-    private lateinit var getLocations: GetLocations
+    private val getLocations: GetLocations = mock()
 
-    @Mock
-    private lateinit var dateUtils: DateUtils
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var orderMapper: OrderMapper
 
@@ -27,7 +24,6 @@ class OrderMapperTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
         orderMapper = OrderMapper(getLocations, dateUtils)
 
         whenever(dateUtils.getDateUsingSiteTimeZone(org.mockito.kotlin.any())).thenReturn(testDate)

@@ -19,7 +19,6 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
-import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult
@@ -42,12 +41,13 @@ import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "UnitTestNamingRule")
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCShippingLabelStoreTest {

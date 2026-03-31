@@ -5,9 +5,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
@@ -42,18 +40,17 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import kotlin.test.assertEquals
 
 @Suppress("DoNotMockDataClass", "UnitTestNamingRule")
-@RunWith(MockitoJUnitRunner::class)
 class SiteStoreTest {
-    @Mock lateinit var dispatcher: Dispatcher
-    @Mock lateinit var siteRestClient: SiteRestClient
-    @Mock lateinit var siteXMLRPCClient: SiteXMLRPCClient
-    @Mock lateinit var siteWPAPIClient: SiteWPAPIRestClient
-    @Mock lateinit var siteSqlUtils: SiteSqlUtils
-    @Mock lateinit var domainsDao: DomainDao
-    @Mock lateinit var domainsSuccessResponse: Response.Success<DomainsResponse>
-    @Mock lateinit var plansSuccessResponse: Response.Success<PlansResponse>
-    @Mock lateinit var domainsErrorResponse: Response.Error<DomainsResponse>
-    @Mock lateinit var plansErrorResponse: Response.Error<PlansResponse>
+    private val dispatcher: Dispatcher = mock()
+    private val siteRestClient: SiteRestClient = mock()
+    private val siteXMLRPCClient: SiteXMLRPCClient = mock()
+    private val siteWPAPIClient: SiteWPAPIRestClient = mock()
+    private val siteSqlUtils: SiteSqlUtils = mock()
+    private val domainsDao: DomainDao = mock()
+    private val domainsSuccessResponse: Response.Success<DomainsResponse> = mock()
+    private val plansSuccessResponse: Response.Success<PlansResponse> = mock()
+    private val domainsErrorResponse: Response.Error<DomainsResponse> = mock()
+    private val plansErrorResponse: Response.Error<PlansResponse> = mock()
     private lateinit var siteStore: SiteStore
 
     @Before
