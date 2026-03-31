@@ -34,4 +34,5 @@ enum class FeatureFlag(
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1", localValue = false),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2("woo_self_driven_push_notifications_m2", localValue = false),
+    WOO_SHIPPING_FEDEX("woo_shipping_fedex", localValue = false),
 }
