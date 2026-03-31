@@ -247,11 +247,17 @@ added to AI translation as a separate batch but deferred from hack week.
 
 **New files:**
 
-`scripts/ai-translations/integrate/translate.sh` — Production translation script:
+`scripts/ai-translations/integrate/translate.py` — Production translation script (Python):
 1. Diff `strings.xml` against previous release tag to find new/changed strings
-2. Batch-grep codebase for usage context (not per-string, one pass)
-3. Call Claude CLI to translate to all 16 languages
+2. Use naive prompt (Phase 1 showed code context does not improve quality)
+3. Call LLM API via SDK to translate to all 16 languages (parallel, one chunk per language)
 4. Output per-language JSON files
+
+Phase 1 learnings applied:
+- Python script (not shell) — reuses `parse_strings.py`, calls API via SDK
+- Naive strategy — contextual showed no quality benefit but was 40% slower
+- Codex/OpenAI preferred (BLEU 60.6 vs 56.4, judge win rate 40% vs 36%)
+- Typical release: 20-50 new strings — fits in one chunk, ~2 min total for all 16 languages
 
 `scripts/ai-translations/integrate/merge_translations.py` — Merge AI translations:
 1. Read existing `values-*/strings.xml` files

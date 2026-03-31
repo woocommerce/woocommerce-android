@@ -587,34 +587,64 @@ git commit -m "Add AI translation evaluation report"
 
 ## Phase 2: Release Pipeline Integration
 
+### Learnings from Phase 1 that affect Phase 2
+
+These findings from the experiment should guide the production implementation:
+
+1. **Use naive strategy (no code context grep needed).** The experiment showed contextual
+   strategy performs identically to naive in blind judge evaluation (38% vs 39% AI win rate).
+   Naive is ~40% faster and much simpler to implement.
+
+2. **Use Codex/OpenAI for translations, not Claude.** Codex scored higher on both
+   similarity metrics (BLEU 60.6 vs 56.4) and blind judge (40% vs 36% AI win rate).
+   However, Claude is acceptable as fallback since it still beats human translations.
+
+3. **Chunking: use ~50-100 strings per chunk, not 300+.** Claude failed on Chinese
+   Simplified with 300-string chunks. Smaller chunks are more reliable across all languages.
+
+4. **CLI is too slow for CI.** Claude CLI takes ~108s per language due to process startup
+   overhead. Use the Anthropic Python SDK or OpenAI API directly for production.
+   `ANTHROPIC_API_KEY` is already in Buildkite secrets. For Codex/OpenAI, an `OPENAI_API_KEY`
+   would need to be added.
+
+5. **`parse_strings.py` already has `cmd_extract_to_list()`.** The production script can
+   import this directly instead of calling the CLI.
+
+6. **venv is required.** macOS system Python blocks global pip installs. The Buildkite
+   pipeline needs to set up a venv or use `pip install --user`.
+
+7. **The prompt is simple.** Just "translate to {LANGUAGE}, keep placeholders and HTML"
+   produces good results. No complex instructions needed.
+
+8. **A typical release adds 20-50 new strings.** Translating 50 strings to 16 languages
+   fits in a single chunk per language - no chunking needed for incremental translations.
+
 ### Task 11: Production Translation Script
 
 **Files:**
-- Create: `scripts/ai-translations/integrate/translate.sh`
+- Create: `scripts/ai-translations/integrate/translate.py` (Python, not shell - reuses parse_strings.py)
 
-- [ ] **Step 1: Write translate.sh**
+- [ ] **Step 1: Write translate.py**
 
 This is the production-ready script that translates only new/changed strings.
-Uses the **Anthropic Python SDK** (not CLI) so it works on CI where `ANTHROPIC_API_KEY`
-is already available as a Buildkite organization secret.
+Uses the **Anthropic Python SDK** (or OpenAI SDK) so it works on CI.
 
 Arguments: `[--previous-tag TAG]` (defaults to latest release tag)
 
 Flow:
 1. Find previous release tag: `git describe --tags --abbrev=0 --match="*.*"` (or use provided tag)
 2. Diff `strings.xml` between current and previous tag:
-   ```bash
-   # Extract keys from previous version
-   git show "$PREV_TAG:WooCommerce/src/main/res/values/strings.xml" > /tmp/prev_strings.xml
-   python3 ../experiment/parse_strings.py extract /tmp/prev_strings.xml > /tmp/prev.json
-   python3 ../experiment/parse_strings.py extract WooCommerce/src/main/res/values/strings.xml > /tmp/current.json
+   ```python
+   # Extract keys from previous version using parse_strings.py
+   prev_xml = subprocess.check_output(["git", "show", f"{prev_tag}:WooCommerce/src/main/res/values/strings.xml"])
+   prev_strings = parse_strings.extract_from_text(prev_xml)
+   current_strings = parse_strings.cmd_extract_to_list(current_xml_path)
    ```
 3. Compute diff: new keys and changed values
-4. Batch-grep codebase for usage context of all new/changed strings
-5. Build prompt using contextual template
-6. Call Anthropic API via Python SDK (`anthropic.Anthropic().messages.create()`)
-   to translate to all 16 languages. Uses `ANTHROPIC_API_KEY` env var.
-7. Output per-language JSON files to a temp directory
+4. Build prompt using naive template (no code context needed - Phase 1 showed it doesn't help)
+5. Call LLM API to translate to all 16 languages (parallel, one chunk per language since
+   incremental translations are small - typically 20-50 strings)
+6. Output per-language JSON files to a temp directory
 
 Usage:
 ```bash
@@ -733,11 +763,20 @@ lane :ai_translate_strings do |skip_confirm: false|
 
   configure_apply(force: is_ci)
 
-  # Run the AI translation script
-  sh('bash', File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'translate.sh'))
+  # Set up Python venv (macOS blocks global pip installs)
+  venv_dir = File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'venv')
+  python = File.join(venv_dir, 'bin', 'python3')
+  unless File.exist?(python)
+    sh('python3', '-m', 'venv', venv_dir)
+    sh(python, '-m', 'pip', 'install', '-r',
+       File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'requirements.txt'))
+  end
+
+  # Run the AI translation script (Python, uses Anthropic/OpenAI SDK)
+  sh(python, File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'translate.py'))
 
   # Merge translations into strings.xml files
-  sh('python3', File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'merge_translations.py'),
+  sh(python, File.join(Dir.pwd, '..', 'scripts', 'ai-translations', 'integrate', 'merge_translations.py'),
      '--translations-dir', '/tmp/ai-translations/',
      '--res-dir', File.join(Dir.pwd, '..', 'WooCommerce', 'src', 'main', 'res'))
 
@@ -774,11 +813,9 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
-      echo '--- :snake: Setup Python'
-      pip3 install -r scripts/ai-translations/requirements.txt
-
       echo '--- :globe_with_meridians: AI Translate Strings'
       bundle exec fastlane ai_translate_strings skip_confirm:true
+      # Note: Fastlane lane handles venv setup internally
     agents:
         queue: "mac-metal"
     retry:
