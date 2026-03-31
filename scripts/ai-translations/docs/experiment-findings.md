@@ -1,8 +1,8 @@
-# Can AI Replace Human Translators for WooCommerce Android?
+# Can AI Replace Human Translators for Mobile Apps?
 
 ## Goal
 
-I wanted to find out if AI-generated translations are good enough to replace human translators for WooCommerce Android app strings. The app has ~3,800 translatable strings across 16 languages, currently managed through GlotPress with human translators.
+I wanted to find out if AI-generated translations are good enough to replace human translators for mobile app string resources. I ran the experiment on the WooCommerce Android app which has ~3,800 translatable strings across 16 languages, currently managed through GlotPress with human translators.
 
 ## Experiment Setup
 
@@ -163,7 +163,7 @@ A typical release adds 20-50 new strings. Translating 50 strings to all 16 langu
 
 ## Conclusion
 
-AI translation is ready to replace human translators for WooCommerce Android. The experiment shows that AI translations are not just comparable to human ones - they are preferred in a blind evaluation across all 16 languages. The quality is there, the speed is there (minutes instead of days), and the flexibility to improve translations through prompt changes is something human translation workflows cannot match.
+AI translation is ready to replace human translators for mobile app strings. The experiment shows that AI translations are not just comparable to human ones - they are preferred in a blind evaluation across all 16 languages. The quality is there, the speed is there (minutes instead of days), and the flexibility to improve translations through prompt changes is something human translation workflows cannot match.
 
 As a next step, I am going to try implementing AI translation as part of the release pipeline and see how it goes in practice.
 
