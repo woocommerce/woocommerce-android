@@ -1,7 +1,6 @@
-package org.wordpress.android.fluxc.model.site
+package org.wordpress.android.fluxc.model
 
 import org.junit.Test
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.site.SiteUtils
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

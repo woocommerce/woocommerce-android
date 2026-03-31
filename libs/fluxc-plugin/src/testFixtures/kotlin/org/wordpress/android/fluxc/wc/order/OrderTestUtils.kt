@@ -1,11 +1,11 @@
 @file:Suppress("MagicNumber")
+
 package org.wordpress.android.fluxc.wc.order
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -23,9 +23,12 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.utils.DateUtils
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.collections.MutableMap.MutableEntry
 
+@Suppress("TooManyFunctions")
 object OrderTestUtils {
+    @Suppress("LongParameterList")
     fun generateSampleOrder(
         orderId: Long,
         orderStatus: String = CoreOrderStatus.PROCESSING.value,

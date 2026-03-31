@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc
+package org.wordpress.android.fluxc.wc.utils
 
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock

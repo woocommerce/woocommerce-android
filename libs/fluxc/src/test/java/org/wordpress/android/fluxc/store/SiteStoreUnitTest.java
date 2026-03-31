@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.site;
+package org.wordpress.android.fluxc.store;
 
 import android.content.Context;
 
@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteExcepti
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.persistence.domains.DomainDao;
-import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.fluxc.store.SiteStore.UpdateSitesResult;
 import org.wordpress.android.fluxc.tools.CoroutineEngineUtilsKt;
 

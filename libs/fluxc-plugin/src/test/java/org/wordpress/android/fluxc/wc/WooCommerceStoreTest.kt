@@ -18,7 +18,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
-import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
@@ -50,8 +49,10 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.test.assertEquals
 
+@Suppress("UnitTestNamingRule")
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WooCommerceStoreTest {
