@@ -22,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Succe
 fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
+    val technicalDetails by viewModel.technicalDetailsToShow.collectAsState()
 
     ConnectivityToolScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
@@ -64,8 +66,16 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
         storeProductsCheckData = viewState?.productsCheckData,
         isWPComCheckVisible = viewState?.isWPComCheckVisible ?: true,
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        onReturnClick = viewModel::onReturnClicked
+        onReturnClick = viewModel::onReturnClicked,
+        onViewTechnicalDetailsClicked = viewModel::onViewTechnicalDetailsClicked
     )
+
+    technicalDetails?.let { details ->
+        TechnicalDetailsBottomSheet(
+            technicalDetails = details,
+            onDismiss = viewModel::onTechnicalDetailsDismissed
+        )
+    }
 }
 
 @Composable
@@ -80,6 +90,7 @@ fun ConnectivityToolScreen(
     isWPComCheckVisible: Boolean,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
+    onViewTechnicalDetailsClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -102,13 +113,13 @@ fun ConnectivityToolScreen(
             Text(stringResource(id = R.string.orderlist_connectivity_tool_subtitle))
         }
 
-        ConnectivityCheckCard(internetConnectionCheckData)
+        ConnectivityCheckCard(internetConnectionCheckData, onViewTechnicalDetailsClicked)
         if (isWPComCheckVisible) {
-            ConnectivityCheckCard(wpComConnectionCheckData)
+            ConnectivityCheckCard(wpComConnectionCheckData, onViewTechnicalDetailsClicked)
         }
-        ConnectivityCheckCard(storeConnectionCheckData)
-        ConnectivityCheckCard(storeOrdersCheckData)
-        ConnectivityCheckCard(storeProductsCheckData)
+        ConnectivityCheckCard(storeConnectionCheckData, onViewTechnicalDetailsClicked)
+        ConnectivityCheckCard(storeOrdersCheckData, onViewTechnicalDetailsClicked)
+        ConnectivityCheckCard(storeProductsCheckData, onViewTechnicalDetailsClicked)
 
         ConnectivitySummary(
             shouldDisplaySummarySection = shouldDisplaySummarySection,
@@ -131,11 +142,13 @@ fun ConnectivityToolScreen(
 
 @Composable
 fun ConnectivityCheckCard(
-    cardData: ConnectivityCheckCardData?
+    cardData: ConnectivityCheckCardData?,
+    onViewTechnicalDetailsClicked: (String) -> Unit
 ) {
     cardData
         ?.takeUnless { it.connectivityCheckStatus is NotStarted }
         ?.let {
+            val technicalDetails = (it.connectivityCheckStatus as? Failure)?.technicalDetails
             ConnectivityCheckCard(
                 checkTitle = it.title,
                 iconDrawable = it.icon,
@@ -143,7 +156,10 @@ fun ConnectivityCheckCard(
                 checkStatus = it.connectivityCheckStatus,
                 onReadMoreClicked = it.readMoreAction ?: {},
                 onRetryConnectionClicked = it.retryConnectionAction ?: {},
-                shouldDisplayReadMoreButton = it.readMoreAction != null
+                shouldDisplayReadMoreButton = it.readMoreAction != null,
+                onViewTechnicalDetailsClicked = technicalDetails?.let { details ->
+                    { onViewTechnicalDetailsClicked(details) }
+                }
             )
             Divider(
                 modifier = Modifier
@@ -161,7 +177,8 @@ fun ConnectivityCheckCard(
     checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
     onRetryConnectionClicked: () -> Unit,
-    shouldDisplayReadMoreButton: Boolean = false
+    shouldDisplayReadMoreButton: Boolean = false,
+    onViewTechnicalDetailsClicked: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_100)))
@@ -245,6 +262,20 @@ fun ConnectivityCheckCard(
                         )
                     )
                 }
+
+                onViewTechnicalDetailsClicked?.let { onClick ->
+                    WCTextButton(
+                        allCaps = false,
+                        onClick = onClick,
+                        icon = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                        modifier = modifier.align(Alignment.Start),
+                        text = stringResource(id = R.string.connectivity_tool_view_technical_details),
+                        contentPadding = PaddingValues(
+                            vertical = dimensionResource(id = R.dimen.minor_100),
+                            horizontal = dimensionResource(id = R.dimen.minor_00)
+                        )
+                    )
+                }
             }
         }
     }
@@ -322,7 +353,10 @@ fun ConnectivityToolScreenPreview() {
                 connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure(),
+                connectivityCheckStatus = Failure(
+                    error = FailureType.PARSE,
+                    technicalDetails = "Operation: Site Connection\nError Type: INVALID_RESPONSE\nDescription: Parse error"
+                ),
                 readMoreAction = {}
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
@@ -333,7 +367,8 @@ fun ConnectivityToolScreenPreview() {
             ),
             isWPComCheckVisible = true,
             onContactSupportClicked = {},
-            onReturnClick = {}
+            onReturnClick = {},
+            onViewTechnicalDetailsClicked = {}
         )
     }
 }
