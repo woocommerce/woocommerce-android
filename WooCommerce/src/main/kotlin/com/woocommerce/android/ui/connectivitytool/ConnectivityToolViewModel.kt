@@ -15,7 +15,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
@@ -24,11 +24,11 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.Con
 import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
 import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
 import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.WordPressCheck
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.WPComCheck
 import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -46,7 +46,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConnectivityToolViewModel @Inject constructor(
     private val internetConnectionCheck: InternetConnectionCheckUseCase,
-    private val wordPressConnectionCheck: WordPressConnectionCheckUseCase,
+    private val wpComConnectionCheck: WPComConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -67,10 +67,10 @@ class ConnectivityToolViewModel @Inject constructor(
         )
     )
 
-    private val wordpressCheckFlow = savedState.getStateFlow(
+    private val wpComCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WordPressConnectivityCheckData(
-            retryConnectionAction = { handleRetryConnectionClick(WordPressCheck) }
+        initialValue = WPComConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(WPComCheck) }
         )
     )
 
@@ -90,16 +90,16 @@ class ConnectivityToolViewModel @Inject constructor(
 
     val viewState = combine(
         internetCheckFlow,
-        wordpressCheckFlow,
+        wpComCheckFlow,
         storeCheckFlow,
         ordersCheckFlow
-    ) { internet, wordpress, store, orders ->
+    ) { internet, wpCom, store, orders ->
         ViewState(
             internetCheckData = internet,
-            wordPressCheckData = wordpress,
+            wpComCheckData = wpCom,
             storeCheckData = store,
             ordersCheckData = orders,
-            isWordPressCheckVisible = !isAppPasswordSite
+            isWPComCheckVisible = !isAppPasswordSite
         )
     }.distinctUntilChanged().asLiveData()
 
@@ -107,8 +107,8 @@ class ConnectivityToolViewModel @Inject constructor(
 
     private val nextStep
         get() = when (stateMachine.value) {
-            InternetCheck -> if (isAppPasswordSite) StoreCheck else WordPressCheck
-            WordPressCheck -> StoreCheck
+            InternetCheck -> if (isAppPasswordSite) StoreCheck else WPComCheck
+            WPComCheck -> StoreCheck
             StoreCheck -> StoreOrdersCheck
             StoreOrdersCheck -> Finished
             Finished -> error("Cannot move to next state from Finished")
@@ -119,7 +119,7 @@ class ConnectivityToolViewModel @Inject constructor(
             stateMachine.collect {
                 when (it) {
                     InternetCheck -> startInternetCheck()
-                    WordPressCheck -> startWordPressCheck()
+                    WPComCheck -> startWPComCheck()
                     StoreCheck -> startStoreCheck()
                     StoreOrdersCheck -> startStoreOrdersCheck()
                     Finished -> { /* No-op */ }
@@ -140,7 +140,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
         when (step) {
             InternetCheck -> internetCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
-            WordPressCheck -> wordpressCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            WPComCheck -> wpComCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
             StoreCheck -> storeCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
             StoreOrdersCheck -> ordersCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
             Finished -> { /* No-op */ }
@@ -165,12 +165,12 @@ class ConnectivityToolViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun startWordPressCheck() {
+    private fun startWPComCheck() {
         val startTime = System.currentTimeMillis()
-        wordPressConnectionCheck().onEach { status ->
+        wpComConnectionCheck().onEach { status ->
             trackChanges(status, VALUE_WP_COM, startTime)
             status.startNextCheck()
-            wordpressCheckFlow.update { it.copy(connectivityCheckStatus = status) }
+            wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
@@ -244,21 +244,21 @@ class ConnectivityToolViewModel @Inject constructor(
 
     data class ViewState(
         val internetCheckData: InternetConnectivityCheckData,
-        val wordPressCheckData: WordPressConnectivityCheckData,
+        val wpComCheckData: WPComConnectivityCheckData,
         val storeCheckData: StoreConnectivityCheckData,
         val ordersCheckData: StoreOrdersConnectivityCheckData,
-        val isWordPressCheckVisible: Boolean = true
+        val isWPComCheckVisible: Boolean = true
     ) {
         val shouldDisplaySummary: Boolean
             get() = internetCheckData.connectivityCheckStatus is Success &&
-                (wordPressCheckData.connectivityCheckStatus is Success || !isWordPressCheckVisible) &&
+                (wpComCheckData.connectivityCheckStatus is Success || !isWPComCheckVisible) &&
                 storeCheckData.connectivityCheckStatus is Success &&
                 ordersCheckData.connectivityCheckStatus is Success
     }
 
     enum class ConnectivityCheckStep {
         InternetCheck,
-        WordPressCheck,
+        WPComCheck,
         StoreCheck,
         StoreOrdersCheck,
         Finished

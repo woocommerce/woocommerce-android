@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.Ope
 import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +30,7 @@ import org.mockito.kotlin.whenever
 class ConnectivityToolViewModelTest : BaseUnitTest() {
     private lateinit var sut: ConnectivityToolViewModel
     private lateinit var internetConnectionCheck: InternetConnectionCheckUseCase
-    private lateinit var wordPressConnectionCheck: WordPressConnectionCheckUseCase
+    private lateinit var wpComConnectionCheck: WPComConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
     private lateinit var storeOrdersCheck: StoreOrdersCheckUseCase
     private lateinit var selectedSite: SelectedSite
@@ -38,12 +38,12 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         internetConnectionCheck = mock()
-        wordPressConnectionCheck = mock()
+        wpComConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
         selectedSite = mock()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
@@ -53,7 +53,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         sut = ConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
-            wordPressConnectionCheck = wordPressConnectionCheck,
+            wpComConnectionCheck = wpComConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
             analyticsTrackerWrapper = mock(),
@@ -80,12 +80,12 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when wordPressConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
+    fun `when wpComConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState
-            .map { it.wordPressCheckData }
+            .map { it.wpComCheckData }
             .distinctUntilChanged()
             .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
@@ -166,7 +166,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<Boolean>()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
@@ -192,7 +192,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app password site, when checks run, then WordPress check is skipped`() = testBlocking {
+    fun `given app password site, when checks run, then WPCom check is skipped`() = testBlocking {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         createViewModel()
@@ -201,7 +201,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // THEN
-        verify(wordPressConnectionCheck, never()).invoke()
+        verify(wpComConnectionCheck, never()).invoke()
     }
 
     @Test
@@ -235,7 +235,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app password site, when viewState is observed, then isWordPressCheckVisible is false`() = testBlocking {
+    fun `given app password site, when viewState is observed, then isWPComCheckVisible is false`() = testBlocking {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         createViewModel()
@@ -245,6 +245,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.viewState.observeForever { latestState = it }
 
         // THEN
-        assertThat(latestState?.isWordPressCheckVisible).isFalse()
+        assertThat(latestState?.isWPComCheckVisible).isFalse()
     }
 }

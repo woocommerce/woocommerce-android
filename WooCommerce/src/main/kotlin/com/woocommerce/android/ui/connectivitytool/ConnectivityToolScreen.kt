@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
@@ -57,10 +57,10 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
         shouldEnableContactSupportButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         internetConnectionCheckData = viewState?.internetCheckData,
-        wordpressConnectionCheckData = viewState?.wordPressCheckData,
+        wpComConnectionCheckData = viewState?.wpComCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
         storeOrdersCheckData = viewState?.ordersCheckData,
-        isWordPressCheckVisible = viewState?.isWordPressCheckVisible ?: true,
+        isWPComCheckVisible = viewState?.isWPComCheckVisible ?: true,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onReturnClick = viewModel::onReturnClicked
     )
@@ -71,10 +71,10 @@ fun ConnectivityToolScreen(
     shouldEnableContactSupportButton: Boolean,
     shouldDisplaySummarySection: Boolean,
     internetConnectionCheckData: InternetConnectivityCheckData?,
-    wordpressConnectionCheckData: WordPressConnectivityCheckData?,
+    wpComConnectionCheckData: WPComConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
     storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
-    isWordPressCheckVisible: Boolean,
+    isWPComCheckVisible: Boolean,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -100,8 +100,8 @@ fun ConnectivityToolScreen(
         }
 
         ConnectivityCheckCard(internetConnectionCheckData)
-        if (isWordPressCheckVisible) {
-            ConnectivityCheckCard(wordpressConnectionCheckData)
+        if (isWPComCheckVisible) {
+            ConnectivityCheckCard(wpComConnectionCheckData)
         }
         ConnectivityCheckCard(storeConnectionCheckData)
         ConnectivityCheckCard(storeOrdersCheckData)
@@ -314,7 +314,7 @@ fun ConnectivityToolScreenPreview() {
             internetConnectionCheckData = InternetConnectivityCheckData(
                 connectivityCheckStatus = NotStarted
             ),
-            wordpressConnectionCheckData = WordPressConnectivityCheckData(
+            wpComConnectionCheckData = WPComConnectivityCheckData(
                 connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
@@ -324,7 +324,7 @@ fun ConnectivityToolScreenPreview() {
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
             ),
-            isWordPressCheckVisible = true,
+            isWPComCheckVisible = true,
             onContactSupportClicked = {},
             onReturnClick = {}
         )

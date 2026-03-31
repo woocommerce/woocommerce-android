@@ -32,7 +32,7 @@ sealed class ConnectivityCheckCardData(
     )
 
     @Parcelize
-    data class WordPressConnectivityCheckData(
+    data class WPComConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null
     ) : Parcelable, ConnectivityCheckCardData(

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.store.WhatsNewStore
 import javax.inject.Inject
 
-class WordPressConnectionCheckUseCase @Inject constructor(
+class WPComConnectionCheckUseCase @Inject constructor(
     private val whatsNewStore: WhatsNewStore,
     private val buildConfigWrapper: BuildConfigWrapper
 ) {
