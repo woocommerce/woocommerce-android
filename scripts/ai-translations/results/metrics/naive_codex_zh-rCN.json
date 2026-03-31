@@ -1,0 +1,2401 @@
+{
+  "language": "zh-rCN",
+  "strategy": "naive",
+  "llm": "codex",
+  "per_string": [
+    {
+      "key": "support_request_loading_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "请稍候…",
+      "human_value": "请稍候…"
+    },
+    {
+      "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+      "bleu": 22.7721,
+      "chrf": 57.818,
+      "levenshtein_sim": 0.821705,
+      "ai_value": "你的 Jetpack 连接似乎出现了问题。\\n\\n不过别担心，我们的支持团队随时为你提供帮助。请联系我们，我们很乐意协助你。",
+      "human_value": "您的 Jetpack 连接似乎存在问题。\\n\\n但请别担心，我们的支持团队将随时为您提供帮助。 请联系我们，我们将很乐意为您提供帮助。"
+    },
+    {
+      "key": "copied_to_clipboard",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "已复制到剪贴板",
+      "human_value": "已复制到剪贴板"
+    },
+    {
+      "key": "woopos_variation_item_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "变体 %s，价格 %s",
+      "human_value": "变体 %s，价格 %s"
+    },
+    {
+      "key": "shipping_label_multiple_customs_form_print_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "打印",
+      "human_value": "打印"
+    },
+    {
+      "key": "shipping_label_shipment_details_title",
+      "bleu": 0.0,
+      "chrf": 4.4643,
+      "levenshtein_sim": 0.2,
+      "ai_value": "货件详情",
+      "human_value": "配送详细信息"
+    },
+    {
+      "key": "shipping_label_edit_address_loading_progress_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "正在加载地址数据",
+      "human_value": "正在加载地址数据"
+    },
+    {
+      "key": "order_creation_fee_percentage_calculated_amount",
+      "bleu": 55.0321,
+      "chrf": 47.1781,
+      "levenshtein_sim": 0.933333,
+      "ai_value": "计算金额：%s",
+      "human_value": "计算的金额：%s"
+    },
+    {
+      "key": "login_app_password_exit_dialog_confirmation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "仍要退出",
+      "human_value": "仍要退出"
+    },
+    {
+      "key": "analytics_list_item_products_sold",
+      "bleu": 94.9414,
+      "chrf": 91.5163,
+      "levenshtein_sim": 0.863636,
+      "ai_value": "已售 %1$s、%2$s、%3$s、%4$s",
+      "human_value": "%1$s、%2$s、%3$s、%4$s 已售"
+    },
+    {
+      "key": "blaze_campaign_status_in_moderation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "审核中",
+      "human_value": "审核中"
+    },
+    {
+      "key": "woopos_checkout_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "结账",
+      "human_value": "结账"
+    },
+    {
+      "key": "woo_shipping_payment_screen_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "付款方式",
+      "human_value": "付款方式"
+    },
+    {
+      "key": "woo_push_notifications_introduction_what_is_wpcom",
+      "bleu": 15.9736,
+      "chrf": 89.9509,
+      "levenshtein_sim": 0.918919,
+      "ai_value": "什么是 WordPress.com？",
+      "human_value": "“什么是WordPress.com？”"
+    },
+    {
+      "key": "dashboard_coupons_card_empty_view_message",
+      "bleu": 0.0,
+      "chrf": 23.6981,
+      "levenshtein_sim": 0.521739,
+      "ai_value": "此期间没有优惠券使用记录",
+      "human_value": "在此期间不能使用优惠券"
+    },
+    {
+      "key": "product_selector_arrow_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "显示详情",
+      "human_value": "显示详情"
+    },
+    {
+      "key": "empty_product_message",
+      "bleu": 0.0,
+      "chrf": 24.7334,
+      "levenshtein_sim": 0.55814,
+      "ai_value": "立即添加你的第一个商品到商店，开始销售。",
+      "human_value": "通过在您的商店中添加第一款商品，立即开始销售。"
+    },
+    {
+      "key": "variations_bulk_update_sale_price",
+      "bleu": 0.0,
+      "chrf": 75.3715,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "更新促销价",
+      "human_value": "更新促销价格"
+    },
+    {
+      "key": "error_required_field",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "必填字段",
+      "human_value": "必填字段"
+    },
+    {
+      "key": "analytics_google_ads_no_data",
+      "bleu": 0.0,
+      "chrf": 2.381,
+      "levenshtein_sim": 0.142857,
+      "ai_value": "此期间没有计划",
+      "human_value": "此时段内无节目"
+    },
+    {
+      "key": "shipping_label_create_purchase",
+      "bleu": 0.0,
+      "chrf": 17.7778,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "购买运输标签",
+      "human_value": "购买配送标签"
+    },
+    {
+      "key": "shipping_label_usps_search_tool_link_text",
+      "bleu": 27.5161,
+      "chrf": 36.9752,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "USPS HAZMAT 搜索工具。",
+      "human_value": "USPS 危险品搜索工具。"
+    },
+    {
+      "key": "magic_link_update_error",
+      "bleu": 0.0,
+      "chrf": 43.3183,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "发生错误。请登录后继续",
+      "human_value": "出现错误。请登录以继续"
+    },
+    {
+      "key": "signup_confirmation_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "注册确认",
+      "human_value": "注册确认"
+    },
+    {
+      "key": "type",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "类型",
+      "human_value": "类型"
+    },
+    {
+      "key": "coupon_list_add_coupon_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加优惠券",
+      "human_value": "添加优惠券"
+    },
+    {
+      "key": "order_detail_payment_header",
+      "bleu": 0.0,
+      "chrf": 47.9167,
+      "levenshtein_sim": 0.75,
+      "ai_value": "付款总计",
+      "human_value": "付款总额"
+    },
+    {
+      "key": "ai_feedback_form_positive_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "正面反馈",
+      "human_value": "正面反馈"
+    },
+    {
+      "key": "subscription_expire",
+      "bleu": 0.0,
+      "chrf": 15.098,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "到期于",
+      "human_value": "以下时间后到期："
+    },
+    {
+      "key": "blaze_campaign_payment_added_successfully",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "信用卡添加成功",
+      "human_value": "信用卡添加成功"
+    },
+    {
+      "key": "woo_push_notifications_introduction_body2",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "只需一分钟。",
+      "human_value": "只需一分钟。"
+    },
+    {
+      "key": "product_selection_menu_select_all",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "全选",
+      "human_value": "全选"
+    },
+    {
+      "key": "shipping_label_edit_address_company",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "公司",
+      "human_value": "公司"
+    },
+    {
+      "key": "variations_bulk_update_sale_prices_dialog_title",
+      "bleu": 0.0,
+      "chrf": 83.0748,
+      "levenshtein_sim": 0.933333,
+      "ai_value": "正在更新促销价",
+      "human_value": "正在更新促销价格"
+    },
+    {
+      "key": "product_selector_select_button_title_default",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "选择 %d 个商品",
+      "human_value": "选择 %d 个商品"
+    },
+    {
+      "key": "order_refunds_confirmation",
+      "bleu": 0.0,
+      "chrf": 39.1443,
+      "levenshtein_sim": 0.787879,
+      "ai_value": "确定要退款吗？此操作无法撤销。",
+      "human_value": "是否确定要发放退款？此操作无法撤消。"
+    },
+    {
+      "key": "woopos_bookings_details_service_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "服务",
+      "human_value": "服务"
+    },
+    {
+      "key": "woo_shipping_labels_customs_itn_info_button",
+      "bleu": 55.0321,
+      "chrf": 73.4788,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "有关 ITN 的更多信息",
+      "human_value": "关于 ITN 的更多信息"
+    },
+    {
+      "key": "retry",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "重试",
+      "human_value": "重试"
+    },
+    {
+      "key": "woopos_settings_card_reader_update_available",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "• 有可用更新",
+      "human_value": "• 有可用更新"
+    },
+    {
+      "key": "woopos_bookings_details_customer_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "客户",
+      "human_value": "客户"
+    },
+    {
+      "key": "domain_picker_subtitle",
+      "bleu": 0.0,
+      "chrf": 30.6102,
+      "levenshtein_sim": 0.612903,
+      "ai_value": "这是人们在互联网上找到你的地址。别担心，你之后还可以更改。",
+      "human_value": "人们可以通过此域名在互联网上找到您。 别担心，您可以稍后进行更改。"
+    },
+    {
+      "key": "blaze_campaign_payment_summary_campaign_budget",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Blaze 广告活动",
+      "human_value": "Blaze 广告活动"
+    },
+    {
+      "key": "product_subscription_free_trial_info",
+      "bleu": 54.4446,
+      "chrf": 50.7513,
+      "levenshtein_sim": 0.75969,
+      "ai_value": "这是在首次收取周期性付款前可选的等待时间。任何注册费仍将在订阅开始时收取。试用期不能超过：90 天、52 周、24 个月或 5 年。",
+      "human_value": "收取第一笔定期付款之前的可选等待时间。 订阅开始时仍将收取注册费。 试用期不得超过：90 天、52 周、24 个月或 5 年。"
+    },
+    {
+      "key": "card_reader_connect_missing_bluetooth_permissions_header",
+      "bleu": 0.0,
+      "chrf": 67.8698,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "缺少所需的附近设备权限",
+      "human_value": "缺少必需的附近设备权限"
+    },
+    {
+      "key": "order_refunds_title_with_amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "退款 %s",
+      "human_value": "退款 %s"
+    },
+    {
+      "key": "domain_contact_information_description",
+      "bleu": 32.5556,
+      "chrf": 55.6763,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "为方便起见，我们已预先填入你的 WordPress.com 联系信息。请检查以确保这是你想用于此域名的正确信息。",
+      "human_value": "为了方便起见，我们已预先填充您的 WordPress.com\\n联系信息。请检查此信息，以确保这是您想在此域上使用的正确信息。"
+    },
+    {
+      "key": "shipping_label_create_title",
+      "bleu": 0.0,
+      "chrf": 17.7778,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "创建运输标签",
+      "human_value": "创建配送标签"
+    },
+    {
+      "key": "woopos_exit_dialog_confirmation_confirm_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "退出",
+      "human_value": "退出"
+    },
+    {
+      "key": "card_reader_connect_connecting_built_in_header",
+      "bleu": 0.0,
+      "chrf": 37.7778,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "正在准备收款",
+      "human_value": "正在准备付款"
+    },
+    {
+      "key": "analytics_items",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "商品",
+      "human_value": "个项目"
+    },
+    {
+      "key": "analytics_revenue_no_data",
+      "bleu": 0.0,
+      "chrf": 7.4074,
+      "levenshtein_sim": 0.333333,
+      "ai_value": "此期间没有收入",
+      "human_value": "本期无收益"
+    },
+    {
+      "key": "product_global_unique_id_summary",
+      "bleu": 0.0,
+      "chrf": 48.2253,
+      "levenshtein_sim": 0.691358,
+      "ai_value": "输入条形码或此商品的其他唯一标识符。它可以帮助你在其他渠道或市场中列出此商品。",
+      "human_value": "输入该产品的条形码或任何其他唯一标识符。 它可以帮助您列出其他渠道或市场上的该产品。"
+    },
+    {
+      "key": "analytics_products_list_items_sold",
+      "bleu": 0.0,
+      "chrf": 20.8333,
+      "levenshtein_sim": 0.5,
+      "ai_value": "已售商品",
+      "human_value": "已售项目"
+    },
+    {
+      "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+      "bleu": 39.7635,
+      "chrf": 47.5148,
+      "levenshtein_sim": 0.754386,
+      "ai_value": "启用到店支付后，客户可以在交付时通过现金或刷卡支付在线订单。\\n\\n即使不启用此功能，仍然可以手动创建订单。",
+      "human_value": "启用“现场付款”功能，让客户能在收货时通过现金或银行卡为在线订单付款。\\n\\n即使不启用此功能，您仍然可以手动创建订单。"
+    },
+    {
+      "key": "custom_fields_list_loading_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "加载自定义字段时出错",
+      "human_value": "加载自定义字段时出错"
+    },
+    {
+      "key": "card_reader_detail_connected_enforced_update_software",
+      "bleu": 0.0,
+      "chrf": 42.2008,
+      "levenshtein_sim": 0.848485,
+      "ai_value": "请更新读卡器软件以继续接受付款",
+      "human_value": "请更新您的阅读器软件，以继续接受付款"
+    },
+    {
+      "key": "login_get_link_by_email",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "通过电子邮件获取登录链接",
+      "human_value": "通过电子邮件获取登录链接"
+    },
+    {
+      "key": "shipping_label_rate_insurance_up_to",
+      "bleu": 55.0321,
+      "chrf": 27.0833,
+      "levenshtein_sim": 0.8,
+      "ai_value": "最高 %s",
+      "human_value": "最多 %s"
+    },
+    {
+      "key": "woopos_bookings_payment_status_unpaid",
+      "bleu": 0.0,
+      "chrf": 22.2222,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "未付款",
+      "human_value": "未支付"
+    },
+    {
+      "key": "login_prologue_label_analytics",
+      "bleu": 0.0,
+      "chrf": 22.6087,
+      "levenshtein_sim": 0.608696,
+      "ai_value": "跟踪销售情况和高表现商品",
+      "human_value": "跟踪销售额和高绩效产品"
+    },
+    {
+      "key": "product_update_stock_status_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "更新库存状态",
+      "human_value": "更新库存状态"
+    },
+    {
+      "key": "image_source_wp_media_library",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WordPress 媒体库",
+      "human_value": "WordPress 媒体库"
+    },
+    {
+      "key": "product_detail_publish_product_draft_success",
+      "bleu": 0.0,
+      "chrf": 73.4524,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "商品草稿已保存",
+      "human_value": "产品草稿已保存"
+    },
+    {
+      "key": "order_creation_customer_note_edit_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "编辑客户备注",
+      "human_value": "编辑客户备注"
+    },
+    {
+      "key": "booking_note_label_add_note",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加备注",
+      "human_value": "添加备注"
+    },
+    {
+      "key": "product_tax_status_none",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "无",
+      "human_value": "无"
+    },
+    {
+      "key": "my_store_custom_range_content_description",
+      "bleu": 0.0,
+      "chrf": 83.7012,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "添加自定义日期范围统计",
+      "human_value": "添加自定义日期范围统计信息"
+    },
+    {
+      "key": "jetpack_install_start_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "安装 Jetpack",
+      "human_value": "安装 Jetpack"
+    },
+    {
+      "key": "order_shipment_tracking_empty_custom_provider_name",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "请输入承运商名称",
+      "human_value": "请输入承运商名称"
+    },
+    {
+      "key": "woopos_scanning_setup_device_selection_title",
+      "bleu": 0.0,
+      "chrf": 28.373,
+      "levenshtein_sim": 0.8,
+      "ai_value": "设置条码扫描器",
+      "human_value": "设置条形码扫描仪"
+    },
+    {
+      "key": "store_onboarding_launch_store_share_url_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "分享 URL",
+      "human_value": "分享 URL"
+    },
+    {
+      "key": "theme_picker_current_theme_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "当前主题",
+      "human_value": "当前主题"
+    },
+    {
+      "key": "error_user_username_instead_of_email",
+      "bleu": 39.7635,
+      "chrf": 69.4973,
+      "levenshtein_sim": 0.876712,
+      "ai_value": "请使用你的 WordPress.com 用户名登录，而不是电子邮件地址。",
+      "human_value": "请使用您的 WordPress.com 用户名（而不是电子邮件地址）登录。"
+    },
+    {
+      "key": "woo_shipping_labels_customs_content_details_description",
+      "bleu": 0.0,
+      "chrf": 57.9055,
+      "levenshtein_sim": 0.785714,
+      "ai_value": "请描述此包裹中包含的货物类型",
+      "human_value": "请说明此包裹中包含的货物种类"
+    },
+    {
+      "key": "new_notifications",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d 条新通知",
+      "human_value": "%d 条新通知"
+    },
+    {
+      "key": "coupon_edit_code_hint",
+      "bleu": 0.0,
+      "chrf": 31.0219,
+      "levenshtein_sim": 0.75,
+      "ai_value": "优惠码",
+      "human_value": "优惠券代码"
+    },
+    {
+      "key": "order_shipment_tracking_delete_error",
+      "bleu": 0.0,
+      "chrf": 24.4162,
+      "levenshtein_sim": 0.75,
+      "ai_value": "删除追踪信息时出错",
+      "human_value": "删除跟踪时出错"
+    },
+    {
+      "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+      "bleu": 55.0321,
+      "chrf": 23.8221,
+      "levenshtein_sim": 0.769231,
+      "ai_value": "目标地址：%s",
+      "human_value": "目的地：%s"
+    },
+    {
+      "key": "login_site_credentials_use_web_authorization",
+      "bleu": 0.0,
+      "chrf": 21.8978,
+      "levenshtein_sim": 0.6,
+      "ai_value": "使用 WP Admin 页面重试",
+      "human_value": "请使用“WP 管理”页面重试"
+    },
+    {
+      "key": "login_verifying_site_error",
+      "bleu": 55.0321,
+      "chrf": 42.1086,
+      "levenshtein_sim": 0.933333,
+      "ai_value": "无法连接到 %s",
+      "human_value": "无法连接 %s"
+    },
+    {
+      "key": "more_menu_button_woo_pos_description",
+      "bleu": 0.0,
+      "chrf": 76.0484,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "在你的实体店接受付款",
+      "human_value": "在实体店接受付款"
+    },
+    {
+      "key": "shipping_label_address_data_invalid_snackbar_message",
+      "bleu": 0.0,
+      "chrf": 83.4061,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "某些必填字段为空。",
+      "human_value": "有些必填字段为空。"
+    },
+    {
+      "key": "woopos_error_icon_content_description",
+      "bleu": 0.0,
+      "chrf": 28.0556,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "错误提示图标",
+      "human_value": "错误指示图标"
+    },
+    {
+      "key": "orderstatus_contentDesc_withStatus",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 0.933333,
+      "ai_value": "订单状态：%s",
+      "human_value": "订单状态： %s"
+    },
+    {
+      "key": "my_store_custom_range_granularity_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "每周",
+      "human_value": "每周"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_empty_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "创建自定义包裹",
+      "human_value": "创建自定义包裹"
+    },
+    {
+      "key": "shipping_label_hazmat_content_dhl_instructions",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooCommerce Shipping 目前不支持通过 %1$s 运输危险品",
+      "human_value": "WooCommerce Shipping 目前不支持通过 %1$s 运输危险品"
+    },
+    {
+      "key": "woo_shipping_labels_customs_product_details_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "描述",
+      "human_value": "描述"
+    },
+    {
+      "key": "analytics_google_ads_filter_clicks",
+      "bleu": 0.0,
+      "chrf": 47.1698,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "点击",
+      "human_value": "点击次数"
+    },
+    {
+      "key": "product_add_photos",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加照片",
+      "human_value": "添加照片"
+    },
+    {
+      "key": "store_onboarding_payments_setup_description",
+      "bleu": 27.5161,
+      "chrf": 30.9592,
+      "levenshtein_sim": 0.708333,
+      "ai_value": "探索其他支付服务提供商，并\\n选择一个支付服务提供商。",
+      "human_value": "探索其他付款提供商和 \\n选择付款提供商。"
+    },
+    {
+      "key": "woopos_scanning_setup_barcodes_on_products_message",
+      "bleu": 19.7161,
+      "chrf": 57.1602,
+      "levenshtein_sim": 0.83871,
+      "ai_value": "你可以在商品库存标签中的 GTIN、UPC、EAN、ISBN 字段设置条码。了解更多详情",
+      "human_value": "您可以在产品库存选项卡的 GTIN、UPC、EAN、ISBN 字段中设置条形码。 如需了解更多详情"
+    },
+    {
+      "key": "wc_approve",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "批准",
+      "human_value": "批准"
+    },
+    {
+      "key": "orderfilters_default_filter_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "全部",
+      "human_value": "全部"
+    },
+    {
+      "key": "product_add_image_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加图片",
+      "human_value": "添加图片"
+    },
+    {
+      "key": "card_reader_onboarding_account_pending_requirements_hint",
+      "bleu": 43.0125,
+      "chrf": 62.229,
+      "levenshtein_sim": 0.839506,
+      "ai_value": "你的账户中有待处理的要求。请在 %1$s 前完成这些要求，以继续接受到店付款。",
+      "human_value": "您的帐户中存在待处理的要求。 请在 %1$s 之前完成这些要求，以继续接受现场付款。"
+    },
+    {
+      "key": "shipping_label_paper_size_legal",
+      "bleu": 46.3078,
+      "chrf": 100.0,
+      "levenshtein_sim": 0.972973,
+      "ai_value": "Legal（8.5 x 14 英寸）",
+      "human_value": "Legal （8.5 x 14 英寸）"
+    },
+    {
+      "key": "ai_product_description_title_hint",
+      "bleu": 0.0,
+      "chrf": 36.2302,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "输入商品标题。",
+      "human_value": "输入产品标题。"
+    },
+    {
+      "key": "shipping_label_customs_restriction_type_other_hint",
+      "bleu": 0.0,
+      "chrf": 31.25,
+      "levenshtein_sim": 0.6,
+      "ai_value": "限制详情",
+      "human_value": "限制详细信息"
+    },
+    {
+      "key": "product_details_blaze_card",
+      "bleu": 55.0321,
+      "chrf": 66.8122,
+      "levenshtein_sim": 0.818182,
+      "ai_value": "使用 Blaze 推广",
+      "human_value": "通过 Blaze 推广"
+    },
+    {
+      "key": "blaze_campaign_preview_details_location",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "位置",
+      "human_value": "位置"
+    },
+    {
+      "key": "subscription_period_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "周",
+      "human_value": "周"
+    },
+    {
+      "key": "login_wpcom_connection_consent_jetpack",
+      "bleu": 0.0,
+      "chrf": 55.2996,
+      "levenshtein_sim": 0.777778,
+      "ai_value": "点击“连接 Jetpack”按钮即表示",
+      "human_value": "通过点击连接 Jetpack 按钮"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_yes_button",
+      "bleu": 0.0,
+      "chrf": 20.1476,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "是，进行更改",
+      "human_value": "是的，更改"
+    },
+    {
+      "key": "store_onboarding_payments_pre_setup_title_wcpay",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooPayments",
+      "human_value": "WooPayments"
+    },
+    {
+      "key": "orderdetail_message_customer",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "消息",
+      "human_value": "邮件"
+    },
+    {
+      "key": "product_type_confirm_dialog_title",
+      "bleu": 0.0,
+      "chrf": 34.6994,
+      "levenshtein_sim": 0.782609,
+      "ai_value": "确定要更改商品类型吗？",
+      "human_value": "是否确定要更改产品类型？"
+    },
+    {
+      "key": "disabled",
+      "bleu": 0.0,
+      "chrf": 87.5,
+      "levenshtein_sim": 0.8,
+      "ai_value": "已禁用",
+      "human_value": "禁用"
+    },
+    {
+      "key": "shipping_label_select_package_description",
+      "bleu": 0.0,
+      "chrf": 35.1254,
+      "levenshtein_sim": 0.807018,
+      "ai_value": "输入包裹尺寸，或选择承运商包裹选项以查看可用的运输费率。",
+      "human_value": "输入您的包裹尺寸或选择一个承运商包裹选项，查看适用的运费。"
+    },
+    {
+      "key": "orderfilters_product_filter",
+      "bleu": 0.0,
+      "chrf": 25.0,
+      "levenshtein_sim": 0.5,
+      "ai_value": "商品",
+      "human_value": "产品"
+    },
+    {
+      "key": "product_update_success_notification_title",
+      "bleu": 0.0,
+      "chrf": 54.3333,
+      "levenshtein_sim": 0.8,
+      "ai_value": "商品已更新",
+      "human_value": "产品已更新"
+    },
+    {
+      "key": "product_global_unique_id",
+      "bleu": 0.0,
+      "chrf": 33.1898,
+      "levenshtein_sim": 0.756757,
+      "ai_value": "GTIN, UPC, EAN, ISBN",
+      "human_value": "GTIN、UPC、EAN、ISBN"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_gifts",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "礼品",
+      "human_value": "礼品"
+    },
+    {
+      "key": "booking_overflow_refund",
+      "bleu": 0.0,
+      "chrf": 78.125,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "发起退款",
+      "human_value": "退款"
+    },
+    {
+      "key": "support_request_success_message",
+      "bleu": 0.0,
+      "chrf": 78.8111,
+      "levenshtein_sim": 0.895522,
+      "ai_value": "你的支持请求已安全送达我们的收件箱。我们会尽快通过电子邮件回复你。",
+      "human_value": "您的支持请求已安全送达我们的收件箱。 我们将尽快通过电子邮件回复您。"
+    },
+    {
+      "key": "blaze_campaign_objective_save_selection_switch_label",
+      "bleu": 0.0,
+      "chrf": 31.6148,
+      "levenshtein_sim": 0.413793,
+      "ai_value": "为未来的广告活动保存我的选择",
+      "human_value": "保存我的选择，以备将来活动使用"
+    },
+    {
+      "key": "jetpack_install_progress_failed_option_contact_support",
+      "bleu": 0.0,
+      "chrf": 58.011,
+      "levenshtein_sim": 0.8,
+      "ai_value": "联系支持",
+      "human_value": "联系支持人员"
+    },
+    {
+      "key": "shipping_label_create_purchase_fulfill_error",
+      "bleu": 0.0,
+      "chrf": 74.9806,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "无法将订单标记为已完成",
+      "human_value": "无法将订单标记为完成"
+    },
+    {
+      "key": "blaze_campaign_preview_days_duration_endless",
+      "bleu": 37.9918,
+      "chrf": 48.0707,
+      "levenshtein_sim": 0.5,
+      "ai_value": "每周 %1$s，自 %2$s 开始",
+      "human_value": "从 %2$s 起每周 %1$s"
+    },
+    {
+      "key": "card_reader_payment_failed_duplicate_transaction",
+      "bleu": 0.0,
+      "chrf": 19.5201,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "最近已提交过相同交易",
+      "human_value": "近期提交过一笔相同的交易"
+    },
+    {
+      "key": "customers_details_registration_section",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "注册",
+      "human_value": "注册"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_edit_order",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "编辑订单",
+      "human_value": "编辑订单"
+    },
+    {
+      "key": "woopos_variations_empty_list_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "未找到受支持的变体",
+      "human_value": "未找到受支持的变体"
+    },
+    {
+      "key": "login_jetpack_connection_explanation",
+      "bleu": 0.0,
+      "chrf": 66.459,
+      "levenshtein_sim": 0.852459,
+      "ai_value": "请将你的商店连接到 Jetpack，以便在此应用中访问它。",
+      "human_value": "请将您的商店连接到 Jetpack，以便在此应用程序上访问商店。"
+    },
+    {
+      "key": "shipping_label_package_details_weight_hint",
+      "bleu": 26.6543,
+      "chrf": 36.7022,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "包裹总重量（%1$s）",
+      "human_value": "包裹总重 (%1$s)"
+    },
+    {
+      "key": "woopos_search_popular_items_title",
+      "bleu": 0.0,
+      "chrf": 12.5,
+      "levenshtein_sim": 0.5,
+      "ai_value": "热门商品",
+      "human_value": "热销产品"
+    },
+    {
+      "key": "variations_bulk_update_regular_price",
+      "bleu": 0.0,
+      "chrf": 20.5556,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "更新常规价格",
+      "human_value": "更新正常价格"
+    },
+    {
+      "key": "woopos_bookings_details_team_member_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "团队成员",
+      "human_value": "团队成员"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+      "bleu": 0.0,
+      "chrf": 20.6397,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "此卡不支持此类型的退款",
+      "human_value": "卡片不支持当前退款类型"
+    },
+    {
+      "key": "product_settings",
+      "bleu": 0.0,
+      "chrf": 47.9167,
+      "levenshtein_sim": 0.75,
+      "ai_value": "商品设置",
+      "human_value": "产品设置"
+    },
+    {
+      "key": "shipping_label_customs_itn_required_country",
+      "bleu": 80.9107,
+      "chrf": 91.8457,
+      "levenshtein_sim": 0.944444,
+      "ai_value": "寄往 %1$s 的货件需要 ITN。",
+      "human_value": "发往 %1$s 的货件需要 ITN。"
+    },
+    {
+      "key": "login_jetpack_installation_continue_connection",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "继续连接",
+      "human_value": "继续连接"
+    },
+    {
+      "key": "print_receipt_label_info_step_3",
+      "bleu": 50.0,
+      "chrf": 90.7164,
+      "levenshtein_sim": 0.966292,
+      "ai_value": "接受付款后选择“打印收据”时，将“另存为 PDF”替换为“所有打印机”，然后搜索新打印机。",
+      "human_value": "接受付款后选择“打印收据”时，将“另存为 PDF”替换为“所有打印机”，并搜索新打印机。"
+    },
+    {
+      "key": "booking_payment_status_cancelled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "已取消",
+      "human_value": "已取消"
+    },
+    {
+      "key": "coupon_details_performance_amount_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "金额",
+      "human_value": "金额"
+    },
+    {
+      "key": "woo_shipping_fetching_countries_and_states",
+      "bleu": 3.7239,
+      "chrf": 29.1961,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "正在获取国家和州/省。",
+      "human_value": "正在获取国家/地区和州/省/自治区/直辖市。"
+    },
+    {
+      "key": "scan_to_update_inventory_product_details_button",
+      "bleu": 0.0,
+      "chrf": 28.0556,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "查看商品详情",
+      "human_value": "查看产品详情"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_completed_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "退款成功",
+      "human_value": "退款成功"
+    },
+    {
+      "key": "print_shipping_label_format_options_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "标签格式选项",
+      "human_value": "标签格式选项"
+    },
+    {
+      "key": "logviewer_activity_title",
+      "bleu": 0.0,
+      "chrf": 28.7356,
+      "levenshtein_sim": 0.8,
+      "ai_value": "应用日志",
+      "human_value": "应用程序日志"
+    },
+    {
+      "key": "product_variant_list_add_first_variation",
+      "bleu": 0.0,
+      "chrf": 56.0053,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "创建你的第一个变体",
+      "human_value": "创建您的第一个变体"
+    },
+    {
+      "key": "woo_shipping_confirm_address_suggested",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "建议地址",
+      "human_value": "推荐"
+    },
+    {
+      "key": "booking_payment_status_refunded",
+      "bleu": 0.0,
+      "chrf": 87.5,
+      "levenshtein_sim": 0.8,
+      "ai_value": "已退款",
+      "human_value": "退款"
+    },
+    {
+      "key": "upgrades_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "订阅",
+      "human_value": "订阅"
+    },
+    {
+      "key": "image_source_device_chooser",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "从设备中选择",
+      "human_value": "从设备中选择"
+    },
+    {
+      "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+      "bleu": 0.0,
+      "chrf": 34.2855,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "你不能直接添加可变商品。请选择具体变体",
+      "human_value": "您不能直接添加变体产品。 请选择一个特定的变体"
+    },
+    {
+      "key": "shipping_label_rate_included_options_insurance",
+      "bleu": 14.1272,
+      "chrf": 17.7778,
+      "levenshtein_sim": 0.615385,
+      "ai_value": "保险（%s）",
+      "human_value": "保险 (%s)"
+    },
+    {
+      "key": "shipping_label_shipment_details_payment_method",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "付款方式",
+      "human_value": "付款方式"
+    },
+    {
+      "key": "woopos_cart_barcode_scan_result_unsupported_product",
+      "bleu": 31.9472,
+      "chrf": 37.2638,
+      "levenshtein_sim": 0.869565,
+      "ai_value": "不支持的商品 – %s",
+      "human_value": "不受支持的商品 — %s"
+    },
+    {
+      "key": "coupon_list_item_label_active",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "启用中",
+      "human_value": "已激活"
+    },
+    {
+      "key": "feedback_completed_back_to_store_button_text",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "返回商店",
+      "human_value": "返回商店"
+    },
+    {
+      "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+      "bleu": 67.865,
+      "chrf": 45.7268,
+      "levenshtein_sim": 0.761905,
+      "ai_value": "客户已支付 %2$s 的 %1$s 运费",
+      "human_value": "客户支付了 %2$s 的 %1$s，用于配送"
+    },
+    {
+      "key": "woopos_dialog_products_info_heading",
+      "bleu": 0.0,
+      "chrf": 35.5471,
+      "levenshtein_sim": 0.761905,
+      "ai_value": "为什么看不到我的商品？",
+      "human_value": "为何看不到我的产品？"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_user_hint",
+      "bleu": 0.0,
+      "chrf": 30.6832,
+      "levenshtein_sim": 0.7,
+      "ai_value": "每位用户的使用上限",
+      "human_value": "每个用户的使用次数限制"
+    },
+    {
+      "key": "product_creation_ai_entry_sheet_ai_option_title",
+      "bleu": 27.5161,
+      "chrf": 26.4484,
+      "levenshtein_sim": 0.7,
+      "ai_value": "使用 AI 创建商品",
+      "human_value": "通过 AI 创建产品"
+    },
+    {
+      "key": "woo_shipping_rate_option_saturday_delivery",
+      "bleu": 0.0,
+      "chrf": 10.4167,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "周六送达",
+      "human_value": "星期六配送"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_coupon_hint",
+      "bleu": 0.0,
+      "chrf": 39.0364,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "每张优惠券的使用上限",
+      "human_value": "每个优惠券的使用次数限制"
+    },
+    {
+      "key": "product_detail_add_more",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加更多详情",
+      "human_value": "添加更多详情"
+    },
+    {
+      "key": "notification_order_title",
+      "bleu": 0.0,
+      "chrf": 83.4061,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "你有一个新订单！🎉",
+      "human_value": "您有一个新订单！🎉"
+    },
+    {
+      "key": "shipping_label_create_purchase_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "购买标签时出错",
+      "human_value": "购买标签时出错"
+    },
+    {
+      "key": "order_creation_add_shipping_name_hint",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "运费",
+      "human_value": "配送"
+    },
+    {
+      "key": "login_error_sms_throttled",
+      "bleu": 0.0,
+      "chrf": 41.2541,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "我们尝试发送短信验证码的次数过多，请稍作等待，并在一分钟后重新请求新的验证码。",
+      "human_value": "尝试发送短信验证码的次数太多了 - 休息一下，在一分钟后再申请新的短信验证码。"
+    },
+    {
+      "key": "support_identity_input_dialog_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "电子邮件",
+      "human_value": "电子邮件"
+    },
+    {
+      "key": "dashboard_google_ads_card_create_campaign_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "创建广告活动",
+      "human_value": "创建广告活动"
+    },
+    {
+      "key": "woopos_date_yesterday_at",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "昨天 %s",
+      "human_value": "昨天 %s"
+    },
+    {
+      "key": "login_avatar_content_description",
+      "bleu": 0.0,
+      "chrf": 9.1048,
+      "levenshtein_sim": 0.428571,
+      "ai_value": "你的头像照片",
+      "human_value": "您的个人资料照片"
+    },
+    {
+      "key": "woo_shipping_labels_customs_return_to_sender_label",
+      "bleu": 0.0,
+      "chrf": 57.8655,
+      "levenshtein_sim": 0.903226,
+      "ai_value": "如果包裹无法送达，则退回寄件人",
+      "human_value": "如果包裹无法送达，会退回给寄件人"
+    },
+    {
+      "key": "orderlist_connectivity_tool_store_orders_check_title",
+      "bleu": 0.0,
+      "chrf": 42.9481,
+      "levenshtein_sim": 0.777778,
+      "ai_value": "正在获取你的站点订单",
+      "human_value": "获取您的站点订单"
+    },
+    {
+      "key": "domains_purchase_successful_heading",
+      "bleu": 0.0,
+      "chrf": 17.4603,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "恭喜你完成购买",
+      "human_value": "恭喜您购买成功"
+    },
+    {
+      "key": "store_onboarding_full_screen_transition_name",
+      "bleu": 0.0,
+      "chrf": 41.6667,
+      "levenshtein_sim": 0.5,
+      "ai_value": "引导全屏",
+      "human_value": "全屏引导"
+    },
+    {
+      "key": "domain_picker_suggestions_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "建议",
+      "human_value": "建议"
+    },
+    {
+      "key": "woopos_orders_edit_refund",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "编辑退款",
+      "human_value": "编辑退款"
+    },
+    {
+      "key": "blaze_campaign_ceation_celebration_message",
+      "bleu": 0.0,
+      "chrf": 39.1997,
+      "levenshtein_sim": 0.714286,
+      "ai_value": "广告已提交审核。待审核通过并开始投放后，我们会向你发送确认电子邮件。",
+      "human_value": "广告已提交审批。 广告通过审批并发布后，我们会向您发送一封确认电子邮件。"
+    },
+    {
+      "key": "product_subscription_expiration_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "订阅到期",
+      "human_value": "订阅到期"
+    },
+    {
+      "key": "notification_wpcom_username_needed",
+      "bleu": 0.0,
+      "chrf": 71.9441,
+      "levenshtein_sim": 0.928571,
+      "ai_value": "请使用你的用户名和密码登录。",
+      "human_value": "请使用您的用户名和密码登录。"
+    },
+    {
+      "key": "login_jetpack_installation_error_generic_message",
+      "bleu": 0.0,
+      "chrf": 15.0282,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "与你的网站通信时出错。",
+      "human_value": "与您的站点通信时发生错误。"
+    },
+    {
+      "key": "product_ratings_count_zero",
+      "bleu": 55.0321,
+      "chrf": 38.8293,
+      "levenshtein_sim": 0.785714,
+      "ai_value": "\\u2022 无已批准评价",
+      "human_value": "\\u2022 没有已批准的评论"
+    },
+    {
+      "key": "product_stock_quantity",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "库存数量",
+      "human_value": "库存数量"
+    },
+    {
+      "key": "error_loading_image",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "无法加载图片",
+      "human_value": "无法加载图片"
+    },
+    {
+      "key": "privacy_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "隐私设置",
+      "human_value": "隐私设置"
+    },
+    {
+      "key": "product_type_variable_subscription",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "可变订阅",
+      "human_value": "可变订阅"
+    },
+    {
+      "key": "shipping_label_purchased_tracking_error",
+      "bleu": 0.0,
+      "chrf": 35.7484,
+      "levenshtein_sim": 0.647059,
+      "ai_value": "我们目前不支持此承运商的追踪服务",
+      "human_value": "我们目前不支持对该承运商启用跟踪功能"
+    },
+    {
+      "key": "jetpack_install_progress_step_one_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "正在安装 Jetpack",
+      "human_value": "正在安装 Jetpack"
+    },
+    {
+      "key": "woo_shipping_labels_customs_restriction_type_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "限制类型",
+      "human_value": "限制类型"
+    },
+    {
+      "key": "today",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "今天",
+      "human_value": "今天"
+    },
+    {
+      "key": "blaze_campaign_creation_celebration_header",
+      "bleu": 0.0,
+      "chrf": 28.6667,
+      "levenshtein_sim": 0.6,
+      "ai_value": "全部就绪！",
+      "human_value": "一切就绪！"
+    },
+    {
+      "key": "save_configuration",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "保存配置",
+      "human_value": "保存配置"
+    },
+    {
+      "key": "orderlist_bulk_update_result_partial_success",
+      "bleu": 19.4331,
+      "chrf": 85.3559,
+      "levenshtein_sim": 0.925926,
+      "ai_value": "%d 个订单已更新，另有 %d 个订单更新失败。请重试。",
+      "human_value": "%d 个订单已更新，%d 个订单更新失败。 请重试。"
+    },
+    {
+      "key": "blaze_campaign_preview_audience_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "受众",
+      "human_value": "受众"
+    },
+    {
+      "key": "woo_shipping_confirm_submit_address_suggested",
+      "bleu": 0.0,
+      "chrf": 12.4425,
+      "levenshtein_sim": 0.533333,
+      "ai_value": "确认建议地址",
+      "human_value": "确认使用推荐的地址"
+    },
+    {
+      "key": "feedback_request_like_it",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "我喜欢",
+      "human_value": "我喜欢"
+    },
+    {
+      "key": "woopos_settings_local_catalog_category_subtitle",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "管理目录设置",
+      "human_value": "管理目录设置"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_other_hint",
+      "bleu": 0.0,
+      "chrf": 31.25,
+      "levenshtein_sim": 0.6,
+      "ai_value": "内容详情",
+      "human_value": "内容详细信息"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+      "bleu": 0.0,
+      "chrf": 54.3333,
+      "levenshtein_sim": 0.8,
+      "ai_value": "移除优惠券",
+      "human_value": "删除优惠券"
+    },
+    {
+      "key": "free_trial_your_trial_ended",
+      "bleu": 0.0,
+      "chrf": 79.7024,
+      "levenshtein_sim": 0.875,
+      "ai_value": "你的试用已结束。",
+      "human_value": "您的试用已结束。"
+    },
+    {
+      "key": "order_shipment_tracking_custom_provider_section_name",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "自定义承运商",
+      "human_value": "自定义承运商"
+    },
+    {
+      "key": "scan_barcode_to_update_inventory_menu_item_title",
+      "bleu": 0.0,
+      "chrf": 55.8286,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "扫描条码以更新库存",
+      "human_value": "扫描条形码以更新库存"
+    },
+    {
+      "key": "domain_contact_information_register_domain_button",
+      "bleu": 0.0,
+      "chrf": 89.8438,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "注册域名",
+      "human_value": "注册域"
+    },
+    {
+      "key": "product_add_photo",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "添加照片",
+      "human_value": "添加照片"
+    },
+    {
+      "key": "shipping",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "运费",
+      "human_value": "配送"
+    },
+    {
+      "key": "configuration_quantity_item_plural",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d 个项目",
+      "human_value": "%d 个项目"
+    },
+    {
+      "key": "woo_shipping_field_required_error",
+      "bleu": 0.0,
+      "chrf": 53.7156,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "此字段为必填项。",
+      "human_value": "此字段为必填字段。"
+    },
+    {
+      "key": "scan_to_update_inventory_stock_not_managed",
+      "bleu": 0.0,
+      "chrf": 35.0111,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "未管理库存",
+      "human_value": "未管理的库存"
+    },
+    {
+      "key": "shipping_label_rate_option_signature_required",
+      "bleu": 14.1272,
+      "chrf": 10.7143,
+      "levenshtein_sim": 0.470588,
+      "ai_value": "需要签名（%s）",
+      "human_value": "必需签收 (%s)"
+    },
+    {
+      "key": "logviewer_current_log_file",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "当前",
+      "human_value": "当前"
+    },
+    {
+      "key": "woopos_product_limitations_title",
+      "bleu": 0.0,
+      "chrf": 45.6548,
+      "levenshtein_sim": 0.875,
+      "ai_value": "我的商品在哪里？",
+      "human_value": "我的产品在哪里？"
+    },
+    {
+      "key": "orderdetail_hide_billing",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "隐藏账单",
+      "human_value": "隐藏账单"
+    },
+    {
+      "key": "login_log_in_for_share_intent",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "登录 WordPress.com 以分享内容。",
+      "human_value": "登录 WordPress.com 以分享内容。"
+    },
+    {
+      "key": "booking_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "已付款",
+      "human_value": "已付款"
+    },
+    {
+      "key": "orderlist_mark_completed_success",
+      "bleu": 80.9107,
+      "chrf": 60.1283,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "订单 #%1$d 已标记为已完成",
+      "human_value": "订单 #%1$d 已标为“已完成”"
+    },
+    {
+      "key": "woo_shipping_labels_customs_origin_country_info",
+      "bleu": 0.0,
+      "chrf": 27.6125,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "商品制造或组装所在的国家。",
+      "human_value": "产品的制造或组装国家/地区。"
+    },
+    {
+      "key": "store_onboarding_task_woopayments_celebration_header",
+      "bleu": 0.0,
+      "chrf": 54.3333,
+      "levenshtein_sim": 0.8,
+      "ai_value": "你做到了！",
+      "human_value": "您做到了！"
+    },
+    {
+      "key": "card_reader_tap_to_pay_header",
+      "bleu": 0.0,
+      "chrf": 3.4722,
+      "levenshtein_sim": 0.166667,
+      "ai_value": "轻触支付",
+      "human_value": "“点按付款”功能"
+    },
+    {
+      "key": "woopos_settings_store_email_label",
+      "bleu": 0.0,
+      "chrf": 58.011,
+      "levenshtein_sim": 0.8,
+      "ai_value": "电子邮件",
+      "human_value": "电子邮件地址"
+    },
+    {
+      "key": "support_request_help_other",
+      "bleu": 55.0321,
+      "chrf": 35.0928,
+      "levenshtein_sim": 0.777778,
+      "ai_value": "其他扩展 / 插件",
+      "human_value": "其他扩展程序/插件"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_message",
+      "bleu": 0.0,
+      "chrf": 55.638,
+      "levenshtein_sim": 0.842105,
+      "ai_value": "当前附加到此商品的所有文件都将被移除。",
+      "human_value": "当前附加到该产品的所有文件都将被删除。"
+    },
+    {
+      "key": "product_attributes_created_description",
+      "bleu": 0.0,
+      "chrf": 60.4299,
+      "levenshtein_sim": 0.820513,
+      "ai_value": "现在你已添加属性，可以创建第一个变体了！",
+      "human_value": "添加属性后，您就可以创建第一个变体了！"
+    },
+    {
+      "key": "woopos_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "订单 %s",
+      "human_value": "订单 %s"
+    },
+    {
+      "key": "order_editing_barcode_content_description",
+      "bleu": 0.0,
+      "chrf": 42.9477,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "扫描条码",
+      "human_value": "扫描条形码"
+    },
+    {
+      "key": "feedback_banner_ipp_title_beginner",
+      "bleu": 0.0,
+      "chrf": 13.7445,
+      "levenshtein_sim": 0.5,
+      "ai_value": "喜欢你的到店支付体验吗？",
+      "human_value": "喜欢现场付款吗？"
+    },
+    {
+      "key": "woopos_totals_reader_ready_for_payment_subtitle",
+      "bleu": 0.0,
+      "chrf": 29.7887,
+      "levenshtein_sim": 0.631579,
+      "ai_value": "轻触、刷卡或插卡",
+      "human_value": "点按、刷卡或插入银行卡"
+    },
+    {
+      "key": "booking_note_description_private",
+      "bleu": 0.0,
+      "chrf": 78.4095,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "这是一条私人备注。它不会与客户共享。",
+      "human_value": "这是一条私人备注。 它将不会与客户共享。"
+    },
+    {
+      "key": "product_type_list_header",
+      "bleu": 0.0,
+      "chrf": 28.0556,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "选择商品类型",
+      "human_value": "选择产品类型"
+    },
+    {
+      "key": "booking_payment_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "付款",
+      "human_value": "付款"
+    },
+    {
+      "key": "notification_channel_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "新订单提醒",
+      "human_value": "新订单提醒"
+    },
+    {
+      "key": "login_text_otp_another",
+      "bleu": 0.0,
+      "chrf": 13.5436,
+      "levenshtein_sim": 0.454545,
+      "ai_value": "改为给我发送另一组验证码",
+      "human_value": "再发一条短信验证码。"
+    },
+    {
+      "key": "card_reader_payment_failed_currency_not_supported",
+      "bleu": 0.0,
+      "chrf": 16.1946,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "此卡不支持此货币",
+      "human_value": "卡片不支持当前币种"
+    },
+    {
+      "key": "settings_woo_plugin_version",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooCommerce 版本",
+      "human_value": "WooCommerce 版本"
+    },
+    {
+      "key": "product_term_name_already_exists",
+      "bleu": 0.0,
+      "chrf": 72.9034,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "具有此名称的选项已存在",
+      "human_value": "已存在具有此名称的选项"
+    },
+    {
+      "key": "orderlist_connectivity_tool_summary_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "无连接问题",
+      "human_value": "无连接问题"
+    },
+    {
+      "key": "about_automattic_acknowledgements_item_title",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "致谢",
+      "human_value": "确认"
+    },
+    {
+      "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "启用声音",
+      "human_value": "启用声音"
+    },
+    {
+      "key": "woopos_scanning_setup_success_title",
+      "bleu": 0.0,
+      "chrf": 21.8283,
+      "levenshtein_sim": 0.705882,
+      "ai_value": "扫描器已设置完成！",
+      "human_value": "扫描仪设置完毕！"
+    },
+    {
+      "key": "woopos_bookings_payment_status_paid",
+      "bleu": 0.0,
+      "chrf": 22.2222,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "已付款",
+      "human_value": "已支付"
+    },
+    {
+      "key": "card_reader_tap_to_pay_successful_refund_message",
+      "bleu": 0.0,
+      "chrf": 24.568,
+      "levenshtein_sim": 0.62069,
+      "ai_value": "测试轻触支付款项已成功退款",
+      "human_value": "测试“点按付款”的付款已成功退款"
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+      "bleu": 24.4462,
+      "chrf": 51.5196,
+      "levenshtein_sim": 0.790698,
+      "ai_value": "第 9 类 – 锂电池，无标记包裹 - 已安装锂电池或与锂电池一起包装的新电子设备（无标记）",
+      "human_value": "第 9 类 — 锂电池，无标记包装 — 安装或包装有锂电池的新电子设备（无标记）"
+    },
+    {
+      "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "取消",
+      "human_value": "取消"
+    },
+    {
+      "key": "shipping_label_hazmat_option_division_6_2",
+      "bleu": 5.6698,
+      "chrf": 26.0323,
+      "levenshtein_sim": 0.68,
+      "ai_value": "第 6.2 项 - 危险材料 - 生物材料（例如实验室测试套件、获准退回的 COVID 测试套件）",
+      "human_value": "类别 6.2 — 危险物质 — 生物材料（如实验室检测试剂盒、获授权的 COVID 检测试剂盒返回包）"
+    },
+    {
+      "key": "woo_shipping_updating_address_failed",
+      "bleu": 0.0,
+      "chrf": 56.6589,
+      "levenshtein_sim": 0.827586,
+      "ai_value": "无法更新你的地址。请重试。",
+      "human_value": "我们无法更新您的地址。 请重试。"
+    },
+    {
+      "key": "dashboard_reviews_card_empty_title_filtered",
+      "bleu": 0.0,
+      "chrf": 54.3333,
+      "levenshtein_sim": 0.8,
+      "ai_value": "未找到评价",
+      "human_value": "未找到评论"
+    },
+    {
+      "key": "product_update_stock_status_variable_ignored_count_singular",
+      "bleu": 50.0,
+      "chrf": 44.8335,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "1 个可变商品将被忽略。",
+      "human_value": "1 种可变产品将被忽略。"
+    },
+    {
+      "key": "settings_app_theme_option_system",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "系统默认",
+      "human_value": "系统默认"
+    },
+    {
+      "key": "woopos_bookings_no_booking_selected",
+      "bleu": 0.0,
+      "chrf": 75.3715,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "未选择预订",
+      "human_value": "未选择预订。"
+    },
+    {
+      "key": "login_site_credentials_http_error",
+      "bleu": 66.874,
+      "chrf": 50.8116,
+      "levenshtein_sim": 0.896552,
+      "ai_value": "登录失败，状态码为 %1$s",
+      "human_value": "登陆失败，状态代码为 %1$s"
+    },
+    {
+      "key": "woopos_settings_help_product_limitations_subtitle",
+      "bleu": 55.0321,
+      "chrf": 76.9637,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "了解 POS 支持哪些商品",
+      "human_value": "了解 POS 支持哪些产品"
+    },
+    {
+      "key": "product_type_variable_subscription_title",
+      "bleu": 0.0,
+      "chrf": 37.7778,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "可变订阅商品",
+      "human_value": "可变订阅产品"
+    },
+    {
+      "key": "woopos_cart_coupon_invalid_subtitle",
+      "bleu": 0.0,
+      "chrf": 38.3333,
+      "levenshtein_sim": 0.5,
+      "ai_value": "优惠券未应用",
+      "human_value": "未应用优惠券"
+    },
+    {
+      "key": "order_creation_add_products",
+      "bleu": 0.0,
+      "chrf": 27.0833,
+      "levenshtein_sim": 0.75,
+      "ai_value": "添加商品",
+      "human_value": "添加产品"
+    },
+    {
+      "key": "order_creation_coupon_discount_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "-%1$s",
+      "human_value": "-%1$s"
+    },
+    {
+      "key": "more_menu_button_reviews_description",
+      "bleu": 0.0,
+      "chrf": 52.0701,
+      "levenshtein_sim": 0.777778,
+      "ai_value": "为你的商店获取评价",
+      "human_value": "为您的商店获取评论"
+    },
+    {
+      "key": "settings_web_options",
+      "bleu": 0.0,
+      "chrf": 16.9979,
+      "levenshtein_sim": 0.4,
+      "ai_value": "网页选项",
+      "human_value": "Web 选项"
+    },
+    {
+      "key": "woo_push_notifications_connection_steps_complete",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "完成",
+      "human_value": "完成"
+    },
+    {
+      "key": "orderfilters_filter_card_title_all_orders",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "所有订单",
+      "human_value": "所有订单"
+    },
+    {
+      "key": "shipping_label_rate_included_options_free_pickup",
+      "bleu": 0.0,
+      "chrf": 7.3179,
+      "levenshtein_sim": 0.266667,
+      "ai_value": "符合免费取件条件",
+      "human_value": "适用于免费自提"
+    },
+    {
+      "key": "product_type_external",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "外部",
+      "human_value": "外部"
+    },
+    {
+      "key": "woo_shipping_labels_hazmat_selection_set",
+      "bleu": 0.0,
+      "chrf": 27.6879,
+      "levenshtein_sim": 0.705882,
+      "ai_value": "危险品类别已设置",
+      "human_value": "危险物质类别已设定"
+    },
+    {
+      "key": "product_downloadable_files_name_info",
+      "bleu": 0.0,
+      "chrf": 32.6557,
+      "levenshtein_sim": 0.416667,
+      "ai_value": "这是向客户显示的文件名称",
+      "human_value": "此文件名将面向客户显示。"
+    },
+    {
+      "key": "product_add_ons_details_info_notice",
+      "bleu": 0.0,
+      "chrf": 18.0427,
+      "levenshtein_sim": 0.6,
+      "ai_value": "你可以在网页仪表板中编辑商品附加选项。",
+      "human_value": "您可以在 Web 仪表盘中编辑产品加载项。"
+    },
+    {
+      "key": "print_receipt_label_info_step_6",
+      "bleu": 0.0,
+      "chrf": 58.5935,
+      "levenshtein_sim": 0.790698,
+      "ai_value": "如果无法打印，你始终可以将收据保存为 PDF，并通过电子邮件发送，以便从另一台设备打印。",
+      "human_value": "如果无法打印，您可以随时将收据保存为 PDF，并通过电子邮件发送到其他设备进行打印。"
+    },
+    {
+      "key": "about_automattic_source_code_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "源代码",
+      "human_value": "源代码"
+    },
+    {
+      "key": "feedback_product_give_feedback_button_text",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "提供反馈",
+      "human_value": "提供反馈"
+    },
+    {
+      "key": "woopos_date_just_now",
+      "bleu": 0.0,
+      "chrf": 25.0,
+      "levenshtein_sim": 0.5,
+      "ai_value": "刚刚",
+      "human_value": "刚才"
+    },
+    {
+      "key": "product_update_stock_status_done",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "完成",
+      "human_value": "完成"
+    },
+    {
+      "key": "blaze_campaign_budget_scheduled_section_title",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "计划",
+      "human_value": "安排"
+    },
+    {
+      "key": "order_detail_attribution_admin_origin",
+      "bleu": 0.0,
+      "chrf": 8.8889,
+      "levenshtein_sim": 0.307692,
+      "ai_value": "网页管理后台",
+      "human_value": "Web 管理员"
+    },
+    {
+      "key": "tax_rate_selector_empty_list_title",
+      "bleu": 0.0,
+      "chrf": 42.5896,
+      "levenshtein_sim": 0.8,
+      "ai_value": "找不到任何税率",
+      "human_value": "无法找到任何税率"
+    },
+    {
+      "key": "card_reader_tap_to_pay_about_copyright",
+      "bleu": 32.5556,
+      "chrf": 27.1698,
+      "levenshtein_sim": 0.554217,
+      "ai_value": "非接触式符号是 EMVCo, LLC 拥有并经许可使用的商标。",
+      "human_value": "Contactless Symbol（非接触式标志）是 EMVCo, LLC 的商标，经其许可方能使用。"
+    },
+    {
+      "key": "product_detail_product_type_hint",
+      "bleu": 66.874,
+      "chrf": 32.2152,
+      "levenshtein_sim": 0.8,
+      "ai_value": "%1$s 商品",
+      "human_value": "%1$s 个产品"
+    },
+    {
+      "key": "ai_product_description_learn_more_link",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 0.992126,
+      "ai_value": "由 AI 提供支持。&lt;a href=\\'\\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。",
+      "human_value": "由 AI 提供支持。 &lt;a href=\\'\\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。"
+    },
+    {
+      "key": "product_attributes",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "属性",
+      "human_value": "属性"
+    },
+    {
+      "key": "ai_product_creation_scanning_photo_error",
+      "bleu": 0.0,
+      "chrf": 39.0615,
+      "levenshtein_sim": 0.742857,
+      "ai_value": "尝试识别照片中的文字时出错。请重试",
+      "human_value": "尝试扫描照片上的文本时出错。 请重试"
+    },
+    {
+      "key": "bookings_resources_fetch_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "获取团队成员时出错",
+      "human_value": "获取团队成员时出错"
+    },
+    {
+      "key": "no_site_error",
+      "bleu": 18.9959,
+      "chrf": 75.6449,
+      "levenshtein_sim": 0.929293,
+      "ai_value": "此地址上的站点不是 WordPress 站点。要让我们连接它，该站点必须使用 WordPress。",
+      "human_value": "此地址下的站点不是 WordPress 站点。要让我们进行连接，此站点必须使用 WordPress。"
+    },
+    {
+      "key": "variations_bulk_creation_warning_title",
+      "bleu": 0.0,
+      "chrf": 37.5403,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "超出生成限制",
+      "human_value": "超出了生成限制"
+    },
+    {
+      "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "固定金额",
+      "human_value": "固定金额"
+    },
+    {
+      "key": "shipping_label_shipping_service_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "运输服务",
+      "human_value": "运输服务"
+    },
+    {
+      "key": "shipping_label_error_address_house_number_missing",
+      "bleu": 0.0,
+      "chrf": 6.8966,
+      "levenshtein_sim": 0.181818,
+      "ai_value": "门牌号缺失",
+      "human_value": "缺少房屋编号"
+    },
+    {
+      "key": "login_jetpack_installation_get_support",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "获取支持",
+      "human_value": "获取支持"
+    },
+    {
+      "key": "card_reader_connect_scanning_failed_header",
+      "bleu": 0.0,
+      "chrf": 24.7222,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "未连接读卡器",
+      "human_value": "未连接阅读器"
+    },
+    {
+      "key": "product_bulk_update_status_updated",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "状态已更新！",
+      "human_value": "状态已更新！"
+    },
+    {
+      "key": "coupon_conditions_products_edit_products_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "编辑商品（%d）",
+      "human_value": "编辑商品（%d）"
+    },
+    {
+      "key": "jetpack_install_progress_step_three_message",
+      "bleu": 0.0,
+      "chrf": 20.3373,
+      "levenshtein_sim": 0.625,
+      "ai_value": "正在连接你的商店",
+      "human_value": "正在关联您的商店"
+    },
+    {
+      "key": "shipping_label_package_details_items_count_many",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d 个项目",
+      "human_value": "%d 个项目"
+    },
+    {
+      "key": "product_selector_select_product_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "选择商品 %s",
+      "human_value": "选择商品 %s"
+    },
+    {
+      "key": "update_downloaded",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Woo 已下载更新",
+      "human_value": "Woo 已下载更新"
+    },
+    {
+      "key": "login_jetpack_connection_create_account",
+      "bleu": 0.0,
+      "chrf": 67.3253,
+      "levenshtein_sim": 0.862745,
+      "ai_value": "如果你还没有账户，我们将使用此电子邮件为你创建一个。",
+      "human_value": "如果您没有账户，我们将使用此电子邮件地址创建一个。"
+    },
+    {
+      "key": "blaze_campaign_creation_error_cancel",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "取消广告活动",
+      "human_value": "取消广告活动"
+    },
+    {
+      "key": "store_onboarding_launch_store_ok",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "确定",
+      "human_value": "确定"
+    },
+    {
+      "key": "login_jetpack_steps_authorizing_validation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "正在验证",
+      "human_value": "正在验证"
+    },
+    {
+      "key": "shipping_label_package_details_selected_package_hint",
+      "bleu": 0.0,
+      "chrf": 25.6738,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "已选择包裹",
+      "human_value": "选定包裹"
+    },
+    {
+      "key": "login_jetpack_connection_enter_wpcom_password",
+      "bleu": 32.4668,
+      "chrf": 69.272,
+      "levenshtein_sim": 0.927536,
+      "ai_value": "输入你的 WordPress.com 账户密码以连接到 Jetpack",
+      "human_value": "输入您 WordPress.com 账户的密码以连接 Jetpack"
+    },
+    {
+      "key": "bookings_filters_title_with_count",
+      "bleu": 14.1272,
+      "chrf": 9.9206,
+      "levenshtein_sim": 0.4,
+      "ai_value": "筛选器（%s）",
+      "human_value": "过滤器 (%s)"
+    },
+    {
+      "key": "amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "金额",
+      "human_value": "金额"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_error_proceed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "继续",
+      "human_value": "继续"
+    },
+    {
+      "key": "card_reader_payment_send_receipt",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "发送收据",
+      "human_value": "发送收据"
+    },
+    {
+      "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+      "bleu": 15.9736,
+      "chrf": 58.4123,
+      "levenshtein_sim": 0.766355,
+      "ai_value": "此站点似乎阻止了 XML-RPC 调用（错误代码 401）。如果登录失败，请点击帮助图标查看常见问题。",
+      "human_value": "XML-RPC 调用似乎已被该站点屏蔽（错误代码 401）。 如果尝试登录失败，可点击帮助图标查看常见问题解答。"
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_8_corrosive",
+      "bleu": 19.0708,
+      "chrf": 25.892,
+      "levenshtein_sim": 0.637363,
+      "ai_value": "第 8 类 – 腐蚀性材料包裹 - 可空运的腐蚀性材料（某些清洁剂或树木/杂草杀灭化合物等）",
+      "human_value": "第 8 类 — 腐蚀性物质包装 — 符合空气条件的腐蚀性物质（某些清洁剂或除杂/除草剂等）"
+    }
+  ],
+  "aggregates": {
+    "bleu_mean": 47.1874,
+    "bleu_median": 32.207,
+    "chrf_mean": 65.1744,
+    "chrf_median": 72.4238,
+    "levenshtein_sim_mean": 0.818226,
+    "levenshtein_sim_median": 0.892206,
+    "total_strings": 300,
+    "matched_strings": 298
+  }
+}

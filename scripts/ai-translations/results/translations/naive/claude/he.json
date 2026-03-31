@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "אנא המתן…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "נראה שיש בעיה בחיבור ה-Jetpack שלך.\n\nאבל אל תדאג, צוות התמיכה שלנו כאן בשביל לעזור. צור איתנו קשר ואנחנו בשמחה נעזור לך."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "הועתק ללוח"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "גרסה %s, מחיר %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "הדפסה"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "פרטי משלוח"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "טוען נתוני כתובת"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "סכום מחושב: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "יציאה בכל זאת"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s נמכרו"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "בבדיקה"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "בדוק"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "שיטת תשלום"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "מה זה WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "אין שימוש בקופון בתקופה זו"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "הצג פרטים"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "התחל למכור היום על ידי הוספת המוצר הראשון שלך לחנות."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "עדכן מחיר מכירה"
+  },
+  {
+    "key": "error_required_field",
+    "value": "שדה חובה"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "אין תוכניות בתקופה זו"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "קנה תווית משלוח"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "כלי חיפוש HAZMAT של USPS."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "אירעה שגיאה. אנא התחבר כדי להמשיך"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "אישור הרשמה"
+  },
+  {
+    "key": "type",
+    "value": "סוג"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "הוסף קופון"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "סך הכל תשלומים"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "משוב חיובי"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "פוקע לאחר"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "כרטיס אשראי נוסף בהצלחה"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "זה לוקח רק דקה."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "בחר הכל"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "חברה"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "עדכון מחירי מכירה"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "בחר %d מוצרים"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "האם אתה בטוח שברצונך להוציא החזר? לא ניתן לבטל זאת."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "שירות"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "מידע נוסף על ITN"
+  },
+  {
+    "key": "retry",
+    "value": "נסה שוב"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• עדכון זמין"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "לקוח"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "כאן אנשים ימצאו אותך באינטרנט. אל תדאג, אתה יכול לשנות זאת מאוחר יותר."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "קמפיין Blaze"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "תקופה אופציונלית של זמן להמתין לפני חיוב התשלום החוזר הראשון. כל דמי הרשמה יחויבו בתחילת המנוי. תקופת הניסיון לא יכולה להעלות: 90 ימים, 52 שבועות, 24 חודשים או 5 שנים."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "הרשאה דרושה של מכשירים קרובים חסרה"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "החזר %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "לנוחותך, מילאנו מראש את פרטי הקשר של WordPress.com שלך. אנא בדוק כדי להיות בטוח שזו המידע הנכון שברצונך להשתמש בו עבור דומיין זה."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "צור תווית משלוח"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "יציאה"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "הכנה לתשלום"
+  },
+  {
+    "key": "analytics_items",
+    "value": "פריטים"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "אין הכנסות בתקופה זו"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "הכנס ברקוד או כל מזהה אחר ייחודי לתוצר זה. זה יכול לעזור לך לרשום תוצר זה בערוצים או בשוקי מסחר אחרים."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "פריטים שנמכרו"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "הפעלת תשלום בעצם לאפשר ללקוח לשלם עבור הזמנות מקוונות בעת הסיום דרך מזומן או כרטיס.\n\nניתן להמשיך ליצור הזמנות ידנית ללא הפעלת תכונה זו."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "שגיאה בטעינת שדות מותאמים אישית"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "אנא עדכן את תוכנת הקורא שלך כדי להמשיך לקבל תשלומים"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "קבל קישור כניסה בדואר אלקטרוני"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "עד %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "לא שולם"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "עקוב אחר מכירות ומוצרים בעלי ביצועים גבוהים"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "עדכן סטטוס מלאי"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "ספריית מדיה של WordPress"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "טיוטת מוצר נשמרה"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "ערוך הערת לקוח"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "הוסף הערה"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "אף אחד"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "הוסף סטטיסטיקות טווח תאריכים מותאם אישית"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "התקן Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "אנא הכנס שם של נושא"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "הגדר סורק ברקוד"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "שתף כתובת URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "ערכת נושא נוכחית"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "אנא התחבר באמצעות שם המשתמש של WordPress.com שלך במקום כתובת הדואר האלקטרוני שלך."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "אנא תאר את סוג הסחורות שחבילה זו מכילה"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d הודעות חדשות"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "קוד קופון"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "שגיאה במחיקת מעקב"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "יעד: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "נסה שוב עם דף WP Admin"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "לא ניתן להתחבר ל-%s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "קבל תשלומים בחנות הפיזית שלך"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "שדות חובה מסוימים ריקים."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "אייקון ציון שגיאה"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "סטטוס הזמנה: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "שבועי"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "צור חבילה מותאמת אישית"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "משלוח WooCommerce אינו תומך כרגע בשחקי HAZMAT דרך %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "תיאור"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "קליקים"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "הוסף תמונות"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "גלה ספקי תשלום אחרים ו\nבחר בספק תשלום."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "אתה יכול להגדיר ברקודים בשדה GTIN, UPC, EAN, ISBN בכרטיסיית המלאי של המוצר. לפרטים נוספים"
+  },
+  {
+    "key": "wc_approve",
+    "value": "אשר"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "הכל"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "הוסף תמונה"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "יש דרישות ממתינות בחשבונך. אנא השלם את הדרישות הללו עד %1$s כדי להמשיך לקבל תשלומי פנים אל פנים."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "הכנס כותרת מוצר."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "פרטי הגבלה"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "קדם עם Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "מיקום"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "שבוע"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "על ידי לחיצה על הכפתור חיבור Jetpack"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "כן, שנה"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "הודעה"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "האם אתה בטוח שברצונך לשנות את סוג המוצר?"
+  },
+  {
+    "key": "disabled",
+    "value": "מופסק"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "הכנס את מידות החבילה שלך או בחר אפשרות חבילה נושא כדי לראות את שיעורי המשלוח הזמינים."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "מוצר"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "מוצר עודכן"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "מתנות"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "הוציא החזר"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "בקשת התמיכה שלך נחתה בבטחה בתיבת הדואר שלנו. אנחנו נענה בדואר אלקטרוני במהירות שבאפשרותנו."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "שמור את הבחירה שלי לקמפיינים עתידיים"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "צור קשר עם התמיכה"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "לא הצלחנו לסמן את ההזמנה כהשלמה"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s שבועי, החל מ-%2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "עסקה זהה הוגשה לאחרונה"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "הרשמה"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "ערוך הזמנה"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "לא נמצאו גרסאות נתמכות"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "אנא חבר את החנות שלך ל-Jetpack כדי לגשת אליה באפליקציה זו."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "משקל החבילה הכולל (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "מוצרים פופולריים"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "עדכן מחיר רגיל"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "חבר צוות"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "הכרטיס אינו תומך בסוג החזר זה"
+  },
+  {
+    "key": "product_settings",
+    "value": "הגדרות מוצר"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "ITN נדרש לשחקים ל-%1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "המשך חיבור"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "בעת בחירה ב\"הדפסת קבלה\" לאחר קבלת תשלום, החלף את \"שמור כ-PDF\" ב\"כל המדפסות\", וחפש מדפסת חדשה."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "בוטל"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "סכום"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "אחזור מדינות ומדינות."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "הצג פרטי מוצר"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "החזר הצליח"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "אפשרויות פורמט תווית"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "יומן היישום"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "צור את הגרסה הראשונה שלך"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "מוצע"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "החוזר"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "מנויים"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "בחר מהמכשיר"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "לא ניתן להוסיף מוצר משתנה ישירות. אנא בחר גרסה ספציפית"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "ביטוח (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "שיטת תשלום"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "פריט לא תומך - %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "פעיל"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "חזור לחנות"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "הלקוח שילם %1$s של %2$s עבור משלוח"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "למה אני לא רואה את המוצרים שלי?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "מגבלת שימוש לכל משתמש"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "צור מוצר עם AI"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "משלוח ביום שבת"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "מגבלת שימוש לכל קופון"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "הוסף עוד פרטים"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "יש לך הזמנה חדשה! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "שגיאה בקנייה של התוויות"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "משלוח"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "עשינו יותר מדי ניסיונות לשליחת קוד אימות SMS - קח הפסקה, בקש חדש תוך דקה."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "דואר אלקטרוני"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "צור קמפיין"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "אתמול ב-%s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "תצלום הפרופיל שלך"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "חזור לשולח אם לא ניתן להעביר את החבילה"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "אחזור הזמנות האתר שלך"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "ברכות על הקנייה שלך"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "מסך מלא של הכנסה"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "הצעות"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "ערוך החזר"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "המודעה הוגשה לאישור. אנחנו נשלח אליך דואר אלקטרוני של אישור ברגע שהוא אושר ופועל."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "פוקע המנוי"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "אנא התחבר עם שם המשתמש וסיסמה שלך."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "הייתה שגיאה בתקשורת עם האתר שלך."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "• ללא ביקורות מאושרות"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "כמות מלאי"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "לא ניתן לטעון תמונה"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "הגדרות פרטיות"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "מנוי משתנה"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "כרגע אנחנו לא תומכים בעקבוב עבור נושא זה"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "התקנת Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "סוג ההגבלה"
+  },
+  {
+    "key": "today",
+    "value": "היום"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "הכל מוכן!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "שמור הגדרות"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d הזמנות עודכנו, ו-%d הזמנות נכשלו בעדכון. אנא נסה שוב."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "קהל יעד"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "אשר כתובת מוצעת"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "זה אהוב עלי"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "נהל הגדרות קטלוג"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "פרטי תכנים"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "הסר קופונים"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "הניסיון שלך הסתיים."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "נושא מותאם אישית"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "סרוק ברקוד לעדכון מלאי"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "רשום דומיין"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "הוסף תמונה"
+  },
+  {
+    "key": "shipping",
+    "value": "משלוח"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d פריטים"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "שדה זה חובה."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "מלאי לא מנוהל"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "חתימה נדרשת (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "נוכחי"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "איפה המוצרים שלי?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "הסתר חיוב"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "התחבר ל-WordPress.com כדי לשתף את התוכן."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "ששולם"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "הזמנה #%1$d סומנה כהשלמה"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "מדינה שבה המוצר יוצר או הורכב."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "עשית זאת!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "לחץ לתשלום"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "דואר אלקטרוני"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "הרחבה אחרת / תוסף"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "כל הקבצים המצורפים כרגע לתוצר זה יוסרו."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "עכשיו שהוספת תכונות, אתה יכול ליצור את הגרסה הראשונה שלך!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "הזמנה %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "סרוק ברקוד"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "אתה נהנה מהתשלום שלך בפנים?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "הקש, החלק או הכנס כרטיס"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "זה הערה פרטית. זה לא יחולק עם הלקוח."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "בחר סוג מוצר"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "תשלום"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "התראות הזמנה חדשות"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "שלח לי קוד אחר בעוד"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "הכרטיס אינו תומך במטבע זה"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "גרסת WooCommerce"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "אפשרות בשם זה קיימת כבר"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "אין בעיות בחיבור"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "הכרות"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "הפעל קול"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "כתובת המוצא חסרה או לא חוקית"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "הסורק הוגדר!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "ששולם"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "בדיקת תשלום Tap To Pay הוחזרה בהצלחה"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "מחלקה 9 - סוללות ליתיום, חבילה לא מסומנת - מכשירים אלקטרוניים חדשים מותקנים או ארוזים עם סוללות ליתיום (ללא סימון)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "ביטול"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "חלוקה 6.2 - חומרים מסוכנים - חומרים ביולוגיים (למשל, ערכות בדיקה במעבדה, החזרות קיט בדיקה COVID מורשות)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "לא הצלחנו לעדכן את הכתובת שלך. אנא נסה שוב."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "לא נמצאו ביקורות"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 מוצר משתנה יתעלם."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "ברירת מחדל של המערכת"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "לא נבחרה הזמנה"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "הכניסה נכשלה עם קוד סטטוס %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "למד אילו מוצרים נתמכים ב-POS"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "מוצר מנוי משתנה"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "קופון לא הוחל"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "הוסף מוצרים"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "לכוד ביקורות עבור החנות שלך"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "אפשרויות אינטרנט"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "הושלם"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "כל ההזמנות"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "זכאי לאיסוף חינם"
+  },
+  {
+    "key": "product_type_external",
+    "value": "חיצוני"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "קטגוריית חומרים מסוכנים הוגדרה"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "זהו שם הקובץ המוצג ללקוח"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "אתה יכול לערוך תוספות מוצר בדשבורד האינטרנט."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "אם הדפסה לא זמינה, אתה תמיד יכול לשמור את הקבלה שלך כ-PDF ולשלוח אותה בדואר אלקטרוני כדי להדפיס אותה מהמכשיר אחר."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "קוד מקור"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "תן משוב"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "רק עכשיו"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "הושלם"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "לוח זמנים"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "ממנהל רשת"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "לא הצלחנו למצוא שיעורי מס כלשהו"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "סמל Contactless הוא סימן מסחרי של בעלות ובשימוש עם הרשאה של EMVCo, LLC."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "מוצר %1$s"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "מופעל על ידי AI. &lt;a href=\\'\\'&gt;&lt;u&gt;למד עוד&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "תכונות"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "שגיאה בעת ניסיון לסרוק את הטקסט מהתמונה. אנא נסה שוב"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "שגיאה בהבאת חברי הצוות"
+  },
+  {
+    "key": "no_site_error",
+    "value": "האתר בכתובת זו אינו אתר WordPress. כדי שנוכל להתחבר אליו, האתר חייב להשתמש WordPress."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "מגבלת הדור חרוגה"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "סכום קבוע"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "שירות משלוח"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "מספר בית חסר"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "קבל תמיכה"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "לא מחובר קורא"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "סטטוס עודכן!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "ערוך מוצרים (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "חיבור החנות שלך"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d פריטים"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "בחר מוצר %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo הוריד עדכון"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "אם אין לך חשבון, אנחנו נשתמש בדואר אלקטרוני זה כדי ליצור אחד."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "בטל קמפיין"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "אוקיי"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "אימות"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "חבילה נבחרה"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "הכנס את הסיסמה של חשבון WordPress.com שלך כדי להתחבר ל-Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "מסננים (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "סכום"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "המשך"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "שלח קבלה"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "קריאות XML-RPC נראות חסומות באתר זה (קוד שגיאה 401). אם הניסיון להתחברות נכשל, הקש על סמל עזרה כדי לצפות בשאלות נפוצות."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "מחלקה 8 - חומרים קורוזיים - חומרים קורוזיים זכאים לאוויר (תרכובות ניקוי או הרג עצים/עשבים מסוימים וכו')"
+  }
+]

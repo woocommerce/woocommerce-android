@@ -1,0 +1,2401 @@
+{
+  "language": "tr",
+  "strategy": "contextual",
+  "llm": "claude",
+  "per_string": [
+    {
+      "key": "support_request_loading_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Lütfen bekleyin…",
+      "human_value": "Lütfen bekleyin…"
+    },
+    {
+      "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+      "bleu": 38.8139,
+      "chrf": 63.561,
+      "levenshtein_sim": 0.728291,
+      "ai_value": "Jetpack bağlantınızda bir sorun görünüyor.\\n\\nAncak endişelenmeyin, destek ekibimiz burada yardımcı olmak için hazır. Bize ulaşın ve sizi memnuniyetle yardımlayacağız.",
+      "human_value": "Görünüşe göre Jetpack bağlantınızda bir sorun oluştu.\\n\\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız."
+    },
+    {
+      "key": "copied_to_clipboard",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Panoya kopyalandı",
+      "human_value": "Panoya kopyalandı"
+    },
+    {
+      "key": "woopos_variation_item_content_description",
+      "bleu": 21.3644,
+      "chrf": 59.1955,
+      "levenshtein_sim": 0.818182,
+      "ai_value": "Varyasyon %s, Fiyat %s",
+      "human_value": "%s Varyasyon, %s Fiyat"
+    },
+    {
+      "key": "shipping_label_multiple_customs_form_print_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Yazdır",
+      "human_value": "Yazdır"
+    },
+    {
+      "key": "shipping_label_shipment_details_title",
+      "bleu": 0.0,
+      "chrf": 18.2014,
+      "levenshtein_sim": 0.470588,
+      "ai_value": "Kargo detayları",
+      "human_value": "Gönderi ayrıntıları"
+    },
+    {
+      "key": "shipping_label_edit_address_loading_progress_title",
+      "bleu": 34.6681,
+      "chrf": 71.5854,
+      "levenshtein_sim": 0.862745,
+      "ai_value": "Adres bilgileri yükleniyor",
+      "human_value": "Adres verileri yükleniyor"
+    },
+    {
+      "key": "order_creation_fee_percentage_calculated_amount",
+      "bleu": 42.7287,
+      "chrf": 66.0021,
+      "levenshtein_sim": 0.878049,
+      "ai_value": "Hesaplanan tutar: %s",
+      "human_value": "Hesaplanan miktar: %s"
+    },
+    {
+      "key": "login_app_password_exit_dialog_confirmation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Yine de Çık",
+      "human_value": "Yine de Çık"
+    },
+    {
+      "key": "analytics_list_item_products_sold",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%1$s, %2$s, %3$s, %4$s satıldı",
+      "human_value": "%1$s, %2$s, %3$s, %4$s satıldı"
+    },
+    {
+      "key": "blaze_campaign_status_in_moderation",
+      "bleu": 0.0,
+      "chrf": 7.4506,
+      "levenshtein_sim": 0.25,
+      "ai_value": "Moderation'da",
+      "human_value": "Denetlemede"
+    },
+    {
+      "key": "woopos_checkout_button",
+      "bleu": 0.0,
+      "chrf": 73.2928,
+      "levenshtein_sim": 0.625,
+      "ai_value": "Ödemeye Geç",
+      "human_value": "Ödeme"
+    },
+    {
+      "key": "woo_shipping_payment_screen_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ödeme yöntemi",
+      "human_value": "Ödeme yöntemi"
+    },
+    {
+      "key": "woo_push_notifications_introduction_what_is_wpcom",
+      "bleu": 42.7287,
+      "chrf": 77.4647,
+      "levenshtein_sim": 0.95,
+      "ai_value": "WordPress.com Nedir?",
+      "human_value": "WordPress.com nedir?"
+    },
+    {
+      "key": "dashboard_coupons_card_empty_view_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bu dönemde kupon kullanımı yok",
+      "human_value": "Bu dönemde kupon kullanımı yok"
+    },
+    {
+      "key": "product_selector_arrow_content_description",
+      "bleu": 50.0,
+      "chrf": 54.4978,
+      "levenshtein_sim": 0.705882,
+      "ai_value": "Detayları göster",
+      "human_value": "Ayrıntıları göster"
+    },
+    {
+      "key": "empty_product_message",
+      "bleu": 36.8894,
+      "chrf": 79.5352,
+      "levenshtein_sim": 0.890756,
+      "ai_value": "Mağazanıza ilk ürünü ekleyerek bugün satış yapmaya başlayın.",
+      "human_value": "Mağazanıza ilk ürünü ekleyerek hemen bugün satışa başlayın."
+    },
+    {
+      "key": "variations_bulk_update_sale_price",
+      "bleu": 27.5161,
+      "chrf": 51.6924,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "İndirimli Fiyatı Güncelle",
+      "human_value": "Satış Fiyatını Güncelle"
+    },
+    {
+      "key": "error_required_field",
+      "bleu": 50.0,
+      "chrf": 19.8779,
+      "levenshtein_sim": 0.583333,
+      "ai_value": "Gerekli alan",
+      "human_value": "Zorunlu alan"
+    },
+    {
+      "key": "analytics_google_ads_no_data",
+      "bleu": 35.3553,
+      "chrf": 77.4647,
+      "levenshtein_sim": 0.954545,
+      "ai_value": "Bu dönemde program yok",
+      "human_value": "Bu dönemde Program yok"
+    },
+    {
+      "key": "shipping_label_create_purchase",
+      "bleu": 59.4604,
+      "chrf": 61.3034,
+      "levenshtein_sim": 0.765957,
+      "ai_value": "Kargo etiketi satın al",
+      "human_value": "Gönderim etiketi satın al"
+    },
+    {
+      "key": "shipping_label_usps_search_tool_link_text",
+      "bleu": 8.7458,
+      "chrf": 3.0722,
+      "levenshtein_sim": 0.207792,
+      "ai_value": "USPS HAZMAT Arama Aracı.",
+      "human_value": "yoluyla Tehlikeli Madde gönderimlerini desteklemiyor."
+    },
+    {
+      "key": "magic_link_update_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bir hata oluştu. Devam etmek için lütfen giriş yapın",
+      "human_value": "Bir hata oluştu. Devam etmek için lütfen giriş yapın"
+    },
+    {
+      "key": "signup_confirmation_title",
+      "bleu": 50.0,
+      "chrf": 37.6706,
+      "levenshtein_sim": 0.72,
+      "ai_value": "Kaydolma onayı",
+      "human_value": "Kayıt onayı"
+    },
+    {
+      "key": "type",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tür",
+      "human_value": "Tür"
+    },
+    {
+      "key": "coupon_list_add_coupon_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kupon ekle",
+      "human_value": "Kupon ekle"
+    },
+    {
+      "key": "order_detail_payment_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ÖDEME TOPLAMI",
+      "human_value": "ÖDEME TOPLAMI"
+    },
+    {
+      "key": "ai_feedback_form_positive_button",
+      "bleu": 55.0321,
+      "chrf": 57.8158,
+      "levenshtein_sim": 0.682927,
+      "ai_value": "Olumlu geri bildirim",
+      "human_value": "Pozitif geri bildirim"
+    },
+    {
+      "key": "subscription_expire",
+      "bleu": 46.3078,
+      "chrf": 81.7574,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Şundan sonra sona er",
+      "human_value": "Şundan sonra sona erdir:"
+    },
+    {
+      "key": "blaze_campaign_payment_added_successfully",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kredi kartı başarıyla eklendi",
+      "human_value": "Kredi kartı başarıyla eklendi"
+    },
+    {
+      "key": "woo_push_notifications_introduction_body2",
+      "bleu": 42.7287,
+      "chrf": 84.2374,
+      "levenshtein_sim": 0.92,
+      "ai_value": "Sadece bir dakika sürüyor.",
+      "human_value": "Sadece bir dakika sürer."
+    },
+    {
+      "key": "product_selection_menu_select_all",
+      "bleu": 50.0,
+      "chrf": 13.6265,
+      "levenshtein_sim": 0.47619,
+      "ai_value": "Hepsini seç",
+      "human_value": "Tümünü seç"
+    },
+    {
+      "key": "shipping_label_edit_address_company",
+      "bleu": 0.0,
+      "chrf": 12.4551,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "Şirket",
+      "human_value": "Firma"
+    },
+    {
+      "key": "variations_bulk_update_sale_prices_dialog_title",
+      "bleu": 27.5161,
+      "chrf": 63.1097,
+      "levenshtein_sim": 0.754098,
+      "ai_value": "İndirimli fiyatlar güncelleniyor",
+      "human_value": "Satış fiyatları güncelleniyor"
+    },
+    {
+      "key": "product_selector_select_button_title_default",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d Ürün Seç",
+      "human_value": "%d Ürün Seç"
+    },
+    {
+      "key": "order_refunds_confirmation",
+      "bleu": 71.7766,
+      "chrf": 78.5206,
+      "levenshtein_sim": 0.874074,
+      "ai_value": "İade vermek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "human_value": "Para iadesi yapmak istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    },
+    {
+      "key": "woopos_bookings_details_service_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hizmet",
+      "human_value": "Hizmet"
+    },
+    {
+      "key": "woo_shipping_labels_customs_itn_info_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ITN hakkında daha fazla bilgi",
+      "human_value": "ITN hakkında daha fazla bilgi"
+    },
+    {
+      "key": "retry",
+      "bleu": 0.0,
+      "chrf": 17.67,
+      "levenshtein_sim": 0.434783,
+      "ai_value": "Yeniden Dene",
+      "human_value": "Tekrar dene"
+    },
+    {
+      "key": "woopos_settings_card_reader_update_available",
+      "bleu": 55.0321,
+      "chrf": 74.7737,
+      "levenshtein_sim": 0.8,
+      "ai_value": "• Güncelleme mevcut",
+      "human_value": "• Güncelleme var"
+    },
+    {
+      "key": "woopos_bookings_details_customer_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Müşteri",
+      "human_value": "Müşteri"
+    },
+    {
+      "key": "domain_picker_subtitle",
+      "bleu": 46.3788,
+      "chrf": 73.5212,
+      "levenshtein_sim": 0.865979,
+      "ai_value": "Burası insanların İnternet'te sizi bulacağı yer. Endişelenmeyin, daha sonra değiştirebilirsiniz.",
+      "human_value": "Bu, insanların sizi internette bulacakları yerdir. Endişelenmeyin, daha sonra değiştirebilirsiniz."
+    },
+    {
+      "key": "blaze_campaign_payment_summary_campaign_budget",
+      "bleu": 0.0,
+      "chrf": 30.9189,
+      "levenshtein_sim": 0.421053,
+      "ai_value": "Blaze kampanyası",
+      "human_value": "Kampanyayı öne çıkarın"
+    },
+    {
+      "key": "product_subscription_free_trial_info",
+      "bleu": 47.0065,
+      "chrf": 63.0169,
+      "levenshtein_sim": 0.780247,
+      "ai_value": "İlk yinelenen ödemeyi tahsil etmeden önce bekleme süresi. Herhangi bir kaydolma ücreti yine de aboneliğin başında ücretlendirilecektir. Deneme süresi şunu aşamaz: 90 gün, 52 hafta, 24 ay veya 5 yıl.",
+      "human_value": "İlk yinelenen ödemeyi tahsil etmeden önce beklemek için isteğe bağlı süre. Yine de üyelik başlangıcında kayıt ücreti tahsil edilecektir. Deneme sürümü süresi şunu geçemez: 90 gün, 52 hafta, 24 ay veya 5 yıl."
+    },
+    {
+      "key": "card_reader_connect_missing_bluetooth_permissions_header",
+      "bleu": 8.7458,
+      "chrf": 55.2821,
+      "levenshtein_sim": 0.675,
+      "ai_value": "Gerekli yakındaki cihazlar izni eksik",
+      "human_value": "Yakındaki cihazla ilgili gerekli izin eksik"
+    },
+    {
+      "key": "order_refunds_title_with_amount",
+      "bleu": 31.9472,
+      "chrf": 22.4206,
+      "levenshtein_sim": 0.8,
+      "ai_value": "%s İade Et",
+      "human_value": "%s iade et"
+    },
+    {
+      "key": "domain_contact_information_description",
+      "bleu": 49.3767,
+      "chrf": 67.1172,
+      "levenshtein_sim": 0.791667,
+      "ai_value": "Kolaylığınız için WordPress.com iletişim bilgilerinizi önceden doldurduk. Lütfen doğru bilgiler olduğundan emin olmak için gözden geçirin.",
+      "human_value": "Size kolaylık olması için, WordPress.com iletişim bilgilerinizi önceden doldurduk. Lütfen bu bilgilerin bu alan adında kullanmak istediğiniz doğru bilgiler olduğundan emin olmak için gözden geçirin."
+    },
+    {
+      "key": "shipping_label_create_title",
+      "bleu": 27.5161,
+      "chrf": 56.5183,
+      "levenshtein_sim": 0.723404,
+      "ai_value": "Kargo etiketi oluştur",
+      "human_value": "Gönderim etiketi oluşturun"
+    },
+    {
+      "key": "woopos_exit_dialog_confirmation_confirm_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Çık",
+      "human_value": "Çık"
+    },
+    {
+      "key": "card_reader_connect_connecting_built_in_header",
+      "bleu": 39.4322,
+      "chrf": 62.9238,
+      "levenshtein_sim": 0.846154,
+      "ai_value": "Ödeme için hazırlanıyor",
+      "human_value": "Ödeme için hazırlık yapılıyor"
+    },
+    {
+      "key": "analytics_items",
+      "bleu": 0.0,
+      "chrf": 8.7719,
+      "levenshtein_sim": 0.2,
+      "ai_value": "ürünler",
+      "human_value": "öğe"
+    },
+    {
+      "key": "analytics_revenue_no_data",
+      "bleu": 35.1863,
+      "chrf": 69.6688,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Bu dönemde gelir yok",
+      "human_value": "Bu dönemde hiç gelir yok"
+    },
+    {
+      "key": "product_global_unique_id_summary",
+      "bleu": 27.3896,
+      "chrf": 67.2684,
+      "levenshtein_sim": 0.82807,
+      "ai_value": "Bu ürüne özgü barkod veya başka bir tanımlayıcı girin. Ürünü diğer kanallarda veya pazaryerlerinde listelemede yardımcı olabilir.",
+      "human_value": "Bu ürüne özel bir barkod veya herhangi başka bir tanımlayıcı girin. Bunu yapmanız bu ürünü diğer kanallarda veya pazarlarda listelemenize yardımcı olabilir."
+    },
+    {
+      "key": "analytics_products_list_items_sold",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Satılan ürünler",
+      "human_value": "Satılan ürünler"
+    },
+    {
+      "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+      "bleu": 39.8341,
+      "chrf": 79.4333,
+      "levenshtein_sim": 0.746544,
+      "ai_value": "Kişi olarak ödemeyi etkinleştirmek, müşterilerin teslimat sırasında nakit veya kartla çevrimiçi siparişler için ödeme yapmalarını sağlar.\\n\\nSiparişler bu özellik etkinleştirilmeden de manuel olarak oluşturulabilir.",
+      "human_value": "Şahsen Ödemeyi etkinleştirmek, müşterinin çevrimiçi siparişler için ödemeyi nakit veya kart aracılığıyla teslimat sırasında yapmasını sağlar.\\n\\nSiparişler bu özellik etkinleştirilmeden manuel olarak da oluşturulabilir."
+    },
+    {
+      "key": "custom_fields_list_loading_error",
+      "bleu": 77.8801,
+      "chrf": 82.9793,
+      "levenshtein_sim": 0.892308,
+      "ai_value": "Özel alanlar yüklenirken hata",
+      "human_value": "Özel alanlar yüklenirken hata oluştu"
+    },
+    {
+      "key": "card_reader_detail_connected_enforced_update_software",
+      "bleu": 18.8859,
+      "chrf": 67.5767,
+      "levenshtein_sim": 0.872483,
+      "ai_value": "Ödeme kabul etmeye devam etmek için okuyucu yazılımını güncelleyin",
+      "human_value": "Ödemeleri kabul etmeye devam edebilmek için lütfen okuyucu yazılımınızı güncelleyin"
+    },
+    {
+      "key": "login_get_link_by_email",
+      "bleu": 15.8487,
+      "chrf": 53.3432,
+      "levenshtein_sim": 0.756757,
+      "ai_value": "E-posta ile giriş bağlantısı al",
+      "human_value": "E-posta ile bir oturum açma bağlantısı alın"
+    },
+    {
+      "key": "shipping_label_rate_insurance_up_to",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "en fazla %s",
+      "human_value": "en fazla %s"
+    },
+    {
+      "key": "woopos_bookings_payment_status_unpaid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ödenmemiş",
+      "human_value": "Ödenmemiş"
+    },
+    {
+      "key": "login_prologue_label_analytics",
+      "bleu": 22.3162,
+      "chrf": 69.2616,
+      "levenshtein_sim": 0.810811,
+      "ai_value": "Satışları ve en iyi performans gösteren ürünleri takip edin",
+      "human_value": "Satışları ve yüksek performanslı ürünleri takip edin"
+    },
+    {
+      "key": "product_update_stock_status_title",
+      "bleu": 55.0321,
+      "chrf": 87.8524,
+      "levenshtein_sim": 0.93617,
+      "ai_value": "Stok Durumunu Güncelle",
+      "human_value": "Stok Durumunu Güncelleyin"
+    },
+    {
+      "key": "image_source_wp_media_library",
+      "bleu": 34.6681,
+      "chrf": 67.2241,
+      "levenshtein_sim": 0.851852,
+      "ai_value": "WordPress medya kütüphanesi",
+      "human_value": "WordPress ortam kütüphanesi"
+    },
+    {
+      "key": "product_detail_publish_product_draft_success",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürün taslağı kaydedildi",
+      "human_value": "Ürün taslağı kaydedildi"
+    },
+    {
+      "key": "order_creation_customer_note_edit_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Müşteri notunu düzenle",
+      "human_value": "Müşteri notunu düzenle"
+    },
+    {
+      "key": "booking_note_label_add_note",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Not ekle",
+      "human_value": "Not ekle"
+    },
+    {
+      "key": "product_tax_status_none",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hiçbiri",
+      "human_value": "Hiçbiri"
+    },
+    {
+      "key": "my_store_custom_range_content_description",
+      "bleu": 66.874,
+      "chrf": 92.9026,
+      "levenshtein_sim": 0.962025,
+      "ai_value": "Özel tarih aralığı istatistikleri ekle",
+      "human_value": "Özel tarih aralığı istatistikleri ekleyin"
+    },
+    {
+      "key": "jetpack_install_start_title",
+      "bleu": 18.394,
+      "chrf": 42.0651,
+      "levenshtein_sim": 0.592593,
+      "ai_value": "Jetpack Yükle",
+      "human_value": "Jetpack\\'i Kur"
+    },
+    {
+      "key": "order_shipment_tracking_empty_custom_provider_name",
+      "bleu": 24.7369,
+      "chrf": 47.7843,
+      "levenshtein_sim": 0.730159,
+      "ai_value": "Lütfen bir taşıyıcı adı girin",
+      "human_value": "Lütfen bir kargo şirketi adı girin"
+    },
+    {
+      "key": "woopos_scanning_setup_device_selection_title",
+      "bleu": 0.0,
+      "chrf": 49.4433,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Barkod tarayıcısı kurun",
+      "human_value": "Bir barkod tarayıcı ayarlama"
+    },
+    {
+      "key": "store_onboarding_launch_store_share_url_button",
+      "bleu": 0.0,
+      "chrf": 42.338,
+      "levenshtein_sim": 0.782609,
+      "ai_value": "URL'yi Paylaş",
+      "human_value": "URL paylaş"
+    },
+    {
+      "key": "theme_picker_current_theme_title",
+      "bleu": 50.0,
+      "chrf": 18.7432,
+      "levenshtein_sim": 0.521739,
+      "ai_value": "Mevcut tema",
+      "human_value": "Geçerli tema"
+    },
+    {
+      "key": "error_user_username_instead_of_email",
+      "bleu": 23.9011,
+      "chrf": 71.0142,
+      "levenshtein_sim": 0.768293,
+      "ai_value": "Lütfen e-posta adresiniz yerine WordPress.com kullanıcı adınızı kullanarak giriş yapın.",
+      "human_value": "E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın."
+    },
+    {
+      "key": "woo_shipping_labels_customs_content_details_description",
+      "bleu": 52.4736,
+      "chrf": 79.4324,
+      "levenshtein_sim": 0.893204,
+      "ai_value": "Lütfen bu paketin ne tür mal içerdiğini açıklayın",
+      "human_value": "Lütfen bu paketin ne tür bir ürün içerdiğini açıklayın"
+    },
+    {
+      "key": "new_notifications",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d yeni bildirim",
+      "human_value": "%d yeni bildirim"
+    },
+    {
+      "key": "coupon_edit_code_hint",
+      "bleu": 50.0,
+      "chrf": 45.7275,
+      "levenshtein_sim": 0.9,
+      "ai_value": "Kupon Kodu",
+      "human_value": "Kupon kodu"
+    },
+    {
+      "key": "order_shipment_tracking_delete_error",
+      "bleu": 59.4604,
+      "chrf": 76.9617,
+      "levenshtein_sim": 0.807018,
+      "ai_value": "İzleme silinirken hata oluştu",
+      "human_value": "Takip silinirken hata oluştu"
+    },
+    {
+      "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hedef: %s",
+      "human_value": "Hedef: %s"
+    },
+    {
+      "key": "login_site_credentials_use_web_authorization",
+      "bleu": 8.1167,
+      "chrf": 37.8161,
+      "levenshtein_sim": 0.636364,
+      "ai_value": "WP Admin sayfası ile yeniden deneyin",
+      "human_value": "Pano sayfasıyla tekrar deneyin"
+    },
+    {
+      "key": "login_verifying_site_error",
+      "bleu": 14.1272,
+      "chrf": 41.2198,
+      "levenshtein_sim": 0.73913,
+      "ai_value": "%s'a bağlanılamıyor",
+      "human_value": "%s ile bağlantı kurulamıyor"
+    },
+    {
+      "key": "more_menu_button_woo_pos_description",
+      "bleu": 23.6435,
+      "chrf": 54.6885,
+      "levenshtein_sim": 0.710526,
+      "ai_value": "Fiziki mağazanızda ödeme kabul edin",
+      "human_value": "Ödemeleri fiziksel mağazanızda kabul edin"
+    },
+    {
+      "key": "shipping_label_address_data_invalid_snackbar_message",
+      "bleu": 39.7635,
+      "chrf": 44.0801,
+      "levenshtein_sim": 0.641509,
+      "ai_value": "Belirli gerekli alanlar boş.",
+      "human_value": "Bazı zorunlu alanlar boş."
+    },
+    {
+      "key": "woopos_error_icon_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hata göstergesi simgesi",
+      "human_value": "Hata göstergesi simgesi"
+    },
+    {
+      "key": "orderstatus_contentDesc_withStatus",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sipariş durumu: %s",
+      "human_value": "Sipariş durumu: %s"
+    },
+    {
+      "key": "my_store_custom_range_granularity_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Haftalık",
+      "human_value": "Haftalık"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_empty_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Özel paket oluştur",
+      "human_value": "Özel paket oluştur"
+    },
+    {
+      "key": "shipping_label_hazmat_content_dhl_instructions",
+      "bleu": 36.705,
+      "chrf": 36.7671,
+      "levenshtein_sim": 0.527778,
+      "ai_value": "WooCommerce Kargo şu anda %1$s aracılığıyla HAZMAT gönderimleri desteklemiyor",
+      "human_value": "WooCommerce Shipping, şu anda %1$s USPS Tehlikeli Madde Arama Aracı"
+    },
+    {
+      "key": "woo_shipping_labels_customs_product_details_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Açıklama",
+      "human_value": "Açıklama"
+    },
+    {
+      "key": "analytics_google_ads_filter_clicks",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tıklamalar",
+      "human_value": "Tıklamalar"
+    },
+    {
+      "key": "product_add_photos",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Fotoğraf ekle",
+      "human_value": "Fotoğraf ekle"
+    },
+    {
+      "key": "store_onboarding_payments_setup_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Diğer ödeme sağlayıcılarını keşfedin ve \\nbir ödeme sağlayıcısı seçin.",
+      "human_value": "Diğer ödeme sağlayıcılarını keşfedin ve \\nbir ödeme sağlayıcısı seçin."
+    },
+    {
+      "key": "woopos_scanning_setup_barcodes_on_products_message",
+      "bleu": 53.99,
+      "chrf": 78.3118,
+      "levenshtein_sim": 0.846847,
+      "ai_value": "Barkodları ürünün envanteri sekmesindeki GTIN, UPC, EAN, ISBN alanında ayarlayabilirsiniz. Daha fazla detay için",
+      "human_value": "Ürünün envanter sekmesinde GTIN, UPC, EAN, ISBN alanında barkodlar ayarlayabilirsiniz. Daha fazla ayrıntı için"
+    },
+    {
+      "key": "wc_approve",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Onayla",
+      "human_value": "Onayla"
+    },
+    {
+      "key": "orderfilters_default_filter_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tümü",
+      "human_value": "Tümü"
+    },
+    {
+      "key": "product_add_image_content_description",
+      "bleu": 50.0,
+      "chrf": 22.6113,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "Resim ekle",
+      "human_value": "Görsel ekle"
+    },
+    {
+      "key": "card_reader_onboarding_account_pending_requirements_hint",
+      "bleu": 40.3831,
+      "chrf": 67.1287,
+      "levenshtein_sim": 0.726619,
+      "ai_value": "Hesabınızda bekleyen gereksinimler var. Kişi Olarak Ödeme kabul etmeyi sürdürmek için bu gereksinimleri %1$s tarihine kadar tamamlayın.",
+      "human_value": "Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen %1$s tarihine kadar bu gereksinimleri karşılayın."
+    },
+    {
+      "key": "shipping_label_paper_size_legal",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Legal (8,5 x 14 inç)",
+      "human_value": "Legal (8,5 x 14 inç)"
+    },
+    {
+      "key": "ai_product_description_title_hint",
+      "bleu": 35.3553,
+      "chrf": 78.483,
+      "levenshtein_sim": 0.95,
+      "ai_value": "Ürün başlığı girin.",
+      "human_value": "Ürün başlığını girin."
+    },
+    {
+      "key": "shipping_label_customs_restriction_type_other_hint",
+      "bleu": 50.0,
+      "chrf": 49.8181,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Kısıtlama detayları",
+      "human_value": "Kısıtlama ayrıntıları"
+    },
+    {
+      "key": "product_details_blaze_card",
+      "bleu": 55.0321,
+      "chrf": 65.0521,
+      "levenshtein_sim": 0.933333,
+      "ai_value": "Blaze ile Tanıt",
+      "human_value": "Blaze ile tanıt"
+    },
+    {
+      "key": "blaze_campaign_preview_details_location",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Konum",
+      "human_value": "Konum"
+    },
+    {
+      "key": "subscription_period_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "hafta",
+      "human_value": "hafta"
+    },
+    {
+      "key": "login_wpcom_connection_consent_jetpack",
+      "bleu": 36.0645,
+      "chrf": 88.7547,
+      "levenshtein_sim": 0.985915,
+      "ai_value": "Jetpack'i Bağla düğmesine dokunarak",
+      "human_value": "Jetpack\\'i Bağla düğmesine dokunarak"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_yes_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Evet, değiştir",
+      "human_value": "Evet, değiştir"
+    },
+    {
+      "key": "store_onboarding_payments_pre_setup_title_wcpay",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooPayments",
+      "human_value": "WooPayments"
+    },
+    {
+      "key": "orderdetail_message_customer",
+      "bleu": 36.7879,
+      "chrf": 36.6238,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "Mesaj",
+      "human_value": "Mesaj Gönder"
+    },
+    {
+      "key": "product_type_confirm_dialog_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürün türünü değiştirmek istediğinizden emin misiniz?",
+      "human_value": "Ürün türünü değiştirmek istediğinizden emin misiniz?"
+    },
+    {
+      "key": "disabled",
+      "bleu": 60.6531,
+      "chrf": 46.7067,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Devre Dışı",
+      "human_value": "Devre Dışı Bırakıldı"
+    },
+    {
+      "key": "shipping_label_select_package_description",
+      "bleu": 15.3102,
+      "chrf": 47.8586,
+      "levenshtein_sim": 0.521327,
+      "ai_value": "Paketinizin boyutlarını girin veya mevcut kargo oranlarını görmek için bir taşıyıcı paket seçeneği seçin.",
+      "human_value": "Mevcut gönderim ücretlerini görmek için paketinizin ölçülerini girin veya bir kargo paketi seçeneği seçin."
+    },
+    {
+      "key": "orderfilters_product_filter",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürün",
+      "human_value": "Ürün"
+    },
+    {
+      "key": "product_update_success_notification_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürün Güncellendi",
+      "human_value": "Ürün Güncellendi"
+    },
+    {
+      "key": "product_global_unique_id",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "GTIN, UPC, EAN, ISBN",
+      "human_value": "GTIN, UPC, EAN, ISBN"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_gifts",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hediyeler",
+      "human_value": "Hediyeler"
+    },
+    {
+      "key": "booking_overflow_refund",
+      "bleu": 30.3265,
+      "chrf": 21.6337,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "İade yap",
+      "human_value": "İade talep et"
+    },
+    {
+      "key": "support_request_success_message",
+      "bleu": 39.4206,
+      "chrf": 72.6233,
+      "levenshtein_sim": 0.801688,
+      "ai_value": "Destek talebiniz güvenli bir şekilde gelen kutumuzda yer aldı. E-posta ile mümkün olan en kısa sürede cevap vereceğiz.",
+      "human_value": "Destek talebiniz güvenli bir şekilde gelen kutumuza ulaştı. Mümkün olan en kısa sürede e-posta yoluyla yanıt vereceğiz."
+    },
+    {
+      "key": "blaze_campaign_objective_save_selection_switch_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Gelecekteki kampanyalar için seçimimi kaydet",
+      "human_value": "Gelecekteki kampanyalar için seçimimi kaydet"
+    },
+    {
+      "key": "jetpack_install_progress_failed_option_contact_support",
+      "bleu": 30.3265,
+      "chrf": 26.064,
+      "levenshtein_sim": 0.55,
+      "ai_value": "Destek İletişimi",
+      "human_value": "Destek birimine başvurun"
+    },
+    {
+      "key": "shipping_label_create_purchase_fulfill_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sipariş tamamlandı olarak işaretlenemedi",
+      "human_value": "Sipariş tamamlandı olarak işaretlenemedi"
+    },
+    {
+      "key": "blaze_campaign_preview_days_duration_endless",
+      "bleu": 35.0844,
+      "chrf": 33.9265,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "%1$s haftalık, %2$s'den başlayarak",
+      "human_value": "%2$s tarihinden itibaren haftalık %1$s"
+    },
+    {
+      "key": "card_reader_payment_failed_duplicate_transaction",
+      "bleu": 11.5102,
+      "chrf": 56.7254,
+      "levenshtein_sim": 0.605263,
+      "ai_value": "Aynı işlem yakın zamanda gönderildi",
+      "human_value": "Yakın zamanda benzer bir işlem gönderildi"
+    },
+    {
+      "key": "customers_details_registration_section",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kayıt",
+      "human_value": "Kayıt"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_edit_order",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Siparişi düzenle",
+      "human_value": "Siparişi düzenle"
+    },
+    {
+      "key": "woopos_variations_empty_list_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Desteklenen varyasyon bulunamadı",
+      "human_value": "Desteklenen varyasyon bulunamadı"
+    },
+    {
+      "key": "login_jetpack_connection_explanation",
+      "bleu": 57.893,
+      "chrf": 94.8745,
+      "levenshtein_sim": 0.993377,
+      "ai_value": "Bu uygulamada mağazanıza erişmek için lütfen mağazanızı Jetpack'e bağlayın.",
+      "human_value": "Bu uygulamada mağazanıza erişmek için lütfen mağazanızı Jetpack\\'e bağlayın."
+    },
+    {
+      "key": "shipping_label_package_details_weight_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Toplam paket ağırlığı (%1$s)",
+      "human_value": "Toplam paket ağırlığı (%1$s)"
+    },
+    {
+      "key": "woopos_search_popular_items_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Popüler ürünler",
+      "human_value": "Popüler ürünler"
+    },
+    {
+      "key": "variations_bulk_update_regular_price",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Normal Fiyatı Güncelle",
+      "human_value": "Normal Fiyatı Güncelle"
+    },
+    {
+      "key": "woopos_bookings_details_team_member_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Takım üyesi",
+      "human_value": "Takım üyesi"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+      "bleu": 27.4825,
+      "chrf": 54.4511,
+      "levenshtein_sim": 0.734177,
+      "ai_value": "Kart bu tür iade türünü desteklemiyor",
+      "human_value": "Kart bu tür bir geri ödemeyi desteklemiyor"
+    },
+    {
+      "key": "product_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürün ayarları",
+      "human_value": "Ürün ayarları"
+    },
+    {
+      "key": "shipping_label_customs_itn_required_country",
+      "bleu": 21.3644,
+      "chrf": 63.6848,
+      "levenshtein_sim": 0.767442,
+      "ai_value": "ITN %1$s'ye yapılan gönderimleri için gereklidir.",
+      "human_value": "%1$s gönderileri için ITN gereklidir."
+    },
+    {
+      "key": "login_jetpack_installation_continue_connection",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bağlantıya devam et",
+      "human_value": "Bağlantıya devam et"
+    },
+    {
+      "key": "print_receipt_label_info_step_3",
+      "bleu": 14.2989,
+      "chrf": 55.2464,
+      "levenshtein_sim": 0.807273,
+      "ai_value": "Ödemeyi kabul ettikten sonra \"Makbuzu Yazdır\" seçildiğinde, \"PDF olarak kaydet\"i \"Tüm yazıcılar\" ile değiştirin ve yeni yazıcı arayın.",
+      "human_value": "Ödemeyi kabul ettikten sonra \\\"Makbuz yazdır\\\"ı seçerken, \\\"PDF Olarak Kaydet\\\" yerine \\\"Tüm yazıcılar\\\"ı seçin ve yeni yazıcı araması yapın."
+    },
+    {
+      "key": "booking_payment_status_cancelled",
+      "bleu": 50.0,
+      "chrf": 52.6912,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "İptal Edildi",
+      "human_value": "İptal edildi"
+    },
+    {
+      "key": "coupon_details_performance_amount_heading",
+      "bleu": 0.0,
+      "chrf": 23.9467,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "Tutar",
+      "human_value": "Miktar"
+    },
+    {
+      "key": "woo_shipping_fetching_countries_and_states",
+      "bleu": 42.7287,
+      "chrf": 68.4538,
+      "levenshtein_sim": 0.825397,
+      "ai_value": "Ülkeler ve eyaletler getiriliyor.",
+      "human_value": "Ülkeler ve eyaletler alınıyor."
+    },
+    {
+      "key": "scan_to_update_inventory_product_details_button",
+      "bleu": 34.6681,
+      "chrf": 61.9484,
+      "levenshtein_sim": 0.814815,
+      "ai_value": "Ürün Detaylarını Görüntüle",
+      "human_value": "Ürün Ayrıntılarını Görüntüle"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_completed_header",
+      "bleu": 30.3265,
+      "chrf": 49.471,
+      "levenshtein_sim": 0.6875,
+      "ai_value": "İade başarılı",
+      "human_value": "Geri ödeme başarılı"
+    },
+    {
+      "key": "print_shipping_label_format_options_title",
+      "bleu": 34.6681,
+      "chrf": 58.2675,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Etiket format seçenekleri",
+      "human_value": "Etiket biçimi seçenekleri"
+    },
+    {
+      "key": "logviewer_activity_title",
+      "bleu": 50.0,
+      "chrf": 49.1941,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Uygulama günlüğü",
+      "human_value": "Uygulama kaydı"
+    },
+    {
+      "key": "product_variant_list_add_first_variation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "İlk varyasyonunuzu oluşturun",
+      "human_value": "İlk varyasyonunuzu oluşturun"
+    },
+    {
+      "key": "woo_shipping_confirm_address_suggested",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Önerilen",
+      "human_value": "Önerilen"
+    },
+    {
+      "key": "booking_payment_status_refunded",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "İade Edildi",
+      "human_value": "İade Edildi"
+    },
+    {
+      "key": "upgrades_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Abonelikler",
+      "human_value": "Abonelikler"
+    },
+    {
+      "key": "image_source_device_chooser",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Cihazdan seç",
+      "human_value": "Cihazdan seç"
+    },
+    {
+      "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+      "bleu": 78.2542,
+      "chrf": 95.6864,
+      "levenshtein_sim": 0.993289,
+      "ai_value": "Değişken ürünü doğrudan ekleyemezsiniz. Lütfen belirli bir varyasyonu seçin",
+      "human_value": "Değişken ürünü doğrudan ekleyemezsiniz. Lütfen belirli bir varyasyon seçin"
+    },
+    {
+      "key": "shipping_label_rate_included_options_insurance",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sigorta (%s)",
+      "human_value": "Sigorta (%s)"
+    },
+    {
+      "key": "shipping_label_shipment_details_payment_method",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ödeme yöntemi",
+      "human_value": "Ödeme yöntemi"
+    },
+    {
+      "key": "woopos_cart_barcode_scan_result_unsupported_product",
+      "bleu": 42.7287,
+      "chrf": 69.7677,
+      "levenshtein_sim": 0.851064,
+      "ai_value": "Desteklenmeyen ürün – %s",
+      "human_value": "Desteklenmeyen öğe – %s"
+    },
+    {
+      "key": "coupon_list_item_label_active",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Etkin",
+      "human_value": "Etkin"
+    },
+    {
+      "key": "feedback_completed_back_to_store_button_text",
+      "bleu": 27.5161,
+      "chrf": 62.0967,
+      "levenshtein_sim": 0.758621,
+      "ai_value": "Mağazaya Geri Dön",
+      "human_value": "Mağazaya dön"
+    },
+    {
+      "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+      "bleu": 35.7586,
+      "chrf": 37.64,
+      "levenshtein_sim": 0.789474,
+      "ai_value": "Müşteri kargo için %1$s %2$s ödedi",
+      "human_value": "Müşteri nakliye için bir %1$s (%2$s) ödedi"
+    },
+    {
+      "key": "woopos_dialog_products_info_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürünlerimi neden göremiyorum?",
+      "human_value": "Ürünlerimi neden göremiyorum?"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_user_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kullanıcı Başına Kullanım Sınırı",
+      "human_value": "Kullanıcı Başına Kullanım Sınırı"
+    },
+    {
+      "key": "product_creation_ai_entry_sheet_ai_option_title",
+      "bleu": 12.4402,
+      "chrf": 25.2262,
+      "levenshtein_sim": 0.625,
+      "ai_value": "AI ile Ürün Oluştur",
+      "human_value": "Yapay zeka ile ürün oluşturun"
+    },
+    {
+      "key": "woo_shipping_rate_option_saturday_delivery",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Cumartesi teslimatı",
+      "human_value": "Cumartesi teslimatı"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_coupon_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kupon Başına Kullanım Sınırı",
+      "human_value": "Kupon Başına Kullanım Sınırı"
+    },
+    {
+      "key": "product_detail_add_more",
+      "bleu": 0.0,
+      "chrf": 15.4253,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "Daha fazla detay ekle",
+      "human_value": "Diğer ayrıntıları ekleme"
+    },
+    {
+      "key": "notification_order_title",
+      "bleu": 57.893,
+      "chrf": 75.4072,
+      "levenshtein_sim": 0.92,
+      "ai_value": "Yeni siparişiniz var! 🎉",
+      "human_value": "Yeni bir siparişiniz var! 🎉"
+    },
+    {
+      "key": "shipping_label_create_purchase_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Etiketler satın alınırken hata oluştu",
+      "human_value": "Etiketler satın alınırken hata oluştu"
+    },
+    {
+      "key": "order_creation_add_shipping_name_hint",
+      "bleu": 0.0,
+      "chrf": 2.7027,
+      "levenshtein_sim": 0.153846,
+      "ai_value": "Kargo",
+      "human_value": "Gönderim"
+    },
+    {
+      "key": "login_error_sms_throttled",
+      "bleu": 23.4181,
+      "chrf": 63.6536,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "SMS doğrulama kodu göndermek için çok fazla deneme yaptık — bir ara verin ve bir dakika sonra yeni bir tane isteyin.",
+      "human_value": "Çok fazla SMS doğrulama kodu gönderimi yaptık. Biraz mola verin ve bir dakika sonra yenisini talep edin."
+    },
+    {
+      "key": "support_identity_input_dialog_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "E-posta",
+      "human_value": "E-posta"
+    },
+    {
+      "key": "dashboard_google_ads_card_create_campaign_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kampanya Oluştur",
+      "human_value": "Kampanya Oluştur"
+    },
+    {
+      "key": "woopos_date_yesterday_at",
+      "bleu": 35.3553,
+      "chrf": 25.1926,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Dün saat %s",
+      "human_value": "Dün, %s"
+    },
+    {
+      "key": "login_avatar_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Profil fotoğrafınız",
+      "human_value": "Profil fotoğrafınız"
+    },
+    {
+      "key": "woo_shipping_labels_customs_return_to_sender_label",
+      "bleu": 17.9652,
+      "chrf": 61.8054,
+      "levenshtein_sim": 0.776471,
+      "ai_value": "Paket teslim edilemezse gönderene geri dön",
+      "human_value": "Paket teslim edilemiyorsa gönderene iade et"
+    },
+    {
+      "key": "orderlist_connectivity_tool_store_orders_check_title",
+      "bleu": 27.5161,
+      "chrf": 58.1749,
+      "levenshtein_sim": 0.75,
+      "ai_value": "Site siparişleri getiriliyor",
+      "human_value": "Site siparişleriniz alınıyor"
+    },
+    {
+      "key": "domains_purchase_successful_heading",
+      "bleu": 35.3553,
+      "chrf": 76.951,
+      "levenshtein_sim": 0.9,
+      "ai_value": "Satın almayınız için tebrikler",
+      "human_value": "Satın aldığınız için tebrikler"
+    },
+    {
+      "key": "store_onboarding_full_screen_transition_name",
+      "bleu": 19.7161,
+      "chrf": 24.8739,
+      "levenshtein_sim": 0.367347,
+      "ai_value": "Onboarding tam ekran",
+      "human_value": "Tam ekran sisteme tanıtılıyor"
+    },
+    {
+      "key": "domain_picker_suggestions_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Öneriler",
+      "human_value": "Öneriler"
+    },
+    {
+      "key": "woopos_orders_edit_refund",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "İadeyi düzenle",
+      "human_value": "İadeyi düzenle"
+    },
+    {
+      "key": "blaze_campaign_ceation_celebration_message",
+      "bleu": 34.3893,
+      "chrf": 67.64,
+      "levenshtein_sim": 0.847826,
+      "ai_value": "Reklam onay için gönderildi. Onaylanıp çalıştığında sizi bir onay e-postası göndereceğiz.",
+      "human_value": "Reklam onaya gönderildi. Reklam onaylanıp yayınlandığında size bir onay e-postası göndereceğiz."
+    },
+    {
+      "key": "product_subscription_expiration_title",
+      "bleu": 19.7161,
+      "chrf": 36.8751,
+      "levenshtein_sim": 0.680851,
+      "ai_value": "Abonelik sona erme",
+      "human_value": "Aboneliğin sona ereceği tarih"
+    },
+    {
+      "key": "notification_wpcom_username_needed",
+      "bleu": 16.5158,
+      "chrf": 63.9908,
+      "levenshtein_sim": 0.845361,
+      "ai_value": "Lütfen kullanıcı adı ve şifrenizle giriş yapın.",
+      "human_value": "Lütfen kullanıcı adınız ve şifrenizle oturum açın."
+    },
+    {
+      "key": "login_jetpack_installation_error_generic_message",
+      "bleu": 18.5751,
+      "chrf": 61.249,
+      "levenshtein_sim": 0.772727,
+      "ai_value": "Sitenizle iletişim kurarken bir hata oluştu.",
+      "human_value": "Sitenizle iletişim kurmada bir hata yaşandı:"
+    },
+    {
+      "key": "product_ratings_count_zero",
+      "bleu": 23.6435,
+      "chrf": 45.9437,
+      "levenshtein_sim": 0.716981,
+      "ai_value": "\\u2022 onaylı inceleme yok",
+      "human_value": "\\u2022 onaylanmış yorum yok"
+    },
+    {
+      "key": "product_stock_quantity",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Stok miktarı",
+      "human_value": "Stok miktarı"
+    },
+    {
+      "key": "error_loading_image",
+      "bleu": 50.0,
+      "chrf": 63.482,
+      "levenshtein_sim": 0.756757,
+      "ai_value": "Resim yüklenemiyor",
+      "human_value": "Görsel yüklenemiyor"
+    },
+    {
+      "key": "privacy_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Gizlilik ayarları",
+      "human_value": "Gizlilik ayarları"
+    },
+    {
+      "key": "product_type_variable_subscription",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Değişken abonelik",
+      "human_value": "Değişken abonelik"
+    },
+    {
+      "key": "shipping_label_purchased_tracking_error",
+      "bleu": 61.4788,
+      "chrf": 68.6093,
+      "levenshtein_sim": 0.847826,
+      "ai_value": "Şu anda bu taşıyıcı için İzleme desteklemiyoruz",
+      "human_value": "Şu anda bu taşıyıcı için Takip desteklenmiyor"
+    },
+    {
+      "key": "jetpack_install_progress_step_one_message",
+      "bleu": 50.0,
+      "chrf": 40.2854,
+      "levenshtein_sim": 0.742857,
+      "ai_value": "Jetpack Yükleniyor",
+      "human_value": "Jetpack kuruluyor"
+    },
+    {
+      "key": "woo_shipping_labels_customs_restriction_type_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kısıtlama Türü",
+      "human_value": "Kısıtlama Türü"
+    },
+    {
+      "key": "today",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bugün",
+      "human_value": "Bugün"
+    },
+    {
+      "key": "blaze_campaign_creation_celebration_header",
+      "bleu": 18.394,
+      "chrf": 4.2373,
+      "levenshtein_sim": 0.24,
+      "ai_value": "Tamamlandı!",
+      "human_value": "Her şey hazır!"
+    },
+    {
+      "key": "save_configuration",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Yapılandırmayı kaydet",
+      "human_value": "Yapılandırmayı kaydet"
+    },
+    {
+      "key": "orderlist_bulk_update_result_partial_success",
+      "bleu": 80.9107,
+      "chrf": 86.5122,
+      "levenshtein_sim": 0.927152,
+      "ai_value": "%d sipariş güncellendi ve %d sipariş güncellenemedi. Lütfen yeniden deneyin.",
+      "human_value": "%d sipariş güncellendi ve %d sipariş güncellenemedi. Lütfen tekrar deneyin."
+    },
+    {
+      "key": "blaze_campaign_preview_audience_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hedef Kitle",
+      "human_value": "Hedef Kitle"
+    },
+    {
+      "key": "woo_shipping_confirm_submit_address_suggested",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Önerilen Adresi Onayla",
+      "human_value": "Önerilen Adresi Onayla"
+    },
+    {
+      "key": "feedback_request_like_it",
+      "bleu": 0.0,
+      "chrf": 9.2593,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "Bunu seviyorum",
+      "human_value": "Beğendim"
+    },
+    {
+      "key": "woopos_settings_local_catalog_category_subtitle",
+      "bleu": 55.0321,
+      "chrf": 92.3678,
+      "levenshtein_sim": 0.96,
+      "ai_value": "Katalog ayarlarını yönet",
+      "human_value": "Katalog ayarlarını yönetin"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_other_hint",
+      "bleu": 0.0,
+      "chrf": 28.3498,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "İçerik detayları",
+      "human_value": "İçeriğin ayrıntıları"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kuponları kaldır",
+      "human_value": "Kuponları kaldır"
+    },
+    {
+      "key": "free_trial_your_trial_ended",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Deneme süreniz sona erdi.",
+      "human_value": "Deneme süreniz sona erdi."
+    },
+    {
+      "key": "order_shipment_tracking_custom_provider_section_name",
+      "bleu": 30.3265,
+      "chrf": 12.8961,
+      "levenshtein_sim": 0.387097,
+      "ai_value": "Özel Taşıyıcı",
+      "human_value": "Özel Kargo Şirketi"
+    },
+    {
+      "key": "scan_barcode_to_update_inventory_menu_item_title",
+      "bleu": 42.7287,
+      "chrf": 90.3946,
+      "levenshtein_sim": 0.987952,
+      "ai_value": "Envanteri güncellemek için barkod tarayın",
+      "human_value": "Envanteri güncellemek için barkodu tarayın"
+    },
+    {
+      "key": "domain_contact_information_register_domain_button",
+      "bleu": 27.5161,
+      "chrf": 48.9091,
+      "levenshtein_sim": 0.6875,
+      "ai_value": "Etki alanı kaydet",
+      "human_value": "Alan adı kaydet"
+    },
+    {
+      "key": "product_add_photo",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Fotoğraf ekle",
+      "human_value": "Fotoğraf ekle"
+    },
+    {
+      "key": "shipping",
+      "bleu": 0.0,
+      "chrf": 2.7027,
+      "levenshtein_sim": 0.153846,
+      "ai_value": "Kargo",
+      "human_value": "Gönderim"
+    },
+    {
+      "key": "configuration_quantity_item_plural",
+      "bleu": 55.0321,
+      "chrf": 12.4551,
+      "levenshtein_sim": 0.461538,
+      "ai_value": "%d ürün",
+      "human_value": "%d öğe"
+    },
+    {
+      "key": "woo_shipping_field_required_error",
+      "bleu": 35.3553,
+      "chrf": 29.0032,
+      "levenshtein_sim": 0.684211,
+      "ai_value": "Bu alan gereklidir.",
+      "human_value": "Bu alan zorunludur."
+    },
+    {
+      "key": "scan_to_update_inventory_stock_not_managed",
+      "bleu": 50.0,
+      "chrf": 85.0759,
+      "levenshtein_sim": 0.903226,
+      "ai_value": "Stok yönetilmez",
+      "human_value": "Stok yönetilmedi"
+    },
+    {
+      "key": "shipping_label_rate_option_signature_required",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "İmza gerekli (%s)",
+      "human_value": "İmza gerekli (%s)"
+    },
+    {
+      "key": "logviewer_current_log_file",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Mevcut",
+      "human_value": "Mevcut"
+    },
+    {
+      "key": "woopos_product_limitations_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürünlerim nerede?",
+      "human_value": "Ürünlerim nerede?"
+    },
+    {
+      "key": "orderdetail_hide_billing",
+      "bleu": 50.0,
+      "chrf": 42.6885,
+      "levenshtein_sim": 0.645161,
+      "ai_value": "Faturayı Gizle",
+      "human_value": "Faturayı Saklayın"
+    },
+    {
+      "key": "login_log_in_for_share_intent",
+      "bleu": 37.4055,
+      "chrf": 72.0701,
+      "levenshtein_sim": 0.865385,
+      "ai_value": "İçeriği paylaşmak için WordPress.com'da oturum açın.",
+      "human_value": "İçeriği paylaşmak için WordPress.com\\'a giriş yapın."
+    },
+    {
+      "key": "booking_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ödendi",
+      "human_value": "Ödendi"
+    },
+    {
+      "key": "orderlist_mark_completed_success",
+      "bleu": 43.167,
+      "chrf": 70.1132,
+      "levenshtein_sim": 0.765957,
+      "ai_value": "Sipariş #%1$d tamamlandı olarak işaretlendi",
+      "human_value": "%1$d numaralı sipariş tamamlandı olarak işaretlendi"
+    },
+    {
+      "key": "woo_shipping_labels_customs_origin_country_info",
+      "bleu": 32.1594,
+      "chrf": 73.0017,
+      "levenshtein_sim": 0.827586,
+      "ai_value": "Ürünün üretildiği veya birleştirildiği ülke.",
+      "human_value": "Ürünün üretildiği veya monte edildiği ülke."
+    },
+    {
+      "key": "store_onboarding_task_woopayments_celebration_header",
+      "bleu": 50.0,
+      "chrf": 29.1105,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Yaptınız!",
+      "human_value": "Başardınız!"
+    },
+    {
+      "key": "card_reader_tap_to_pay_header",
+      "bleu": 0.0,
+      "chrf": 10.3992,
+      "levenshtein_sim": 0.275862,
+      "ai_value": "DOKUNARAK ÖDEME YAP",
+      "human_value": "TAP TO PAY"
+    },
+    {
+      "key": "woopos_settings_store_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "E-posta",
+      "human_value": "E-posta"
+    },
+    {
+      "key": "support_request_help_other",
+      "bleu": 35.3553,
+      "chrf": 48.9362,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Diğer Eklenti / Eklenti",
+      "human_value": "Diğer Uzantı / Eklenti"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_message",
+      "bleu": 33.0101,
+      "chrf": 77.419,
+      "levenshtein_sim": 0.900901,
+      "ai_value": "Şu anda bu ürüne eklenen tüm dosyalar kaldırılacak.",
+      "human_value": "Şu anda bu ürüne eklenmiş olan tüm dosyalar kaldırılacaktır."
+    },
+    {
+      "key": "product_attributes_created_description",
+      "bleu": 41.1134,
+      "chrf": 89.9151,
+      "levenshtein_sim": 0.985294,
+      "ai_value": "Nitelikler eklediğinize göre, ilk varyasyonunuzu oluşturabilirsiniz!",
+      "human_value": "Nitelikleri eklediğinize göre ilk varyasyonunuzu oluşturabilirsiniz!"
+    },
+    {
+      "key": "woopos_order_title",
+      "bleu": 55.0321,
+      "chrf": 9.3614,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "Sipariş %s",
+      "human_value": "Order %s"
+    },
+    {
+      "key": "order_editing_barcode_content_description",
+      "bleu": 50.0,
+      "chrf": 77.4482,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "Barkodu tara",
+      "human_value": "Barkodu tarayın"
+    },
+    {
+      "key": "feedback_banner_ipp_title_beginner",
+      "bleu": 17.9652,
+      "chrf": 49.969,
+      "levenshtein_sim": 0.623377,
+      "ai_value": "Kişi olarak ödemenizden memnun musunuz?",
+      "human_value": "Şahsen ödemenizden memnun kaldınız mı?"
+    },
+    {
+      "key": "woopos_totals_reader_ready_for_payment_subtitle",
+      "bleu": 10.6822,
+      "chrf": 31.7434,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Dokunun, kaydırın veya kartı takın",
+      "human_value": "Kartı dokundurun, geçirin veya takın"
+    },
+    {
+      "key": "booking_note_description_private",
+      "bleu": 21.0698,
+      "chrf": 81.0669,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "Bu özel bir nottir. Müşteriyle paylaşılmayacaktır.",
+      "human_value": "Bu özel bir nottur. Bu, müşteriyle paylaşılmayacaktır."
+    },
+    {
+      "key": "product_type_list_header",
+      "bleu": 59.4604,
+      "chrf": 96.5757,
+      "levenshtein_sim": 0.944444,
+      "ai_value": "Bir ürün türü seçin",
+      "human_value": "Bir ürün türü seç"
+    },
+    {
+      "key": "booking_payment_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ÖDEME",
+      "human_value": "ÖDEME"
+    },
+    {
+      "key": "notification_channel_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Yeni sipariş uyarıları",
+      "human_value": "Yeni sipariş uyarıları"
+    },
+    {
+      "key": "login_text_otp_another",
+      "bleu": 20.5567,
+      "chrf": 48.9309,
+      "levenshtein_sim": 0.65,
+      "ai_value": "Bunun yerine bana başka bir kod metin gönderin",
+      "human_value": "Bana SMS ile başka bir kod gönder."
+    },
+    {
+      "key": "card_reader_payment_failed_currency_not_supported",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kart bu para birimini desteklemiyor",
+      "human_value": "Kart bu para birimini desteklemiyor"
+    },
+    {
+      "key": "settings_woo_plugin_version",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooCommerce Sürümü",
+      "human_value": "WooCommerce Sürümü"
+    },
+    {
+      "key": "product_term_name_already_exists",
+      "bleu": 53.7285,
+      "chrf": 83.8563,
+      "levenshtein_sim": 0.965517,
+      "ai_value": "Bu adla bir seçenek zaten var",
+      "human_value": "Bu adda bir seçenek zaten var"
+    },
+    {
+      "key": "orderlist_connectivity_tool_summary_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bağlantı sorunu yok",
+      "human_value": "Bağlantı sorunu yok"
+    },
+    {
+      "key": "about_automattic_acknowledgements_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Teşekkürler",
+      "human_value": "Teşekkürler"
+    },
+    {
+      "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+      "bleu": 50.0,
+      "chrf": 54.3329,
+      "levenshtein_sim": 0.875,
+      "ai_value": "SESİ ETKINLEŞTIR",
+      "human_value": "SESİ ETKİNLEŞTİR"
+    },
+    {
+      "key": "woopos_scanning_setup_success_title",
+      "bleu": 34.6681,
+      "chrf": 47.3884,
+      "levenshtein_sim": 0.6875,
+      "ai_value": "Tarayıcı kuruldu!",
+      "human_value": "Tarayıcı hazır!"
+    },
+    {
+      "key": "woopos_bookings_payment_status_paid",
+      "bleu": 0.0,
+      "chrf": 4.902,
+      "levenshtein_sim": 0.307692,
+      "ai_value": "Ödendi",
+      "human_value": "Ücretli"
+    },
+    {
+      "key": "card_reader_tap_to_pay_successful_refund_message",
+      "bleu": 21.6491,
+      "chrf": 55.6072,
+      "levenshtein_sim": 0.712644,
+      "ai_value": "Test Dokunarak Ödeme başarıyla iade edildi",
+      "human_value": "Tap To Pay test ödemesi başarıyla iade edildi"
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+      "bleu": 36.9684,
+      "chrf": 71.5361,
+      "levenshtein_sim": 0.871595,
+      "ai_value": "Sınıf 9 – Lityum pil, işaretlenmemiş paket - Lityum pil yüklü veya paketlenmiş yeni elektronik cihazlar (işaretlenmemiş)",
+      "human_value": "Sınıf 9 - Lityum piller, işaretlenmemiş paket - Lityum piller takılmış veya onlarla paketlenmiş yeni elektronik cihazlar (işaretleme yok)"
+    },
+    {
+      "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+      "bleu": 36.7879,
+      "chrf": 61.6781,
+      "levenshtein_sim": 0.769231,
+      "ai_value": "İptal",
+      "human_value": "İptal Et"
+    },
+    {
+      "key": "shipping_label_hazmat_option_division_6_2",
+      "bleu": 51.9796,
+      "chrf": 74.0445,
+      "levenshtein_sim": 0.88,
+      "ai_value": "Bölüm 6.2 - Tehlikeli Maddeler - Biyolojik Maddeler (örneğin lab test kitleri, yetkili COVID test kiti iadesi)",
+      "human_value": "Bölüm 6.2 - Tehlikeli Maddeler - Biyolojik Maddeler (ör. laboratuvar test kitleri, onaylı COVID test kiti iadeleri)"
+    },
+    {
+      "key": "woo_shipping_updating_address_failed",
+      "bleu": 19.6407,
+      "chrf": 43.6661,
+      "levenshtein_sim": 0.647059,
+      "ai_value": "Adresinizi güncelleyemiyoruz. Lütfen yeniden deneyin.",
+      "human_value": "Adresinizi doğrulayamadık. Lütfen tekrar deneyin."
+    },
+    {
+      "key": "dashboard_reviews_card_empty_title_filtered",
+      "bleu": 30.3265,
+      "chrf": 80.8337,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "İnceleme bulunamadı",
+      "human_value": "Hiç inceleme bulunamadı"
+    },
+    {
+      "key": "product_update_stock_status_variable_ignored_count_singular",
+      "bleu": 9.0423,
+      "chrf": 15.9001,
+      "levenshtein_sim": 0.441176,
+      "ai_value": "1 değişken ürün yok sayılacaktır.",
+      "human_value": "1 varyasyonlu ürün göz ardı edilir."
+    },
+    {
+      "key": "settings_app_theme_option_system",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sistem varsayılanı",
+      "human_value": "Sistem varsayılanı"
+    },
+    {
+      "key": "woopos_bookings_no_booking_selected",
+      "bleu": 0.0,
+      "chrf": 47.6572,
+      "levenshtein_sim": 0.488889,
+      "ai_value": "Rezervasyon seçilmedi",
+      "human_value": "Seçilen rezervasyon yok."
+    },
+    {
+      "key": "login_site_credentials_http_error",
+      "bleu": 31.7622,
+      "chrf": 60.9535,
+      "levenshtein_sim": 0.632911,
+      "ai_value": "Giriş %1$s durum koduyla başarısız oldu",
+      "human_value": "Durum kodu %1$s ile giriş başarısız oldu"
+    },
+    {
+      "key": "woopos_settings_help_product_limitations_subtitle",
+      "bleu": 18.3256,
+      "chrf": 60.7005,
+      "levenshtein_sim": 0.71028,
+      "ai_value": "POS'ta desteklenen ürünler hakkında bilgi edinin",
+      "human_value": "POS\\'ta hangi ürünlerin desteklendiği hakkında bilgi edinin"
+    },
+    {
+      "key": "product_type_variable_subscription_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Değişken abonelik ürünü",
+      "human_value": "Değişken abonelik ürünü"
+    },
+    {
+      "key": "woopos_cart_coupon_invalid_subtitle",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kupon uygulanmadı",
+      "human_value": "Kupon uygulanmadı"
+    },
+    {
+      "key": "order_creation_add_products",
+      "bleu": 50.0,
+      "chrf": 33.0342,
+      "levenshtein_sim": 0.818182,
+      "ai_value": "Ürün ekle",
+      "human_value": "Ürünleri ekle"
+    },
+    {
+      "key": "order_creation_coupon_discount_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "-%1$s",
+      "human_value": "-%1$s"
+    },
+    {
+      "key": "more_menu_button_reviews_description",
+      "bleu": 31.9472,
+      "chrf": 50.6415,
+      "levenshtein_sim": 0.698413,
+      "ai_value": "Mağazanız için incelemeler toplayın",
+      "human_value": "Mağazanız için yorumlar alın"
+    },
+    {
+      "key": "settings_web_options",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Web Seçenekleri",
+      "human_value": "Web Seçenekleri"
+    },
+    {
+      "key": "woo_push_notifications_connection_steps_complete",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tamamla",
+      "human_value": "Tamamla"
+    },
+    {
+      "key": "orderfilters_filter_card_title_all_orders",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tüm siparişler",
+      "human_value": "Tüm siparişler"
+    },
+    {
+      "key": "shipping_label_rate_included_options_free_pickup",
+      "bleu": 18.9959,
+      "chrf": 36.8917,
+      "levenshtein_sim": 0.603774,
+      "ai_value": "Ücretsiz kargo için uygun",
+      "human_value": "Ücretsiz teslim almaya uygun"
+    },
+    {
+      "key": "product_type_external",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "Dış",
+      "human_value": "Harici"
+    },
+    {
+      "key": "woo_shipping_labels_hazmat_selection_set",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tehlikeli maddeler kategorisi ayarlandı",
+      "human_value": "Tehlikeli maddeler kategorisi ayarlandı"
+    },
+    {
+      "key": "product_downloadable_files_name_info",
+      "bleu": 84.6482,
+      "chrf": 97.6619,
+      "levenshtein_sim": 0.987654,
+      "ai_value": "Bu, müşteriye gösterilen dosyanın adıdır",
+      "human_value": "Bu, müşteriye gösterilen dosyanın adıdır."
+    },
+    {
+      "key": "product_add_ons_details_info_notice",
+      "bleu": 19.3049,
+      "chrf": 84.6555,
+      "levenshtein_sim": 0.716981,
+      "ai_value": "Web panosunda ürün eklentilerini düzenleyebilirsiniz.",
+      "human_value": "Ürün eklentilerini web panosunda düzenleyebilirsiniz."
+    },
+    {
+      "key": "print_receipt_label_info_step_6",
+      "bleu": 28.5432,
+      "chrf": 65.3341,
+      "levenshtein_sim": 0.806084,
+      "ai_value": "Yazdırma mevcut değilse, makbuzunuzu PDF olarak kaydedip başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.",
+      "human_value": "Yazdırmak mümkün olmuyorsa, makbuzunuzu her zaman PDF olarak kaydedebilir ve başka bir cihazdan yazdırmak üzere e-posta ile gönderebilirsiniz."
+    },
+    {
+      "key": "about_automattic_source_code_item_title",
+      "bleu": 50.0,
+      "chrf": 54.4114,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Kaynak Kodu",
+      "human_value": "Kaynak kodu"
+    },
+    {
+      "key": "feedback_product_give_feedback_button_text",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Geri Bildirim Ver",
+      "human_value": "Geri Bildirim Ver"
+    },
+    {
+      "key": "woopos_date_just_now",
+      "bleu": 0.0,
+      "chrf": 4.4643,
+      "levenshtein_sim": 0.333333,
+      "ai_value": "Şu an",
+      "human_value": "Az önce"
+    },
+    {
+      "key": "product_update_stock_status_done",
+      "bleu": 0.0,
+      "chrf": 4.4444,
+      "levenshtein_sim": 0.266667,
+      "ai_value": "BITTI",
+      "human_value": "TAMAMLANDI"
+    },
+    {
+      "key": "blaze_campaign_budget_scheduled_section_title",
+      "bleu": 0.0,
+      "chrf": 40.9188,
+      "levenshtein_sim": 0.533333,
+      "ai_value": "Planlama",
+      "human_value": "Zamanla"
+    },
+    {
+      "key": "order_detail_attribution_admin_origin",
+      "bleu": 50.0,
+      "chrf": 83.7012,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "Web yönetici",
+      "human_value": "Web yöneticisi"
+    },
+    {
+      "key": "tax_rate_selector_empty_list_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hiçbir vergi oranı bulamadık",
+      "human_value": "Hiçbir vergi oranı bulamadık"
+    },
+    {
+      "key": "card_reader_tap_to_pay_about_copyright",
+      "bleu": 27.83,
+      "chrf": 52.9066,
+      "levenshtein_sim": 0.685083,
+      "ai_value": "Contactless Symbol, EMVCo, LLC tarafından sahip olunan ve izinle kullanılan bir ticari markadır.",
+      "human_value": "Temassız Simgesi; EMVCo, LLC\\'ye ait ve onun izni ile kullanılan bir ticari markadır."
+    },
+    {
+      "key": "product_detail_product_type_hint",
+      "bleu": 66.874,
+      "chrf": 96.1732,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "%1$s ürünü",
+      "human_value": "%1$s ürün"
+    },
+    {
+      "key": "ai_product_description_learn_more_link",
+      "bleu": 79.7611,
+      "chrf": 76.5025,
+      "levenshtein_sim": 0.854054,
+      "ai_value": "AI tarafından desteklenir. &lt;a href=\\'\\'&gt;&lt;u&gt;Daha fazla bilgi&lt;/u&gt;&lt;/a&gt;.",
+      "human_value": "Yapay zeka destekli. &lt;a href=\\'\\'&gt;&lt;u&gt;Daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;."
+    },
+    {
+      "key": "product_attributes",
+      "bleu": 0.0,
+      "chrf": 81.4165,
+      "levenshtein_sim": 0.818182,
+      "ai_value": "Öznitelikler",
+      "human_value": "Nitelikler"
+    },
+    {
+      "key": "ai_product_creation_scanning_photo_error",
+      "bleu": 29.5387,
+      "chrf": 62.1408,
+      "levenshtein_sim": 0.811189,
+      "ai_value": "Fotoğraftan metin taranırken hata oluştu. Lütfen yeniden deneyin",
+      "human_value": "Fotoğraftan metin taranmaya çalışılırken bir hata oluştu. Lütfen tekrar deneyin"
+    },
+    {
+      "key": "bookings_resources_fetch_error",
+      "bleu": 12.4402,
+      "chrf": 27.1922,
+      "levenshtein_sim": 0.548387,
+      "ai_value": "Takım üyeleri getirme hatası",
+      "human_value": "Ekip üyeleri alınırken hata oluştu"
+    },
+    {
+      "key": "no_site_error",
+      "bleu": 45.8303,
+      "chrf": 68.35,
+      "levenshtein_sim": 0.843049,
+      "ai_value": "Bu adresteki site bir WordPress sitesi değil. Bize bağlantı kurmak için sitenin WordPress kullanması gerekir.",
+      "human_value": "Bu adresteki site bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress kullanılmalıdır."
+    },
+    {
+      "key": "variations_bulk_creation_warning_title",
+      "bleu": 27.5161,
+      "chrf": 22.0778,
+      "levenshtein_sim": 0.465116,
+      "ai_value": "Üretim limiti aşıldı",
+      "human_value": "Oluşturma sınırı aşıldı"
+    },
+    {
+      "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sabit bir tutar",
+      "human_value": "Sabit bir tutar"
+    },
+    {
+      "key": "shipping_label_shipping_service_title",
+      "bleu": 50.0,
+      "chrf": 37.6531,
+      "levenshtein_sim": 0.62069,
+      "ai_value": "Kargo hizmeti",
+      "human_value": "Gönderim hizmeti"
+    },
+    {
+      "key": "shipping_label_error_address_house_number_missing",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ev numarası eksik",
+      "human_value": "Ev numarası eksik"
+    },
+    {
+      "key": "login_jetpack_installation_get_support",
+      "bleu": 50.0,
+      "chrf": 76.1025,
+      "levenshtein_sim": 0.9,
+      "ai_value": "Destek al",
+      "human_value": "Destek alın"
+    },
+    {
+      "key": "card_reader_connect_scanning_failed_header",
+      "bleu": 27.5161,
+      "chrf": 59.9933,
+      "levenshtein_sim": 0.702703,
+      "ai_value": "Okuyucu bağlı değil",
+      "human_value": "Okuyucu bağlanmadı"
+    },
+    {
+      "key": "product_bulk_update_status_updated",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Durum güncellendi!",
+      "human_value": "Durum güncellendi!"
+    },
+    {
+      "key": "coupon_conditions_products_edit_products_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ürünleri Düzenle (%d)",
+      "human_value": "Ürünleri Düzenle (%d)"
+    },
+    {
+      "key": "jetpack_install_progress_step_three_message",
+      "bleu": 0.0,
+      "chrf": 59.4856,
+      "levenshtein_sim": 0.789474,
+      "ai_value": "Mağazanız bağlanıyor",
+      "human_value": "Mağazanızı bağlama"
+    },
+    {
+      "key": "shipping_label_package_details_items_count_many",
+      "bleu": 55.0321,
+      "chrf": 9.1048,
+      "levenshtein_sim": 0.5,
+      "ai_value": "%d ürün",
+      "human_value": "%d öğeler"
+    },
+    {
+      "key": "product_selector_select_product_label",
+      "bleu": 21.4441,
+      "chrf": 24.6372,
+      "levenshtein_sim": 0.56,
+      "ai_value": "%s ürünü seç",
+      "human_value": "Ürün seç (%s)"
+    },
+    {
+      "key": "update_downloaded",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Woo bir güncelleme indirdi",
+      "human_value": "Woo bir güncelleme indirdi"
+    },
+    {
+      "key": "login_jetpack_connection_create_account",
+      "bleu": 18.3603,
+      "chrf": 69.5779,
+      "levenshtein_sim": 0.784615,
+      "ai_value": "Hesabınız yoksa, bir hesap oluşturmak için bu e-postayı kullanacağız.",
+      "human_value": "Hesabınız yoksa oluşturmak için bu e-posta adresi kullanılır."
+    },
+    {
+      "key": "blaze_campaign_creation_error_cancel",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Kampanyayı iptal et",
+      "human_value": "Kampanyayı iptal et"
+    },
+    {
+      "key": "store_onboarding_launch_store_ok",
+      "bleu": 0.0,
+      "chrf": 4.0,
+      "levenshtein_sim": 0.2,
+      "ai_value": "TAMAM",
+      "human_value": "Tamam"
+    },
+    {
+      "key": "login_jetpack_steps_authorizing_validation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Doğrulanıyor",
+      "human_value": "Doğrulanıyor"
+    },
+    {
+      "key": "shipping_label_package_details_selected_package_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Paket seçildi",
+      "human_value": "Paket seçildi"
+    },
+    {
+      "key": "login_jetpack_connection_enter_wpcom_password",
+      "bleu": 69.1309,
+      "chrf": 94.2488,
+      "levenshtein_sim": 0.992481,
+      "ai_value": "Jetpack'e bağlanmak için WordPress.com hesabınızın şifresini girin",
+      "human_value": "Jetpack\\'e bağlanmak için WordPress.com hesabınızın şifresini girin"
+    },
+    {
+      "key": "bookings_filters_title_with_count",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Filtreler (%s)",
+      "human_value": "Filtreler (%s)"
+    },
+    {
+      "key": "amount",
+      "bleu": 0.0,
+      "chrf": 23.9467,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "Tutar",
+      "human_value": "Miktar"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_error_proceed",
+      "bleu": 0.0,
+      "chrf": 2.6882,
+      "levenshtein_sim": 0.142857,
+      "ai_value": "Devam Et",
+      "human_value": "İlerle"
+    },
+    {
+      "key": "card_reader_payment_send_receipt",
+      "bleu": 50.0,
+      "chrf": 67.9784,
+      "levenshtein_sim": 0.962963,
+      "ai_value": "Makbuzu gönder",
+      "human_value": "Makbuz gönder"
+    },
+    {
+      "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+      "bleu": 45.2577,
+      "chrf": 73.5006,
+      "levenshtein_sim": 0.829114,
+      "ai_value": "Bu sitede XML-RPC çağrıları engellenmişe benziyor (hata kodu 401). Giriş denemesi başarısız olursa yardım sayfasını görüntülemek için yardım simgesine dokunun.",
+      "human_value": "Bu sitede XML-RPC çağrıları engellenmiş görünüyor (hata kodu 401). Oturum açma girişimi başarısız olursa, SSS\\'yi görüntülemek için yardım simgesine dokunun."
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_8_corrosive",
+      "bleu": 31.2085,
+      "chrf": 54.7765,
+      "levenshtein_sim": 0.752852,
+      "ai_value": "Sınıf 8 – Korozif Maddeler Paketi - Hava Uygun Korozif Maddeler (belirli temizlik veya ağaç/yabani ot öldürme bileşikleri, vb.)",
+      "human_value": "Sınıf 8 - Aşındırıcı Malzemeler Paketi - Hava Yoluna Uygun Aşındırıcı Malzemeler (belirli temizlik veya ağaç/ot öldürücü bileşikler vb.)"
+    }
+  ],
+  "aggregates": {
+    "bleu_mean": 58.7669,
+    "bleu_median": 50.0,
+    "chrf_mean": 71.187,
+    "chrf_median": 77.1904,
+    "levenshtein_sim_mean": 0.821567,
+    "levenshtein_sim_median": 0.892756,
+    "total_strings": 300,
+    "matched_strings": 298
+  }
+}

@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "お待ちください…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Jetpack 接続に問題があるようです。\\n\\nですがご安心ください。サポートチームがお手伝いします。お問い合わせいただければ、喜んでサポートいたします。"
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "クリップボードにコピーしました"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "バリエーション %s、価格 %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "印刷"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "発送詳細"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "住所データを読み込み中"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "計算金額: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "そのまま終了"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s、%2$s、%3$s、%4$s 販売"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "審査中"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "チェックアウト"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "支払い方法"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "WordPress.com とは？"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "この期間中のクーポン利用はありません"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "詳細を表示"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "最初の商品をストアに追加して、今日から販売を始めましょう。"
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "セール価格を更新"
+  },
+  {
+    "key": "error_required_field",
+    "value": "必須項目"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "この期間のプログラムはありません"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "配送ラベルを購入"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT Search Tool."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "エラーが発生しました。続行するにはログインしてください"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "サインアップ確認"
+  },
+  {
+    "key": "type",
+    "value": "タイプ"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "クーポンを追加"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "支払い合計"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "肯定的なフィードバック"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "次の後に期限切れ"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "クレジットカードが正常に追加されました"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "1分もかかりません。"
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "すべて選択"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "会社名"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "セール価格を更新中"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "%d 個の商品を選択"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "返金を実行してもよろしいですか？これは取り消せません。"
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "サービス"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "ITN の詳細情報"
+  },
+  {
+    "key": "retry",
+    "value": "再試行"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• 更新があります"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "顧客"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "これはインターネット上で人々があなたを見つける場所です。ご安心ください。後で変更できます。"
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze キャンペーン"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "最初の定期支払いを請求する前に待機する任意の期間です。サインアップ料金がある場合は、サブスクリプション開始時に引き続き請求されます。試用期間は 90日、52週間、24か月、または 5年を超えることはできません。"
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "必要な付近のデバイス権限がありません"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "%s を返金"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "便宜上、WordPress.com の連絡先情報を事前入力しました。このドメインに使用したい正しい情報であることを確認してください。"
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "配送ラベルを作成"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "終了"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "支払いの準備中"
+  },
+  {
+    "key": "analytics_items",
+    "value": "商品"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "この期間の売上はありません"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "この商品固有のバーコードまたはその他の識別子を入力してください。これにより、他のチャネルやマーケットプレイスでこの商品を掲載しやすくなります。"
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "販売商品数"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "対面支払いを有効にすると、配達時にオンライン注文の代金を現金またはカードで受け取れるようになります。\\n\\nこの機能を有効にしなくても、注文は引き続き手動で作成できます。"
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "カスタムフィールドの読み込み中にエラーが発生しました"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "支払いの受付を継続するには、リーダーのソフトウェアを更新してください"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "メールでログインリンクを受け取る"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "%s まで"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "未払い"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "売上と好調な商品を追跡"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "在庫状況を更新"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress メディアライブラリ"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "商品下書きを保存しました"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "顧客メモを編集"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "メモを追加"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "なし"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "カスタム日付範囲の統計を追加"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Jetpack をインストール"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "配送業者名を入力してください"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "バーコードスキャナーを設定"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "URL を共有"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "現在のテーマ"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "メールアドレスではなく、WordPress.com のユーザー名でログインしてください。"
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "この荷物に含まれる商品の種類を説明してください"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d 件の新しい通知"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "クーポンコード"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "追跡の削除エラー"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "リンク先: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "WP Admin ページでもう一度試す"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "%s に接続できません"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "実店舗で支払いを受け付ける"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "一部の必須項目が空白です。"
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "エラー表示アイコン"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "注文ステータス: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "週ごと"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "カスタムパッケージを作成"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping は現在、%1$s 経由の HAZMAT 配送をサポートしていません"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "説明"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "クリック数"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "写真を追加"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "他の支払いプロバイダーを見つけて、\\n支払いプロバイダーを選択してください。"
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "商品の在庫タブにある GTIN, UPC, EAN, ISBN フィールドでバーコードを設定できます。詳細については"
+  },
+  {
+    "key": "wc_approve",
+    "value": "承認"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "すべて"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "画像を追加"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "アカウントに保留中の要件があります。対面支払いの受付を継続するには、%1$s までにそれらの要件を完了してください。"
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "商品タイトルを入力してください。"
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "制限の詳細"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Blaze で宣伝する"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "場所"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "週"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Connect Jetpack ボタンをタップすることで"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "はい、変更します"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "メッセージ"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "商品タイプを変更してもよろしいですか？"
+  },
+  {
+    "key": "disabled",
+    "value": "無効"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "荷物の寸法を入力するか、配送業者のパッケージオプションを選択して、利用可能な配送率を確認してください。"
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "商品"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "商品を更新しました"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "ギフト"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "返金を実行"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "サポートリクエストは正常に受信されました。できるだけ早くメールで返信いたします。"
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "今後のキャンペーンのために選択内容を保存する"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "サポートに連絡"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "注文を完了としてマークできませんでした"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s /週、%2$s から開始"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "同一の取引が最近送信されました"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "登録"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "注文を編集"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "対応しているバリエーションが見つかりません"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "このアプリでストアにアクセスするには、ストアを Jetpack に接続してください。"
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "荷物の合計重量 (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "人気商品"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "通常価格を更新"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "担当スタッフ"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "このカードはこの種類の返金に対応していません"
+  },
+  {
+    "key": "product_settings",
+    "value": "商品設定"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "%1$s 宛ての発送には ITN が必要です。"
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "接続を続行"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "支払い受領後に「Print receipt」を選択したら、「Save as PDF」を「All printers」に置き換え、新しいプリンターを検索してください。"
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "キャンセル済み"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "金額"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "国と州を取得中です。"
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "商品詳細を表示"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "返金に成功しました"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "ラベル形式のオプション"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "アプリケーションログ"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "最初のバリエーションを作成"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "候補"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "返金済み"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "サブスクリプション"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "デバイスから選択"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "可変商品を直接追加することはできません。特定のバリエーションを選択してください"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "保険 (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "支払い方法"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "非対応の商品 - %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "有効"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "ストアに戻る"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "顧客は送料として %2$s の %1$s を支払いました"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "商品が表示されないのはなぜですか？"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "ユーザーごとの利用制限"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "AI で商品を作成"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "土曜日配達"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "クーポンごとの利用制限"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "詳細をさらに追加"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "新しい注文があります！ 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "ラベル購入中にエラーが発生しました"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "配送"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "SMS 認証コードの送信を試みすぎました。少し時間を置いて、1分後に新しいコードをリクエストしてください。"
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "メール"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "キャンペーンを作成"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "昨日 %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "あなたのプロフィール写真"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "荷物を配達できない場合は差出人に返送する"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "サイトの注文を取得中"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "ご購入おめでとうございます"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "オンボーディング全画面"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "候補"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "返金を編集"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "広告は承認のため送信されました。承認されて配信が開始されたら、確認メールをお送りします。"
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "サブスクリプションの有効期限"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "ユーザー名とパスワードでログインしてください。"
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "サイトとの通信中にエラーが発生しました。"
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 承認済みレビューなし"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "在庫数"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "画像を読み込めません"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "プライバシー設定"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "可変サブスクリプション"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "現在、この配送業者の追跡には対応していません"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Jetpack をインストール中"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "制限の種類"
+  },
+  {
+    "key": "today",
+    "value": "今日"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "準備完了です！"
+  },
+  {
+    "key": "save_configuration",
+    "value": "設定を保存"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d 件の注文を更新し、%d 件の注文の更新に失敗しました。もう一度お試しください。"
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "オーディエンス"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "候補の住所を確認"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "気に入りました"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "カタログ設定を管理"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "内容の詳細"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "クーポンを削除"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "試用期間が終了しました。"
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "カスタム配送業者"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "バーコードをスキャンして在庫を更新"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "ドメインを登録"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "写真を追加"
+  },
+  {
+    "key": "shipping",
+    "value": "配送"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d 個の商品"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "この項目は必須です。"
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "在庫管理されていません"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "署名必須 (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "現在"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "商品はどこにありますか？"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "請求先を非表示"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "コンテンツを共有するには WordPress.com にログインしてください。"
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "支払済み"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "注文 #%1$d を完了としてマークしました"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "商品が製造または組み立てられた国。"
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "やりました！"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TAP TO PAY"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "メール"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "その他の拡張機能 / プラグイン"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "現在この商品に添付されているすべてのファイルが削除されます。"
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "属性を追加したので、最初のバリエーションを作成できます！"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "注文 %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "バーコードをスキャン"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "対面支払いはいかがでしたか？"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "タップ、スワイプ、またはカードを挿入"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "これは非公開メモです。顧客には共有されません。"
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "商品タイプを選択"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "支払い"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "新規注文アラート"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "代わりに別のコードを SMS で送る"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "このカードはこの通貨に対応していません"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce バージョン"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "この名前のオプションはすでに存在します"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "接続の問題はありません"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "謝辞"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "サウンドを有効にする"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "発送元住所がないか無効です"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "スキャナーの設定完了！"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "支払済み"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Test Tap To Pay の支払いは正常に返金されました"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Class 9 – Lithium batteries, unmarked package - New electronic devices installed or packaged with lithium batteries (no marking)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "キャンセル"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Division 6.2 - Hazardous Materials - Biological Materials (e.g., lab test kits, authorized COVID test kit returns)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "住所を更新できませんでした。もう一度お試しください。"
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "レビューが見つかりません"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 件の可変商品は無視されます。"
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "システムのデフォルト"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "予約が選択されていません"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "ステータスコード %1$s でログインに失敗しました"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "POS で対応している商品について確認する"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "可変サブスクリプション商品"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "クーポンは適用されませんでした"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "商品を追加"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "ストアのレビューを集める"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Web オプション"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "完了"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "すべての注文"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "無料集荷の対象"
+  },
+  {
+    "key": "product_type_external",
+    "value": "外部"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "危険物カテゴリを設定しました"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "これは顧客に表示されるファイル名です"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "商品アドオンは Web ダッシュボードで編集できます。"
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "印刷できない場合は、レシートを PDF として保存し、別のデバイスから印刷できるようメールで送信できます。"
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "ソースコード"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "フィードバックを送る"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "たった今"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "完了"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "スケジュール"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Web 管理画面"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "税率が見つかりませんでした"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s 商品"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "AI により提供されています。&lt;a href=\\'\\'&gt;&lt;u&gt;詳細はこちら&lt;/u&gt;&lt;/a&gt;。"
+  },
+  {
+    "key": "product_attributes",
+    "value": "属性"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "写真からテキストをスキャンしようとした際にエラーが発生しました。もう一度お試しください"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "担当スタッフの取得エラー"
+  },
+  {
+    "key": "no_site_error",
+    "value": "このアドレスのサイトは WordPress サイトではありません。接続するには、そのサイトが WordPress を使用している必要があります。"
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "生成上限を超えました"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "固定金額"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "配送サービス"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "番地がありません"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "サポートを受ける"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "リーダーが接続されていません"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "ステータスを更新しました！"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "商品を編集 (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "ストアを接続中"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d 個の商品"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "商品 %s を選択"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo がアップデートをダウンロードしました"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "アカウントをお持ちでない場合は、このメールアドレスを使用して作成します。"
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "キャンペーンをキャンセル"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "OK"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "検証中"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "パッケージを選択済み"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Jetpack に接続するには、WordPress.com アカウントのパスワードを入力してください"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "フィルター (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "金額"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "続行"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "領収書を送信"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "このサイトでは XML-RPC 呼び出しがブロックされているようです（エラーコード 401）。ログインに失敗した場合は、ヘルプアイコンをタップして FAQ を確認してください。"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Class 8 – Corrosive Materials Package - Air Eligible Corrosive Materials (certain cleaning or tree/weed killing compounds, etc.)"
+  }
+]

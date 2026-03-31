@@ -1,0 +1,2401 @@
+{
+  "language": "fr",
+  "strategy": "contextual",
+  "llm": "claude",
+  "per_string": [
+    {
+      "key": "support_request_loading_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Veuillez patienter…",
+      "human_value": "Veuillez patienter…"
+    },
+    {
+      "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+      "bleu": 57.3665,
+      "chrf": 67.3208,
+      "levenshtein_sim": 0.798969,
+      "ai_value": "Il semble y avoir un problème avec votre connexion Jetpack.\\n\\nMais ne vous inquiétez pas, notre équipe d'assistance est là pour vous aider. Contactez-nous et nous serons heureux de vous assister.",
+      "human_value": "Il semble y avoir un problème avec votre connexion Jetpack.\\n\\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider."
+    },
+    {
+      "key": "copied_to_clipboard",
+      "bleu": 59.4604,
+      "chrf": 99.0728,
+      "levenshtein_sim": 0.981818,
+      "ai_value": "Copié dans le presse-papiers",
+      "human_value": "Copié dans le presse-papier"
+    },
+    {
+      "key": "woopos_variation_item_content_description",
+      "bleu": 30.7394,
+      "chrf": 39.7186,
+      "levenshtein_sim": 0.829268,
+      "ai_value": "Variation %s, Prix %s",
+      "human_value": "Variante %s, prix %s"
+    },
+    {
+      "key": "shipping_label_multiple_customs_form_print_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Imprimer",
+      "human_value": "Imprimer"
+    },
+    {
+      "key": "shipping_label_shipment_details_title",
+      "bleu": 55.0321,
+      "chrf": 80.0524,
+      "levenshtein_sim": 0.956522,
+      "ai_value": "Détails de l'expédition",
+      "human_value": "Détails de l’expédition"
+    },
+    {
+      "key": "shipping_label_edit_address_loading_progress_title",
+      "bleu": 0.0,
+      "chrf": 51.2677,
+      "levenshtein_sim": 0.416667,
+      "ai_value": "Chargement des données d'adresse",
+      "human_value": "Données d’adresse en cours de chargement"
+    },
+    {
+      "key": "order_creation_fee_percentage_calculated_amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Montant calculé : %s",
+      "human_value": "Montant calculé : %s"
+    },
+    {
+      "key": "login_app_password_exit_dialog_confirmation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Quitter quand même",
+      "human_value": "Quitter quand même"
+    },
+    {
+      "key": "analytics_list_item_products_sold",
+      "bleu": 70.0623,
+      "chrf": 81.6301,
+      "levenshtein_sim": 0.920635,
+      "ai_value": "%1$s, %2$s, %3$s, %4$s vendus",
+      "human_value": "%1$s, %2$s, %3$s, %4$s vendu(e)(s)"
+    },
+    {
+      "key": "blaze_campaign_status_in_moderation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "En modération",
+      "human_value": "En modération"
+    },
+    {
+      "key": "woopos_checkout_button",
+      "bleu": 39.4322,
+      "chrf": 42.0724,
+      "levenshtein_sim": 0.651163,
+      "ai_value": "Passer la commande",
+      "human_value": "Validation de la commande"
+    },
+    {
+      "key": "woo_shipping_payment_screen_title",
+      "bleu": 55.0321,
+      "chrf": 64.7847,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Mode de paiement",
+      "human_value": "Moyen de paiement"
+    },
+    {
+      "key": "woo_push_notifications_introduction_what_is_wpcom",
+      "bleu": 54.4446,
+      "chrf": 90.3099,
+      "levenshtein_sim": 0.983051,
+      "ai_value": "Qu'est-ce que WordPress.com ?",
+      "human_value": "Qu\\'est-ce que WordPress.com ?"
+    },
+    {
+      "key": "dashboard_coupons_card_empty_view_message",
+      "bleu": 22.7721,
+      "chrf": 68.173,
+      "levenshtein_sim": 0.815534,
+      "ai_value": "Aucune utilisation de coupon pendant cette période",
+      "human_value": "Pas d’utilisation de code promo pendant cette période"
+    },
+    {
+      "key": "product_selector_arrow_content_description",
+      "bleu": 27.5161,
+      "chrf": 41.3269,
+      "levenshtein_sim": 0.685714,
+      "ai_value": "Afficher les détails",
+      "human_value": "Voir en détails"
+    },
+    {
+      "key": "empty_product_message",
+      "bleu": 76.7733,
+      "chrf": 82.0629,
+      "levenshtein_sim": 0.917808,
+      "ai_value": "Commencez à vendre en ajoutant votre premier produit à la boutique.",
+      "human_value": "Commencez à vendre aujourd’hui en ajoutant votre premier produit à la boutique."
+    },
+    {
+      "key": "variations_bulk_update_sale_price",
+      "bleu": 41.1134,
+      "chrf": 44.3419,
+      "levenshtein_sim": 0.676923,
+      "ai_value": "Mettre à jour le prix de vente",
+      "human_value": "Mettre à jour le tarif promotionnel"
+    },
+    {
+      "key": "error_required_field",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Champ obligatoire",
+      "human_value": "Champ obligatoire"
+    },
+    {
+      "key": "analytics_google_ads_no_data",
+      "bleu": 35.1863,
+      "chrf": 78.1529,
+      "levenshtein_sim": 0.920635,
+      "ai_value": "Aucun programme cette période",
+      "human_value": "Aucun programme pour cette période"
+    },
+    {
+      "key": "shipping_label_create_purchase",
+      "bleu": 59.4604,
+      "chrf": 87.3136,
+      "levenshtein_sim": 0.970588,
+      "ai_value": "Acheter une étiquette d'expédition",
+      "human_value": "Acheter une étiquette d’expédition"
+    },
+    {
+      "key": "shipping_label_usps_search_tool_link_text",
+      "bleu": 20.4124,
+      "chrf": 67.3342,
+      "levenshtein_sim": 0.78125,
+      "ai_value": "Outil de recherche HAZMAT USPS.",
+      "human_value": "l’outil de recherche USPS HAZMAT."
+    },
+    {
+      "key": "magic_link_update_error",
+      "bleu": 47.6035,
+      "chrf": 69.394,
+      "levenshtein_sim": 0.84058,
+      "ai_value": "Une erreur s'est produite. Veuillez vous connecter pour continuer",
+      "human_value": "Une erreur inconnue est survenue. Veuillez vous connecter pour continuer."
+    },
+    {
+      "key": "signup_confirmation_title",
+      "bleu": 30.3265,
+      "chrf": 78.2248,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Confirmation d'inscription",
+      "human_value": "Confirmation de l’inscription"
+    },
+    {
+      "key": "type",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Type",
+      "human_value": "Type"
+    },
+    {
+      "key": "coupon_list_add_coupon_content_description",
+      "bleu": 39.4322,
+      "chrf": 58.3912,
+      "levenshtein_sim": 0.789474,
+      "ai_value": "Ajouter un coupon",
+      "human_value": "Ajouter un code promo"
+    },
+    {
+      "key": "order_detail_payment_header",
+      "bleu": 27.5161,
+      "chrf": 71.1869,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "TOTAUX DE PAIEMENT",
+      "human_value": "TOTAUX DES PAIEMENTS"
+    },
+    {
+      "key": "ai_feedback_form_positive_button",
+      "bleu": 50.0,
+      "chrf": 63.3072,
+      "levenshtein_sim": 0.689655,
+      "ai_value": "Retours positifs",
+      "human_value": "Avis positifs"
+    },
+    {
+      "key": "subscription_expire",
+      "bleu": 50.0,
+      "chrf": 63.5548,
+      "levenshtein_sim": 0.96,
+      "ai_value": "Expirer après",
+      "human_value": "Expire après"
+    },
+    {
+      "key": "blaze_campaign_payment_added_successfully",
+      "bleu": 8.1167,
+      "chrf": 21.0277,
+      "levenshtein_sim": 0.441176,
+      "ai_value": "Carte de crédit ajoutée avec succès",
+      "human_value": "Ajout de la carte bancaire réussi"
+    },
+    {
+      "key": "woo_push_notifications_introduction_body2",
+      "bleu": 16.4498,
+      "chrf": 76.4497,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Cela ne prend qu'une minute.",
+      "human_value": "Ça ne prend qu\\'une minute."
+    },
+    {
+      "key": "product_selection_menu_select_all",
+      "bleu": 0.0,
+      "chrf": 68.891,
+      "levenshtein_sim": 0.647059,
+      "ai_value": "Sélectionner tout",
+      "human_value": "Tout sélectionner"
+    },
+    {
+      "key": "shipping_label_edit_address_company",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Entreprise",
+      "human_value": "Entreprise"
+    },
+    {
+      "key": "variations_bulk_update_sale_prices_dialog_title",
+      "bleu": 41.1134,
+      "chrf": 40.8265,
+      "levenshtein_sim": 0.646154,
+      "ai_value": "Mise à jour des prix de vente",
+      "human_value": "Mise à jour des tarifs promotionnels"
+    },
+    {
+      "key": "product_selector_select_button_title_default",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sélectionner %d produits",
+      "human_value": "Sélectionner %d produits"
+    },
+    {
+      "key": "order_refunds_confirmation",
+      "bleu": 16.1886,
+      "chrf": 41.7869,
+      "levenshtein_sim": 0.625,
+      "ai_value": "Êtes-vous sûr de vouloir effectuer un remboursement ? Cette action ne peut pas être annulée.",
+      "human_value": "Voulez-vous vraiment déclencher un remboursement ? Cette opération est irréversible."
+    },
+    {
+      "key": "woopos_bookings_details_service_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Service",
+      "human_value": "Service"
+    },
+    {
+      "key": "woo_shipping_labels_customs_itn_info_button",
+      "bleu": 15.9736,
+      "chrf": 45.0625,
+      "levenshtein_sim": 0.761905,
+      "ai_value": "Plus d'informations sur ITN",
+      "human_value": "Plus d’informations concernant l’ITN"
+    },
+    {
+      "key": "retry",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Réessayer",
+      "human_value": "Réessayer"
+    },
+    {
+      "key": "woopos_settings_card_reader_update_available",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "• Mise à jour disponible",
+      "human_value": "• Mise à jour disponible"
+    },
+    {
+      "key": "woopos_bookings_details_customer_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Client",
+      "human_value": "Client"
+    },
+    {
+      "key": "domain_picker_subtitle",
+      "bleu": 27.7429,
+      "chrf": 56.9015,
+      "levenshtein_sim": 0.770563,
+      "ai_value": "C'est ici que les gens vous trouveront sur Internet. Ne vous inquiétez pas, vous pourrez le modifier plus tard.",
+      "human_value": "C’est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement."
+    },
+    {
+      "key": "blaze_campaign_payment_summary_campaign_budget",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Campagne Blaze",
+      "human_value": "Campagne Blaze"
+    },
+    {
+      "key": "product_subscription_free_trial_info",
+      "bleu": 52.2189,
+      "chrf": 78.8909,
+      "levenshtein_sim": 0.890295,
+      "ai_value": "Une période facultative à attendre avant de facturer le premier paiement récurrent. Tout frais d'inscription sera toujours facturé au début de l'abonnement. La période d'essai ne peut pas dépasser : 90 jours, 52 semaines, 24 mois ou 5 ans.",
+      "human_value": "Une période d’attente facultative avant de facturer le premier paiement récurrent. Les frais d’inscription seront toujours facturés au début de l’abonnement. La période d’essai ne peut excéder : 90 jours, 52 semaines, 24 mois ou 5 ans."
+    },
+    {
+      "key": "card_reader_connect_missing_bluetooth_permissions_header",
+      "bleu": 15.8487,
+      "chrf": 57.5611,
+      "levenshtein_sim": 0.57732,
+      "ai_value": "Permission d'appareils à proximité manquante",
+      "human_value": "Autorisation manquante pour les appareils à proximité"
+    },
+    {
+      "key": "order_refunds_title_with_amount",
+      "bleu": 55.0321,
+      "chrf": 67.3911,
+      "levenshtein_sim": 0.827586,
+      "ai_value": "Remboursement %s",
+      "human_value": "Rembourser %s"
+    },
+    {
+      "key": "domain_contact_information_description",
+      "bleu": 37.9634,
+      "chrf": 62.7874,
+      "levenshtein_sim": 0.772118,
+      "ai_value": "Pour votre commodité, nous avons prérempli vos informations de contact WordPress.com. Veuillez vérifier que ce sont les bonnes informations que vous souhaitez utiliser pour ce domaine.",
+      "human_value": "Pour vous faciliter la tâche, nous avons prérempli vos coordonnées\\n WordPress.com. Veuillez vérifier qu\\'elles correspondent bien aux informations que vous voulez utiliser pour ce domaine."
+    },
+    {
+      "key": "shipping_label_create_title",
+      "bleu": 59.4604,
+      "chrf": 86.3189,
+      "levenshtein_sim": 0.96875,
+      "ai_value": "Créer une étiquette d'expédition",
+      "human_value": "Créer une étiquette d’expédition"
+    },
+    {
+      "key": "woopos_exit_dialog_confirmation_confirm_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Quitter",
+      "human_value": "Quitter"
+    },
+    {
+      "key": "card_reader_connect_connecting_built_in_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Préparation du paiement",
+      "human_value": "Préparation du paiement"
+    },
+    {
+      "key": "analytics_items",
+      "bleu": 0.0,
+      "chrf": 8.3333,
+      "levenshtein_sim": 0.375,
+      "ai_value": "articles",
+      "human_value": "éléments"
+    },
+    {
+      "key": "analytics_revenue_no_data",
+      "bleu": 19.3769,
+      "chrf": 50.3289,
+      "levenshtein_sim": 0.688525,
+      "ai_value": "Aucun revenu cette période",
+      "human_value": "Pas de revenus durant cette période"
+    },
+    {
+      "key": "product_global_unique_id_summary",
+      "bleu": 52.8289,
+      "chrf": 75.0777,
+      "levenshtein_sim": 0.881356,
+      "ai_value": "Entrez un code-barres ou tout autre identifiant unique de ce produit. Cela peut vous aider à vendre ce produit sur d'autres canaux ou marchés.",
+      "human_value": "Saisissez un code-barres ou tout autre identifiant unique à ce produit. Cela peut vous aider à lister ce produit sur d’autres canaux ou places de marché."
+    },
+    {
+      "key": "analytics_products_list_items_sold",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Articles vendus",
+      "human_value": "Articles vendus"
+    },
+    {
+      "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+      "bleu": 60.4797,
+      "chrf": 79.1219,
+      "levenshtein_sim": 0.900662,
+      "ai_value": "L'activation de Payer en personne permet au client de vous payer pour les commandes en ligne à la livraison en espèces ou par carte.\\n\\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité.",
+      "human_value": "Activer Payez en personne permet à vos clients de vous régler leurs commandes en ligne lors de la livraison, en espèces ou par carte.\\n\\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité."
+    },
+    {
+      "key": "custom_fields_list_loading_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Erreur lors du chargement des champs personnalisés",
+      "human_value": "Erreur lors du chargement des champs personnalisés"
+    },
+    {
+      "key": "card_reader_detail_connected_enforced_update_software",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Veuillez mettre à jour le logiciel de votre lecteur pour continuer à accepter les paiements",
+      "human_value": "Veuillez mettre à jour le logiciel de votre lecteur pour continuer à accepter les paiements"
+    },
+    {
+      "key": "login_get_link_by_email",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Obtenir un lien de connexion par e-mail",
+      "human_value": "Obtenir un lien de connexion par e-mail"
+    },
+    {
+      "key": "shipping_label_rate_insurance_up_to",
+      "bleu": 55.0321,
+      "chrf": 45.7275,
+      "levenshtein_sim": 0.9,
+      "ai_value": "jusqu'à %s",
+      "human_value": "jusqu’à %s"
+    },
+    {
+      "key": "woopos_bookings_payment_status_unpaid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Non payé",
+      "human_value": "Non payé"
+    },
+    {
+      "key": "login_prologue_label_analytics",
+      "bleu": 46.7138,
+      "chrf": 66.5147,
+      "levenshtein_sim": 0.844037,
+      "ai_value": "Suivre les ventes et les produits les plus performants",
+      "human_value": "Suivez les ventes et les produits hautement performants"
+    },
+    {
+      "key": "product_update_stock_status_title",
+      "bleu": 30.7394,
+      "chrf": 71.2201,
+      "levenshtein_sim": 0.885246,
+      "ai_value": "Mettre à jour le statut du stock",
+      "human_value": "Mettre à jour l’état du stock"
+    },
+    {
+      "key": "image_source_wp_media_library",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Bibliothèque de médias WordPress",
+      "human_value": "Bibliothèque de médias WordPress"
+    },
+    {
+      "key": "product_detail_publish_product_draft_success",
+      "bleu": 59.4604,
+      "chrf": 64.2005,
+      "levenshtein_sim": 0.806452,
+      "ai_value": "Brouillon de produit enregistré",
+      "human_value": "Brouillon de produit sauvegardé"
+    },
+    {
+      "key": "order_creation_customer_note_edit_content_description",
+      "bleu": 14.0585,
+      "chrf": 55.9011,
+      "levenshtein_sim": 0.84,
+      "ai_value": "Modifier la note du client",
+      "human_value": "Modifier une note client"
+    },
+    {
+      "key": "booking_note_label_add_note",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ajouter une note",
+      "human_value": "Ajouter une note"
+    },
+    {
+      "key": "product_tax_status_none",
+      "bleu": 0.0,
+      "chrf": 75.3715,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Aucun",
+      "human_value": "Aucune"
+    },
+    {
+      "key": "my_store_custom_range_content_description",
+      "bleu": 23.8752,
+      "chrf": 73.9584,
+      "levenshtein_sim": 0.883333,
+      "ai_value": "Ajouter des statistiques de plage de dates personnalisée",
+      "human_value": "Ajouter des statistiques avec une plage de données personnalisée"
+    },
+    {
+      "key": "jetpack_install_start_title",
+      "bleu": 50.0,
+      "chrf": 45.6494,
+      "levenshtein_sim": 0.628571,
+      "ai_value": "Installer Jetpack",
+      "human_value": "Configurer Jetpack"
+    },
+    {
+      "key": "order_shipment_tracking_empty_custom_provider_name",
+      "bleu": 53.7285,
+      "chrf": 75.0171,
+      "levenshtein_sim": 0.868421,
+      "ai_value": "Veuillez entrer un nom de transporteur",
+      "human_value": "Veuillez saisir un nom de transporteur"
+    },
+    {
+      "key": "woopos_scanning_setup_device_selection_title",
+      "bleu": 30.2138,
+      "chrf": 72.7381,
+      "levenshtein_sim": 0.891892,
+      "ai_value": "Configurer un lecteur de codes-barres",
+      "human_value": "Configurer un scanner de codes-barres"
+    },
+    {
+      "key": "store_onboarding_launch_store_share_url_button",
+      "bleu": 0.0,
+      "chrf": 42.6979,
+      "levenshtein_sim": 0.428571,
+      "ai_value": "Partager l'URL",
+      "human_value": "URL de partage"
+    },
+    {
+      "key": "theme_picker_current_theme_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Thème actuel",
+      "human_value": "Thème actuel"
+    },
+    {
+      "key": "error_user_username_instead_of_email",
+      "bleu": 26.8905,
+      "chrf": 76.5181,
+      "levenshtein_sim": 0.869565,
+      "ai_value": "Veuillez vous connecter en utilisant votre nom d'utilisateur WordPress.com au lieu de votre adresse e-mail.",
+      "human_value": "Veuillez vous connecter avec votre nom d\\'utilisateur WordPress.com plutôt que votre adresse e-mail."
+    },
+    {
+      "key": "woo_shipping_labels_customs_content_details_description",
+      "bleu": 44.1792,
+      "chrf": 59.7832,
+      "levenshtein_sim": 0.745763,
+      "ai_value": "Veuillez décrire le type de biens que ce paquet contient",
+      "human_value": "Veuillez décrire le type de marchandises que contient ce colis"
+    },
+    {
+      "key": "new_notifications",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d nouvelles notifications",
+      "human_value": "%d nouvelles notifications"
+    },
+    {
+      "key": "coupon_edit_code_hint",
+      "bleu": 50.0,
+      "chrf": 26.0977,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Code coupon",
+      "human_value": "Code promo"
+    },
+    {
+      "key": "order_shipment_tracking_delete_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Erreur lors de la suppression du suivi",
+      "human_value": "Erreur lors de la suppression du suivi"
+    },
+    {
+      "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Destination : %s",
+      "human_value": "Destination : %s"
+    },
+    {
+      "key": "login_site_credentials_use_web_authorization",
+      "bleu": 8.1167,
+      "chrf": 30.1154,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "Réessayer avec la page Admin WP",
+      "human_value": "Réessayer sur le tableau de bord"
+    },
+    {
+      "key": "login_verifying_site_error",
+      "bleu": 24.4462,
+      "chrf": 43.7193,
+      "levenshtein_sim": 0.321429,
+      "ai_value": "Impossible de se connecter à %s",
+      "human_value": "Connexion à %s impossible"
+    },
+    {
+      "key": "more_menu_button_woo_pos_description",
+      "bleu": 64.3459,
+      "chrf": 75.8189,
+      "levenshtein_sim": 0.871287,
+      "ai_value": "Accepter les paiements dans votre magasin physique",
+      "human_value": "Accepter les paiements dans votre boutique physique"
+    },
+    {
+      "key": "shipping_label_address_data_invalid_snackbar_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Certains champs obligatoires sont vides.",
+      "human_value": "Certains champs obligatoires sont vides."
+    },
+    {
+      "key": "woopos_error_icon_content_description",
+      "bleu": 27.5161,
+      "chrf": 67.5439,
+      "levenshtein_sim": 0.925926,
+      "ai_value": "Icône d'indication d'erreur",
+      "human_value": "Icône d’indication d’erreur"
+    },
+    {
+      "key": "orderstatus_contentDesc_withStatus",
+      "bleu": 80.9107,
+      "chrf": 84.162,
+      "levenshtein_sim": 0.92,
+      "ai_value": "Statut de la commande : %s",
+      "human_value": "État de la commande : %s"
+    },
+    {
+      "key": "my_store_custom_range_granularity_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hebdomadaire",
+      "human_value": "Hebdomadaire"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_empty_button",
+      "bleu": 35.3553,
+      "chrf": 63.668,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Créer un paquet personnalisé",
+      "human_value": "Créer un colis personnalisé"
+    },
+    {
+      "key": "shipping_label_hazmat_content_dhl_instructions",
+      "bleu": 18.993,
+      "chrf": 50.3552,
+      "levenshtein_sim": 0.69697,
+      "ai_value": "WooCommerce Shipping ne supporte pas actuellement les expéditions HAZMAT via %1$s",
+      "human_value": "WooCommerce Shipping ne prend pas actuellement en charge les expéditions de matières dangereuses par le biais de %1$s"
+    },
+    {
+      "key": "woo_shipping_labels_customs_product_details_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Description",
+      "human_value": "Description"
+    },
+    {
+      "key": "analytics_google_ads_filter_clicks",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Clics",
+      "human_value": "Clics"
+    },
+    {
+      "key": "product_add_photos",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ajouter des photos",
+      "human_value": "Ajouter des photos"
+    },
+    {
+      "key": "store_onboarding_payments_setup_description",
+      "bleu": 35.0644,
+      "chrf": 79.6928,
+      "levenshtein_sim": 0.897727,
+      "ai_value": "Découvrez d'autres fournisseurs de paiement et\\nchoisissez un fournisseur de paiement.",
+      "human_value": "Découvrir les autres \\n et fournisseurs de paiement choisissez un fournisseur de paiement."
+    },
+    {
+      "key": "woopos_scanning_setup_barcodes_on_products_message",
+      "bleu": 73.1534,
+      "chrf": 89.9357,
+      "levenshtein_sim": 0.977444,
+      "ai_value": "Vous pouvez configurer les codes-barres dans le champ GTIN, UPC, EAN, ISBN dans l'onglet inventaire du produit. Pour plus de détails",
+      "human_value": "Vous pouvez configurer des codes-barres dans le champ GTIN, UPC, EAN, ISBN dans l’onglet d’inventaire du produit. Pour plus de détails"
+    },
+    {
+      "key": "wc_approve",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Approuver",
+      "human_value": "Approuver"
+    },
+    {
+      "key": "orderfilters_default_filter_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Tous",
+      "human_value": "Tous"
+    },
+    {
+      "key": "product_add_image_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ajouter une image",
+      "human_value": "Ajouter une image"
+    },
+    {
+      "key": "card_reader_onboarding_account_pending_requirements_hint",
+      "bleu": 32.5312,
+      "chrf": 58.9255,
+      "levenshtein_sim": 0.687285,
+      "ai_value": "Il y a des exigences en attente dans votre compte. Veuillez les satisfaire avant le %1$s pour continuer à accepter les paiements en personne.",
+      "human_value": "Votre compte comporte des prérequis en attente. Veuillez compléter ces prérequis avant le %1$s afin de continuer à accepter des paiements en personne."
+    },
+    {
+      "key": "shipping_label_paper_size_legal",
+      "bleu": 80.9107,
+      "chrf": 84.8024,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "Légal (8,5 x 14 po)",
+      "human_value": "Legal (8,5 x 14 po)"
+    },
+    {
+      "key": "ai_product_description_title_hint",
+      "bleu": 37.9918,
+      "chrf": 67.6972,
+      "levenshtein_sim": 0.846154,
+      "ai_value": "Entrez le titre du produit.",
+      "human_value": "Entrez le nom du produit."
+    },
+    {
+      "key": "shipping_label_customs_restriction_type_other_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Détails de la restriction",
+      "human_value": "Détails de la restriction"
+    },
+    {
+      "key": "product_details_blaze_card",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Promouvoir avec Blaze",
+      "human_value": "Promouvoir avec Blaze"
+    },
+    {
+      "key": "blaze_campaign_preview_details_location",
+      "bleu": 0.0,
+      "chrf": 2.6042,
+      "levenshtein_sim": 0.133333,
+      "ai_value": "Lieu",
+      "human_value": "Emplacement"
+    },
+    {
+      "key": "subscription_period_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "semaine",
+      "human_value": "semaine"
+    },
+    {
+      "key": "login_wpcom_connection_consent_jetpack",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "En appuyant sur le bouton Connecter Jetpack",
+      "human_value": "En appuyant sur le bouton Connecter Jetpack"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_yes_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Oui, modifier",
+      "human_value": "Oui, modifier"
+    },
+    {
+      "key": "store_onboarding_payments_pre_setup_title_wcpay",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooPayments",
+      "human_value": "WooPayments"
+    },
+    {
+      "key": "orderdetail_message_customer",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Message",
+      "human_value": "Message"
+    },
+    {
+      "key": "product_type_confirm_dialog_title",
+      "bleu": 51.6973,
+      "chrf": 63.0776,
+      "levenshtein_sim": 0.75,
+      "ai_value": "Êtes-vous sûr de vouloir modifier le type de produit ?",
+      "human_value": "Voulez-vous vraiment modifier le type de produit ?"
+    },
+    {
+      "key": "disabled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Désactivé",
+      "human_value": "Désactivé"
+    },
+    {
+      "key": "shipping_label_select_package_description",
+      "bleu": 48.0863,
+      "chrf": 76.8773,
+      "levenshtein_sim": 0.865455,
+      "ai_value": "Entrez les dimensions de votre paquet ou sélectionnez une option de paquet de transporteur pour voir les tarifs d'expédition disponibles.",
+      "human_value": "Saisissez les dimensions de votre colis ou sélectionnez une option de colis du transporteur pour voir les tarifs d’expédition disponibles."
+    },
+    {
+      "key": "orderfilters_product_filter",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Produit",
+      "human_value": "Produit"
+    },
+    {
+      "key": "product_update_success_notification_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Produit mis à jour",
+      "human_value": "Produit mis à jour"
+    },
+    {
+      "key": "product_global_unique_id",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "GTIN, UPC, EAN, ISBN",
+      "human_value": "GTIN, UPC, EAN, ISBN"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_gifts",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Cadeaux",
+      "human_value": "Cadeaux"
+    },
+    {
+      "key": "booking_overflow_refund",
+      "bleu": 0.0,
+      "chrf": 74.4542,
+      "levenshtein_sim": 0.615385,
+      "ai_value": "Effectuer un remboursement",
+      "human_value": "Remboursement"
+    },
+    {
+      "key": "support_request_success_message",
+      "bleu": 28.6907,
+      "chrf": 56.8164,
+      "levenshtein_sim": 0.710938,
+      "ai_value": "Votre demande d'assistance est arrivée en toute sécurité dans notre boîte de réception. Nous vous répondrons par e-mail dès que possible.",
+      "human_value": "Votre demande d’assistance est bien parvenue jusqu’à nous. Nous vous enverrons une réponse par e-mail dès que possible."
+    },
+    {
+      "key": "blaze_campaign_objective_save_selection_switch_label",
+      "bleu": 48.8923,
+      "chrf": 88.9189,
+      "levenshtein_sim": 0.970297,
+      "ai_value": "Enregistrer ma sélection pour les futures campagnes",
+      "human_value": "Enregistrer ma sélection pour de futures campagnes"
+    },
+    {
+      "key": "jetpack_install_progress_failed_option_contact_support",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Contacter le support",
+      "human_value": "Contacter le support"
+    },
+    {
+      "key": "shipping_label_create_purchase_fulfill_error",
+      "bleu": 26.2691,
+      "chrf": 64.132,
+      "levenshtein_sim": 0.770833,
+      "ai_value": "Impossible de marquer la commande comme complète",
+      "human_value": "Impossible d’indiquer la commande comme terminée"
+    },
+    {
+      "key": "blaze_campaign_preview_days_duration_endless",
+      "bleu": 67.0342,
+      "chrf": 53.3167,
+      "levenshtein_sim": 0.794118,
+      "ai_value": "%1$s hebdomadaire, à partir du %2$s",
+      "human_value": "%1$s par semaine à partir du %2$s"
+    },
+    {
+      "key": "card_reader_payment_failed_duplicate_transaction",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Une transaction identique a été soumise récemment",
+      "human_value": "Une transaction identique a été soumise récemment"
+    },
+    {
+      "key": "customers_details_registration_section",
+      "bleu": 0.0,
+      "chrf": 8.6207,
+      "levenshtein_sim": 0.4,
+      "ai_value": "Enregistrement",
+      "human_value": "Inscription"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_edit_order",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Modifier la commande",
+      "human_value": "Modifier la commande"
+    },
+    {
+      "key": "woopos_variations_empty_list_title",
+      "bleu": 11.5216,
+      "chrf": 47.8266,
+      "levenshtein_sim": 0.712329,
+      "ai_value": "Aucune variation supportée trouvée",
+      "human_value": "Aucune variante prise en charge trouvée"
+    },
+    {
+      "key": "login_jetpack_connection_explanation",
+      "bleu": 47.5873,
+      "chrf": 76.6632,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "Veuillez connecter votre magasin à Jetpack pour y accéder sur cette application.",
+      "human_value": "Veuillez connecter votre boutique à Jetpack pour y accéder dans cette application."
+    },
+    {
+      "key": "shipping_label_package_details_weight_hint",
+      "bleu": 65.8037,
+      "chrf": 61.857,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Poids total du paquet (%1$s)",
+      "human_value": "Poids total du colis (%1$s)"
+    },
+    {
+      "key": "woopos_search_popular_items_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Produits populaires",
+      "human_value": "Produits populaires"
+    },
+    {
+      "key": "variations_bulk_update_regular_price",
+      "bleu": 50.8133,
+      "chrf": 47.3766,
+      "levenshtein_sim": 0.688525,
+      "ai_value": "Mettre à jour le prix régulier",
+      "human_value": "Mettre à jour le tarif standard"
+    },
+    {
+      "key": "woopos_bookings_details_team_member_label",
+      "bleu": 0.0,
+      "chrf": 44.1814,
+      "levenshtein_sim": 0.322581,
+      "ai_value": "Membre de l'équipe",
+      "human_value": "Équipe membre"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+      "bleu": 59.6949,
+      "chrf": 77.74,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "La carte ne supporte pas ce type de remboursement",
+      "human_value": "La carte ne permet pas ce type de remboursement"
+    },
+    {
+      "key": "product_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Paramètres du produit",
+      "human_value": "Paramètres du produit"
+    },
+    {
+      "key": "shipping_label_customs_itn_required_country",
+      "bleu": 44.463,
+      "chrf": 41.6487,
+      "levenshtein_sim": 0.673684,
+      "ai_value": "ITN est requis pour les expéditions vers %1$s.",
+      "human_value": "Un NTI est obligatoire pour les envois vers %1$s."
+    },
+    {
+      "key": "login_jetpack_installation_continue_connection",
+      "bleu": 55.0321,
+      "chrf": 49.9812,
+      "levenshtein_sim": 0.711111,
+      "ai_value": "Continuer la connexion",
+      "human_value": "Poursuivre la connexion"
+    },
+    {
+      "key": "print_receipt_label_info_step_3",
+      "bleu": 25.8301,
+      "chrf": 69.262,
+      "levenshtein_sim": 0.854054,
+      "ai_value": "Lors de la sélection de \"Imprimer le reçu\" après avoir accepté le paiement, remplacez \"Enregistrer en tant que PDF\" par \"Tous les imprimantes\", et recherchez une nouvelle imprimante.",
+      "human_value": "Lorsque vous sélectionnez « Imprimer le reçu » après avoir accepté le paiement, remplacez « Enregistrer au format PDF » par « Toutes les imprimantes » et recherchez la nouvelle imprimante."
+    },
+    {
+      "key": "booking_payment_status_cancelled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Annulé",
+      "human_value": "Annulé"
+    },
+    {
+      "key": "coupon_details_performance_amount_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Montant",
+      "human_value": "Montant"
+    },
+    {
+      "key": "woo_shipping_fetching_countries_and_states",
+      "bleu": 32.4668,
+      "chrf": 58.6161,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Récupération des pays et états.",
+      "human_value": "Extraction des pays et États."
+    },
+    {
+      "key": "scan_to_update_inventory_product_details_button",
+      "bleu": 66.874,
+      "chrf": 82.7467,
+      "levenshtein_sim": 0.862069,
+      "ai_value": "Afficher les détails du produit",
+      "human_value": "Voir les détails du produit"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_completed_header",
+      "bleu": 18.394,
+      "chrf": 42.3123,
+      "levenshtein_sim": 0.62963,
+      "ai_value": "Remboursement réussi",
+      "human_value": "Remboursement effectué avec succès"
+    },
+    {
+      "key": "print_shipping_label_format_options_title",
+      "bleu": 46.3078,
+      "chrf": 79.1201,
+      "levenshtein_sim": 0.918033,
+      "ai_value": "Options de format d'étiquette",
+      "human_value": "Options de format des étiquettes"
+    },
+    {
+      "key": "logviewer_activity_title",
+      "bleu": 27.5161,
+      "chrf": 77.0872,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "Journal de l'application",
+      "human_value": "Journal d’application"
+    },
+    {
+      "key": "product_variant_list_add_first_variation",
+      "bleu": 59.4604,
+      "chrf": 87.6995,
+      "levenshtein_sim": 0.915254,
+      "ai_value": "Créer votre première variation",
+      "human_value": "Créer votre première variante"
+    },
+    {
+      "key": "woo_shipping_confirm_address_suggested",
+      "bleu": 0.0,
+      "chrf": 20.1643,
+      "levenshtein_sim": 0.470588,
+      "ai_value": "Suggéré",
+      "human_value": "Suggestion"
+    },
+    {
+      "key": "booking_payment_status_refunded",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Remboursé",
+      "human_value": "Remboursé"
+    },
+    {
+      "key": "upgrades_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Abonnements",
+      "human_value": "Abonnements"
+    },
+    {
+      "key": "image_source_device_chooser",
+      "bleu": 27.5161,
+      "chrf": 51.3676,
+      "levenshtein_sim": 0.808511,
+      "ai_value": "Choisir sur l'appareil",
+      "human_value": "Choisir depuis l’appareil"
+    },
+    {
+      "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+      "bleu": 35.8313,
+      "chrf": 72.4823,
+      "levenshtein_sim": 0.878049,
+      "ai_value": "Vous ne pouvez pas ajouter directement un produit variable. Veuillez sélectionner une variation spécifique",
+      "human_value": "Vous ne pouvez pas ajouter directement des produits variables. Sélectionnez une variante spécifique"
+    },
+    {
+      "key": "shipping_label_rate_included_options_insurance",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Assurance (%s)",
+      "human_value": "Assurance (%s)"
+    },
+    {
+      "key": "shipping_label_shipment_details_payment_method",
+      "bleu": 55.0321,
+      "chrf": 64.7847,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Mode de paiement",
+      "human_value": "Moyen de paiement"
+    },
+    {
+      "key": "woopos_cart_barcode_scan_result_unsupported_product",
+      "bleu": 27.2223,
+      "chrf": 40.4738,
+      "levenshtein_sim": 0.678571,
+      "ai_value": "Article non supporté – %s",
+      "human_value": "Article non pris en charge – %s"
+    },
+    {
+      "key": "coupon_list_item_label_active",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Actif",
+      "human_value": "Actif"
+    },
+    {
+      "key": "feedback_completed_back_to_store_button_text",
+      "bleu": 19.7161,
+      "chrf": 26.7041,
+      "levenshtein_sim": 0.540541,
+      "ai_value": "Retour au magasin",
+      "human_value": "Retour à la boutique"
+    },
+    {
+      "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+      "bleu": 87.4222,
+      "chrf": 74.9721,
+      "levenshtein_sim": 0.86,
+      "ai_value": "Le client a payé un %1$s de %2$s pour l'expédition",
+      "human_value": "Le client a payé un %1$s de %2$s pour la livraison"
+    },
+    {
+      "key": "woopos_dialog_products_info_heading",
+      "bleu": 24.4462,
+      "chrf": 55.4072,
+      "levenshtein_sim": 0.814815,
+      "ai_value": "Pourquoi je ne vois pas mes produits ?",
+      "human_value": "Pourquoi ne puis-je pas voir mes produits ?"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_user_hint",
+      "bleu": 35.3553,
+      "chrf": 88.1732,
+      "levenshtein_sim": 0.972222,
+      "ai_value": "Limite d'utilisation par utilisateur",
+      "human_value": "Limite d’utilisation par utilisateur"
+    },
+    {
+      "key": "product_creation_ai_entry_sheet_ai_option_title",
+      "bleu": 66.874,
+      "chrf": 86.8046,
+      "levenshtein_sim": 0.961538,
+      "ai_value": "Créer un produit avec l'IA",
+      "human_value": "Créer un produit avec l’IA"
+    },
+    {
+      "key": "woo_shipping_rate_option_saturday_delivery",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Livraison le samedi",
+      "human_value": "Livraison le samedi"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_coupon_hint",
+      "bleu": 18.9959,
+      "chrf": 74.6719,
+      "levenshtein_sim": 0.866667,
+      "ai_value": "Limite d'utilisation par coupon",
+      "human_value": "Limite d’utilisation par code"
+    },
+    {
+      "key": "product_detail_add_more",
+      "bleu": 18.9959,
+      "chrf": 37.6757,
+      "levenshtein_sim": 0.62069,
+      "ai_value": "Ajouter plus de détails",
+      "human_value": "Ajouter des détails supplémentaires"
+    },
+    {
+      "key": "notification_order_title",
+      "bleu": 10.4897,
+      "chrf": 45.599,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "Vous avez une nouvelle commande ! 🎉",
+      "human_value": "Une nouvelle commande a été passée sur votre site ! 🎉"
+    },
+    {
+      "key": "shipping_label_create_purchase_error",
+      "bleu": 37.9918,
+      "chrf": 87.7585,
+      "levenshtein_sim": 0.972973,
+      "ai_value": "Erreur lors de l'achat des étiquettes",
+      "human_value": "Erreur lors de l’achat des étiquettes"
+    },
+    {
+      "key": "order_creation_add_shipping_name_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Expédition",
+      "human_value": "Expédition"
+    },
+    {
+      "key": "login_error_sms_throttled",
+      "bleu": 24.452,
+      "chrf": 59.9013,
+      "levenshtein_sim": 0.738351,
+      "ai_value": "Nous avons fait trop de tentatives pour envoyer un code de vérification par SMS — prenez une pause, et demandez-en un nouveau dans une minute.",
+      "human_value": "Le nombre de tentatives d\\'envoi d\\'un code de vérification par SMS a été dépassé – faites une pause et redemandez-en un dans une minute."
+    },
+    {
+      "key": "support_identity_input_dialog_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "E-mail",
+      "human_value": "E-mail"
+    },
+    {
+      "key": "dashboard_google_ads_card_create_campaign_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Créer une campagne",
+      "human_value": "Créer une campagne"
+    },
+    {
+      "key": "woopos_date_yesterday_at",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Hier à %s",
+      "human_value": "Hier à %s"
+    },
+    {
+      "key": "login_avatar_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Votre photo de profil",
+      "human_value": "Votre photo de profil"
+    },
+    {
+      "key": "woo_shipping_labels_customs_return_to_sender_label",
+      "bleu": 41.7226,
+      "chrf": 65.7128,
+      "levenshtein_sim": 0.834783,
+      "ai_value": "Renvoyer à l'expéditeur si le paquet ne peut pas être livré",
+      "human_value": "Retour à l’expéditeur si le colis ne peut pas être livré"
+    },
+    {
+      "key": "orderlist_connectivity_tool_store_orders_check_title",
+      "bleu": 75.9836,
+      "chrf": 81.236,
+      "levenshtein_sim": 0.871795,
+      "ai_value": "Récupération des commandes de votre site",
+      "human_value": "Extraction des commandes de votre site"
+    },
+    {
+      "key": "domains_purchase_successful_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Félicitations pour votre achat",
+      "human_value": "Félicitations pour votre achat"
+    },
+    {
+      "key": "store_onboarding_full_screen_transition_name",
+      "bleu": 0.0,
+      "chrf": 48.7682,
+      "levenshtein_sim": 0.5,
+      "ai_value": "Écran complet d'intégration",
+      "human_value": "Intégration (plein écran)"
+    },
+    {
+      "key": "domain_picker_suggestions_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Suggestions",
+      "human_value": "Suggestions"
+    },
+    {
+      "key": "woopos_orders_edit_refund",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Modifier le remboursement",
+      "human_value": "Modifier le remboursement"
+    },
+    {
+      "key": "blaze_campaign_ceation_celebration_message",
+      "bleu": 57.8488,
+      "chrf": 73.5063,
+      "levenshtein_sim": 0.828571,
+      "ai_value": "L'annonce a été soumise pour approbation. Nous vous enverrons un e-mail de confirmation une fois qu'elle sera approuvée et en cours d'exécution.",
+      "human_value": "La publicité a été soumise pour approbation. Nous vous enverrons un e-mail de confirmation dès qu’elle sera approuvée et opérationnelle."
+    },
+    {
+      "key": "product_subscription_expiration_title",
+      "bleu": 19.7161,
+      "chrf": 64.0664,
+      "levenshtein_sim": 0.813559,
+      "ai_value": "Expiration de l'abonnement",
+      "human_value": "Date d’expiration de l’abonnement"
+    },
+    {
+      "key": "notification_wpcom_username_needed",
+      "bleu": 65.2622,
+      "chrf": 94.6238,
+      "levenshtein_sim": 0.993377,
+      "ai_value": "Veuillez vous connecter avec votre nom d'utilisateur et votre mot de passe.",
+      "human_value": "Veuillez vous connecter avec votre nom d\\'utilisateur et votre mot de passe."
+    },
+    {
+      "key": "login_jetpack_installation_error_generic_message",
+      "bleu": 67.0423,
+      "chrf": 78.2144,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Une erreur s'est produite lors de la communication avec votre site.",
+      "human_value": "Une erreur est survenue lors de la communication avec votre site."
+    },
+    {
+      "key": "product_ratings_count_zero",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "\\u2022 aucun avis approuvé",
+      "human_value": "\\u2022 aucun avis approuvé"
+    },
+    {
+      "key": "product_stock_quantity",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Quantité en stock",
+      "human_value": "Quantité en stock"
+    },
+    {
+      "key": "error_loading_image",
+      "bleu": 7.5454,
+      "chrf": 32.3552,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Impossible de charger l'image",
+      "human_value": "Échec du chargement de l\\'image"
+    },
+    {
+      "key": "privacy_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Paramètres de confidentialité",
+      "human_value": "Paramètres de confidentialité"
+    },
+    {
+      "key": "product_type_variable_subscription",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Abonnement variable",
+      "human_value": "Abonnement variable"
+    },
+    {
+      "key": "shipping_label_purchased_tracking_error",
+      "bleu": 41.2259,
+      "chrf": 72.5283,
+      "levenshtein_sim": 0.875912,
+      "ai_value": "Nous ne supportons actuellement pas le suivi pour ce transporteur",
+      "human_value": "Nous ne prenons actuellement pas en charge le suivi pour ce transporteur"
+    },
+    {
+      "key": "jetpack_install_progress_step_one_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Installation de Jetpack",
+      "human_value": "Installation de Jetpack"
+    },
+    {
+      "key": "woo_shipping_labels_customs_restriction_type_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Type de restriction",
+      "human_value": "Type de restriction"
+    },
+    {
+      "key": "today",
+      "bleu": 0.0,
+      "chrf": 62.116,
+      "levenshtein_sim": 0.956522,
+      "ai_value": "Aujourd'hui",
+      "human_value": "Aujourd\\'hui"
+    },
+    {
+      "key": "blaze_campaign_creation_celebration_header",
+      "bleu": 19.7161,
+      "chrf": 22.8288,
+      "levenshtein_sim": 0.518519,
+      "ai_value": "C'est tout !",
+      "human_value": "Tout est prêt !"
+    },
+    {
+      "key": "save_configuration",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Enregistrer la configuration",
+      "human_value": "Enregistrer la configuration"
+    },
+    {
+      "key": "orderlist_bulk_update_result_partial_success",
+      "bleu": 74.7147,
+      "chrf": 87.228,
+      "levenshtein_sim": 0.897297,
+      "ai_value": "%d commande(s) mise(s) à jour, et %d commande(s) n'a pas pu être mise(s) à jour. Veuillez réessayer.",
+      "human_value": "%d commande(s) mise(s) à jour, %d commande(s) non mise(s) à jour. Veuillez réessayer."
+    },
+    {
+      "key": "blaze_campaign_preview_audience_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Audience",
+      "human_value": "Audience"
+    },
+    {
+      "key": "woo_shipping_confirm_submit_address_suggested",
+      "bleu": 34.6681,
+      "chrf": 84.494,
+      "levenshtein_sim": 0.964286,
+      "ai_value": "Confirmer l'adresse suggérée",
+      "human_value": "Confirmer l’adresse suggérée"
+    },
+    {
+      "key": "feedback_request_like_it",
+      "bleu": 0.0,
+      "chrf": 32.2967,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "J'aime bien",
+      "human_value": "J’aime"
+    },
+    {
+      "key": "woopos_settings_local_catalog_category_subtitle",
+      "bleu": 30.2138,
+      "chrf": 64.8301,
+      "levenshtein_sim": 0.84375,
+      "ai_value": "Gérer les paramètres du catalogue",
+      "human_value": "Gérer les réglages du catalogue"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_other_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Détails du contenu",
+      "human_value": "Détails du contenu"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+      "bleu": 39.4322,
+      "chrf": 62.8611,
+      "levenshtein_sim": 0.782609,
+      "ai_value": "Supprimer les coupons",
+      "human_value": "Supprimer les codes promo"
+    },
+    {
+      "key": "free_trial_your_trial_ended",
+      "bleu": 7.8098,
+      "chrf": 29.8098,
+      "levenshtein_sim": 0.596491,
+      "ai_value": "Votre période d'essai a pris fin.",
+      "human_value": "Votre essai est terminé."
+    },
+    {
+      "key": "order_shipment_tracking_custom_provider_section_name",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Transporteur personnalisé",
+      "human_value": "Transporteur personnalisé"
+    },
+    {
+      "key": "scan_barcode_to_update_inventory_menu_item_title",
+      "bleu": 54.1082,
+      "chrf": 81.7006,
+      "levenshtein_sim": 0.944444,
+      "ai_value": "Scanner un code-barres pour mettre à jour l'inventaire",
+      "human_value": "Scanner le code-barres pour mettre à jour l’inventaire"
+    },
+    {
+      "key": "domain_contact_information_register_domain_button",
+      "bleu": 34.6681,
+      "chrf": 73.0683,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Enregistrer le domaine",
+      "human_value": "Enregistrer un domaine"
+    },
+    {
+      "key": "product_add_photo",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ajouter une photo",
+      "human_value": "Ajouter une photo"
+    },
+    {
+      "key": "shipping",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Expédition",
+      "human_value": "Expédition"
+    },
+    {
+      "key": "configuration_quantity_item_plural",
+      "bleu": 55.0321,
+      "chrf": 11.8519,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "%d articles",
+      "human_value": "%d éléments"
+    },
+    {
+      "key": "woo_shipping_field_required_error",
+      "bleu": 21.3644,
+      "chrf": 71.5877,
+      "levenshtein_sim": 0.837209,
+      "ai_value": "Ce champ est obligatoire.",
+      "human_value": "Champ obligatoire."
+    },
+    {
+      "key": "scan_to_update_inventory_stock_not_managed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Stock non géré",
+      "human_value": "Stock non géré"
+    },
+    {
+      "key": "shipping_label_rate_option_signature_required",
+      "bleu": 53.7285,
+      "chrf": 44.5895,
+      "levenshtein_sim": 0.708333,
+      "ai_value": "Signature requise (%s)",
+      "human_value": "Signature obligatoire (%s)"
+    },
+    {
+      "key": "logviewer_current_log_file",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Actuel",
+      "human_value": "Actuel"
+    },
+    {
+      "key": "woopos_product_limitations_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Où sont mes produits ?",
+      "human_value": "Où sont mes produits ?"
+    },
+    {
+      "key": "orderdetail_hide_billing",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Masquer la facturation",
+      "human_value": "Masquer la facturation"
+    },
+    {
+      "key": "login_log_in_for_share_intent",
+      "bleu": 46.7138,
+      "chrf": 82.221,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "Connectez-vous à WordPress.com pour partager le contenu.",
+      "human_value": "Connectez-vous sur WordPress.com pour partager ce contenu."
+    },
+    {
+      "key": "booking_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Payé",
+      "human_value": "Payé"
+    },
+    {
+      "key": "orderlist_mark_completed_success",
+      "bleu": 61.0474,
+      "chrf": 62.2735,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Commande #%1$d marquée comme complète",
+      "human_value": "Commande n°%1$d marquée comme terminée"
+    },
+    {
+      "key": "woo_shipping_labels_customs_origin_country_info",
+      "bleu": 70.8074,
+      "chrf": 74.1996,
+      "levenshtein_sim": 0.871287,
+      "ai_value": "Pays où le produit a été fabriqué ou assemblé.",
+      "human_value": "Pays dans lequel le produit a été fabriqué ou assemblé."
+    },
+    {
+      "key": "store_onboarding_task_woopayments_celebration_header",
+      "bleu": 35.3553,
+      "chrf": 69.5305,
+      "levenshtein_sim": 0.944444,
+      "ai_value": "Vous l'avez fait !",
+      "human_value": "Vous l’avez fait !"
+    },
+    {
+      "key": "card_reader_tap_to_pay_header",
+      "bleu": 0.0,
+      "chrf": 12.0229,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "TAP TO PAY",
+      "human_value": "APPUYER POUR PAYER"
+    },
+    {
+      "key": "woopos_settings_store_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "E-mail",
+      "human_value": "E-mail"
+    },
+    {
+      "key": "support_request_help_other",
+      "bleu": 31.9472,
+      "chrf": 89.0122,
+      "levenshtein_sim": 0.769231,
+      "ai_value": "Autre extension / Plugin",
+      "human_value": "Autre extension"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_message",
+      "bleu": 70.1688,
+      "chrf": 86.2938,
+      "levenshtein_sim": 0.927536,
+      "ai_value": "Tous les fichiers actuellement attachés à ce produit seront supprimés.",
+      "human_value": "Tous les fichiers actuellement joints à ce produit seront supprimés."
+    },
+    {
+      "key": "product_attributes_created_description",
+      "bleu": 86.6642,
+      "chrf": 95.0222,
+      "levenshtein_sim": 0.972376,
+      "ai_value": "Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variation !",
+      "human_value": "Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variante !"
+    },
+    {
+      "key": "woopos_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Commande %s",
+      "human_value": "Commande %s"
+    },
+    {
+      "key": "order_editing_barcode_content_description",
+      "bleu": 34.6681,
+      "chrf": 73.0683,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Scanner un code-barres",
+      "human_value": "Scanner le code-barres"
+    },
+    {
+      "key": "feedback_banner_ipp_title_beginner",
+      "bleu": 22.7721,
+      "chrf": 55.7173,
+      "levenshtein_sim": 0.643678,
+      "ai_value": "Vous aimez votre paiement en personne ?",
+      "human_value": "Votre paiement en personne s’est-il bien passé ?"
+    },
+    {
+      "key": "woopos_totals_reader_ready_for_payment_subtitle",
+      "bleu": 15.6197,
+      "chrf": 48.0685,
+      "levenshtein_sim": 0.805556,
+      "ai_value": "Appuyez, balayez ou insérez la carte",
+      "human_value": "Appuyer, glisser ou insérer la carte"
+    },
+    {
+      "key": "booking_note_description_private",
+      "bleu": 77.4403,
+      "chrf": 83.2777,
+      "levenshtein_sim": 0.921875,
+      "ai_value": "C'est une note privée. Elle ne sera pas partagée avec le client.",
+      "human_value": "Cette note est privée. Elle ne sera pas partagée avec le client."
+    },
+    {
+      "key": "product_type_list_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sélectionner un type de produit",
+      "human_value": "Sélectionner un type de produit"
+    },
+    {
+      "key": "booking_payment_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "PAIEMENT",
+      "human_value": "PAIEMENT"
+    },
+    {
+      "key": "notification_channel_order_title",
+      "bleu": 31.9472,
+      "chrf": 86.7041,
+      "levenshtein_sim": 0.965517,
+      "ai_value": "Alertes de nouvelles commandes",
+      "human_value": "Alertes de nouvelle commande"
+    },
+    {
+      "key": "login_text_otp_another",
+      "bleu": 29.8475,
+      "chrf": 74.1125,
+      "levenshtein_sim": 0.864198,
+      "ai_value": "Envoyez-moi un autre code par SMS à la place",
+      "human_value": "Envoyez moi un autre code à la place."
+    },
+    {
+      "key": "card_reader_payment_failed_currency_not_supported",
+      "bleu": 24.1772,
+      "chrf": 50.5603,
+      "levenshtein_sim": 0.790123,
+      "ai_value": "La carte ne supporte pas cette devise",
+      "human_value": "La carte ne prend pas en charge cette devise"
+    },
+    {
+      "key": "settings_woo_plugin_version",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Version de WooCommerce",
+      "human_value": "Version de WooCommerce"
+    },
+    {
+      "key": "product_term_name_already_exists",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Une option avec ce nom existe déjà",
+      "human_value": "Une option avec ce nom existe déjà"
+    },
+    {
+      "key": "orderlist_connectivity_tool_summary_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Aucun problème de connexion",
+      "human_value": "Aucun problème de connexion"
+    },
+    {
+      "key": "about_automattic_acknowledgements_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Remerciements",
+      "human_value": "Remerciements"
+    },
+    {
+      "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ACTIVER LE SON",
+      "human_value": "ACTIVER LE SON"
+    },
+    {
+      "key": "woopos_scanning_setup_success_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Scanner configuré !",
+      "human_value": "Scanner configuré !"
+    },
+    {
+      "key": "woopos_bookings_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Payé",
+      "human_value": "Payé"
+    },
+    {
+      "key": "card_reader_tap_to_pay_successful_refund_message",
+      "bleu": 16.5904,
+      "chrf": 50.2647,
+      "levenshtein_sim": 0.715596,
+      "ai_value": "Le paiement de test Tap To Pay a été remboursé avec succès",
+      "human_value": "Le paiement test Appuyer pour payer a été remboursé"
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+      "bleu": 48.3449,
+      "chrf": 73.3506,
+      "levenshtein_sim": 0.858974,
+      "ai_value": "Classe 9 – Batteries au lithium, paquet non marqué - Nouveaux appareils électroniques installés ou emballés avec des batteries au lithium (aucun marquage)",
+      "human_value": "Classe 9 : batteries au lithium, colis sans marquage - Nouveaux appareils électroniques contenant ou emballés avec des batteries au lithium (aucun étiquetage)"
+    },
+    {
+      "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Annuler",
+      "human_value": "Annuler"
+    },
+    {
+      "key": "shipping_label_hazmat_option_division_6_2",
+      "bleu": 40.6669,
+      "chrf": 68.4275,
+      "levenshtein_sim": 0.820513,
+      "ai_value": "Division 6.2 - Matières dangereuses - Matériel biologique (par ex., kits de test de laboratoire, retours de kits de test COVID autorisés)",
+      "human_value": "Division 6.2 : matières infectieuses - matières biologiques (ex. : kits de test de laboratoire, retours autorisés de kits de test COVID)"
+    },
+    {
+      "key": "woo_shipping_updating_address_failed",
+      "bleu": 84.2363,
+      "chrf": 93.5929,
+      "levenshtein_sim": 0.985294,
+      "ai_value": "Nous n'avons pas pu mettre à jour votre adresse. Veuillez réessayer.",
+      "human_value": "Nous n’avons pas pu mettre à jour votre adresse. Veuillez réessayer."
+    },
+    {
+      "key": "dashboard_reviews_card_empty_title_filtered",
+      "bleu": 71.6531,
+      "chrf": 93.8844,
+      "levenshtein_sim": 0.971429,
+      "ai_value": "Aucun avis trouvé",
+      "human_value": "Aucun avis trouvé."
+    },
+    {
+      "key": "product_update_stock_status_variable_ignored_count_singular",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "1 produit variable sera ignoré.",
+      "human_value": "1 produit variable sera ignoré."
+    },
+    {
+      "key": "settings_app_theme_option_system",
+      "bleu": 46.3078,
+      "chrf": 63.5139,
+      "levenshtein_sim": 0.792453,
+      "ai_value": "Par défaut du système",
+      "human_value": "Paramètres par défaut du système"
+    },
+    {
+      "key": "woopos_bookings_no_booking_selected",
+      "bleu": 71.6531,
+      "chrf": 97.0581,
+      "levenshtein_sim": 0.984127,
+      "ai_value": "Aucune réservation sélectionnée",
+      "human_value": "Aucune réservation sélectionnée."
+    },
+    {
+      "key": "login_site_credentials_http_error",
+      "bleu": 31.7023,
+      "chrf": 63.7195,
+      "levenshtein_sim": 0.76087,
+      "ai_value": "Échec de la connexion avec le code d'état %1$s",
+      "human_value": "La connexion a échoué avec le code d’état %1$s"
+    },
+    {
+      "key": "woopos_settings_help_product_limitations_subtitle",
+      "bleu": 5.0736,
+      "chrf": 28.0736,
+      "levenshtein_sim": 0.509434,
+      "ai_value": "En savoir plus sur les produits supportés dans POS",
+      "human_value": "Découvrez quels produits sont pris en charge dans le PDV"
+    },
+    {
+      "key": "product_type_variable_subscription_title",
+      "bleu": 24.8408,
+      "chrf": 83.7825,
+      "levenshtein_sim": 0.931034,
+      "ai_value": "Produit d'abonnement variable",
+      "human_value": "Produit à abonnement variable"
+    },
+    {
+      "key": "woopos_cart_coupon_invalid_subtitle",
+      "bleu": 39.4322,
+      "chrf": 55.0304,
+      "levenshtein_sim": 0.809524,
+      "ai_value": "Coupon non appliqué",
+      "human_value": "Code promo non appliqué"
+    },
+    {
+      "key": "order_creation_add_products",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Ajouter des produits",
+      "human_value": "Ajouter des produits"
+    },
+    {
+      "key": "order_creation_coupon_discount_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "-%1$s",
+      "human_value": "- %1$s"
+    },
+    {
+      "key": "more_menu_button_reviews_description",
+      "bleu": 10.6822,
+      "chrf": 41.019,
+      "levenshtein_sim": 0.704225,
+      "ai_value": "Capturer les avis de votre magasin",
+      "human_value": "Capturer des avis pour votre boutique"
+    },
+    {
+      "key": "settings_web_options",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Options Web",
+      "human_value": "Options Web"
+    },
+    {
+      "key": "woo_push_notifications_connection_steps_complete",
+      "bleu": 0.0,
+      "chrf": 6.7568,
+      "levenshtein_sim": 0.25,
+      "ai_value": "Complétée",
+      "human_value": "Terminé"
+    },
+    {
+      "key": "orderfilters_filter_card_title_all_orders",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Toutes les commandes",
+      "human_value": "Toutes les commandes"
+    },
+    {
+      "key": "shipping_label_rate_included_options_free_pickup",
+      "bleu": 12.4402,
+      "chrf": 21.766,
+      "levenshtein_sim": 0.472727,
+      "ai_value": "Admissible au retrait gratuit",
+      "human_value": "Éligible au point de vente"
+    },
+    {
+      "key": "product_type_external",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Externe",
+      "human_value": "Externe"
+    },
+    {
+      "key": "woo_shipping_labels_hazmat_selection_set",
+      "bleu": 42.7287,
+      "chrf": 90.3946,
+      "levenshtein_sim": 0.987952,
+      "ai_value": "Catégorie de matières dangereuses définie",
+      "human_value": "Catégorie des matières dangereuses définie"
+    },
+    {
+      "key": "product_downloadable_files_name_info",
+      "bleu": 68.0375,
+      "chrf": 92.7008,
+      "levenshtein_sim": 0.894737,
+      "ai_value": "C'est le nom du fichier affiché au client",
+      "human_value": "Le nom du fichier affiché au client"
+    },
+    {
+      "key": "product_add_ons_details_info_notice",
+      "bleu": 50.3892,
+      "chrf": 79.2726,
+      "levenshtein_sim": 0.860759,
+      "ai_value": "Vous pouvez modifier les modules complémentaires du produit dans le tableau de bord Web.",
+      "human_value": "Vous pouvez modifier des modules produits dans le tableau de bord Web."
+    },
+    {
+      "key": "print_receipt_label_info_step_6",
+      "bleu": 40.0446,
+      "chrf": 76.6781,
+      "levenshtein_sim": 0.896341,
+      "ai_value": "Si l'impression n'est pas disponible, vous pouvez toujours enregistrer votre reçu en tant que PDF et l'envoyer par e-mail pour l'imprimer à partir d'un autre appareil.",
+      "human_value": "Si l’impression n’est pas disponible, vous pouvez toujours enregistrer votre reçu au format PDF et l’envoyer par e-mail pour l’imprimer depuis un autre appareil."
+    },
+    {
+      "key": "about_automattic_source_code_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Code source",
+      "human_value": "Code source"
+    },
+    {
+      "key": "feedback_product_give_feedback_button_text",
+      "bleu": 27.5161,
+      "chrf": 10.7786,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "Donner un retour",
+      "human_value": "Faire un commentaire"
+    },
+    {
+      "key": "woopos_date_just_now",
+      "bleu": 50.0,
+      "chrf": 62.9034,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "À l'instant",
+      "human_value": "À l’instant"
+    },
+    {
+      "key": "product_update_stock_status_done",
+      "bleu": 0.0,
+      "chrf": 10.8696,
+      "levenshtein_sim": 0.181818,
+      "ai_value": "TERMINÉ",
+      "human_value": "FAIT"
+    },
+    {
+      "key": "blaze_campaign_budget_scheduled_section_title",
+      "bleu": 0.0,
+      "chrf": 17.2497,
+      "levenshtein_sim": 0.526316,
+      "ai_value": "Calendrier",
+      "human_value": "Planifier"
+    },
+    {
+      "key": "order_detail_attribution_admin_origin",
+      "bleu": 50.0,
+      "chrf": 25.1155,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Admin Web",
+      "human_value": "Administrateur Web"
+    },
+    {
+      "key": "tax_rate_selector_empty_list_title",
+      "bleu": 43.4721,
+      "chrf": 76.1145,
+      "levenshtein_sim": 0.9,
+      "ai_value": "Nous n'avons trouvé aucun taux de taxe",
+      "human_value": "Nous n’avons trouvé aucun taux de taxation"
+    },
+    {
+      "key": "card_reader_tap_to_pay_about_copyright",
+      "bleu": 41.2755,
+      "chrf": 68.5528,
+      "levenshtein_sim": 0.723618,
+      "ai_value": "Le symbole sans contact est une marque déposée appartenant à EMVCo, LLC et utilisée avec sa permission.",
+      "human_value": "Le symbole du sans contact est une marque déposée et utilisée avec l’autorisation de EMVCo, LLC."
+    },
+    {
+      "key": "product_detail_product_type_hint",
+      "bleu": 70.7107,
+      "chrf": 67.7447,
+      "levenshtein_sim": 0.583333,
+      "ai_value": "produit %1$s",
+      "human_value": "%1$s produit"
+    },
+    {
+      "key": "ai_product_description_learn_more_link",
+      "bleu": 73.722,
+      "chrf": 77.772,
+      "levenshtein_sim": 0.883436,
+      "ai_value": "Alimenté par l'IA. &lt;a href=\\'\\'&gt;&lt;u&gt;En savoir plus&lt;/u&gt;&lt;/a&gt;.",
+      "human_value": "Alimenté par l’IA. &lt;a href=\\'\\'&gt;&lt;u&gt;Lire la suite&lt;/u&gt;&lt;/a&gt;."
+    },
+    {
+      "key": "product_attributes",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Attributs",
+      "human_value": "Attributs"
+    },
+    {
+      "key": "ai_product_creation_scanning_photo_error",
+      "bleu": 46.5954,
+      "chrf": 74.3875,
+      "levenshtein_sim": 0.88,
+      "ai_value": "Erreur lors du balayage du texte de la photo. Veuillez réessayer",
+      "human_value": "Erreur lors du scan du texte sur la photo. Veuillez réessayer"
+    },
+    {
+      "key": "bookings_resources_fetch_error",
+      "bleu": 29.8475,
+      "chrf": 69.1428,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "Erreur lors de la récupération des membres de l'équipe",
+      "human_value": "Erreur lors de l’extraction des membres de l’équipe"
+    },
+    {
+      "key": "no_site_error",
+      "bleu": 46.5173,
+      "chrf": 84.2506,
+      "levenshtein_sim": 0.69962,
+      "ai_value": "Le site à cette adresse n'est pas un site WordPress. Pour que nous puissions nous connecter à celui-ci, le site doit utiliser WordPress.",
+      "human_value": "Le site à cette adresse n\\'est pas un site WordPress. Le site doit utiliser WordPress pour que nous puissions nous y connecter."
+    },
+    {
+      "key": "variations_bulk_creation_warning_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Limite de génération dépassée",
+      "human_value": "Limite de génération dépassée"
+    },
+    {
+      "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+      "bleu": 27.5161,
+      "chrf": 83.6757,
+      "levenshtein_sim": 0.814815,
+      "ai_value": "Un montant fixe",
+      "human_value": "Montant fixe"
+    },
+    {
+      "key": "shipping_label_shipping_service_title",
+      "bleu": 50.0,
+      "chrf": 77.4647,
+      "levenshtein_sim": 0.95,
+      "ai_value": "Service d'expédition",
+      "human_value": "Service d’expédition"
+    },
+    {
+      "key": "shipping_label_error_address_house_number_missing",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Numéro de maison manquant",
+      "human_value": "Numéro de maison manquant"
+    },
+    {
+      "key": "login_jetpack_installation_get_support",
+      "bleu": 55.0321,
+      "chrf": 71.1971,
+      "levenshtein_sim": 0.941176,
+      "ai_value": "Obtenir de l'aide",
+      "human_value": "Obtenir de l’aide"
+    },
+    {
+      "key": "card_reader_connect_scanning_failed_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Aucun lecteur connecté",
+      "human_value": "Aucun lecteur connecté"
+    },
+    {
+      "key": "product_bulk_update_status_updated",
+      "bleu": 66.874,
+      "chrf": 74.6545,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "Statut mis à jour !",
+      "human_value": "État mis à jour !"
+    },
+    {
+      "key": "coupon_conditions_products_edit_products_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Modifier les produits (%d)",
+      "human_value": "Modifier les produits (%d)"
+    },
+    {
+      "key": "jetpack_install_progress_step_three_message",
+      "bleu": 18.9959,
+      "chrf": 44.2551,
+      "levenshtein_sim": 0.692308,
+      "ai_value": "Connexion de votre magasin",
+      "human_value": "Connexion à votre boutique"
+    },
+    {
+      "key": "shipping_label_package_details_items_count_many",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d articles",
+      "human_value": "%d articles"
+    },
+    {
+      "key": "product_selector_select_product_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Sélectionner le produit %s",
+      "human_value": "Sélectionner le produit %s"
+    },
+    {
+      "key": "update_downloaded",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Woo a téléchargé une mise à jour",
+      "human_value": "Woo a téléchargé une mise à jour"
+    },
+    {
+      "key": "login_jetpack_connection_create_account",
+      "bleu": 60.2527,
+      "chrf": 80.3102,
+      "levenshtein_sim": 0.925,
+      "ai_value": "Si vous n'avez pas de compte, nous utiliserons cet e-mail pour en créer un.",
+      "human_value": "Si vous n’avez pas de compte, nous utiliserons cette adresse e-mail pour en créer un."
+    },
+    {
+      "key": "blaze_campaign_creation_error_cancel",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Annuler la campagne",
+      "human_value": "Annuler la campagne"
+    },
+    {
+      "key": "store_onboarding_launch_store_ok",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "OK",
+      "human_value": "OK"
+    },
+    {
+      "key": "login_jetpack_steps_authorizing_validation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Validation",
+      "human_value": "Validation"
+    },
+    {
+      "key": "shipping_label_package_details_selected_package_hint",
+      "bleu": 50.0,
+      "chrf": 61.4384,
+      "levenshtein_sim": 0.685714,
+      "ai_value": "Paquet sélectionné",
+      "human_value": "Colis sélectionné"
+    },
+    {
+      "key": "login_jetpack_connection_enter_wpcom_password",
+      "bleu": 66.6895,
+      "chrf": 78.3981,
+      "levenshtein_sim": 0.884615,
+      "ai_value": "Entrez le mot de passe de votre compte WordPress.com pour vous connecter à Jetpack",
+      "human_value": "Saisir le mot de passe de votre compte WordPress.com pour connecter Jepack"
+    },
+    {
+      "key": "bookings_filters_title_with_count",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Filtres (%s)",
+      "human_value": "Filtres (%s)"
+    },
+    {
+      "key": "amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Montant",
+      "human_value": "Montant"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_error_proceed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Continuer",
+      "human_value": "Continuer"
+    },
+    {
+      "key": "card_reader_payment_send_receipt",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Envoyer le reçu",
+      "human_value": "Envoyer le reçu"
+    },
+    {
+      "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+      "bleu": 61.8098,
+      "chrf": 81.4216,
+      "levenshtein_sim": 0.92459,
+      "ai_value": "Les appels XML-RPC semblent bloqués sur ce site (code d'erreur 401). Si la tentative de connexion échoue, appuyez sur l'icône d'aide pour consulter la FAQ.",
+      "human_value": "Les appels XML-RPC sont bloqués sur ce site (code d’erreur 401). Si la tentative de connexion échoue, appuyez sur l’icône d’aide pour afficher la FAQ."
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_8_corrosive",
+      "bleu": 22.2085,
+      "chrf": 60.0796,
+      "levenshtein_sim": 0.730061,
+      "ai_value": "Classe 8 – Paquet de matières corrosives - Matières corrosives admissibles au transport aérien (certains composés de nettoyage ou de destruction d'arbres/mauvaises herbes, etc.)",
+      "human_value": "Classe 8 : matières corrosives - matières corrosives éligibles à l’envoi par avion (certains produits de nettoyage ou de désherbage des arbres, etc.)"
+    }
+  ],
+  "aggregates": {
+    "bleu_mean": 62.7863,
+    "bleu_median": 59.9738,
+    "chrf_mean": 77.4929,
+    "chrf_median": 81.8818,
+    "levenshtein_sim_mean": 0.868208,
+    "levenshtein_sim_median": 0.923233,
+    "total_strings": 300,
+    "matched_strings": 298
+  }
+}

@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Harap tunggu…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Tampaknya ada masalah dengan koneksi Jetpack Anda.\\n\\nNamun jangan khawatir, tim dukungan kami siap membantu. Hubungi kami dan kami akan dengan senang hati membantu Anda."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "Disalin ke clipboard"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Variasi %s, Harga %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Cetak"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Detail pengiriman"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Memuat data alamat"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Jumlah yang dihitung: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Tetap Keluar"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s terjual"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "Dalam moderasi"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Checkout"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Metode pembayaran"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "Apa itu WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Tidak ada penggunaan kupon selama periode ini"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Tampilkan detail"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Mulai berjualan hari ini dengan menambahkan produk pertama Anda ke toko."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "Perbarui Harga Diskon"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Kolom wajib"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Tidak ada program pada periode ini"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Beli label pengiriman"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "Alat Pencarian HAZMAT USPS."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Terjadi kesalahan. Silakan login untuk melanjutkan"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Konfirmasi pendaftaran"
+  },
+  {
+    "key": "type",
+    "value": "Tipe"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Tambah kupon"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "TOTAL PEMBAYARAN"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Umpan balik positif"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Berakhir setelah"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Kartu kredit berhasil ditambahkan"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Hanya butuh satu menit."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Pilih semua"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Perusahaan"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "Memperbarui harga diskon"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "Pilih %d Produk"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "Apakah Anda yakin ingin menerbitkan refund? Ini tidak dapat dibatalkan."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Layanan"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "Info lebih lanjut tentang ITN"
+  },
+  {
+    "key": "retry",
+    "value": "Coba lagi"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Pembaruan tersedia"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Pelanggan"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "Di sinilah orang akan menemukan Anda di Internet. Jangan khawatir, Anda dapat mengubahnya nanti."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Kampanye Blaze"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "Periode waktu opsional untuk menunggu sebelum menagih pembayaran berulang pertama. Biaya pendaftaran apa pun tetap akan ditagihkan pada awal langganan. Masa percobaan tidak boleh melebihi: 90 hari, 52 minggu, 24 bulan, atau 5 tahun."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Izin perangkat terdekat yang diperlukan tidak ada"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "Refund %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "Untuk kenyamanan Anda, kami telah mengisi otomatis informasi kontak WordPress.com Anda. Harap tinjau untuk memastikan bahwa ini adalah informasi yang benar yang ingin Anda gunakan untuk domain ini."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Buat label pengiriman"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Keluar"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Mempersiapkan pembayaran"
+  },
+  {
+    "key": "analytics_items",
+    "value": "item"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Tidak ada pendapatan pada periode ini"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Masukkan barcode atau pengenal lain yang unik untuk produk ini. Ini dapat membantu Anda mencantumkan produk ini di kanal atau marketplace lain."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Item terjual"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Mengaktifkan Bayar Langsung memungkinkan pelanggan membayar pesanan online saat pengiriman melalui tunai atau kartu.\\n\\nPesanan tetap dapat dibuat secara manual tanpa mengaktifkan fitur ini."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Kesalahan saat memuat kolom kustom"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Silakan perbarui perangkat lunak pembaca Anda agar tetap dapat menerima pembayaran"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "Dapatkan tautan login melalui email"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "hingga %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Belum dibayar"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Lacak penjualan dan produk dengan performa tinggi"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Perbarui Status Stok"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "Pustaka media WordPress"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Draf produk disimpan"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Edit catatan pelanggan"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Tambah catatan"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Tidak ada"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Tambahkan statistik rentang tanggal kustom"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Instal Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Silakan masukkan nama kurir"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Siapkan pemindai barcode"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "Bagikan URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Tema saat ini"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Silakan masuk menggunakan nama pengguna WordPress.com Anda, bukan alamat email Anda."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Harap jelaskan jenis barang yang ada di dalam paket ini"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d notifikasi baru"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Kode Kupon"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Kesalahan saat menghapus pelacakan"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Tujuan: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "Coba lagi dengan halaman WP Admin"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "Tidak dapat terhubung ke %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Terima pembayaran di toko fisik Anda"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Beberapa kolom wajib kosong."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Ikon indikasi kesalahan"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Status pesanan: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Mingguan"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Buat paket kustom"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping saat ini tidak mendukung pengiriman HAZMAT melalui %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Deskripsi"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Klik"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Tambah foto"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Temukan penyedia pembayaran lain dan \\npilih penyedia pembayaran."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "Anda dapat menyiapkan barcode di kolom GTIN, UPC, EAN, ISBN pada tab inventaris produk. Untuk detail lebih lanjut"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Setujui"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Semua"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Tambah gambar"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "Ada persyaratan yang masih tertunda di akun Anda. Harap selesaikan persyaratan tersebut sebelum %1$s agar tetap dapat menerima Pembayaran Langsung."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Masukkan judul produk."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Detail pembatasan"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Promosikan dengan Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Lokasi"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "minggu"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Dengan mengetuk tombol Hubungkan Jetpack"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Ya, ubah"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Pesan"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Apakah Anda yakin ingin mengubah tipe produk?"
+  },
+  {
+    "key": "disabled",
+    "value": "Dinonaktifkan"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Masukkan dimensi paket Anda atau pilih opsi paket kurir untuk melihat tarif pengiriman yang tersedia."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Produk"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Produk Diperbarui"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Hadiah"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "Terbitkan refund"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Permintaan dukungan Anda telah masuk dengan aman ke kotak masuk kami. Kami akan membalas melalui email secepat mungkin."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Simpan pilihan saya untuk kampanye mendatang"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Hubungi Dukungan"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Tidak dapat menandai pesanan sebagai selesai"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s per minggu, mulai dari %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "Transaksi yang sama telah dikirim baru-baru ini"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Pendaftaran"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Edit pesanan"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Tidak ada variasi yang didukung"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Silakan hubungkan toko Anda ke Jetpack untuk mengaksesnya di aplikasi ini."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Total berat paket (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Produk populer"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Perbarui Harga Reguler"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Anggota tim"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "Kartu tidak mendukung jenis refund ini"
+  },
+  {
+    "key": "product_settings",
+    "value": "Pengaturan produk"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "ITN wajib untuk pengiriman ke %1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Lanjutkan koneksi"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "Saat memilih \"Print receipt\" setelah menerima pembayaran, ganti \"Save as PDF\" dengan \"All printers\", lalu cari printer baru."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "Dibatalkan"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Jumlah"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Mengambil negara dan provinsi."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Lihat Detail Produk"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "Refund berhasil"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Opsi format label"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Log aplikasi"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "Buat variasi pertama Anda"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Disarankan"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "Dikembalikan"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Langganan"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Pilih dari perangkat"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "Anda tidak dapat menambahkan produk variabel secara langsung. Silakan pilih variasi tertentu"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Asuransi (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Metode pembayaran"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Item tidak didukung – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Aktif"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Kembali ke toko"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Pelanggan membayar %1$s sebesar %2$s untuk pengiriman"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Mengapa saya tidak dapat melihat produk saya?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Batas Penggunaan Per Pengguna"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Buat produk dengan AI"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Pengiriman Sabtu"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Batas Penggunaan Per Kupon"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Tambahkan detail lainnya"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "Anda memiliki pesanan baru! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Kesalahan saat membeli label"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Pengiriman"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "Kami telah terlalu banyak mencoba mengirim kode verifikasi SMS — istirahat sejenak, lalu minta yang baru dalam satu menit."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "Email"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Buat Kampanye"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Kemarin pukul %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Foto profil Anda"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "Kembalikan ke pengirim jika paket tidak dapat dikirimkan"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Mengambil pesanan situs Anda"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Selamat atas pembelian Anda"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Layar penuh onboarding"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Saran"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "Edit refund"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "Iklan telah dikirim untuk persetujuan. Kami akan mengirim email konfirmasi setelah iklan disetujui dan berjalan."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Kedaluwarsa langganan"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Silakan masuk dengan nama pengguna dan kata sandi Anda."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Terjadi kesalahan saat berkomunikasi dengan situs Anda."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 tidak ada ulasan yang disetujui"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Jumlah stok"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Tidak dapat memuat gambar"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Pengaturan privasi"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Langganan variabel"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "Saat ini kami tidak mendukung Pelacakan untuk kurir ini"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Menginstal Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Jenis Pembatasan"
+  },
+  {
+    "key": "today",
+    "value": "Hari ini"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Semua siap!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Simpan konfigurasi"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d pesanan diperbarui, dan %d pesanan gagal diperbarui. Silakan coba lagi."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Audiens"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Konfirmasi Alamat yang Disarankan"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Saya menyukainya"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Kelola pengaturan katalog"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "Detail isi"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Hapus kupon"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Masa percobaan Anda telah berakhir."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Kurir Kustom"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Pindai barcode untuk memperbarui inventaris"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Daftarkan domain"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Tambah foto"
+  },
+  {
+    "key": "shipping",
+    "value": "Pengiriman"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d item"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Kolom ini wajib diisi."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Stok tidak dikelola"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "Tanda tangan wajib (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Saat ini"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Di mana produk saya?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Sembunyikan Penagihan"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "Masuk ke WordPress.com untuk membagikan konten."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Dibayar"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "Pesanan #%1$d ditandai sebagai selesai"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Negara tempat produk diproduksi atau dirakit."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Anda berhasil!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TAP TO PAY"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "Email"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Ekstensi / Plugin Lain"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Semua file yang saat ini dilampirkan ke produk ini akan dihapus."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Sekarang setelah Anda menambahkan atribut, Anda dapat membuat variasi pertama Anda!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Pesanan %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Pindai barcode"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Menikmati pembayaran langsung Anda?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Ketuk, gesek, atau masukkan kartu"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Ini adalah catatan pribadi. Catatan ini tidak akan dibagikan kepada pelanggan."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Pilih tipe produk"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "PEMBAYARAN"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Peringatan pesanan baru"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Kirimkan saya kode lain lewat SMS"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "Kartu tidak mendukung mata uang ini"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "Versi WooCommerce"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Opsi dengan nama ini sudah ada"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Tidak ada masalah koneksi"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Ucapan terima kasih"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "AKTIFKAN SUARA"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Alamat asal tidak ada atau tidak valid"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Pemindai disiapkan!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Dibayar"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Pembayaran uji Tap To Pay berhasil di-refund"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Kelas 9 – Baterai litium, paket tanpa tanda - Perangkat elektronik baru yang terpasang atau dikemas dengan baterai litium (tanpa penandaan)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "Batal"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Divisi 6.2 - Bahan Berbahaya - Bahan Biologis (mis., kit uji laboratorium, pengembalian kit tes COVID resmi)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "Kami tidak dapat memperbarui alamat Anda. Silakan coba lagi."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Tidak ada ulasan ditemukan"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 produk variabel akan diabaikan."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "Default sistem"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Tidak ada pemesanan yang dipilih"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "Login gagal dengan kode status %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "Pelajari produk mana yang didukung di POS"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Produk langganan variabel"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Kupon tidak diterapkan"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Tambah produk"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Kumpulkan ulasan untuk toko Anda"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Opsi Web"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Selesai"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Semua pesanan"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "Memenuhi syarat untuk pengambilan gratis"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Eksternal"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Kategori bahan berbahaya ditetapkan"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Ini adalah nama file yang ditampilkan kepada pelanggan"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "Anda dapat mengedit add-on produk di dashboard web."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Jika pencetakan tidak tersedia, Anda selalu dapat menyimpan tanda terima sebagai PDF dan mengirimkannya melalui email untuk dicetak dari perangkat lain."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Kode Sumber"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Berikan Umpan Balik"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Baru saja"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "SELESAI"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Jadwal"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Admin web"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "Kami tidak dapat menemukan tarif pajak apa pun"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "Simbol Contactless adalah merek dagang yang dimiliki oleh dan digunakan dengan izin dari EMVCo, LLC."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "Produk %1$s"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Didukung oleh AI. &lt;a href=\\'\\'&gt;&lt;u&gt;Pelajari lebih lanjut&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Atribut"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Kesalahan saat mencoba memindai teks dari foto. Silakan coba lagi"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Kesalahan saat mengambil anggota tim"
+  },
+  {
+    "key": "no_site_error",
+    "value": "Situs di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs ini, situs tersebut harus menggunakan WordPress."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Batas pembuatan terlampaui"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Jumlah tetap"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Layanan pengiriman"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Nomor rumah tidak ada"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Dapatkan dukungan"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Tidak ada pembaca yang terhubung"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Status diperbarui!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Edit Produk (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Menghubungkan toko Anda"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d item"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "Pilih produk %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo telah mengunduh pembaruan"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Jika Anda belum memiliki akun, kami akan menggunakan email ini untuk membuatnya."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Batalkan kampanye"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "OK"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Memvalidasi"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Paket dipilih"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Masukkan kata sandi akun WordPress.com Anda untuk terhubung ke Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Filter (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Jumlah"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Lanjutkan"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Kirim tanda terima"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "Panggilan XML-RPC tampaknya diblokir di situs ini (kode kesalahan 401). Jika upaya login gagal, ketuk ikon bantuan untuk melihat FAQ."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Kelas 8 – Paket Bahan Korosif - Bahan Korosif yang Memenuhi Syarat Udara (senyawa pembersih tertentu atau pembasmi pohon/gulma, dll.)"
+  }
+]

@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "يرجى الانتظار…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "يبدو أن هناك مشكلة في اتصال Jetpack لديك.\\n\\nلكن لا تقلق، فريق الدعم لدينا هنا للمساعدة. تواصل معنا وسنساعدك بكل سرور."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "تم النسخ إلى الحافظة"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "النوع %s، السعر %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "طباعة"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "تفاصيل الشحنة"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "جارٍ تحميل بيانات العنوان"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "المبلغ المحسوب: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "خروج على أي حال"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s، %2$s، %3$s، تم بيع %4$s"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "قيد المراجعة"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "إتمام الدفع"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "طريقة الدفع"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "ما هو WordPress.com؟"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "لا يوجد استخدام للقسائم خلال هذه الفترة"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "إظهار التفاصيل"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "ابدأ البيع اليوم بإضافة أول منتج إلى المتجر."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "تحديث سعر التخفيض"
+  },
+  {
+    "key": "error_required_field",
+    "value": "حقل مطلوب"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "لا توجد برامج خلال هذه الفترة"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "شراء ملصق شحن"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "أداة بحث USPS HAZMAT."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "حدث خطأ. يرجى تسجيل الدخول للمتابعة"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "تأكيد التسجيل"
+  },
+  {
+    "key": "type",
+    "value": "النوع"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "إضافة قسيمة"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "إجماليات الدفع"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "ملاحظات إيجابية"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "ينتهي بعد"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "تمت إضافة بطاقة الائتمان بنجاح"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "لن يستغرق الأمر سوى دقيقة واحدة."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "تحديد الكل"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "الشركة"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "جارٍ تحديث أسعار التخفيض"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "تحديد %d منتجًا"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "هل أنت متأكد أنك تريد إصدار استرداد؟ لا يمكن التراجع عن هذا."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "الخدمة"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "مزيد من المعلومات حول ITN"
+  },
+  {
+    "key": "retry",
+    "value": "إعادة المحاولة"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• تحديث متاح"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "العميل"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "هذا هو المكان الذي سيعثر عليك فيه الأشخاص على الإنترنت. لا تقلق، يمكنك تغييره لاحقًا."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "حملة Blaze"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "فترة زمنية اختيارية للانتظار قبل تحصيل أول دفعة متكررة. ستظل أي رسوم تسجيل تُحصّل عند بداية الاشتراك. لا يمكن أن تتجاوز فترة التجربة: 90 يومًا أو 52 أسبوعًا أو 24 شهرًا أو 5 سنوات."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "إذن الأجهزة القريبة المطلوب مفقود"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "استرداد %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "لتسهيل الأمر عليك، قمنا مسبقًا بتعبئة معلومات الاتصال الخاصة بك على WordPress.com. يرجى مراجعتها للتأكد من أنها المعلومات الصحيحة التي تريد استخدامها لهذا النطاق."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "إنشاء ملصق شحن"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "خروج"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "التحضير للدفع"
+  },
+  {
+    "key": "analytics_items",
+    "value": "عناصر"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "لا توجد إيرادات خلال هذه الفترة"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "أدخل باركودًا أو أي معرّف آخر فريد لهذا المنتج. يمكن أن يساعدك ذلك على إدراج هذا المنتج في قنوات أو أسواق أخرى."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "العناصر المباعة"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "يتيح لك تفعيل الدفع حضوريًا أن يدفع لك العميل مقابل الطلبات عبر الإنترنت عند التسليم نقدًا أو بالبطاقة.\\n\\nلا يزال بالإمكان إنشاء الطلبات يدويًا بدون تفعيل هذه الميزة."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "خطأ أثناء تحميل الحقول المخصصة"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "يرجى تحديث برنامج القارئ لمواصلة قبول المدفوعات"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "الحصول على رابط تسجيل الدخول عبر البريد الإلكتروني"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "حتى %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "غير مدفوع"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "تتبّع المبيعات والمنتجات عالية الأداء"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "تحديث حالة المخزون"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "مكتبة وسائط WordPress"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "تم حفظ مسودة المنتج"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "تعديل ملاحظة العميل"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "إضافة ملاحظة"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "لا شيء"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "إضافة إحصاءات نطاق تاريخ مخصص"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "تثبيت Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "يرجى إدخال اسم شركة شحن"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "إعداد ماسح باركود"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "مشاركة URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "القالب الحالي"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "يرجى تسجيل الدخول باستخدام اسم مستخدم WordPress.com بدلًا من عنوان بريدك الإلكتروني."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "يرجى وصف نوع البضائع التي تحتويها هذه الحزمة"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d إشعارات جديدة"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "رمز القسيمة"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "خطأ في حذف التتبع"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "الوجهة: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "حاول مرة أخرى باستخدام صفحة WP Admin"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "يتعذر الاتصال بـ %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "اقبل المدفوعات في متجرك الفعلي"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "بعض الحقول المطلوبة فارغة."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "أيقونة الإشارة إلى الخطأ"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "حالة الطلب: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "أسبوعيًا"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "إنشاء حزمة مخصصة"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "لا يدعم WooCommerce Shipping حاليًا شحنات HAZMAT عبر %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "الوصف"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "النقرات"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "إضافة صور"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "اكتشف مزوّدي دفع آخرين و \\nاختر مزوّد دفع."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "يمكنك إعداد الباركودات في حقل GTIN أو UPC أو EAN أو ISBN في تبويب مخزون المنتج. لمزيد من التفاصيل"
+  },
+  {
+    "key": "wc_approve",
+    "value": "موافقة"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "الكل"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "إضافة صورة"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "هناك متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات بحلول %1$s لمواصلة قبول المدفوعات الحضورية."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "قانوني (8.5 × 14 بوصة)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "أدخل عنوان المنتج."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "تفاصيل القيود"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "روّج باستخدام Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "الموقع"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "أسبوع"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "بالنقر على زر Connect Jetpack"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "نعم، تغيير"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "رسالة"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "هل أنت متأكد أنك تريد تغيير نوع المنتج؟"
+  },
+  {
+    "key": "disabled",
+    "value": "معطّل"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "أدخل أبعاد الحزمة أو اختر خيار حزمة شركة الشحن لمعرفة أسعار الشحن المتاحة."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "المنتج"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "تم تحديث المنتج"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "هدايا"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "إصدار استرداد"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "وصل طلب الدعم الخاص بك بأمان إلى صندوق الوارد لدينا. سنرد عليك عبر البريد الإلكتروني بأسرع ما يمكن."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "احفظ اختياري للحملات المستقبلية"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "الاتصال بالدعم"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "تعذر وضع علامة على الطلب كمكتمل"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s أسبوعيًا، بدءًا من %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "تم إرسال معاملة مطابقة مؤخرًا"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "التسجيل"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "تعديل الطلب"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "لم يتم العثور على أنواع مدعومة"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "يرجى ربط متجرك بـ Jetpack للوصول إليه في هذا التطبيق."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "إجمالي وزن الحزمة (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "المنتجات الشائعة"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "تحديث السعر العادي"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "عضو الفريق"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "البطاقة لا تدعم هذا النوع من الاسترداد"
+  },
+  {
+    "key": "product_settings",
+    "value": "إعدادات المنتج"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "مطلوب ITN للشحنات إلى %1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "متابعة الاتصال"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "عند تحديد \"Print receipt\" بعد قبول الدفع، استبدل \"Save as PDF\" بـ \"All printers\"، وابحث عن طابعة جديدة."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "تم الإلغاء"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "المبلغ"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "جارٍ جلب البلدان والولايات."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "عرض تفاصيل المنتج"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "تم الاسترداد بنجاح"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "خيارات تنسيق الملصق"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "سجل التطبيق"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "أنشئ أول نوع"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "مقترح"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "تم الاسترداد"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "الاشتراكات"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "الاختيار من الجهاز"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "لا يمكنك إضافة منتج متغير مباشرة. يرجى تحديد نوع محدد"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "التأمين (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "طريقة الدفع"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "عنصر غير مدعوم – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "نشط"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "العودة إلى المتجر"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "دفع العميل %1$s بقيمة %2$s للشحن"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "لماذا لا يمكنني رؤية منتجاتي؟"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "حد الاستخدام لكل مستخدم"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "إنشاء منتج باستخدام الذكاء الاصطناعي"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "تسليم يوم السبت"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "حد الاستخدام لكل قسيمة"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "إضافة المزيد من التفاصيل"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "لديك طلب جديد! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "خطأ في شراء الملصقات"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "الشحن"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "لقد قمنا بعدد كبير جدًا من المحاولات لإرسال رمز التحقق عبر SMS — خذ استراحة واطلب رمزًا جديدًا بعد دقيقة."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "البريد الإلكتروني"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "إنشاء حملة"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "أمس في %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "صورة ملفك الشخصي"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "إرجاع إلى المرسل إذا تعذر تسليم الحزمة"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "جارٍ جلب طلبات موقعك"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "تهانينا على عملية الشراء"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "شاشة تأهيل كاملة"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "اقتراحات"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "تعديل الاسترداد"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "تم إرسال الإعلان للموافقة. سنرسل إليك رسالة تأكيد عبر البريد الإلكتروني بمجرد الموافقة عليه وبدء تشغيله."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "انتهاء الاشتراك"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "يرجى تسجيل الدخول باستخدام اسم المستخدم وكلمة المرور."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "حدث خطأ أثناء التواصل مع موقعك."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 لا توجد مراجعات معتمدة"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "كمية المخزون"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "تعذر تحميل الصورة"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "إعدادات الخصوصية"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "اشتراك متغير"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "نحن لا ندعم حاليًا التتبع لهذه الشركة الناقلة"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "جارٍ تثبيت Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "نوع القيود"
+  },
+  {
+    "key": "today",
+    "value": "اليوم"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "كل شيء جاهز!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "حفظ التكوين"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "تم تحديث %d طلب(ات)، وفشل تحديث %d طلب(ات). يرجى المحاولة مرة أخرى."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "الجمهور"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "تأكيد العنوان المقترح"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "أعجبني"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "إدارة إعدادات الكتالوج"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "تفاصيل المحتويات"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "إزالة القسائم"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "انتهت فترة تجربتك."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "شركة شحن مخصصة"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "مسح الباركود لتحديث المخزون"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "تسجيل النطاق"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "إضافة صورة"
+  },
+  {
+    "key": "shipping",
+    "value": "الشحن"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d عناصر"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "هذا الحقل مطلوب."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "المخزون غير مُدار"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "التوقيع مطلوب (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "الحالي"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "أين منتجاتي؟"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "إخفاء الفوترة"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "سجّل الدخول إلى WordPress.com لمشاركة المحتوى."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "مدفوع"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "تم وضع علامة مكتمل على الطلب رقم %1$d"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "البلد الذي تم فيه تصنيع المنتج أو تجميعه."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "لقد فعلتها!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "انقر للدفع"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "البريد الإلكتروني"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "إضافة / Plugin آخر"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "ستتم إزالة جميع الملفات المرفقة حاليًا بهذا المنتج."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "الآن بعد أن أضفت السمات، يمكنك إنشاء أول نوع!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "الطلب %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "مسح الباركود"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "هل استمتعت بالدفع الحضوري؟"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "انقر أو مرر أو أدخل البطاقة"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "هذه ملاحظة خاصة. لن تتم مشاركتها مع العميل."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "حدد نوع المنتج"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "الدفع"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "تنبيهات الطلبات الجديدة"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "أرسل لي رمزًا آخر بدلًا من ذلك"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "البطاقة لا تدعم هذه العملة"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "إصدار WooCommerce"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "يوجد خيار بهذا الاسم بالفعل"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "لا توجد مشاكل في الاتصال"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "شكر وتقدير"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "تمكين الصوت"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "عنوان المنشأ مفقود أو غير صالح"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "تم إعداد الماسح!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "مدفوع"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "تم استرداد دفعة Tap To Pay التجريبية بنجاح"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "الفئة 9 – بطاريات الليثيوم، طرد غير معلّم - أجهزة إلكترونية جديدة مركبة أو معبأة مع بطاريات ليثيوم (بدون وسم)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "إلغاء"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "القسم 6.2 - مواد خطرة - مواد بيولوجية (مثل مجموعات الاختبار المعملي، ومرتجعات مجموعات اختبار COVID المعتمدة)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "تعذر تحديث عنوانك. يرجى المحاولة مرة أخرى."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "لم يتم العثور على مراجعات"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "سيتم تجاهل منتج متغير واحد."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "افتراضي النظام"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "لم يتم تحديد حجز"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "فشل تسجيل الدخول برمز الحالة %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "تعرّف على المنتجات المدعومة في POS"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "منتج اشتراك متغير"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "لم يتم تطبيق القسيمة"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "إضافة منتجات"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "اجمع مراجعات لمتجرك"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "خيارات الويب"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "مكتمل"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "كل الطلبات"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "مؤهل للاستلام المجاني"
+  },
+  {
+    "key": "product_type_external",
+    "value": "خارجي"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "تم تعيين فئة المواد الخطرة"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "هذا هو اسم الملف الذي يظهر للعميل"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "يمكنك تعديل إضافات المنتج من لوحة تحكم الويب."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "إذا لم تكن الطباعة متاحة، يمكنك دائمًا حفظ الإيصال كملف PDF وإرساله بالبريد الإلكتروني لطباعة الإيصال من جهاز آخر."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "الشفرة المصدرية"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "إرسال ملاحظات"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "الآن للتو"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "تم"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "الجدول الزمني"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "مشرف الويب"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "لم نتمكن من العثور على أي معدلات ضريبية"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "رمز الدفع بدون تلامس علامة تجارية مملوكة لـ EMVCo, LLC ويُستخدم بإذن منها."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "منتج %1$s"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "مدعوم بالذكاء الاصطناعي. &lt;a href=''&gt;&lt;u&gt;معرفة المزيد&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "السمات"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "حدث خطأ أثناء محاولة مسح النص من الصورة. يرجى المحاولة مرة أخرى"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "خطأ في جلب أعضاء الفريق"
+  },
+  {
+    "key": "no_site_error",
+    "value": "الموقع الموجود على هذا العنوان ليس موقع WordPress. لكي نتمكن من الاتصال به، يجب أن يستخدم الموقع WordPress."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "تم تجاوز حد الإنشاء"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "مبلغ ثابت"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "خدمة الشحن"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "رقم المنزل مفقود"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "الحصول على الدعم"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "لا يوجد قارئ متصل"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "تم تحديث الحالة!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "تعديل المنتجات (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "جارٍ ربط متجرك"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d عناصر"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "حدد المنتج %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "قام Woo بتنزيل تحديث"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "إذا لم يكن لديك حساب، فسنستخدم هذا البريد الإلكتروني لإنشاء حساب."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "إلغاء الحملة"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "موافق"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "جارٍ التحقق"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "تم تحديد الحزمة"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "أدخل كلمة مرور حساب WordPress.com الخاص بك للاتصال بـ Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "عوامل التصفية (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "المبلغ"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "متابعة"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "إرسال الإيصال"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "يبدو أن استدعاءات XML-RPC محظورة على هذا الموقع (رمز الخطأ 401). إذا فشلت محاولة تسجيل الدخول، فانقر على أيقونة المساعدة لعرض الأسئلة الشائعة."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "الفئة 8 – طرد مواد أكّالة - مواد أكّالة مؤهلة للشحن الجوي (بعض مواد التنظيف أو مركبات قتل الأشجار/الأعشاب، إلخ.)"
+  }
+]

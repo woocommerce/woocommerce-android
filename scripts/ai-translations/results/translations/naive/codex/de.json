@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Bitte warten…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Es scheint ein Problem mit deiner Jetpack-Verbindung zu geben.\\n\\nAber keine Sorge, unser Support-Team hilft dir gerne weiter. Kontaktiere uns, und wir unterstützen dich gern."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "In die Zwischenablage kopiert"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Variante %s, Preis %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Drucken"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Sendungsdetails"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Adressdaten werden geladen"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Berechneter Betrag: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Trotzdem beenden"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s verkauft"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "In Moderation"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Zur Kasse"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Zahlungsmethode"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "Was ist WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Keine Gutscheinnutzung in diesem Zeitraum"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Details anzeigen"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Beginne noch heute mit dem Verkaufen, indem du dein erstes Produkt zum Shop hinzufügst."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "Angebotspreis aktualisieren"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Pflichtfeld"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Keine Programme in diesem Zeitraum"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Versandetikett kaufen"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT-Suchtool."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Ein Fehler ist aufgetreten. Bitte melde dich an, um fortzufahren"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Registrierungsbestätigung"
+  },
+  {
+    "key": "type",
+    "value": "Typ"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Gutschein hinzufügen"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "ZAHLUNGSSUMMEN"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Positives Feedback"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Läuft ab nach"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Kreditkarte erfolgreich hinzugefügt"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Es dauert nur eine Minute."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Alle auswählen"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Unternehmen"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "Angebotspreise werden aktualisiert"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "%d Produkte auswählen"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "Möchtest du wirklich eine Rückerstattung veranlassen? Dies kann nicht rückgängig gemacht werden."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Service"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "Mehr Infos zu ITN"
+  },
+  {
+    "key": "retry",
+    "value": "Erneut versuchen"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Update verfügbar"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Kunde"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "Hier finden dich die Leute im Internet. Keine Sorge, du kannst das später ändern."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze-Kampagne"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "Ein optionaler Zeitraum, der vor der ersten wiederkehrenden Zahlung verstreicht. Eine Anmeldegebühr wird zu Beginn des Abonnements dennoch berechnet. Der Testzeitraum darf nicht länger sein als: 90 Tage, 52 Wochen, 24 Monate oder 5 Jahre."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Erforderliche Berechtigung für Geräte in der Nähe fehlt"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "Rückerstattung %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "Zu deiner Bequemlichkeit haben wir deine WordPress.com-Kontaktinformationen vorausgefüllt. Bitte überprüfe sie, um sicherzustellen, dass es die richtigen Informationen sind, die du für diese Domain verwenden möchtest."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Versandetikett erstellen"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Beenden"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Für Zahlung vorbereiten"
+  },
+  {
+    "key": "analytics_items",
+    "value": "Artikel"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Kein Umsatz in diesem Zeitraum"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Gib einen Barcode oder eine andere Kennung ein, die für dieses Produkt eindeutig ist. Das kann dir helfen, dieses Produkt auf anderen Kanälen oder Marktplätzen anzubieten."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Verkaufte Artikel"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Wenn du Vor-Ort-Zahlung aktivierst, können Kundinnen und Kunden Online-Bestellungen bei Lieferung per Bargeld oder Karte bezahlen.\\n\\nBestellungen können auch ohne Aktivierung dieser Funktion weiterhin manuell erstellt werden."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Fehler beim Laden benutzerdefinierter Felder"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Bitte aktualisiere die Software deines Kartenlesers, damit du weiterhin Zahlungen annehmen kannst"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "Anmeldelink per E-Mail erhalten"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "bis zu %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Unbezahlt"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Verfolge Verkäufe und leistungsstarke Produkte"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Lagerstatus aktualisieren"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress-Mediathek"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Produktentwurf gespeichert"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Kundennotiz bearbeiten"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Notiz hinzufügen"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Keine"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Statistiken für benutzerdefinierten Datumsbereich hinzufügen"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Jetpack installieren"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Bitte gib einen Versanddienstleister an"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Barcode-Scanner einrichten"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "URL teilen"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Aktuelles Theme"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Bitte melde dich mit deinem WordPress.com-Benutzernamen statt mit deiner E-Mail-Adresse an."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Bitte beschreibe, welche Art von Waren dieses Paket enthält"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d neue Benachrichtigungen"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Gutscheincode"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Fehler beim Löschen der Sendungsverfolgung"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Ziel: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "Erneut mit WP-Admin-Seite versuchen"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "Verbindung zu %s nicht möglich"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Zahlungen in deinem Ladengeschäft annehmen"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Einige erforderliche Felder sind leer."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Fehlerhinweissymbol"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Bestellstatus: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Wöchentlich"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Benutzerdefiniertes Paket erstellen"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping unterstützt derzeit keine HAZMAT-Sendungen über %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Beschreibung"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Klicks"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Fotos hinzufügen"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Entdecke weitere Zahlungsanbieter und \\nwähle einen Zahlungsanbieter aus."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "Du kannst Barcodes im Feld GTIN, UPC, EAN, ISBN im Inventar-Tab des Produkts einrichten. Für weitere Details"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Genehmigen"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Alle"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Bild hinzufügen"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "Für dein Konto stehen noch Anforderungen aus. Bitte erfülle diese bis zum %1$s, damit du weiterhin Vor-Ort-Zahlungen annehmen kannst."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Produkttitel eingeben."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Details zur Beschränkung"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Mit Blaze bewerben"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Standort"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "Woche"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Durch Tippen auf die Schaltfläche \"Jetpack verbinden\""
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Ja, ändern"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Nachricht"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Möchtest du den Produkttyp wirklich ändern?"
+  },
+  {
+    "key": "disabled",
+    "value": "Deaktiviert"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Gib die Maße deines Pakets ein oder wähle eine Paketoption des Versanddienstleisters aus, um die verfügbaren Versandtarife zu sehen."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Produkt"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Produkt aktualisiert"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Geschenke"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "Rückerstattung veranlassen"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Deine Support-Anfrage ist sicher in unserem Posteingang angekommen. Wir antworten dir so schnell wie möglich per E-Mail."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Meine Auswahl für zukünftige Kampagnen speichern"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Support kontaktieren"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Die Bestellung konnte nicht als abgeschlossen markiert werden"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s wöchentlich, beginnend ab %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "Vor Kurzem wurde eine identische Transaktion übermittelt"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Registrierung"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Bestellung bearbeiten"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Keine unterstützten Varianten gefunden"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Bitte verbinde deinen Shop mit Jetpack, um in dieser App darauf zuzugreifen."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Gesamtgewicht des Pakets (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Beliebte Produkte"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Regulären Preis aktualisieren"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Teammitglied"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "Die Karte unterstützt diese Art der Rückerstattung nicht"
+  },
+  {
+    "key": "product_settings",
+    "value": "Produkteinstellungen"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "Für Sendungen nach %1$s ist eine ITN erforderlich."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Verbindung fortsetzen"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "Wenn du nach dem Akzeptieren der Zahlung \"Beleg drucken\" auswählst, ersetze \"Als PDF speichern\" durch \"Alle Drucker\" und suche nach dem neuen Drucker."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "Storniert"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Betrag"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Länder und Bundesländer werden abgerufen."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Produktdetails anzeigen"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "Rückerstattung erfolgreich"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Optionen für Etikettenformat"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Anwendungsprotokoll"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "Erstelle deine erste Variante"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Vorgeschlagen"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "Erstattet"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Abonnements"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Vom Gerät auswählen"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "Du kannst ein variables Produkt nicht direkt hinzufügen. Bitte wähle eine bestimmte Variante aus"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Versicherung (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Zahlungsmethode"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Nicht unterstützter Artikel – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Aktiv"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Zurück zum Shop"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Der Kunde hat %1$s in Höhe von %2$s für den Versand bezahlt"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Warum kann ich meine Produkte nicht sehen?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Nutzungslimit pro Nutzer"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Ein Produkt mit KI erstellen"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Samstagszustellung"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Nutzungslimit pro Gutschein"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Weitere Details hinzufügen"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "Du hast eine neue Bestellung! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Fehler beim Kauf der Etiketten"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Versand"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "Wir haben zu viele Versuche unternommen, einen SMS-Bestätigungscode zu senden. Mach kurz eine Pause und fordere in einer Minute einen neuen an."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "E-Mail"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Kampagne erstellen"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Gestern um %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Dein Profilfoto"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "An Absender zurücksenden, wenn das Paket nicht zugestellt werden kann"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Deine Shop-Bestellungen werden abgerufen"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Glückwunsch zu deinem Kauf"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Onboarding Vollbild"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Vorschläge"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "Rückerstattung bearbeiten"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "Die Anzeige wurde zur Genehmigung eingereicht. Wir senden dir eine Bestätigungs-E-Mail, sobald sie genehmigt ist und läuft."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Ablauf des Abonnements"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Bitte melde dich mit deinem Benutzernamen und Passwort an."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 keine genehmigten Bewertungen"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Lagermenge"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Bild konnte nicht geladen werden"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Datenschutzeinstellungen"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Variables Abonnement"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "Sendungsverfolgung wird derzeit für diesen Versanddienstleister nicht unterstützt"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Jetpack wird installiert"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Art der Beschränkung"
+  },
+  {
+    "key": "today",
+    "value": "Heute"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Alles bereit!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Konfiguration speichern"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d Bestellung(en) aktualisiert und %d Bestellung(en) konnten nicht aktualisiert werden. Bitte versuche es erneut."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Zielgruppe"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Vorgeschlagene Adresse bestätigen"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Gefällt mir"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Katalogeinstellungen verwalten"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "Inhaltsdetails"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Gutscheine entfernen"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Dein Testzeitraum ist beendet."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Benutzerdefinierter Versanddienstleister"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Barcode scannen, um Lagerbestand zu aktualisieren"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Domain registrieren"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Foto hinzufügen"
+  },
+  {
+    "key": "shipping",
+    "value": "Versand"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d Artikel"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Dieses Feld ist erforderlich."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Bestand wird nicht verwaltet"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "Unterschrift erforderlich (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Aktuell"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Wo sind meine Produkte?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Rechnungsadresse ausblenden"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "Melde dich bei WordPress.com an, um den Inhalt zu teilen."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Bezahlt"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "Bestellung Nr. %1$d als abgeschlossen markiert"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Land, in dem das Produkt hergestellt oder montiert wurde."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Du hast es geschafft!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TIPPEN ZUM BEZAHLEN"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "E-Mail"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Andere Erweiterung / Plugin"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Alle derzeit mit diesem Produkt verknüpften Dateien werden entfernt."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Jetzt, da du Attribute hinzugefügt hast, kannst du deine erste Variante erstellen!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Bestellung %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Barcode scannen"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Hat dir deine Vor-Ort-Zahlung gefallen?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Karte auflegen, durchziehen oder einstecken"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Dies ist eine private Notiz. Sie wird nicht mit dem Kunden geteilt."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Einen Produkttyp auswählen"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "ZAHLUNG"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Benachrichtigungen zu neuen Bestellungen"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Stattdessen einen weiteren Code per SMS senden"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "Die Karte unterstützt diese Währung nicht"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce-Version"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Eine Option mit diesem Namen existiert bereits"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Keine Verbindungsprobleme"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Danksagungen"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "TON AKTIVIEREN"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Absenderadresse fehlt oder ist ungültig"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Scanner eingerichtet!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Bezahlt"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Test-Tap-To-Pay-Zahlung wurde erfolgreich erstattet"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Klasse 9 – Lithiumbatterien, nicht gekennzeichnetes Paket - Neue elektronische Geräte mit installierten oder beigepackten Lithiumbatterien (ohne Kennzeichnung)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "Abbrechen"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Division 6.2 - Gefährliche Stoffe - Biologische Materialien (z. B. Labortest-Kits, autorisierte Rücksendungen von COVID-Testkits)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "Deine Adresse konnte nicht aktualisiert werden. Bitte versuche es erneut."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Keine Bewertungen gefunden"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 variables Produkt wird ignoriert."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "Systemstandard"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Keine Buchung ausgewählt"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "Anmeldung mit Statuscode %1$s fehlgeschlagen"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "Erfahre, welche Produkte im POS unterstützt werden"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Variables Abonnementprodukt"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Gutschein nicht angewendet"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Produkte hinzufügen"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Bewertungen für deinen Shop sammeln"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Weboptionen"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Abgeschlossen"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Alle Bestellungen"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "Für kostenlose Abholung berechtigt"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Extern"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Gefahrgutkategorie festgelegt"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Dies ist der Dateiname, der dem Kunden angezeigt wird"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "Du kannst Produkt-Add-ons im Web-Dashboard bearbeiten."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Falls Drucken nicht verfügbar ist, kannst du deinen Beleg jederzeit als PDF speichern und ihn per E-Mail senden, um ihn von einem anderen Gerät aus zu drucken."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Quellcode"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Feedback geben"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Gerade eben"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "FERTIG"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Zeitplan"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Web-Admin"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "Wir konnten keine Steuersätze finden"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "Das Contactless-Symbol ist eine Marke von EMVCo, LLC und wird mit deren Genehmigung verwendet."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s-Produkt"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Bereitgestellt von KI. &lt;a href=\\'\\'&gt;&lt;u&gt;Mehr erfahren&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Attribute"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Fehler beim Versuch, den Text aus dem Foto zu scannen. Bitte versuche es erneut"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Fehler beim Abrufen der Teammitglieder"
+  },
+  {
+    "key": "no_site_error",
+    "value": "Die Website unter dieser Adresse ist keine WordPress-Website. Damit wir uns damit verbinden können, muss die Website WordPress verwenden."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Generierungslimit überschritten"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Ein fester Betrag"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Versandservice"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Hausnummer fehlt"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Support erhalten"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Kein Kartenleser verbunden"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Status aktualisiert!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Produkte bearbeiten (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Dein Shop wird verbunden"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d Artikel"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "Produkt %s auswählen"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo hat ein Update heruntergeladen"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Wenn du kein Konto hast, verwenden wir diese E-Mail-Adresse, um eins zu erstellen."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Kampagne abbrechen"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "OK"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Wird validiert"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Paket ausgewählt"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Gib das Passwort deines WordPress.com-Kontos ein, um dich mit Jetpack zu verbinden"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Filter (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Betrag"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Fortfahren"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Beleg senden"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "XML-RPC-Aufrufe scheinen auf dieser Website blockiert zu sein (Fehlercode 401). Wenn der Anmeldeversuch fehlschlägt, tippe auf das Hilfesymbol, um die FAQ anzuzeigen."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Klasse 8 – Ätzende Stoffe Paket - Luftfrachtgeeignete ätzende Stoffe (bestimmte Reinigungsmittel oder Mittel zur Baum-/Unkrautbekämpfung usw.)"
+  }
+]

@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Lütfen bekleyin…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Jetpack bağlantınızda bir sorun var gibi görünüyor.\\n\\nAma endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size memnuniyetle yardımcı olacağız."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "Panoya kopyalandı"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Varyasyon %s, Fiyat %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Yazdır"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Gönderi ayrıntıları"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Adres verileri yükleniyor"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Hesaplanan tutar: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Yine de çık"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, satılan %4$s"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "İnceleniyor"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Ödeme yap"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Ödeme yöntemi"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "WordPress.com nedir?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Bu dönemde kupon kullanımı yok"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Ayrıntıları göster"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Mağazaya ilk ürününüzü ekleyerek bugün satışa başlayın."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "İndirimli Fiyatı Güncelle"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Zorunlu alan"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Bu dönemde program yok"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Gönderi etiketi satın al"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT Arama Aracı."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Bir hata oluştu. Devam etmek için lütfen giriş yapın"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Kayıt onayı"
+  },
+  {
+    "key": "type",
+    "value": "Tür"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Kupon ekle"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "ÖDEME TOPLAMLARI"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Olumlu geri bildirim"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Şu süreden sonra sona er"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Kredi kartı başarıyla eklendi"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Sadece bir dakika sürer."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Tümünü seç"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Şirket"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "İndirimli fiyatlar güncelleniyor"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "%d Ürün Seç"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "İade yapmak istediğinizden emin misiniz? Bu işlem geri alınamaz."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Hizmet"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "ITN hakkında daha fazla bilgi"
+  },
+  {
+    "key": "retry",
+    "value": "Yeniden dene"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Güncelleme mevcut"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Müşteri"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "İnsanlar sizi internette burada bulacak. Endişelenmeyin, bunu daha sonra değiştirebilirsiniz."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze kampanyası"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "İlk yinelenen ödeme alınmadan önce beklenecek isteğe bağlı bir süre. Herhangi bir kayıt ücreti varsa aboneliğin başlangıcında yine tahsil edilir. Deneme süresi şunları aşamaz: 90 gün, 52 hafta, 24 ay veya 5 yıl."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Gerekli yakındaki cihazlar izni eksik"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "%s iade et"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "Kolaylık olması için WordPress.com iletişim bilgileriniz önceden dolduruldu. Lütfen bu alan adı için kullanmak istediğiniz doğru bilgiler olduğundan emin olmak üzere gözden geçirin."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Gönderi etiketi oluştur"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Çık"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Ödeme için hazırlanıyor"
+  },
+  {
+    "key": "analytics_items",
+    "value": "öğe"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Bu dönemde gelir yok"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Bir barkod ya da bu ürüne özgü başka bir tanımlayıcı girin. Bu, ürünü diğer kanallarda veya pazar yerlerinde listelemenize yardımcı olabilir."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Satılan ürünler"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Şahsen Öde özelliğini etkinleştirmek, müşterinin çevrimiçi siparişler için teslimatta nakit veya kartla ödeme yapmasını sağlar.\\n\\nBu özellik etkinleştirilmeden de siparişler manuel olarak oluşturulabilir."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Özel alanlar yüklenirken hata oluştu"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Ödeme almaya devam etmek için lütfen okuyucu yazılımınızı güncelleyin"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "E-postayla giriş bağlantısı al"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "%s tutarına kadar"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Ödenmedi"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Satışları ve yüksek performanslı ürünleri takip edin"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Stok Durumunu Güncelle"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress medya kütüphanesi"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Ürün taslağı kaydedildi"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Müşteri notunu düzenle"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Not ekle"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Yok"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Özel tarih aralığı istatistikleri ekle"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Jetpack'i yükle"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Lütfen bir taşıyıcı adı girin"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Barkod tarayıcı kur"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "URL'yi paylaş"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Geçerli tema"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Lütfen e-posta adresiniz yerine WordPress.com kullanıcı adınızla giriş yapın."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Lütfen bu paketin ne tür ürünler içerdiğini açıklayın"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d yeni bildirim"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Kupon Kodu"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Takip silinirken hata oluştu"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Hedef: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "WP Admin sayfasıyla yeniden dene"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "%s sitesine bağlanılamıyor"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Fiziksel mağazanızda ödeme alın"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Bazı zorunlu alanlar boş."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Hata göstergesi simgesi"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Sipariş durumu: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Haftalık"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Özel paket oluştur"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping şu anda %1$s üzerinden HAZMAT gönderilerini desteklemiyor"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Açıklama"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Tıklamalar"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Fotoğraf ekle"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Diğer ödeme sağlayıcılarını keşfedin ve \\nbir ödeme sağlayıcısı seçin."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "Barkodları ürünün envanter sekmesindeki GTIN, UPC, EAN, ISBN alanında ayarlayabilirsiniz. Daha fazla ayrıntı için"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Onayla"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Tümü"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Görsel ekle"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeler almaya devam etmek için lütfen bu gereksinimleri %1$s tarihine kadar tamamlayın."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Ürün başlığını girin."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Kısıtlama ayrıntıları"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Blaze ile tanıt"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Konum"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "hafta"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Jetpack'e Bağlan düğmesine dokunarak"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Evet, değiştir"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Mesaj"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Ürün türünü değiştirmek istediğinizden emin misiniz?"
+  },
+  {
+    "key": "disabled",
+    "value": "Devre dışı"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Paketinizin boyutlarını girin veya mevcut gönderim ücretlerini görmek için bir taşıyıcı paket seçeneği seçin."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Ürün"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Ürün Güncellendi"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Hediyeler"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "İade yap"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Destek talebiniz gelen kutumuza güvenle ulaştı. Size mümkün olan en kısa sürede e-postayla yanıt vereceğiz."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Seçimimi gelecekteki kampanyalar için kaydet"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Destekle iletişime geç"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Sipariş tamamlandı olarak işaretlenemedi"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "Haftalık %1$s, başlangıç %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "Aynı işlem kısa süre önce gönderildi"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Kayıt"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Siparişi düzenle"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Desteklenen varyasyon bulunamadı"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Bu uygulamada erişmek için lütfen mağazanızı Jetpack'e bağlayın."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Toplam paket ağırlığı (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Popüler ürünler"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Normal Fiyatı Güncelle"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Ekip üyesi"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "Kart bu iade türünü desteklemiyor"
+  },
+  {
+    "key": "product_settings",
+    "value": "Ürün ayarları"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "%1$s ülkesine yapılan gönderiler için ITN gereklidir."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Bağlantıya devam et"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "Ödemeyi kabul ettikten sonra \"Makbuz yazdır\" seçilirken, \"PDF olarak kaydet\" yerine \"Tüm yazıcılar\"ı seçin ve yeni yazıcı arayın."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "İptal edildi"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Tutar"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Ülkeler ve eyaletler alınıyor."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Ürün Ayrıntılarını Görüntüle"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "İade başarılı"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Etiket biçimi seçenekleri"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Uygulama günlüğü"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "İlk varyasyonunuzu oluşturun"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Önerilen"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "İade edildi"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Abonelikler"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Cihazdan seç"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "Değişken ürün doğrudan eklenemez. Lütfen belirli bir varyasyon seçin"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Sigorta (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Ödeme yöntemi"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Desteklenmeyen öğe – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Etkin"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Mağazaya dön"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Müşteri gönderim için %2$s tutarında %1$s ödedi"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Ürünlerimi neden göremiyorum?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Kullanıcı Başına Kullanım Sınırı"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Yapay zekayla ürün oluştur"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Cumartesi teslimatı"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Kupon Başına Kullanım Sınırı"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Daha fazla ayrıntı ekle"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "Yeni bir siparişiniz var! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Etiketler satın alınırken hata oluştu"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Gönderim"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "SMS doğrulama kodu göndermek için çok fazla deneme yaptık. Biraz bekleyin ve bir dakika sonra yenisini isteyin."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "E-posta"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Kampanya Oluştur"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Dün %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Profil fotoğrafınız"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "Paket teslim edilemezse göndericiye iade et"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Site siparişleriniz alınıyor"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Satın alımınız kutlu olsun"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Tam ekran başlangıç"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Öneriler"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "İadeyi düzenle"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "Reklam onay için gönderildi. Onaylandığında ve yayına alındığında size bir onay e-postası göndereceğiz."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Abonelik sona erme"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Lütfen kullanıcı adınız ve şifrenizle giriş yapın."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Sitenizle iletişim kurarken bir hata oluştu."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 onaylanmış değerlendirme yok"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Stok miktarı"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Görsel yüklenemedi"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Gizlilik ayarları"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Değişken abonelik"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "Şu anda bu taşıyıcı için Takip desteğimiz yok"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Jetpack yükleniyor"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Kısıtlama Türü"
+  },
+  {
+    "key": "today",
+    "value": "Bugün"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Her şey hazır!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Yapılandırmayı kaydet"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d sipariş güncellendi ve %d sipariş güncellenemedi. Lütfen tekrar deneyin."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Hedef kitle"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Önerilen Adresi Onayla"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Beğendim"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Katalog ayarlarını yönet"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "İçerik ayrıntıları"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Kuponları kaldır"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Deneme süreniz sona erdi."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Özel Taşıyıcı"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Envanteri güncellemek için barkod tara"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Alan adı kaydet"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Fotoğraf ekle"
+  },
+  {
+    "key": "shipping",
+    "value": "Gönderim"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d öğe"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Bu alan zorunludur."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Stok yönetilmiyor"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "İmza gerekli (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Geçerli"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Ürünlerim nerede?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Faturalandırmayı Gizle"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "İçeriği paylaşmak için WordPress.com'a giriş yapın."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Ödendi"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "#%1$d siparişi tamamlandı olarak işaretlendi"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Ürünün üretildiği veya monte edildiği ülke."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Başardınız!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TEMASSIZ ÖDEME"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "E-posta"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Diğer Uzantı / Eklenti"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Şu anda bu ürüne ekli tüm dosyalar kaldırılacak."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Öznitelikleri eklediğinize göre artık ilk varyasyonunuzu oluşturabilirsiniz!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Sipariş %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Barkod tara"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Şahsen ödeme deneyiminiz nasıldı?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Karta dokundurun, kaydırın veya takın"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Bu özel bir nottur. Müşteriyle paylaşılmayacaktır."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Bir ürün türü seçin"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "ÖDEME"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Yeni sipariş uyarıları"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Bana onun yerine başka bir kod gönder"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "Kart bu para birimini desteklemiyor"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce Sürümü"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Bu adda bir seçenek zaten var"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Bağlantı sorunu yok"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Teşekkürler"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "SESİ ETKİNLEŞTİR"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Gönderen adresi eksik veya geçersiz"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Tarayıcı kuruldu!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Ödendi"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Test Temassız Ödeme işlemi başarıyla iade edildi"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Sınıf 9 – Lityum piller, işaretsiz paket - Lityum piller takılı veya bunlarla paketlenmiş yeni elektronik cihazlar (işaretleme yok)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "İptal"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Bölüm 6.2 - Tehlikeli Maddeler - Biyolojik Materyaller (örn. laboratuvar test kitleri, yetkili COVID test kiti iadeleri)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "Adresiniz güncellenemedi. Lütfen tekrar deneyin."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Değerlendirme bulunamadı"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 değişken ürün yok sayılacak."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "Sistem varsayılanı"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Rezervasyon seçilmedi"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "%1$s durum koduyla giriş başarısız oldu"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "POS'ta hangi ürünlerin desteklendiğini öğrenin"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Değişken abonelik ürünü"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Kupon uygulanmadı"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Ürün ekle"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Mağazanız için değerlendirme toplayın"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Web Seçenekleri"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Tamamlandı"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Tüm siparişler"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "Ücretsiz alıma uygun"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Harici"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Tehlikeli maddeler kategorisi ayarlandı"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Bu, müşteriye gösterilen dosya adıdır"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "Ürün eklentilerini web panosunda düzenleyebilirsiniz."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Yazdırma kullanılamıyorsa makbuzunuzu her zaman PDF olarak kaydedebilir ve başka bir cihazdan yazdırmak için e-postayla gönderebilirsiniz."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Kaynak Kodu"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Geri Bildirim Ver"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Az önce"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "BİTTİ"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Zamanlama"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Web yönetimi"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "Hiç vergi oranı bulamadık"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "Temassız Sembolü, EMVCo, LLC'ye ait bir ticari markadır ve izinle kullanılmaktadır."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s ürün"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Yapay zeka destekli. &lt;a href=''&gt;&lt;u&gt;Daha fazla bilgi&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Öznitelikler"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Fotoğraftaki metin taranmaya çalışılırken hata oluştu. Lütfen tekrar deneyin"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Ekip üyeleri alınırken hata oluştu"
+  },
+  {
+    "key": "no_site_error",
+    "value": "Bu adresteki site bir WordPress sitesi değil. Bağlanabilmemiz için sitenin WordPress kullanması gerekir."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Oluşturma sınırı aşıldı"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Sabit tutar"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Gönderim hizmeti"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Bina numarası eksik"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Destek al"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Bağlı okuyucu yok"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Durum güncellendi!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Ürünleri Düzenle (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Mağazanız bağlanıyor"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d öğe"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "%s ürününü seç"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo bir güncelleme indirdi"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Hesabınız yoksa, bir hesap oluşturmak için bu e-postayı kullanacağız."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Kampanyayı iptal et"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "Tamam"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Doğrulanıyor"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Paket seçildi"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Jetpack'e bağlanmak için WordPress.com hesabınızın şifresini girin"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Filtreler (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Tutar"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Devam et"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Makbuz gönder"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "Bu sitede XML-RPC çağrıları engellenmiş görünüyor (hata kodu 401). Giriş denemesi başarısız olursa SSS'yi görmek için yardım simgesine dokunun."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Sınıf 8 – Aşındırıcı Maddeler Paketi - Hava Taşımacılığına Uygun Aşındırıcı Maddeler (belirli temizlik veya ağaç/ot öldürücü bileşikler vb.)"
+  }
+]

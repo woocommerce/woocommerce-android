@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Vänta…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Det verkar finnas ett problem med din Jetpack-anslutning.\\n\\nMen oroa dig inte, vårt supportteam finns här för att hjälpa dig. Kontakta oss så hjälper vi dig gärna."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "Kopierat till urklipp"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Variation %s, Pris %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Skriv ut"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Försändelseuppgifter"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Laddar adressdata"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Beräknat belopp: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Avsluta ändå"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s sålda"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "Under granskning"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Betala"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Betalningsmetod"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "Vad är WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Ingen kuponganvändning under denna period"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Visa detaljer"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Börja sälja idag genom att lägga till din första produkt i butiken."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "Uppdatera reapris"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Obligatoriskt fält"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Inga program under denna period"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Köp fraktetikett"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT Search Tool."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Ett fel har uppstått. Logga in för att fortsätta"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Bekräftelse av registrering"
+  },
+  {
+    "key": "type",
+    "value": "Typ"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Lägg till kupong"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "BETALNINGSTOTALER"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Positiv feedback"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Upphör efter"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Kreditkortet har lagts till"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Det tar bara en minut."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Markera alla"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Företag"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "Uppdaterar reapriser"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "Välj %d produkter"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "Är du säker på att du vill göra en återbetalning? Detta kan inte ångras."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Tjänst"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "Mer info om ITN"
+  },
+  {
+    "key": "retry",
+    "value": "Försök igen"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Uppdatering tillgänglig"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Kund"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "Det är här människor hittar dig på internet. Oroa dig inte, du kan ändra det senare."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze-kampanj"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "En valfri tidsperiod att vänta innan den första återkommande betalningen debiteras. Eventuell registreringsavgift debiteras fortfarande i början av prenumerationen. Testperioden får inte överstiga: 90 dagar, 52 veckor, 24 månader eller 5 år."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Saknar nödvändig behörighet för närliggande enheter"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "Återbetalning %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "För din bekvämlighet har vi förifyllt dina kontaktuppgifter från WordPress.com. Kontrollera att det är rätt information du vill använda för denna domän."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Skapa fraktetikett"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Avsluta"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Förbereder för betalning"
+  },
+  {
+    "key": "analytics_items",
+    "value": "artiklar"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Ingen intäkt under denna period"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Ange en streckkod eller någon annan identifierare som är unik för den här produkten. Det kan hjälpa dig att lista produkten på andra kanaler eller marknadsplatser."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Sålda artiklar"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Att aktivera Betala personligen låter kunden betala dig för onlinebeställningar vid leverans med kontanter eller kort.\\n\\nBeställningar kan fortfarande skapas manuellt utan att aktivera denna funktion."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Fel vid inläsning av anpassade fält"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Uppdatera läsarens programvara för att fortsätta ta emot betalningar"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "Få en inloggningslänk via e-post"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "upp till %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Obetald"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Följ försäljning och produkter som presterar bra"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Uppdatera lagerstatus"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress mediebibliotek"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Produktutkast sparat"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Redigera kundanteckning"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Lägg till anteckning"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Ingen"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Lägg till statistik för anpassat datumintervall"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Installera Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Ange ett transportörsnamn"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Konfigurera en streckkodsläsare"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "Dela URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Aktuellt tema"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Logga in med ditt WordPress.com-användarnamn i stället för din e-postadress."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Beskriv vilken typ av varor paketet innehåller"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d nya aviseringar"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Kupongkod"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Fel vid borttagning av spårning"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Destination: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "Försök igen med WP Admin-sidan"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "Kan inte ansluta till %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Ta emot betalningar i din fysiska butik"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Vissa obligatoriska fält är tomma."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Ikon för felindikering"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Orderstatus: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Veckovis"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Skapa ett anpassat paket"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping stöder för närvarande inte HAZMAT-försändelser via %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Beskrivning"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Klick"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Lägg till foton"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Upptäck andra betalningsleverantörer och \\nvälj en betalningsleverantör."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "Du kan konfigurera streckkoder i fältet GTIN, UPC, EAN, ISBN på produktens lagerflik. För mer information"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Godkänn"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Alla"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Lägg till bild"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "Det finns väntande krav på ditt konto. Slutför dessa krav senast %1$s för att fortsätta ta emot betalningar på plats."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14 in)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Ange produkttitel."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Restriktionsdetaljer"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Marknadsför med Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Plats"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "vecka"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Genom att trycka på knappen Anslut Jetpack"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Ja, ändra"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Meddelande"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Är du säker på att du vill ändra produkttyp?"
+  },
+  {
+    "key": "disabled",
+    "value": "Inaktiverad"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Ange ditt pakets mått eller välj ett transportörspaket för att se tillgängliga fraktpriser."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Produkt"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Produkten uppdaterad"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Gåvor"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "Gör återbetalning"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Din supportförfrågan har kommit fram säkert till vår inkorg. Vi svarar via e-post så snabbt vi kan."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Spara mitt val för framtida kampanjer"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Kontakta support"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Kunde inte markera ordern som slutförd"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s per vecka, från och med %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "En identisk transaktion skickades nyligen"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Registrering"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Redigera order"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Inga variationer som stöds hittades"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Anslut din butik till Jetpack för att få åtkomst till den i appen."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Paketets totalvikt (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Populära produkter"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Uppdatera ordinarie pris"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Teammedlem"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "Kortet stöder inte den här typen av återbetalning"
+  },
+  {
+    "key": "product_settings",
+    "value": "Produktinställningar"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "ITN krävs för försändelser till %1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Fortsätt anslutningen"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "När du väljer \"Skriv ut kvitto\" efter att ha tagit emot betalning, ersätt \"Spara som PDF\" med \"Alla skrivare\" och sök efter ny skrivare."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "Avbruten"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Belopp"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Hämtar länder och delstater."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Visa produktdetaljer"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "Återbetalningen lyckades"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Alternativ för etikettformat"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Programlogg"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "Skapa din första variation"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Föreslagen"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "Återbetald"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Prenumerationer"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Välj från enheten"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "Du kan inte lägga till en variabel produkt direkt. Välj en specifik variation"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Försäkring (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Betalningsmetod"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Objekt som inte stöds – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Aktiv"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Tillbaka till butiken"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Kunden betalade en %1$s på %2$s för frakt"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Varför kan jag inte se mina produkter?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Användningsgräns per användare"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Skapa en produkt med AI"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Lördagsleverans"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Användningsgräns per kupong"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Lägg till fler detaljer"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "Du har en ny order! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Fel vid köp av etiketterna"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Frakt"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "Vi har gjort för många försök att skicka en SMS-verifieringskod — ta en paus och begär en ny om en minut."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "E-post"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Skapa kampanj"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Igår kl. %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Din profilbild"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "Returnera till avsändaren om paketet inte kan levereras"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Hämtar dina webbplatsordrar"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Grattis till ditt köp"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Introduktion helskärm"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Förslag"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "Redigera återbetalning"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "Annonsen har skickats in för godkännande. Vi skickar ett bekräftelsemejl när den är godkänd och igång."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Prenumerationens utgång"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Logga in med ditt användarnamn och lösenord."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Det uppstod ett fel vid kommunikationen med din webbplats."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 inga godkända recensioner"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Lagerantal"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Det gick inte att läsa in bilden"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Sekretessinställningar"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Variabel prenumeration"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "Vi stöder för närvarande inte spårning för denna transportör"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Installerar Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Typ av restriktion"
+  },
+  {
+    "key": "today",
+    "value": "Idag"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Klart!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Spara konfiguration"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d order uppdaterades och %d order kunde inte uppdateras. Försök igen."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Målgrupp"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Bekräfta föreslagen adress"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Jag gillar det"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Hantera kataloginställningar"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "Innehållsdetaljer"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Ta bort kuponger"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Din provperiod har avslutats."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Anpassad transportör"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Skanna streckkod för att uppdatera lager"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Registrera domän"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Lägg till foto"
+  },
+  {
+    "key": "shipping",
+    "value": "Frakt"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d artiklar"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Det här fältet är obligatoriskt."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Lagret hanteras inte"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "Signatur krävs (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Aktuell"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Var är mina produkter?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Dölj fakturering"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "Logga in på WordPress.com för att dela innehållet."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Betald"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "Order #%1$d markerad som slutförd"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Land där produkten tillverkades eller monterades."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Du gjorde det!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TRYCK FÖR ATT BETALA"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "E-post"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Annan utökning / plugin"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Alla filer som för närvarande är kopplade till den här produkten kommer att tas bort."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Nu när du har lagt till attribut kan du skapa din första variation!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Order %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Skanna streckkod"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Tyckte du om din betalning på plats?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Tryck, dra eller sätt in kort"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Detta är en privat anteckning. Den delas inte med kunden."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Välj en produkttyp"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "BETALNING"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Aviseringar om nya ordrar"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Sms:a mig en annan kod i stället"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "Kortet stöder inte denna valuta"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce-version"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Ett alternativ med detta namn finns redan"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Inga anslutningsproblem"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Tack"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "AKTIVERA LJUD"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Ursprungsadress saknas eller är ogiltig"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Skannern är konfigurerad!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Betald"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Testbetalningen med Tap To Pay återbetalades"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Klass 9 – Litiumbatterier, omärkt paket - Nya elektroniska enheter installerade eller förpackade med litiumbatterier (ingen märkning)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "Avbryt"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Division 6.2 - Farligt gods - Biologiskt material (t.ex. laboratorietestkit, godkända returer av COVID-testkit)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "Vi kunde inte uppdatera din adress. Försök igen."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Inga recensioner hittades"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 variabel produkt kommer att ignoreras."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "Systemstandard"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Ingen bokning vald"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "Inloggningen misslyckades med statuskod %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "Lär dig vilka produkter som stöds i POS"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Produkt med variabel prenumeration"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Kupongen tillämpades inte"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Lägg till produkter"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Samla in recensioner för din butik"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Webbalternativ"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Slutförd"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Alla ordrar"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "Berättigar till kostnadsfri upphämtning"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Extern"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Kategori för farligt gods angiven"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Detta är namnet på filen som visas för kunden"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "Du kan redigera produkttillägg i webbpanelen."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Om utskrift inte är tillgänglig kan du alltid spara kvittot som PDF och skicka det via e-post för att skriva ut det från en annan enhet."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Källkod"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Ge feedback"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Just nu"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "KLAR"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Schema"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Webbadministration"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "Vi kunde inte hitta några momssatser"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s-produkt"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Drivs av AI. &lt;a href=\\'\\'&gt;&lt;u&gt;Läs mer&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Attribut"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Fel vid försök att skanna texten från fotot. Försök igen"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Fel vid hämtning av teammedlemmar"
+  },
+  {
+    "key": "no_site_error",
+    "value": "Webbplatsen på denna adress är inte en WordPress-webbplats. För att vi ska kunna ansluta till den måste webbplatsen använda WordPress."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Genereringsgränsen har överskridits"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Ett fast belopp"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Frakttjänst"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Husnummer saknas"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Få support"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Ingen läsare ansluten"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Status uppdaterad!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Redigera produkter (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Ansluter din butik"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d artiklar"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "Välj produkt %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo har laddat ner en uppdatering"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Om du inte har ett konto använder vi denna e-postadress för att skapa ett."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Avbryt kampanj"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "OK"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Validerar"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Paket valt"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Ange lösenordet för ditt WordPress.com-konto för att ansluta till Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Filter (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Belopp"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Fortsätt"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Skicka kvitto"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "XML-RPC-anrop verkar blockerade på denna webbplats (felkod 401). Om inloggningsförsöket misslyckas trycker du på hjälpikonen för att visa vanliga frågor."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Klass 8 – Frätande material-paket - Frätande material som är godkända för flyg (vissa rengöringsmedel eller medel för att döda träd/ogräs osv.)"
+  }
+]

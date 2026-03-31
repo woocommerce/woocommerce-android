@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "请稍候…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "你的 Jetpack 连接似乎有问题。\\n\\n不过别担心，我们的支持团队会为你提供帮助。联系我们，我们很乐意协助你。"
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "已复制到剪贴板"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "变体 %s，价格 %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "打印"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "货件详情"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "正在加载地址数据"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "计算金额：%s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "仍要退出"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s，%2$s，%3$s，已售 %4$s"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "审核中"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "结账"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "支付方式"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "什么是 WordPress.com？"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "此期间无优惠券使用"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "显示详情"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "立即添加你的首个商品，开始在商店销售。"
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "更新促销价"
+  },
+  {
+    "key": "error_required_field",
+    "value": "必填字段"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "此期间无项目"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "购买运单标签"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT 搜索工具。"
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "发生错误。请登录后继续"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "注册确认"
+  },
+  {
+    "key": "type",
+    "value": "类型"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "添加优惠券"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "支付总计"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "正面反馈"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "到期于"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "信用卡添加成功"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "只需一分钟。"
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "全选"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "公司"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "正在更新促销价"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "选择 %d 个商品"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "确定要退款吗？此操作无法撤销。"
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "服务"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "关于 ITN 的更多信息"
+  },
+  {
+    "key": "retry",
+    "value": "重试"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• 有可用更新"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "客户"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "这是人们在互联网上找到你的地址。别担心，你之后可以更改。"
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze 广告活动"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "这是首次定期付款前可选的等待时间。任何注册费用仍会在订阅开始时收取。试用期最长不能超过：90 天、52 周、24 个月或 5 年。"
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "缺少所需的附近设备权限"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "退款 %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "为方便起见，我们已预先填写你的 WordPress.com 联系信息。请检查并确认这些信息是你希望用于此域名的正确信息。"
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "创建运单标签"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "退出"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "正在准备收款"
+  },
+  {
+    "key": "analytics_items",
+    "value": "件"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "此期间无收入"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "输入条形码或该商品的其他唯一标识符。这有助于你在其他渠道或市场上发布此商品。"
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "已售商品数"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "启用当面支付后，客户可在送货时通过现金或银行卡为在线订单付款。\\n\\n即使不启用此功能，仍可手动创建订单。"
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "加载自定义字段时出错"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "请更新读卡器软件以继续收款"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "通过电子邮件获取登录链接"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "最高至 %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "未支付"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "跟踪销售额和热销商品"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "更新库存状态"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress 媒体库"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "商品草稿已保存"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "编辑客户备注"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "添加备注"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "无"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "添加自定义日期范围统计"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "安装 Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "请输入承运商名称"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "设置条码扫描器"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "分享 URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "当前主题"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "请使用你的 WordPress.com 用户名登录，而不是电子邮件地址。"
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "请描述此包裹所含货物类型"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d 条新通知"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "优惠券代码"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "删除跟踪信息时出错"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "目标位置：%s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "使用 WP Admin 页面重试"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "无法连接到 %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "在你的实体店接受付款"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "某些必填字段为空。"
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "错误提示图标"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "订单状态：%s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "每周"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "创建自定义包裹"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping 目前不支持通过 %1$s 运输危险品"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "描述"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "点击"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "添加照片"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "发现其他支付服务商并\\n选择一个支付服务商。"
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "你可以在商品库存选项卡的 GTIN、UPC、EAN、ISBN 字段中设置条码。更多详情"
+  },
+  {
+    "key": "wc_approve",
+    "value": "批准"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "全部"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "添加图片"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "你的账户中有待完成的要求。请在 %1$s 前完成这些要求，以继续接受当面付款。"
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal（8.5 x 14 英寸）"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "输入商品标题。"
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "限制详情"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "用 Blaze 推广"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "位置"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "周"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "点击“连接 Jetpack”按钮即表示"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "是，更改"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "消息"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "确定要更改商品类型吗？"
+  },
+  {
+    "key": "disabled",
+    "value": "已禁用"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "输入包裹尺寸，或选择承运商包裹选项以查看可用运费。"
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "商品"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "商品已更新"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN、UPC、EAN、ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "礼品"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "发起退款"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "你的支持请求已安全送达我们的收件箱。我们会尽快通过电子邮件回复你。"
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "为今后的广告活动保存我的选择"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "联系支持"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "无法将订单标记为已完成"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "每周 %1$s，开始于 %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "最近已提交过相同交易"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "注册"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "编辑订单"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "未找到受支持的变体"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "请将你的商店连接到 Jetpack，以便在此应用中访问它。"
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "包裹总重量（%1$s）"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "热门商品"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "更新常规价格"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "团队成员"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "此卡不支持这种退款类型"
+  },
+  {
+    "key": "product_settings",
+    "value": "商品设置"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "寄往 %1$s 的货件必须填写 ITN。"
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "继续连接"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "接受付款后选择“打印收据”时，将“另存为 PDF”替换为“所有打印机”，然后搜索新打印机。"
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "已取消"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "金额"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "正在获取国家和州/省。"
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "查看商品详情"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "退款成功"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "标签格式选项"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "应用日志"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "创建你的首个变体"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "建议地址"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "已退款"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "订阅"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "从设备选择"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "无法直接添加可变商品。请选择具体变体"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "保险（%s）"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "支付方式"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "不支持的商品 - %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "有效"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "返回商店"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "客户已支付 %2$s 的 %1$s 运费"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "为什么看不到我的商品？"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "每位用户使用上限"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "用 AI 创建商品"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "周六配送"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "每张优惠券使用上限"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "添加更多详情"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "你有一个新订单！🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "购买运单标签时出错"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "运费"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "我们已多次尝试发送短信验证码，请稍作休息，一分钟后再请求新的验证码。"
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "电子邮件"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "创建广告活动"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "昨天 %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "你的头像"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "若包裹无法投递，则退回寄件人"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "正在获取你站点的订单"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "恭喜你完成购买"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "入门引导全屏"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "建议"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "编辑退款"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "广告已提交审核。审核通过并开始投放后，我们会向你发送确认邮件。"
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "订阅到期"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "请使用你的用户名和密码登录。"
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "与你的站点通信时出错。"
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 无已批准评价"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "库存数量"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "无法加载图片"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "隐私设置"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "可变订阅"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "我们目前不支持此承运商的跟踪"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "正在安装 Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "限制类型"
+  },
+  {
+    "key": "today",
+    "value": "今天"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "一切就绪！"
+  },
+  {
+    "key": "save_configuration",
+    "value": "保存配置"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d 个订单已更新，%d 个订单更新失败。请重试。"
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "受众"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "确认建议地址"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "我喜欢"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "管理目录设置"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "内容详情"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "移除优惠券"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "你的试用已结束。"
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "自定义承运商"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "扫描条码更新库存"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "注册域名"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "添加照片"
+  },
+  {
+    "key": "shipping",
+    "value": "运费"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d 件"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "此字段为必填项。"
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "未管理库存"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "需要签名（%s）"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "当前"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "我的商品在哪里？"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "隐藏账单信息"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "登录 WordPress.com 以分享内容。"
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "已支付"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "订单 #%1$d 已标记为已完成"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "商品制造或组装所在的国家。"
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "你做到了！"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "轻触支付"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "电子邮件"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "其他扩展 / 插件"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "当前附加到此商品的所有文件都将被移除。"
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "现在你已添加属性，可以创建首个变体了！"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "订单 %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "扫描条码"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "喜欢你的当面付款体验吗？"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "轻触、刷卡或插卡"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "这是私密备注，不会与客户共享。"
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "选择商品类型"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "付款"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "新订单提醒"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "改为给我发送另一组验证码"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "此卡不支持此货币"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce 版本"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "已存在同名选项"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "无连接问题"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "致谢"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "启用声音"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "发货地址缺失或无效"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "扫描器已设置！"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "已支付"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "测试轻触支付款项已成功退款"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "第 9 类 - 锂电池，未标记包裹 - 已安装或随包裹附带锂电池的新电子设备（无标记）"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "取消"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "第 6.2 项 - 危险品 - 生物材料（例如实验室检测试剂盒、授权的 COVID 检测试剂盒退回）"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "我们无法更新你的地址。请重试。"
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "未找到评价"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 个可变商品将被忽略。"
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "系统默认"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "未选择预订"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "登录失败，状态码为 %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "了解 POS 支持哪些商品"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "可变订阅商品"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "优惠券未应用"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "添加商品"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "为你的商店收集评价"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "网页选项"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "完成"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "所有订单"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "符合免费取件条件"
+  },
+  {
+    "key": "product_type_external",
+    "value": "外部"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "危险品类别已设置"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "这是向客户显示的文件名称"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "你可以在网页仪表盘中编辑商品附加项。"
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "如果无法打印，你也可以随时将收据保存为 PDF，并通过电子邮件发送到其他设备上进行打印。"
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "源代码"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "提供反馈"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "刚刚"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "完成"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "计划"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "网页管理后台"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "我们找不到任何税率"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "The Contactless Symbol 是 EMVCo, LLC 拥有并经许可使用的商标。"
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s商品"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "由 AI 提供支持。&lt;a href=\\'\\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。"
+  },
+  {
+    "key": "product_attributes",
+    "value": "属性"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "尝试从照片中识别文字时出错。请重试"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "获取团队成员时出错"
+  },
+  {
+    "key": "no_site_error",
+    "value": "此地址上的站点不是 WordPress 站点。要连接到它，该站点必须使用 WordPress。"
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "已超出生成上限"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "固定金额"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "配送服务"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "缺少门牌号"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "获取支持"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "未连接读卡器"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "状态已更新！"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "编辑商品（%d）"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "正在连接你的商店"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d 件"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "选择商品 %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo 已下载更新"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "如果你还没有账户，我们将使用此电子邮件为你创建一个。"
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "取消广告活动"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "确定"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "正在验证"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "已选包裹"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "输入你的 WordPress.com 账户密码以连接到 Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "筛选（%s）"
+  },
+  {
+    "key": "amount",
+    "value": "金额"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "继续"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "发送收据"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "此站点似乎阻止了 XML-RPC 调用（错误代码 401）。如果登录失败，请点击帮助图标查看常见问题。"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "第 8 类 - 腐蚀性物质包裹 - 可空运的腐蚀性物质（某些清洁剂或杀树/除草化合物等）"
+  }
+]

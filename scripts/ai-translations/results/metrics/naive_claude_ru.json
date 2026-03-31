@@ -1,0 +1,2401 @@
+{
+  "language": "ru",
+  "strategy": "naive",
+  "llm": "claude",
+  "per_string": [
+    {
+      "key": "support_request_loading_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Пожалуйста, подождите…",
+      "human_value": "Пожалуйста, подождите…"
+    },
+    {
+      "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+      "bleu": 45.864,
+      "chrf": 65.7739,
+      "levenshtein_sim": 0.82623,
+      "ai_value": "Похоже, возникла проблема с подключением Jetpack.\\n\\nНе беспокойтесь, наша команда поддержки готова помочь. Свяжитесь с нами, и мы будем рады вам помочь.",
+      "human_value": "Похоже, возникла проблема при подключении к Jetpack.\\n\\nНо не волнуйтесь: наши инженеры поддержки вам помогут. Свяжитесь с нами, и мы будем рады помочь."
+    },
+    {
+      "key": "copied_to_clipboard",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Скопировано в буфер обмена",
+      "human_value": "Скопировано в буфер обмена"
+    },
+    {
+      "key": "woopos_variation_item_content_description",
+      "bleu": 80.9107,
+      "chrf": 63.5491,
+      "levenshtein_sim": 0.871795,
+      "ai_value": "Вариация %s, цена %s",
+      "human_value": "Вариант %s, цена %s"
+    },
+    {
+      "key": "shipping_label_multiple_customs_form_print_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Печать",
+      "human_value": "Печать"
+    },
+    {
+      "key": "shipping_label_shipment_details_title",
+      "bleu": 0.0,
+      "chrf": 11.5181,
+      "levenshtein_sim": 0.470588,
+      "ai_value": "Детали отправки",
+      "human_value": "Сведения о доставке"
+    },
+    {
+      "key": "shipping_label_edit_address_loading_progress_title",
+      "bleu": 34.6681,
+      "chrf": 68.4874,
+      "levenshtein_sim": 0.810811,
+      "ai_value": "Загрузка данных адреса",
+      "human_value": "Загрузка адреса"
+    },
+    {
+      "key": "order_creation_fee_percentage_calculated_amount",
+      "bleu": 66.874,
+      "chrf": 59.9473,
+      "levenshtein_sim": 0.744186,
+      "ai_value": "Рассчитанная сумма: %s",
+      "human_value": "Вычисленная сумма: %s"
+    },
+    {
+      "key": "login_app_password_exit_dialog_confirmation",
+      "bleu": 0.0,
+      "chrf": 19.1456,
+      "levenshtein_sim": 0.285714,
+      "ai_value": "Выйти в любом случае",
+      "human_value": "Всё равно выйти"
+    },
+    {
+      "key": "analytics_list_item_products_sold",
+      "bleu": 94.5742,
+      "chrf": 95.722,
+      "levenshtein_sim": 0.966667,
+      "ai_value": "%1$s, %2$s, %3$s, %4$s продано",
+      "human_value": "%1$s, %2$s, %3$s, %4$s проданы"
+    },
+    {
+      "key": "blaze_campaign_status_in_moderation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "На модерации",
+      "human_value": "На модерации"
+    },
+    {
+      "key": "woopos_checkout_button",
+      "bleu": 0.0,
+      "chrf": 20.5061,
+      "levenshtein_sim": 0.48,
+      "ai_value": "Оформить",
+      "human_value": "Оформление заказа"
+    },
+    {
+      "key": "woo_shipping_payment_screen_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Способ оплаты",
+      "human_value": "Способ оплаты"
+    },
+    {
+      "key": "woo_push_notifications_introduction_what_is_wpcom",
+      "bleu": 45.4802,
+      "chrf": 45.2043,
+      "levenshtein_sim": 0.721311,
+      "ai_value": "Что такое WordPress.com?",
+      "human_value": "Что представляет собой WordPress.com?"
+    },
+    {
+      "key": "dashboard_coupons_card_empty_view_message",
+      "bleu": 16.2334,
+      "chrf": 36.868,
+      "levenshtein_sim": 0.416667,
+      "ai_value": "Никаких покупок купонов в этот период",
+      "human_value": "В этот период купоны не применялись"
+    },
+    {
+      "key": "product_selector_arrow_content_description",
+      "bleu": 50.0,
+      "chrf": 45.3185,
+      "levenshtein_sim": 0.75,
+      "ai_value": "Показать детали",
+      "human_value": "Показать сведения"
+    },
+    {
+      "key": "empty_product_message",
+      "bleu": 7.4035,
+      "chrf": 34.3714,
+      "levenshtein_sim": 0.428571,
+      "ai_value": "Начните продавать сегодня, добавив первый товар в магазин.",
+      "human_value": "Добавьте в магазин первый продукт, чтобы уже сегодня приступить к продаже товаров."
+    },
+    {
+      "key": "variations_bulk_update_sale_price",
+      "bleu": 34.6681,
+      "chrf": 39.4447,
+      "levenshtein_sim": 0.553191,
+      "ai_value": "Обновить цену распродажи",
+      "human_value": "Обновить акционную цену"
+    },
+    {
+      "key": "error_required_field",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Обязательное поле",
+      "human_value": "Обязательное поле"
+    },
+    {
+      "key": "analytics_google_ads_no_data",
+      "bleu": 30.2138,
+      "chrf": 77.9496,
+      "levenshtein_sim": 0.943396,
+      "ai_value": "Нет программ в этот период",
+      "human_value": "Нет программ за этот период"
+    },
+    {
+      "key": "shipping_label_create_purchase",
+      "bleu": 27.5161,
+      "chrf": 27.3908,
+      "levenshtein_sim": 0.392857,
+      "ai_value": "Купить этикетку доставки",
+      "human_value": "Приобрести транспортную этикетку"
+    },
+    {
+      "key": "shipping_label_usps_search_tool_link_text",
+      "bleu": 20.8012,
+      "chrf": 49.1663,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Инструмент поиска USPS HAZMAT.",
+      "human_value": "Инструмент поиска опасных веществ USPS."
+    },
+    {
+      "key": "magic_link_update_error",
+      "bleu": 29.8475,
+      "chrf": 83.3273,
+      "levenshtein_sim": 0.848485,
+      "ai_value": "Произошла ошибка. Пожалуйста, войдите, чтобы продолжить",
+      "human_value": "Произошла ошибка. Войдите, чтобы продолжить."
+    },
+    {
+      "key": "signup_confirmation_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подтверждение регистрации",
+      "human_value": "Подтверждение регистрации"
+    },
+    {
+      "key": "type",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Тип",
+      "human_value": "Тип"
+    },
+    {
+      "key": "coupon_list_add_coupon_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Добавить купон",
+      "human_value": "Добавить купон"
+    },
+    {
+      "key": "order_detail_payment_header",
+      "bleu": 0.0,
+      "chrf": 29.3177,
+      "levenshtein_sim": 0.611111,
+      "ai_value": "ИТОГИ ПЛАТЕЖА",
+      "human_value": "ИТОГОВЫЕ СУММЫ ПЛАТЕЖЕЙ"
+    },
+    {
+      "key": "ai_feedback_form_positive_button",
+      "bleu": 50.0,
+      "chrf": 41.9324,
+      "levenshtein_sim": 0.742857,
+      "ai_value": "Позитивный отзыв",
+      "human_value": "Положительный отзыв"
+    },
+    {
+      "key": "subscription_expire",
+      "bleu": 0.0,
+      "chrf": 11.5834,
+      "levenshtein_sim": 0.4,
+      "ai_value": "Истекает через",
+      "human_value": "Прекратить после"
+    },
+    {
+      "key": "blaze_campaign_payment_added_successfully",
+      "bleu": 35.3553,
+      "chrf": 81.4745,
+      "levenshtein_sim": 0.862069,
+      "ai_value": "Кредитная карта успешно добавлена",
+      "human_value": "Кредитная карта добавлена"
+    },
+    {
+      "key": "woo_push_notifications_introduction_body2",
+      "bleu": 35.1863,
+      "chrf": 61.538,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "Это займет минуту.",
+      "human_value": "Это займет всего минуту."
+    },
+    {
+      "key": "product_selection_menu_select_all",
+      "bleu": 50.0,
+      "chrf": 85.9061,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Выбрать все",
+      "human_value": "Выбрать всё"
+    },
+    {
+      "key": "shipping_label_edit_address_company",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Компания",
+      "human_value": "Компания"
+    },
+    {
+      "key": "variations_bulk_update_sale_prices_dialog_title",
+      "bleu": 34.6681,
+      "chrf": 44.5015,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "Обновление цен распродажи",
+      "human_value": "Обновление акционных цен"
+    },
+    {
+      "key": "product_selector_select_button_title_default",
+      "bleu": 21.4441,
+      "chrf": 49.7813,
+      "levenshtein_sim": 0.702703,
+      "ai_value": "Выбрать %d товаров",
+      "human_value": "Выбрать товары (%d)"
+    },
+    {
+      "key": "order_refunds_confirmation",
+      "bleu": 42.8698,
+      "chrf": 59.4978,
+      "levenshtein_sim": 0.771654,
+      "ai_value": "Вы уверены, что хотите выдать возврат? Это нельзя отменить.",
+      "human_value": "Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить."
+    },
+    {
+      "key": "woopos_bookings_details_service_label",
+      "bleu": 0.0,
+      "chrf": 59.1667,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "Услуга",
+      "human_value": "Услуги"
+    },
+    {
+      "key": "woo_shipping_labels_customs_itn_info_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подробнее об ITN",
+      "human_value": "Подробнее об ITN"
+    },
+    {
+      "key": "retry",
+      "bleu": 36.7879,
+      "chrf": 52.8674,
+      "levenshtein_sim": 0.692308,
+      "ai_value": "Повторить",
+      "human_value": "Повторить попытку"
+    },
+    {
+      "key": "woopos_settings_card_reader_update_available",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "• Доступно обновление",
+      "human_value": "• Доступно обновление"
+    },
+    {
+      "key": "woopos_bookings_details_customer_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Клиент",
+      "human_value": "Клиент"
+    },
+    {
+      "key": "domain_picker_subtitle",
+      "bleu": 50.9677,
+      "chrf": 76.6368,
+      "levenshtein_sim": 0.88,
+      "ai_value": "Здесь люди найдут вас в интернете. Не беспокойтесь, вы сможете изменить это позже.",
+      "human_value": "Это место, где люди найдут вас в Интернете. Не беспокойтесь, вы сможете изменить это позднее."
+    },
+    {
+      "key": "blaze_campaign_payment_summary_campaign_budget",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Кампания Blaze",
+      "human_value": "Кампания Blaze"
+    },
+    {
+      "key": "product_subscription_free_trial_info",
+      "bleu": 65.3743,
+      "chrf": 66.8985,
+      "levenshtein_sim": 0.810552,
+      "ai_value": "Дополнительный период времени перед первым периодическим платежом. Любой стартовый сбор будет взиматься в начале подписки. Пробный период не может превышать: 90 дней, 52 недели, 24 месяца или 5 лет.",
+      "human_value": "Необязательный период времени до списания первого регулярного платежа. Любой регистрационный взнос всё равно будет взиматься в начале подписки. Пробный период не может превышать: 90 дней, 52 недели, 24 месяца или 5 лет."
+    },
+    {
+      "key": "card_reader_connect_missing_bluetooth_permissions_header",
+      "bleu": 19.3049,
+      "chrf": 71.8078,
+      "levenshtein_sim": 0.807339,
+      "ai_value": "Отсутствует требуемое разрешение для устройств поблизости",
+      "human_value": "Отсутствует разрешение на поиск устройств поблизости"
+    },
+    {
+      "key": "order_refunds_title_with_amount",
+      "bleu": 55.0321,
+      "chrf": 11.3426,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Возврат %s",
+      "human_value": "Вернуть %s"
+    },
+    {
+      "key": "domain_contact_information_description",
+      "bleu": 51.4211,
+      "chrf": 72.6596,
+      "levenshtein_sim": 0.830084,
+      "ai_value": "Для вашего удобства мы заполнили вашу контактную информацию WordPress.com. Пожалуйста, проверьте, что это правильная информация, которую вы хотите использовать для этого домена.",
+      "human_value": "Для вашего удобства, мы заполнили вашу контактную информацию WordPress.com. Пожалуйста, перепроверьте её на корректность, действительно ли вы хотите использовать её для этого домена."
+    },
+    {
+      "key": "shipping_label_create_title",
+      "bleu": 0.0,
+      "chrf": 16.6508,
+      "levenshtein_sim": 0.48,
+      "ai_value": "Создать этикетку доставки",
+      "human_value": "Создание почтового бланка"
+    },
+    {
+      "key": "woopos_exit_dialog_confirmation_confirm_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Выход",
+      "human_value": "Выход"
+    },
+    {
+      "key": "card_reader_connect_connecting_built_in_header",
+      "bleu": 55.0321,
+      "chrf": 73.1006,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "Подготовка к платежу",
+      "human_value": "Подготовка к оплате"
+    },
+    {
+      "key": "analytics_items",
+      "bleu": 0.0,
+      "chrf": 12.7269,
+      "levenshtein_sim": 0.375,
+      "ai_value": "товаров",
+      "human_value": "элементов"
+    },
+    {
+      "key": "analytics_revenue_no_data",
+      "bleu": 12.7033,
+      "chrf": 40.0291,
+      "levenshtein_sim": 0.654545,
+      "ai_value": "Нет дохода в этот период",
+      "human_value": "Нет доходов за указанный период"
+    },
+    {
+      "key": "product_global_unique_id_summary",
+      "bleu": 35.7103,
+      "chrf": 61.5956,
+      "levenshtein_sim": 0.767123,
+      "ai_value": "Введите штрихкод или любой другой уникальный идентификатор этого товара. Это может помочь вам указать этот товар на других каналах или площадках.",
+      "human_value": "Введите штрихкод или любой другой уникальный идентификатор товара. Это поможет вам выставлять товар на продажу в других сетях или на маркетплейсах."
+    },
+    {
+      "key": "analytics_products_list_items_sold",
+      "bleu": 0.0,
+      "chrf": 26.0552,
+      "levenshtein_sim": 0.484848,
+      "ai_value": "Продано товаров",
+      "human_value": "Проданные предметы"
+    },
+    {
+      "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+      "bleu": 21.0995,
+      "chrf": 52.5254,
+      "levenshtein_sim": 0.643979,
+      "ai_value": "Включение опции «Оплата при получении» позволит клиентам оплачивать онлайн-заказы наличными или картой при доставке.\\n\\nЗаказы по-прежнему можно создавать вручную без включения этой функции.",
+      "human_value": "Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\\n\\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции."
+    },
+    {
+      "key": "custom_fields_list_loading_error",
+      "bleu": 42.7287,
+      "chrf": 63.2741,
+      "levenshtein_sim": 0.825,
+      "ai_value": "Ошибка при загрузке пользовательских полей",
+      "human_value": "Ошибка при загрузке произвольных полей"
+    },
+    {
+      "key": "card_reader_detail_connected_enforced_update_software",
+      "bleu": 10.128,
+      "chrf": 59.4829,
+      "levenshtein_sim": 0.434211,
+      "ai_value": "Пожалуйста, обновите программное обеспечение вашего устройства, чтобы продолжить принимать платежи",
+      "human_value": "Чтобы принимать платежи, обновите ПО устройства чтения"
+    },
+    {
+      "key": "login_get_link_by_email",
+      "bleu": 22.9575,
+      "chrf": 56.9546,
+      "levenshtein_sim": 0.657895,
+      "ai_value": "Получить ссылку входа по электронной почте",
+      "human_value": "Получить ссылку для входа по email"
+    },
+    {
+      "key": "shipping_label_rate_insurance_up_to",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "до %s",
+      "human_value": "до %s"
+    },
+    {
+      "key": "woopos_bookings_payment_status_unpaid",
+      "bleu": 0.0,
+      "chrf": 70.3817,
+      "levenshtein_sim": 0.782609,
+      "ai_value": "Не оплачено",
+      "human_value": "Неоплаченный"
+    },
+    {
+      "key": "login_prologue_label_analytics",
+      "bleu": 19.1992,
+      "chrf": 45.6838,
+      "levenshtein_sim": 0.628571,
+      "ai_value": "Отслеживайте продажи и популярные товары",
+      "human_value": "Отслеживайте продажи и узнавайте, какие товары пользуются спросом"
+    },
+    {
+      "key": "product_update_stock_status_title",
+      "bleu": 28.2544,
+      "chrf": 48.3905,
+      "levenshtein_sim": 0.678571,
+      "ai_value": "Обновить статус запасов",
+      "human_value": "Обновить статус наличия на складе"
+    },
+    {
+      "key": "image_source_wp_media_library",
+      "bleu": 30.3265,
+      "chrf": 38.1081,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "Медиатека WordPress",
+      "human_value": "Библиотека медиафайлов WordPress"
+    },
+    {
+      "key": "product_detail_publish_product_draft_success",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Черновик товара сохранен",
+      "human_value": "Черновик товара сохранен"
+    },
+    {
+      "key": "order_creation_customer_note_edit_content_description",
+      "bleu": 27.5161,
+      "chrf": 26.4712,
+      "levenshtein_sim": 0.535714,
+      "ai_value": "Редактировать заметку клиента",
+      "human_value": "Изменить примечание клиента"
+    },
+    {
+      "key": "booking_note_label_add_note",
+      "bleu": 50.0,
+      "chrf": 39.9582,
+      "levenshtein_sim": 0.628571,
+      "ai_value": "Добавить заметку",
+      "human_value": "Добавить примечание"
+    },
+    {
+      "key": "product_tax_status_none",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Нет",
+      "human_value": "Нет"
+    },
+    {
+      "key": "my_store_custom_range_content_description",
+      "bleu": 30.2138,
+      "chrf": 54.0363,
+      "levenshtein_sim": 0.659341,
+      "ai_value": "Добавить статистику за пользовательский диапазон дат",
+      "human_value": "Добавить статистику за выбранный период"
+    },
+    {
+      "key": "jetpack_install_start_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Установить Jetpack",
+      "human_value": "Установить Jetpack"
+    },
+    {
+      "key": "order_shipment_tracking_empty_custom_provider_name",
+      "bleu": 66.874,
+      "chrf": 76.5324,
+      "levenshtein_sim": 0.898876,
+      "ai_value": "Пожалуйста, введите название перевозчика",
+      "human_value": "Пожалуйста, введите название компании-перевозчика"
+    },
+    {
+      "key": "woopos_scanning_setup_device_selection_title",
+      "bleu": 27.5161,
+      "chrf": 60.9424,
+      "levenshtein_sim": 0.872727,
+      "ai_value": "Настроить сканер штрихкодов",
+      "human_value": "Настройка сканера штрихкодов"
+    },
+    {
+      "key": "store_onboarding_launch_store_share_url_button",
+      "bleu": 0.0,
+      "chrf": 9.6428,
+      "levenshtein_sim": 0.222222,
+      "ai_value": "Поделиться URL",
+      "human_value": "URL-адрес рекомендации"
+    },
+    {
+      "key": "theme_picker_current_theme_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Текущая тема",
+      "human_value": "Текущая тема"
+    },
+    {
+      "key": "error_user_username_instead_of_email",
+      "bleu": 77.6011,
+      "chrf": 95.6559,
+      "levenshtein_sim": 0.920455,
+      "ai_value": "Пожалуйста, войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.",
+      "human_value": "Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты."
+    },
+    {
+      "key": "woo_shipping_labels_customs_content_details_description",
+      "bleu": 17.7474,
+      "chrf": 63.5255,
+      "levenshtein_sim": 0.708333,
+      "ai_value": "Пожалуйста, опишите, какие товары содержит эта посылка",
+      "human_value": "Укажите, какие товары содержатся в посылке"
+    },
+    {
+      "key": "new_notifications",
+      "bleu": 27.5348,
+      "chrf": 79.1362,
+      "levenshtein_sim": 0.780488,
+      "ai_value": "%d новых уведомлений",
+      "human_value": "Новых уведомлений: %d"
+    },
+    {
+      "key": "coupon_edit_code_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Код купона",
+      "human_value": "Код купона"
+    },
+    {
+      "key": "order_shipment_tracking_delete_error",
+      "bleu": 18.9959,
+      "chrf": 71.463,
+      "levenshtein_sim": 0.9,
+      "ai_value": "Ошибка при удалении отслеживания",
+      "human_value": "Ошибка удаления отслеживания"
+    },
+    {
+      "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+      "bleu": 39.7635,
+      "chrf": 18.713,
+      "levenshtein_sim": 0.529412,
+      "ai_value": "Пункт назначения: %s",
+      "human_value": "Размещение: %s"
+    },
+    {
+      "key": "login_site_credentials_use_web_authorization",
+      "bleu": 0.0,
+      "chrf": 18.943,
+      "levenshtein_sim": 0.418605,
+      "ai_value": "Попробуйте снова с веб-страницей WP Admin",
+      "human_value": "Повторите попытку, используя страницу консоли"
+    },
+    {
+      "key": "login_verifying_site_error",
+      "bleu": 53.7285,
+      "chrf": 69.6311,
+      "levenshtein_sim": 0.892857,
+      "ai_value": "Не удается подключиться к %s",
+      "human_value": "Не удалось подключиться к %s"
+    },
+    {
+      "key": "more_menu_button_woo_pos_description",
+      "bleu": 16.2334,
+      "chrf": 51.7464,
+      "levenshtein_sim": 0.691358,
+      "ai_value": "Принимайте платежи в вашем физическом магазине",
+      "human_value": "Принимать платежи в офлайн-магазине"
+    },
+    {
+      "key": "shipping_label_address_data_invalid_snackbar_message",
+      "bleu": 34.9833,
+      "chrf": 69.3585,
+      "levenshtein_sim": 0.826667,
+      "ai_value": "Некоторые обязательные поля пусты.",
+      "human_value": "Некоторые обязательные поля не заполнены."
+    },
+    {
+      "key": "woopos_error_icon_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Значок ошибки",
+      "human_value": "Значок ошибки"
+    },
+    {
+      "key": "orderstatus_contentDesc_withStatus",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Статус заказа: %s",
+      "human_value": "Статус заказа: %s"
+    },
+    {
+      "key": "my_store_custom_range_granularity_week",
+      "bleu": 0.0,
+      "chrf": 33.6373,
+      "levenshtein_sim": 0.47619,
+      "ai_value": "Еженедельно",
+      "human_value": "По неделям"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_empty_button",
+      "bleu": 34.6681,
+      "chrf": 46.8335,
+      "levenshtein_sim": 0.71875,
+      "ai_value": "Создать пользовательскую упаковку",
+      "human_value": "Создать индивидуальную упаковку"
+    },
+    {
+      "key": "shipping_label_hazmat_content_dhl_instructions",
+      "bleu": 34.6719,
+      "chrf": 66.8644,
+      "levenshtein_sim": 0.650888,
+      "ai_value": "WooCommerce Shipping в настоящее время не поддерживает опасные грузы через %1$s",
+      "human_value": "В настоящее время WooCommerce Shipping не поддерживает доставку опасных веществ через %1$s"
+    },
+    {
+      "key": "woo_shipping_labels_customs_product_details_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Описание",
+      "human_value": "Описание"
+    },
+    {
+      "key": "analytics_google_ads_filter_clicks",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "Клики",
+      "human_value": "Переходы"
+    },
+    {
+      "key": "product_add_photos",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Добавить фото",
+      "human_value": "Добавить фото"
+    },
+    {
+      "key": "store_onboarding_payments_setup_description",
+      "bleu": 13.546,
+      "chrf": 31.5597,
+      "levenshtein_sim": 0.489209,
+      "ai_value": "Откройте для себя других поставщиков платежей и\\nвыберите поставщика платежей.",
+      "human_value": "Посмотрите другие платёжные системы и \\nвыберите одну из них."
+    },
+    {
+      "key": "woopos_scanning_setup_barcodes_on_products_message",
+      "bleu": 28.5078,
+      "chrf": 59.7593,
+      "levenshtein_sim": 0.772277,
+      "ai_value": "Вы можете установить штрихкоды в поле GTIN, UPC, EAN, ISBN на вкладке инвентаризации товара. Для подробнее",
+      "human_value": "Можно настроить штрихкоды в поле «GTIN, UPC, EAN, ISBN» на вкладке запасов товара. Подробнее см."
+    },
+    {
+      "key": "wc_approve",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Одобрить",
+      "human_value": "Одобрить"
+    },
+    {
+      "key": "orderfilters_default_filter_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Все",
+      "human_value": "Все"
+    },
+    {
+      "key": "product_add_image_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Добавить изображение",
+      "human_value": "Добавить изображение"
+    },
+    {
+      "key": "card_reader_onboarding_account_pending_requirements_hint",
+      "bleu": 34.6334,
+      "chrf": 53.7146,
+      "levenshtein_sim": 0.647482,
+      "ai_value": "В вашем аккаунте есть невыполненные требования. Пожалуйста, выполните эти требования к %1$s, чтобы продолжить принимать платежи при получении.",
+      "human_value": "Для вашей учётной записи существуют требования на утверждении. Выполните эти требования к %1$s, чтобы продолжать получать очные платежи."
+    },
+    {
+      "key": "shipping_label_paper_size_legal",
+      "bleu": 64.3459,
+      "chrf": 72.014,
+      "levenshtein_sim": 0.809524,
+      "ai_value": "Legal (8,5 x 14 дюймов)",
+      "human_value": "Legal (8,5 x 14 in)"
+    },
+    {
+      "key": "ai_product_description_title_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Введите название товара.",
+      "human_value": "Введите название товара."
+    },
+    {
+      "key": "shipping_label_customs_restriction_type_other_hint",
+      "bleu": 0.0,
+      "chrf": 47.0715,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Детали ограничения",
+      "human_value": "Сведения об ограничениях"
+    },
+    {
+      "key": "product_details_blaze_card",
+      "bleu": 19.7161,
+      "chrf": 14.5385,
+      "levenshtein_sim": 0.382979,
+      "ai_value": "Продвигать с Blaze",
+      "human_value": "Рекламируйте при помощи Blaze"
+    },
+    {
+      "key": "blaze_campaign_preview_details_location",
+      "bleu": 0.0,
+      "chrf": 65.9351,
+      "levenshtein_sim": 0.769231,
+      "ai_value": "Местоположение",
+      "human_value": "Расположение"
+    },
+    {
+      "key": "subscription_period_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "неделя",
+      "human_value": "неделя"
+    },
+    {
+      "key": "login_wpcom_connection_consent_jetpack",
+      "bleu": 31.9472,
+      "chrf": 84.4108,
+      "levenshtein_sim": 0.96875,
+      "ai_value": "Нажав кнопку Подключить Jetpack",
+      "human_value": "Нажав кнопку «Подключить Jetpack»"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_yes_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Да, изменить",
+      "human_value": "Да, изменить"
+    },
+    {
+      "key": "store_onboarding_payments_pre_setup_title_wcpay",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooPayments",
+      "human_value": "WooPayments"
+    },
+    {
+      "key": "orderdetail_message_customer",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сообщение",
+      "human_value": "Сообщение"
+    },
+    {
+      "key": "product_type_confirm_dialog_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Вы уверены, что хотите изменить тип товара?",
+      "human_value": "Вы уверены, что хотите изменить тип товара?"
+    },
+    {
+      "key": "disabled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Отключено",
+      "human_value": "Отключено"
+    },
+    {
+      "key": "shipping_label_select_package_description",
+      "bleu": 18.5213,
+      "chrf": 70.5569,
+      "levenshtein_sim": 0.855856,
+      "ai_value": "Введите размеры вашей посылки или выберите вариант упаковки перевозчика, чтобы увидеть доступные тарифы доставки.",
+      "human_value": "Введите размеры посылки или выберите одну из упаковок перевозчика, чтобы узнать доступные тарифы на доставку."
+    },
+    {
+      "key": "orderfilters_product_filter",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Товар",
+      "human_value": "Товар"
+    },
+    {
+      "key": "product_update_success_notification_title",
+      "bleu": 0.0,
+      "chrf": 32.1115,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Товар обновлен",
+      "human_value": "Продукт обновлён"
+    },
+    {
+      "key": "product_global_unique_id",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "GTIN, UPC, EAN, ISBN",
+      "human_value": "GTIN, UPC, EAN, ISBN"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_gifts",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подарки",
+      "human_value": "Подарки"
+    },
+    {
+      "key": "booking_overflow_refund",
+      "bleu": 0.0,
+      "chrf": 27.208,
+      "levenshtein_sim": 0.461538,
+      "ai_value": "Выдать возврат",
+      "human_value": "Вопрос о возврате средств"
+    },
+    {
+      "key": "support_request_success_message",
+      "bleu": 9.1282,
+      "chrf": 48.0761,
+      "levenshtein_sim": 0.720812,
+      "ai_value": "Ваш запрос поддержки успешно отправлен. Мы ответим вам по электронной почте как можно скорее.",
+      "human_value": "Ваш запрос в службу поддержки успешно доставлен. Мы постараемся ответить вам в письме как можно быстрее."
+    },
+    {
+      "key": "blaze_campaign_objective_save_selection_switch_label",
+      "bleu": 53.7285,
+      "chrf": 89.3444,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "Сохранить мой выбор для будущих кампаний",
+      "human_value": "Сохранить выбор для будущих кампаний"
+    },
+    {
+      "key": "jetpack_install_progress_failed_option_contact_support",
+      "bleu": 15.9736,
+      "chrf": 45.6838,
+      "levenshtein_sim": 0.745763,
+      "ai_value": "Связаться со службой поддержки",
+      "human_value": "Обратиться в службу поддержки"
+    },
+    {
+      "key": "shipping_label_create_purchase_fulfill_error",
+      "bleu": 75.9836,
+      "chrf": 74.7625,
+      "levenshtein_sim": 0.878049,
+      "ai_value": "Не удалось отметить заказ как завершенный",
+      "human_value": "Не удалось отметить заказ как выполненный"
+    },
+    {
+      "key": "blaze_campaign_preview_days_duration_endless",
+      "bleu": 73.4889,
+      "chrf": 88.5342,
+      "levenshtein_sim": 0.984127,
+      "ai_value": "%1$s еженедельно, начиная с %2$s",
+      "human_value": "%1$s еженедельно начиная с %2$s"
+    },
+    {
+      "key": "card_reader_payment_failed_duplicate_transaction",
+      "bleu": 19.3577,
+      "chrf": 58.3671,
+      "levenshtein_sim": 0.781609,
+      "ai_value": "Одинаковая транзакция была отправлена недавно",
+      "human_value": "Такая же транзакция была запрошена недавно"
+    },
+    {
+      "key": "customers_details_registration_section",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Регистрация",
+      "human_value": "Регистрация"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_edit_order",
+      "bleu": 50.0,
+      "chrf": 40.1358,
+      "levenshtein_sim": 0.606061,
+      "ai_value": "Редактировать заказ",
+      "human_value": "Изменить заказ"
+    },
+    {
+      "key": "woopos_variations_empty_list_title",
+      "bleu": 15.9736,
+      "chrf": 62.3305,
+      "levenshtein_sim": 0.84058,
+      "ai_value": "Поддерживаемые вариации не найдены",
+      "human_value": "Поддерживаемых вариантов не найдено"
+    },
+    {
+      "key": "login_jetpack_connection_explanation",
+      "bleu": 35.8642,
+      "chrf": 66.9929,
+      "levenshtein_sim": 0.773006,
+      "ai_value": "Пожалуйста, подключите свой магазин к Jetpack, чтобы получить доступ к нему в этом приложении.",
+      "human_value": "Подключите магазин к Jetpack, чтобы работать с ним в этом приложении."
+    },
+    {
+      "key": "shipping_label_package_details_weight_hint",
+      "bleu": 66.0633,
+      "chrf": 75.3939,
+      "levenshtein_sim": 0.958333,
+      "ai_value": "Общий вес посылки (%1$s)",
+      "human_value": "Общий вес посылок (%1$s)"
+    },
+    {
+      "key": "woopos_search_popular_items_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Популярные товары",
+      "human_value": "Популярные товары"
+    },
+    {
+      "key": "variations_bulk_update_regular_price",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Обновить обычную цену",
+      "human_value": "Обновить обычную цену"
+    },
+    {
+      "key": "woopos_bookings_details_team_member_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Член команды",
+      "human_value": "Член команды"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Карта не поддерживает этот тип возврата",
+      "human_value": "Карта не поддерживает этот тип возврата"
+    },
+    {
+      "key": "product_settings",
+      "bleu": 50.0,
+      "chrf": 49.3065,
+      "levenshtein_sim": 0.705882,
+      "ai_value": "Параметры товара",
+      "human_value": "Параметры продукта"
+    },
+    {
+      "key": "shipping_label_customs_itn_required_country",
+      "bleu": 45.4824,
+      "chrf": 24.6383,
+      "levenshtein_sim": 0.487805,
+      "ai_value": "ITN требуется для отправок в %1$s.",
+      "human_value": "Необходимо указать номер ITN для посылок в %1$s."
+    },
+    {
+      "key": "login_jetpack_installation_continue_connection",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Продолжить подключение",
+      "human_value": "Продолжить подключение"
+    },
+    {
+      "key": "print_receipt_label_info_step_3",
+      "bleu": 5.2176,
+      "chrf": 59.8814,
+      "levenshtein_sim": 0.84375,
+      "ai_value": "При выборе \"Печать квитанции\" после принятия платежа замените \"Сохранить как PDF\" на \"Все принтеры\" и найдите новый принтер.",
+      "human_value": "При выборе «Печать квитанции» после приёма платежа замените «Сохранить как PDF» на «Все принтеры» и выполните поиск нового принтера."
+    },
+    {
+      "key": "booking_payment_status_cancelled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Отменено",
+      "human_value": "Отменено"
+    },
+    {
+      "key": "coupon_details_performance_amount_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сумма",
+      "human_value": "Сумма"
+    },
+    {
+      "key": "woo_shipping_fetching_countries_and_states",
+      "bleu": 42.7287,
+      "chrf": 63.3374,
+      "levenshtein_sim": 0.807692,
+      "ai_value": "Получение стран и штатов.",
+      "human_value": "Получение стран и регионов."
+    },
+    {
+      "key": "scan_to_update_inventory_product_details_button",
+      "bleu": 0.0,
+      "chrf": 23.3043,
+      "levenshtein_sim": 0.54902,
+      "ai_value": "Просмотреть детали товара",
+      "human_value": "Показать сведения о товаре"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_completed_header",
+      "bleu": 50.0,
+      "chrf": 39.9073,
+      "levenshtein_sim": 0.709677,
+      "ai_value": "Возврат успешен",
+      "human_value": "Возврат выполнен"
+    },
+    {
+      "key": "print_shipping_label_format_options_title",
+      "bleu": 55.0321,
+      "chrf": 68.6023,
+      "levenshtein_sim": 0.862745,
+      "ai_value": "Параметры формата этикетки",
+      "human_value": "Варианты формата этикетки"
+    },
+    {
+      "key": "logviewer_activity_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Журнал приложения",
+      "human_value": "Журнал приложения"
+    },
+    {
+      "key": "product_variant_list_add_first_variation",
+      "bleu": 15.9736,
+      "chrf": 47.7475,
+      "levenshtein_sim": 0.730769,
+      "ai_value": "Создайте вашу первую вариацию",
+      "human_value": "Создайте первый вариант"
+    },
+    {
+      "key": "woo_shipping_confirm_address_suggested",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Предложено",
+      "human_value": "Предложено"
+    },
+    {
+      "key": "booking_payment_status_refunded",
+      "bleu": 0.0,
+      "chrf": 23.5181,
+      "levenshtein_sim": 0.5,
+      "ai_value": "Возврат",
+      "human_value": "Возвращенные средства"
+    },
+    {
+      "key": "upgrades_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подписки",
+      "human_value": "Подписки"
+    },
+    {
+      "key": "image_source_device_chooser",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Выбрать с устройства",
+      "human_value": "Выбрать с устройства"
+    },
+    {
+      "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+      "bleu": 9.6693,
+      "chrf": 60.5167,
+      "levenshtein_sim": 0.706587,
+      "ai_value": "Вы не можете добавить вариативный товар напрямую. Пожалуйста, выберите конкретную вариацию",
+      "human_value": "Невозможно добавить товар с вариациями напрямую. Выберите конкретную вариацию"
+    },
+    {
+      "key": "shipping_label_rate_included_options_insurance",
+      "bleu": 66.874,
+      "chrf": 49.3644,
+      "levenshtein_sim": 0.866667,
+      "ai_value": "Страховка (%s)",
+      "human_value": "Страхование (%s)"
+    },
+    {
+      "key": "shipping_label_shipment_details_payment_method",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Способ оплаты",
+      "human_value": "Способ оплаты"
+    },
+    {
+      "key": "woopos_cart_barcode_scan_result_unsupported_product",
+      "bleu": 17.4917,
+      "chrf": 53.8984,
+      "levenshtein_sim": 0.618182,
+      "ai_value": "Неподдерживаемый товар – %s",
+      "human_value": "Товар не поддерживается — %s"
+    },
+    {
+      "key": "coupon_list_item_label_active",
+      "bleu": 0.0,
+      "chrf": 61.7673,
+      "levenshtein_sim": 0.8,
+      "ai_value": "Активно",
+      "human_value": "Активный"
+    },
+    {
+      "key": "feedback_completed_back_to_store_button_text",
+      "bleu": 55.0321,
+      "chrf": 47.4697,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "Вернуться в магазин",
+      "human_value": "Назад в магазин"
+    },
+    {
+      "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+      "bleu": 54.4518,
+      "chrf": 68.6481,
+      "levenshtein_sim": 0.850575,
+      "ai_value": "Клиент заплатил %1$s в размере %2$s за доставку",
+      "human_value": "Клиент оплатил %1$s из %2$s за доставку."
+    },
+    {
+      "key": "woopos_dialog_products_info_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Почему я не вижу свои товары?",
+      "human_value": "Почему я не вижу свои товары?"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_user_hint",
+      "bleu": 18.9959,
+      "chrf": 67.3501,
+      "levenshtein_sim": 0.679245,
+      "ai_value": "Лимит использования на пользователя",
+      "human_value": "Лимит пользователя"
+    },
+    {
+      "key": "product_creation_ai_entry_sheet_ai_option_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Создать товар с помощью ИИ",
+      "human_value": "Создать товар с помощью ИИ"
+    },
+    {
+      "key": "woo_shipping_rate_option_saturday_delivery",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Доставка в субботу",
+      "human_value": "Доставка в субботу"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_coupon_hint",
+      "bleu": 0.0,
+      "chrf": 29.0388,
+      "levenshtein_sim": 0.434783,
+      "ai_value": "Лимит использования на купон",
+      "human_value": "Общий лимит купона"
+    },
+    {
+      "key": "product_detail_add_more",
+      "bleu": 27.5161,
+      "chrf": 33.4323,
+      "levenshtein_sim": 0.553191,
+      "ai_value": "Добавить больше деталей",
+      "human_value": "Добавить другие сведения"
+    },
+    {
+      "key": "notification_order_title",
+      "bleu": 50.8133,
+      "chrf": 57.3018,
+      "levenshtein_sim": 0.744186,
+      "ai_value": "У вас новый заказ! 🎉",
+      "human_value": "Поступил новый заказ! 🎉"
+    },
+    {
+      "key": "shipping_label_create_purchase_error",
+      "bleu": 46.3078,
+      "chrf": 73.3812,
+      "levenshtein_sim": 0.825397,
+      "ai_value": "Ошибка при покупке этикеток",
+      "human_value": "Возникла ошибка при покупке этикеток"
+    },
+    {
+      "key": "order_creation_add_shipping_name_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Доставка",
+      "human_value": "Доставка"
+    },
+    {
+      "key": "login_error_sms_throttled",
+      "bleu": 12.0392,
+      "chrf": 62.3038,
+      "levenshtein_sim": 0.80203,
+      "ai_value": "Мы сделали слишком много попыток отправить код проверки SMS. Подождите и запросите новый через минуту.",
+      "human_value": "Слишком много попыток отправить СМС-код проверки, отдохните и запросите снова через пару минут."
+    },
+    {
+      "key": "support_identity_input_dialog_email_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Электронная почта",
+      "human_value": "Электронная почта"
+    },
+    {
+      "key": "dashboard_google_ads_card_create_campaign_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Создать кампанию",
+      "human_value": "Создать кампанию"
+    },
+    {
+      "key": "woopos_date_yesterday_at",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Вчера в %s",
+      "human_value": "Вчера в %s"
+    },
+    {
+      "key": "login_avatar_content_description",
+      "bleu": 0.0,
+      "chrf": 50.8999,
+      "levenshtein_sim": 0.653061,
+      "ai_value": "Ваша фотография профиля",
+      "human_value": "Фотография в вашем профиле"
+    },
+    {
+      "key": "woo_shipping_labels_customs_return_to_sender_label",
+      "bleu": 9.5354,
+      "chrf": 50.3279,
+      "levenshtein_sim": 0.697248,
+      "ai_value": "Вернуть отправителю, если посылка не может быть доставлена",
+      "human_value": "Вернуть отправителю в случае невозможности доставки"
+    },
+    {
+      "key": "orderlist_connectivity_tool_store_orders_check_title",
+      "bleu": 35.1863,
+      "chrf": 86.4374,
+      "levenshtein_sim": 0.967742,
+      "ai_value": "Получение заказов вашего сайта",
+      "human_value": "Получение заказов с вашего сайта"
+    },
+    {
+      "key": "domains_purchase_successful_heading",
+      "bleu": 55.0321,
+      "chrf": 49.2085,
+      "levenshtein_sim": 0.653061,
+      "ai_value": "Поздравляем с покупкой",
+      "human_value": "Поздравляем с приобретением"
+    },
+    {
+      "key": "store_onboarding_full_screen_transition_name",
+      "bleu": 14.1272,
+      "chrf": 18.1779,
+      "levenshtein_sim": 0.291667,
+      "ai_value": "Полный экран подключения",
+      "human_value": "Адаптация, во весь экран"
+    },
+    {
+      "key": "domain_picker_suggestions_title",
+      "bleu": 0.0,
+      "chrf": 5.814,
+      "levenshtein_sim": 0.210526,
+      "ai_value": "Предложения",
+      "human_value": "Варианты"
+    },
+    {
+      "key": "woopos_orders_edit_refund",
+      "bleu": 60.6531,
+      "chrf": 75.6315,
+      "levenshtein_sim": 0.84,
+      "ai_value": "Редактировать возврат",
+      "human_value": "Редактировать возврат средств"
+    },
+    {
+      "key": "blaze_campaign_ceation_celebration_message",
+      "bleu": 8.897,
+      "chrf": 51.5748,
+      "levenshtein_sim": 0.521073,
+      "ai_value": "Объявление отправлено на одобрение. Мы отправим вам подтверждение по электронной почте, как только оно будет одобрено и запущено.",
+      "human_value": "Реклама отправлена на утверждение. Когда она будет одобрена и запущена, вы получите сообщение с подтверждением по электронной почте."
+    },
+    {
+      "key": "product_subscription_expiration_title",
+      "bleu": 18.394,
+      "chrf": 29.1186,
+      "levenshtein_sim": 0.489796,
+      "ai_value": "Истечение подписки",
+      "human_value": "Срок действия подписки истекает"
+    },
+    {
+      "key": "notification_wpcom_username_needed",
+      "bleu": 4.1961,
+      "chrf": 0.3894,
+      "levenshtein_sim": 0.144144,
+      "ai_value": "Пожалуйста, войдите с использованием имени пользователя и пароля.",
+      "human_value": "Please log in with your username and password."
+    },
+    {
+      "key": "login_jetpack_installation_error_generic_message",
+      "bleu": 18.0444,
+      "chrf": 59.6805,
+      "levenshtein_sim": 0.594595,
+      "ai_value": "Произошла ошибка при обмене данными с вашим сайтом.",
+      "human_value": "Во время обмена данными с вашим веб-сайтом произошла ошибка."
+    },
+    {
+      "key": "product_ratings_count_zero",
+      "bleu": 42.7287,
+      "chrf": 58.4622,
+      "levenshtein_sim": 0.83871,
+      "ai_value": "\\u2022 нет одобренных отзывов",
+      "human_value": "\\u2022 нет подтверждённых отзывов"
+    },
+    {
+      "key": "product_stock_quantity",
+      "bleu": 27.5161,
+      "chrf": 51.5052,
+      "levenshtein_sim": 0.7,
+      "ai_value": "Количество на складе",
+      "human_value": "Количество в наличии"
+    },
+    {
+      "key": "error_loading_image",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Не удалось загрузить изображение",
+      "human_value": "Не удалось загрузить изображение"
+    },
+    {
+      "key": "privacy_settings",
+      "bleu": 50.0,
+      "chrf": 65.5782,
+      "levenshtein_sim": 0.785714,
+      "ai_value": "Параметры конфиденциальности",
+      "human_value": "Настройки конфиденциальности"
+    },
+    {
+      "key": "product_type_variable_subscription",
+      "bleu": 50.0,
+      "chrf": 54.5023,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Вариативная подписка",
+      "human_value": "Переменная подписка"
+    },
+    {
+      "key": "shipping_label_purchased_tracking_error",
+      "bleu": 9.9801,
+      "chrf": 62.0703,
+      "levenshtein_sim": 0.42963,
+      "ai_value": "Мы в настоящее время не поддерживаем отслеживание для этого перевозчика",
+      "human_value": "Отслеживание этого перевозчика в данный момент не поддерживается"
+    },
+    {
+      "key": "jetpack_install_progress_step_one_message",
+      "bleu": 30.3265,
+      "chrf": 74.5912,
+      "levenshtein_sim": 0.820513,
+      "ai_value": "Установка Jetpack",
+      "human_value": "Идет установка Jetpack"
+    },
+    {
+      "key": "woo_shipping_labels_customs_restriction_type_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Тип ограничения",
+      "human_value": "Тип ограничения"
+    },
+    {
+      "key": "today",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сегодня",
+      "human_value": "Сегодня"
+    },
+    {
+      "key": "blaze_campaign_creation_celebration_header",
+      "bleu": 55.0321,
+      "chrf": 62.9034,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "Все готово!",
+      "human_value": "Всё готово!"
+    },
+    {
+      "key": "save_configuration",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сохранить конфигурацию",
+      "human_value": "Сохранить конфигурацию"
+    },
+    {
+      "key": "orderlist_bulk_update_result_partial_success",
+      "bleu": 13.156,
+      "chrf": 56.0932,
+      "levenshtein_sim": 0.641509,
+      "ai_value": "%d заказов обновлено, и %d заказов не удалось обновить. Пожалуйста, попробуйте снова.",
+      "human_value": "Заказов обновлено: %d; не удалось обновить заказов: %d. Повторите попытку."
+    },
+    {
+      "key": "blaze_campaign_preview_audience_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Аудитория",
+      "human_value": "Аудитория"
+    },
+    {
+      "key": "woo_shipping_confirm_submit_address_suggested",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подтвердить предложенный адрес",
+      "human_value": "Подтвердить предложенный адрес"
+    },
+    {
+      "key": "feedback_request_like_it",
+      "bleu": 34.6681,
+      "chrf": 68.1821,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "Мне это нравится",
+      "human_value": "Мне нравится"
+    },
+    {
+      "key": "woopos_settings_local_catalog_category_subtitle",
+      "bleu": 34.6681,
+      "chrf": 62.1126,
+      "levenshtein_sim": 0.83871,
+      "ai_value": "Управление параметрами каталога",
+      "human_value": "Управление настройками каталога"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_other_hint",
+      "bleu": 0.0,
+      "chrf": 42.3778,
+      "levenshtein_sim": 0.615385,
+      "ai_value": "Детали содержимого",
+      "human_value": "Сведения о содержимом"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Удалить купоны",
+      "human_value": "Удалить купоны"
+    },
+    {
+      "key": "free_trial_your_trial_ended",
+      "bleu": 39.7635,
+      "chrf": 92.718,
+      "levenshtein_sim": 0.892857,
+      "ai_value": "Ваш пробный период закончился.",
+      "human_value": "Пробный период закончился."
+    },
+    {
+      "key": "order_shipment_tracking_custom_provider_section_name",
+      "bleu": 50.0,
+      "chrf": 55.2391,
+      "levenshtein_sim": 0.590909,
+      "ai_value": "Пользовательский перевозчик",
+      "human_value": "Другой перевозчик"
+    },
+    {
+      "key": "scan_barcode_to_update_inventory_menu_item_title",
+      "bleu": 8.7458,
+      "chrf": 51.121,
+      "levenshtein_sim": 0.651685,
+      "ai_value": "Отсканировать штрихкод для обновления инвентаря",
+      "human_value": "Сканировать штрихкод, чтобы обновить запас"
+    },
+    {
+      "key": "domain_contact_information_register_domain_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Зарегистрировать домен",
+      "human_value": "Зарегистрировать домен"
+    },
+    {
+      "key": "product_add_photo",
+      "bleu": 50.0,
+      "chrf": 65.9819,
+      "levenshtein_sim": 0.8125,
+      "ai_value": "Добавить фото",
+      "human_value": "Добавить фотографию"
+    },
+    {
+      "key": "shipping",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Доставка",
+      "human_value": "Доставка"
+    },
+    {
+      "key": "configuration_quantity_item_plural",
+      "bleu": 55.0321,
+      "chrf": 15.0086,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "%d товаров",
+      "human_value": "%d элементов"
+    },
+    {
+      "key": "woo_shipping_field_required_error",
+      "bleu": 18.9959,
+      "chrf": 60.8299,
+      "levenshtein_sim": 0.564103,
+      "ai_value": "Это поле обязательно.",
+      "human_value": "Обязательное поле."
+    },
+    {
+      "key": "scan_to_update_inventory_stock_not_managed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Запасы не управляются",
+      "human_value": "Запасы не управляются"
+    },
+    {
+      "key": "shipping_label_rate_option_signature_required",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Требуется подпись (%s)",
+      "human_value": "Требуется подпись (%s)"
+    },
+    {
+      "key": "logviewer_current_log_file",
+      "bleu": 0.0,
+      "chrf": 46.9048,
+      "levenshtein_sim": 0.714286,
+      "ai_value": "Текущий",
+      "human_value": "Текущее"
+    },
+    {
+      "key": "woopos_product_limitations_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Где мои товары?",
+      "human_value": "Где мои товары?"
+    },
+    {
+      "key": "orderdetail_hide_billing",
+      "bleu": 27.5161,
+      "chrf": 27.528,
+      "levenshtein_sim": 0.52,
+      "ai_value": "Скрыть выставление счетов",
+      "human_value": "Скрыть платёжные сведения"
+    },
+    {
+      "key": "login_log_in_for_share_intent",
+      "bleu": 46.7138,
+      "chrf": 71.2512,
+      "levenshtein_sim": 0.865385,
+      "ai_value": "Войдите в WordPress.com, чтобы поделиться контентом.",
+      "human_value": "Войдите в WordPress.com чтобы поделиться содержимым."
+    },
+    {
+      "key": "booking_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Оплачено",
+      "human_value": "Оплачено"
+    },
+    {
+      "key": "orderlist_mark_completed_success",
+      "bleu": 61.0474,
+      "chrf": 57.5576,
+      "levenshtein_sim": 0.816901,
+      "ai_value": "Заказ #%1$d отмечен как завершенный",
+      "human_value": "Заказ № %1$d отмечен как выполненный"
+    },
+    {
+      "key": "woo_shipping_labels_customs_origin_country_info",
+      "bleu": 6.2747,
+      "chrf": 29.735,
+      "levenshtein_sim": 0.658537,
+      "ai_value": "Страна, где был изготовлен или собран товар.",
+      "human_value": "Страна производства или сборки товара."
+    },
+    {
+      "key": "store_onboarding_task_woopayments_celebration_header",
+      "bleu": 15.9736,
+      "chrf": 10.7304,
+      "levenshtein_sim": 0.272727,
+      "ai_value": "Вы сделали это!",
+      "human_value": "Готово!"
+    },
+    {
+      "key": "card_reader_tap_to_pay_header",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.133333,
+      "ai_value": "ПРИЛОЖИТЬ ДЛЯ ОПЛАТЫ",
+      "human_value": "TAP TO PAY"
+    },
+    {
+      "key": "woopos_settings_store_email_label",
+      "bleu": 0.0,
+      "chrf": 16.9936,
+      "levenshtein_sim": 0.375,
+      "ai_value": "Электронная почта",
+      "human_value": "Адрес эл. почты"
+    },
+    {
+      "key": "support_request_help_other",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 0.96,
+      "ai_value": "Другое расширение / плагин",
+      "human_value": "Другое расширение/плагин"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_message",
+      "bleu": 36.1328,
+      "chrf": 82.7203,
+      "levenshtein_sim": 0.87037,
+      "ai_value": "Все файлы, прикрепленные к этому товару, будут удалены.",
+      "human_value": "Все прикрепленные к этому товару файлы будут удалены."
+    },
+    {
+      "key": "product_attributes_created_description",
+      "bleu": 30.5769,
+      "chrf": 62.215,
+      "levenshtein_sim": 0.791367,
+      "ai_value": "Теперь, когда вы добавили атрибуты, вы можете создать вашу первую вариацию!",
+      "human_value": "Теперь, добавив атрибуты, вы можете создать свой первый вариант."
+    },
+    {
+      "key": "woopos_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Заказ %s",
+      "human_value": "Заказ %s"
+    },
+    {
+      "key": "order_editing_barcode_content_description",
+      "bleu": 50.0,
+      "chrf": 91.6319,
+      "levenshtein_sim": 0.904762,
+      "ai_value": "Отсканировать штрихкод",
+      "human_value": "Сканировать штрихкод"
+    },
+    {
+      "key": "feedback_banner_ipp_title_beginner",
+      "bleu": 8.1167,
+      "chrf": 34.9864,
+      "levenshtein_sim": 0.642857,
+      "ai_value": "Вам нравится оплата при получении?",
+      "human_value": "Нравится платить очно?"
+    },
+    {
+      "key": "woopos_totals_reader_ready_for_payment_subtitle",
+      "bleu": 27.4825,
+      "chrf": 72.1409,
+      "levenshtein_sim": 0.767442,
+      "ai_value": "Приложите, проведите или вставьте карту",
+      "human_value": "Проведите пальцем, приложите или вставьте карту"
+    },
+    {
+      "key": "booking_note_description_private",
+      "bleu": 13.1345,
+      "chrf": 40.9329,
+      "levenshtein_sim": 0.706897,
+      "ai_value": "Это приватная заметка. Она не будет доступна клиенту.",
+      "human_value": "Это конфиденциальное примечание. Оно не будет доступно клиенту."
+    },
+    {
+      "key": "product_type_list_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Выбрать тип товара",
+      "human_value": "Выбрать тип товара"
+    },
+    {
+      "key": "booking_payment_header",
+      "bleu": 0.0,
+      "chrf": 35.0,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "ПЛАТЕЖ",
+      "human_value": "ОПЛАТА"
+    },
+    {
+      "key": "notification_channel_order_title",
+      "bleu": 31.9472,
+      "chrf": 70.0844,
+      "levenshtein_sim": 0.862745,
+      "ai_value": "Оповещения о новых заказах",
+      "human_value": "Оповещения о новом заказе"
+    },
+    {
+      "key": "login_text_otp_another",
+      "bleu": 30.2138,
+      "chrf": 55.9816,
+      "levenshtein_sim": 0.590164,
+      "ai_value": "Вместо этого отправьте мне другой код",
+      "human_value": "Пришлите мне другой код."
+    },
+    {
+      "key": "card_reader_payment_failed_currency_not_supported",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Карта не поддерживает эту валюту",
+      "human_value": "Карта не поддерживает эту валюту"
+    },
+    {
+      "key": "settings_woo_plugin_version",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Версия WooCommerce",
+      "human_value": "Версия WooCommerce"
+    },
+    {
+      "key": "product_term_name_already_exists",
+      "bleu": 32.1594,
+      "chrf": 73.2787,
+      "levenshtein_sim": 0.864865,
+      "ai_value": "Опция с таким названием уже существует",
+      "human_value": "Опция с таким именем уже существует."
+    },
+    {
+      "key": "orderlist_connectivity_tool_summary_title",
+      "bleu": 31.9472,
+      "chrf": 82.5576,
+      "levenshtein_sim": 0.807692,
+      "ai_value": "Нет проблем с подключением",
+      "human_value": "Проблем с подключением нет"
+    },
+    {
+      "key": "about_automattic_acknowledgements_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Благодарности",
+      "human_value": "Благодарности"
+    },
+    {
+      "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ВКЛЮЧИТЬ ЗВУК",
+      "human_value": "ВКЛЮЧИТЬ ЗВУК"
+    },
+    {
+      "key": "woopos_scanning_setup_success_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сканер настроен!",
+      "human_value": "Сканер настроен!"
+    },
+    {
+      "key": "woopos_bookings_payment_status_paid",
+      "bleu": 0.0,
+      "chrf": 27.3034,
+      "levenshtein_sim": 0.6,
+      "ai_value": "Оплачено",
+      "human_value": "Оплачиваемый"
+    },
+    {
+      "key": "card_reader_tap_to_pay_successful_refund_message",
+      "bleu": 4.1673,
+      "chrf": 25.2607,
+      "levenshtein_sim": 0.434783,
+      "ai_value": "Тестовый платеж через приложение успешно возвращен",
+      "human_value": "Возврат средств для проверки «Оплаты в касание» выполнен успешно."
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+      "bleu": 15.4151,
+      "chrf": 65.3508,
+      "levenshtein_sim": 0.798701,
+      "ai_value": "Класс 9 – Литиевые батарейки, немаркированная посылка - Новые электронные устройства, установленные или упакованные с литиевыми батарейками (без маркировки)",
+      "human_value": "Класс 9 — литиевые батареи, посылки без маркировки — новые электронные устройства с установленными или комплектными литиевыми батареями (без маркировки)"
+    },
+    {
+      "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Отмена",
+      "human_value": "Отмена"
+    },
+    {
+      "key": "shipping_label_hazmat_option_division_6_2",
+      "bleu": 23.11,
+      "chrf": 50.7883,
+      "levenshtein_sim": 0.635714,
+      "ai_value": "Класс 6.2 - Опасные материалы - Биологические материалы (например, наборы для лабораторных тестов, одобренные наборы для тестирования COVID)",
+      "human_value": "П. 6.2 — посылка с опасными веществами — биологические вещества (например, наборы для лабораторных анализов, материалы для анализа на COVID)"
+    },
+    {
+      "key": "woo_shipping_updating_address_failed",
+      "bleu": 10.128,
+      "chrf": 53.0281,
+      "levenshtein_sim": 0.678899,
+      "ai_value": "Нам не удалось обновить ваш адрес. Пожалуйста, попробуйте снова.",
+      "human_value": "Не удалось обновить адрес. Повторите попытку."
+    },
+    {
+      "key": "dashboard_reviews_card_empty_title_filtered",
+      "bleu": 0.0,
+      "chrf": 44.0273,
+      "levenshtein_sim": 0.514286,
+      "ai_value": "Отзывы не найдены",
+      "human_value": "Не найдено отзывов"
+    },
+    {
+      "key": "product_update_stock_status_variable_ignored_count_singular",
+      "bleu": 20.8219,
+      "chrf": 51.6818,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "1 вариативный товар будет пропущен.",
+      "human_value": "1 товар, имеющий варианты, будет пропущен."
+    },
+    {
+      "key": "settings_app_theme_option_system",
+      "bleu": 19.7161,
+      "chrf": 40.9915,
+      "levenshtein_sim": 0.423077,
+      "ai_value": "По умолчанию системы",
+      "human_value": "Системные параметры по умолчанию"
+    },
+    {
+      "key": "woopos_bookings_no_booking_selected",
+      "bleu": 71.6531,
+      "chrf": 95.8224,
+      "levenshtein_sim": 0.978723,
+      "ai_value": "Бронирование не выбрано",
+      "human_value": "Бронирование не выбрано."
+    },
+    {
+      "key": "login_site_credentials_http_error",
+      "bleu": 25.2711,
+      "chrf": 33.3565,
+      "levenshtein_sim": 0.611111,
+      "ai_value": "Ошибка входа с кодом состояния %1$s",
+      "human_value": "Не удалось войти. Код состояния: %1$s"
+    },
+    {
+      "key": "woopos_settings_help_product_limitations_subtitle",
+      "bleu": 14.5358,
+      "chrf": 47.5555,
+      "levenshtein_sim": 0.628571,
+      "ai_value": "Узнайте, какие товары поддерживаются в POS",
+      "human_value": "Товары, поддерживаемые в POS"
+    },
+    {
+      "key": "product_type_variable_subscription_title",
+      "bleu": 0.0,
+      "chrf": 30.3952,
+      "levenshtein_sim": 0.448276,
+      "ai_value": "Вариативный товар подписки",
+      "human_value": "Продукт по подписке с вариантами"
+    },
+    {
+      "key": "woopos_cart_coupon_invalid_subtitle",
+      "bleu": 55.0321,
+      "chrf": 84.8024,
+      "levenshtein_sim": 0.941176,
+      "ai_value": "Купон не применен",
+      "human_value": "Купон не применён"
+    },
+    {
+      "key": "order_creation_add_products",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Добавить товары",
+      "human_value": "Добавить товары"
+    },
+    {
+      "key": "order_creation_coupon_discount_value",
+      "bleu": 66.874,
+      "chrf": 54.3333,
+      "levenshtein_sim": 0.8,
+      "ai_value": "-%1$s",
+      "human_value": "–%1$s"
+    },
+    {
+      "key": "more_menu_button_reviews_description",
+      "bleu": 17.4917,
+      "chrf": 56.7021,
+      "levenshtein_sim": 0.746667,
+      "ai_value": "Собирайте отзывы для вашего магазина",
+      "human_value": "Собирайте отзывы о продуктах в магазине"
+    },
+    {
+      "key": "settings_web_options",
+      "bleu": 0.0,
+      "chrf": 8.5485,
+      "levenshtein_sim": 0.296296,
+      "ai_value": "Веб-параметры",
+      "human_value": "Интернет-опции"
+    },
+    {
+      "key": "woo_push_notifications_connection_steps_complete",
+      "bleu": 0.0,
+      "chrf": 50.2183,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Завершено",
+      "human_value": "Завершить"
+    },
+    {
+      "key": "orderfilters_filter_card_title_all_orders",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Все заказы",
+      "human_value": "Все заказы"
+    },
+    {
+      "key": "shipping_label_rate_included_options_free_pickup",
+      "bleu": 31.9472,
+      "chrf": 43.2685,
+      "levenshtein_sim": 0.57971,
+      "ai_value": "Доступно для бесплатного получения",
+      "human_value": "Подходит для бесплатного самовывоза"
+    },
+    {
+      "key": "product_type_external",
+      "bleu": 0.0,
+      "chrf": 14.6651,
+      "levenshtein_sim": 0.5,
+      "ai_value": "Внешний",
+      "human_value": "Сторонний"
+    },
+    {
+      "key": "woo_shipping_labels_hazmat_selection_set",
+      "bleu": 15.9736,
+      "chrf": 48.9747,
+      "levenshtein_sim": 0.56,
+      "ai_value": "Категория опасных материалов установлена",
+      "human_value": "Присвоена категория опасных веществ"
+    },
+    {
+      "key": "product_downloadable_files_name_info",
+      "bleu": 15.2072,
+      "chrf": 34.0763,
+      "levenshtein_sim": 0.693333,
+      "ai_value": "Это название файла, отображаемое клиенту",
+      "human_value": "Это имя файла, которое видит клиент"
+    },
+    {
+      "key": "product_add_ons_details_info_notice",
+      "bleu": 5.9342,
+      "chrf": 57.0186,
+      "levenshtein_sim": 0.471545,
+      "ai_value": "Вы можете редактировать дополнения к товарам в веб-панели управления.",
+      "human_value": "Дополнения к товару можно редактировать в веб-консоли."
+    },
+    {
+      "key": "print_receipt_label_info_step_6",
+      "bleu": 63.2973,
+      "chrf": 87.0161,
+      "levenshtein_sim": 0.930693,
+      "ai_value": "Если печать недоступна, вы всегда можете сохранить свою квитанцию в формате PDF и отправить ее по электронной почте, чтобы распечатать с другого устройства.",
+      "human_value": "Если печать недоступна, можно всегда сохранить квитанцию в формате PDF и отправить её по электронной почте, чтобы распечатать с другого устройства."
+    },
+    {
+      "key": "about_automattic_source_code_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Исходный код",
+      "human_value": "Исходный код"
+    },
+    {
+      "key": "feedback_product_give_feedback_button_text",
+      "bleu": 50.0,
+      "chrf": 71.8241,
+      "levenshtein_sim": 0.896552,
+      "ai_value": "Отправить отзыв",
+      "human_value": "Оставить отзыв"
+    },
+    {
+      "key": "woopos_date_just_now",
+      "bleu": 0.0,
+      "chrf": 3.1447,
+      "levenshtein_sim": 0.272727,
+      "ai_value": "Только что",
+      "human_value": "Прямо сейчас"
+    },
+    {
+      "key": "product_update_stock_status_done",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ГОТОВО",
+      "human_value": "ГОТОВО"
+    },
+    {
+      "key": "blaze_campaign_budget_scheduled_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Расписание",
+      "human_value": "Расписание"
+    },
+    {
+      "key": "order_detail_attribution_admin_origin",
+      "bleu": 0.0,
+      "chrf": 13.6128,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "Веб-панель",
+      "human_value": "Веб-администратор"
+    },
+    {
+      "key": "tax_rate_selector_empty_list_title",
+      "bleu": 9.6524,
+      "chrf": 58.8138,
+      "levenshtein_sim": 0.5,
+      "ai_value": "Нам не удалось найти налоговые ставки",
+      "human_value": "Налоговые ставки не найдены"
+    },
+    {
+      "key": "card_reader_tap_to_pay_about_copyright",
+      "bleu": 18.0815,
+      "chrf": 56.6959,
+      "levenshtein_sim": 0.740741,
+      "ai_value": "Символ бесконтактной оплаты является товарным знаком, принадлежащим EMVCo, LLC и используется с его разрешения.",
+      "human_value": "Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения."
+    },
+    {
+      "key": "product_detail_product_type_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%1$s товар",
+      "human_value": "%1$s товар"
+    },
+    {
+      "key": "ai_product_description_learn_more_link",
+      "bleu": 78.0127,
+      "chrf": 72.3066,
+      "levenshtein_sim": 0.794702,
+      "ai_value": "Работает на ИИ. &lt;a href=\\'\\'&gt;&lt;u&gt;Узнайте больше&lt;/u&gt;&lt;/a&gt;.",
+      "human_value": "На основе ИИ. &lt;a href=\\'\\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt;."
+    },
+    {
+      "key": "product_attributes",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Атрибуты",
+      "human_value": "Атрибуты"
+    },
+    {
+      "key": "ai_product_creation_scanning_photo_error",
+      "bleu": 13.546,
+      "chrf": 46.9407,
+      "levenshtein_sim": 0.69863,
+      "ai_value": "Ошибка при попытке отсканировать текст с фото. Пожалуйста, попробуйте снова",
+      "human_value": "Ошибка при попытке сканирования текста на фотографии. Повторите попытку"
+    },
+    {
+      "key": "bookings_resources_fetch_error",
+      "bleu": 28.6419,
+      "chrf": 61.0494,
+      "levenshtein_sim": 0.814815,
+      "ai_value": "Ошибка при получении членов команды",
+      "human_value": "Ошибка при получении сведений о членах команды"
+    },
+    {
+      "key": "no_site_error",
+      "bleu": 3.9592,
+      "chrf": 16.7971,
+      "levenshtein_sim": 0.337778,
+      "ai_value": "Сайт по этому адресу не является сайтом WordPress. Чтобы мы могли подключиться к нему, сайт должен использовать WordPress.",
+      "human_value": "The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress."
+    },
+    {
+      "key": "variations_bulk_creation_warning_title",
+      "bleu": 0.0,
+      "chrf": 22.1334,
+      "levenshtein_sim": 0.484848,
+      "ai_value": "Превышен лимит создания",
+      "human_value": "Превышено максимальное количество вариантов"
+    },
+    {
+      "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Фиксированная сумма",
+      "human_value": "Фиксированная сумма"
+    },
+    {
+      "key": "shipping_label_shipping_service_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Служба доставки",
+      "human_value": "Служба доставки"
+    },
+    {
+      "key": "shipping_label_error_address_house_number_missing",
+      "bleu": 19.7161,
+      "chrf": 38.4357,
+      "levenshtein_sim": 0.47619,
+      "ai_value": "Номер дома отсутствует",
+      "human_value": "Не указан номер дома"
+    },
+    {
+      "key": "login_jetpack_installation_get_support",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Получить поддержку",
+      "human_value": "Получить поддержку"
+    },
+    {
+      "key": "card_reader_connect_scanning_failed_header",
+      "bleu": 19.7161,
+      "chrf": 61.6649,
+      "levenshtein_sim": 0.472727,
+      "ai_value": "Устройство не подключено",
+      "human_value": "Не подключено устройство чтения"
+    },
+    {
+      "key": "product_bulk_update_status_updated",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Статус обновлен!",
+      "human_value": "Статус обновлен!"
+    },
+    {
+      "key": "coupon_conditions_products_edit_products_title",
+      "bleu": 75.9836,
+      "chrf": 58.8752,
+      "levenshtein_sim": 0.711111,
+      "ai_value": "Редактировать товары (%d)",
+      "human_value": "Изменить товары (%d)"
+    },
+    {
+      "key": "jetpack_install_progress_step_three_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Подключение вашего магазина",
+      "human_value": "Подключение вашего магазина"
+    },
+    {
+      "key": "shipping_label_package_details_items_count_many",
+      "bleu": 55.0321,
+      "chrf": 15.0086,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "%d товаров",
+      "human_value": "%d элементов"
+    },
+    {
+      "key": "product_selector_select_product_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Выбрать товар %s",
+      "human_value": "Выбрать товар %s"
+    },
+    {
+      "key": "update_downloaded",
+      "bleu": 34.6681,
+      "chrf": 51.1448,
+      "levenshtein_sim": 0.638298,
+      "ai_value": "Woo загрузил обновление",
+      "human_value": "Загружено обновление Woo"
+    },
+    {
+      "key": "login_jetpack_connection_create_account",
+      "bleu": 17.6093,
+      "chrf": 36.6523,
+      "levenshtein_sim": 0.562092,
+      "ai_value": "Если у вас нет аккаунта, мы используем этот адрес электронной почты для его создания.",
+      "human_value": "Если у вас нет учётной записи, создайте её с этим адресом эл. почты."
+    },
+    {
+      "key": "blaze_campaign_creation_error_cancel",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Отменить кампанию",
+      "human_value": "Отменить кампанию"
+    },
+    {
+      "key": "store_onboarding_launch_store_ok",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "ОК",
+      "human_value": "OK"
+    },
+    {
+      "key": "login_jetpack_steps_authorizing_validation",
+      "bleu": 0.0,
+      "chrf": 30.5603,
+      "levenshtein_sim": 0.5,
+      "ai_value": "Проверка",
+      "human_value": "Выполняется проверка"
+    },
+    {
+      "key": "shipping_label_package_details_selected_package_hint",
+      "bleu": 50.0,
+      "chrf": 55.7472,
+      "levenshtein_sim": 0.709677,
+      "ai_value": "Упаковка выбрана",
+      "human_value": "Посылка выбрана"
+    },
+    {
+      "key": "login_jetpack_connection_enter_wpcom_password",
+      "bleu": 19.2842,
+      "chrf": 63.4715,
+      "levenshtein_sim": 0.441558,
+      "ai_value": "Введите пароль вашего аккаунта WordPress.com, чтобы подключиться к Jetpack",
+      "human_value": "Чтобы подключиться к Jetpack, введите пароль своей учётной записи WordPress.com."
+    },
+    {
+      "key": "bookings_filters_title_with_count",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Фильтры (%s)",
+      "human_value": "Фильтры (%s)"
+    },
+    {
+      "key": "amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Сумма",
+      "human_value": "Сумма"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_error_proceed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Продолжить",
+      "human_value": "Продолжить"
+    },
+    {
+      "key": "card_reader_payment_send_receipt",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "Отправить квитанцию",
+      "human_value": "Отправить квитанцию"
+    },
+    {
+      "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+      "bleu": 50.142,
+      "chrf": 78.01,
+      "levenshtein_sim": 0.80625,
+      "ai_value": "Похоже, вызовы XML-RPC заблокированы на этом сайте (код ошибки 401). Если попытка входа не удалась, нажмите на значок справки, чтобы просмотреть часто задаваемые вопросы.",
+      "human_value": "Вызовы XML-RPC на этом сайте заблокированы (код ошибки 401). Если войти не удалось, нажмите на значок справки, чтобы открыть часто задаваемые вопросы."
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_8_corrosive",
+      "bleu": 18.6282,
+      "chrf": 35.1492,
+      "levenshtein_sim": 0.483582,
+      "ai_value": "Класс 8 – Коррозивные материалы - Имеет право на воздух доставки коррозивные материалы (определенные чистящие вещества или составы для уничтожения деревьев / сорняков и т.д.)",
+      "human_value": "Класс 8 — посылка с коррозионно-активными веществами — разрешённые к авиаперевозке коррозионно-активные вещества (некоторые чистящие средства, гербициды и т. д.)"
+    }
+  ],
+  "aggregates": {
+    "bleu_mean": 51.3531,
+    "bleu_median": 45.6732,
+    "chrf_mean": 66.7915,
+    "chrf_median": 65.8545,
+    "levenshtein_sim_mean": 0.774002,
+    "levenshtein_sim_median": 0.811655,
+    "total_strings": 300,
+    "matched_strings": 298
+  }
+}

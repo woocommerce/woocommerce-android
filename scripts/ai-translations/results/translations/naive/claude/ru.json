@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Пожалуйста, подождите…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Похоже, возникла проблема с подключением Jetpack.\\n\\nНе беспокойтесь, наша команда поддержки готова помочь. Свяжитесь с нами, и мы будем рады вам помочь."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "Скопировано в буфер обмена"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Вариация %s, цена %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Печать"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Детали отправки"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Загрузка данных адреса"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Рассчитанная сумма: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Выйти в любом случае"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s продано"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "На модерации"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Оформить"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Способ оплаты"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "Что такое WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Никаких покупок купонов в этот период"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Показать детали"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Начните продавать сегодня, добавив первый товар в магазин."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "Обновить цену распродажи"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Обязательное поле"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Нет программ в этот период"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Купить этикетку доставки"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "Инструмент поиска USPS HAZMAT."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Произошла ошибка. Пожалуйста, войдите, чтобы продолжить"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Подтверждение регистрации"
+  },
+  {
+    "key": "type",
+    "value": "Тип"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Добавить купон"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "ИТОГИ ПЛАТЕЖА"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Позитивный отзыв"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Истекает через"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Кредитная карта успешно добавлена"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Это займет минуту."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Выбрать все"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Компания"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "Обновление цен распродажи"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "Выбрать %d товаров"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "Вы уверены, что хотите выдать возврат? Это нельзя отменить."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Услуга"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "Подробнее об ITN"
+  },
+  {
+    "key": "retry",
+    "value": "Повторить"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Доступно обновление"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Клиент"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "Здесь люди найдут вас в интернете. Не беспокойтесь, вы сможете изменить это позже."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Кампания Blaze"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "Дополнительный период времени перед первым периодическим платежом. Любой стартовый сбор будет взиматься в начале подписки. Пробный период не может превышать: 90 дней, 52 недели, 24 месяца или 5 лет."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Отсутствует требуемое разрешение для устройств поблизости"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "Возврат %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "Для вашего удобства мы заполнили вашу контактную информацию WordPress.com. Пожалуйста, проверьте, что это правильная информация, которую вы хотите использовать для этого домена."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Создать этикетку доставки"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Выход"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Подготовка к платежу"
+  },
+  {
+    "key": "analytics_items",
+    "value": "товаров"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Нет дохода в этот период"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Введите штрихкод или любой другой уникальный идентификатор этого товара. Это может помочь вам указать этот товар на других каналах или площадках."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Продано товаров"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Включение опции «Оплата при получении» позволит клиентам оплачивать онлайн-заказы наличными или картой при доставке.\\n\\nЗаказы по-прежнему можно создавать вручную без включения этой функции."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Ошибка при загрузке пользовательских полей"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Пожалуйста, обновите программное обеспечение вашего устройства, чтобы продолжить принимать платежи"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "Получить ссылку входа по электронной почте"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "до %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Не оплачено"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Отслеживайте продажи и популярные товары"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Обновить статус запасов"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "Медиатека WordPress"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Черновик товара сохранен"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Редактировать заметку клиента"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Добавить заметку"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Нет"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Добавить статистику за пользовательский диапазон дат"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Установить Jetpack"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Пожалуйста, введите название перевозчика"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Настроить сканер штрихкодов"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "Поделиться URL"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Текущая тема"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Пожалуйста, войдите, используя имя пользователя WordPress.com вместо адреса электронной почты."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Пожалуйста, опишите, какие товары содержит эта посылка"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d новых уведомлений"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Код купона"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Ошибка при удалении отслеживания"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Пункт назначения: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "Попробуйте снова с веб-страницей WP Admin"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "Не удается подключиться к %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Принимайте платежи в вашем физическом магазине"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Некоторые обязательные поля пусты."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Значок ошибки"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Статус заказа: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Еженедельно"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Создать пользовательскую упаковку"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping в настоящее время не поддерживает опасные грузы через %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Описание"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Клики"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Добавить фото"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Откройте для себя других поставщиков платежей и\\nвыберите поставщика платежей."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "Вы можете установить штрихкоды в поле GTIN, UPC, EAN, ISBN на вкладке инвентаризации товара. Для подробнее"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Одобрить"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Все"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Добавить изображение"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "В вашем аккаунте есть невыполненные требования. Пожалуйста, выполните эти требования к %1$s, чтобы продолжить принимать платежи при получении."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8,5 x 14 дюймов)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Введите название товара."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Детали ограничения"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Продвигать с Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Местоположение"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "неделя"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Нажав кнопку Подключить Jetpack"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Да, изменить"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Сообщение"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Вы уверены, что хотите изменить тип товара?"
+  },
+  {
+    "key": "disabled",
+    "value": "Отключено"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Введите размеры вашей посылки или выберите вариант упаковки перевозчика, чтобы увидеть доступные тарифы доставки."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Товар"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Товар обновлен"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Подарки"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "Выдать возврат"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Ваш запрос поддержки успешно отправлен. Мы ответим вам по электронной почте как можно скорее."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Сохранить мой выбор для будущих кампаний"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Связаться со службой поддержки"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Не удалось отметить заказ как завершенный"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s еженедельно, начиная с %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "Одинаковая транзакция была отправлена недавно"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Регистрация"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Редактировать заказ"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Поддерживаемые вариации не найдены"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Пожалуйста, подключите свой магазин к Jetpack, чтобы получить доступ к нему в этом приложении."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Общий вес посылки (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Популярные товары"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Обновить обычную цену"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Член команды"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "Карта не поддерживает этот тип возврата"
+  },
+  {
+    "key": "product_settings",
+    "value": "Параметры товара"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "ITN требуется для отправок в %1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Продолжить подключение"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "При выборе \"Печать квитанции\" после принятия платежа замените \"Сохранить как PDF\" на \"Все принтеры\" и найдите новый принтер."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "Отменено"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Сумма"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Получение стран и штатов."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Просмотреть детали товара"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "Возврат успешен"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Параметры формата этикетки"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Журнал приложения"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "Создайте вашу первую вариацию"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Предложено"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "Возврат"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Подписки"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Выбрать с устройства"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "Вы не можете добавить вариативный товар напрямую. Пожалуйста, выберите конкретную вариацию"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Страховка (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Способ оплаты"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Неподдерживаемый товар – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Активно"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Вернуться в магазин"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Клиент заплатил %1$s в размере %2$s за доставку"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Почему я не вижу свои товары?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Лимит использования на пользователя"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Создать товар с помощью ИИ"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Доставка в субботу"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Лимит использования на купон"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Добавить больше деталей"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "У вас новый заказ! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Ошибка при покупке этикеток"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Доставка"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "Мы сделали слишком много попыток отправить код проверки SMS. Подождите и запросите новый через минуту."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "Электронная почта"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Создать кампанию"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Вчера в %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Ваша фотография профиля"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "Вернуть отправителю, если посылка не может быть доставлена"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Получение заказов вашего сайта"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Поздравляем с покупкой"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Полный экран подключения"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Предложения"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "Редактировать возврат"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "Объявление отправлено на одобрение. Мы отправим вам подтверждение по электронной почте, как только оно будет одобрено и запущено."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Истечение подписки"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Пожалуйста, войдите с использованием имени пользователя и пароля."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Произошла ошибка при обмене данными с вашим сайтом."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 нет одобренных отзывов"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Количество на складе"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Не удалось загрузить изображение"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Параметры конфиденциальности"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Вариативная подписка"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "Мы в настоящее время не поддерживаем отслеживание для этого перевозчика"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Установка Jetpack"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Тип ограничения"
+  },
+  {
+    "key": "today",
+    "value": "Сегодня"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Все готово!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Сохранить конфигурацию"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d заказов обновлено, и %d заказов не удалось обновить. Пожалуйста, попробуйте снова."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Аудитория"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Подтвердить предложенный адрес"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Мне это нравится"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Управление параметрами каталога"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "Детали содержимого"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Удалить купоны"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Ваш пробный период закончился."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Пользовательский перевозчик"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Отсканировать штрихкод для обновления инвентаря"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Зарегистрировать домен"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Добавить фото"
+  },
+  {
+    "key": "shipping",
+    "value": "Доставка"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d товаров"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Это поле обязательно."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Запасы не управляются"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "Требуется подпись (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Текущий"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Где мои товары?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Скрыть выставление счетов"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "Войдите в WordPress.com, чтобы поделиться контентом."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Оплачено"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "Заказ #%1$d отмечен как завершенный"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Страна, где был изготовлен или собран товар."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Вы сделали это!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "ПРИЛОЖИТЬ ДЛЯ ОПЛАТЫ"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "Электронная почта"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Другое расширение / плагин"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Все файлы, прикрепленные к этому товару, будут удалены."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Теперь, когда вы добавили атрибуты, вы можете создать вашу первую вариацию!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Заказ %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Отсканировать штрихкод"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Вам нравится оплата при получении?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Приложите, проведите или вставьте карту"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Это приватная заметка. Она не будет доступна клиенту."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Выбрать тип товара"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "ПЛАТЕЖ"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Оповещения о новых заказах"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Вместо этого отправьте мне другой код"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "Карта не поддерживает эту валюту"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "Версия WooCommerce"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Опция с таким названием уже существует"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Нет проблем с подключением"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Благодарности"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "ВКЛЮЧИТЬ ЗВУК"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Исходный адрес отсутствует или недействителен"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Сканер настроен!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Оплачено"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Тестовый платеж через приложение успешно возвращен"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Класс 9 – Литиевые батарейки, немаркированная посылка - Новые электронные устройства, установленные или упакованные с литиевыми батарейками (без маркировки)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "Отмена"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Класс 6.2 - Опасные материалы - Биологические материалы (например, наборы для лабораторных тестов, одобренные наборы для тестирования COVID)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "Нам не удалось обновить ваш адрес. Пожалуйста, попробуйте снова."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Отзывы не найдены"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 вариативный товар будет пропущен."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "По умолчанию системы"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Бронирование не выбрано"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "Ошибка входа с кодом состояния %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "Узнайте, какие товары поддерживаются в POS"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Вариативный товар подписки"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Купон не применен"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Добавить товары"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Собирайте отзывы для вашего магазина"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Веб-параметры"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Завершено"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Все заказы"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "Доступно для бесплатного получения"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Внешний"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Категория опасных материалов установлена"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Это название файла, отображаемое клиенту"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "Вы можете редактировать дополнения к товарам в веб-панели управления."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Если печать недоступна, вы всегда можете сохранить свою квитанцию в формате PDF и отправить ее по электронной почте, чтобы распечатать с другого устройства."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Исходный код"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Отправить отзыв"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Только что"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "ГОТОВО"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Расписание"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Веб-панель"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "Нам не удалось найти налоговые ставки"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "Символ бесконтактной оплаты является товарным знаком, принадлежащим EMVCo, LLC и используется с его разрешения."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s товар"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Работает на ИИ. &lt;a href=\\'\\'&gt;&lt;u&gt;Узнайте больше&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Атрибуты"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Ошибка при попытке отсканировать текст с фото. Пожалуйста, попробуйте снова"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Ошибка при получении членов команды"
+  },
+  {
+    "key": "no_site_error",
+    "value": "Сайт по этому адресу не является сайтом WordPress. Чтобы мы могли подключиться к нему, сайт должен использовать WordPress."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Превышен лимит создания"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Фиксированная сумма"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Служба доставки"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Номер дома отсутствует"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Получить поддержку"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Устройство не подключено"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Статус обновлен!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Редактировать товары (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Подключение вашего магазина"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d товаров"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "Выбрать товар %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo загрузил обновление"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Если у вас нет аккаунта, мы используем этот адрес электронной почты для его создания."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Отменить кампанию"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "ОК"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Проверка"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Упаковка выбрана"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Введите пароль вашего аккаунта WordPress.com, чтобы подключиться к Jetpack"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Фильтры (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Сумма"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Продолжить"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Отправить квитанцию"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "Похоже, вызовы XML-RPC заблокированы на этом сайте (код ошибки 401). Если попытка входа не удалась, нажмите на значок справки, чтобы просмотреть часто задаваемые вопросы."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Класс 8 – Коррозивные материалы - Имеет право на воздух доставки коррозивные материалы (определенные чистящие вещества или составы для уничтожения деревьев / сорняков и т.д.)"
+  }
+]

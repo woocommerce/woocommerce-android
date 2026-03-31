@@ -1,0 +1,2401 @@
+{
+  "language": "he",
+  "strategy": "naive",
+  "llm": "codex",
+  "per_string": [
+    {
+      "key": "support_request_loading_message",
+      "bleu": 0.0,
+      "chrf": 2.5253,
+      "levenshtein_sim": 0.235294,
+      "ai_value": "נא להמתין…",
+      "human_value": "רק רגע…"
+    },
+    {
+      "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+      "bleu": 40.5071,
+      "chrf": 70.9598,
+      "levenshtein_sim": 0.853333,
+      "ai_value": "נראה שיש בעיה בחיבור ה-Jetpack שלך.\\n\\nאבל אל דאגה, צוות התמיכה שלנו כאן כדי לעזור. צור איתנו קשר ונשמח לסייע לך.",
+      "human_value": "נראה שיש בעיה עם החיבור שלך ל-Jetpack.\\n\\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע."
+    },
+    {
+      "key": "copied_to_clipboard",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הועתק ללוח",
+      "human_value": "הועתק ללוח"
+    },
+    {
+      "key": "woopos_variation_item_content_description",
+      "bleu": 80.9107,
+      "chrf": 63.3806,
+      "levenshtein_sim": 0.764706,
+      "ai_value": "וריאציה %s, מחיר %s",
+      "human_value": "סוג %s, מחיר %s"
+    },
+    {
+      "key": "shipping_label_multiple_customs_form_print_button",
+      "bleu": 0.0,
+      "chrf": 35.7193,
+      "levenshtein_sim": 0.8,
+      "ai_value": "הדפס",
+      "human_value": "להדפיס"
+    },
+    {
+      "key": "shipping_label_shipment_details_title",
+      "bleu": 50.0,
+      "chrf": 49.4774,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "פרטי משלוח",
+      "human_value": "פרטי המשלוח"
+    },
+    {
+      "key": "shipping_label_edit_address_loading_progress_title",
+      "bleu": 14.1272,
+      "chrf": 36.4998,
+      "levenshtein_sim": 0.780488,
+      "ai_value": "טוען נתוני כתובת",
+      "human_value": "טוען את הנתונים של הכתובת"
+    },
+    {
+      "key": "order_creation_fee_percentage_calculated_amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סכום מחושב: %s",
+      "human_value": "סכום מחושב: %s"
+    },
+    {
+      "key": "login_app_password_exit_dialog_confirmation",
+      "bleu": 27.5161,
+      "chrf": 18.6936,
+      "levenshtein_sim": 0.608696,
+      "ai_value": "צא בכל זאת",
+      "human_value": "לצאת בכל מקרה"
+    },
+    {
+      "key": "analytics_list_item_products_sold",
+      "bleu": 77.4381,
+      "chrf": 70.9768,
+      "levenshtein_sim": 0.965517,
+      "ai_value": "%1$s, %2$s, %3$s, %4$s נמכרו",
+      "human_value": "%1$s, %2$s, %3$s, ⁦%4$s⁩ נמכרו"
+    },
+    {
+      "key": "blaze_campaign_status_in_moderation",
+      "bleu": 0.0,
+      "chrf": 5.0,
+      "levenshtein_sim": 0.222222,
+      "ai_value": "בבדיקה",
+      "human_value": "בתהליך אישור"
+    },
+    {
+      "key": "woopos_checkout_button",
+      "bleu": 0.0,
+      "chrf": 32.8181,
+      "levenshtein_sim": 0.588235,
+      "ai_value": "לתשלום",
+      "human_value": "תשלום בקופה"
+    },
+    {
+      "key": "woo_shipping_payment_screen_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "אמצעי תשלום",
+      "human_value": "אמצעי תשלום"
+    },
+    {
+      "key": "woo_push_notifications_introduction_what_is_wpcom",
+      "bleu": 54.7518,
+      "chrf": 77.7126,
+      "levenshtein_sim": 0.894737,
+      "ai_value": "מהו WordPress.com?",
+      "human_value": "מה זה WordPress.com?"
+    },
+    {
+      "key": "dashboard_coupons_card_empty_view_message",
+      "bleu": 16.2334,
+      "chrf": 54.2395,
+      "levenshtein_sim": 0.776119,
+      "ai_value": "לא היה שימוש בקופונים בתקופה זו",
+      "human_value": "אין שימוש בקופונים במהלך התקופה הזאת"
+    },
+    {
+      "key": "product_selector_arrow_content_description",
+      "bleu": 50.0,
+      "chrf": 51.4861,
+      "levenshtein_sim": 0.9,
+      "ai_value": "הצג פרטים",
+      "human_value": "להציג פרטים"
+    },
+    {
+      "key": "empty_product_message",
+      "bleu": 16.8923,
+      "chrf": 56.57,
+      "levenshtein_sim": 0.79661,
+      "ai_value": "התחל למכור עוד היום על ידי הוספת המוצר הראשון שלך לחנות.",
+      "human_value": "אפשר להתחיל למכור היום על ידי הוספה של המוצר הראשון לחנות שלך."
+    },
+    {
+      "key": "variations_bulk_update_sale_price",
+      "bleu": 19.7161,
+      "chrf": 35.3986,
+      "levenshtein_sim": 0.848485,
+      "ai_value": "עדכן מחיר מבצע",
+      "human_value": "לעדכן את מחיר המבצע"
+    },
+    {
+      "key": "error_required_field",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "שדה חובה",
+      "human_value": "שדה חובה"
+    },
+    {
+      "key": "analytics_google_ads_no_data",
+      "bleu": 59.4604,
+      "chrf": 80.4821,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "אין תוכניות בתקופה זו",
+      "human_value": "אין תוכניות בתקופה הזאת"
+    },
+    {
+      "key": "shipping_label_create_purchase",
+      "bleu": 55.0321,
+      "chrf": 64.9426,
+      "levenshtein_sim": 0.882353,
+      "ai_value": "רכישת תווית משלוח",
+      "human_value": "לרכוש תווית משלוח"
+    },
+    {
+      "key": "shipping_label_usps_search_tool_link_text",
+      "bleu": 19.3577,
+      "chrf": 39.1394,
+      "levenshtein_sim": 0.48,
+      "ai_value": "USPS HAZMAT Search Tool.",
+      "human_value": "כלי החיפוש של USPS HAZMAT."
+    },
+    {
+      "key": "magic_link_update_error",
+      "bleu": 41.1134,
+      "chrf": 77.0011,
+      "levenshtein_sim": 0.911765,
+      "ai_value": "אירעה שגיאה. נא להתחבר כדי להמשיך",
+      "human_value": "אירעה שגיאה. עליך להתחבר כדי להמשיך"
+    },
+    {
+      "key": "signup_confirmation_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "אישור הרשמה",
+      "human_value": "אישור הרשמה"
+    },
+    {
+      "key": "type",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סוג",
+      "human_value": "סוג"
+    },
+    {
+      "key": "coupon_list_add_coupon_content_description",
+      "bleu": 50.0,
+      "chrf": 50.6213,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "הוסף קופון",
+      "human_value": "להוסיף קופון"
+    },
+    {
+      "key": "order_detail_payment_header",
+      "bleu": 0.0,
+      "chrf": 29.24,
+      "levenshtein_sim": 0.6875,
+      "ai_value": "סיכומי תשלום",
+      "human_value": "סכומים כוללים לתשלום"
+    },
+    {
+      "key": "ai_feedback_form_positive_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "משוב חיובי",
+      "human_value": "משוב חיובי"
+    },
+    {
+      "key": "subscription_expire",
+      "bleu": 30.3265,
+      "chrf": 19.4625,
+      "levenshtein_sim": 0.583333,
+      "ai_value": "יפוג לאחר",
+      "human_value": "פקיעת תוקף לאחר"
+    },
+    {
+      "key": "blaze_campaign_payment_added_successfully",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "כרטיס האשראי נוסף בהצלחה",
+      "human_value": "כרטיס האשראי נוסף בהצלחה"
+    },
+    {
+      "key": "woo_push_notifications_introduction_body2",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "זה לוקח רק דקה.",
+      "human_value": "זה לוקח רק דקה."
+    },
+    {
+      "key": "product_selection_menu_select_all",
+      "bleu": 0.0,
+      "chrf": 21.2725,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "בחר הכל",
+      "human_value": "לבחור הכול"
+    },
+    {
+      "key": "shipping_label_edit_address_company",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "חברה",
+      "human_value": "חברה"
+    },
+    {
+      "key": "variations_bulk_update_sale_prices_dialog_title",
+      "bleu": 55.0321,
+      "chrf": 60.2119,
+      "levenshtein_sim": 0.882353,
+      "ai_value": "מעדכן מחירי מבצע",
+      "human_value": "מעדכנים מחירי מבצע"
+    },
+    {
+      "key": "product_selector_select_button_title_default",
+      "bleu": 46.3078,
+      "chrf": 58.2141,
+      "levenshtein_sim": 0.83871,
+      "ai_value": "בחר %d מוצרים",
+      "human_value": "יש לבחור %d מוצרים"
+    },
+    {
+      "key": "order_refunds_confirmation",
+      "bleu": 24.3842,
+      "chrf": 44.303,
+      "levenshtein_sim": 0.705882,
+      "ai_value": "האם אתה בטוח שברצונך להנפיק החזר? לא ניתן לבטל זאת.",
+      "human_value": "האם ברצונך ליצור החזר כספי? לא ניתן לבטל את הפעולה."
+    },
+    {
+      "key": "woopos_bookings_details_service_label",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "שירות",
+      "human_value": "שירות"
+    },
+    {
+      "key": "woo_shipping_labels_customs_itn_info_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מידע נוסף על ITN",
+      "human_value": "מידע נוסף על ITN"
+    },
+    {
+      "key": "retry",
+      "bleu": 0.0,
+      "chrf": 8.5197,
+      "levenshtein_sim": 0.4,
+      "ai_value": "נסה שוב",
+      "human_value": "יש לנסות שנית"
+    },
+    {
+      "key": "woopos_settings_card_reader_update_available",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "• עדכון זמין",
+      "human_value": "• עדכון זמין"
+    },
+    {
+      "key": "woopos_bookings_details_customer_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "לקוח",
+      "human_value": "לקוח"
+    },
+    {
+      "key": "domain_picker_subtitle",
+      "bleu": 66.0633,
+      "chrf": 77.3353,
+      "levenshtein_sim": 0.887218,
+      "ai_value": "כאן אנשים ימצאו אותך באינטרנט. אל דאגה, אפשר לשנות זאת מאוחר יותר.",
+      "human_value": "כאן ימצאו אותך באינטרנט. אל דאגה, אפשר לשנות את ההגדרות מאוחר יותר."
+    },
+    {
+      "key": "blaze_campaign_payment_summary_campaign_budget",
+      "bleu": 42.8882,
+      "chrf": 55.1831,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "קמפיין Blaze",
+      "human_value": "קמפיין של Blaze"
+    },
+    {
+      "key": "product_subscription_free_trial_info",
+      "bleu": 33.6174,
+      "chrf": 58.7675,
+      "levenshtein_sim": 0.813559,
+      "ai_value": "פרק זמן אופציונלי להמתנה לפני חיוב התשלום המחזורי הראשון. כל דמי הרשמה עדיין יחויבו בתחילת המנוי. תקופת הניסיון לא יכולה לעלות על: 90 ימים, 52 שבועות, 24 חודשים או 5 שנים.",
+      "human_value": "פרק הזמן האופציונלי עד לגביית התשלום החוזר הראשון. דמי הרשמה (אם ישנם) עדיין יחויבו בתחילת השימוש במינוי. תקופת הניסיון יכולה להימשך לכל היותר: 90 יום, 52 שבועות, 24 חודשים או 5 שנים."
+    },
+    {
+      "key": "card_reader_connect_missing_bluetooth_permissions_header",
+      "bleu": 10.6822,
+      "chrf": 48.5748,
+      "levenshtein_sim": 0.65625,
+      "ai_value": "חסרה הרשאת מכשירים קרובים נדרשת",
+      "human_value": "חסרה הרשאה שנדרשת למכשירים בסביבה"
+    },
+    {
+      "key": "order_refunds_title_with_amount",
+      "bleu": 45.1386,
+      "chrf": 26.3485,
+      "levenshtein_sim": 0.736842,
+      "ai_value": "החזר %s",
+      "human_value": "החזר כספי %s"
+    },
+    {
+      "key": "domain_contact_information_description",
+      "bleu": 21.8825,
+      "chrf": 58.3835,
+      "levenshtein_sim": 0.719697,
+      "ai_value": "לנוחיותך, מילאנו מראש את פרטי יצירת הקשר שלך ב-WordPress.com. נא לבדוק כדי לוודא שזה המידע הנכון שבו ברצונך להשתמש עבור דומיין זה.",
+      "human_value": "לנוחותך, מילאנו מראש את הפרטים שלך ב-WordPress.com\\n מידע ליצירת קשר. יש לבדוק את הפרטים ולוודא שהמידע נכון לדומיין שבו ברצונך להשתמש."
+    },
+    {
+      "key": "shipping_label_create_title",
+      "bleu": 55.0321,
+      "chrf": 86.5131,
+      "levenshtein_sim": 0.9375,
+      "ai_value": "צור תווית משלוח",
+      "human_value": "ליצור תווית משלוח"
+    },
+    {
+      "key": "woopos_exit_dialog_confirmation_confirm_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "יציאה",
+      "human_value": "יציאה"
+    },
+    {
+      "key": "card_reader_connect_connecting_built_in_header",
+      "bleu": 50.0,
+      "chrf": 58.0022,
+      "levenshtein_sim": 0.833333,
+      "ai_value": "מתכונן לתשלום",
+      "human_value": "מכין לתשלום"
+    },
+    {
+      "key": "analytics_items",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "פריטים",
+      "human_value": "פריטים"
+    },
+    {
+      "key": "analytics_revenue_no_data",
+      "bleu": 18.9959,
+      "chrf": 37.17,
+      "levenshtein_sim": 0.682927,
+      "ai_value": "אין הכנסות בתקופה זו",
+      "human_value": "אין רווחים בתקופה זאת"
+    },
+    {
+      "key": "product_global_unique_id_summary",
+      "bleu": 31.3155,
+      "chrf": 64.767,
+      "levenshtein_sim": 0.849057,
+      "ai_value": "הזן ברקוד או כל מזהה אחר הייחודי למוצר זה. זה יכול לעזור לך לרשום את המוצר בערוצים או במרקטפלייסים אחרים.",
+      "human_value": "יש להזין ברקוד או כל מזהה אחר ייחודי למוצר הזה. הנתון יעזור לך לרשום את המוצר הזה בערוצים או בשווקים אחרים."
+    },
+    {
+      "key": "analytics_products_list_items_sold",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "פריטים שנמכרו",
+      "human_value": "פריטים שנמכרו"
+    },
+    {
+      "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+      "bleu": 23.0307,
+      "chrf": 46.2182,
+      "levenshtein_sim": 0.706625,
+      "ai_value": "הפעלת Pay In Person מאפשרת ללקוח לשלם לך עבור הזמנות מקוונות בעת המסירה במזומן או בכרטיס.\\n\\nעדיין ניתן ליצור הזמנות ידנית גם בלי להפעיל תכונה זו.",
+      "human_value": "הפעלת האפשרות \\'לשלם באופן אישי\\' תאפשר ללקוחות לשלם לך על הזמנות מקוונות במעמד המשלוח באמצעות מזומן או כרטיס.\\n\\nעדיין ניתן ליצור הזמנות באופן ידני ללא הפעלת האפשרות הזו."
+    },
+    {
+      "key": "custom_fields_list_loading_error",
+      "bleu": 75.9836,
+      "chrf": 82.7978,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "שגיאה בעת טעינת שדות מותאמים אישית",
+      "human_value": "אירעה שגיאה בעת טעינת שדות מותאמים"
+    },
+    {
+      "key": "card_reader_detail_connected_enforced_update_software",
+      "bleu": 32.4668,
+      "chrf": 65.0382,
+      "levenshtein_sim": 0.846154,
+      "ai_value": "נא לעדכן את תוכנת הקורא שלך כדי להמשיך לקבל תשלומים",
+      "human_value": "עליך לעדכן את התוכנה של הקורא כדי להמשיך לקבל תשלומים"
+    },
+    {
+      "key": "login_get_link_by_email",
+      "bleu": 8.1167,
+      "chrf": 53.0617,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "קבל קישור התחברות בדוא\"ל",
+      "human_value": "לקבל קישור להתחברות באימייל"
+    },
+    {
+      "key": "shipping_label_rate_insurance_up_to",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "עד %s",
+      "human_value": "עד %s"
+    },
+    {
+      "key": "woopos_bookings_payment_status_unpaid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "לא שולם",
+      "human_value": "לא שולם"
+    },
+    {
+      "key": "login_prologue_label_analytics",
+      "bleu": 30.7394,
+      "chrf": 84.1788,
+      "levenshtein_sim": 0.941176,
+      "ai_value": "עקוב אחר מכירות ומוצרים בעלי ביצועים גבוהים",
+      "human_value": "לעקוב אחר מכירות ומוצרים עם ביצועים גבוהים"
+    },
+    {
+      "key": "product_update_stock_status_title",
+      "bleu": 0.0,
+      "chrf": 24.6505,
+      "levenshtein_sim": 0.606061,
+      "ai_value": "עדכן סטטוס מלאי",
+      "human_value": "לעדכן את מצב המלאי"
+    },
+    {
+      "key": "image_source_wp_media_library",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ספריית המדיה של WordPress",
+      "human_value": "ספריית המדיה של WordPress"
+    },
+    {
+      "key": "product_detail_publish_product_draft_success",
+      "bleu": 39.4322,
+      "chrf": 59.8756,
+      "levenshtein_sim": 0.842105,
+      "ai_value": "טיוטת המוצר נשמרה",
+      "human_value": "הטיוטה של המוצר נשמרה"
+    },
+    {
+      "key": "order_creation_customer_note_edit_content_description",
+      "bleu": 0.0,
+      "chrf": 29.9086,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "ערוך הערת לקוח",
+      "human_value": "לערוך את הערות הלקוח"
+    },
+    {
+      "key": "booking_note_label_add_note",
+      "bleu": 50.0,
+      "chrf": 42.3308,
+      "levenshtein_sim": 0.9,
+      "ai_value": "הוסף הערה",
+      "human_value": "להוסיף הערה"
+    },
+    {
+      "key": "product_tax_status_none",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ללא",
+      "human_value": "ללא"
+    },
+    {
+      "key": "my_store_custom_range_content_description",
+      "bleu": 25.5754,
+      "chrf": 62.6004,
+      "levenshtein_sim": 0.822222,
+      "ai_value": "הוסף סטטיסטיקות לטווח תאריכים מותאם אישית",
+      "human_value": "להוסיף נתונים סטטיסטיים מטווח תאריכים מותאם אישית"
+    },
+    {
+      "key": "jetpack_install_start_title",
+      "bleu": 30.3265,
+      "chrf": 45.7074,
+      "levenshtein_sim": 0.827586,
+      "ai_value": "התקן Jetpack",
+      "human_value": "להתקין את Jetpack"
+    },
+    {
+      "key": "order_shipment_tracking_empty_custom_provider_name",
+      "bleu": 14.794,
+      "chrf": 24.4483,
+      "levenshtein_sim": 0.555556,
+      "ai_value": "נא להזין שם מוביל",
+      "human_value": "יש להזין את שם הספק"
+    },
+    {
+      "key": "woopos_scanning_setup_device_selection_title",
+      "bleu": 27.5161,
+      "chrf": 68.5262,
+      "levenshtein_sim": 0.882353,
+      "ai_value": "הגדר סורק ברקודים",
+      "human_value": "להגדיר סורק ברקוד"
+    },
+    {
+      "key": "store_onboarding_launch_store_share_url_button",
+      "bleu": 30.3265,
+      "chrf": 12.5989,
+      "levenshtein_sim": 0.434783,
+      "ai_value": "שתף URL",
+      "human_value": "כתובת URL לשיתוף"
+    },
+    {
+      "key": "theme_picker_current_theme_title",
+      "bleu": 27.5161,
+      "chrf": 35.9097,
+      "levenshtein_sim": 0.742857,
+      "ai_value": "ערכת נושא נוכחית",
+      "human_value": "ערכת העיצוב הנוכחית"
+    },
+    {
+      "key": "error_user_username_instead_of_email",
+      "bleu": 31.5355,
+      "chrf": 70.3332,
+      "levenshtein_sim": 0.796992,
+      "ai_value": "נא להתחבר באמצעות שם המשתמש שלך ב-WordPress.com במקום כתובת הדוא\"ל שלך.",
+      "human_value": "יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל."
+    },
+    {
+      "key": "woo_shipping_labels_customs_content_details_description",
+      "bleu": 20.6124,
+      "chrf": 53.0434,
+      "levenshtein_sim": 0.682353,
+      "ai_value": "נא לתאר איזה סוג סחורה מכילה החבילה הזו",
+      "human_value": "עליך לתאר איזה סוג של סחורות החבילה הזאת מכילה"
+    },
+    {
+      "key": "new_notifications",
+      "bleu": 35.3553,
+      "chrf": 49.4114,
+      "levenshtein_sim": 0.8,
+      "ai_value": "%d התראות חדשות",
+      "human_value": "%d הודעות חדשות"
+    },
+    {
+      "key": "coupon_edit_code_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "קוד קופון",
+      "human_value": "קוד קופון"
+    },
+    {
+      "key": "order_shipment_tracking_delete_error",
+      "bleu": 24.8408,
+      "chrf": 71.1869,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "שגיאה במחיקת המעקב",
+      "human_value": "שגיאה בעת מחיקת המעקב"
+    },
+    {
+      "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "יעד: %s",
+      "human_value": "יעד: %s"
+    },
+    {
+      "key": "login_site_credentials_use_web_authorization",
+      "bleu": 10.8964,
+      "chrf": 16.5374,
+      "levenshtein_sim": 0.528302,
+      "ai_value": "נסה שוב עם דף WP Admin",
+      "human_value": "לנסות שוב עם העמוד \\'ניהול WP\\'"
+    },
+    {
+      "key": "login_verifying_site_error",
+      "bleu": 50.8133,
+      "chrf": 50.1749,
+      "levenshtein_sim": 0.744186,
+      "ai_value": "לא ניתן להתחבר אל %s",
+      "human_value": "אין אפשרות להתחבר אל %s"
+    },
+    {
+      "key": "more_menu_button_woo_pos_description",
+      "bleu": 21.3644,
+      "chrf": 78.3231,
+      "levenshtein_sim": 0.884615,
+      "ai_value": "קבל תשלומים בחנות הפיזית שלך",
+      "human_value": "לקבל תשלומים בחנות פיזית"
+    },
+    {
+      "key": "shipping_label_address_data_invalid_snackbar_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "חלק מהשדות הנדרשים ריקים.",
+      "human_value": "חלק מהשדות הנדרשים ריקים."
+    },
+    {
+      "key": "woopos_error_icon_content_description",
+      "bleu": 34.6681,
+      "chrf": 30.327,
+      "levenshtein_sim": 0.774194,
+      "ai_value": "סמל חיווי שגיאה",
+      "human_value": "סמל שמציין שגיאה"
+    },
+    {
+      "key": "orderstatus_contentDesc_withStatus",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סטטוס הזמנה: %s",
+      "human_value": "סטטוס הזמנה: %s"
+    },
+    {
+      "key": "my_store_custom_range_granularity_week",
+      "bleu": 0.0,
+      "chrf": 75.3715,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "שבועי",
+      "human_value": "שבועית"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_empty_button",
+      "bleu": 59.4604,
+      "chrf": 91.0821,
+      "levenshtein_sim": 0.956522,
+      "ai_value": "צור חבילה מותאמת אישית",
+      "human_value": "ליצור חבילה מותאמת אישית"
+    },
+    {
+      "key": "shipping_label_hazmat_content_dhl_instructions",
+      "bleu": 21.2622,
+      "chrf": 67.188,
+      "levenshtein_sim": 0.825397,
+      "ai_value": "WooCommerce Shipping לא תומך כרגע במשלוחי HAZMAT דרך %1$s",
+      "human_value": "השירות של WooCommerce Shipping כרגע לא תומך במשלוחי HAZMAT דרך ⁦%1$s⁩"
+    },
+    {
+      "key": "woo_shipping_labels_customs_product_details_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "תיאור",
+      "human_value": "תיאור"
+    },
+    {
+      "key": "analytics_google_ads_filter_clicks",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "קליקים",
+      "human_value": "קליקים"
+    },
+    {
+      "key": "product_add_photos",
+      "bleu": 50.0,
+      "chrf": 56.762,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "הוסף תמונות",
+      "human_value": "להוסיף תמונות"
+    },
+    {
+      "key": "store_onboarding_payments_setup_description",
+      "bleu": 11.3396,
+      "chrf": 44.6575,
+      "levenshtein_sim": 0.756098,
+      "ai_value": "גלה ספקי תשלום נוספים ובחר \\nספק תשלום.",
+      "human_value": "לעיין בספקי תשלום אחרים \\nולבחור ספק תשלום."
+    },
+    {
+      "key": "woopos_scanning_setup_barcodes_on_products_message",
+      "bleu": 27.8909,
+      "chrf": 65.5022,
+      "levenshtein_sim": 0.913295,
+      "ai_value": "אפשר להגדיר ברקודים בשדה GTIN, UPC, EAN, ISBN בלשונית המלאי של המוצר. לפרטים נוספים",
+      "human_value": "אפשר להגדיר ברקודים בשדה \\'GTIN‏, UPC,‏ EAN,‏ ISBN\\' שבלשונית של מלאי המוצר. לפרטים נוספים"
+    },
+    {
+      "key": "wc_approve",
+      "bleu": 0.0,
+      "chrf": 21.7391,
+      "levenshtein_sim": 0.75,
+      "ai_value": "אשר",
+      "human_value": "אישור"
+    },
+    {
+      "key": "orderfilters_default_filter_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הכול",
+      "human_value": "הכול"
+    },
+    {
+      "key": "product_add_image_content_description",
+      "bleu": 50.0,
+      "chrf": 50.6213,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "הוסף תמונה",
+      "human_value": "להוסיף תמונה"
+    },
+    {
+      "key": "card_reader_onboarding_account_pending_requirements_hint",
+      "bleu": 26.9736,
+      "chrf": 63.477,
+      "levenshtein_sim": 0.610837,
+      "ai_value": "יש דרישות ממתינות בחשבון שלך. נא להשלים את הדרישות האלה עד %1$s כדי להמשיך לקבל תשלומים פנים אל פנים.",
+      "human_value": "ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך ולקבל תשלומים באופן אישי, על ⁦%1$s⁩ להשלים את הדרישות הללו."
+    },
+    {
+      "key": "shipping_label_paper_size_legal",
+      "bleu": 11.7378,
+      "chrf": 17.7844,
+      "levenshtein_sim": 0.55814,
+      "ai_value": "Legal (8.5 x 14 in)",
+      "human_value": "משפטי (8.5 x‏ 14 אינץ\\')"
+    },
+    {
+      "key": "ai_product_description_title_hint",
+      "bleu": 9.6885,
+      "chrf": 22.1568,
+      "levenshtein_sim": 0.611111,
+      "ai_value": "הזן כותרת מוצר.",
+      "human_value": "יש להזין את שם המוצר."
+    },
+    {
+      "key": "shipping_label_customs_restriction_type_other_hint",
+      "bleu": 50.0,
+      "chrf": 63.6226,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "פרטי ההגבלה",
+      "human_value": "פרטי הגבלה"
+    },
+    {
+      "key": "product_details_blaze_card",
+      "bleu": 55.0321,
+      "chrf": 89.9322,
+      "levenshtein_sim": 0.96,
+      "ai_value": "קדם עם Blaze",
+      "human_value": "לקדם עם Blaze"
+    },
+    {
+      "key": "blaze_campaign_preview_details_location",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מיקום",
+      "human_value": "מיקום"
+    },
+    {
+      "key": "subscription_period_week",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "שבוע",
+      "human_value": "שבוע"
+    },
+    {
+      "key": "login_wpcom_connection_consent_jetpack",
+      "bleu": 15.8487,
+      "chrf": 53.5915,
+      "levenshtein_sim": 0.69697,
+      "ai_value": "בלחיצה על כפתור Connect Jetpack",
+      "human_value": "על ידי לחיצה על כפתור חיבור Jetpack"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_yes_button",
+      "bleu": 28.2544,
+      "chrf": 13.17,
+      "levenshtein_sim": 0.48,
+      "ai_value": "כן, שנה",
+      "human_value": "כן, אני רוצה לשנות"
+    },
+    {
+      "key": "store_onboarding_payments_pre_setup_title_wcpay",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "WooPayments",
+      "human_value": "WooPayments"
+    },
+    {
+      "key": "orderdetail_message_customer",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הודעה",
+      "human_value": "הודעה"
+    },
+    {
+      "key": "product_type_confirm_dialog_title",
+      "bleu": 46.7138,
+      "chrf": 84.6819,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "האם אתה בטוח שברצונך לשנות את סוג המוצר?",
+      "human_value": "האם ברצונך לשנות את סוג המוצר?"
+    },
+    {
+      "key": "disabled",
+      "bleu": 0.0,
+      "chrf": 0.0,
+      "levenshtein_sim": 0.0,
+      "ai_value": "מושבת",
+      "human_value": "נָכֶה"
+    },
+    {
+      "key": "shipping_label_select_package_description",
+      "bleu": 19.5827,
+      "chrf": 59.768,
+      "levenshtein_sim": 0.790419,
+      "ai_value": "הזן את ממדי החבילה שלך או בחר אפשרות של חבילת מוביל כדי לראות את תעריפי המשלוח הזמינים.",
+      "human_value": "יש להזין את ממדי החבילה או לבחור אפשרות של חבילת ספק כדי להציג את תעריפי המשלוח."
+    },
+    {
+      "key": "orderfilters_product_filter",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מוצר",
+      "human_value": "מוצר"
+    },
+    {
+      "key": "product_update_success_notification_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "המוצר עודכן",
+      "human_value": "המוצר עודכן"
+    },
+    {
+      "key": "product_global_unique_id",
+      "bleu": 15.6197,
+      "chrf": 41.1653,
+      "levenshtein_sim": 0.930233,
+      "ai_value": "GTIN, UPC, EAN, ISBN",
+      "human_value": "GTIN, ‏UPC, ‏EAN, ‏ISBN"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_gifts",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מתנות",
+      "human_value": "מתנות"
+    },
+    {
+      "key": "booking_overflow_refund",
+      "bleu": 50.0,
+      "chrf": 26.4484,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "הנפק החזר",
+      "human_value": "החזר כספי"
+    },
+    {
+      "key": "support_request_success_message",
+      "bleu": 7.1586,
+      "chrf": 38.0175,
+      "levenshtein_sim": 0.625,
+      "ai_value": "בקשת התמיכה שלך נחתה בבטחה בתיבת הדואר הנכנס שלנו. נשיב בדוא\"ל במהירות האפשרית.",
+      "human_value": "בקשת התמיכה הגיעה בשלום אל תיבת הדואר שלנו. אנחנו נשלח מענה באימייל בהקדם האפשרי."
+    },
+    {
+      "key": "blaze_campaign_objective_save_selection_switch_label",
+      "bleu": 27.4825,
+      "chrf": 78.9989,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "שמור את הבחירה שלי לקמפיינים עתידיים",
+      "human_value": "לשמור את הבחירה שלי עבור קמפיינים עתידיים"
+    },
+    {
+      "key": "jetpack_install_progress_failed_option_contact_support",
+      "bleu": 59.4604,
+      "chrf": 66.4123,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "צור קשר עם התמיכה",
+      "human_value": "יצירת קשר עם התמיכה"
+    },
+    {
+      "key": "shipping_label_create_purchase_fulfill_error",
+      "bleu": 45.6917,
+      "chrf": 79.7133,
+      "levenshtein_sim": 0.944444,
+      "ai_value": "לא ניתן היה לסמן את ההזמנה כהושלמה",
+      "human_value": "לא ניתן היה לסמן את ההזמנה כ\\'הושלמה\\'"
+    },
+    {
+      "key": "blaze_campaign_preview_days_duration_endless",
+      "bleu": 18.7602,
+      "chrf": 33.7461,
+      "levenshtein_sim": 0.607143,
+      "ai_value": "%1$s לשבוע, החל מ-%2$s",
+      "human_value": "חיוב שבועי של ⁦%1$s⁩, החל מ-⁦%2$s⁩"
+    },
+    {
+      "key": "card_reader_payment_failed_duplicate_transaction",
+      "bleu": 35.3553,
+      "chrf": 66.0884,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "עסקה זהה נשלחה לאחרונה",
+      "human_value": "עסקה זהה נרשמה לאחרונה"
+    },
+    {
+      "key": "customers_details_registration_section",
+      "bleu": 0.0,
+      "chrf": 8.0,
+      "levenshtein_sim": 0.4,
+      "ai_value": "הרשמה",
+      "human_value": "רישום"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_edit_order",
+      "bleu": 50.0,
+      "chrf": 35.5631,
+      "levenshtein_sim": 0.761905,
+      "ai_value": "ערוך הזמנה",
+      "human_value": "עריכת הזמנה"
+    },
+    {
+      "key": "woopos_variations_empty_list_title",
+      "bleu": 31.9472,
+      "chrf": 39.3149,
+      "levenshtein_sim": 0.711111,
+      "ai_value": "לא נמצאו וריאציות נתמכות",
+      "human_value": "לא נמצאו סוגים נתמכים"
+    },
+    {
+      "key": "login_jetpack_connection_explanation",
+      "bleu": 40.1768,
+      "chrf": 81.5275,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "נא לחבר את החנות שלך ל-Jetpack כדי לגשת אליה באפליקציה הזו.",
+      "human_value": "יש לחבר את החנות שלך אל Jetpack כדי לגשת אליה באפליקציה הזאת."
+    },
+    {
+      "key": "shipping_label_package_details_weight_hint",
+      "bleu": 18.8859,
+      "chrf": 44.9267,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "משקל חבילה כולל (%1$s)",
+      "human_value": "משקל החבילה הכולל (⁦%1$s⁩)"
+    },
+    {
+      "key": "woopos_search_popular_items_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מוצרים פופולריים",
+      "human_value": "מוצרים פופולריים"
+    },
+    {
+      "key": "variations_bulk_update_regular_price",
+      "bleu": 0.0,
+      "chrf": 33.493,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "עדכן מחיר רגיל",
+      "human_value": "לעדכן את המחיר הרגיל"
+    },
+    {
+      "key": "woopos_bookings_details_team_member_label",
+      "bleu": 50.0,
+      "chrf": 22.3654,
+      "levenshtein_sim": 0.555556,
+      "ai_value": "חבר צוות",
+      "human_value": "משתתף צוות"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+      "bleu": 40.2935,
+      "chrf": 59.8243,
+      "levenshtein_sim": 0.771429,
+      "ai_value": "הכרטיס לא תומך בסוג ההחזר הזה",
+      "human_value": "הכרטיס הזה לא תומך בסוג ההחזר הכספי שנבחר"
+    },
+    {
+      "key": "product_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הגדרות מוצר",
+      "human_value": "הגדרות מוצר"
+    },
+    {
+      "key": "shipping_label_customs_itn_required_country",
+      "bleu": 16.8074,
+      "chrf": 38.2342,
+      "levenshtein_sim": 0.709677,
+      "ai_value": "נדרש ITN עבור משלוחים אל %1$s.",
+      "human_value": "יש לציין ITN למשלוחים אל ⁦%1$s⁩."
+    },
+    {
+      "key": "login_jetpack_installation_continue_connection",
+      "bleu": 0.0,
+      "chrf": 36.0984,
+      "levenshtein_sim": 0.869565,
+      "ai_value": "המשך חיבור",
+      "human_value": "להמשיך בחיבור"
+    },
+    {
+      "key": "print_receipt_label_info_step_3",
+      "bleu": 3.822,
+      "chrf": 33.2925,
+      "levenshtein_sim": 0.635714,
+      "ai_value": "כאשר בוחרים \"Print receipt\" לאחר קבלת התשלום, החלף את \"Save as PDF\" ב-\"All printers\", וחפש מדפסת חדשה.",
+      "human_value": "לאחר הבחירה ב\\'Print receipt\\' (להדפיס קבלה) אחרי קבלת התשלום, יש להחליף את האפשרות \\'Save as PDF\\' (לשמור כקובץ PDF) באפשרות \\'All printers\\' (כל המדפסות) ולחפש את המדפסת החדשה."
+    },
+    {
+      "key": "booking_payment_status_cancelled",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "בוטל",
+      "human_value": "בוטל"
+    },
+    {
+      "key": "coupon_details_performance_amount_heading",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סכום",
+      "human_value": "סכום"
+    },
+    {
+      "key": "woo_shipping_fetching_countries_and_states",
+      "bleu": 18.9959,
+      "chrf": 45.5402,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "מביא מדינות ומחוזות.",
+      "human_value": "מביא ארצות ומדינות."
+    },
+    {
+      "key": "scan_to_update_inventory_product_details_button",
+      "bleu": 27.5161,
+      "chrf": 38.3302,
+      "levenshtein_sim": 0.896552,
+      "ai_value": "הצג פרטי מוצר",
+      "human_value": "להציג פרטי המוצר"
+    },
+    {
+      "key": "card_reader_interac_refund_refund_completed_header",
+      "bleu": 24.8408,
+      "chrf": 33.8906,
+      "levenshtein_sim": 0.682927,
+      "ai_value": "ההחזר בוצע בהצלחה",
+      "human_value": "ההחזר הכספי הונפק בהצלחה"
+    },
+    {
+      "key": "print_shipping_label_format_options_title",
+      "bleu": 34.6681,
+      "chrf": 78.4095,
+      "levenshtein_sim": 0.97561,
+      "ai_value": "אפשרויות פורמט תווית",
+      "human_value": "אפשרויות לפורמט תווית"
+    },
+    {
+      "key": "logviewer_activity_title",
+      "bleu": 50.0,
+      "chrf": 70.2937,
+      "levenshtein_sim": 0.962963,
+      "ai_value": "יומן האפליקציה",
+      "human_value": "יומן אפליקציה"
+    },
+    {
+      "key": "product_variant_list_add_first_variation",
+      "bleu": 12.7033,
+      "chrf": 37.8861,
+      "levenshtein_sim": 0.730769,
+      "ai_value": "צור את הווריאציה הראשונה שלך",
+      "human_value": "ליצור את הסוג הראשון שלך"
+    },
+    {
+      "key": "woo_shipping_confirm_address_suggested",
+      "bleu": 0.0,
+      "chrf": 16.3547,
+      "levenshtein_sim": 0.545455,
+      "ai_value": "מוצע",
+      "human_value": "מומלצות"
+    },
+    {
+      "key": "booking_payment_status_refunded",
+      "bleu": 0.0,
+      "chrf": 17.9605,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "הוחזר",
+      "human_value": "להחזיר"
+    },
+    {
+      "key": "upgrades_title",
+      "bleu": 0.0,
+      "chrf": 51.3859,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "מנויים",
+      "human_value": "מינויים"
+    },
+    {
+      "key": "image_source_device_chooser",
+      "bleu": 50.0,
+      "chrf": 63.4229,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "בחר מהמכשיר",
+      "human_value": "לבחור מהמכשיר"
+    },
+    {
+      "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+      "bleu": 8.9138,
+      "chrf": 34.4078,
+      "levenshtein_sim": 0.571429,
+      "ai_value": "אי אפשר להוסיף מוצר עם וריאציות ישירות. נא לבחור וריאציה מסוימת",
+      "human_value": "לא ניתן להוסיף ישירות מוצר עם סוגים. יש לבחור סוג ספציפי"
+    },
+    {
+      "key": "shipping_label_rate_included_options_insurance",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ביטוח (%s)",
+      "human_value": "ביטוח (%s)"
+    },
+    {
+      "key": "shipping_label_shipment_details_payment_method",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "אמצעי תשלום",
+      "human_value": "אמצעי תשלום"
+    },
+    {
+      "key": "woopos_cart_barcode_scan_result_unsupported_product",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "פריט לא נתמך – %s",
+      "human_value": "פריט לא נתמך – %s"
+    },
+    {
+      "key": "coupon_list_item_label_active",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "פעיל",
+      "human_value": "פעיל"
+    },
+    {
+      "key": "feedback_completed_back_to_store_button_text",
+      "bleu": 50.0,
+      "chrf": 88.3978,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "חזרה לחנות",
+      "human_value": "בחזרה לחנות"
+    },
+    {
+      "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+      "bleu": 19.4026,
+      "chrf": 43.1182,
+      "levenshtein_sim": 0.821918,
+      "ai_value": "הלקוח שילם %1$s בסך %2$s עבור משלוח",
+      "human_value": "הלקוח שילם ⁦%1$s⁩ מתוך ⁦%2$s⁩ על משלוח"
+    },
+    {
+      "key": "woopos_dialog_products_info_heading",
+      "bleu": 11.9901,
+      "chrf": 44.3306,
+      "levenshtein_sim": 0.53125,
+      "ai_value": "למה אני לא יכול לראות את המוצרים שלי?",
+      "human_value": "למה המוצרים שלי לא מופיעים?"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_user_hint",
+      "bleu": 31.9472,
+      "chrf": 83.5563,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "מגבלת שימוש לכל משתמש",
+      "human_value": "מגבלת שימוש למשתמש"
+    },
+    {
+      "key": "product_creation_ai_entry_sheet_ai_option_title",
+      "bleu": 12.4402,
+      "chrf": 19.2216,
+      "levenshtein_sim": 0.458333,
+      "ai_value": "צור מוצר עם AI",
+      "human_value": "ליצור מוצר באמצעות הבינה המלאכותית"
+    },
+    {
+      "key": "woo_shipping_rate_option_saturday_delivery",
+      "bleu": 0.0,
+      "chrf": 13.7511,
+      "levenshtein_sim": 0.5,
+      "ai_value": "מסירה בשבת",
+      "human_value": "משלוח ביום שבת"
+    },
+    {
+      "key": "coupon_restrictions_limit_per_coupon_hint",
+      "bleu": 31.9472,
+      "chrf": 83.5563,
+      "levenshtein_sim": 0.923077,
+      "ai_value": "מגבלת שימוש לכל קופון",
+      "human_value": "מגבלת שימוש לקופון"
+    },
+    {
+      "key": "product_detail_add_more",
+      "bleu": 27.5161,
+      "chrf": 30.5615,
+      "levenshtein_sim": 0.606061,
+      "ai_value": "הוסף פרטים נוספים",
+      "human_value": "להוסיף עוד פרטים"
+    },
+    {
+      "key": "notification_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "יש לך הזמנה חדשה! 🎉",
+      "human_value": "יש לך הזמנה חדשה! 🎉"
+    },
+    {
+      "key": "shipping_label_create_purchase_error",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "שגיאה ברכישת התוויות",
+      "human_value": "שגיאה ברכישת התוויות"
+    },
+    {
+      "key": "order_creation_add_shipping_name_hint",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "משלוח",
+      "human_value": "משלוח"
+    },
+    {
+      "key": "login_error_sms_throttled",
+      "bleu": 34.2612,
+      "chrf": 52.6237,
+      "levenshtein_sim": 0.681564,
+      "ai_value": "ביצענו יותר מדי ניסיונות לשלוח קוד אימות ב-SMS — קח הפסקה ובקש קוד חדש בעוד דקה.",
+      "human_value": "ביצענו יותר מדי ניסיונות לשלוח קוד אימות בהודעת טקסט - אנחנו ממליצים להמתין רגע ולנסות שוב עוד דקה."
+    },
+    {
+      "key": "support_identity_input_dialog_email_label",
+      "bleu": 0.0,
+      "chrf": 6.8966,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "דוא\"ל",
+      "human_value": "אימייל"
+    },
+    {
+      "key": "dashboard_google_ads_card_create_campaign_button",
+      "bleu": 50.0,
+      "chrf": 79.3446,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "צור קמפיין",
+      "human_value": "ליצור קמפיין"
+    },
+    {
+      "key": "woopos_date_yesterday_at",
+      "bleu": 35.3553,
+      "chrf": 45.374,
+      "levenshtein_sim": 0.782609,
+      "ai_value": "אתמול ב-%s",
+      "human_value": "אתמול בשעה %s"
+    },
+    {
+      "key": "login_avatar_content_description",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "תמונת הפרופיל שלך",
+      "human_value": "תמונת הפרופיל שלך"
+    },
+    {
+      "key": "woo_shipping_labels_customs_return_to_sender_label",
+      "bleu": 15.6197,
+      "chrf": 43.1106,
+      "levenshtein_sim": 0.789474,
+      "ai_value": "החזר לשולח אם אי אפשר למסור את החבילה",
+      "human_value": "להחזיר לשולח אם לא ניתן לשלוח את החבילה"
+    },
+    {
+      "key": "orderlist_connectivity_tool_store_orders_check_title",
+      "bleu": 12.7033,
+      "chrf": 63.8795,
+      "levenshtein_sim": 0.863636,
+      "ai_value": "מביא את הזמנות האתר שלך",
+      "human_value": "הבאת הזמנות מהאתר שלך"
+    },
+    {
+      "key": "domains_purchase_successful_heading",
+      "bleu": 27.5348,
+      "chrf": 48.6622,
+      "levenshtein_sim": 0.808511,
+      "ai_value": "ברכות על הרכישה שלך",
+      "human_value": "ברכותינו על הרכישה החדשה שלך"
+    },
+    {
+      "key": "store_onboarding_full_screen_transition_name",
+      "bleu": 0.0,
+      "chrf": 14.4513,
+      "levenshtein_sim": 0.540541,
+      "ai_value": "מסך מלא של ההיכרות",
+      "human_value": "תצוגה מלאה להצטרפות"
+    },
+    {
+      "key": "domain_picker_suggestions_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הצעות",
+      "human_value": "הצעות"
+    },
+    {
+      "key": "woopos_orders_edit_refund",
+      "bleu": 30.3265,
+      "chrf": 56.6003,
+      "levenshtein_sim": 0.75,
+      "ai_value": "ערוך החזר",
+      "human_value": "לערוך החזר כספי"
+    },
+    {
+      "key": "blaze_campaign_ceation_celebration_message",
+      "bleu": 25.7487,
+      "chrf": 56.836,
+      "levenshtein_sim": 0.732824,
+      "ai_value": "המודעה נשלחה לאישור. נשלח לך דוא\"ל אישור ברגע שהיא תאושר ותתחיל לרוץ.",
+      "human_value": "הפרסומת נשלחה לאישור. נשלח לך אישור באימייל כשהיא תאושר ותוצג."
+    },
+    {
+      "key": "product_subscription_expiration_title",
+      "bleu": 50.0,
+      "chrf": 39.2388,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "תפוגת מנוי",
+      "human_value": "תפוגת המינוי"
+    },
+    {
+      "key": "notification_wpcom_username_needed",
+      "bleu": 51.6973,
+      "chrf": 55.133,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "נא להתחבר עם שם המשתמש והסיסמה שלך.",
+      "human_value": "עליך להיכנס באמצעות שם המשתמש והסיסמה שלך."
+    },
+    {
+      "key": "login_jetpack_installation_error_generic_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "אירעה שגיאה בתקשורת עם האתר שלך.",
+      "human_value": "אירעה שגיאה בתקשורת עם האתר שלך."
+    },
+    {
+      "key": "product_ratings_count_zero",
+      "bleu": 66.874,
+      "chrf": 80.314,
+      "levenshtein_sim": 0.941176,
+      "ai_value": "\\u2022 אין ביקורות מאושרות",
+      "human_value": "\\u2022 אין ביקורות שאושרו"
+    },
+    {
+      "key": "product_stock_quantity",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "כמות במלאי",
+      "human_value": "כמות במלאי"
+    },
+    {
+      "key": "error_loading_image",
+      "bleu": 39.7635,
+      "chrf": 58.3049,
+      "levenshtein_sim": 0.77551,
+      "ai_value": "לא ניתן לטעון את התמונה",
+      "human_value": "אין אפשרות לטעון את התמונה"
+    },
+    {
+      "key": "privacy_settings",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הגדרות פרטיות",
+      "human_value": "הגדרות פרטיות"
+    },
+    {
+      "key": "product_type_variable_subscription",
+      "bleu": 0.0,
+      "chrf": 14.5562,
+      "levenshtein_sim": 0.444444,
+      "ai_value": "מנוי עם וריאציות",
+      "human_value": "מינוי משתנה"
+    },
+    {
+      "key": "shipping_label_purchased_tracking_error",
+      "bleu": 10.9233,
+      "chrf": 35.3691,
+      "levenshtein_sim": 0.650602,
+      "ai_value": "כרגע איננו תומכים במעקב עבור מוביל זה",
+      "human_value": "אנחנו כרגע לא תומכים במעקב של חברת השילוח הזאת"
+    },
+    {
+      "key": "jetpack_install_progress_step_one_message",
+      "bleu": 42.8882,
+      "chrf": 59.6888,
+      "levenshtein_sim": 0.896552,
+      "ai_value": "מתקין Jetpack",
+      "human_value": "מתקין את Jetpack"
+    },
+    {
+      "key": "woo_shipping_labels_customs_restriction_type_label",
+      "bleu": 50.0,
+      "chrf": 59.4975,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "סוג ההגבלה",
+      "human_value": "סוג הגבלה"
+    },
+    {
+      "key": "today",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "היום",
+      "human_value": "היום"
+    },
+    {
+      "key": "blaze_campaign_creation_celebration_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הכול מוכן!",
+      "human_value": "הכול מוכן!"
+    },
+    {
+      "key": "save_configuration",
+      "bleu": 30.3265,
+      "chrf": 31.3709,
+      "levenshtein_sim": 0.714286,
+      "ai_value": "שמור תצורה",
+      "human_value": "לשמור הגדרות תצורה"
+    },
+    {
+      "key": "orderlist_bulk_update_result_partial_success",
+      "bleu": 27.0982,
+      "chrf": 57.1852,
+      "levenshtein_sim": 0.711864,
+      "ai_value": "%d הזמנות עודכנו, ו-%d הזמנות לא הצליחו להתעדכן. נא לנסות שוב.",
+      "human_value": "%d הזמנות עודכנו ועדכון של %d הזמנות נכשל. יש לנסות שוב."
+    },
+    {
+      "key": "blaze_campaign_preview_audience_section_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "קהל",
+      "human_value": "קהל"
+    },
+    {
+      "key": "woo_shipping_confirm_submit_address_suggested",
+      "bleu": 0.0,
+      "chrf": 25.8639,
+      "levenshtein_sim": 0.756757,
+      "ai_value": "אשר כתובת מוצעת",
+      "human_value": "לאשר את הכתובת המומלצת"
+    },
+    {
+      "key": "feedback_request_like_it",
+      "bleu": 0.0,
+      "chrf": 19.9869,
+      "levenshtein_sim": 0.421053,
+      "ai_value": "אני אוהב את זה",
+      "human_value": "אהבתי"
+    },
+    {
+      "key": "woopos_settings_local_catalog_category_subtitle",
+      "bleu": 19.7161,
+      "chrf": 44.6827,
+      "levenshtein_sim": 0.864865,
+      "ai_value": "נהל הגדרות קטלוג",
+      "human_value": "לנהל את הגדרות הקטלוג"
+    },
+    {
+      "key": "shipping_label_customs_contents_type_other_hint",
+      "bleu": 50.0,
+      "chrf": 53.38,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "פרטי התכולה",
+      "human_value": "פרטי תכולה"
+    },
+    {
+      "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+      "bleu": 0.0,
+      "chrf": 42.627,
+      "levenshtein_sim": 0.785714,
+      "ai_value": "הסר קופונים",
+      "human_value": "להסיר את הקופונים"
+    },
+    {
+      "key": "free_trial_your_trial_ended",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "תקופת הניסיון שלך הסתיימה.",
+      "human_value": "תקופת הניסיון שלך הסתיימה."
+    },
+    {
+      "key": "order_shipment_tracking_custom_provider_section_name",
+      "bleu": 27.5161,
+      "chrf": 31.9561,
+      "levenshtein_sim": 0.461538,
+      "ai_value": "מוביל מותאם אישית",
+      "human_value": "ספק מותאם"
+    },
+    {
+      "key": "scan_barcode_to_update_inventory_menu_item_title",
+      "bleu": 0.0,
+      "chrf": 34.4469,
+      "levenshtein_sim": 0.792453,
+      "ai_value": "סרוק ברקוד כדי לעדכן מלאי",
+      "human_value": "לסרוק את הברקוד לעדכון המלאי"
+    },
+    {
+      "key": "domain_contact_information_register_domain_button",
+      "bleu": 50.0,
+      "chrf": 78.8748,
+      "levenshtein_sim": 0.956522,
+      "ai_value": "רשום דומיין",
+      "human_value": "רישום דומיין"
+    },
+    {
+      "key": "product_add_photo",
+      "bleu": 50.0,
+      "chrf": 50.6213,
+      "levenshtein_sim": 0.909091,
+      "ai_value": "הוסף תמונה",
+      "human_value": "להוסיף תמונה"
+    },
+    {
+      "key": "shipping",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "משלוח",
+      "human_value": "משלוח"
+    },
+    {
+      "key": "configuration_quantity_item_plural",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d פריטים",
+      "human_value": "%d פריטים"
+    },
+    {
+      "key": "woo_shipping_field_required_error",
+      "bleu": 19.3049,
+      "chrf": 33.3509,
+      "levenshtein_sim": 0.526316,
+      "ai_value": "שדה זה הוא שדה חובה.",
+      "human_value": "חובה להזין שדה זה."
+    },
+    {
+      "key": "scan_to_update_inventory_stock_not_managed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "המלאי לא מנוהל",
+      "human_value": "המלאי לא מנוהל"
+    },
+    {
+      "key": "shipping_label_rate_option_signature_required",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "נדרשת חתימה (%s)",
+      "human_value": "נדרשת חתימה (%s)"
+    },
+    {
+      "key": "logviewer_current_log_file",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "נוכחי",
+      "human_value": "נוכחי"
+    },
+    {
+      "key": "woopos_product_limitations_title",
+      "bleu": 59.4604,
+      "chrf": 69.6048,
+      "levenshtein_sim": 0.823529,
+      "ai_value": "איפה המוצרים שלי?",
+      "human_value": "היכן המוצרים שלי?"
+    },
+    {
+      "key": "orderdetail_hide_billing",
+      "bleu": 50.0,
+      "chrf": 43.526,
+      "levenshtein_sim": 0.947368,
+      "ai_value": "הסתר חיוב",
+      "human_value": "הסתרת חיוב"
+    },
+    {
+      "key": "login_log_in_for_share_intent",
+      "bleu": 46.7138,
+      "chrf": 82.7525,
+      "levenshtein_sim": 0.9,
+      "ai_value": "התחבר ל-WordPress.com כדי לשתף את התוכן.",
+      "human_value": "יש להתחבר ל-WordPress.com כדי לשתף תוכן."
+    },
+    {
+      "key": "booking_payment_status_paid",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "שולם",
+      "human_value": "שולם"
+    },
+    {
+      "key": "orderlist_mark_completed_success",
+      "bleu": 9.7366,
+      "chrf": 40.4113,
+      "levenshtein_sim": 0.8,
+      "ai_value": "הזמנה #%1$d סומנה כהושלמה",
+      "human_value": "הזמנה מס\\' ⁦%1$d⁩ סומנה כ\\'הושלמה\\'"
+    },
+    {
+      "key": "woo_shipping_labels_customs_origin_country_info",
+      "bleu": 41.1134,
+      "chrf": 84.494,
+      "levenshtein_sim": 0.967742,
+      "ai_value": "המדינה שבה המוצר יוצר או הורכב.",
+      "human_value": "המדינה שבה המוצר נוצר או הורכב."
+    },
+    {
+      "key": "store_onboarding_task_woopayments_celebration_header",
+      "bleu": 15.9736,
+      "chrf": 7.5758,
+      "levenshtein_sim": 0.235294,
+      "ai_value": "עשית את זה!",
+      "human_value": "הצלחת!"
+    },
+    {
+      "key": "card_reader_tap_to_pay_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "TAP TO PAY",
+      "human_value": "TAP TO PAY"
+    },
+    {
+      "key": "woopos_settings_store_email_label",
+      "bleu": 0.0,
+      "chrf": 6.8966,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "דוא\"ל",
+      "human_value": "אימייל"
+    },
+    {
+      "key": "support_request_help_other",
+      "bleu": 59.4604,
+      "chrf": 65.5739,
+      "levenshtein_sim": 0.787879,
+      "ai_value": "הרחבה / תוסף אחר",
+      "human_value": "הרחבה / תוסף שונה"
+    },
+    {
+      "key": "product_uncheck_is_downloadable_warning_message",
+      "bleu": 41.1134,
+      "chrf": 60.9346,
+      "levenshtein_sim": 0.871795,
+      "ai_value": "כל הקבצים שמצורפים כעת למוצר זה יוסרו.",
+      "human_value": "כל הקבצים שמחוברים עכשיו למוצר זה יוסרו."
+    },
+    {
+      "key": "product_attributes_created_description",
+      "bleu": 10.6003,
+      "chrf": 47.1112,
+      "levenshtein_sim": 0.8,
+      "ai_value": "עכשיו לאחר שהוספת מאפיינים, אפשר ליצור את הווריאציה הראשונה שלך!",
+      "human_value": "לאחר הוספת המאפיינים, באפשרותך ליצור את הסוג הראשון שלך!"
+    },
+    {
+      "key": "woopos_order_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הזמנה %s",
+      "human_value": "הזמנה %s"
+    },
+    {
+      "key": "order_editing_barcode_content_description",
+      "bleu": 50.0,
+      "chrf": 88.3978,
+      "levenshtein_sim": 0.952381,
+      "ai_value": "סרוק ברקוד",
+      "human_value": "לסרוק ברקוד"
+    },
+    {
+      "key": "feedback_banner_ipp_title_beginner",
+      "bleu": 4.1673,
+      "chrf": 11.5029,
+      "levenshtein_sim": 0.454545,
+      "ai_value": "נהנית מתשלום פנים אל פנים?",
+      "human_value": "מרוצה מהשירות של \\'תשלומים באופן אישי\\'?"
+    },
+    {
+      "key": "woopos_totals_reader_ready_for_payment_subtitle",
+      "bleu": 6.9163,
+      "chrf": 18.0384,
+      "levenshtein_sim": 0.6,
+      "ai_value": "הקש, החלק או הכנס כרטיס",
+      "human_value": "יש להצמיד, להעביר או להכניס את הכרטיס"
+    },
+    {
+      "key": "booking_note_description_private",
+      "bleu": 39.2815,
+      "chrf": 63.4476,
+      "levenshtein_sim": 0.846154,
+      "ai_value": "זוהי הערה פרטית. היא לא תשותף עם הלקוח.",
+      "human_value": "זוהי הערה פרטית. לא נשתף אותה עם הלקוח."
+    },
+    {
+      "key": "product_type_list_header",
+      "bleu": 14.1272,
+      "chrf": 22.5377,
+      "levenshtein_sim": 0.727273,
+      "ai_value": "בחר סוג מוצר",
+      "human_value": "יש לבחור את סוג המוצר"
+    },
+    {
+      "key": "booking_payment_header",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "תשלום",
+      "human_value": "תשלום"
+    },
+    {
+      "key": "notification_channel_order_title",
+      "bleu": 31.9472,
+      "chrf": 64.1239,
+      "levenshtein_sim": 0.857143,
+      "ai_value": "התראות על הזמנה חדשה",
+      "human_value": "התראות על הזמנות חדשות"
+    },
+    {
+      "key": "login_text_otp_another",
+      "bleu": 26.2691,
+      "chrf": 57.1045,
+      "levenshtein_sim": 0.787879,
+      "ai_value": "שלחו לי קוד אחר בהודעת טקסט במקום",
+      "human_value": "שליחת קוד נוסף בהודעת טקסט במקום."
+    },
+    {
+      "key": "card_reader_payment_failed_currency_not_supported",
+      "bleu": 36.9903,
+      "chrf": 59.1879,
+      "levenshtein_sim": 0.777778,
+      "ai_value": "הכרטיס לא תומך במטבע הזה",
+      "human_value": "הכרטיס הזה לא תומך במטבע שצוין"
+    },
+    {
+      "key": "settings_woo_plugin_version",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "גרסת WooCommerce",
+      "human_value": "גרסת WooCommerce"
+    },
+    {
+      "key": "product_term_name_already_exists",
+      "bleu": 19.3577,
+      "chrf": 51.1078,
+      "levenshtein_sim": 0.48,
+      "ai_value": "אפשרות בשם זה כבר קיימת",
+      "human_value": "כבר קיימת אפשרות עם השם הזה"
+    },
+    {
+      "key": "orderlist_connectivity_tool_summary_title",
+      "bleu": 19.7161,
+      "chrf": 33.1157,
+      "levenshtein_sim": 0.722222,
+      "ai_value": "אין בעיות חיבור",
+      "human_value": "לא נמצאו בעיות בחיבור"
+    },
+    {
+      "key": "about_automattic_acknowledgements_item_title",
+      "bleu": 0.0,
+      "chrf": 11.0638,
+      "levenshtein_sim": 0.363636,
+      "ai_value": "תודות",
+      "human_value": "בשיתוף"
+    },
+    {
+      "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+      "bleu": 0.0,
+      "chrf": 25.5496,
+      "levenshtein_sim": 0.75,
+      "ai_value": "הפעל צליל",
+      "human_value": "להפעיל את הצליל"
+    },
+    {
+      "key": "woopos_scanning_setup_success_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הסורק הוגדר!",
+      "human_value": "הסורק הוגדר!"
+    },
+    {
+      "key": "woopos_bookings_payment_status_paid",
+      "bleu": 0.0,
+      "chrf": 17.8571,
+      "levenshtein_sim": 0.6,
+      "ai_value": "שולם",
+      "human_value": "בתשלום"
+    },
+    {
+      "key": "card_reader_tap_to_pay_successful_refund_message",
+      "bleu": 15.1819,
+      "chrf": 38.182,
+      "levenshtein_sim": 0.688172,
+      "ai_value": "תשלום בדיקה של Tap To Pay הוחזר בהצלחה",
+      "human_value": "החזר כספי עבור התשלום לבדיקה דרך Tap To Pay בוצע בהצלחה"
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+      "bleu": 25.6912,
+      "chrf": 44.8813,
+      "levenshtein_sim": 0.623077,
+      "ai_value": "Class 9 – Lithium batteries, unmarked package - מכשירים אלקטרוניים חדשים שמותקנות בהם או ארוזות איתם סוללות ליתיום (ללא סימון)",
+      "human_value": "סיווג 9 – חבילה לא מסומנת עם סוללות ליתיום – מכשירים אלקטרוניים חדשים שהותקנו בהם סוללות ליתיום או שנארזו עם סוללות ליתיום (ללא סימון)"
+    },
+    {
+      "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "ביטול",
+      "human_value": "ביטול"
+    },
+    {
+      "key": "shipping_label_hazmat_option_division_6_2",
+      "bleu": 30.7026,
+      "chrf": 53.7805,
+      "levenshtein_sim": 0.666667,
+      "ai_value": "Division 6.2 - Hazardous Materials - חומרים ביולוגיים (למשל, ערכות בדיקות מעבדה, החזרות מורשות של ערכות בדיקת COVID)",
+      "human_value": "סיווג 6.2 – חומרים מסוכנים – חומרים ביולוגיים (למשל, ערכות לבדיקות מעבדה, החזרות של ערכות מאושרות לבדיקת קורונה)"
+    },
+    {
+      "key": "woo_shipping_updating_address_failed",
+      "bleu": 70.1688,
+      "chrf": 86.271,
+      "levenshtein_sim": 0.954545,
+      "ai_value": "לא הצלחנו לעדכן את הכתובת שלך. נא לנסות שוב.",
+      "human_value": "לא הצלחנו לעדכן את הכתובת שלך. יש לנסות שוב."
+    },
+    {
+      "key": "dashboard_reviews_card_empty_title_filtered",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "לא נמצאו ביקורות",
+      "human_value": "לא נמצאו ביקורות"
+    },
+    {
+      "key": "product_update_stock_status_variable_ignored_count_singular",
+      "bleu": 9.4237,
+      "chrf": 21.6688,
+      "levenshtein_sim": 0.518519,
+      "ai_value": "יתעלמו ממוצר משתנה אחד.",
+      "human_value": "אנחנו נתעלם ממוצר אחד עם סוגים."
+    },
+    {
+      "key": "settings_app_theme_option_system",
+      "bleu": 18.9959,
+      "chrf": 45.7979,
+      "levenshtein_sim": 0.904762,
+      "ai_value": "ברירת מחדל של המערכת",
+      "human_value": "ברירת המחדל לפי המערכת"
+    },
+    {
+      "key": "woopos_bookings_no_booking_selected",
+      "bleu": 71.6531,
+      "chrf": 92.0133,
+      "levenshtein_sim": 0.965517,
+      "ai_value": "לא נבחרה הזמנה",
+      "human_value": "לא נבחרה הזמנה."
+    },
+    {
+      "key": "login_site_credentials_http_error",
+      "bleu": 26.7087,
+      "chrf": 39.1719,
+      "levenshtein_sim": 0.677419,
+      "ai_value": "ההתחברות נכשלה עם קוד מצב %1$s",
+      "human_value": "הכניסה נכשלה עם קוד סטטוס ⁦%1$s⁩"
+    },
+    {
+      "key": "woopos_settings_help_product_limitations_subtitle",
+      "bleu": 8.7458,
+      "chrf": 47.0581,
+      "levenshtein_sim": 0.78125,
+      "ai_value": "למד אילו מוצרים נתמכים ב-POS",
+      "human_value": "לקבל מידע לגבי המוצרים הנתמכים ב-POS"
+    },
+    {
+      "key": "product_type_variable_subscription_title",
+      "bleu": 31.9472,
+      "chrf": 80.8843,
+      "levenshtein_sim": 0.842105,
+      "ai_value": "מוצר מנוי עם וריאציות",
+      "human_value": "מינוי עם וריאציות"
+    },
+    {
+      "key": "woopos_cart_coupon_invalid_subtitle",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הקופון לא הוחל",
+      "human_value": "הקופון לא הוחל"
+    },
+    {
+      "key": "order_creation_add_products",
+      "bleu": 50.0,
+      "chrf": 56.762,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "הוסף מוצרים",
+      "human_value": "להוסיף מוצרים"
+    },
+    {
+      "key": "order_creation_coupon_discount_value",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "-%1$s",
+      "human_value": "-%1$s"
+    },
+    {
+      "key": "more_menu_button_reviews_description",
+      "bleu": 12.7033,
+      "chrf": 70.6666,
+      "levenshtein_sim": 0.84,
+      "ai_value": "אסוף ביקורות עבור החנות שלך",
+      "human_value": "לאסוף ביקורות לחנות שלך"
+    },
+    {
+      "key": "settings_web_options",
+      "bleu": 50.0,
+      "chrf": 44.0601,
+      "levenshtein_sim": 0.689655,
+      "ai_value": "אפשרויות ווב",
+      "human_value": "אפשרויות באינטרנט"
+    },
+    {
+      "key": "woo_push_notifications_connection_steps_complete",
+      "bleu": 0.0,
+      "chrf": 82.0611,
+      "levenshtein_sim": 0.75,
+      "ai_value": "הושלם",
+      "human_value": "שלם"
+    },
+    {
+      "key": "orderfilters_filter_card_title_all_orders",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "כל ההזמנות",
+      "human_value": "כל ההזמנות"
+    },
+    {
+      "key": "shipping_label_rate_included_options_free_pickup",
+      "bleu": 55.0321,
+      "chrf": 72.343,
+      "levenshtein_sim": 0.969697,
+      "ai_value": "זכאי לאיסוף חינם",
+      "human_value": "זכאי לאיסוף בחינם"
+    },
+    {
+      "key": "product_type_external",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "חיצוני",
+      "human_value": "חיצוני"
+    },
+    {
+      "key": "woo_shipping_labels_hazmat_selection_set",
+      "bleu": 18.9959,
+      "chrf": 73.7411,
+      "levenshtein_sim": 0.967742,
+      "ai_value": "קטגוריית חומרים מסוכנים הוגדרה",
+      "human_value": "קטגוריית החומרים המסוכנים הוגדרה"
+    },
+    {
+      "key": "product_downloadable_files_name_info",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "זהו שם הקובץ שמוצג ללקוח",
+      "human_value": "זהו שם הקובץ שמוצג ללקוח"
+    },
+    {
+      "key": "product_add_ons_details_info_notice",
+      "bleu": 32.2601,
+      "chrf": 65.2619,
+      "levenshtein_sim": 0.844444,
+      "ai_value": "אפשר לערוך תוספי מוצר בלוח הבקרה באינטרנט.",
+      "human_value": "ניתן לערוך את התוספים למוצר בלוח הבקרה באינטרנט."
+    },
+    {
+      "key": "print_receipt_label_info_step_6",
+      "bleu": 15.6783,
+      "chrf": 56.0047,
+      "levenshtein_sim": 0.80198,
+      "ai_value": "אם הדפסה אינה זמינה, תמיד אפשר לשמור את הקבלה כ-PDF ולשלוח אותה בדוא\"ל כדי להדפיס ממכשיר אחר.",
+      "human_value": "אם אפשרות ההדפסה לא זמינה, אפשר תמיד לשמור את הקבלה כקובץ PDF ולשלוח אותה באימייל כדי להדפיס אותה ממכשיר אחר."
+    },
+    {
+      "key": "about_automattic_source_code_item_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "קוד מקור",
+      "human_value": "קוד מקור"
+    },
+    {
+      "key": "feedback_product_give_feedback_button_text",
+      "bleu": 50.0,
+      "chrf": 20.6886,
+      "levenshtein_sim": 0.555556,
+      "ai_value": "תן משוב",
+      "human_value": "להעניק משוב"
+    },
+    {
+      "key": "woopos_date_just_now",
+      "bleu": 0.0,
+      "chrf": 2.7027,
+      "levenshtein_sim": 0.266667,
+      "ai_value": "זה עתה",
+      "human_value": "ממש עכשיו"
+    },
+    {
+      "key": "product_update_stock_status_done",
+      "bleu": 0.0,
+      "chrf": 5.2083,
+      "levenshtein_sim": 0.222222,
+      "ai_value": "בוצע",
+      "human_value": "הושלם"
+    },
+    {
+      "key": "blaze_campaign_budget_scheduled_section_title",
+      "bleu": 0.0,
+      "chrf": 15.0672,
+      "levenshtein_sim": 0.285714,
+      "ai_value": "לוח זמנים",
+      "human_value": "תזמון"
+    },
+    {
+      "key": "order_detail_attribution_admin_origin",
+      "bleu": 0.0,
+      "chrf": 4.6296,
+      "levenshtein_sim": 0.296296,
+      "ai_value": "ניהול ווב",
+      "human_value": "מנהל מערכת אינטרנט"
+    },
+    {
+      "key": "tax_rate_selector_empty_list_title",
+      "bleu": 66.874,
+      "chrf": 84.3365,
+      "levenshtein_sim": 0.943396,
+      "ai_value": "לא הצלחנו למצוא שיעורי מס",
+      "human_value": "לא הצלחנו למצוא שיעורי מיסים"
+    },
+    {
+      "key": "card_reader_tap_to_pay_about_copyright",
+      "bleu": 31.6898,
+      "chrf": 49.1558,
+      "levenshtein_sim": 0.653061,
+      "ai_value": "The Contactless Symbol הוא סימן מסחרי בבעלות EMVCo, LLC ונעשה בו שימוש ברשות.",
+      "human_value": "סמל \\'ללא מגע\\' הוא סימן מסחרי בבעלות EMVCo, LLC.‎ ובשימוש לפי הרשאתה."
+    },
+    {
+      "key": "product_detail_product_type_hint",
+      "bleu": 34.9833,
+      "chrf": 39.3468,
+      "levenshtein_sim": 0.4,
+      "ai_value": "מוצר %1$s",
+      "human_value": "⁦%1$s⁩ מוצר"
+    },
+    {
+      "key": "ai_product_description_learn_more_link",
+      "bleu": 85.7469,
+      "chrf": 76.0034,
+      "levenshtein_sim": 0.865854,
+      "ai_value": "מופעל על ידי AI. &lt;a href=\\'\\'&gt;&lt;u&gt;למידע נוסף&lt;/u&gt;&lt;/a&gt;.",
+      "human_value": "מופעל באמצעות בינה מלאכותית. &lt;a href=\\'\\'&gt;&lt;u&gt;למידע נוסף&lt;/u&gt;&lt;/a&gt;."
+    },
+    {
+      "key": "product_attributes",
+      "bleu": 0.0,
+      "chrf": 8.631,
+      "levenshtein_sim": 0.375,
+      "ai_value": "מאפיינים",
+      "human_value": "אפשרויות"
+    },
+    {
+      "key": "ai_product_creation_scanning_photo_error",
+      "bleu": 38.0969,
+      "chrf": 68.2157,
+      "levenshtein_sim": 0.852174,
+      "ai_value": "שגיאה בעת ניסיון לסרוק את הטקסט מהתמונה. נא לנסות שוב",
+      "human_value": "אירעה שגיאה במהלך הניסיון לסרוק את הטקסט מהתמונה. יש לנסות שוב"
+    },
+    {
+      "key": "bookings_resources_fetch_error",
+      "bleu": 18.9959,
+      "chrf": 45.2643,
+      "levenshtein_sim": 0.883721,
+      "ai_value": "שגיאה בקבלת חברי צוות",
+      "human_value": "שגיאה בהבאת חברי הצוות"
+    },
+    {
+      "key": "no_site_error",
+      "bleu": 29.1201,
+      "chrf": 61.0439,
+      "levenshtein_sim": 0.783505,
+      "ai_value": "האתר בכתובת זו אינו אתר WordPress. כדי שנוכל להתחבר אליו, האתר חייב להשתמש ב-WordPress.",
+      "human_value": "כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress."
+    },
+    {
+      "key": "variations_bulk_creation_warning_title",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "חרגת ממגבלת היצירה",
+      "human_value": "חרגת ממגבלת היצירה"
+    },
+    {
+      "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סכום קבוע",
+      "human_value": "סכום קבוע"
+    },
+    {
+      "key": "shipping_label_shipping_service_title",
+      "bleu": 50.0,
+      "chrf": 81.788,
+      "levenshtein_sim": 0.916667,
+      "ai_value": "שירות משלוח",
+      "human_value": "שירות משלוחים"
+    },
+    {
+      "key": "shipping_label_error_address_house_number_missing",
+      "bleu": 34.6681,
+      "chrf": 56.7282,
+      "levenshtein_sim": 0.96,
+      "ai_value": "מספר בית חסר",
+      "human_value": "מספר הבית חסר"
+    },
+    {
+      "key": "login_jetpack_installation_get_support",
+      "bleu": 50.0,
+      "chrf": 48.9886,
+      "levenshtein_sim": 0.9,
+      "ai_value": "קבל תמיכה",
+      "human_value": "לקבלת תמיכה"
+    },
+    {
+      "key": "card_reader_connect_scanning_failed_header",
+      "bleu": 34.6681,
+      "chrf": 54.2733,
+      "levenshtein_sim": 0.518519,
+      "ai_value": "אין קורא מחובר",
+      "human_value": "לא מחובר קורא"
+    },
+    {
+      "key": "product_bulk_update_status_updated",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "הסטטוס עודכן!",
+      "human_value": "הסטטוס עודכן!"
+    },
+    {
+      "key": "coupon_conditions_products_edit_products_title",
+      "bleu": 75.9836,
+      "chrf": 93.3684,
+      "levenshtein_sim": 0.969697,
+      "ai_value": "ערוך מוצרים (%d)",
+      "human_value": "לערוך מוצרים (%d)"
+    },
+    {
+      "key": "jetpack_install_progress_step_three_message",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מחבר את החנות שלך",
+      "human_value": "מחבר את החנות שלך"
+    },
+    {
+      "key": "shipping_label_package_details_items_count_many",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "%d פריטים",
+      "human_value": "%d פריטים"
+    },
+    {
+      "key": "product_selector_select_product_label",
+      "bleu": 46.3078,
+      "chrf": 48.914,
+      "levenshtein_sim": 0.814815,
+      "ai_value": "בחר מוצר %s",
+      "human_value": "יש לבחור מוצר %s"
+    },
+    {
+      "key": "update_downloaded",
+      "bleu": 51.3417,
+      "chrf": 61.7713,
+      "levenshtein_sim": 0.75,
+      "ai_value": "Woo הוריד עדכון",
+      "human_value": "השירות של Woo הוריד עדכון"
+    },
+    {
+      "key": "login_jetpack_connection_create_account",
+      "bleu": 32.3772,
+      "chrf": 55.8912,
+      "levenshtein_sim": 0.816667,
+      "ai_value": "אם אין לך חשבון, נשתמש בכתובת הדוא\"ל הזו כדי ליצור חשבון.",
+      "human_value": "אם אין לך חשבון, אנחנו נשתמש בכתובת האימייל הזאת כדי ליצור אחד."
+    },
+    {
+      "key": "blaze_campaign_creation_error_cancel",
+      "bleu": 0.0,
+      "chrf": 42.7365,
+      "levenshtein_sim": 0.8,
+      "ai_value": "בטל קמפיין",
+      "human_value": "לבטל את הקמפיין"
+    },
+    {
+      "key": "store_onboarding_launch_store_ok",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "אישור",
+      "human_value": "אישור"
+    },
+    {
+      "key": "login_jetpack_steps_authorizing_validation",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מאמת",
+      "human_value": "מאמת"
+    },
+    {
+      "key": "shipping_label_package_details_selected_package_hint",
+      "bleu": 50.0,
+      "chrf": 89.9322,
+      "levenshtein_sim": 0.956522,
+      "ai_value": "חבילה נבחרה",
+      "human_value": "החבילה נבחרה"
+    },
+    {
+      "key": "login_jetpack_connection_enter_wpcom_password",
+      "bleu": 9.7528,
+      "chrf": 55.109,
+      "levenshtein_sim": 0.796875,
+      "ai_value": "הזן את הסיסמה של חשבון WordPress.com שלך כדי להתחבר ל-Jetpack",
+      "human_value": "עליך להזין את הסיסמה לחשבון שלך ב-WordPress.com כדי לחבר את Jetpack"
+    },
+    {
+      "key": "bookings_filters_title_with_count",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "מסננים (%s)",
+      "human_value": "מסננים (%s)"
+    },
+    {
+      "key": "amount",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "סכום",
+      "human_value": "סכום"
+    },
+    {
+      "key": "woo_shipping_labels_package_creation_error_proceed",
+      "bleu": 100.0,
+      "chrf": 100.0,
+      "levenshtein_sim": 1.0,
+      "ai_value": "המשך",
+      "human_value": "המשך"
+    },
+    {
+      "key": "card_reader_payment_send_receipt",
+      "bleu": 50.0,
+      "chrf": 41.715,
+      "levenshtein_sim": 0.888889,
+      "ai_value": "שלח קבלה",
+      "human_value": "לשלוח קבלה"
+    },
+    {
+      "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+      "bleu": 45.5443,
+      "chrf": 74.9089,
+      "levenshtein_sim": 0.928,
+      "ai_value": "נראה שקריאות XML-RPC חסומות באתר זה (קוד שגיאה 401). אם ניסיון ההתחברות נכשל, הקש על סמל העזרה כדי לצפות בשאלות הנפוצות.",
+      "human_value": "נראה שקריאות XML-RPC חסומות באתר הזה (קוד שגיאה 401). אם הניסיון להתחברות נכשל, יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות."
+    },
+    {
+      "key": "shipping_label_hazmat_option_class_8_corrosive",
+      "bleu": 8.363,
+      "chrf": 35.4946,
+      "levenshtein_sim": 0.542857,
+      "ai_value": "Class 8 – Corrosive Materials Package - חומרים קורוזיביים המאושרים להובלה אווירית (תרכובות ניקוי מסוימות או חומרים להשמדת עצים/עשבים, וכו')",
+      "human_value": "סיווג 8 – חבילה עם חומרים שגורמים לקורוזיה – חומרים שגורמים לקורוזיה שמורשים להובלה אווירית (חומרים ניקוי או קוטלי צמחים/עשבים מסוימים וכו\\')"
+    }
+  ],
+  "aggregates": {
+    "bleu_mean": 48.6502,
+    "bleu_median": 40.8102,
+    "chrf_mean": 63.2231,
+    "chrf_median": 60.9892,
+    "levenshtein_sim_mean": 0.818605,
+    "levenshtein_sim_median": 0.882353,
+    "total_strings": 300,
+    "matched_strings": 298
+  }
+}

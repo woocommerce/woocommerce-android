@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "Even geduld…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Er lijkt een probleem te zijn met uw Jetpack-verbinding.\\n\\nMaak je geen zorgen, ons ondersteuningsteam helpt je graag. Neem contact met ons op en we helpen je van harte."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "Gekopieerd naar klembord"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "Variatie %s, Prijs %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "Afdrukken"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "Zendingdetails"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "Adresgegevens laden"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "Berekend bedrag: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "Toch afsluiten"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s verkocht"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "In beoordeling"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "Afrekenen"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "Betalingsmethode"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "Wat is WordPress.com?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "Geen coupongebruik in deze periode"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "Details weergeven"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "Begin vandaag met verkopen door uw eerste product aan de winkel toe te voegen."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "Verkoopprijs bijwerken"
+  },
+  {
+    "key": "error_required_field",
+    "value": "Verplicht veld"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "Geen programma's in deze periode"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "Verzendlabel kopen"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT Search Tool."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "Er is een fout opgetreden. Meld u aan om door te gaan"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "Aanmeldingsbevestiging"
+  },
+  {
+    "key": "type",
+    "value": "Type"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "Coupon toevoegen"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "BETALINGSTOTALEN"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "Positieve feedback"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "Verlopen na"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "Creditcard succesvol toegevoegd"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "Het duurt maar een minuut."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "Alles selecteren"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "Bedrijf"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "Verkoopprijzen bijwerken"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "Selecteer %d producten"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "Weet u zeker dat u een restitutie wilt geven? Dit kan niet ongedaan gemaakt worden."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "Service"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "Meer informatie over ITN"
+  },
+  {
+    "key": "retry",
+    "value": "Opnieuw proberen"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• Update beschikbaar"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "Klant"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "Dit is waar mensen u op internet zullen vinden. Maak je geen zorgen, je kunt het later wijzigen."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze-campagne"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "Een optionele wachtperiode voordat de eerste terugkerende betaling wordt berekend. Eventuele inschrijvingskosten worden nog steeds aan het begin van het abonnement in rekening gebracht. De proefperiode mag niet langer zijn dan: 90 dagen, 52 weken, 24 maanden of 5 jaar."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "Ontbrekende vereiste machtiging voor nabijgelegen apparaten"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "Restitutie %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "Voor uw gemak hebben we uw WordPress.com-contactgegevens vooraf ingevuld. Controleer of dit de juiste gegevens zijn die u voor dit domein wilt gebruiken."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "Verzendlabel maken"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "Afsluiten"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "Voorbereiding voor betaling"
+  },
+  {
+    "key": "analytics_items",
+    "value": "items"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "Geen inkomsten in deze periode"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "Voer een streepjescode of ander identificatienummer in dat uniek is voor dit product. Het kan u helpen dit product op andere kanalen of marktplaatsen te vermelden."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "Verkochte artikelen"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "Door 'Betaling op locatie' in te schakelen, kunnen klanten online bestellingen aan de deur via contant geld of kaart betalen.\\n\\nBestellingen kunnen nog steeds handmatig worden gemaakt zonder deze functie in te schakelen."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "Fout bij het laden van aangepaste velden"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "Update uw lezerssoftware om betalingen te blijven accepteren"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "Krijg een aanmeldingslink per e-mail"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "tot %s"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "Niet betaald"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "Verkoop en goed presterende producten volgen"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "Voorraarstatus bijwerken"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress-mediabibliotheek"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "Productconcept opgeslagen"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "Klantenopmerking bewerken"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "Notitie toevoegen"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "Geen"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "Statistieken voor aangepaste datumbereik toevoegen"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Jetpack installeren"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "Voer een vervoerdernaam in"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "Een barcodescanner instellen"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "URL delen"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "Huidig thema"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "Meld u aan met uw WordPress.com-gebruikersnaam in plaats van uw e-mailadres."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "Beschrijf het soort goederen dat dit pakket bevat"
+  },
+  {
+    "key": "new_notifications",
+    "value": "%d nieuwe meldingen"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "Couponcode"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "Fout bij het verwijderen van tracking"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "Bestemming: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "Probeer het opnieuw met de WP Admin-pagina"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "Kan geen verbinding maken met %s"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "Accepteer betalingen in uw fysieke winkel"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "Bepaalde vereiste velden zijn leeg."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "Foutaanduidingspictogram"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "Orderstatus: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "Wekelijks"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "Maak een aangepast pakket"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping ondersteunt momenteel geen HAZMAT-zendingen via %1$s"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "Beschrijving"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "Klikken"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "Foto's toevoegen"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "Ontdek andere betaalproviders en \\nkies een betaalprovider."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "U kunt streepjescodes instellen in het GTIN-, UPC-, EAN-, ISBN-veld op het tabblad voorraadbeheer van het product. Voor meer informatie"
+  },
+  {
+    "key": "wc_approve",
+    "value": "Goedkeuren"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "Alles"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "Afbeelding toevoegen"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "Er zijn openstaande vereisten in uw account. Voltooi die vereisten voor %1$s om in-persoon betalingen te blijven accepteren."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8,5 x 14 inch)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "Voer producttitel in."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "Beperkingsdetails"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Promoten met Blaze"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "Locatie"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "week"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Door op de knop Jetpack verbinden te tikken"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "Ja, wijzigen"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "Bericht"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "Weet u zeker dat u het producttype wilt wijzigen?"
+  },
+  {
+    "key": "disabled",
+    "value": "Uitgeschakeld"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "Voer de afmetingen van uw pakket in of kies een optie voor een vervoerderspakket om de beschikbare verzendtarieven te zien."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "Product"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "Product bijgewerkt"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "Cadeaus"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "Restitutie geven"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "Uw ondersteuningsverzoek is veilig in onze inbox geland. We zullen zo snel mogelijk per e-mail antwoorden."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "Mijn selectie opslaan voor toekomstige campagnes"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "Ondersteuning contacteren"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "Kon de order niet als voltooid markeren"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%1$s wekelijks, beginnend op %2$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "Een identieke transactie is onlangs ingediend"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "Registratie"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "Order bewerken"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "Geen ondersteunde variaties gevonden"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "Verbind uw winkel met Jetpack om er op deze app toegang tot te hebben."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "Totaal pakketgewicht (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "Populaire producten"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "Normale prijs bijwerken"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "Teamlid"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "De kaart ondersteunt dit type restitutie niet"
+  },
+  {
+    "key": "product_settings",
+    "value": "Productinstellingen"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "ITN is vereist voor zendingen naar %1$s."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "Verbinding voortzetten"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "Als u na het accepteren van betaling \"Bonnetje afdrukken\" selecteert, vervangt u \"Opslaan als PDF\" door \"Alle printers\" en zoekt u naar een nieuwe printer."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "Geannuleerd"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "Bedrag"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "Landen en staten ophalen."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "Productdetails weergeven"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "Restitutie geslaagd"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "Labelformaatopties"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "Toepassingslogboek"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "Maak uw eerste variatie"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "Voorgesteld"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "Gerestitueerd"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "Abonnementen"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "Kies van apparaat"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "U kunt het variabele product niet rechtstreeks toevoegen. Selecteer een specifieke variatie"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "Verzekering (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "Betalingsmethode"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "Niet-ondersteund item – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "Actief"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "Terug naar winkel"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "Klant betaalde een %1$s van %2$s voor verzending"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "Waarom zie ik mijn producten niet?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "Gebruikslimiet per gebruiker"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "Een product maken met AI"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "Zaterdag bezorging"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "Gebruikslimiet per coupon"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "Voeg meer details toe"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "Je hebt een nieuwe bestelling! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "Fout bij het kopen van labels"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "Verzending"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "We hebben te veel pogingen gedaan om een SMS-verificatiecode te verzenden. Neem een pauze en vraag er over een minuut een nieuw aan."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "E-mail"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "Campagne maken"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "Gisteren om %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "Uw profielfoto"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "Terugsturen naar afzender als pakket niet kan worden bezorgd"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "Uw site-orders ophalen"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "Gefeliciteerd met uw aankoop"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "Onboarding volledig scherm"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "Suggesties"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "Restitutie bewerken"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "De advertentie is ter goedkeuring ingediend. We sturen u een bevestigingse-mail zodra deze is goedgekeurd en wordt uitgevoerd."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "Abonnement verloopt"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "Meld u aan met uw gebruikersnaam en wachtwoord."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "Er was een fout bij de communicatie met uw site."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "\\u2022 geen goedgekeurde beoordelingen"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "Voorraadhoeveelheid"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "Kan afbeelding niet laden"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "Privacy-instellingen"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "Variabel abonnement"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "We ondersteunen momenteel geen tracking voor deze vervoerder"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Jetpack installeren"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "Restrictie Type"
+  },
+  {
+    "key": "today",
+    "value": "Vandaag"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "Alles klaar!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "Configuratie opslaan"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d bestelling(en) bijgewerkt en %d bestelling(en) kon niet worden bijgewerkt. Probeer het alstublieft opnieuw."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "Doelgroep"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "Voorgesteld adres bevestigen"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "Ik vind het leuk"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "Catalogusinstellingen beheren"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "Inhoudsdetails"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "Coupons verwijderen"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "Uw proefperiode is afgelopen."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "Aangepaste vervoerder"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "Streepjescode scannen om voorraadbeheer bij te werken"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "Domein registreren"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "Foto toevoegen"
+  },
+  {
+    "key": "shipping",
+    "value": "Verzending"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d items"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "Dit veld is verplicht."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "Voorraadbeheer niet beheerd"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "Handtekening vereist (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "Huidig"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "Waar zijn mijn producten?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "Verberg facturering"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "Meld u aan bij WordPress.com om de inhoud te delen."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "Betaald"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "Bestelling #%1$d gemarkeerd als voltooid"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "Land waar het product werd vervaardigd of samengesteld."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "Dat heb je gedaan!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "TIK OM TE BETALEN"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "E-mail"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "Andere extensie / plugin"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "Alle bestanden die momenteel aan dit product zijn gekoppeld, worden verwijderd."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "Nu u kenmerken hebt toegevoegd, kunt u uw eerste variatie maken!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "Bestelling %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "Streepjescode scannen"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "Geniet van uw betaling in persoon?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "Tik, veeg of plaats kaart"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "Dit is een persoonlijke notitie. Het wordt niet met de klant gedeeld."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "Selecteer een producttype"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "BETALING"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "Nieuwe orderwaarschuwingen"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "Stuur me een ander code per sms"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "De kaart ondersteunt deze valuta niet"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce-versie"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "Er bestaat al een optie met deze naam"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "Geen verbindingsproblemen"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "Dankwoord"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "GELUID INSCHAKELEN"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "Afkomstadres ontbreekt of is ongeldig"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "Scanner ingesteld!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "Betaald"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "Test Tap To Pay-betaling is succesvol terugbetaald"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "Klasse 9 – Lithiumbatterijen, ongemarkeerd pakket - nieuwe elektronische apparaten geïnstalleerd of verpakt met lithiumbatterijen (geen markering)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "Annuleren"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "Afdeling 6.2 - gevaarlijke stoffen - biologische materialen (bijv. laboratoriumtestkits, geautoriseerde COVID-testkitretouren)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "We konden uw adres niet bijwerken. Probeer het alstublieft opnieuw."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "Geen beoordelingen gevonden"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1 variabel product wordt genegeerd."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "Systeemstandaard"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "Geen boeking geselecteerd"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "Aanmelding mislukt met statuscode %1$s"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "Meer informatie over welke producten in POS worden ondersteund"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "Variabel abonnementsproduct"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "Coupon niet toegepast"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "Producten toevoegen"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "Verzamel beoordelingen voor uw winkel"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "Webopties"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "Voltooid"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "Alle bestellingen"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "In aanmerking komend voor gratis ophaling"
+  },
+  {
+    "key": "product_type_external",
+    "value": "Extern"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "Categorie gevaarlijke materialen ingesteld"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "Dit is de naam van het bestand dat aan de klant wordt weergegeven"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "U kunt producttoevoegingen in het webdashboard bewerken."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "Als afdrukken niet beschikbaar is, kunt u uw ontvangstbewijs altijd als PDF opslaan en per e-mail verzenden om het vanaf een ander apparaat af te drukken."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "Broncode"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "Feedback geven"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "Zojuist"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "KLAAR"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "Schema"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "Webbeheerder"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "We konden geen belastingtarieven vinden"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "Het symbool voor contactloos is een handelsmerk dat eigendom is van en wordt gebruikt met toestemming van EMVCo, LLC."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s-product"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "Aangestuurd door AI. &lt;a href=\\'\\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "Kenmerken"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "Fout bij het scannen van tekst uit de foto. Probeer het alstublieft opnieuw"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "Fout bij het ophalen van teamleden"
+  },
+  {
+    "key": "no_site_error",
+    "value": "De site op dit adres is geen WordPress-site. Om er verbinding mee te maken, moet de site WordPress gebruiken."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "Generatielimiet overschreden"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "Een vast bedrag"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "Verzendservice"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "Huisnummer ontbreekt"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "Ondersteuning krijgen"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "Geen lezer verbonden"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "Status bijgewerkt!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "Producten bewerken (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "Uw winkel verbinden"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d items"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "Product selecteren %s"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo heeft een update gedownload"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "Als u geen account hebt, gebruiken we dit e-mailadres om er een te maken."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "Campagne annuleren"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "OK"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "Validatie"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "Pakket geselecteerd"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Voer het wachtwoord van uw WordPress.com-account in om verbinding met Jetpack tot stand te brengen"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "Filters (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "Bedrag"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "Doorgaan"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "Ontvangstbewijs verzenden"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "XML-RPC-oproepen lijken geblokkeerd op deze site (foutcode 401). Als aanmeldingspoging mislukt, tikt u op het hulppictogram om de veelgestelde vragen weer te geven."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "Klasse 8 – Corrosieve materialen pakket - Lucht geschikt corrosieve materialen (bepaalde reinigings- of boom/onkruidbestrijdingsmiddelen, enz.)"
+  }
+]

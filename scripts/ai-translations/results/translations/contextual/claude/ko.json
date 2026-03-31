@@ -1,0 +1,1202 @@
+[
+  {
+    "key": "support_request_loading_message",
+    "value": "잠시만 기다려주세요…"
+  },
+  {
+    "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+    "value": "Jetpack 연결에 문제가 있는 것 같습니다.\\n\\n걱정하지 마세요. 저희 지원팀이 도와드리겠습니다. 문의해주시면 기꺼이 도움을 드리겠습니다."
+  },
+  {
+    "key": "copied_to_clipboard",
+    "value": "클립보드에 복사됨"
+  },
+  {
+    "key": "woopos_variation_item_content_description",
+    "value": "상품 옵션 %s, 가격 %s"
+  },
+  {
+    "key": "shipping_label_multiple_customs_form_print_button",
+    "value": "인쇄"
+  },
+  {
+    "key": "shipping_label_shipment_details_title",
+    "value": "배송 상세정보"
+  },
+  {
+    "key": "shipping_label_edit_address_loading_progress_title",
+    "value": "주소 데이터 로딩 중"
+  },
+  {
+    "key": "order_creation_fee_percentage_calculated_amount",
+    "value": "계산된 금액: %s"
+  },
+  {
+    "key": "login_app_password_exit_dialog_confirmation",
+    "value": "어쨌든 종료"
+  },
+  {
+    "key": "analytics_list_item_products_sold",
+    "value": "%1$s, %2$s, %3$s, %4$s 판매됨"
+  },
+  {
+    "key": "blaze_campaign_status_in_moderation",
+    "value": "검토 중"
+  },
+  {
+    "key": "woopos_checkout_button",
+    "value": "결제하기"
+  },
+  {
+    "key": "woo_shipping_payment_screen_title",
+    "value": "결제 방법"
+  },
+  {
+    "key": "woo_push_notifications_introduction_what_is_wpcom",
+    "value": "WordPress.com이란 무엇인가요?"
+  },
+  {
+    "key": "dashboard_coupons_card_empty_view_message",
+    "value": "이 기간 동안 사용한 쿠폰이 없습니다"
+  },
+  {
+    "key": "product_selector_arrow_content_description",
+    "value": "상세정보 표시"
+  },
+  {
+    "key": "empty_product_message",
+    "value": "지금 첫 상품을 추가하고 판매를 시작하세요."
+  },
+  {
+    "key": "variations_bulk_update_sale_price",
+    "value": "판매가 업데이트"
+  },
+  {
+    "key": "error_required_field",
+    "value": "필수 항목"
+  },
+  {
+    "key": "analytics_google_ads_no_data",
+    "value": "이 기간의 프로그램 없음"
+  },
+  {
+    "key": "shipping_label_create_purchase",
+    "value": "배송 라벨 구매"
+  },
+  {
+    "key": "shipping_label_usps_search_tool_link_text",
+    "value": "USPS HAZMAT 검색 도구."
+  },
+  {
+    "key": "magic_link_update_error",
+    "value": "오류가 발생했습니다. 계속하려면 로그인하세요"
+  },
+  {
+    "key": "signup_confirmation_title",
+    "value": "가입 확인"
+  },
+  {
+    "key": "type",
+    "value": "유형"
+  },
+  {
+    "key": "coupon_list_add_coupon_content_description",
+    "value": "쿠폰 추가"
+  },
+  {
+    "key": "order_detail_payment_header",
+    "value": "결제 합계"
+  },
+  {
+    "key": "ai_feedback_form_positive_button",
+    "value": "긍정적인 피드백"
+  },
+  {
+    "key": "subscription_expire",
+    "value": "다음 이후 만료"
+  },
+  {
+    "key": "blaze_campaign_payment_added_successfully",
+    "value": "신용카드가 성공적으로 추가되었습니다"
+  },
+  {
+    "key": "woo_push_notifications_introduction_body2",
+    "value": "1분이면 충분합니다."
+  },
+  {
+    "key": "product_selection_menu_select_all",
+    "value": "모두 선택"
+  },
+  {
+    "key": "shipping_label_edit_address_company",
+    "value": "회사명"
+  },
+  {
+    "key": "variations_bulk_update_sale_prices_dialog_title",
+    "value": "판매가 업데이트 중"
+  },
+  {
+    "key": "product_selector_select_button_title_default",
+    "value": "%d개 상품 선택"
+  },
+  {
+    "key": "order_refunds_confirmation",
+    "value": "환불을 진행하시겠습니까? 이 작업은 취소할 수 없습니다."
+  },
+  {
+    "key": "woopos_bookings_details_service_label",
+    "value": "서비스"
+  },
+  {
+    "key": "woo_shipping_labels_customs_itn_info_button",
+    "value": "ITN에 대해 더 알아보기"
+  },
+  {
+    "key": "retry",
+    "value": "다시 시도"
+  },
+  {
+    "key": "woopos_settings_card_reader_update_available",
+    "value": "• 업데이트 사용 가능"
+  },
+  {
+    "key": "woopos_bookings_details_customer_title",
+    "value": "고객"
+  },
+  {
+    "key": "domain_picker_subtitle",
+    "value": "이것이 사람들이 인터넷에서 당신을 찾을 수 있는 곳입니다. 나중에 언제든지 변경할 수 있습니다."
+  },
+  {
+    "key": "blaze_campaign_payment_summary_campaign_budget",
+    "value": "Blaze 캠페인"
+  },
+  {
+    "key": "product_subscription_free_trial_info",
+    "value": "첫 정기 결제 전에 기다릴 선택적 기간입니다. 신청 수수료는 구독이 시작될 때 청구됩니다. 평가판 기간은 90일, 52주, 24개월 또는 5년을 초과할 수 없습니다."
+  },
+  {
+    "key": "card_reader_connect_missing_bluetooth_permissions_header",
+    "value": "필수 근처 기기 권한 누락"
+  },
+  {
+    "key": "order_refunds_title_with_amount",
+    "value": "환불 %s"
+  },
+  {
+    "key": "domain_contact_information_description",
+    "value": "편의상 WordPress.com 연락처 정보를 미리 입력했습니다. 이것이 이 도메인에 사용할 올바른 정보인지 확인해주세요."
+  },
+  {
+    "key": "shipping_label_create_title",
+    "value": "배송 라벨 생성"
+  },
+  {
+    "key": "woopos_exit_dialog_confirmation_confirm_button",
+    "value": "종료"
+  },
+  {
+    "key": "card_reader_connect_connecting_built_in_header",
+    "value": "결제 준비 중"
+  },
+  {
+    "key": "analytics_items",
+    "value": "상품"
+  },
+  {
+    "key": "analytics_revenue_no_data",
+    "value": "이 기간의 수익 없음"
+  },
+  {
+    "key": "product_global_unique_id_summary",
+    "value": "이 상품에 고유한 바코드 또는 기타 식별자를 입력하세요. 다른 채널이나 마켓플레이스에 이 상품을 등록할 때 도움이 될 수 있습니다."
+  },
+  {
+    "key": "analytics_products_list_items_sold",
+    "value": "판매된 항목"
+  },
+  {
+    "key": "card_reader_onboarding_cash_on_delivery_disabled_error_hint",
+    "value": "대면 결제를 사용하면 고객이 온라인 주문에 대해 배송 시점에 현금 또는 카드로 결제할 수 있습니다.\\n\\n이 기능을 사용하지 않아도 주문을 수동으로 생성할 수 있습니다."
+  },
+  {
+    "key": "custom_fields_list_loading_error",
+    "value": "사용자 정의 필드를 로드하는 중 오류 발생"
+  },
+  {
+    "key": "card_reader_detail_connected_enforced_update_software",
+    "value": "결제를 계속 수락하려면 리더 소프트웨어를 업데이트하세요"
+  },
+  {
+    "key": "login_get_link_by_email",
+    "value": "이메일로 로그인 링크 받기"
+  },
+  {
+    "key": "shipping_label_rate_insurance_up_to",
+    "value": "%s까지"
+  },
+  {
+    "key": "woopos_bookings_payment_status_unpaid",
+    "value": "미결제"
+  },
+  {
+    "key": "login_prologue_label_analytics",
+    "value": "판매 및 인기 상품 추적"
+  },
+  {
+    "key": "product_update_stock_status_title",
+    "value": "재고 상태 업데이트"
+  },
+  {
+    "key": "image_source_wp_media_library",
+    "value": "WordPress 미디어 라이브러리"
+  },
+  {
+    "key": "product_detail_publish_product_draft_success",
+    "value": "상품 초안 저장됨"
+  },
+  {
+    "key": "order_creation_customer_note_edit_content_description",
+    "value": "고객 메모 수정"
+  },
+  {
+    "key": "booking_note_label_add_note",
+    "value": "메모 추가"
+  },
+  {
+    "key": "product_tax_status_none",
+    "value": "없음"
+  },
+  {
+    "key": "my_store_custom_range_content_description",
+    "value": "사용자 정의 날짜 범위 통계 추가"
+  },
+  {
+    "key": "jetpack_install_start_title",
+    "value": "Jetpack 설치"
+  },
+  {
+    "key": "order_shipment_tracking_empty_custom_provider_name",
+    "value": "배송사 이름을 입력하세요"
+  },
+  {
+    "key": "woopos_scanning_setup_device_selection_title",
+    "value": "바코드 스캐너 설정"
+  },
+  {
+    "key": "store_onboarding_launch_store_share_url_button",
+    "value": "URL 공유"
+  },
+  {
+    "key": "theme_picker_current_theme_title",
+    "value": "현재 테마"
+  },
+  {
+    "key": "error_user_username_instead_of_email",
+    "value": "이메일 주소 대신 WordPress.com 사용자명으로 로그인하세요."
+  },
+  {
+    "key": "woo_shipping_labels_customs_content_details_description",
+    "value": "이 패키지에 포함된 상품의 종류를 설명하세요"
+  },
+  {
+    "key": "new_notifications",
+    "value": "새 알림 %d개"
+  },
+  {
+    "key": "coupon_edit_code_hint",
+    "value": "쿠폰 코드"
+  },
+  {
+    "key": "order_shipment_tracking_delete_error",
+    "value": "추적 삭제 중 오류 발생"
+  },
+  {
+    "key": "blaze_campaign_edit_ad_destination_destination_with_parameters",
+    "value": "대상: %s"
+  },
+  {
+    "key": "login_site_credentials_use_web_authorization",
+    "value": "WP Admin 페이지로 다시 시도"
+  },
+  {
+    "key": "login_verifying_site_error",
+    "value": "%s에 연결할 수 없습니다"
+  },
+  {
+    "key": "more_menu_button_woo_pos_description",
+    "value": "당신의 물리적 매장에서 결제 수락"
+  },
+  {
+    "key": "shipping_label_address_data_invalid_snackbar_message",
+    "value": "일부 필수 필드가 비어있습니다."
+  },
+  {
+    "key": "woopos_error_icon_content_description",
+    "value": "오류 표시 아이콘"
+  },
+  {
+    "key": "orderstatus_contentDesc_withStatus",
+    "value": "주문 상태: %s"
+  },
+  {
+    "key": "my_store_custom_range_granularity_week",
+    "value": "주간"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_empty_button",
+    "value": "사용자 정의 패키지 생성"
+  },
+  {
+    "key": "shipping_label_hazmat_content_dhl_instructions",
+    "value": "WooCommerce Shipping은 현재 %1$s를 통한 HAZMAT 배송을 지원하지 않습니다"
+  },
+  {
+    "key": "woo_shipping_labels_customs_product_details_description",
+    "value": "설명"
+  },
+  {
+    "key": "analytics_google_ads_filter_clicks",
+    "value": "클릭"
+  },
+  {
+    "key": "product_add_photos",
+    "value": "사진 추가"
+  },
+  {
+    "key": "store_onboarding_payments_setup_description",
+    "value": "다른 결제 공급자를 발견하고\\n결제 공급자를 선택하세요."
+  },
+  {
+    "key": "woopos_scanning_setup_barcodes_on_products_message",
+    "value": "상품 재고 탭의 GTIN, UPC, EAN, ISBN 필드에서 바코드를 설정할 수 있습니다. 자세한 내용은"
+  },
+  {
+    "key": "wc_approve",
+    "value": "승인"
+  },
+  {
+    "key": "orderfilters_default_filter_value",
+    "value": "모두"
+  },
+  {
+    "key": "product_add_image_content_description",
+    "value": "이미지 추가"
+  },
+  {
+    "key": "card_reader_onboarding_account_pending_requirements_hint",
+    "value": "%1$s까지 계정의 보류 중인 요구사항을 완료하여 대면 결제 수락을 유지하세요."
+  },
+  {
+    "key": "shipping_label_paper_size_legal",
+    "value": "Legal (8.5 x 14인치)"
+  },
+  {
+    "key": "ai_product_description_title_hint",
+    "value": "상품명을 입력하세요."
+  },
+  {
+    "key": "shipping_label_customs_restriction_type_other_hint",
+    "value": "제한 상세정보"
+  },
+  {
+    "key": "product_details_blaze_card",
+    "value": "Blaze로 홍보"
+  },
+  {
+    "key": "blaze_campaign_preview_details_location",
+    "value": "위치"
+  },
+  {
+    "key": "subscription_period_week",
+    "value": "주"
+  },
+  {
+    "key": "login_wpcom_connection_consent_jetpack",
+    "value": "Jetpack 연결 버튼을 탭함으로써"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_yes_button",
+    "value": "예, 변경"
+  },
+  {
+    "key": "store_onboarding_payments_pre_setup_title_wcpay",
+    "value": "WooPayments"
+  },
+  {
+    "key": "orderdetail_message_customer",
+    "value": "메시지"
+  },
+  {
+    "key": "product_type_confirm_dialog_title",
+    "value": "상품 유형을 변경하시겠습니까?"
+  },
+  {
+    "key": "disabled",
+    "value": "비활성화됨"
+  },
+  {
+    "key": "shipping_label_select_package_description",
+    "value": "패키지의 크기를 입력하거나 배송사 패키지 옵션을 선택하여 이용 가능한 배송비를 확인하세요."
+  },
+  {
+    "key": "orderfilters_product_filter",
+    "value": "상품"
+  },
+  {
+    "key": "product_update_success_notification_title",
+    "value": "상품 업데이트됨"
+  },
+  {
+    "key": "product_global_unique_id",
+    "value": "GTIN, UPC, EAN, ISBN"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_gifts",
+    "value": "선물"
+  },
+  {
+    "key": "booking_overflow_refund",
+    "value": "환불 발급"
+  },
+  {
+    "key": "support_request_success_message",
+    "value": "당신의 지원 요청이 안전하게 도착했습니다. 최대한 빨리 이메일로 답변해드리겠습니다."
+  },
+  {
+    "key": "blaze_campaign_objective_save_selection_switch_label",
+    "value": "향후 캠페인을 위해 내 선택 저장"
+  },
+  {
+    "key": "jetpack_install_progress_failed_option_contact_support",
+    "value": "지원팀 문의"
+  },
+  {
+    "key": "shipping_label_create_purchase_fulfill_error",
+    "value": "주문을 완료로 표시할 수 없습니다"
+  },
+  {
+    "key": "blaze_campaign_preview_days_duration_endless",
+    "value": "%2$s부터 시작하여 매주 %1$s"
+  },
+  {
+    "key": "card_reader_payment_failed_duplicate_transaction",
+    "value": "동일한 거래가 최근에 제출되었습니다"
+  },
+  {
+    "key": "customers_details_registration_section",
+    "value": "가입"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_edit_order",
+    "value": "주문 수정"
+  },
+  {
+    "key": "woopos_variations_empty_list_title",
+    "value": "지원되는 옵션 없음"
+  },
+  {
+    "key": "login_jetpack_connection_explanation",
+    "value": "이 앱에서 스토어에 접근하려면 Jetpack에 연결하세요."
+  },
+  {
+    "key": "shipping_label_package_details_weight_hint",
+    "value": "총 패키지 무게 (%1$s)"
+  },
+  {
+    "key": "woopos_search_popular_items_title",
+    "value": "인기 상품"
+  },
+  {
+    "key": "variations_bulk_update_regular_price",
+    "value": "정가 업데이트"
+  },
+  {
+    "key": "woopos_bookings_details_team_member_label",
+    "value": "팀원"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_failed_card_not_supported",
+    "value": "카드가 이 유형의 환불을 지원하지 않습니다"
+  },
+  {
+    "key": "product_settings",
+    "value": "상품 설정"
+  },
+  {
+    "key": "shipping_label_customs_itn_required_country",
+    "value": "%1$s로의 배송에는 ITN이 필요합니다."
+  },
+  {
+    "key": "login_jetpack_installation_continue_connection",
+    "value": "연결 계속"
+  },
+  {
+    "key": "print_receipt_label_info_step_3",
+    "value": "결제 수락 후 '영수증 인쇄'를 선택할 때 'PDF로 저장'을 '모든 프린터'로 바꾸고 새 프린터를 검색하세요."
+  },
+  {
+    "key": "booking_payment_status_cancelled",
+    "value": "취소됨"
+  },
+  {
+    "key": "coupon_details_performance_amount_heading",
+    "value": "금액"
+  },
+  {
+    "key": "woo_shipping_fetching_countries_and_states",
+    "value": "국가 및 지역을 불러오는 중입니다."
+  },
+  {
+    "key": "scan_to_update_inventory_product_details_button",
+    "value": "상품 상세정보 보기"
+  },
+  {
+    "key": "card_reader_interac_refund_refund_completed_header",
+    "value": "환불 완료"
+  },
+  {
+    "key": "print_shipping_label_format_options_title",
+    "value": "라벨 형식 옵션"
+  },
+  {
+    "key": "more_menu_button_wс_admin",
+    "value": "WC Admin"
+  },
+  {
+    "key": "logviewer_activity_title",
+    "value": "애플리케이션 로그"
+  },
+  {
+    "key": "product_variant_list_add_first_variation",
+    "value": "첫 번째 옵션 생성"
+  },
+  {
+    "key": "woo_shipping_confirm_address_suggested",
+    "value": "제안됨"
+  },
+  {
+    "key": "booking_payment_status_refunded",
+    "value": "환불됨"
+  },
+  {
+    "key": "upgrades_title",
+    "value": "구독"
+  },
+  {
+    "key": "image_source_device_chooser",
+    "value": "기기에서 선택"
+  },
+  {
+    "key": "order_creation_barcode_scanning_unable_to_add_variable_product",
+    "value": "변수 상품을 직접 추가할 수 없습니다. 특정 옵션을 선택하세요"
+  },
+  {
+    "key": "shipping_label_rate_included_options_insurance",
+    "value": "보험 (%s)"
+  },
+  {
+    "key": "shipping_label_shipment_details_payment_method",
+    "value": "결제 방법"
+  },
+  {
+    "key": "woopos_cart_barcode_scan_result_unsupported_product",
+    "value": "지원되지 않는 상품 – %s"
+  },
+  {
+    "key": "coupon_list_item_label_active",
+    "value": "활성"
+  },
+  {
+    "key": "feedback_completed_back_to_store_button_text",
+    "value": "스토어로 돌아가기"
+  },
+  {
+    "key": "shipping_label_shipping_carrier_flat_fee_banner_message",
+    "value": "고객이 배송료로 %1$s 중 %2$s를 결제했습니다"
+  },
+  {
+    "key": "woopos_dialog_products_info_heading",
+    "value": "내 상품이 보이지 않는 이유는 무엇입니까?"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_user_hint",
+    "value": "사용자당 사용 제한"
+  },
+  {
+    "key": "product_creation_ai_entry_sheet_ai_option_title",
+    "value": "AI로 상품 생성"
+  },
+  {
+    "key": "woo_shipping_rate_option_saturday_delivery",
+    "value": "토요일 배송"
+  },
+  {
+    "key": "coupon_restrictions_limit_per_coupon_hint",
+    "value": "쿠폰당 사용 제한"
+  },
+  {
+    "key": "product_detail_add_more",
+    "value": "상세정보 추가"
+  },
+  {
+    "key": "notification_order_title",
+    "value": "새로운 주문이 있습니다! 🎉"
+  },
+  {
+    "key": "shipping_label_create_purchase_error",
+    "value": "라벨 구매 오류"
+  },
+  {
+    "key": "order_creation_add_shipping_name_hint",
+    "value": "배송"
+  },
+  {
+    "key": "login_error_sms_throttled",
+    "value": "SMS 인증 코드 발송 시도가 너무 많습니다. 잠시 기다렸다가 1분 후 새 코드를 요청하세요."
+  },
+  {
+    "key": "support_identity_input_dialog_email_label",
+    "value": "이메일"
+  },
+  {
+    "key": "dashboard_google_ads_card_create_campaign_button",
+    "value": "캠페인 생성"
+  },
+  {
+    "key": "woopos_date_yesterday_at",
+    "value": "어제 %s"
+  },
+  {
+    "key": "login_avatar_content_description",
+    "value": "프로필 사진"
+  },
+  {
+    "key": "woo_shipping_labels_customs_return_to_sender_label",
+    "value": "패키지를 배송할 수 없는 경우 발신자에게 반송"
+  },
+  {
+    "key": "orderlist_connectivity_tool_store_orders_check_title",
+    "value": "사이트 주문 가져오는 중"
+  },
+  {
+    "key": "domains_purchase_successful_heading",
+    "value": "구매 축하합니다"
+  },
+  {
+    "key": "store_onboarding_full_screen_transition_name",
+    "value": "온보딩 전체 화면"
+  },
+  {
+    "key": "domain_picker_suggestions_title",
+    "value": "제안"
+  },
+  {
+    "key": "woopos_orders_edit_refund",
+    "value": "환불 수정"
+  },
+  {
+    "key": "blaze_campaign_ceation_celebration_message",
+    "value": "광고가 승인을 위해 제출되었습니다. 승인되어 실행되면 확인 이메일을 보내드리겠습니다."
+  },
+  {
+    "key": "product_subscription_expiration_title",
+    "value": "구독 만료"
+  },
+  {
+    "key": "notification_wpcom_username_needed",
+    "value": "사용자명과 비밀번호로 로그인하세요."
+  },
+  {
+    "key": "login_jetpack_installation_error_generic_message",
+    "value": "사이트와 통신하는 중 오류가 발생했습니다."
+  },
+  {
+    "key": "product_ratings_count_zero",
+    "value": "• 승인된 리뷰 없음"
+  },
+  {
+    "key": "product_stock_quantity",
+    "value": "재고 수량"
+  },
+  {
+    "key": "error_loading_image",
+    "value": "이미지를 로드할 수 없습니다"
+  },
+  {
+    "key": "privacy_settings",
+    "value": "개인정보 설정"
+  },
+  {
+    "key": "product_type_variable_subscription",
+    "value": "변수 구독"
+  },
+  {
+    "key": "shipping_label_purchased_tracking_error",
+    "value": "현재 이 배송사에 대한 추적을 지원하지 않습니다"
+  },
+  {
+    "key": "jetpack_install_progress_step_one_message",
+    "value": "Jetpack 설치 중"
+  },
+  {
+    "key": "woo_shipping_labels_customs_restriction_type_label",
+    "value": "제한 유형"
+  },
+  {
+    "key": "today",
+    "value": "오늘"
+  },
+  {
+    "key": "blaze_campaign_creation_celebration_header",
+    "value": "준비 완료!"
+  },
+  {
+    "key": "save_configuration",
+    "value": "구성 저장"
+  },
+  {
+    "key": "orderlist_bulk_update_result_partial_success",
+    "value": "%d개 주문 업데이트되었고 %d개 주문 업데이트에 실패했습니다. 다시 시도하세요."
+  },
+  {
+    "key": "blaze_campaign_preview_audience_section_title",
+    "value": "대상"
+  },
+  {
+    "key": "woo_shipping_confirm_submit_address_suggested",
+    "value": "제안된 주소 확인"
+  },
+  {
+    "key": "feedback_request_like_it",
+    "value": "좋습니다"
+  },
+  {
+    "key": "woopos_settings_local_catalog_category_subtitle",
+    "value": "카탈로그 설정 관리"
+  },
+  {
+    "key": "shipping_label_customs_contents_type_other_hint",
+    "value": "콘텐츠 상세정보"
+  },
+  {
+    "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+    "value": "쿠폰 제거"
+  },
+  {
+    "key": "free_trial_your_trial_ended",
+    "value": "평가판이 종료되었습니다."
+  },
+  {
+    "key": "order_shipment_tracking_custom_provider_section_name",
+    "value": "사용자 정의 배송사"
+  },
+  {
+    "key": "scan_barcode_to_update_inventory_menu_item_title",
+    "value": "바코드 스캔하여 재고 업데이트"
+  },
+  {
+    "key": "domain_contact_information_register_domain_button",
+    "value": "도메인 등록"
+  },
+  {
+    "key": "product_add_photo",
+    "value": "사진 추가"
+  },
+  {
+    "key": "shipping",
+    "value": "배송"
+  },
+  {
+    "key": "configuration_quantity_item_plural",
+    "value": "%d개 항목"
+  },
+  {
+    "key": "woo_shipping_field_required_error",
+    "value": "이 필드는 필수입니다."
+  },
+  {
+    "key": "scan_to_update_inventory_stock_not_managed",
+    "value": "재고 관리 안 함"
+  },
+  {
+    "key": "shipping_label_rate_option_signature_required",
+    "value": "서명 필요 (%s)"
+  },
+  {
+    "key": "logviewer_current_log_file",
+    "value": "현재"
+  },
+  {
+    "key": "woopos_product_limitations_title",
+    "value": "내 상품은 어디에 있습니까?"
+  },
+  {
+    "key": "orderdetail_hide_billing",
+    "value": "청구 정보 숨기기"
+  },
+  {
+    "key": "login_log_in_for_share_intent",
+    "value": "콘텐츠를 공유하려면 WordPress.com에 로그인하세요."
+  },
+  {
+    "key": "booking_payment_status_paid",
+    "value": "결제됨"
+  },
+  {
+    "key": "orderlist_mark_completed_success",
+    "value": "주문 #%1$d 완료로 표시됨"
+  },
+  {
+    "key": "woo_shipping_labels_customs_origin_country_info",
+    "value": "상품이 제조되거나 조립된 국가입니다."
+  },
+  {
+    "key": "store_onboarding_task_woopayments_celebration_header",
+    "value": "완료했습니다!"
+  },
+  {
+    "key": "card_reader_tap_to_pay_header",
+    "value": "탭으로 결제"
+  },
+  {
+    "key": "woopos_settings_store_email_label",
+    "value": "이메일"
+  },
+  {
+    "key": "support_request_help_other",
+    "value": "기타 확장 프로그램 / 플러그인"
+  },
+  {
+    "key": "product_uncheck_is_downloadable_warning_message",
+    "value": "현재 이 상품에 첨부된 모든 파일이 제거됩니다."
+  },
+  {
+    "key": "product_attributes_created_description",
+    "value": "속성을 추가했으므로 이제 첫 옵션을 생성할 수 있습니다!"
+  },
+  {
+    "key": "woopos_order_title",
+    "value": "주문 %s"
+  },
+  {
+    "key": "order_editing_barcode_content_description",
+    "value": "바코드 스캔"
+  },
+  {
+    "key": "feedback_banner_ipp_title_beginner",
+    "value": "대면 결제가 마음에 드셨나요?"
+  },
+  {
+    "key": "woopos_totals_reader_ready_for_payment_subtitle",
+    "value": "탭하거나, 스와이프하거나, 카드를 삽입하세요"
+  },
+  {
+    "key": "booking_note_description_private",
+    "value": "이것은 비공개 메모입니다. 고객과 공유되지 않습니다."
+  },
+  {
+    "key": "product_type_list_header",
+    "value": "상품 유형 선택"
+  },
+  {
+    "key": "booking_payment_header",
+    "value": "결제"
+  },
+  {
+    "key": "notification_channel_order_title",
+    "value": "새 주문 알림"
+  },
+  {
+    "key": "login_text_otp_another",
+    "value": "대신 다른 코드 문자로 받기"
+  },
+  {
+    "key": "card_reader_payment_failed_currency_not_supported",
+    "value": "카드가 이 통화를 지원하지 않습니다"
+  },
+  {
+    "key": "settings_woo_plugin_version",
+    "value": "WooCommerce 버전"
+  },
+  {
+    "key": "product_term_name_already_exists",
+    "value": "이 이름의 옵션이 이미 존재합니다"
+  },
+  {
+    "key": "orderlist_connectivity_tool_summary_title",
+    "value": "연결 문제 없음"
+  },
+  {
+    "key": "about_automattic_acknowledgements_item_title",
+    "value": "감사의 말"
+  },
+  {
+    "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+    "value": "사운드 활성화"
+  },
+  {
+    "key": "woo_shipping_address_notification_origin_missing_or_invalid",
+    "value": "발신 주소 누락 또는 잘못됨"
+  },
+  {
+    "key": "woopos_scanning_setup_success_title",
+    "value": "스캐너 설정 완료!"
+  },
+  {
+    "key": "woopos_bookings_payment_status_paid",
+    "value": "결제됨"
+  },
+  {
+    "key": "card_reader_tap_to_pay_successful_refund_message",
+    "value": "탭으로 결제 테스트가 성공적으로 환불되었습니다"
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_9_unmarked_lithium",
+    "value": "등급 9 – 리튬 배터리, 미표시 패키지 - 리튬 배터리가 설치되거나 포함된 새 전자 기기 (표시 없음)"
+  },
+  {
+    "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+    "value": "취소"
+  },
+  {
+    "key": "shipping_label_hazmat_option_division_6_2",
+    "value": "부문 6.2 - 위험물 - 생물학적 물질 (예: 실험실 테스트 키트, 승인된 COVID 테스트 키트 반송)"
+  },
+  {
+    "key": "woo_shipping_updating_address_failed",
+    "value": "주소를 업데이트할 수 없습니다. 다시 시도하세요."
+  },
+  {
+    "key": "dashboard_reviews_card_empty_title_filtered",
+    "value": "리뷰를 찾을 수 없습니다"
+  },
+  {
+    "key": "product_update_stock_status_variable_ignored_count_singular",
+    "value": "1개의 변수 상품이 무시됩니다."
+  },
+  {
+    "key": "settings_app_theme_option_system",
+    "value": "시스템 기본값"
+  },
+  {
+    "key": "woopos_bookings_no_booking_selected",
+    "value": "선택된 예약 없음"
+  },
+  {
+    "key": "login_site_credentials_http_error",
+    "value": "상태 코드 %1$s로 로그인 실패"
+  },
+  {
+    "key": "woopos_settings_help_product_limitations_subtitle",
+    "value": "POS에서 지원되는 상품에 대해 알아보기"
+  },
+  {
+    "key": "product_type_variable_subscription_title",
+    "value": "변수 구독 상품"
+  },
+  {
+    "key": "woopos_cart_coupon_invalid_subtitle",
+    "value": "쿠폰 미적용"
+  },
+  {
+    "key": "order_creation_add_products",
+    "value": "상품 추가"
+  },
+  {
+    "key": "order_creation_coupon_discount_value",
+    "value": "-%1$s"
+  },
+  {
+    "key": "more_menu_button_reviews_description",
+    "value": "스토어의 리뷰 수집"
+  },
+  {
+    "key": "settings_web_options",
+    "value": "웹 옵션"
+  },
+  {
+    "key": "woo_push_notifications_connection_steps_complete",
+    "value": "완료"
+  },
+  {
+    "key": "orderfilters_filter_card_title_all_orders",
+    "value": "모든 주문"
+  },
+  {
+    "key": "shipping_label_rate_included_options_free_pickup",
+    "value": "무료 픽업 가능"
+  },
+  {
+    "key": "product_type_external",
+    "value": "외부"
+  },
+  {
+    "key": "woo_shipping_labels_hazmat_selection_set",
+    "value": "위험물 카테고리 설정됨"
+  },
+  {
+    "key": "product_downloadable_files_name_info",
+    "value": "고객에게 표시되는 파일의 이름입니다"
+  },
+  {
+    "key": "product_add_ons_details_info_notice",
+    "value": "웹 대시보드에서 상품 추가 기능을 편집할 수 있습니다."
+  },
+  {
+    "key": "print_receipt_label_info_step_6",
+    "value": "인쇄를 사용할 수 없는 경우 영수증을 PDF로 저장하고 이메일로 전송하여 다른 기기에서 인쇄할 수 있습니다."
+  },
+  {
+    "key": "about_automattic_source_code_item_title",
+    "value": "소스 코드"
+  },
+  {
+    "key": "feedback_product_give_feedback_button_text",
+    "value": "피드백 제공"
+  },
+  {
+    "key": "woopos_date_just_now",
+    "value": "방금 전"
+  },
+  {
+    "key": "product_update_stock_status_done",
+    "value": "완료"
+  },
+  {
+    "key": "blaze_campaign_budget_scheduled_section_title",
+    "value": "일정"
+  },
+  {
+    "key": "order_detail_attribution_admin_origin",
+    "value": "웹 관리자"
+  },
+  {
+    "key": "tax_rate_selector_empty_list_title",
+    "value": "세금 비율을 찾을 수 없습니다"
+  },
+  {
+    "key": "card_reader_tap_to_pay_about_copyright",
+    "value": "비접촉식 기호는 EMVCo, LLC가 소유하고 허가 하에 사용되는 상표입니다."
+  },
+  {
+    "key": "product_detail_product_type_hint",
+    "value": "%1$s 상품"
+  },
+  {
+    "key": "ai_product_description_learn_more_link",
+    "value": "AI 기반. &lt;a href=\\'\\'&gt;&lt;u&gt;자세히 알아보기&lt;/u&gt;&lt;/a&gt;."
+  },
+  {
+    "key": "product_attributes",
+    "value": "속성"
+  },
+  {
+    "key": "ai_product_creation_scanning_photo_error",
+    "value": "사진에서 텍스트를 스캔하는 중 오류가 발생했습니다. 다시 시도하세요"
+  },
+  {
+    "key": "bookings_resources_fetch_error",
+    "value": "팀원을 가져오는 중 오류"
+  },
+  {
+    "key": "no_site_error",
+    "value": "이 주소의 사이트는 WordPress 사이트가 아닙니다. 연결하려면 사이트가 WordPress를 사용해야 합니다."
+  },
+  {
+    "key": "variations_bulk_creation_warning_title",
+    "value": "생성 제한 초과"
+  },
+  {
+    "key": "custom_amounts_bottom_sheet_fixed_amount_option",
+    "value": "고정 금액"
+  },
+  {
+    "key": "shipping_label_shipping_service_title",
+    "value": "배송 서비스"
+  },
+  {
+    "key": "shipping_label_error_address_house_number_missing",
+    "value": "주택 번호 누락"
+  },
+  {
+    "key": "login_jetpack_installation_get_support",
+    "value": "지원 받기"
+  },
+  {
+    "key": "card_reader_connect_scanning_failed_header",
+    "value": "리더가 연결되지 않음"
+  },
+  {
+    "key": "product_bulk_update_status_updated",
+    "value": "상태 업데이트됨!"
+  },
+  {
+    "key": "coupon_conditions_products_edit_products_title",
+    "value": "상품 수정 (%d)"
+  },
+  {
+    "key": "jetpack_install_progress_step_three_message",
+    "value": "스토어 연결 중"
+  },
+  {
+    "key": "shipping_label_package_details_items_count_many",
+    "value": "%d개 항목"
+  },
+  {
+    "key": "product_selector_select_product_label",
+    "value": "상품 %s 선택"
+  },
+  {
+    "key": "update_downloaded",
+    "value": "Woo가 업데이트를 다운로드했습니다"
+  },
+  {
+    "key": "login_jetpack_connection_create_account",
+    "value": "계정이 없으면 이 이메일로 계정을 만들 것입니다."
+  },
+  {
+    "key": "blaze_campaign_creation_error_cancel",
+    "value": "캠페인 취소"
+  },
+  {
+    "key": "store_onboarding_launch_store_ok",
+    "value": "확인"
+  },
+  {
+    "key": "login_jetpack_steps_authorizing_validation",
+    "value": "검증 중"
+  },
+  {
+    "key": "shipping_label_package_details_selected_package_hint",
+    "value": "선택된 패키지"
+  },
+  {
+    "key": "login_jetpack_connection_enter_wpcom_password",
+    "value": "Jetpack에 연결하려면 WordPress.com 계정의 비밀번호를 입력하세요"
+  },
+  {
+    "key": "bookings_filters_title_with_count",
+    "value": "필터 (%s)"
+  },
+  {
+    "key": "amount",
+    "value": "금액"
+  },
+  {
+    "key": "woo_shipping_labels_package_creation_error_proceed",
+    "value": "진행"
+  },
+  {
+    "key": "card_reader_payment_send_receipt",
+    "value": "영수증 전송"
+  },
+  {
+    "key": "login_error_xml_rpc_cannot_read_site_auth_required",
+    "value": "이 사이트에서 XML-RPC 호출이 차단된 것 같습니다 (오류 코드 401). 로그인 시도가 실패하면 도움말 아이콘을 탭하여 FAQ를 확인하세요."
+  },
+  {
+    "key": "shipping_label_hazmat_option_class_8_corrosive",
+    "value": "등급 8 – 부식성 물질 패키지 - 항공 적격 부식성 물질 (특정 세정제 또는 나무/잡초 제거제 등)"
+  }
+]
