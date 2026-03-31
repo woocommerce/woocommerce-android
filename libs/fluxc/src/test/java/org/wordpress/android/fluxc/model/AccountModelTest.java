@@ -1,10 +1,9 @@
-package org.wordpress.android.fluxc.account;
+package org.wordpress.android.fluxc.model;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.wordpress.android.fluxc.model.AccountModel;
 
 public class AccountModelTest {
     @Before

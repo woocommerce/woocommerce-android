@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import com.woocommerce.android.util.FeatureFlagRepository
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -15,6 +16,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val localCatalogStore: WooPosLocalCatalogStore,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val time: DateTimeProvider,
 ) {
@@ -26,7 +28,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.Error("No site selected")
         }
 
-        if (!isLocalCatalogSupported()) {
+        if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
@@ -56,6 +58,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 )
                 WooPosFullSyncRequirement.NotRequired(lastFullSyncTimestamp)
             }
+
             else -> {
                 if (!networkStatus.isConnected()) {
                     wooPosLogWrapper.d(

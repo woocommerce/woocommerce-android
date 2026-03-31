@@ -18,6 +18,7 @@ data class OrderDetailViewState(
     val isProductListVisible: Boolean? = null,
     val isProductListMenuVisible: Boolean? = null,
     val wcShippingBannerVisible: Boolean? = null,
+    val isWcShippingBannerEnabled: Boolean = false,
     val isAIThankYouNoteButtonShown: Boolean = false,
     val isOrderDetailEmpty: Boolean = false,
 ) : Parcelable {

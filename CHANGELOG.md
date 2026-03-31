@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.4
+Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.
+
 ## 24.3
 We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.
 

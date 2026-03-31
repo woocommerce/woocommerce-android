@@ -68,6 +68,14 @@ class WooPosSettingsLocalCatalogViewModelTest {
                     syncDurationMs = 1000L
                 )
             )
+        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(any()))
+            .thenReturn(
+                PosLocalCatalogSyncResult.Success(
+                    productsSynced = 0,
+                    variationsSynced = 0,
+                    syncDurationMs = 100L
+                )
+            )
 
         whenever(syncTimestampManager.getProductsLastSyncTimestamp()).thenReturn(1000L)
         whenever(syncTimestampManager.getVariationsLastSyncTimestamp()).thenReturn(1000L)
@@ -312,6 +320,34 @@ class WooPosSettingsLocalCatalogViewModelTest {
         // THEN
         assertThat(sut.state.value.catalogStatus)
             .isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
+    }
+
+    @Test
+    fun `given full sync succeeds, when runFullCatalogSync called, then product list refresh is requested`() = runTest {
+        // GIVEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        verify(childToParentEventSender).sendToParent(ChildToParentEvent.RefreshProductList)
+    }
+
+    @Test
+    fun `given full sync succeeds, when runFullCatalogSync called, then incremental sync is also run`() = runTest {
+        // GIVEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        verify(localCatalogSyncRepository).syncLocalCatalogIncremental(mockSite)
     }
 
     @Test

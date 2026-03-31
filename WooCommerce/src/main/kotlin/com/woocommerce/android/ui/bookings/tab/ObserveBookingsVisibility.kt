@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class ObserveBookingsVisibility @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val bookingsRepository: BookingsRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val selectedSite: SelectedSite,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
@@ -40,7 +42,7 @@ class ObserveBookingsVisibility @Inject constructor(
             }
 
     private fun observeBookingsVisibilityForSite(siteModel: SiteModel): Flow<Boolean> = flow {
-        val isCIABSite = FeatureFlag.BOOKINGS_MVP.isEnabled() && siteModel.isCIABSite()
+        val isCIABSite = featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_MVP) && siteModel.isCIABSite()
         if (!isCIABSite) {
             emit(false)
         } else {
