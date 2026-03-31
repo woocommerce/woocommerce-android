@@ -43,7 +43,7 @@ Similarity metrics assume human translations are the gold standard. But human tr
 - Randomly assign which is AI and which is human (the judge does not know)
 - Ask: which is better for a mobile app UI? Consider accuracy, naturalness, and length
 
-To make sure the results are not biased by the judge model, I ran this evaluation **twice with different judges**: once with Claude (Haiku 4.5) and once with Codex (GPT-5.4). The Codex judge evaluated translations made by Codex -if there were self-preference bias, Codex-as-judge would unfairly favor Codex translations. Both judges agreed.
+Out of the 300 translated strings, I randomly picked 50 per language for judging (50 x 16 = 800 evaluations per judge). To make sure the results are not biased by the judge model, I ran this evaluation **twice with different judges**: once with Claude (Haiku 4.5, 800 evaluations) and once with Codex (GPT-5.4, 700 evaluations). The Codex judge evaluated translations made by Codex - if there were self-preference bias, Codex-as-judge would unfairly favor Codex translations. Both judges agreed.
 
 ## Results
 
