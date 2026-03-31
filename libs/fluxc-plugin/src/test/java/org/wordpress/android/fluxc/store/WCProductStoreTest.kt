@@ -65,7 +65,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateVariationPay
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateVariationPayload
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import org.wordpress.android.fluxc.wc.utils.SiteTestUtils
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -1076,5 +1076,5 @@ class WCProductStoreTest {
 
     /* HELPER */
 
-    private fun insertTestAccountAndSiteIntoDb() = SiteTestUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
+    private fun insertTestAccountAndSiteIntoDb() = TestSiteSqlUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
 }
