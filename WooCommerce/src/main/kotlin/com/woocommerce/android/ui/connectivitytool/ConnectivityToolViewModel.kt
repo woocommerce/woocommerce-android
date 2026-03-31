@@ -247,7 +247,7 @@ class ConnectivityToolViewModel @Inject constructor(
         val wpComCheckData: WPComConnectivityCheckData,
         val storeCheckData: StoreConnectivityCheckData,
         val ordersCheckData: StoreOrdersConnectivityCheckData,
-        val isWPComCheckVisible: Boolean = true
+        val isWPComCheckVisible: Boolean
     ) {
         val shouldDisplaySummary: Boolean
             get() = internetCheckData.connectivityCheckStatus is Success &&
