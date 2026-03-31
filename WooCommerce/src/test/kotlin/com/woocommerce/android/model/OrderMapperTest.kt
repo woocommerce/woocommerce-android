@@ -133,7 +133,33 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when fulfillment status is no fulfillments, then map to NO_FULFILLMENTS`() = runTest {
+    fun `when fulfillment status metadata is missing, then map to NO_FULFILLMENTS`() = runTest {
+        val orderEntity = createTestOrderEntity()
+
+        val result = orderMapper.toAppModel(orderEntity)
+
+        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.NO_FULFILLMENTS)
+    }
+
+    @Test
+    fun `when fulfillment status is empty, then map to UNKNOWN`() = runTest {
+        val orderEntity = createTestOrderEntity(
+            metaData = listOf(
+                WCMetaData(
+                    id = 1L,
+                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
+                    value = ""
+                )
+            )
+        )
+
+        val result = orderMapper.toAppModel(orderEntity)
+
+        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
+    }
+
+    @Test
+    fun `when fulfillment status is no fulfillments, then map to UNKNOWN`() = runTest {
         val orderEntity = createTestOrderEntity(
             metaData = listOf(
                 WCMetaData(
@@ -146,16 +172,7 @@ class OrderMapperTest {
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.NO_FULFILLMENTS)
-    }
-
-    @Test
-    fun `when fulfillment status metadata is missing, then map to NO_FULFILLMENTS`() = runTest {
-        val orderEntity = createTestOrderEntity()
-
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.NO_FULFILLMENTS)
+        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
     }
 
     @Test

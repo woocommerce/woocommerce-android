@@ -71,7 +71,7 @@ data class Order(
                 "fulfilled" -> FULFILLED
                 "partially_fulfilled" -> PARTIALLY_FULFILLED
                 "unfulfilled" -> UNFULFILLED
-                null, "", "no_fulfillments" -> NO_FULFILLMENTS
+                null -> NO_FULFILLMENTS
                 else -> UNKNOWN
             }
         }
