@@ -2,6 +2,18 @@
 
 This is a follow-up to [the experiment post](https://peacockp2.wordpress.com/2026/03/31/hack-experiment-can-ai-replace-translators/) where I showed that AI translations are preferred over human ones in a blind evaluation across all 16 languages. Here I describe what changes are needed to integrate AI translations into the release pipeline and what that would give us.
 
+## Related Work
+
+After posting the experiment, I learned there is already active work in this area across teams:
+
+- **@plokhoves** built an [in-PR AI translation workflow for Day One Android](https://dayoneandroidp2.wordpress.com/2026/03/26/rfc-moving-string-translations-from-glotpress-to-ai/) using Claude API that translates string deltas in 30-60 seconds
+- **@iangmaia** is working on [AI-Powered Translation Context Extraction](https://fieldguide.automattic.com/...) - a gem/CLI tool that enriches string comments with code context to help both human and AI translators
+- **@joshheald** and the AI enablement cohort are exploring AI translations with LLM-as-Judge evaluation in langfuse
+- **@alexgrebenyuk** proposed [Continuous Translation](https://appsinfrap2.wordpress.com/2026/03/10/proposal-continuous-translation) - translating in trunk continuously instead of during release
+- **@sorinnunca** shared data from GlotPress where AI translation suggestions (GPT-3.5/GPT-4o-mini) were accepted without edits 46-58% of the time
+
+Given this existing momentum, I won't implement the release pipeline integration myself. But during the hack week I spent time thinking through the exact changes needed and put together a plan based on our release infrastructure. I think it can be useful as a reference for whoever picks this up, so here is what I propose.
+
 ## The Current Release Flow
 
 Today a release goes through these steps (managed via Releases V2 + Buildkite):
