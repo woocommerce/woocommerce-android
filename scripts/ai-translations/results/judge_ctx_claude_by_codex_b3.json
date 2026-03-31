@@ -1,0 +1,1263 @@
+{
+  "strategy": "claude",
+  "llm": "",
+  "sample_size": 50,
+  "languages": [
+    {
+      "language": "ja",
+      "error": "judge parse failed",
+      "results": []
+    },
+    {
+      "language": "ko",
+      "language_name": "Korean",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 19,
+      "human_wins": 12,
+      "ties": 19,
+      "ai_win_rate": 0.38,
+      "human_win_rate": 0.24,
+      "tie_rate": 0.38,
+      "results": [
+        {
+          "key": "login_get_link_by_email",
+          "winner": "tie",
+          "reason": "두 번역이 동일하며 자연스럽고 간결합니다.",
+          "english": "Get a login link by email",
+          "ai": "이메일로 로그인 링크 받기",
+          "human": "이메일로 로그인 링크 받기"
+        },
+        {
+          "key": "woo_shipping_payment_screen_title",
+          "winner": "human",
+          "reason": "\"결제 수단\"이 UI 라벨로 더 자연스럽고 일반적입니다.",
+          "english": "Payment method",
+          "ai": "결제 방법",
+          "human": "결제 수단"
+        },
+        {
+          "key": "logviewer_activity_title",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Application log",
+          "ai": "애플리케이션 로그",
+          "human": "애플리케이션 로그"
+        },
+        {
+          "key": "shipping_label_package_details_weight_hint",
+          "winner": "human",
+          "reason": "괄호 앞 공백이 없어 모바일 UI 문구로 더 자연스럽습니다.",
+          "english": "Total package weight (%1$s)",
+          "ai": "총 패키지 무게 (%1$s)",
+          "human": "총 패키지 무게(%1$s)"
+        },
+        {
+          "key": "booking_overflow_refund",
+          "winner": "human",
+          "reason": "\"환불 발급\"은 부자연스럽고, B가 의미 전달이 더 자연스럽습니다.",
+          "english": "Issue refund",
+          "ai": "환불 발급",
+          "human": "환불 요청"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "ai",
+          "reason": "\"URL 공유\"가 버튼 문구로 더 자연스럽고 간결합니다.",
+          "english": "Share URL",
+          "ai": "URL 공유",
+          "human": "공유 URL"
+        },
+        {
+          "key": "product_global_unique_id_summary",
+          "winner": "ai",
+          "reason": "의미가 같고 문장 흐름이 더 자연스럽습니다.",
+          "english": "Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.",
+          "ai": "이 상품에 고유한 바코드 또는 기타 식별자를 입력하세요. 다른 채널이나 마켓플레이스에 이 상품을 등록할 때 도움이 될 수 있습니다.",
+          "human": "이 상품에 고유한 바코드 또는 기타 식별자를 입력하세요. 이 상품을 다른 채널이나 마켓플레이스에 등록하는 데 도움이 될 수 있습니다."
+        },
+        {
+          "key": "card_reader_connect_scanning_failed_header",
+          "winner": "ai",
+          "reason": "\"리더가 연결되지 않음\"이 상태 메시지로 더 자연스럽습니다.",
+          "english": "No reader connected",
+          "ai": "리더가 연결되지 않음",
+          "human": "연결된 리더 없음"
+        },
+        {
+          "key": "card_reader_connect_missing_bluetooth_permissions_header",
+          "winner": "human",
+          "reason": "\"권한 없음\"이 UI 헤더로 더 자연스럽고 간결합니다.",
+          "english": "Missing required nearby devices permission",
+          "ai": "필수 근처 기기 권한 누락",
+          "human": "필수 근처 기기 권한 없음"
+        },
+        {
+          "key": "product_uncheck_is_downloadable_warning_message",
+          "winner": "ai",
+          "reason": "WooCommerce UI에서는 \"상품\"이 \"제품\"보다 더 일관되고 자연스럽습니다.",
+          "english": "All files currently attached to this product will be removed.",
+          "ai": "현재 이 상품에 첨부된 모든 파일이 제거됩니다.",
+          "human": "현재 이 제품에 첨부된 모든 파일이 제거됩니다."
+        },
+        {
+          "key": "empty_product_message",
+          "winner": "ai",
+          "reason": "더 짧고 자연스럽지만 핵심 의미는 유지합니다.",
+          "english": "Start selling today by adding your first product to the store.",
+          "ai": "지금 첫 상품을 추가하고 판매를 시작하세요.",
+          "human": "스토어에 첫 번째 상품을 추가하고 지금 바로 판매를 시작하세요."
+        },
+        {
+          "key": "product_selector_arrow_content_description",
+          "winner": "human",
+          "reason": "\"상세 정보\"가 일반적인 표기이며 가독성이 좋습니다.",
+          "english": "Show details",
+          "ai": "상세정보 표시",
+          "human": "상세 정보 표시"
+        },
+        {
+          "key": "shipping_label_create_title",
+          "winner": "ai",
+          "reason": "\"배송 라벨 생성\"이 더 간결하고 UI 제목에 적합합니다.",
+          "english": "Create shipping label",
+          "ai": "배송 라벨 생성",
+          "human": "배송 레이블 만들기"
+        },
+        {
+          "key": "product_update_success_notification_title",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Product Updated",
+          "ai": "상품 업데이트됨",
+          "human": "상품 업데이트됨"
+        },
+        {
+          "key": "blaze_campaign_preview_days_duration_endless",
+          "winner": "human",
+          "reason": "더 짧고 의미도 충분히 정확합니다.",
+          "english": "%1$s weekly, starting from %2$s",
+          "ai": "%2$s부터 시작하여 매주 %1$s",
+          "human": "%2$s부터 주당 %1$s"
+        },
+        {
+          "key": "product_add_ons_details_info_notice",
+          "winner": "ai",
+          "reason": "\"추가 기능\"이 \"애드온\"보다 더 자연스러운 한국어입니다.",
+          "english": "You can edit product add-ons in the web dashboard.",
+          "ai": "웹 대시보드에서 상품 추가 기능을 편집할 수 있습니다.",
+          "human": "웹 대시보드에서 상품 애드온을 편집하실 수 있습니다."
+        },
+        {
+          "key": "woo_push_notifications_introduction_what_is_wpcom",
+          "winner": "ai",
+          "reason": "앱 UI에 맞는 정중한 문체이며 서비스명도 그대로 유지했습니다.",
+          "english": "What is WordPress.com?",
+          "ai": "WordPress.com이란 무엇인가요?",
+          "human": "워드프레스닷컴이 뭐야?"
+        },
+        {
+          "key": "blaze_campaign_creation_error_cancel",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Cancel campaign",
+          "ai": "캠페인 취소",
+          "human": "캠페인 취소"
+        },
+        {
+          "key": "blaze_campaign_preview_details_location",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Location",
+          "ai": "위치",
+          "human": "위치"
+        },
+        {
+          "key": "woopos_settings_store_email_label",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Email",
+          "ai": "이메일",
+          "human": "이메일"
+        },
+        {
+          "key": "product_global_unique_id",
+          "winner": "tie",
+          "reason": "두 번역이 동일하며 원문 약어를 그대로 유지하는 것이 적절합니다.",
+          "english": "GTIN, UPC, EAN, ISBN",
+          "ai": "GTIN, UPC, EAN, ISBN",
+          "human": "GTIN, UPC, EAN, ISBN"
+        },
+        {
+          "key": "product_term_name_already_exists",
+          "winner": "ai",
+          "reason": "마침표가 없어 UI 오류 메시지로 더 간결합니다.",
+          "english": "An option with this name already exists",
+          "ai": "이 이름의 옵션이 이미 존재합니다",
+          "human": "이 이름의 옵션이 이미 존재합니다."
+        },
+        {
+          "key": "woo_shipping_confirm_address_suggested",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Suggested",
+          "ai": "제안됨",
+          "human": "제안됨"
+        },
+        {
+          "key": "woopos_variation_item_content_description",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Variation %s, Price %s",
+          "ai": "상품 옵션 %s, 가격 %s",
+          "human": "상품 옵션 %s, 가격 %s"
+        },
+        {
+          "key": "more_menu_button_woo_pos_description",
+          "winner": "human",
+          "reason": "B는 직역투로 매우 부자연스럽고, A가 훨씬 자연스럽습니다.",
+          "english": "Accept payments at your physical store",
+          "ai": "당신의 물리적 매장에서 결제 수락",
+          "human": "실제 매장에서 결제받기"
+        },
+        {
+          "key": "product_subscription_expiration_title",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Subscription expiration",
+          "ai": "구독 만료",
+          "human": "구독 만료"
+        },
+        {
+          "key": "login_site_credentials_use_web_authorization",
+          "winner": "human",
+          "reason": "\"WP 관리자 페이지\"가 한국어 UI 문맥에서 더 자연스럽습니다.",
+          "english": "Try again with WP Admin page",
+          "ai": "WP Admin 페이지로 다시 시도",
+          "human": "WP 관리자 페이지에서 다시 시도"
+        },
+        {
+          "key": "orderfilters_product_filter",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Product",
+          "ai": "상품",
+          "human": "상품"
+        },
+        {
+          "key": "woopos_orders_edit_refund",
+          "winner": "ai",
+          "reason": "\"수정\"이 UI 동작 표현으로 \"편집\"보다 더 자연스럽습니다.",
+          "english": "Edit refund",
+          "ai": "환불 수정",
+          "human": "환불 편집"
+        },
+        {
+          "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Remove coupons",
+          "ai": "쿠폰 제거",
+          "human": "쿠폰 제거"
+        },
+        {
+          "key": "card_reader_connect_connecting_built_in_header",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Preparing for payment",
+          "ai": "결제 준비 중",
+          "human": "결제 준비 중"
+        },
+        {
+          "key": "jetpack_install_progress_step_one_message",
+          "winner": "ai",
+          "reason": "브랜드명 Jetpack은 보통 원문 표기를 유지하는 편이 적절합니다.",
+          "english": "Installing Jetpack",
+          "ai": "Jetpack 설치 중",
+          "human": "젯팩 설치 중"
+        },
+        {
+          "key": "login_jetpack_installation_error_generic_message",
+          "winner": "human",
+          "reason": "\"통신 중\"이 더 자연스럽고 간결합니다.",
+          "english": "There was an error communicating with your site.",
+          "ai": "사이트와 통신하는 중 오류가 발생했습니다.",
+          "human": "사이트와 통신 중 오류가 발생했습니다."
+        },
+        {
+          "key": "coupon_details_performance_amount_heading",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Amount",
+          "ai": "금액",
+          "human": "금액"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "ai",
+          "reason": "마침표가 없어 UI 메시지로 더 간결합니다.",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "오류가 발생했습니다. 계속하려면 로그인하세요",
+          "human": "오류가 발생했습니다. 계속하려면 로그인하세요."
+        },
+        {
+          "key": "card_reader_tap_to_pay_successful_refund_message",
+          "winner": "human",
+          "reason": "서비스명 Tap To Pay를 유지했고 더 자연스럽고 간결합니다.",
+          "english": "Test Tap To Pay payment was successfully refunded",
+          "ai": "탭으로 결제 테스트가 성공적으로 환불되었습니다",
+          "human": "테스트 Tap To Pay 결제가 환불되었습니다."
+        },
+        {
+          "key": "variations_bulk_creation_warning_title",
+          "winner": "ai",
+          "reason": "더 간결하면서 의미 전달이 충분합니다.",
+          "english": "Generation limit exceeded",
+          "ai": "생성 제한 초과",
+          "human": "생성 한도 초과됨"
+        },
+        {
+          "key": "product_detail_publish_product_draft_success",
+          "winner": "ai",
+          "reason": "\"상품 초안 저장됨\"이 더 자연스럽고 용어도 일관됩니다.",
+          "english": "Product draft saved",
+          "ai": "상품 초안 저장됨",
+          "human": "제품 임시글 저장됨"
+        },
+        {
+          "key": "shipping_label_customs_contents_type_other_hint",
+          "winner": "human",
+          "reason": "\"내용물\"이 customs/shipping 문맥에 더 정확하고 자연스럽습니다.",
+          "english": "Contents details",
+          "ai": "콘텐츠 상세정보",
+          "human": "내용물 상세 정보"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Customer",
+          "ai": "고객",
+          "human": "고객"
+        },
+        {
+          "key": "jetpack_install_progress_step_three_message",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Connecting your store",
+          "ai": "스토어 연결 중",
+          "human": "스토어 연결 중"
+        },
+        {
+          "key": "coupon_list_item_label_active",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Active",
+          "ai": "활성",
+          "human": "활성"
+        },
+        {
+          "key": "today",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "Today",
+          "ai": "오늘",
+          "human": "오늘"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "ai",
+          "reason": "\"전송\"이 디지털 영수증 문맥에서 더 자연스럽습니다.",
+          "english": "Send receipt",
+          "ai": "영수증 전송",
+          "human": "영수증 발송"
+        },
+        {
+          "key": "ai_product_description_title_hint",
+          "winner": "ai",
+          "reason": "WooCommerce 문맥에서는 \"상품명\"이 더 자연스럽고 일관됩니다.",
+          "english": "Enter product title.",
+          "ai": "상품명을 입력하세요.",
+          "human": "제품명을 입력하세요."
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "의미가 더 정확하고 \"issue a refund\"를 자연스럽게 옮겼습니다.",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "환불을 진행하시겠습니까? 이 작업은 취소할 수 없습니다.",
+          "human": "환불을 발행하시겠습니까? 취소할 수 없습니다."
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "ai",
+          "reason": "\"가입 확인\"이 signup confirmation의 의미에 더 정확합니다.",
+          "english": "Signup confirmation",
+          "ai": "가입 확인",
+          "human": "등록 확인"
+        },
+        {
+          "key": "blaze_campaign_objective_save_selection_switch_label",
+          "winner": "ai",
+          "reason": "더 짧고 자연스러우며 의미 손실이 없습니다.",
+          "english": "Save my selection for future campaigns",
+          "ai": "향후 캠페인을 위해 내 선택 저장",
+          "human": "향후 캠페인을 위해 내 선택 사항 저장"
+        },
+        {
+          "key": "shipping_label_shipment_details_payment_method",
+          "winner": "human",
+          "reason": "\"결제 수단\"이 UI 항목명으로 더 자연스럽습니다.",
+          "english": "Payment method",
+          "ai": "결제 방법",
+          "human": "결제 수단"
+        },
+        {
+          "key": "analytics_revenue_no_data",
+          "winner": "tie",
+          "reason": "두 번역이 동일합니다.",
+          "english": "No revenue this period",
+          "ai": "이 기간의 수익 없음",
+          "human": "이 기간의 수익 없음"
+        }
+      ]
+    },
+    {
+      "language": "zh-rCN",
+      "language_name": "Chinese (Simplified)",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 19,
+      "human_wins": 11,
+      "ties": 20,
+      "ai_win_rate": 0.38,
+      "human_win_rate": 0.22,
+      "tie_rate": 0.4,
+      "results": [
+        {
+          "key": "store_onboarding_task_woopayments_celebration_header",
+          "winner": "human",
+          "reason": "更贴近“You did it!”的完成感表达，更自然；A 更像“做得好”。",
+          "english": "You did it!",
+          "ai": "做得好!",
+          "human": "您做到了！"
+        },
+        {
+          "key": "subscription_expire",
+          "winner": "ai",
+          "reason": "更简洁，适合 UI；B 冗长且句式不自然。",
+          "english": "Expire after",
+          "ai": "有效期至",
+          "human": "以下时间后到期："
+        },
+        {
+          "key": "shipping_label_edit_address_loading_progress_title",
+          "winner": "human",
+          "reason": "中文里加载中的状态通常用“正在加载…”，比 B 更自然明确。",
+          "english": "Loading address data",
+          "ai": "加载地址数据",
+          "human": "正在加载地址数据"
+        },
+        {
+          "key": "shipping_label_hazmat_option_division_6_2",
+          "winner": "ai",
+          "reason": "“危险物品”比“危险物质”更符合运输语境；整体更自然。",
+          "english": "Division 6.2 - Hazardous Materials - Biological Materials (e.g., lab test kits, authorized COVID test kit returns)",
+          "ai": "第 6.2 类 - 危险物品 - 生物材料(例如实验室测试套件、授权的 COVID 测试套件退货)",
+          "human": "类别 6.2 — 危险物质 — 生物材料（如实验室检测试剂盒、获授权的 COVID 检测试剂盒返回包）"
+        },
+        {
+          "key": "woopos_scanning_setup_device_selection_title",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Set up a barcode scanner",
+          "ai": "设置条形码扫描仪",
+          "human": "设置条形码扫描仪"
+        },
+        {
+          "key": "image_source_wp_media_library",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "WordPress media library",
+          "ai": "WordPress 媒体库",
+          "human": "WordPress 媒体库"
+        },
+        {
+          "key": "login_get_link_by_email",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Get a login link by email",
+          "ai": "通过电子邮件获取登录链接",
+          "human": "通过电子邮件获取登录链接"
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "“发起退款”比“发放退款”更符合电商/支付语境；“撤销”也更规范。",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "您确定要发起退款吗？此操作无法撤销。",
+          "human": "是否确定要发放退款？此操作无法撤消。"
+        },
+        {
+          "key": "login_jetpack_user_already_connected_dialog_cancel_button",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Cancel",
+          "ai": "取消",
+          "human": "取消"
+        },
+        {
+          "key": "order_detail_payment_header",
+          "winner": "ai",
+          "reason": "“支付总计”更自然，适合 UI 标题；“付款总额”稍显生硬。",
+          "english": "PAYMENT TOTALS",
+          "ai": "支付总计",
+          "human": "付款总额"
+        },
+        {
+          "key": "booking_note_description_private",
+          "winner": "ai",
+          "reason": "“这是一个私人备注。它不会与客户共享。”更自然顺畅；A 有翻译腔。",
+          "english": "This is a private note. It’ll not be shared with the customer.",
+          "ai": "这是一个私人备注。它不会与客户共享。",
+          "human": "这是一条私人备注。 它将不会与客户共享。"
+        },
+        {
+          "key": "woo_shipping_labels_package_creation_error_proceed",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Proceed",
+          "ai": "继续",
+          "human": "继续"
+        },
+        {
+          "key": "shipping_label_error_address_house_number_missing",
+          "winner": "ai",
+          "reason": "“房号”更符合中文地址表达，也更简洁。",
+          "english": "House number missing",
+          "ai": "缺少房号",
+          "human": "缺少房屋编号"
+        },
+        {
+          "key": "orderlist_bulk_update_result_partial_success",
+          "winner": "ai",
+          "reason": "去掉多余空格，标点更自然，其他含义一致。",
+          "english": "%d order(s) updated, and %d order(s) failed to update. Please try again.",
+          "ai": "%d 个订单已更新，%d 个订单更新失败。请重试。",
+          "human": "%d 个订单已更新，%d 个订单更新失败。 请重试。"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "human",
+          "reason": "“出现错误”比“发生错误”更常见于中文 UI。",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "发生错误。请登录以继续",
+          "human": "出现错误。请登录以继续"
+        },
+        {
+          "key": "shipping",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Shipping",
+          "ai": "配送",
+          "human": "配送"
+        },
+        {
+          "key": "coupon_restrictions_limit_per_coupon_hint",
+          "winner": "ai",
+          "reason": "更简洁自然；B 的“每个优惠券”不地道。",
+          "english": "Usage Limit Per Coupon",
+          "ai": "每张优惠券的使用限制",
+          "human": "每个优惠券的使用次数限制"
+        },
+        {
+          "key": "login_app_password_exit_dialog_confirmation",
+          "winner": "human",
+          "reason": "“仍要退出”更像按钮文案，简洁自然；A 稍显口语化。",
+          "english": "Exit Anyway",
+          "ai": "仍然退出",
+          "human": "仍要退出"
+        },
+        {
+          "key": "order_creation_fee_percentage_calculated_amount",
+          "winner": "ai",
+          "reason": "更简洁，UI 文案更常用；B 多了不必要的“的”。",
+          "english": "Calculated amount: %s",
+          "ai": "计算金额：%s",
+          "human": "计算的金额：%s"
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Signup confirmation",
+          "ai": "注册确认",
+          "human": "注册确认"
+        },
+        {
+          "key": "custom_fields_list_loading_error",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Error while loading custom fields",
+          "ai": "加载自定义字段时出错",
+          "human": "加载自定义字段时出错"
+        },
+        {
+          "key": "woopos_bookings_payment_status_unpaid",
+          "winner": "ai",
+          "reason": "“未付款”更常见于订单/支付状态。",
+          "english": "Unpaid",
+          "ai": "未付款",
+          "human": "未支付"
+        },
+        {
+          "key": "product_stock_quantity",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Stock quantity",
+          "ai": "库存数量",
+          "human": "库存数量"
+        },
+        {
+          "key": "scan_to_update_inventory_stock_not_managed",
+          "winner": "ai",
+          "reason": "更准确表达“库存未启用管理”；B 像名词短语，意思偏了。",
+          "english": "Stock not managed",
+          "ai": "库存不受管理",
+          "human": "未管理的库存"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Send receipt",
+          "ai": "发送收据",
+          "human": "发送收据"
+        },
+        {
+          "key": "woopos_settings_local_catalog_category_subtitle",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Manage catalog settings",
+          "ai": "管理目录设置",
+          "human": "管理目录设置"
+        },
+        {
+          "key": "analytics_items",
+          "winner": "ai",
+          "reason": "在电商场景下“items”译为“商品”更准确；B 不自然且依赖上下文。",
+          "english": "items",
+          "ai": "商品",
+          "human": "个项目"
+        },
+        {
+          "key": "cha_ching_sound_issue_dialog_turn_on_sound",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "ENABLE SOUND",
+          "ai": "启用声音",
+          "human": "启用声音"
+        },
+        {
+          "key": "support_request_help_other",
+          "winner": "ai",
+          "reason": "更简洁自然；A 的“扩展程序”略冗。",
+          "english": "Other Extension / Plugin",
+          "ai": "其他扩展/插件",
+          "human": "其他扩展程序/插件"
+        },
+        {
+          "key": "settings_woo_plugin_version",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "WooCommerce Version",
+          "ai": "WooCommerce 版本",
+          "human": "WooCommerce 版本"
+        },
+        {
+          "key": "product_selector_select_product_label",
+          "winner": "human",
+          "reason": "保留空格更符合占位符显示习惯，可读性更好。",
+          "english": "Select product %s",
+          "ai": "选择商品%s",
+          "human": "选择商品 %s"
+        },
+        {
+          "key": "woo_shipping_rate_option_saturday_delivery",
+          "winner": "human",
+          "reason": "“配送”更贴近物流语境；“送货”稍口语。",
+          "english": "Saturday delivery",
+          "ai": "星期六送货",
+          "human": "星期六配送"
+        },
+        {
+          "key": "card_reader_detail_connected_enforced_update_software",
+          "winner": "ai",
+          "reason": "reader 应为“读卡器”，B 误译成“阅读器”。",
+          "english": "Please update your reader software to keep accepting payments",
+          "ai": "请更新您的读卡器软件以继续接受付款",
+          "human": "请更新您的阅读器软件，以继续接受付款"
+        },
+        {
+          "key": "support_identity_input_dialog_email_label",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Email",
+          "ai": "电子邮件",
+          "human": "电子邮件"
+        },
+        {
+          "key": "product_add_photo",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Add photo",
+          "ai": "添加照片",
+          "human": "添加照片"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Share URL",
+          "ai": "分享 URL",
+          "human": "分享 URL"
+        },
+        {
+          "key": "woo_shipping_labels_hazmat_selection_set",
+          "winner": "ai",
+          "reason": "“危险品”更符合物流语境；“已设置”也更常见。",
+          "english": "Hazardous materials category set",
+          "ai": "危险品类别已设置",
+          "human": "危险物质类别已设定"
+        },
+        {
+          "key": "orderlist_connectivity_tool_jetpack_error_suggestion",
+          "winner": "ai",
+          "reason": "整体更自然流畅，去除了重复和多余空格，语气更符合中文客服文案。",
+          "english": "There seems to be a problem with your jetpack connection.\\n\\nBut don\\'t worry, our support team is here to help. Contact us and we will happily assist you.",
+          "ai": "您的 Jetpack 连接似乎有问题。\\n\\n但别担心，我们的支持团队随时准备帮助您。请联系我们，我们很乐意为您服务。",
+          "human": "您的 Jetpack 连接似乎存在问题。\\n\\n但请别担心，我们的支持团队将随时为您提供帮助。 请联系我们，我们将很乐意为您提供帮助。"
+        },
+        {
+          "key": "woopos_bookings_no_booking_selected",
+          "winner": "ai",
+          "reason": "更简洁自然，且无多余句号；“预约”在此也更常用。",
+          "english": "No booking selected",
+          "ai": "未选择预约",
+          "human": "未选择预订。"
+        },
+        {
+          "key": "product_type_external",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "External",
+          "ai": "外部",
+          "human": "外部"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "Customer",
+          "ai": "客户",
+          "human": "客户"
+        },
+        {
+          "key": "card_reader_payment_failed_currency_not_supported",
+          "winner": "human",
+          "reason": "“当前币种”更自然；A 的“此货币”较生硬。",
+          "english": "The card does not support this currency",
+          "ai": "该卡不支持此货币",
+          "human": "卡片不支持当前币种"
+        },
+        {
+          "key": "coupon_conditions_products_edit_products_title",
+          "winner": "human",
+          "reason": "中文 UI 更常用全角括号，更自然。",
+          "english": "Edit Products (%d)",
+          "ai": "编辑商品 (%d)",
+          "human": "编辑商品（%d）"
+        },
+        {
+          "key": "shipping_label_hazmat_content_dhl_instructions",
+          "winner": "human",
+          "reason": "表达更自然直接；A 的“危险品货运”略拗口。",
+          "english": "WooCommerce Shipping does not currently support HAZMAT shipments through %1$s",
+          "ai": "WooCommerce Shipping 目前不支持通过 %1$s 的危险品货运",
+          "human": "WooCommerce Shipping 目前不支持通过 %1$s 运输危险品"
+        },
+        {
+          "key": "woopos_date_just_now",
+          "winner": "ai",
+          "reason": "“刚刚”更常见于时间显示；“刚才”更偏口语叙述。",
+          "english": "Just now",
+          "ai": "刚刚",
+          "human": "刚才"
+        },
+        {
+          "key": "woopos_settings_card_reader_update_available",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "• Update available",
+          "ai": "• 有可用更新",
+          "human": "• 有可用更新"
+        },
+        {
+          "key": "update_downloaded",
+          "winner": "human",
+          "reason": "“Woo 已下载更新”空格规范，可读性更好。",
+          "english": "Woo has downloaded an update",
+          "ai": "Woo已下载更新",
+          "human": "Woo 已下载更新"
+        },
+        {
+          "key": "login_site_credentials_http_error",
+          "winner": "ai",
+          "reason": "“登录”写法正确；B 把“登录”误写成“登陆”。",
+          "english": "Login failed with status code %1$s",
+          "ai": "登录失败,状态代码为 %1$s",
+          "human": "登陆失败，状态代码为 %1$s"
+        },
+        {
+          "key": "woo_shipping_labels_package_creation_empty_button",
+          "winner": "human",
+          "reason": "package 在运输场景下译为“包裹”更准确；B 的“包装”偏物料。",
+          "english": "Create a custom package",
+          "ai": "创建自定义包装",
+          "human": "创建自定义包裹"
+        },
+        {
+          "key": "store_onboarding_launch_store_ok",
+          "winner": "tie",
+          "reason": "两者完全相同。",
+          "english": "OK",
+          "ai": "确定",
+          "human": "确定"
+        }
+      ]
+    },
+    {
+      "language": "zh-rTW",
+      "language_name": "Chinese (Traditional)",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 14,
+      "human_wins": 23,
+      "ties": 13,
+      "ai_win_rate": 0.28,
+      "human_win_rate": 0.46,
+      "tie_rate": 0.26,
+      "results": [
+        {
+          "key": "login_get_link_by_email",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Get a login link by email",
+          "ai": "透過電子郵件取得登入連結",
+          "human": "透過電子郵件取得登入連結"
+        },
+        {
+          "key": "woo_shipping_payment_screen_title",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Payment method",
+          "ai": "付款方式",
+          "human": "付款方式"
+        },
+        {
+          "key": "logviewer_activity_title",
+          "winner": "ai",
+          "reason": "「應用程式日誌」較自然精簡；A 的「記錄檔」較技術化且偏長。",
+          "english": "Application log",
+          "ai": "應用程式日誌",
+          "human": "應用程式記錄檔"
+        },
+        {
+          "key": "shipping_label_package_details_weight_hint",
+          "winner": "human",
+          "reason": "「包裹總重」更自然精簡，意思完整；A 稍微生硬。",
+          "english": "Total package weight (%1$s)",
+          "ai": "總包裹重量（%1$s）",
+          "human": "包裹總重 (%1$s)"
+        },
+        {
+          "key": "booking_overflow_refund",
+          "winner": "human",
+          "reason": "「退還款項」較符合 UI 動作文字，A 的「發出退款」較不自然。",
+          "english": "Issue refund",
+          "ai": "發出退款",
+          "human": "退還款項"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "ai",
+          "reason": "「分享網址」比「分享 URL」更本地化、更自然。",
+          "english": "Share URL",
+          "ai": "分享網址",
+          "human": "分享 URL"
+        },
+        {
+          "key": "product_global_unique_id_summary",
+          "winner": "human",
+          "reason": "A 較符合繁體中文用語且更自然；B 用詞偏陸式，如「標識符」「渠道」。",
+          "english": "Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.",
+          "ai": "輸入條形碼或任何其他該產品獨有的標識符。它可以幫助您在其他渠道或市場上列出該產品。",
+          "human": "請輸入條碼或此商品任一不重複識別碼， 這可協助你將此商品上架於其他通路或市集。"
+        },
+        {
+          "key": "card_reader_connect_scanning_failed_header",
+          "winner": "ai",
+          "reason": "「未連接讀卡機」更像原生 UI 文案；A 的「讀取器」不自然。",
+          "english": "No reader connected",
+          "ai": "未連接讀卡機",
+          "human": "沒有連接的讀取器"
+        },
+        {
+          "key": "card_reader_connect_missing_bluetooth_permissions_header",
+          "winner": "human",
+          "reason": "「所需的附近裝置權限」較自然，且「裝置」比 A 的「設備」更常見於繁中介面。",
+          "english": "Missing required nearby devices permission",
+          "ai": "缺少必需的附近設備權限",
+          "human": "缺少所需的附近裝置權限"
+        },
+        {
+          "key": "product_uncheck_is_downloadable_warning_message",
+          "winner": "human",
+          "reason": "「檔案」較符合繁中軟體用語；B 的「文件」較偏陸式。",
+          "english": "All files currently attached to this product will be removed.",
+          "ai": "目前附加到此產品的所有文件將被移除。",
+          "human": "目前附加到此產品的所有檔案將被移除。"
+        },
+        {
+          "key": "empty_product_message",
+          "winner": "human",
+          "reason": "語序自然且精簡；B 的「添加您的第一個產品到商店」不夠地道。",
+          "english": "Start selling today by adding your first product to the store.",
+          "ai": "立即開始銷售，添加您的第一個產品到商店。",
+          "human": "為商店新增第一個產品，立即開始銷售。"
+        },
+        {
+          "key": "product_selector_arrow_content_description",
+          "winner": "ai",
+          "reason": "「顯示詳情」較短；B 雖正確但較長。",
+          "english": "Show details",
+          "ai": "顯示詳情",
+          "human": "顯示詳細資訊"
+        },
+        {
+          "key": "shipping_label_create_title",
+          "winner": "ai",
+          "reason": "「運貨標籤」較貼近 shipping label；B 的「郵寄標籤」可能偏向 mail。",
+          "english": "Create shipping label",
+          "ai": "建立運貨標籤",
+          "human": "建立郵寄標籤"
+        },
+        {
+          "key": "product_update_success_notification_title",
+          "winner": "human",
+          "reason": "WooCommerce UI 中「商品」通常比「產品」更自然。",
+          "english": "Product Updated",
+          "ai": "產品已更新",
+          "human": "商品已更新"
+        },
+        {
+          "key": "blaze_campaign_preview_days_duration_endless",
+          "winner": "human",
+          "reason": "A 更符合中文語序；B 有英文直譯感。",
+          "english": "%1$s weekly, starting from %2$s",
+          "ai": "%1$s 每週，從 %2$s 開始",
+          "human": "從 %2$s起，每週 %1$s"
+        },
+        {
+          "key": "product_add_ons_details_info_notice",
+          "winner": "human",
+          "reason": "A 的「附加元件」較準確；B 的「附加選項」可能改變 add-ons 原意。",
+          "english": "You can edit product add-ons in the web dashboard.",
+          "ai": "您可以在網路儀表板中編輯產品附加選項。",
+          "human": "你可以在 Web 儀表板中編輯產品附加元件。"
+        },
+        {
+          "key": "woo_push_notifications_introduction_what_is_wpcom",
+          "winner": "ai",
+          "reason": "「WordPress.com 是什麼？」是繁中更自然的問法。",
+          "english": "What is WordPress.com?",
+          "ai": "WordPress.com 是什麼？",
+          "human": "什麼是 WordPress.com？"
+        },
+        {
+          "key": "blaze_campaign_creation_error_cancel",
+          "winner": "human",
+          "reason": "完整表達「campaign」為「行銷活動」；A 的「活動」較泛。",
+          "english": "Cancel campaign",
+          "ai": "取消活動",
+          "human": "取消行銷活動"
+        },
+        {
+          "key": "blaze_campaign_preview_details_location",
+          "winner": "ai",
+          "reason": "在定位或投放設定情境下，「位置」通常比「地點」更合適。",
+          "english": "Location",
+          "ai": "位置",
+          "human": "地點"
+        },
+        {
+          "key": "woopos_settings_store_email_label",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Email",
+          "ai": "電子郵件",
+          "human": "電子郵件"
+        },
+        {
+          "key": "product_global_unique_id",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "GTIN, UPC, EAN, ISBN",
+          "ai": "GTIN、UPC、EAN、ISBN",
+          "human": "GTIN、UPC、EAN、ISBN"
+        },
+        {
+          "key": "product_term_name_already_exists",
+          "winner": "human",
+          "reason": "A 更精簡自然；B 的「具有此名稱」較冗。",
+          "english": "An option with this name already exists",
+          "ai": "已存在具有此名稱的選項",
+          "human": "已存在使用此名稱的選項"
+        },
+        {
+          "key": "woo_shipping_confirm_address_suggested",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Suggested",
+          "ai": "建議",
+          "human": "建議"
+        },
+        {
+          "key": "woopos_variation_item_content_description",
+          "winner": "ai",
+          "reason": "WooCommerce 中「Variation」譯為「變體」較準確；B 的「款式」較窄。",
+          "english": "Variation %s, Price %s",
+          "ai": "變體 %s，價格 %s",
+          "human": "款式 %s，價格 %s"
+        },
+        {
+          "key": "more_menu_button_woo_pos_description",
+          "winner": "human",
+          "reason": "更精簡，意思完整；B 多了「您的」但無實際加值。",
+          "english": "Accept payments at your physical store",
+          "ai": "在您的實體店接受付款",
+          "human": "在實體店面接受付款"
+        },
+        {
+          "key": "product_subscription_expiration_title",
+          "winner": "ai",
+          "reason": "原文是概念標題而非日期欄位；A 的「到期日」偏成 date field。",
+          "english": "Subscription expiration",
+          "ai": "訂閱到期",
+          "human": "訂閱到期日"
+        },
+        {
+          "key": "login_site_credentials_use_web_authorization",
+          "winner": "ai",
+          "reason": "較像按鈕文案且精簡；A 帶有較重提示語氣。",
+          "english": "Try again with WP Admin page",
+          "ai": "使用 WP Admin 頁面重試",
+          "human": "請從 WP 管理員頁面再試一次"
+        },
+        {
+          "key": "orderfilters_product_filter",
+          "winner": "human",
+          "reason": "在電商 App 中「商品」通常比「產品」更自然。",
+          "english": "Product",
+          "ai": "產品",
+          "human": "商品"
+        },
+        {
+          "key": "woopos_orders_edit_refund",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Edit refund",
+          "ai": "編輯退款",
+          "human": "編輯退款"
+        },
+        {
+          "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Remove coupons",
+          "ai": "移除優惠券",
+          "human": "移除優惠券"
+        },
+        {
+          "key": "card_reader_connect_connecting_built_in_header",
+          "winner": "ai",
+          "reason": "標題文案以「準備付款」更俐落；A 的進行式略顯冗長。",
+          "english": "Preparing for payment",
+          "ai": "準備付款",
+          "human": "正在準備付款"
+        },
+        {
+          "key": "jetpack_install_progress_step_one_message",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Installing Jetpack",
+          "ai": "正在安裝 Jetpack",
+          "human": "正在安裝 Jetpack"
+        },
+        {
+          "key": "login_jetpack_installation_error_generic_message",
+          "winner": "human",
+          "reason": "「發生錯誤」比 A 的「出錯」更自然；整體語氣較順。",
+          "english": "There was an error communicating with your site.",
+          "ai": "與您的網站通訊時出錯。",
+          "human": "與你的網站通訊時發生錯誤。"
+        },
+        {
+          "key": "coupon_details_performance_amount_heading",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Amount",
+          "ai": "金額",
+          "human": "金額"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "human",
+          "reason": "「登入」是繁中常用；B 的「登錄」偏簡中。",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "發生錯誤。請登錄繼續",
+          "human": "發生錯誤。請登入以繼續"
+        },
+        {
+          "key": "card_reader_tap_to_pay_successful_refund_message",
+          "winner": "human",
+          "reason": "A 使用既有產品名「卡緊收」，比 B 的直譯「點擊支付」更準確。",
+          "english": "Test Tap To Pay payment was successfully refunded",
+          "ai": "測試點擊支付已成功退款",
+          "human": "「卡緊收」測試付款已成功退款"
+        },
+        {
+          "key": "variations_bulk_creation_warning_title",
+          "winner": "human",
+          "reason": "「超過產生上限」較自然；A 的「生成限制已超出」直譯感較重。",
+          "english": "Generation limit exceeded",
+          "ai": "生成限制已超出",
+          "human": "超過產生上限"
+        },
+        {
+          "key": "product_detail_publish_product_draft_success",
+          "winner": "human",
+          "reason": "A 較符合繁中用語；B 的「保存」偏簡中。",
+          "english": "Product draft saved",
+          "ai": "產品草稿已保存",
+          "human": "已儲存商品草稿"
+        },
+        {
+          "key": "shipping_label_customs_contents_type_other_hint",
+          "winner": "ai",
+          "reason": "「內容詳情」更精簡自然；B 稍嫌冗長。",
+          "english": "Contents details",
+          "ai": "內容詳情",
+          "human": "內容詳細資料"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Customer",
+          "ai": "客戶",
+          "human": "客戶"
+        },
+        {
+          "key": "jetpack_install_progress_step_three_message",
+          "winner": "ai",
+          "reason": "A 直接對應「Connecting your store」；B 的「連結至」較不自然。",
+          "english": "Connecting your store",
+          "ai": "正在連接您的商店",
+          "human": "連結至你的商店"
+        },
+        {
+          "key": "coupon_list_item_label_active",
+          "winner": "human",
+          "reason": "在優惠券狀態中，「使用中」比「活躍」自然得多。",
+          "english": "Active",
+          "ai": "活躍",
+          "human": "使用中"
+        },
+        {
+          "key": "today",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Today",
+          "ai": "今天",
+          "human": "今天"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "human",
+          "reason": "「傳送收據」較符合繁中；B 的「發送」偏簡中。",
+          "english": "Send receipt",
+          "ai": "發送收據",
+          "human": "傳送收據"
+        },
+        {
+          "key": "ai_product_description_title_hint",
+          "winner": "human",
+          "reason": "B 更自然且有提示語氣；A 雖短但略顯生硬。",
+          "english": "Enter product title.",
+          "ai": "輸入產品標題。",
+          "human": "請輸入商品標題。"
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "原文是商家發起退款，A 的「發出退款」較準確；B 的「申請退款」像向他人提出申請。",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "您確定要發出退款嗎？此操作無法撤銷。",
+          "human": "確定要申請退款？此動作無法復原。"
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Signup confirmation",
+          "ai": "註冊確認",
+          "human": "註冊確認"
+        },
+        {
+          "key": "blaze_campaign_objective_save_selection_switch_label",
+          "winner": "human",
+          "reason": "A 對 future campaigns 的表達較準確，也更貼近行銷情境；B 較泛且「保存」偏簡中。",
+          "english": "Save my selection for future campaigns",
+          "ai": "為未來的活動保存我的選擇",
+          "human": "儲存我的選取項目，供日後行銷活動使用"
+        },
+        {
+          "key": "shipping_label_shipment_details_payment_method",
+          "winner": "tie",
+          "reason": "兩者完全相同。",
+          "english": "Payment method",
+          "ai": "付款方式",
+          "human": "付款方式"
+        },
+        {
+          "key": "analytics_revenue_no_data",
+          "winner": "human",
+          "reason": "A 較精簡自然；B 的「此期間」較生硬。",
+          "english": "No revenue this period",
+          "ai": "此期間沒有收入",
+          "human": "本期沒有收益"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_judged": 150,
+    "ai_wins": 52,
+    "human_wins": 46,
+    "ties": 52,
+    "ai_win_rate": 0.3466666666666667,
+    "human_win_rate": 0.30666666666666664,
+    "tie_rate": 0.3466666666666667
+  }
+}

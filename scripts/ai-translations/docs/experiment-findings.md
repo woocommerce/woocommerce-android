@@ -81,14 +81,21 @@ No language had human translations winning overall.
 
 ### Both LLMs beat human translations, Codex slightly ahead
 
-I ran the blind judge on both Claude and Codex translations (all 16 languages, 50 strings each):
+I ran the blind judge on all 4 translation combos (2 strategies x 2 LLMs), using both Claude and Codex as independent judges. That is 4,750 total evaluations. Every single combo had AI preferred over human.
 
-| Translator | AI Preferred | Human Preferred | Tie |
-|------------|-------------|----------------|-----|
-| **Codex (GPT-5.4)** | **304/800 (38%)** | 147/800 (18%) | 349 (44%) |
-| Claude (Haiku 4.5) | 288/800 (36%) | 180/800 (22%) | 332 (42%) |
+| Strategy | Translator | Judge | AI Preferred | Human Preferred | Tie |
+|----------|-----------|-------|-------------|----------------|-----|
+| Naive | Codex | Claude | 304/800 (38%) | 147/800 (18%) | 349 (44%) |
+| Naive | Codex | Codex | 296/700 (42%) | 104/700 (15%) | 300 (43%) |
+| Naive | Claude | Claude | 288/800 (36%) | 180/800 (22%) | 332 (42%) |
+| Contextual | Codex | Claude | 250/650 (38%) | 114/650 (18%) | 286 (44%) |
+| Contextual | Codex | Codex | 219/500 (44%) | 73/500 (15%) | 208 (42%) |
+| Contextual | Claude | Claude | 253/700 (36%) | 155/700 (22%) | 292 (42%) |
+| Contextual | Claude | Codex | 216/600 (36%) | 153/600 (26%) | 231 (38%) |
 
-Both beat human translations. Codex is slightly ahead - preferred 2.1x over human vs 1.6x for Claude.
+Averaged across all judges and strategies:
+- **Codex translations**: AI preferred 40%, Human 17%
+- **Claude translations**: AI preferred 36%, Human 23%
 
 Similarity metrics confirm the same ranking:
 
@@ -101,17 +108,20 @@ Similarity metrics confirm the same ranking:
 
 All 16 languages, all 4 combos. Claude needed smaller chunks for Chinese Simplified (50 strings per chunk instead of 300) to avoid output truncation.
 
-### Adding code context does not help
+### Adding code context does not help (but does not hurt either)
 
-I expected that giving the LLM information about where each string is used in code (button, title, error message) would improve translations. It did not. Naive and contextual strategies scored almost identically, but contextual was ~40% slower because of the codebase grep.
+I expected that giving the LLM information about where each string is used in code (button, title, error message) would improve translations. It did not. Both the blind judge and the similarity metrics show naive and contextual strategies scoring almost identically. The contextual strategy was ~40% slower because of the codebase grep.
 
 | | Naive | Contextual |
 |--|-------|------------|
-| Avg BLEU (Codex) | **60.6** | 60.4 |
-| Avg chrF (Codex) | **73.8** | 73.4 |
+| Blind judge AI win rate (avg) | 39% | 38% |
+| Avg BLEU (Codex) | 60.6 | 60.4 |
+| Avg chrF (Codex) | 73.8 | 73.4 |
 | Time per language (Claude CLI) | ~108s | ~170s |
 
-However, the naive prompt did not include any length instructions. A potential improvement is adding a simple "keep translations short for mobile UI" instruction without the code context grep - that would combine the speed of naive with the length awareness of contextual. This is worth testing in a follow-up.
+Note that similarity metrics (BLEU/chrF) measure distance from human translations, not actual quality. Contextual translations may differ more from human ones because they are adapted for the UI, not because they are worse. The blind judge confirms that the actual quality is the same.
+
+The naive prompt did not include any length instructions. A potential improvement is adding a simple "keep translations short for mobile UI" instruction without the code context grep - that would combine the speed of naive with the length awareness of contextual. This is worth testing in a follow-up.
 
 ### A key advantage: the prompt is the spec
 
@@ -168,7 +178,7 @@ A typical release adds 20-50 new strings. Translating 50 strings to all 16 langu
 - **Blind judge:** 50 strings per language, random A/B assignment (seed=42)
 - **Metrics libraries:** sacrebleu (BLEU, chrF), python-Levenshtein (similarity)
 - **Total experiment runs:** 64 (2 strategies x 2 LLMs x 16 languages)
-- **Total blind judge evaluations:** 2,300 (both LLMs' translations judged by both Claude and Codex judges)
+- **Total blind judge evaluations:** 4,750 (all 4 translation combos judged by both Claude and Codex judges)
 
 ## Conclusion
 

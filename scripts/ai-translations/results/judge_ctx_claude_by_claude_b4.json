@@ -1,0 +1,1263 @@
+{
+  "strategy": "claude",
+  "llm": "",
+  "sample_size": 50,
+  "languages": [
+    {
+      "language": "ar",
+      "language_name": "Arabic",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 23,
+      "human_wins": 5,
+      "ties": 22,
+      "ai_win_rate": 0.46,
+      "human_win_rate": 0.1,
+      "tie_rate": 0.44,
+      "results": [
+        {
+          "key": "login_get_link_by_email",
+          "winner": "ai",
+          "reason": "A uses imperative form (احصل) which is more natural for UI button text, while B uses nominal form (الحصول)",
+          "english": "Get a login link by email",
+          "ai": "احصل على رابط تسجيل دخول عبر البريد الإلكتروني",
+          "human": "الحصول على رابط تسجيل الدخول عن طريق البريد الإلكتروني"
+        },
+        {
+          "key": "woo_shipping_payment_screen_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Payment method",
+          "ai": "طريقة الدفع",
+          "human": "طريقة الدفع"
+        },
+        {
+          "key": "logviewer_activity_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Application log",
+          "ai": "سجل التطبيق",
+          "human": "سجل التطبيق"
+        },
+        {
+          "key": "shipping_label_package_details_weight_hint",
+          "winner": "ai",
+          "reason": "A is cleaner without RTL directional marks that B contains, making it more suitable for UI",
+          "english": "Total package weight (%1$s)",
+          "ai": "إجمالي وزن العبوة (%1$s)",
+          "human": "إجمالي وزن الحزمة (⁦%1$s⁩)"
+        },
+        {
+          "key": "booking_overflow_refund",
+          "winner": "ai",
+          "reason": "استرجاع is more standard terminology for refunds in e-commerce context",
+          "english": "Issue refund",
+          "ai": "إصدار استرجاع",
+          "human": "إصدار استرداد"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "ai",
+          "reason": "B is shorter and more natural (مشاركة الرابط) compared to A's literal translation (مشاركة عنوان URL)",
+          "english": "Share URL",
+          "ai": "مشاركة الرابط",
+          "human": "مشاركة عنوان URL"
+        },
+        {
+          "key": "product_global_unique_id_summary",
+          "winner": "ai",
+          "reason": "A contains critical error (كود المرور means password code, not barcode). B correctly uses باركود and is more concise",
+          "english": "Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.",
+          "ai": "أدخل باركود أو معرّف فريد آخر لهذا المنتج. يساعدك على إدراجه على قنوات أخرى.",
+          "human": "أدخل كود المرور أو أي معرِّف آخر فريد لهذا المنتج. قد يساعدك ذلك على إدراج هذا المنتج على القنوات الأخرى أو الأسواق."
+        },
+        {
+          "key": "card_reader_connect_scanning_failed_header",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "No reader connected",
+          "ai": "لا يوجد قارئ متصل",
+          "human": "لا يوجد قارئ متصل"
+        },
+        {
+          "key": "card_reader_connect_missing_bluetooth_permissions_header",
+          "winner": "ai",
+          "reason": "A flows more naturally; B's word order (صلاحية...المطلوبة) is slightly awkward",
+          "english": "Missing required nearby devices permission",
+          "ai": "الإذن المطلوب لأجهزة قريبة مفقود",
+          "human": "صلاحية الأجهزة القريبة المطلوبة مفقودة"
+        },
+        {
+          "key": "product_uncheck_is_downloadable_warning_message",
+          "winner": "tie",
+          "reason": "Only difference is diacritics (حاليًا vs حالياً), both are acceptable and identical in meaning",
+          "english": "All files currently attached to this product will be removed.",
+          "ai": "سيتم إزالة جميع الملفات المرفقة حالياً بهذا المنتج.",
+          "human": "سيتم إزالة جميع الملفات المرفقة حاليًا بهذا المنتج."
+        },
+        {
+          "key": "empty_product_message",
+          "winner": "ai",
+          "reason": "B uses المتجر (store) which is more accurate for e-commerce than A's المخزن (warehouse)",
+          "english": "Start selling today by adding your first product to the store.",
+          "ai": "ابدأ البيع اليوم بإضافة منتجك الأول إلى المتجر.",
+          "human": "ابدأ بالبيع اليوم عن طريق إضافة منتجك الأول إلى المخزن."
+        },
+        {
+          "key": "product_selector_arrow_content_description",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Show details",
+          "ai": "عرض التفاصيل",
+          "human": "عرض التفاصيل"
+        },
+        {
+          "key": "shipping_label_create_title",
+          "winner": "human",
+          "reason": "B is shorter (ملصق الشحن) without sacrificing meaning, better for mobile UI than A (ملصق الشحنة)",
+          "english": "Create shipping label",
+          "ai": "إنشاء ملصق الشحنة",
+          "human": "إنشاء ملصق الشحن"
+        },
+        {
+          "key": "product_update_success_notification_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Product Updated",
+          "ai": "تم تحديث المنتج",
+          "human": "تم تحديث المنتج"
+        },
+        {
+          "key": "blaze_campaign_preview_days_duration_endless",
+          "winner": "ai",
+          "reason": "B is cleaner without RTL directional marks. Both convey meaning, but B is more suitable for UI display",
+          "english": "%1$s weekly, starting from %2$s",
+          "ai": "%1$s أسبوعياً، بدءاً من %2$s",
+          "human": "⁦%1$s⁩ أسبوعيًا، بدءًا من ⁦%2$s⁩"
+        },
+        {
+          "key": "product_add_ons_details_info_notice",
+          "winner": "ai",
+          "reason": "A incorrectly uses وظائف (functions); B correctly uses إضافات (add-ons)",
+          "english": "You can edit product add-ons in the web dashboard.",
+          "ai": "يمكنك تعديل إضافات المنتج في لوحة المعلومات على الويب.",
+          "human": "يمكنك تحرير وظائف المنتج الإضافية في لوحة تحكم الويب."
+        },
+        {
+          "key": "woo_push_notifications_introduction_what_is_wpcom",
+          "winner": "ai",
+          "reason": "A preserves the brand name WordPress.com, which should not be translated",
+          "english": "What is WordPress.com?",
+          "ai": "ما هو WordPress.com؟",
+          "human": "ما هو ووردبريس.كوم؟"
+        },
+        {
+          "key": "blaze_campaign_creation_error_cancel",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Cancel campaign",
+          "ai": "إلغاء الحملة",
+          "human": "إلغاء الحملة"
+        },
+        {
+          "key": "blaze_campaign_preview_details_location",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Location",
+          "ai": "الموقع",
+          "human": "الموقع"
+        },
+        {
+          "key": "woopos_settings_store_email_label",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Email",
+          "ai": "البريد الإلكتروني",
+          "human": "البريد الإلكتروني"
+        },
+        {
+          "key": "product_global_unique_id",
+          "winner": "ai",
+          "reason": "B is cleaner as a list of acronyms without و (and) conjunctions, more suitable for compact UI display",
+          "english": "GTIN, UPC, EAN, ISBN",
+          "ai": "GTIN، UPC، EAN، ISBN",
+          "human": "GTIN، وUPC، وEAN، وISBN"
+        },
+        {
+          "key": "product_term_name_already_exists",
+          "winner": "ai",
+          "reason": "B is more concise and natural-sounding, while A is more verbose",
+          "english": "An option with this name already exists",
+          "ai": "خيار بهذا الاسم موجود بالفعل",
+          "human": "يوجد خيار يحمل هذا الاسم بالفعل"
+        },
+        {
+          "key": "woo_shipping_confirm_address_suggested",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Suggested",
+          "ai": "مقترح",
+          "human": "مقترح"
+        },
+        {
+          "key": "woopos_variation_item_content_description",
+          "winner": "ai",
+          "reason": "B contains critical errors (الشكل could work, but الشعر means 'hair' - completely wrong)",
+          "english": "Variation %s, Price %s",
+          "ai": "المتغير %s، السعر %s",
+          "human": "الشكل %s، الشعر %s"
+        },
+        {
+          "key": "more_menu_button_woo_pos_description",
+          "winner": "human",
+          "reason": "A's متجرك المادي (your physical store) is more personal and appropriate for user context than B's generic form",
+          "english": "Accept payments at your physical store",
+          "ai": "قبول المدفوعات في المتجر الفيزيائي",
+          "human": "قبول المدفوعات في متجرك المادي"
+        },
+        {
+          "key": "product_subscription_expiration_title",
+          "winner": "ai",
+          "reason": "B is shorter without losing meaning; more suitable for mobile UI than A's longer form",
+          "english": "Subscription expiration",
+          "ai": "انتهاء الاشتراك",
+          "human": "انتهاء صلاحية الاشتراك"
+        },
+        {
+          "key": "login_site_credentials_use_web_authorization",
+          "winner": "ai",
+          "reason": "B is shorter and preserves the brand acronym WP Admin, more suitable for UI than A's full translation",
+          "english": "Try again with WP Admin page",
+          "ai": "حاول مرة أخرى مع صفحة WP Admin",
+          "human": "المحاولة مجددًا باستخدام صفحة مسؤول ووردبريس"
+        },
+        {
+          "key": "orderfilters_product_filter",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Product",
+          "ai": "المنتج",
+          "human": "المنتج"
+        },
+        {
+          "key": "woopos_orders_edit_refund",
+          "winner": "ai",
+          "reason": "A is more concise (تعديل الاسترجاع) compared to B's longer form (تحرير استرداد الأموال)",
+          "english": "Edit refund",
+          "ai": "تعديل الاسترجاع",
+          "human": "تحرير استرداد الأموال"
+        },
+        {
+          "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+          "winner": "human",
+          "reason": "A uses القسائم which is more Arabic and natural; B's الكوبونات is transliterated",
+          "english": "Remove coupons",
+          "ai": "إزالة الكوبونات",
+          "human": "إزالة القسائم"
+        },
+        {
+          "key": "card_reader_connect_connecting_built_in_header",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Preparing for payment",
+          "ai": "التحضير للدفع",
+          "human": "التحضير للدفع"
+        },
+        {
+          "key": "jetpack_install_progress_step_one_message",
+          "winner": "ai",
+          "reason": "A's جاري تثبيت better conveys ongoing action for a progress message; B's تنصيب is more static",
+          "english": "Installing Jetpack",
+          "ai": "جاري تثبيت Jetpack",
+          "human": "تنصيب Jetpack"
+        },
+        {
+          "key": "login_jetpack_installation_error_generic_message",
+          "winner": "ai",
+          "reason": "A is more concise; B's في أثناء adds unnecessary verbosity",
+          "english": "There was an error communicating with your site.",
+          "ai": "حدث خطأ في الاتصال بموقعك.",
+          "human": "حدث خطأ في أثناء الاتصال بموقعك."
+        },
+        {
+          "key": "coupon_details_performance_amount_heading",
+          "winner": "ai",
+          "reason": "B's المبلغ (amount of money) is correct; A's الكمية means quantity, which is incorrect for monetary amounts",
+          "english": "Amount",
+          "ai": "المبلغ",
+          "human": "الكمية"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "ai",
+          "reason": "B is more accurate to original text; A's 'مجددًا' (again) suggests prior login which the original doesn't",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "حدث خطأ. يرجى تسجيل الدخول للمتابعة",
+          "human": "حدث خطأ. يرجى تسجيل الدخول مجددًا للمتابعة"
+        },
+        {
+          "key": "card_reader_tap_to_pay_successful_refund_message",
+          "winner": "human",
+          "reason": "A preserves the brand name 'Tap To Pay'; B transliterates it as 'الضغط' which loses brand recognition",
+          "english": "Test Tap To Pay payment was successfully refunded",
+          "ai": "تم استرجاع دفعة اختبار الضغط بنجاح",
+          "human": "تم استرداد دفعة اختبار Tap To Pay بنجاح"
+        },
+        {
+          "key": "variations_bulk_creation_warning_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Generation limit exceeded",
+          "ai": "تم تجاوز حد الإنشاء",
+          "human": "تم تجاوز حد الإنشاء"
+        },
+        {
+          "key": "product_detail_publish_product_draft_success",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Product draft saved",
+          "ai": "تم حفظ مسودة المنتج",
+          "human": "تم حفظ مسودة المنتج"
+        },
+        {
+          "key": "shipping_label_customs_contents_type_other_hint",
+          "winner": "tie",
+          "reason": "Both are acceptable; singular/plural both work for this context",
+          "english": "Contents details",
+          "ai": "تفاصيل المحتوى",
+          "human": "تفاصيل المحتويات"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Customer",
+          "ai": "العميل",
+          "human": "العميل"
+        },
+        {
+          "key": "jetpack_install_progress_step_three_message",
+          "winner": "ai",
+          "reason": "A's جاري ربط better conveys ongoing action in progress; B's الاتصال is simpler but less precise",
+          "english": "Connecting your store",
+          "ai": "جاري ربط متجرك",
+          "human": "الاتصال بمتجرك"
+        },
+        {
+          "key": "coupon_list_item_label_active",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Active",
+          "ai": "نشط",
+          "human": "نشط"
+        },
+        {
+          "key": "today",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Today",
+          "ai": "اليوم",
+          "human": "اليوم"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "human",
+          "reason": "A without the definite article flows better as button text; B's الإيصال is more formal",
+          "english": "Send receipt",
+          "ai": "إرسال الإيصال",
+          "human": "إرسال إيصال"
+        },
+        {
+          "key": "ai_product_description_title_hint",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Enter product title.",
+          "ai": "أدخل عنوان المنتج.",
+          "human": "أدخل عنوان المنتج."
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "A is more concise and directly matches 'issue a refund'; B adds extra words (مبلغ) and changes verb",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "هل أنت متأكد من أنك تريد إصدار استرجاع؟ لا يمكن التراجع عن هذا.",
+          "human": "هل تريد بالتأكيد إرسال مبلغ الاسترداد؟ لا يمكن التراجع عن هذا."
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Signup confirmation",
+          "ai": "تأكيد التسجيل",
+          "human": "تأكيد التسجيل"
+        },
+        {
+          "key": "blaze_campaign_objective_save_selection_switch_label",
+          "winner": "ai",
+          "reason": "B is more concise (تحديدي) suitable for mobile UI; A's possessive form is wordier",
+          "english": "Save my selection for future campaigns",
+          "ai": "حفظ تحديدي للحملات المستقبلية",
+          "human": "حفظ التحديد الخاص بي للحملات المستقبلية"
+        },
+        {
+          "key": "shipping_label_shipment_details_payment_method",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "Payment method",
+          "ai": "طريقة الدفع",
+          "human": "طريقة الدفع"
+        },
+        {
+          "key": "analytics_revenue_no_data",
+          "winner": "tie",
+          "reason": "Both translations are identical",
+          "english": "No revenue this period",
+          "ai": "لا توجد إيرادات في هذه الفترة",
+          "human": "لا توجد إيرادات في هذه الفترة"
+        }
+      ]
+    },
+    {
+      "language": "he",
+      "error": "judge parse failed",
+      "results": []
+    },
+    {
+      "language": "id",
+      "language_name": "Indonesian",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 14,
+      "human_wins": 6,
+      "ties": 30,
+      "ai_win_rate": 0.28,
+      "human_win_rate": 0.12,
+      "tie_rate": 0.6,
+      "results": [
+        {
+          "key": "login_get_link_by_email",
+          "winner": "ai",
+          "reason": "\"tautan login\" is more precise than \"tautan masuk\"; \"melalui\" is more formal than colloquial \"lewat\"",
+          "english": "Get a login link by email",
+          "ai": "Dapatkan tautan login melalui email",
+          "human": "Dapatkan tautan masuk lewat email"
+        },
+        {
+          "key": "woo_shipping_payment_screen_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Payment method",
+          "ai": "Metode pembayaran",
+          "human": "Metode pembayaran"
+        },
+        {
+          "key": "logviewer_activity_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Application log",
+          "ai": "Log aplikasi",
+          "human": "Log aplikasi"
+        },
+        {
+          "key": "shipping_label_package_details_weight_hint",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Total package weight (%1$s)",
+          "ai": "Total berat paket (%1$s)",
+          "human": "Total berat paket (%1$s)"
+        },
+        {
+          "key": "booking_overflow_refund",
+          "winner": "ai",
+          "reason": "A is properly translated; B is untranslated English",
+          "english": "Issue refund",
+          "ai": "Keluarkan pengembalian dana",
+          "human": "Issue refund"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Share URL",
+          "ai": "Bagikan URL",
+          "human": "Bagikan URL"
+        },
+        {
+          "key": "product_global_unique_id_summary",
+          "winner": "ai",
+          "reason": "More concise while preserving meaning; uses clearer pronoun \"Ini\" and avoids repetition of \"Pengenal\"",
+          "english": "Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.",
+          "ai": "Masukkan barcode atau pengidentifikasi unik lainnya untuk produk ini. Ini dapat membantu Anda membuat daftar produk ini di saluran atau pasar lain.",
+          "human": "Masukkan kode batang atau pengenal lainnya yang bersifat unik untuk produk ini. Pengenal semacam ini dapat membantu Anda mencantumkan produk ini di saluran atau marketplace lain."
+        },
+        {
+          "key": "card_reader_connect_scanning_failed_header",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "No reader connected",
+          "ai": "Tidak ada pembaca yang terhubung",
+          "human": "Tidak ada pembaca yang terhubung"
+        },
+        {
+          "key": "card_reader_connect_missing_bluetooth_permissions_header",
+          "winner": "human",
+          "reason": "Cleaner structure; \"tidak ditemukan\" is more concise than \"yang diperlukan tidak ada\"",
+          "english": "Missing required nearby devices permission",
+          "ai": "Izin perangkat terdekat yang diperlukan tidak ada",
+          "human": "Izin perangkat terdekat tidak ditemukan"
+        },
+        {
+          "key": "product_uncheck_is_downloadable_warning_message",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "All files currently attached to this product will be removed.",
+          "ai": "Semua file yang saat ini terlampir pada produk ini akan dihapus.",
+          "human": "Semua file yang saat ini terlampir pada produk ini akan dihapus."
+        },
+        {
+          "key": "empty_product_message",
+          "winner": "human",
+          "reason": "Explicitly includes \"Anda\" (your) for clarity; B omits it, making the context less clear",
+          "english": "Start selling today by adding your first product to the store.",
+          "ai": "Mulai menjual hari ini dengan menambahkan produk pertama Anda ke toko.",
+          "human": "Mulai berjualan hari ini dengan menambahkan produk pertama ke toko Anda."
+        },
+        {
+          "key": "product_selector_arrow_content_description",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Show details",
+          "ai": "Tampilkan detail",
+          "human": "Tampilkan detail"
+        },
+        {
+          "key": "shipping_label_create_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Create shipping label",
+          "ai": "Buat label pengiriman",
+          "human": "Buat label pengiriman"
+        },
+        {
+          "key": "product_update_success_notification_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Product Updated",
+          "ai": "Produk Diperbarui",
+          "human": "Produk Diperbarui"
+        },
+        {
+          "key": "blaze_campaign_preview_days_duration_endless",
+          "winner": "human",
+          "reason": "\"per minggu\" is more natural for frequency; \"mingguan\" is typically used as an adjective, not a frequency descriptor",
+          "english": "%1$s weekly, starting from %2$s",
+          "ai": "%1$s mingguan, dimulai dari %2$s",
+          "human": "%1$s per minggu, mulai dari %2$s"
+        },
+        {
+          "key": "product_add_ons_details_info_notice",
+          "winner": "ai",
+          "reason": "\"mengedit\" is more commonly used in Indonesian tech contexts than \"menyunting\"",
+          "english": "You can edit product add-ons in the web dashboard.",
+          "ai": "Anda dapat mengedit add-on produk di dasbor web.",
+          "human": "Anda dapat menyunting add-on produk di dasbor web."
+        },
+        {
+          "key": "woo_push_notifications_introduction_what_is_wpcom",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "What is WordPress.com?",
+          "ai": "Apa itu WordPress.com?",
+          "human": "Apa itu WordPress.com?"
+        },
+        {
+          "key": "blaze_campaign_creation_error_cancel",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Cancel campaign",
+          "ai": "Batalkan kampanye",
+          "human": "Batalkan kampanye"
+        },
+        {
+          "key": "blaze_campaign_preview_details_location",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Location",
+          "ai": "Lokasi",
+          "human": "Lokasi"
+        },
+        {
+          "key": "woopos_settings_store_email_label",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Email",
+          "ai": "Email",
+          "human": "Email"
+        },
+        {
+          "key": "product_global_unique_id",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "GTIN, UPC, EAN, ISBN",
+          "ai": "GTIN, UPC, EAN, ISBN",
+          "human": "GTIN, UPC, EAN, ISBN"
+        },
+        {
+          "key": "product_term_name_already_exists",
+          "winner": "human",
+          "reason": "Includes proper sentence punctuation (period at end)",
+          "english": "An option with this name already exists",
+          "ai": "Opsi dengan nama ini sudah ada",
+          "human": "Opsi dengan nama ini sudah ada."
+        },
+        {
+          "key": "woo_shipping_confirm_address_suggested",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Suggested",
+          "ai": "Disarankan",
+          "human": "Disarankan"
+        },
+        {
+          "key": "woopos_variation_item_content_description",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Variation %s, Price %s",
+          "ai": "Variasi %s, Harga %s",
+          "human": "Variasi %s, Harga %s"
+        },
+        {
+          "key": "more_menu_button_woo_pos_description",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Accept payments at your physical store",
+          "ai": "Terima pembayaran di toko fisik Anda",
+          "human": "Terima pembayaran di toko fisik Anda"
+        },
+        {
+          "key": "product_subscription_expiration_title",
+          "winner": "ai",
+          "reason": "More concise as a title; \"Kedaluwarsa langganan\" sufficient without redundant \"Tanggal\"",
+          "english": "Subscription expiration",
+          "ai": "Kedaluwarsa langganan",
+          "human": "Tanggal kedaluwarsa langganan"
+        },
+        {
+          "key": "login_site_credentials_use_web_authorization",
+          "winner": "tie",
+          "reason": "Both are natural; A uses \"menggunakan\" (using), B uses \"dengan\" (with)—both convey the meaning appropriately",
+          "english": "Try again with WP Admin page",
+          "ai": "Coba lagi dengan halaman Admin WP",
+          "human": "Coba lagi menggunakan halaman WP Admin"
+        },
+        {
+          "key": "orderfilters_product_filter",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Product",
+          "ai": "Produk",
+          "human": "Produk"
+        },
+        {
+          "key": "woopos_orders_edit_refund",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Edit refund",
+          "ai": "Edit pengembalian dana",
+          "human": "Edit pengembalian dana"
+        },
+        {
+          "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Remove coupons",
+          "ai": "Hapus kupon",
+          "human": "Hapus kupon"
+        },
+        {
+          "key": "card_reader_connect_connecting_built_in_header",
+          "winner": "ai",
+          "reason": "\"Menyiapkan\" is more concise and natural than \"Mempersiapkan\"",
+          "english": "Preparing for payment",
+          "ai": "Menyiapkan pembayaran",
+          "human": "Mempersiapkan pembayaran"
+        },
+        {
+          "key": "jetpack_install_progress_step_one_message",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Installing Jetpack",
+          "ai": "Menginstal Jetpack",
+          "human": "Menginstal Jetpack"
+        },
+        {
+          "key": "login_jetpack_installation_error_generic_message",
+          "winner": "ai",
+          "reason": "Uses full Indonesian \"kesalahan\" instead of English \"error\"; more appropriate for user-facing message",
+          "english": "There was an error communicating with your site.",
+          "ai": "Ada kesalahan berkomunikasi dengan situs Anda.",
+          "human": "Terjadi error saat berkomunikasi dengan situs Anda."
+        },
+        {
+          "key": "coupon_details_performance_amount_heading",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Amount",
+          "ai": "Jumlah",
+          "human": "Jumlah"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "ai",
+          "reason": "\"Silakan\" is more polite and formal; uses Indonesian \"kesalahan\" instead of English \"error\"",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "Terjadi kesalahan. Silakan login untuk melanjutkan",
+          "human": "Terjadi error. Harap login untuk melanjutkan"
+        },
+        {
+          "key": "card_reader_tap_to_pay_successful_refund_message",
+          "winner": "human",
+          "reason": "Better word order; \"Uji coba pembayaran menggunakan Ketuk untuk Bayar\" reads more naturally than B's awkward placement of \"Uji Coba\" at end",
+          "english": "Test Tap To Pay payment was successfully refunded",
+          "ai": "Pembayaran Ketuk Untuk Membayar Uji Coba berhasil dikembalikan",
+          "human": "Uji coba pembayaran menggunakan Ketuk untuk Bayar berhasil dikembalikan"
+        },
+        {
+          "key": "variations_bulk_creation_warning_title",
+          "winner": "ai",
+          "reason": "More literal structure matching original; \"Batas generasi terlampaui\" clearly conveys the meaning",
+          "english": "Generation limit exceeded",
+          "ai": "Batas generasi terlampaui",
+          "human": "Melebihi batas pembuatan"
+        },
+        {
+          "key": "product_detail_publish_product_draft_success",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Product draft saved",
+          "ai": "Draf produk disimpan",
+          "human": "Draf produk disimpan"
+        },
+        {
+          "key": "shipping_label_customs_contents_type_other_hint",
+          "winner": "ai",
+          "reason": "\"Detail konten\" is more standard in modern Indonesian tech usage than \"Detail isi\"",
+          "english": "Contents details",
+          "ai": "Detail konten",
+          "human": "Detail isi"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Customer",
+          "ai": "Pelanggan",
+          "human": "Pelanggan"
+        },
+        {
+          "key": "jetpack_install_progress_step_three_message",
+          "winner": "ai",
+          "reason": "\"Menghubungkan toko Anda\" is more natural; B's \"Menyambungkan ke\" adds \"ke\" (to) which slightly changes meaning",
+          "english": "Connecting your store",
+          "ai": "Menghubungkan toko Anda",
+          "human": "Menyambungkan ke toko Anda"
+        },
+        {
+          "key": "coupon_list_item_label_active",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Active",
+          "ai": "Aktif",
+          "human": "Aktif"
+        },
+        {
+          "key": "today",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Today",
+          "ai": "Hari ini",
+          "human": "Hari ini"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "ai",
+          "reason": "\"Kirim\" is more concise than \"Kirimkan\" without loss of meaning",
+          "english": "Send receipt",
+          "ai": "Kirim tanda terima",
+          "human": "Kirimkan tanda terima"
+        },
+        {
+          "key": "ai_product_description_title_hint",
+          "winner": "ai",
+          "reason": "\"judul\" (title) correctly matches English; \"nama\" (name) would be inaccurate",
+          "english": "Enter product title.",
+          "ai": "Masukkan judul produk.",
+          "human": "Masukkan nama produk."
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "\"mengeluarkan\" correctly conveys the merchant issuing the refund; \"meminta\" (request) changes the meaning",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "Apakah Anda yakin ingin mengeluarkan pengembalian dana? Ini tidak dapat dibatalkan.",
+          "human": "Apakah Anda yakin ingin meminta pengembalian dana? Hal ini tidak dapat dibatalkan."
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Signup confirmation",
+          "ai": "Konfirmasi pendaftaran",
+          "human": "Konfirmasi pendaftaran"
+        },
+        {
+          "key": "blaze_campaign_objective_save_selection_switch_label",
+          "winner": "human",
+          "reason": "Includes proper sentence punctuation; \"mendatang\" is standard for \"future\" in this context",
+          "english": "Save my selection for future campaigns",
+          "ai": "Simpan pilihan saya untuk kampanye masa depan",
+          "human": "Simpan pilihan saya untuk kampanye mendatang."
+        },
+        {
+          "key": "shipping_label_shipment_details_payment_method",
+          "winner": "tie",
+          "reason": "Translations are identical",
+          "english": "Payment method",
+          "ai": "Metode pembayaran",
+          "human": "Metode pembayaran"
+        },
+        {
+          "key": "analytics_revenue_no_data",
+          "winner": "tie",
+          "reason": "Both phrasings are equally valid; \"dalam periode\" vs \"selama periode\" convey the same meaning",
+          "english": "No revenue this period",
+          "ai": "Tidak ada pendapatan selama periode ini",
+          "human": "Tidak ada pendapatan dalam periode ini"
+        }
+      ]
+    },
+    {
+      "language": "ru",
+      "language_name": "Russian",
+      "sample_size": 50,
+      "judged": 50,
+      "ai_wins": 23,
+      "human_wins": 9,
+      "ties": 18,
+      "ai_win_rate": 0.46,
+      "human_win_rate": 0.18,
+      "tie_rate": 0.36,
+      "results": [
+        {
+          "key": "login_get_link_by_email",
+          "winner": "human",
+          "reason": "Shorter while maintaining clarity; using 'email' is standard in Russian mobile UI",
+          "english": "Get a login link by email",
+          "ai": "Получить ссылку для входа по электронной почте",
+          "human": "Получить ссылку для входа по email"
+        },
+        {
+          "key": "woo_shipping_payment_screen_title",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Payment method",
+          "ai": "Способ оплаты",
+          "human": "Способ оплаты"
+        },
+        {
+          "key": "logviewer_activity_title",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Application log",
+          "ai": "Журнал приложения",
+          "human": "Журнал приложения"
+        },
+        {
+          "key": "shipping_label_package_details_weight_hint",
+          "winner": "ai",
+          "reason": "Correct singular 'пакета' for single package; 'посылок' (plural) is incorrect for this context",
+          "english": "Total package weight (%1$s)",
+          "ai": "Общий вес пакета (%1$s)",
+          "human": "Общий вес посылок (%1$s)"
+        },
+        {
+          "key": "booking_overflow_refund",
+          "winner": "ai",
+          "reason": "A correctly means 'execute a refund'; B incorrectly means 'question about refund'",
+          "english": "Issue refund",
+          "ai": "Выполнить возврат",
+          "human": "Вопрос о возврате средств"
+        },
+        {
+          "key": "store_onboarding_launch_store_share_url_button",
+          "winner": "ai",
+          "reason": "Correctly matches meaning 'share link'; A's 'URL recommendation' is incorrect",
+          "english": "Share URL",
+          "ai": "Поделиться ссылкой",
+          "human": "URL-адрес рекомендации"
+        },
+        {
+          "key": "product_global_unique_id_summary",
+          "winner": "human",
+          "reason": "More natural Russian; 'выставлять товар на продажу' is more commerce-appropriate than 'разместить'",
+          "english": "Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.",
+          "ai": "Введите штрихкод или любой другой уникальный идентификатор этого товара. Это может помочь вам разместить этот товар на других каналах или маркетплейсах.",
+          "human": "Введите штрихкод или любой другой уникальный идентификатор товара. Это поможет вам выставлять товар на продажу в других сетях или на маркетплейсах."
+        },
+        {
+          "key": "card_reader_connect_scanning_failed_header",
+          "winner": "ai",
+          "reason": "More natural and direct; 'считыватель' is standard terminology for card reader",
+          "english": "No reader connected",
+          "ai": "Считыватель не подключен",
+          "human": "Не подключено устройство чтения"
+        },
+        {
+          "key": "card_reader_connect_missing_bluetooth_permissions_header",
+          "winner": "ai",
+          "reason": "More complete translation; includes 'требуемое' (required) which matches the English",
+          "english": "Missing required nearby devices permission",
+          "ai": "Отсутствует требуемое разрешение на поиск ближайших устройств",
+          "human": "Отсутствует разрешение на поиск устройств поблизости"
+        },
+        {
+          "key": "product_uncheck_is_downloadable_warning_message",
+          "winner": "human",
+          "reason": "Shorter and equally clear; B's 'в настоящее время' is unnecessarily verbose",
+          "english": "All files currently attached to this product will be removed.",
+          "ai": "Все файлы, в настоящее время прикрепленные к этому товару, будут удалены.",
+          "human": "Все прикрепленные к этому товару файлы будут удалены."
+        },
+        {
+          "key": "empty_product_message",
+          "winner": "ai",
+          "reason": "Better word order and uses 'товар' (product) instead of 'продукт'",
+          "english": "Start selling today by adding your first product to the store.",
+          "ai": "Начните продавать уже сегодня, добавив первый товар в магазин.",
+          "human": "Добавьте в магазин первый продукт, чтобы уже сегодня приступить к продаже товаров."
+        },
+        {
+          "key": "product_selector_arrow_content_description",
+          "winner": "ai",
+          "reason": "'Подробности' (details) is more appropriate than 'сведения' (information) for UI context",
+          "english": "Show details",
+          "ai": "Показать подробности",
+          "human": "Показать сведения"
+        },
+        {
+          "key": "shipping_label_create_title",
+          "winner": "ai",
+          "reason": "Uses appropriate verb form; B's noun form is less suitable for action button",
+          "english": "Create shipping label",
+          "ai": "Создать ярлык доставки",
+          "human": "Создание почтового бланка"
+        },
+        {
+          "key": "product_update_success_notification_title",
+          "winner": "ai",
+          "reason": "'Товар' is more natural in commerce context than 'продукт'",
+          "english": "Product Updated",
+          "ai": "Товар обновлен",
+          "human": "Продукт обновлён"
+        },
+        {
+          "key": "blaze_campaign_preview_days_duration_endless",
+          "winner": "ai",
+          "reason": "Proper punctuation with comma before 'начиная'",
+          "english": "%1$s weekly, starting from %2$s",
+          "ai": "%1$s еженедельно, начиная с %2$s",
+          "human": "%1$s еженедельно начиная с %2$s"
+        },
+        {
+          "key": "product_add_ons_details_info_notice",
+          "winner": "human",
+          "reason": "Shorter and more natural passive construction; 'веб-консоли' is standard UI terminology",
+          "english": "You can edit product add-ons in the web dashboard.",
+          "ai": "Вы можете редактировать дополнения товара на веб-панели.",
+          "human": "Дополнения к товару можно редактировать в веб-консоли."
+        },
+        {
+          "key": "woo_push_notifications_introduction_what_is_wpcom",
+          "winner": "ai",
+          "reason": "'Что такое' is more direct and natural than 'Что представляет собой'",
+          "english": "What is WordPress.com?",
+          "ai": "Что такое WordPress.com?",
+          "human": "Что представляет собой WordPress.com?"
+        },
+        {
+          "key": "blaze_campaign_creation_error_cancel",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Cancel campaign",
+          "ai": "Отменить кампанию",
+          "human": "Отменить кампанию"
+        },
+        {
+          "key": "blaze_campaign_preview_details_location",
+          "winner": "human",
+          "reason": "'Расположение' is shorter than 'местоположение'; both work but A is better for mobile",
+          "english": "Location",
+          "ai": "Местоположение",
+          "human": "Расположение"
+        },
+        {
+          "key": "woopos_settings_store_email_label",
+          "winner": "ai",
+          "reason": "Standard in Russian mobile apps to use 'Email'; shorter and consistent with UI conventions",
+          "english": "Email",
+          "ai": "Email",
+          "human": "Адрес эл. почты"
+        },
+        {
+          "key": "product_global_unique_id",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "GTIN, UPC, EAN, ISBN",
+          "ai": "GTIN, UPC, EAN, ISBN",
+          "human": "GTIN, UPC, EAN, ISBN"
+        },
+        {
+          "key": "product_term_name_already_exists",
+          "winner": "ai",
+          "reason": "'Названием' (for names/titles) is more appropriate than 'имем' (for names/identities)",
+          "english": "An option with this name already exists",
+          "ai": "Опция с таким названием уже существует",
+          "human": "Опция с таким именем уже существует."
+        },
+        {
+          "key": "woo_shipping_confirm_address_suggested",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Suggested",
+          "ai": "Предложено",
+          "human": "Предложено"
+        },
+        {
+          "key": "woopos_variation_item_content_description",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Variation %s, Price %s",
+          "ai": "Вариант %s, цена %s",
+          "human": "Вариант %s, цена %s"
+        },
+        {
+          "key": "more_menu_button_woo_pos_description",
+          "winner": "human",
+          "reason": "More natural; 'офлайн-магазин' is shorter and clearer than 'физическом магазине'",
+          "english": "Accept payments at your physical store",
+          "ai": "Принимайте платежи в своем физическом магазине",
+          "human": "Принимать платежи в офлайн-магазине"
+        },
+        {
+          "key": "product_subscription_expiration_title",
+          "winner": "ai",
+          "reason": "Matches English noun form better; A is more verbose with unnecessary modifiers",
+          "english": "Subscription expiration",
+          "ai": "Истечение подписки",
+          "human": "Срок действия подписки истекает"
+        },
+        {
+          "key": "login_site_credentials_use_web_authorization",
+          "winner": "ai",
+          "reason": "Mentions 'WP Admin' which is more accurate and helpful than generic 'page console'",
+          "english": "Try again with WP Admin page",
+          "ai": "Попробуйте еще раз со страницы WP Admin",
+          "human": "Повторите попытку, используя страницу консоли"
+        },
+        {
+          "key": "orderfilters_product_filter",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Product",
+          "ai": "Товар",
+          "human": "Товар"
+        },
+        {
+          "key": "woopos_orders_edit_refund",
+          "winner": "ai",
+          "reason": "Shorter; 'средств' is unnecessary as 'возврат' (refund) is clear",
+          "english": "Edit refund",
+          "ai": "Редактировать возврат",
+          "human": "Редактировать возврат средств"
+        },
+        {
+          "key": "woopos_totals_coupons_validation_failed_remove_coupons",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Remove coupons",
+          "ai": "Удалить купоны",
+          "human": "Удалить купоны"
+        },
+        {
+          "key": "card_reader_connect_connecting_built_in_header",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Preparing for payment",
+          "ai": "Подготовка к оплате",
+          "human": "Подготовка к оплате"
+        },
+        {
+          "key": "jetpack_install_progress_step_one_message",
+          "winner": "ai",
+          "reason": "Shorter and more common for progress messages; noun form is standard",
+          "english": "Installing Jetpack",
+          "ai": "Установка Jetpack",
+          "human": "Идет установка Jetpack"
+        },
+        {
+          "key": "login_jetpack_installation_error_generic_message",
+          "winner": "ai",
+          "reason": "More natural; 'общение' better matches 'communicating' than 'обмен данными'",
+          "english": "There was an error communicating with your site.",
+          "ai": "Произошла ошибка при общении с вашим сайтом.",
+          "human": "Во время обмена данными с вашим веб-сайтом произошла ошибка."
+        },
+        {
+          "key": "coupon_details_performance_amount_heading",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Amount",
+          "ai": "Сумма",
+          "human": "Сумма"
+        },
+        {
+          "key": "magic_link_update_error",
+          "winner": "human",
+          "reason": "More concise and natural; avoids unnecessary 'пожалуйста' and 'для продолжения'",
+          "english": "An error has occurred. Please login to continue",
+          "ai": "Произошла ошибка. Пожалуйста, войдите для продолжения",
+          "human": "Произошла ошибка. Войдите, чтобы продолжить."
+        },
+        {
+          "key": "card_reader_tap_to_pay_successful_refund_message",
+          "winner": "ai",
+          "reason": "More natural word order; 'был возвращен' flows better than 'выполнен'",
+          "english": "Test Tap To Pay payment was successfully refunded",
+          "ai": "Тестовый платеж Tap To Pay был успешно возвращен",
+          "human": "Возврат средств для проверки «Оплаты в касание» выполнен успешно."
+        },
+        {
+          "key": "variations_bulk_creation_warning_title",
+          "winner": "ai",
+          "reason": "Directly matches English; B adds interpretation that changes the meaning",
+          "english": "Generation limit exceeded",
+          "ai": "Лимит генерации превышен",
+          "human": "Превышено максимальное количество вариантов"
+        },
+        {
+          "key": "product_detail_publish_product_draft_success",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Product draft saved",
+          "ai": "Черновик товара сохранен",
+          "human": "Черновик товара сохранен"
+        },
+        {
+          "key": "shipping_label_customs_contents_type_other_hint",
+          "winner": "ai",
+          "reason": "'Детали' (details) is more accurate than 'сведения' (information) for this context",
+          "english": "Contents details",
+          "ai": "Детали содержимого",
+          "human": "Сведения о содержимом"
+        },
+        {
+          "key": "woopos_bookings_details_customer_title",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Customer",
+          "ai": "Клиент",
+          "human": "Клиент"
+        },
+        {
+          "key": "jetpack_install_progress_step_three_message",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Connecting your store",
+          "ai": "Подключение вашего магазина",
+          "human": "Подключение вашего магазина"
+        },
+        {
+          "key": "coupon_list_item_label_active",
+          "winner": "human",
+          "reason": "Adjective form is appropriate for label; A's adverb form is incorrect",
+          "english": "Active",
+          "ai": "Активно",
+          "human": "Активный"
+        },
+        {
+          "key": "today",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Today",
+          "ai": "Сегодня",
+          "human": "Сегодня"
+        },
+        {
+          "key": "card_reader_payment_send_receipt",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Send receipt",
+          "ai": "Отправить квитанцию",
+          "human": "Отправить квитанцию"
+        },
+        {
+          "key": "ai_product_description_title_hint",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Enter product title.",
+          "ai": "Введите название товара.",
+          "human": "Введите название товара."
+        },
+        {
+          "key": "order_refunds_confirmation",
+          "winner": "ai",
+          "reason": "'Выполнить возврат' better matches 'issue a refund'; B's 'вернуть деньги' is too colloquial",
+          "english": "Are you sure you want to issue a refund? This can’t be undone.",
+          "ai": "Вы уверены, что хотите выполнить возврат? Это действие невозможно отменить.",
+          "human": "Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить."
+        },
+        {
+          "key": "signup_confirmation_title",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Signup confirmation",
+          "ai": "Подтверждение регистрации",
+          "human": "Подтверждение регистрации"
+        },
+        {
+          "key": "blaze_campaign_objective_save_selection_switch_label",
+          "winner": "human",
+          "reason": "Slightly more natural; 'мой' is implied and unnecessary",
+          "english": "Save my selection for future campaigns",
+          "ai": "Сохранить мой выбор для будущих кампаний",
+          "human": "Сохранить выбор для будущих кампаний"
+        },
+        {
+          "key": "shipping_label_shipment_details_payment_method",
+          "winner": "tie",
+          "reason": "Identical translations",
+          "english": "Payment method",
+          "ai": "Способ оплаты",
+          "human": "Способ оплаты"
+        },
+        {
+          "key": "analytics_revenue_no_data",
+          "winner": "ai",
+          "reason": "More natural and concise; 'в этот период' is more commonly used than 'за указанный период'",
+          "english": "No revenue this period",
+          "ai": "Нет доходов в этот период",
+          "human": "Нет доходов за указанный период"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_judged": 150,
+    "ai_wins": 60,
+    "human_wins": 20,
+    "ties": 70,
+    "ai_win_rate": 0.4,
+    "human_win_rate": 0.13333333333333333,
+    "tie_rate": 0.4666666666666667
+  }
+}
