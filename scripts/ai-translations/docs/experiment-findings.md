@@ -148,6 +148,12 @@ All times below are using local CLI tools. API calls would be faster (no CLI pro
 
 A typical release adds 20-50 new strings. Translating 50 strings to all 16 languages via API would take under 2 minutes.
 
+## Conclusion
+
+AI translation is ready to replace human translators for WooCommerce Android. The experiment shows that AI translations are not just comparable to human ones -- they are preferred in a blind evaluation across all 16 languages. The quality is there, the speed is there (minutes instead of days), and the flexibility to improve translations through prompt changes is something human translation workflows cannot match.
+
+As a next step, I am going to try implementing AI translation as part of the release pipeline and see how it goes in practice.
+
 ## Experiment Details
 
 - **Branch:** `hack/ai-translations` in `woocommerce/woocommerce-android`
