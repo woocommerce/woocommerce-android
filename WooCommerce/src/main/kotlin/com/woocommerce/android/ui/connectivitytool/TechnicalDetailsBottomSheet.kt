@@ -18,15 +18,14 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +36,6 @@ fun TechnicalDetailsBottomSheet(
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     val copiedMessage = stringResource(id = R.string.connectivity_tool_technical_details_copied)
 
@@ -63,7 +61,7 @@ fun TechnicalDetailsBottomSheet(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = {
-                        clipboardManager.setText(AnnotatedString(technicalDetails))
+                        context.copyToClipboard("Technical Details", technicalDetails)
                         Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
                     }
                 ) {

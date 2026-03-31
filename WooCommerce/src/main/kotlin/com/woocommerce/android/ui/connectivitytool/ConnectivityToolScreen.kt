@@ -158,7 +158,9 @@ fun ConnectivityCheckCard(
                 onRetryConnectionClicked = it.retryConnectionAction ?: {},
                 shouldDisplayReadMoreButton = it.readMoreAction != null,
                 onViewTechnicalDetailsClicked = technicalDetails?.let { details ->
-                    { onViewTechnicalDetailsClicked(details) }
+                    {
+                        onViewTechnicalDetailsClicked(details)
+                    }
                 }
             )
             Divider(
@@ -355,7 +357,9 @@ fun ConnectivityToolScreenPreview() {
             storeConnectionCheckData = StoreConnectivityCheckData(
                 connectivityCheckStatus = Failure(
                     error = FailureType.PARSE,
-                    technicalDetails = "Operation: Site Connection\nError Type: INVALID_RESPONSE\nDescription: Parse error"
+                    technicalDetails = "Operation: Site Connection\n" +
+                        "Error Type: INVALID_RESPONSE\n" +
+                        "Description: Parse error"
                 ),
                 readMoreAction = {}
             ),
