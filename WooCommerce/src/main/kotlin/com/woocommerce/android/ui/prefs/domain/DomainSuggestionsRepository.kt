@@ -36,12 +36,12 @@ class DomainSuggestionsRepository @Inject constructor(
 
     suspend fun fetchDomainSuggestions(domainQuery: String, freeOnly: Boolean): Result<Unit> {
         val domainSuggestionsPayload = SiteStore.SuggestDomainsPayload(
-            domainQuery,
+            query = domainQuery,
             onlyWordpressCom = freeOnly,
             includeWordpressCom = false,
             includeDotBlogSubdomain = false,
-            SUGGESTIONS_REQUEST_COUNT,
-            vendor = "variation8_front"
+            quantity = SUGGESTIONS_REQUEST_COUNT,
+            vendor = "variation8_front",
         )
         dispatcher.dispatchAndAwait<SiteStore.SuggestDomainsPayload, SiteStore.OnSuggestedDomains>(
             SiteActionBuilder.newSuggestDomainsAction(domainSuggestionsPayload)

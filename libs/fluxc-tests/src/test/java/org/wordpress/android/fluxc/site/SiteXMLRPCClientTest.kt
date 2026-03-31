@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class SiteXMLRPCClientTest {
     private lateinit var mSiteXMLRPCClient: SiteXMLRPCClient
@@ -86,38 +87,38 @@ class SiteXMLRPCClientTest {
   <member><name>post_thumbnail</name><value><struct>
   <member><name>value</name><value><boolean>1</boolean></value></member>
   </struct></value></member>
-  
+
   <member><name>time_zone</name><value><struct>
   <member><name>value</name><value><string>0</string></value></member>
   </struct></value></member>
-  
+
   <member><name>login_url</name><value><struct>
   <member><name>value</name><value>
   <string>https://taliwutblog.wordpress.com/wp-login.php</string>
   </value></member></struct></value></member>
-  
+
   <member><name>blog_public</name><value><struct>
   <member><name>value</name><value><string>0</string></value></member></struct>
   </value></member>
-  
+
   <member><name>blog_title</name><value><struct>
   <member><name>value</name><value><string>@tal&amp;amp;wut blog</string>
   </value></member></struct></value></member>
-  
+
   <member><name>admin_url</name><value><struct>
   <member><name>readonly</name><value><boolean>1</boolean></value></member>
   <member><name>value</name><value>
   <string>https://taliwutblog.wordpress.com/wp-admin/</string>
   </value></member></struct></value></member>
-  
+
   <member><name>software_version</name><value><struct>
   <member><name>value</name><value><string>4.5.3-20160628</string></value></member>
   </struct></value></member>
-  
+
   <member><name>jetpack_client_id</name><value><struct>
   <member><name>value</name><value><string>false</string></value></member></struct>
   </value></member>
-  
+
   <member><name>home_url</name><value><struct>
   <member><name>value</name><value><string>http://taliwutblog.wordpress.com</string>
   </value></member></struct></value></member>
