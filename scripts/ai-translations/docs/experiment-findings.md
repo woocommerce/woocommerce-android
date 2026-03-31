@@ -17,8 +17,8 @@ I wanted to find out if AI-generated translations are good enough to replace hum
 I used Haiku for Claude because it is the fastest and cheapest model in the Claude family. If the cheapest model already produces good translations, stronger models would do at least as well.
 
 **Translation strategies:**
-- **Naive** -just ask to translate with no extra instructions beyond preserving placeholders and HTML
-- **Contextual** -same as naive but also grep the codebase for each string's usage (button label? dialog title? error message?) and ask the LLM to keep translations short for mobile UI
+- **Naive** - just ask to translate with no extra instructions beyond preserving placeholders and HTML
+- **Contextual** - same as naive but also grep the codebase for each string's usage (button label? dialog title? error message?) and ask the LLM to keep translations short for mobile UI
 
 **How the experiment ran:** A Python script extracted strings from `strings.xml`, split them into chunks, sent each chunk to the LLM CLI, and collected the JSON responses. All runs used the CLI tools locally (not the API). API calls would be faster since they skip CLI startup overhead — the `ANTHROPIC_API_KEY` is already available in our Buildkite CI secrets (used by the `claude-summarize` build analysis plugin).
 
@@ -26,7 +26,7 @@ I used Haiku for Claude because it is the fastest and cheapest model in the Clau
 
 ### Similarity metrics (AI vs existing human translation)
 
-These metrics measure how close the AI output is to the existing human translation. They do not tell us which is better -only how similar they are.
+These metrics measure how close the AI output is to the existing human translation. They do not tell us which is better - only how similar they are.
 
 - **BLEU** (0-100): counts how many word sequences (1-4 words) match between the two translations. Higher means more overlap. Standard metric in machine translation research. Known limitation: penalizes valid alternative word choices, especially in CJK languages where word segmentation differs.
 
@@ -43,7 +43,7 @@ Similarity metrics assume human translations are the gold standard. But human tr
 - Randomly assign which is AI and which is human (the judge does not know)
 - Ask: which is better for a mobile app UI? Consider accuracy, naturalness, and length
 
-Out of the 300 translated strings, I randomly picked 50 per language for judging (50 x 16 = 800 evaluations per judge). To make sure the results are not biased by the judge model, I ran this evaluation **twice with different judges**: once with Claude (Haiku 4.5, 800 evaluations) and once with Codex (GPT-5.4, 700 evaluations). The Codex judge evaluated translations made by Codex - if there were self-preference bias, Codex-as-judge would unfairly favor Codex translations. Both judges agreed.
+Out of the 300 translated strings, I randomly picked 50 per language for judging (50 x 16 = 800 evaluations per judge). To make sure the results are not biased by the judge model, I ran this evaluation **twice with different judges**: once with Claude (Haiku 4.5, 800 evaluations) and once with Codex (GPT-5.4, 700 evaluations). The Codex judge evaluated translations made by Codex - if there was self-preference bias, Codex-as-judge would unfairly favor Codex translations. Both judges agreed.
 
 ## Results
 
@@ -102,7 +102,7 @@ I expected that giving the LLM information about where each string is used in co
 | Avg chrF (Codex) | **73.8** | 73.4 |
 | Time per language (Claude CLI) | ~108s | ~170s |
 
-However, the naive prompt did not include any length instructions. A potential improvement is adding a simple "keep translations short for mobile UI" instruction without the code context grep -that would combine the speed of naive with the length awareness of contextual. This is worth testing in a follow-up.
+However, the naive prompt did not include any length instructions. A potential improvement is adding a simple "keep translations short for mobile UI" instruction without the code context grep - that would combine the speed of naive with the length awareness of contextual. This is worth testing in a follow-up.
 
 ### A key advantage: the prompt is the spec
 
@@ -131,7 +131,7 @@ With human translators, this kind of adjustment requires writing documentation, 
 | Chinese (Traditional) | 44.5 | 63.1 | 0.815 | 40% |
 | Japanese | 39.5 | 62.0 | 0.755 | 46% |
 
-BLEU scores are lower for CJK and RTL languages. This is a known limitation of the metric -it penalizes valid alternative word choices, and word segmentation differs. The blind judge results tell a different story: AI is preferred **even more** for these languages (Hebrew 66%, Japanese 46%, Chinese 40-42%). The likely reason is that human translators produced more literal or verbose translations, while the AI picked more natural phrasing.
+BLEU scores are lower for CJK and RTL languages. This is a known limitation of the metric - it penalizes valid alternative word choices, and word segmentation differs. The blind judge results tell a different story: AI is preferred **even more** for these languages (Hebrew 66%, Japanese 46%, Chinese 40-42%). The likely reason is that human translators produced more literal or verbose translations, while the AI picked more natural phrasing.
 
 ### Timing
 
@@ -163,7 +163,7 @@ A typical release adds 20-50 new strings. Translating 50 strings to all 16 langu
 
 ## Conclusion
 
-AI translation is ready to replace human translators for WooCommerce Android. The experiment shows that AI translations are not just comparable to human ones -they are preferred in a blind evaluation across all 16 languages. The quality is there, the speed is there (minutes instead of days), and the flexibility to improve translations through prompt changes is something human translation workflows cannot match.
+AI translation is ready to replace human translators for WooCommerce Android. The experiment shows that AI translations are not just comparable to human ones - they are preferred in a blind evaluation across all 16 languages. The quality is there, the speed is there (minutes instead of days), and the flexibility to improve translations through prompt changes is something human translation workflows cannot match.
 
 As a next step, I am going to try implementing AI translation as part of the release pipeline and see how it goes in practice.
 
