@@ -143,13 +143,15 @@ fun ConnectivityToolScreen(
 @Composable
 fun ConnectivityCheckCard(
     cardData: ConnectivityCheckCardData?,
-    onViewTechnicalDetailsClicked: (String) -> Unit
+    onViewTechnicalDetailsClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     cardData
         ?.takeUnless { it.connectivityCheckStatus is NotStarted }
         ?.let {
             val technicalDetails = (it.connectivityCheckStatus as? Failure)?.technicalDetails
             ConnectivityCheckCard(
+                modifier = modifier,
                 checkTitle = it.title,
                 iconDrawable = it.icon,
                 suggestion = it.suggestion,

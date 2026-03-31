@@ -37,6 +37,7 @@ fun TechnicalDetailsBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
+    val clipboardLabel = stringResource(id = R.string.connectivity_tool_technical_details_title)
     val copiedMessage = stringResource(id = R.string.connectivity_tool_technical_details_copied)
 
     WCModalBottomSheet(
@@ -61,7 +62,7 @@ fun TechnicalDetailsBottomSheet(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = {
-                        context.copyToClipboard("Technical Details", technicalDetails)
+                        context.copyToClipboard(clipboardLabel, technicalDetails)
                         Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
                     }
                 ) {

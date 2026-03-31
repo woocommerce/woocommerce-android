@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.connectivitytool.useCases
 
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class ErrorDetailsFormatterTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class ErrorDetailsFormatterTest : BaseUnitTest() {
     @Test
     fun `when message is provided, then all fields are included`() {
         // WHEN
