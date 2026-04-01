@@ -56,6 +56,6 @@ class StoreOrdersCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "Fetch Orders"
+        const val OPERATION_NAME = "Fetching your site orders"
     }
 }

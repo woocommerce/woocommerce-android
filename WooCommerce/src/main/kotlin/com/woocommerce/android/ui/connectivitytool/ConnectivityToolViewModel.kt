@@ -293,22 +293,21 @@ class ConnectivityToolViewModel @Inject constructor(
         }.filter { it.second is Success || it.second is Failure }
 
         return buildString {
-            appendLine("Connectivity Test Log")
-            appendLine("====================")
-            appendLine()
             checks.forEachIndexed { index, (name, status) ->
-                val statusStr = when (status) {
-                    is Success -> "SUCCESS"
-                    is Failure -> "FAILED"
-                    else -> "UNKNOWN"
-                }
-                appendLine("${index + 1}. $name: $statusStr (${status.durationMs}ms)")
-                if (status is Failure) {
-                    status.error?.let { appendLine("   Error: ${it.name}") }
-                    status.technicalDetails?.let { details ->
-                        details.lines().forEach { line -> appendLine("   $line") }
+                appendLine("## ${index + 1}. $name")
+                appendLine("Took: ${status.durationMs}ms")
+                val resultStr = when (status) {
+                    is Success -> "Success"
+                    is Failure -> buildString {
+                        append(status.error?.name ?: "Failed")
+                        status.technicalDetails?.let { details ->
+                            append("\n$details")
+                        }
                     }
+                    else -> "Unknown"
                 }
+                appendLine("Result: $resultStr")
+                appendLine()
             }
         }.trimEnd()
     }

@@ -54,6 +54,6 @@ class StoreProductsCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "Fetch Products"
+        const val OPERATION_NAME = "Fetching products in your store"
     }
 }

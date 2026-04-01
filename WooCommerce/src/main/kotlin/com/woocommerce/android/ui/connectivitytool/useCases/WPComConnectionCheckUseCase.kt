@@ -29,6 +29,6 @@ class WPComConnectionCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "WordPress.com Servers"
+        const val OPERATION_NAME = "Connecting to WordPress.com Servers"
     }
 }

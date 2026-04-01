@@ -54,6 +54,6 @@ class StoreConnectionCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "Site Connection"
+        const val OPERATION_NAME = "Connecting to your site"
     }
 }

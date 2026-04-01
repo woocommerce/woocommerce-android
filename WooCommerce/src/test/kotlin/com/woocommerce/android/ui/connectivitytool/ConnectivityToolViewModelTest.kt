@@ -235,8 +235,8 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             assertThat(events).hasSize(1)
             assertThat(events.first()).isInstanceOf(OpenSupportRequest::class.java)
             val log = (events.first() as OpenSupportRequest).diagnosticLog
-            assertThat(log).contains("Connectivity Test Log")
-            assertThat(log).contains("Internet Connection: SUCCESS")
+            assertThat(log).contains("## 1. Internet Connection")
+            assertThat(log).contains("Result: Success")
         }
 
     @Test
@@ -346,11 +346,12 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // THEN
         val log = (events.first() as OpenSupportRequest).diagnosticLog
-        assertThat(log).contains("1. Internet Connection: SUCCESS")
-        assertThat(log).contains("2. WordPress.com Servers: SUCCESS")
-        assertThat(log).contains("3. Site Connection: SUCCESS")
-        assertThat(log).contains("4. Fetch Orders: SUCCESS")
-        assertThat(log).contains("5. Fetch Products: SUCCESS")
+        assertThat(log).contains("## 1. Internet Connection")
+        assertThat(log).contains("## 2. Connecting to WordPress.com Servers")
+        assertThat(log).contains("## 3. Connecting to your site")
+        assertThat(log).contains("## 4. Fetching your site orders")
+        assertThat(log).contains("## 5. Fetching products in your store")
+        assertThat(log!!.lines().filter { it == "Result: Success" }).hasSize(5)
     }
 
     @Test
@@ -372,8 +373,8 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // THEN
         val log = (events.first() as OpenSupportRequest).diagnosticLog
-        assertThat(log).contains("3. Site Connection: FAILED")
-        assertThat(log).contains("Error: TIMEOUT")
+        assertThat(log).contains("## 3. Connecting to your site")
+        assertThat(log).contains("Result: TIMEOUT")
         assertThat(log).contains("Operation: Site Connection")
     }
 
@@ -392,11 +393,11 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // THEN
         val log = (events.first() as OpenSupportRequest).diagnosticLog
-        assertThat(log).contains("Internet Connection: SUCCESS")
+        assertThat(log).contains("## 1. Internet Connection")
         assertThat(log).doesNotContain("WordPress.com Servers")
-        assertThat(log).contains("Site Connection: SUCCESS")
-        assertThat(log).contains("Fetch Orders: SUCCESS")
-        assertThat(log).contains("Fetch Products: SUCCESS")
+        assertThat(log).contains("## 2. Connecting to your site")
+        assertThat(log).contains("## 3. Fetching your site orders")
+        assertThat(log).contains("## 4. Fetching products in your store")
     }
 
     @Test
@@ -414,8 +415,9 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // THEN
         val log = (events.first() as OpenSupportRequest).diagnosticLog
-        assertThat(log).contains("1. Internet Connection: FAILED")
+        assertThat(log).contains("## 1. Internet Connection")
+        assertThat(log).contains("Result: Failed")
         assertThat(log).doesNotContain("WordPress.com Servers")
-        assertThat(log).doesNotContain("Site Connection")
+        assertThat(log).doesNotContain("Connecting to your site")
     }
 }
