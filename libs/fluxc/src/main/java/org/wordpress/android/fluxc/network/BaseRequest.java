@@ -106,6 +106,12 @@ public abstract class BaseRequest<T> extends Request<T> {
             this.volleyError = volleyError;
         }
 
+        public BaseNetworkError(@NonNull VolleyError volleyError, @NonNull String message) {
+            this.type = GenericErrorType.UNKNOWN;
+            this.message = message;
+            this.volleyError = volleyError;
+        }
+
         public BaseNetworkError(@NonNull VolleyError volleyError, @NonNull XmlRpcErrorType xmlRpcErrorType) {
             this.type = GenericErrorType.UNKNOWN;
             this.message = "";
@@ -384,7 +390,7 @@ public abstract class BaseRequest<T> extends Request<T> {
         }
 
         // Nothing found
-        return new BaseNetworkError(volleyError);
+        return new BaseNetworkError(volleyError, errorMessage);
     }
 
     public abstract BaseNetworkError deliverBaseNetworkError(@NonNull BaseNetworkError error);
