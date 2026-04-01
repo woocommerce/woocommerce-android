@@ -270,16 +270,12 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun trackChanges(status: ConnectivityCheckStatus, type: String) {
         if (status is InProgress || status is NotStarted) return
 
-        val durationMs = when (status) {
-            is Success -> status.durationMs
-            is Failure -> status.durationMs
-        }
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
             mapOf(
                 AnalyticsTracker.KEY_SUCCESS to (status is Success),
                 KEY_CONNECTIVITY_TEST to type,
-                AnalyticsTracker.KEY_TIME_TAKEN to durationMs
+                AnalyticsTracker.KEY_TIME_TAKEN to status.durationMs
             )
         )
     }
@@ -306,12 +302,7 @@ class ConnectivityToolViewModel @Inject constructor(
                     is Failure -> "FAILED"
                     else -> "UNKNOWN"
                 }
-                val durationMs = when (status) {
-                    is Success -> status.durationMs
-                    is Failure -> status.durationMs
-                    else -> 0L
-                }
-                appendLine("${index + 1}. $name: $statusStr (${durationMs}ms)")
+                appendLine("${index + 1}. $name: $statusStr (${status.durationMs}ms)")
                 if (status is Failure) {
                     status.error?.let { appendLine("   Error: ${it.name}") }
                     status.technicalDetails?.let { details ->
