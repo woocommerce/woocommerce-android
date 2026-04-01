@@ -62,6 +62,9 @@ class ConnectivityToolViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+
+    private val testResults = mutableListOf<TestResult>()
+
     private val stateMachine = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetCheck
@@ -160,7 +163,7 @@ class ConnectivityToolViewModel @Inject constructor(
 
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
-        triggerEvent(OpenSupportRequest)
+        triggerEvent(OpenSupportRequest(diagnosticLog = generateDiagnosticLog()))
     }
 
     fun onReturnClicked() {
@@ -190,7 +193,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startInternetCheck() {
         val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, TEST_NAME_INTERNET, startTime)
             status.startNextCheck()
             internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
@@ -199,7 +202,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startWPComCheck() {
         val startTime = System.currentTimeMillis()
         wpComConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, TEST_NAME_WPCOM, startTime)
             status.startNextCheck()
             wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
@@ -208,7 +211,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startStoreCheck() {
         val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_SITE, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_SITE, TEST_NAME_SITE, startTime)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
@@ -226,7 +229,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startStoreOrdersCheck() {
         val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, TEST_NAME_ORDERS, startTime)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
@@ -244,7 +247,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startProductsCheck() {
         val startTime = System.currentTimeMillis()
         storeProductsCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, TEST_NAME_PRODUCTS, startTime)
             status.startNextCheck()
             productsCheckFlow.update {
                 if (status is Failure) {
@@ -274,21 +277,44 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun trackChanges(
         status: ConnectivityCheckStatus,
         type: String,
+        displayName: String,
         startTime: Long
     ) {
         if (status is InProgress || status is NotStarted) return
 
+        val durationMs = System.currentTimeMillis() - startTime
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
             mapOf(
                 AnalyticsTracker.KEY_SUCCESS to (status is Success),
                 KEY_CONNECTIVITY_TEST to type,
-                AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime)
+                AnalyticsTracker.KEY_TIME_TAKEN to durationMs
             )
         )
+        testResults.add(TestResult(name = displayName, status = status, durationMs = durationMs))
     }
 
-    object OpenSupportRequest : MultiLiveEvent.Event()
+    fun generateDiagnosticLog(): String = buildString {
+        appendLine("Connectivity Test Log")
+        appendLine("====================")
+        appendLine()
+        testResults.forEachIndexed { index, result ->
+            val statusStr = when (result.status) {
+                is Success -> "SUCCESS"
+                is Failure -> "FAILED"
+                else -> "UNKNOWN"
+            }
+            appendLine("${index + 1}. ${result.name}: $statusStr (${result.durationMs}ms)")
+            if (result.status is Failure) {
+                result.status.error?.let { appendLine("   Error: ${it.name}") }
+                result.status.technicalDetails?.let { details ->
+                    details.lines().forEach { line -> appendLine("   $line") }
+                }
+            }
+        }
+    }.trimEnd()
+
+    data class OpenSupportRequest(val diagnosticLog: String) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
     data class ViewState(
@@ -316,10 +342,22 @@ class ConnectivityToolViewModel @Inject constructor(
         Finished
     }
 
+    private data class TestResult(
+        val name: String,
+        val status: ConnectivityCheckStatus,
+        val durationMs: Long
+    )
+
     companion object {
         const val jetpackTroubleshootingUrl =
             "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
         const val genericTroubleshootingUrl =
             "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
+
+        private const val TEST_NAME_INTERNET = "Internet Connection"
+        private const val TEST_NAME_WPCOM = "WordPress.com Servers"
+        private const val TEST_NAME_SITE = "Site Connection"
+        private const val TEST_NAME_ORDERS = "Fetching Orders"
+        private const val TEST_NAME_PRODUCTS = "Fetching Products"
     }
 }
