@@ -37,7 +37,7 @@ class ConnectivityToolFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OpenSupportRequest -> openSupportRequestScreen()
+                is OpenSupportRequest -> openSupportRequestScreen(it.diagnosticLog)
                 is OpenWebView -> openWebView(it.url)
                 is Exit -> findNavController().popBackStack()
             }
@@ -47,11 +47,12 @@ class ConnectivityToolFragment : BaseFragment() {
 
     override fun getFragmentTitle() = ""
 
-    private fun openSupportRequestScreen() {
+    private fun openSupportRequestScreen(diagnosticLog: String) {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
             origin = HelpOrigin.CONNECTIVITY_TOOL,
-            extraTags = ArrayList()
+            extraTags = ArrayList(),
+            diagnosticLog = diagnosticLog
         ).let { activity?.startActivity(it) }
     }
 

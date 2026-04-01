@@ -43,7 +43,7 @@ class ZendeskTicketRepository @Inject constructor(
      * This function creates a new customer Support Request through the Zendesk API Providers.
      */
     @Suppress("LongParameterList")
-    suspend fun createRequest(
+    fun createRequest(
         context: Context,
         origin: HelpOrigin,
         ticketType: TicketType,
@@ -51,7 +51,8 @@ class ZendeskTicketRepository @Inject constructor(
         subject: String,
         description: String,
         extraTags: List<String>,
-        siteAddress: String
+        siteAddress: String,
+        diagnosticLog: String? = null
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
@@ -78,7 +79,11 @@ class ZendeskTicketRepository @Inject constructor(
         CreateRequest().apply {
             this.ticketFormId = ticketType.form
             this.subject = subject
-            this.description = description
+            this.description = if (diagnosticLog != null) {
+                "$description\n\n---\n\n$diagnosticLog"
+            } else {
+                description
+            }
             this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             val zendeskCustomFieldsParams = ZendeskCustomFieldsParams(
