@@ -74,7 +74,7 @@ The [detailed implementation plan](https://github.com/woocommerce/woocommerce-an
 
 **Modified in `fastlane/Fastfile`:**
 - `start_code_freeze` (line 132) - set version name to `X.Y` instead of `X.Y-rc-1`
-- `build_and_upload_google_play` (line 648) - decouple track routing from version name. Currently checks for `-rc-` to decide beta vs production track. Needs an explicit `track` parameter instead.
+- `build_and_upload_google_play` (line 648, routing conditional at line 650) - decouple track routing from version name. Currently `beta_version?(version_name_current)` checks for `-rc-` in the version name: if present, uploads to `beta` track; if absent, uploads to `production` track. Without RC suffix, all builds would route to production. Needs an explicit `track` parameter instead.
 - `new_beta_release` (line 316) - just increment version code, not version name
 - `finalize_release` (line 519) - split into track promotion + admin tasks, remove build trigger
 
