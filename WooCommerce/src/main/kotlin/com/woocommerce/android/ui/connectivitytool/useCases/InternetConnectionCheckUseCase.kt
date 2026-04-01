@@ -20,4 +20,8 @@ class InternetConnectionCheckUseCase @Inject constructor(
             emit(Failure())
         }
     }
+
+    companion object {
+        const val OPERATION_NAME = "Internet Connection"
+    }
 }

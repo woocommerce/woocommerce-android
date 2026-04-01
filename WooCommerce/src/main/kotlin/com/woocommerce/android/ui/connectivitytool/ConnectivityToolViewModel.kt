@@ -193,7 +193,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startInternetCheck() {
         val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, TEST_NAME_INTERNET, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, InternetConnectionCheckUseCase.OPERATION_NAME, startTime)
             status.startNextCheck()
             internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
@@ -202,7 +202,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startWPComCheck() {
         val startTime = System.currentTimeMillis()
         wpComConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, TEST_NAME_WPCOM, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, WPComConnectionCheckUseCase.OPERATION_NAME, startTime)
             status.startNextCheck()
             wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
@@ -211,7 +211,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startStoreCheck() {
         val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_SITE, TEST_NAME_SITE, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_SITE, StoreConnectionCheckUseCase.OPERATION_NAME, startTime)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
@@ -229,7 +229,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startStoreOrdersCheck() {
         val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, TEST_NAME_ORDERS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, StoreOrdersCheckUseCase.OPERATION_NAME, startTime)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
@@ -247,7 +247,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private fun startProductsCheck() {
         val startTime = System.currentTimeMillis()
         storeProductsCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, TEST_NAME_PRODUCTS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, StoreProductsCheckUseCase.OPERATION_NAME, startTime)
             status.startNextCheck()
             productsCheckFlow.update {
                 if (status is Failure) {
@@ -353,11 +353,5 @@ class ConnectivityToolViewModel @Inject constructor(
             "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
         const val genericTroubleshootingUrl =
             "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
-
-        private const val TEST_NAME_INTERNET = "Internet Connection"
-        private const val TEST_NAME_WPCOM = "WordPress.com Servers"
-        private const val TEST_NAME_SITE = "Site Connection"
-        private const val TEST_NAME_ORDERS = "Fetch Orders"
-        private const val TEST_NAME_PRODUCTS = "Fetch Products"
     }
 }

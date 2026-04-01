@@ -22,4 +22,8 @@ class WPComConnectionCheckUseCase @Inject constructor(
             emit(Failure())
         } ?: emit(Success)
     }
+
+    companion object {
+        const val OPERATION_NAME = "WordPress.com Servers"
+    }
 }

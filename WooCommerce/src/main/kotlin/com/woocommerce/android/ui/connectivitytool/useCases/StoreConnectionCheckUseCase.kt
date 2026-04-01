@@ -42,10 +42,14 @@ class StoreConnectionCheckUseCase @Inject constructor(
         return Failure(
             error = failureType,
             technicalDetails = formatErrorDetails(
-                operation = "Site Connection",
+                operation = OPERATION_NAME,
                 errorType = error.type.name,
                 message = error.message
             )
         )
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Site Connection"
     }
 }

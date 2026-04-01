@@ -42,10 +42,14 @@ class StoreProductsCheckUseCase @Inject constructor(
         return Failure(
             error = failureType,
             technicalDetails = formatErrorDetails(
-                operation = "Fetch Products",
+                operation = OPERATION_NAME,
                 errorType = error.type.name,
                 message = error.message
             )
         )
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Fetch Products"
     }
 }
