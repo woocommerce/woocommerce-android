@@ -58,6 +58,8 @@ import java.util.Date
 import java.util.Locale
 
 const val DASHBOARD_TOP_CATEGORIES_CARD = "dashboard_top_categories_card"
+private val ITEMS_SOLD_COLUMN_WIDTH = 72.dp
+private val NET_SALES_COLUMN_WIDTH = 96.dp
 
 @Composable
 fun DashboardTopCategoriesWidgetCard(
@@ -200,17 +202,20 @@ private fun TopCategoriesContent(
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                modifier = Modifier.padding(end = 16.dp),
+                modifier = Modifier.width(ITEMS_SOLD_COLUMN_WIDTH),
                 text = stringResource(id = R.string.dashboard_top_categories_items_sold),
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_medium_selector),
                 fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
             )
             Text(
+                modifier = Modifier.width(NET_SALES_COLUMN_WIDTH),
                 text = stringResource(id = R.string.dashboard_top_categories_net_sales),
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_medium_selector),
                 fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
             )
         }
         when {
@@ -315,12 +320,13 @@ private fun TopCategoryCategoryItem(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                modifier = Modifier.padding(start = 8.dp, end = 16.dp),
+                modifier = Modifier.width(ITEMS_SOLD_COLUMN_WIDTH),
                 text = topCategory.timesOrdered,
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.End
             )
             Text(
+                modifier = Modifier.width(NET_SALES_COLUMN_WIDTH),
                 text = topCategory.netSales,
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.End
