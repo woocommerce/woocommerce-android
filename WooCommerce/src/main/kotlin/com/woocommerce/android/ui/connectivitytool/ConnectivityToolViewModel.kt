@@ -63,7 +63,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
-    private val testResults = mutableListOf<TestResult>()
+    private val testResults = LinkedHashMap<String, TestResult>()
 
     private val stateMachine = savedState.getStateFlow(
         scope = viewModelScope,
@@ -291,14 +291,14 @@ class ConnectivityToolViewModel @Inject constructor(
                 AnalyticsTracker.KEY_TIME_TAKEN to durationMs
             )
         )
-        testResults.add(TestResult(name = displayName, status = status, durationMs = durationMs))
+        testResults[displayName] = TestResult(name = displayName, status = status, durationMs = durationMs)
     }
 
-    fun generateDiagnosticLog(): String = buildString {
+    private fun generateDiagnosticLog(): String = buildString {
         appendLine("Connectivity Test Log")
         appendLine("====================")
         appendLine()
-        testResults.forEachIndexed { index, result ->
+        testResults.values.forEachIndexed { index, result ->
             val statusStr = when (result.status) {
                 is Success -> "SUCCESS"
                 is Failure -> "FAILED"
@@ -357,7 +357,7 @@ class ConnectivityToolViewModel @Inject constructor(
         private const val TEST_NAME_INTERNET = "Internet Connection"
         private const val TEST_NAME_WPCOM = "WordPress.com Servers"
         private const val TEST_NAME_SITE = "Site Connection"
-        private const val TEST_NAME_ORDERS = "Fetching Orders"
-        private const val TEST_NAME_PRODUCTS = "Fetching Products"
+        private const val TEST_NAME_ORDERS = "Fetch Orders"
+        private const val TEST_NAME_PRODUCTS = "Fetch Products"
     }
 }

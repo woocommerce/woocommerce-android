@@ -235,6 +235,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             assertThat(events.first()).isInstanceOf(OpenSupportRequest::class.java)
             val log = (events.first() as OpenSupportRequest).diagnosticLog
             assertThat(log).contains("Connectivity Test Log")
+            assertThat(log).contains("Internet Connection: SUCCESS")
         }
 
     @Test
@@ -333,16 +334,21 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when all checks succeed, then diagnostic log contains all SUCCESS entries`() = testBlocking {
-        // WHEN
+        // GIVEN
         sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // WHEN
+        sut.onContactSupportClicked()
 
         // THEN
-        val log = sut.generateDiagnosticLog()
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
         assertThat(log).contains("1. Internet Connection: SUCCESS")
         assertThat(log).contains("2. WordPress.com Servers: SUCCESS")
         assertThat(log).contains("3. Site Connection: SUCCESS")
-        assertThat(log).contains("4. Fetching Orders: SUCCESS")
-        assertThat(log).contains("5. Fetching Products: SUCCESS")
+        assertThat(log).contains("4. Fetch Orders: SUCCESS")
+        assertThat(log).contains("5. Fetch Products: SUCCESS")
     }
 
     @Test
@@ -353,12 +359,16 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             technicalDetails = "Operation: Site Connection\nError Type: TIMEOUT"
         )
         whenever(storeConnectionCheck()).thenReturn(flowOf(failure))
+        createViewModel()
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
 
         // WHEN
-        sut.startConnectionChecks()
+        sut.onContactSupportClicked()
 
         // THEN
-        val log = sut.generateDiagnosticLog()
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
         assertThat(log).contains("3. Site Connection: FAILED")
         assertThat(log).contains("Error: TIMEOUT")
         assertThat(log).contains("Operation: Site Connection")
@@ -369,29 +379,36 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         createViewModel()
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
 
         // WHEN
-        sut.startConnectionChecks()
+        sut.onContactSupportClicked()
 
         // THEN
-        val log = sut.generateDiagnosticLog()
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
         assertThat(log).contains("Internet Connection: SUCCESS")
         assertThat(log).doesNotContain("WordPress.com Servers")
         assertThat(log).contains("Site Connection: SUCCESS")
-        assertThat(log).contains("Fetching Orders: SUCCESS")
-        assertThat(log).contains("Fetching Products: SUCCESS")
+        assertThat(log).contains("Fetch Orders: SUCCESS")
+        assertThat(log).contains("Fetch Products: SUCCESS")
     }
 
     @Test
     fun `when check fails early, then diagnostic log only contains completed checks`() = testBlocking {
         // GIVEN
         whenever(internetConnectionCheck()).thenReturn(flowOf(Failure()))
+        createViewModel()
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
 
         // WHEN
-        sut.startConnectionChecks()
+        sut.onContactSupportClicked()
 
         // THEN
-        val log = sut.generateDiagnosticLog()
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
         assertThat(log).contains("1. Internet Connection: FAILED")
         assertThat(log).doesNotContain("WordPress.com Servers")
         assertThat(log).doesNotContain("Site Connection")
