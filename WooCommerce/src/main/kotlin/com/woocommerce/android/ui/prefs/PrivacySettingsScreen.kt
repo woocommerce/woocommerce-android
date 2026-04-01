@@ -76,7 +76,10 @@ fun PrivacySettingsScreen(
             enter = slideInVertically(),
             exit = slideOutVertically()
         ) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.24f)
+            )
         }
         Column(
             modifier = Modifier
