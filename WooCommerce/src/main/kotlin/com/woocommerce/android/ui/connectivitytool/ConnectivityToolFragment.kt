@@ -47,7 +47,7 @@ class ConnectivityToolFragment : BaseFragment() {
 
     override fun getFragmentTitle() = ""
 
-    private fun openSupportRequestScreen(diagnosticLog: String) {
+    private fun openSupportRequestScreen(diagnosticLog: String?) {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
             origin = HelpOrigin.CONNECTIVITY_TOOL,

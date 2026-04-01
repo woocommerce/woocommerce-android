@@ -280,8 +280,8 @@ class ConnectivityToolViewModel @Inject constructor(
         )
     }
 
-    private fun generateDiagnosticLog(): String {
-        val currentState = viewState.value ?: return ""
+    private fun generateDiagnosticLog(): String? {
+        val currentState = viewState.value ?: return null
         val checks = buildList {
             add(InternetConnectionCheckUseCase.OPERATION_NAME to currentState.internetCheckData.connectivityCheckStatus)
             if (currentState.isWPComCheckVisible) {
@@ -313,7 +313,7 @@ class ConnectivityToolViewModel @Inject constructor(
         }.trimEnd()
     }
 
-    data class OpenSupportRequest(val diagnosticLog: String) : MultiLiveEvent.Event()
+    data class OpenSupportRequest(val diagnosticLog: String?) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
     data class ViewState(
