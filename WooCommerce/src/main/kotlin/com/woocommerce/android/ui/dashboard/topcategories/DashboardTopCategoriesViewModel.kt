@@ -256,10 +256,7 @@ class DashboardTopCategoriesViewModel @AssistedInject constructor(
             categoryId = categoryId,
             name = StringEscapeUtils.unescapeHtml4(name),
             timesOrdered = FormatUtils.formatDecimal(quantity),
-            netSales = resourceProvider.getString(
-                R.string.dashboard_top_performers_net_sales,
-                getTotalSpendFormatted(total.toBigDecimal(), currency)
-            ),
+            netSales = getTotalSpendFormatted(total.toBigDecimal(), currency),
             onClick = ::onTopCategoryTapped
         )
 
