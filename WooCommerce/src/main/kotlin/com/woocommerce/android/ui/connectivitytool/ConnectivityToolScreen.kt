@@ -22,7 +22,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -54,7 +53,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Succe
 fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
-    val technicalDetails by viewModel.technicalDetailsToShow.collectAsState()
+    val technicalDetails by viewModel.technicalDetailsToShow.observeAsState()
 
     ConnectivityToolScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,

@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheck
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -294,10 +295,12 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         val details = "Operation: Site Connection\nError Type: TIMEOUT"
 
         // WHEN
-        sut.onViewTechnicalDetailsClicked(details)
+        sut.technicalDetailsToShow.observeForTesting {
+            sut.onViewTechnicalDetailsClicked(details)
 
-        // THEN
-        assertThat(sut.technicalDetailsToShow.value).isEqualTo(details)
+            // THEN
+            assertThat(sut.technicalDetailsToShow.value).isEqualTo(details)
+        }
     }
 
     @Test
@@ -311,13 +314,15 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onTechnicalDetailsDismissed is called, then technicalDetailsToShow is cleared`() = testBlocking {
-        // GIVEN
-        sut.onViewTechnicalDetailsClicked("some details")
+        sut.technicalDetailsToShow.observeForTesting {
+            // GIVEN
+            sut.onViewTechnicalDetailsClicked("some details")
 
-        // WHEN
-        sut.onTechnicalDetailsDismissed()
+            // WHEN
+            sut.onTechnicalDetailsDismissed()
 
-        // THEN
-        assertThat(sut.technicalDetailsToShow.value).isNull()
+            // THEN
+            assertThat(sut.technicalDetailsToShow.value).isNull()
+        }
     }
 }
