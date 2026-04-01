@@ -67,7 +67,7 @@ Changed files:
 
 For each unreviewed message:
 
-**a) Fetch the WooCommerce Core PR for details.** Extract the PR number from the message
+**a) Fetch the WooCommerce Core PR metadata.** Extract the PR number from the message
 (e.g., `#63556`) and fetch it from the `woocommerce/woocommerce` GitHub repo:
 
 ```
@@ -78,22 +78,83 @@ mcp__context-a8c__context-a8c-execute-tool(
 )
 ```
 
-This gives you the full PR description, which often explains the change in more detail
-than the Slack message — including motivation, before/after behavior, and affected endpoints.
+This gives you the PR title, milestone, and description for context. However, do NOT rely
+on the description alone to assess mobile impact — PR descriptions are written for the web
+team and often omit mobile-relevant details. The diff (step b) is what matters most.
 
-**b) Identify the API surface change.** From the PR description and changed files:
-- What endpoint or feature is affected?
-- Which REST controllers, schemas, or routes changed?
-- Key paths to watch for:
+**b) Fetch and analyze the PR diff.** PR descriptions are often vague or focused on the
+web admin context — they may not mention mobile impact at all. The diff is the ground truth.
+Fetch it directly:
+
+```
+mcp__context-a8c__context-a8c-execute-tool(
+  provider='github',
+  tool='pull-request',
+  params={"owner": "woocommerce", "repo": "woocommerce", "pullNumber": <PR_NUMBER>, "method": "diff"}
+)
+```
+
+If `method: "diff"` is not available, fall back to fetching the PR files list:
+```
+mcp__context-a8c__context-a8c-execute-tool(
+  provider='github',
+  tool='pull-request-files',
+  params={"owner": "woocommerce", "repo": "woocommerce", "pullNumber": <PR_NUMBER>}
+)
+```
+
+**What to look for in the diff:**
+
+1. **Response schema changes** — Look for additions/removals in arrays like
+   `$data['field_name']`, `'field' => ...`, or `register_rest_field()` calls. These directly
+   affect what the mobile app receives when calling the endpoint.
+
+2. **Endpoint route changes** — Look for `register_rest_route()`, route path strings, or
+   HTTP method changes. Removed or renamed routes break the app immediately.
+
+3. **Query/filter logic changes** — Look for modifications to `get_items()`, `prepare_items_query()`,
+   or SQL query construction. These change *which* data is returned (pagination, sort order,
+   filtering), even if the schema stays the same.
+
+4. **Validation changes** — Look for `validate_callback`, `sanitize_callback`, or parameter
+   requirement changes. Stricter validation can cause previously-accepted requests to fail.
+
+5. **Cache/header changes** — Look for `Cache-Control`, `ETag`, `Last-Modified` header additions.
+   Caching on endpoints the app polls can cause stale data.
+
+**Key file paths to watch for:**
   - `plugins/woocommerce/src/StoreApi/` — Store API (**not used by Android app** — POS uses `wc/pos/v1` instead)
   - `plugins/woocommerce/src/Internal/Orders/` — Orders REST API
   - `plugins/woocommerce/src/REST/` or `includes/rest-api/` — WC REST API v3 (primary API the app uses)
   - `plugins/woocommerce/src/Admin/API/` — Admin API endpoints
+  - `plugins/woocommerce/src/Internal/Admin/Settings/` — Admin settings pages (mobile apps
+    open some of these in webviews — e.g., payment onboarding flows)
 
 **c) Search the Android codebase for usage.** Look in:
 - `libs/fluxc/` — REST clients, network DTOs, stores (this is where API calls live)
 - `WooCommerce/src/main/kotlin/.../model/` — domain models that map to API responses
 - Search for the endpoint path, field names, or controller name
+
+**Webview dependency check:** The Android app opens several WC admin pages in webviews
+(not just REST API calls). When the diff shows changes to WC admin tasks, onboarding flows,
+or admin page routing (look for `task` slugs, page paths, redirect logic, or removed/renamed
+admin features), also grep the Android codebase for webview URLs:
+
+```
+# Search for wc-admin page references opened in webviews
+grep -r "wc-admin" WooCommerce/src/main/kotlin/ --include="*.kt"
+grep -r "wp-admin" WooCommerce/src/main/kotlin/ --include="*.kt"
+```
+
+Known webview entry points in the Android app:
+- `GetPaidViewModel.kt` — Opens `/wp-admin/admin.php?page=wc-admin&task={taskId}` for
+  payment onboarding. If a WC admin task is removed or renamed server-side, this breaks.
+- `CardReaderOnboardingErrorCtaClickHandler.kt` — Opens `/admin.php?page=wc-admin&path=/payments/connect`
+- `AppUrls.kt` — Opens Google Listings dashboard and other admin pages
+
+If the diff removes, renames, or changes routing for any admin task or page that the app
+opens in a webview, classify the impact as **High** — the app cannot detect the removal
+and users will see a broken page or infinite spinner.
 
 **d) Classify the impact:**
 - **None** — The change is in an API the app doesn't use (e.g., Store API blocks, admin-only endpoints)
