@@ -2,7 +2,7 @@
 
 This is a follow-up to [the experiment post](https://peacockp2.wordpress.com/2026/03/31/hack-experiment-can-ai-replace-translators/) where I showed that AI translations are preferred over human ones in a blind evaluation across all 16 languages.
 
-There is already [active work towards AI translations across teams](#related-work). I won't implement the release pipeline integration myself, but during hack week I spent time analyzing the exact changes needed for WooCommerce Android. I tried to make this document specific enough that it can be used as a spec - either by a person or by an AI agent - to implement the changes.
+There is already active work towards AI translations across teams (see [Related Work](#related-work) - @plokhoves, @iangmaia, @joshheald, @alexgrebenyuk, and others). I won't implement the release pipeline integration myself, but during hack week I spent time analyzing the exact changes needed for WooCommerce Android. I tried to make this document specific enough that it can be used as a spec - either by a person or by an AI agent - to implement the changes.
 
 ## The Current Release Flow
 
@@ -292,8 +292,9 @@ The experiment branch ([woocommerce/woocommerce-android#15588](https://github.co
 
 ## Related Work
 
-- **@plokhoves** - [in-PR AI translation for Day One Android](https://dayoneandroidp2.wordpress.com/2026/03/26/rfc-moving-string-translations-from-glotpress-to-ai/) using Claude API
-- **@iangmaia** - AI-Powered Translation Context Extraction - gem/CLI tool that enriches string comments with code context
-- **@joshheald** and the AI enablement cohort - AI translations with LLM-as-Judge evaluation in langfuse
-- **@alexgrebenyuk** - [Continuous Translation proposal](https://appsinfrap2.wordpress.com/2026/03/10/proposal-continuous-translation) - translating in trunk continuously
-- **@sorinnunca** - GlotPress data showing AI suggestions (GPT-3.5/GPT-4o-mini) accepted without edits 46-58% of the time
+- **@plokhoves** - [RFC: Moving String Translations from GlotPress to AI](https://dayoneandroidp2.wordpress.com/2026/03/26/rfc-moving-string-translations-from-glotpress-to-ai/) - built a GitHub Actions workflow for Day One Android that translates string deltas in-PR using Claude API in 30-60 seconds. Includes validation of format specifiers and a second Claude call to review translations for mechanical errors.
+- **@iangmaia** - [RFC: AI-Powered Translation Context Extraction Pipeline](https://appsinfrap2.wordpress.com/2026/01/30/rfc-ai-powered-translation-context-extraction-pipeline/) - a Ruby gem/CLI tool ([i18n-context-generator](https://github.com/Automattic/i18n-context-generator)) that enriches string comments with code context using AI. Already tested on the WCAndroid repo. Focuses on improving context for translators (human or AI) rather than doing the translation itself.
+- **@joshheald** and the AI enablement cohort 2 (NYC) - exploring AI translations across Beeper/Mesh with LLM-as-Judge evaluation in langfuse, comparing different models
+- **@alexgrebenyuk** - [Proposal: Continuous Translation](https://appsinfrap2.wordpress.com/2026/03/10/proposal-continuous-translation) - translating in trunk continuously instead of during release, eliminating backmerges. Includes discussion about GlotPress limitations and potential Crowdin migration.
+- **@sorinnunca** - shared GlotPress data: AI translation suggestions (GPT-3.5/GPT-4o-mini) were accepted without edits by translators 46-58% of the time. Also noted that for non-Mag-16 locales translated with OpenAI on wpcom, 4 out of 6 were launchable but 2 needed significant manual intervention.
+- **@olivierhalligon** - raised important points about [GlotPress limitations for mobile](https://appsinfrap2.wordpress.com/2026/03/10/proposal-continuous-translation/#comment-2962) (no branch concept, WeeklyKit process constraints) and the potential to migrate to Crowdin which supports custom AI translation workflows
