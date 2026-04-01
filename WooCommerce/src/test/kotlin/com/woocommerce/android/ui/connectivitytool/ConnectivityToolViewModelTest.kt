@@ -220,17 +220,22 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event`() {
-        // Given
-        val events = mutableListOf<MultiLiveEvent.Event>()
-        sut.event.observeForever { events.add(it) }
+    fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event with diagnostic log`() =
+        testBlocking {
+            // Given
+            sut.startConnectionChecks()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever { events.add(it) }
 
-        // When
-        sut.onContactSupportClicked()
+            // When
+            sut.onContactSupportClicked()
 
-        // Then
-        assertThat(events).isEqualTo(listOf(OpenSupportRequest))
-    }
+            // Then
+            assertThat(events).hasSize(1)
+            assertThat(events.first()).isInstanceOf(OpenSupportRequest::class.java)
+            val log = (events.first() as OpenSupportRequest).diagnosticLog
+            assertThat(log).contains("Connectivity Test Log")
+        }
 
     @Test
     fun `given app password site, when checks run, then WPCom check is skipped`() = testBlocking {
@@ -324,5 +329,71 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(sut.technicalDetailsToShow.value).isNull()
         }
+    }
+
+    @Test
+    fun `when all checks succeed, then diagnostic log contains all SUCCESS entries`() = testBlocking {
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        val log = sut.generateDiagnosticLog()
+        assertThat(log).contains("1. Internet Connection: SUCCESS")
+        assertThat(log).contains("2. WordPress.com Servers: SUCCESS")
+        assertThat(log).contains("3. Site Connection: SUCCESS")
+        assertThat(log).contains("4. Fetching Orders: SUCCESS")
+        assertThat(log).contains("5. Fetching Products: SUCCESS")
+    }
+
+    @Test
+    fun `when a check fails, then diagnostic log contains FAILED entry with error info`() = testBlocking {
+        // GIVEN
+        val failure = Failure(
+            error = FailureType.TIMEOUT,
+            technicalDetails = "Operation: Site Connection\nError Type: TIMEOUT"
+        )
+        whenever(storeConnectionCheck()).thenReturn(flowOf(failure))
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        val log = sut.generateDiagnosticLog()
+        assertThat(log).contains("3. Site Connection: FAILED")
+        assertThat(log).contains("Error: TIMEOUT")
+        assertThat(log).contains("Operation: Site Connection")
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then diagnostic log skips WPCom entry`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        val log = sut.generateDiagnosticLog()
+        assertThat(log).contains("Internet Connection: SUCCESS")
+        assertThat(log).doesNotContain("WordPress.com Servers")
+        assertThat(log).contains("Site Connection: SUCCESS")
+        assertThat(log).contains("Fetching Orders: SUCCESS")
+        assertThat(log).contains("Fetching Products: SUCCESS")
+    }
+
+    @Test
+    fun `when check fails early, then diagnostic log only contains completed checks`() = testBlocking {
+        // GIVEN
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Failure()))
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        val log = sut.generateDiagnosticLog()
+        assertThat(log).contains("1. Internet Connection: FAILED")
+        assertThat(log).doesNotContain("WordPress.com Servers")
+        assertThat(log).doesNotContain("Site Connection")
     }
 }
