@@ -24,14 +24,17 @@ class StoreProductsCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        productStore.fetchProducts(selectedSite.get())
-            .takeIf { it.isError }
-            ?.parseError()
-            ?.let { emit(it) }
-            ?: emit(Success)
+        val startTime = System.currentTimeMillis()
+        val result = productStore.fetchProducts(selectedSite.get())
+        val durationMs = System.currentTimeMillis() - startTime
+        if (result.isError) {
+            emit(result.parseError(durationMs))
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
     }
 
-    private fun WooResult<List<WCProductModel>>.parseError(): Failure {
+    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long): Failure {
         val failureType = when (error.type) {
             WooErrorType.TIMEOUT -> FailureType.TIMEOUT
             WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
@@ -45,7 +48,8 @@ class StoreProductsCheckUseCase @Inject constructor(
                 operation = OPERATION_NAME,
                 errorType = error.type.name,
                 message = error.message
-            )
+            ),
+            durationMs = durationMs
         )
     }
 

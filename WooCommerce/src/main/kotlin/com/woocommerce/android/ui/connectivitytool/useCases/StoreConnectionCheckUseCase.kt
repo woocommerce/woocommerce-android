@@ -24,14 +24,17 @@ class StoreConnectionCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        ssrFetcher.load(selectedSite.get())
-            .takeIf { it.isError }
-            ?.parseError()
-            ?.let { emit(it) }
-            ?: emit(Success)
+        val startTime = System.currentTimeMillis()
+        val result = ssrFetcher.load(selectedSite.get())
+        val durationMs = System.currentTimeMillis() - startTime
+        if (result.isError) {
+            emit(result.parseError(durationMs))
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
     }
 
-    private fun WooResult<WCSSRModel>.parseError(): Failure {
+    private fun WooResult<WCSSRModel>.parseError(durationMs: Long): Failure {
         val failureType = when (error.type) {
             WooErrorType.TIMEOUT -> FailureType.TIMEOUT
             WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
@@ -45,7 +48,8 @@ class StoreConnectionCheckUseCase @Inject constructor(
                 operation = OPERATION_NAME,
                 errorType = error.type.name,
                 message = error.message
-            )
+            ),
+            durationMs = durationMs
         )
     }
 

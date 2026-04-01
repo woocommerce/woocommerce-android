@@ -63,8 +63,6 @@ class ConnectivityToolViewModel @Inject constructor(
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
-    private val testResults = LinkedHashMap<String, TestResult>()
-
     private val stateMachine = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetCheck
@@ -191,27 +189,24 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startInternetCheck() {
-        val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, InternetConnectionCheckUseCase.OPERATION_NAME, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_INTERNET)
             status.startNextCheck()
             internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startWPComCheck() {
-        val startTime = System.currentTimeMillis()
         wpComConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, WPComConnectionCheckUseCase.OPERATION_NAME, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_WP_COM)
             status.startNextCheck()
             wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreCheck() {
-        val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_SITE, StoreConnectionCheckUseCase.OPERATION_NAME, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_SITE)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
@@ -227,9 +222,8 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startStoreOrdersCheck() {
-        val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, StoreOrdersCheckUseCase.OPERATION_NAME, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_ORDERS)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
@@ -245,9 +239,8 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startProductsCheck() {
-        val startTime = System.currentTimeMillis()
         storeProductsCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, StoreProductsCheckUseCase.OPERATION_NAME, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS)
             status.startNextCheck()
             productsCheckFlow.update {
                 if (status is Failure) {
@@ -274,15 +267,13 @@ class ConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun trackChanges(
-        status: ConnectivityCheckStatus,
-        type: String,
-        displayName: String,
-        startTime: Long
-    ) {
+    private fun trackChanges(status: ConnectivityCheckStatus, type: String) {
         if (status is InProgress || status is NotStarted) return
 
-        val durationMs = System.currentTimeMillis() - startTime
+        val durationMs = when (status) {
+            is Success -> status.durationMs
+            is Failure -> status.durationMs
+        }
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
             mapOf(
@@ -291,28 +282,45 @@ class ConnectivityToolViewModel @Inject constructor(
                 AnalyticsTracker.KEY_TIME_TAKEN to durationMs
             )
         )
-        testResults[displayName] = TestResult(name = displayName, status = status, durationMs = durationMs)
     }
 
-    private fun generateDiagnosticLog(): String = buildString {
-        appendLine("Connectivity Test Log")
-        appendLine("====================")
-        appendLine()
-        testResults.values.forEachIndexed { index, result ->
-            val statusStr = when (result.status) {
-                is Success -> "SUCCESS"
-                is Failure -> "FAILED"
-                else -> "UNKNOWN"
+    private fun generateDiagnosticLog(): String {
+        val currentState = viewState.value ?: return ""
+        val checks = buildList {
+            add(InternetConnectionCheckUseCase.OPERATION_NAME to currentState.internetCheckData.connectivityCheckStatus)
+            if (currentState.isWPComCheckVisible) {
+                add(WPComConnectionCheckUseCase.OPERATION_NAME to currentState.wpComCheckData.connectivityCheckStatus)
             }
-            appendLine("${index + 1}. ${result.name}: $statusStr (${result.durationMs}ms)")
-            if (result.status is Failure) {
-                result.status.error?.let { appendLine("   Error: ${it.name}") }
-                result.status.technicalDetails?.let { details ->
-                    details.lines().forEach { line -> appendLine("   $line") }
+            add(StoreConnectionCheckUseCase.OPERATION_NAME to currentState.storeCheckData.connectivityCheckStatus)
+            add(StoreOrdersCheckUseCase.OPERATION_NAME to currentState.ordersCheckData.connectivityCheckStatus)
+            add(StoreProductsCheckUseCase.OPERATION_NAME to currentState.productsCheckData.connectivityCheckStatus)
+        }.filter { it.second is Success || it.second is Failure }
+
+        return buildString {
+            appendLine("Connectivity Test Log")
+            appendLine("====================")
+            appendLine()
+            checks.forEachIndexed { index, (name, status) ->
+                val statusStr = when (status) {
+                    is Success -> "SUCCESS"
+                    is Failure -> "FAILED"
+                    else -> "UNKNOWN"
+                }
+                val durationMs = when (status) {
+                    is Success -> status.durationMs
+                    is Failure -> status.durationMs
+                    else -> 0L
+                }
+                appendLine("${index + 1}. $name: $statusStr (${durationMs}ms)")
+                if (status is Failure) {
+                    status.error?.let { appendLine("   Error: ${it.name}") }
+                    status.technicalDetails?.let { details ->
+                        details.lines().forEach { line -> appendLine("   $line") }
+                    }
                 }
             }
-        }
-    }.trimEnd()
+        }.trimEnd()
+    }
 
     data class OpenSupportRequest(val diagnosticLog: String) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
@@ -341,12 +349,6 @@ class ConnectivityToolViewModel @Inject constructor(
         StoreProductsCheck,
         Finished
     }
-
-    private data class TestResult(
-        val name: String,
-        val status: ConnectivityCheckStatus,
-        val durationMs: Long
-    )
 
     companion object {
         const val jetpackTroubleshootingUrl =

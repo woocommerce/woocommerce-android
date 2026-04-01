@@ -90,12 +90,13 @@ sealed class ConnectivityCheckCardData(
 sealed class ConnectivityCheckStatus : Parcelable {
     data object NotStarted : ConnectivityCheckStatus()
     data object InProgress : ConnectivityCheckStatus()
-    data object Success : ConnectivityCheckStatus()
+    data class Success(val durationMs: Long = 0L) : ConnectivityCheckStatus()
 
     @Parcelize
     data class Failure(
         val error: FailureType? = null,
-        val technicalDetails: String? = null
+        val technicalDetails: String? = null,
+        val durationMs: Long = 0L
     ) : ConnectivityCheckStatus(), Parcelable
 }
 

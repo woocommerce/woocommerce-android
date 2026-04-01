@@ -179,6 +179,8 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Success::class.java)
     }
 }

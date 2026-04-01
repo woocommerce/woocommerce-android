@@ -50,11 +50,11 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         storeProductsCheck = mock()
         selectedSite = mock()
         analyticsTrackerWrapper = mock()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
-        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success()))
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success()))
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         createViewModel()
     }
@@ -76,7 +76,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when internetConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.internetCheckData }
             .distinctUntilChanged()
@@ -86,14 +86,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when wpComConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.wpComCheckData }
             .distinctUntilChanged()
@@ -103,14 +103,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when storeConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.storeCheckData }
             .distinctUntilChanged()
@@ -120,14 +120,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when storeOrdersCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.ordersCheckData }
             .distinctUntilChanged()
@@ -137,7 +137,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
@@ -175,7 +175,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when checks are still running, then isCheckFinished is false`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
         whenever(wpComConnectionCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
@@ -192,7 +192,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when storeProductsCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.productsCheckData }
             .distinctUntilChanged()
@@ -202,7 +202,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
@@ -223,6 +223,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event with diagnostic log`() =
         testBlocking {
             // Given
+            sut.viewState.observeForever {}
             sut.startConnectionChecks()
             val events = mutableListOf<MultiLiveEvent.Event>()
             sut.event.observeForever { events.add(it) }
@@ -335,6 +336,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     @Test
     fun `when all checks succeed, then diagnostic log contains all SUCCESS entries`() = testBlocking {
         // GIVEN
+        sut.viewState.observeForever {}
         sut.startConnectionChecks()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
@@ -360,6 +362,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         )
         whenever(storeConnectionCheck()).thenReturn(flowOf(failure))
         createViewModel()
+        sut.viewState.observeForever {}
         sut.startConnectionChecks()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
@@ -379,6 +382,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         createViewModel()
+        sut.viewState.observeForever {}
         sut.startConnectionChecks()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
@@ -400,6 +404,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(internetConnectionCheck()).thenReturn(flowOf(Failure()))
         createViewModel()
+        sut.viewState.observeForever {}
         sut.startConnectionChecks()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
