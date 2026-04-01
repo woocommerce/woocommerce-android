@@ -155,7 +155,7 @@ class BookingsRestClient @Inject constructor(
             }
         }
         if (paymentStatus != null) TODO()
-        if (customer != null) set("customer", customer.customerId.toString())
+        if (customer != null) set("user", customer.userId.toString())
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
             dateRange.before?.let {
                 set("start_date_before", it.toString())
