@@ -66,7 +66,7 @@ This does require changes to how the Fastfile handles versioning (see the implem
 
 ## What Needs to Change
 
-The [detailed implementation plan](https://github.com/woocommerce/woocommerce-android/blob/hack/ai-translations/docs/superpowers/plans/2026-03-30-ai-translations.md) on the `hack/ai-translations` branch lists every file and function that needs to change, with line numbers. Here is a summary:
+The [implementation spec](https://github.com/woocommerce/woocommerce-android/blob/hack/ai-translations/scripts/ai-translations/docs/implementation-spec.md) on the branch lists every file and function that needs to change, with line numbers and code snippets. It is written to be usable directly by an AI agent as a task spec. Here is a summary:
 
 **New:**
 - A Python script that diffs `strings.xml` against the previous release tag, translates new/changed strings via the Anthropic (or OpenAI) API, and writes translations back. The release-toolkit gem already has `LocalizeHelper` with XML parsing and merging logic (`android_download_translations` action) - some of this could be reused instead of writing from scratch.
@@ -98,9 +98,9 @@ The [detailed implementation plan](https://github.com/woocommerce/woocommerce-an
 
 The experiment branch ([woocommerce/woocommerce-android#15588](https://github.com/woocommerce/woocommerce-android/pull/15588)) has:
 
-- `parse_strings.py` - Android `strings.xml` parser that can be reused or replaced by the existing `LocalizeHelper` from the release-toolkit gem
+- `parse_strings.py` - Android `strings.xml` parser (can be reused or replaced by `LocalizeHelper` from the release-toolkit gem)
 - `translate_fast.py` - translation script with chunking and parallel execution
-- [Detailed implementation plan](https://github.com/woocommerce/woocommerce-android/blob/hack/ai-translations/docs/superpowers/plans/2026-03-30-ai-translations.md) with line-by-line analysis of all changes needed
+- [Implementation spec](https://github.com/woocommerce/woocommerce-android/blob/hack/ai-translations/scripts/ai-translations/docs/implementation-spec.md) - focused spec for the release pipeline changes, with exact file paths, line numbers, and code snippets. Written to be usable as a task spec by an AI agent.
 
 ## Related Work
 
