@@ -32,22 +32,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
-import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelViewModel.ChannelSalesUiModel
-import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelViewModel.SalesByChannelDateRange
 import com.woocommerce.android.ui.dashboard.salesbychannel.DashboardSalesByChannelViewModel.SalesByChannelState
@@ -75,7 +70,7 @@ fun DashboardSalesByChannelWidgetCard(
         WidgetCard(
             titleResource = state.titleStringRes,
             menu = state.menu,
-            button = state.onOpenAnalyticsTapped,
+            button = null,
             modifier = modifier.testTag(DASHBOARD_SALES_BY_CHANNEL_CARD),
             isError = state.error != null
         ) {
@@ -151,23 +146,15 @@ private fun HandleEvents(
     event: LiveData<Event>,
     openDatePicker: (Long, Long) -> Unit,
 ) {
-    val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    DisposableEffect(event, navController, lifecycleOwner) {
+    DisposableEffect(event, lifecycleOwner) {
         val observer = Observer { event: Event ->
             when (event) {
                 is OpenDatePicker -> openDatePicker(
                     event.fromDate.time,
                     event.toDate.time
                 )
-
-                is OpenAnalytics -> {
-                    navController.navigateSafely(
-                        DashboardFragmentDirections
-                            .actionDashboardToAnalytics(event.analyticsPeriod)
-                    )
-                }
             }
         }
         event.observe(lifecycleOwner, observer)
@@ -431,10 +418,6 @@ private fun SalesByChannelWidgetCardPreview() {
         isLoading = false,
         titleStringRes = R.string.my_store_widget_sales_by_channel_title,
         menu = DashboardWidgetMenu(emptyList()),
-        onOpenAnalyticsTapped = DashboardWidgetAction(
-            titleResource = R.string.analytics_section_see_all,
-            action = {}
-        )
     )
     Column {
         DashboardSalesByChannelContent(

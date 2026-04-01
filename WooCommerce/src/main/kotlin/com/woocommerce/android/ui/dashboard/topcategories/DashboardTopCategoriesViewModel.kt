@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerCategoryUiModel
@@ -119,10 +118,6 @@ class DashboardTopCategoriesViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onOpenAnalyticsTapped = DashboardWidgetAction(
-                titleResource = R.string.analytics_section_see_all,
-                action = ::onViewAllAnalyticsTapped
-            )
         )
 
         viewModelScope.launch {
@@ -281,14 +276,6 @@ class DashboardTopCategoriesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun onViewAllAnalyticsTapped() {
-        parentViewModel.trackCardInteracted(DashboardWidget.Type.TOP_CATEGORIES.trackingIdentifier)
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
-            triggerEvent(OpenAnalytics(it.rangeSelection))
-        }
-    }
-
     private fun trackEventForTopCategoriesCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
@@ -308,7 +295,6 @@ class DashboardTopCategoriesViewModel @AssistedInject constructor(
         @StringRes val titleStringRes: Int,
         val topCategories: List<TopPerformerCategoryUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
-        val onOpenAnalyticsTapped: DashboardWidgetAction,
         val isOutdated: Boolean = false,
     )
 
@@ -323,7 +309,6 @@ class DashboardTopCategoriesViewModel @AssistedInject constructor(
     ) : MultiLiveEvent.Event()
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
-    data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

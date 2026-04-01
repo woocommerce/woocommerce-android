@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.SalesByChannelCustomDateRangeDataStore
@@ -116,10 +115,6 @@ class DashboardSalesByChannelViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onOpenAnalyticsTapped = DashboardWidgetAction(
-                titleResource = R.string.analytics_section_see_all,
-                action = ::onViewAllAnalyticsTapped
-            )
         )
 
         viewModelScope.launch {
@@ -300,16 +295,6 @@ class DashboardSalesByChannelViewModel @AssistedInject constructor(
         }
     }
 
-    private fun onViewAllAnalyticsTapped() {
-        parentViewModel.trackCardInteracted(
-            DashboardWidget.Type.SALES_BY_CHANNEL.trackingIdentifier
-        )
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
-            triggerEvent(OpenAnalytics(it.rangeSelection))
-        }
-    }
-
     private fun trackEvent(
         event: AnalyticsEvent,
         properties: Map<String, Any> = emptyMap()
@@ -335,7 +320,6 @@ class DashboardSalesByChannelViewModel @AssistedInject constructor(
         @StringRes val titleStringRes: Int,
         val channels: List<ChannelSalesUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
-        val onOpenAnalyticsTapped: DashboardWidgetAction,
         val isOutdated: Boolean = false,
     )
 
@@ -355,10 +339,6 @@ class DashboardSalesByChannelViewModel @AssistedInject constructor(
     data class OpenDatePicker(
         val fromDate: Date,
         val toDate: Date
-    ) : MultiLiveEvent.Event()
-
-    data class OpenAnalytics(
-        val analyticsPeriod: StatsTimeRangeSelection
     ) : MultiLiveEvent.Event()
 
     @AssistedFactory

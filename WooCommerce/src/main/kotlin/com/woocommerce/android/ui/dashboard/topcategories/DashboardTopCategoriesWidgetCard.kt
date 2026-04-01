@@ -40,13 +40,11 @@ import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerCategoryUiModel
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
-import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesViewModel.OpenCategoryProducts
 import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topcategories.DashboardTopCategoriesViewModel.TopCategoriesDateRange
@@ -77,7 +75,7 @@ fun DashboardTopCategoriesWidgetCard(
         WidgetCard(
             titleResource = topCategoriesState.titleStringRes,
             menu = topCategoriesState.menu,
-            button = topCategoriesState.onOpenAnalyticsTapped,
+            button = null,
             modifier = modifier.testTag(DASHBOARD_TOP_CATEGORIES_CARD),
             isError = topCategoriesState.error != null
         ) {
@@ -171,11 +169,6 @@ private fun HandleEvents(
                 }
 
                 is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
-                is OpenAnalytics -> {
-                    navController.navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
-                    )
-                }
             }
         }
         event.observe(lifecycleOwner, observer)
@@ -420,10 +413,6 @@ private fun TopCategoriesWidgetCardPreview() {
         isLoading = false,
         titleStringRes = DashboardWidget.Type.TOP_CATEGORIES.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
-        onOpenAnalyticsTapped = DashboardWidgetAction(
-            titleResource = R.string.analytics_section_see_all,
-            action = {}
-        )
     )
     Column {
         DashboardTopCategoriesContent(

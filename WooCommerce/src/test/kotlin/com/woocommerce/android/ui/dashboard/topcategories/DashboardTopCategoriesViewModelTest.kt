@@ -250,28 +250,4 @@ class DashboardTopCategoriesViewModelTest : BaseUnitTest() {
         assertThat(state).isNotNull()
     }
 
-    @Test
-    fun `when view all analytics tapped, then OpenAnalytics event is triggered`() = testBlocking {
-        setup {
-            whenever(getTopPerformerCategories.invoke(any(), any())).thenReturn(
-                flowOf(
-                    TopPerformerCategoryResult.Success(
-                        ResultWithOutdatedFlag(sampleCategories, false)
-                    )
-                )
-            )
-        }
-
-        // GIVEN
-        viewModel.selectedDateRange.getOrAwaitValue()
-        val state = viewModel.topCategoriesState.getOrAwaitValue()
-
-        // WHEN
-        val event = viewModel.event.runAndCaptureValues {
-            state.onOpenAnalyticsTapped.action()
-        }.last()
-
-        // THEN
-        assertThat(event).isInstanceOf(DashboardTopCategoriesViewModel.OpenAnalytics::class.java)
-    }
 }
