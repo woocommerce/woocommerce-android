@@ -68,6 +68,7 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
+    @Suppress("LongParameterList")
     fun onUserIdentitySet(
         context: Context,
         helpOrigin: HelpOrigin,

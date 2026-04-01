@@ -123,7 +123,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -140,7 +143,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        verify(
+            zendeskTicketRepository,
+            never()
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -222,7 +228,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
