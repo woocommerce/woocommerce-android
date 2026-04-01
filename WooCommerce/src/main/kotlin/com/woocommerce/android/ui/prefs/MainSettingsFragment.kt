@@ -228,6 +228,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
         }
 
+        binding.pluginsContainer.isVisible = presenter.isPluginsSectionVisible
         binding.optionSitePlugins.setOnClickListener {
             findNavController()
                 .navigateSafely(
