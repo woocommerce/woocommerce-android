@@ -78,7 +78,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         val checks = sut.viewState.value!!.checks
@@ -94,7 +93,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         val checks = sut.viewState.value!!.checks
@@ -110,7 +108,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         val checks = sut.viewState.value!!.checks
@@ -126,7 +123,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         val checks = sut.viewState.value!!.checks
@@ -142,7 +138,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         val checks = sut.viewState.value!!.checks
@@ -157,7 +152,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         assertThat(sut.isCheckFinished.value).isTrue()
@@ -172,7 +166,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         assertThat(sut.isCheckFinished.value).isTrue()
@@ -187,7 +180,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         assertThat(sut.isCheckFinished.value).isFalse()
@@ -202,7 +194,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // When
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // Then
         assertThat(sut.isCheckFinished.value).isTrue()
@@ -214,7 +205,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             // Given
             sut.viewState.observeForever {}
             sut.startConnectionChecks()
-            advanceUntilIdle()
             val events = mutableListOf<MultiLiveEvent.Event>()
             sut.event.observeForever { events.add(it) }
 
@@ -237,7 +227,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // WHEN
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // THEN
         verify(wpComConnectionCheck, never()).invoke()
@@ -252,7 +241,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // WHEN
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // THEN
         assertThat(sut.isCheckFinished.value).isTrue()
@@ -267,7 +255,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // WHEN
         sut.startConnectionChecks()
-        advanceUntilIdle()
 
         // THEN
         assertThat(sut.viewState.value?.shouldDisplaySummary).isTrue()
@@ -315,7 +302,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         // GIVEN
         sut.viewState.observeForever {}
         sut.startConnectionChecks()
-        advanceUntilIdle()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
 
@@ -343,7 +329,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         createViewModel()
         sut.viewState.observeForever {}
         sut.startConnectionChecks()
-        advanceUntilIdle()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
 
@@ -364,7 +349,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         createViewModel()
         sut.viewState.observeForever {}
         sut.startConnectionChecks()
-        advanceUntilIdle()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
 
@@ -387,7 +371,6 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         createViewModel()
         sut.viewState.observeForever {}
         sut.startConnectionChecks()
-        advanceUntilIdle()
         val events = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever { events.add(it) }
 

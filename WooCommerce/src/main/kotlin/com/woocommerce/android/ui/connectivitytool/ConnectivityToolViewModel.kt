@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTIVITY_TEST
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,7 +68,7 @@ class ConnectivityToolViewModel @Inject constructor(
     }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = checksFlow.map { checks ->
-        checks.all { it.status is Success || it.status is Failure }
+        checks.any { it.status is Failure } || checks.all { it.status is Success }
     }.distinctUntilChanged().asLiveData()
 
     private val _technicalDetailsToShow = MutableStateFlow<String?>(null)
