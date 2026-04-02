@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -52,7 +52,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colors.surface)
     ) {
         Image(
             modifier = Modifier
@@ -74,7 +74,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
                     vertical = dimensionResource(id = dimen.major_100)
                 ),
             text = stringResource(id = string.domains_purchase_successful_heading),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.h5,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
@@ -88,7 +88,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
                     .padding(dimensionResource(id = dimen.minor_100))
                     .fillMaxWidth(),
                 text = viewState.domain,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center
             )
         }
@@ -97,7 +97,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
                 .align(Alignment.CenterHorizontally)
                 .padding(dimensionResource(id = dimen.major_100)),
             text = stringResource(string.domains_purchase_successful_delay_notice),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center
         )
@@ -106,7 +106,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
                 .align(Alignment.CenterHorizontally)
                 .padding(dimensionResource(id = dimen.major_100)),
             text = stringResource(id = string.domains_purchase_successful_settings_notice),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = color.color_on_surface_medium),
             textAlign = TextAlign.Center
         )
@@ -114,7 +114,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
             modifier = Modifier
                 .weight(1f)
         )
-        HorizontalDivider()
+        Divider()
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth()
