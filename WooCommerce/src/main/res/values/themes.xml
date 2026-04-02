@@ -148,6 +148,11 @@
 
     <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
 
+    <style name="Theme.Woo.MediaPicker" parent="Theme.Woo.DayNight">
+        <item name="colorPrimary">@color/color_on_surface</item>
+        <item name="colorAccent">@color/color_on_surface</item>
+    </style>
+
     <style name="Theme.WooPos" parent="Theme.Woo">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

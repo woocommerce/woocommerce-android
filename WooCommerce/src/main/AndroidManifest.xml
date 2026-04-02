@@ -150,7 +150,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
-            android:theme="@style/Theme.Woo.DayNight"
+            android:theme="@style/Theme.Woo.MediaPicker"
             android:windowSoftInputMode="adjustResize" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
         <activity
