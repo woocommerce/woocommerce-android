@@ -322,33 +322,34 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selection removed after reload, when refreshing, then first item is auto selected with details`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.onOrderSelected(200L)
-        advanceUntilIdle()
+    fun `given selection removed after reload, when refreshing, then first item is auto selected with details`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            viewModel.onOrderSelected(200L)
+            advanceUntilIdle()
 
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow {
-                emit(LoadOrdersResult.SuccessCache(emptyMap()))
-                emit(LoadOrdersResult.SuccessRemote(ordersMap(order(300), order(400))))
-            }
-        )
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow {
+                    emit(LoadOrdersResult.SuccessCache(emptyMap()))
+                    emit(LoadOrdersResult.SuccessRemote(ordersMap(order(300), order(400))))
+                }
+            )
 
-        // WHEN
-        viewModel.onRefresh()
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onRefresh()
+            advanceUntilIdle()
 
-        // THEN
-        val state = viewModel.state.value as WooPosOrdersState.Content
-        val loadedItems = state.items as WooPosOrdersState.Content.Items.Loaded
-        assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
-        assertThat(state.selectedDetails?.id).isEqualTo(300L)
-    }
+            // THEN
+            val state = viewModel.state.value as WooPosOrdersState.Content
+            val loadedItems = state.items as WooPosOrdersState.Content.Items.Loaded
+            assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
+            assertThat(state.selectedDetails?.id).isEqualTo(300L)
+        }
 
     @Test
     fun `given ViewModel initialized, when onSearchEvent SearchIconClicked, then search input state opens`() = runTest {
@@ -371,81 +372,84 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given search data available, when onSearchEvent Search with query, then searchOrders is called and state updates`() = runTest {
-        // GIVEN
-        val query = "test query"
-        val searchResult = listOf(order(10), order(20))
-        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
-            SearchOrdersResult.Success(ordersMap(*searchResult.toTypedArray()))
-        )
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
-        )
+    fun `given search data available, when onSearchEvent Search with query, then searchOrders is called and state updates`() =
+        runTest {
+            // GIVEN
+            val query = "test query"
+            val searchResult = listOf(order(10), order(20))
+            whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
+                SearchOrdersResult.Success(ordersMap(*searchResult.toTypedArray()))
+            )
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+            )
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+            advanceUntilIdle()
 
-        // THEN
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
-        val content = state as WooPosOrdersState.Content
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L)
-        assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
-        verify(dataSource).searchOrders(query)
-    }
-
-    @Test
-    fun `given ViewModel initialized, when onSearchEvent Search with empty query, then loadOrders is called`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("", 0))
-        advanceUntilIdle()
-
-        // THEN
-        verify(dataSource, times(2)).loadOrders()
-    }
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+            val content = state as WooPosOrdersState.Content
+            val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+            assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L)
+            assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+            verify(dataSource).searchOrders(query)
+        }
 
     @Test
-    fun `given search will fail, when search is performed, then Error state is shown with search input state preserved`() = runTest {
-        // GIVEN
-        val query = "test query"
-        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(SearchOrdersResult.Error("search failed"))
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
-            .thenReturn("Unable to load orders")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
-            .thenReturn("Please try again.")
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
-        )
+    fun `given ViewModel initialized, when onSearchEvent Search with empty query, then loadOrders is called`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search("", 0))
+            advanceUntilIdle()
 
-        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
-        advanceUntilIdle()
+            // THEN
+            verify(dataSource, times(2)).loadOrders()
+        }
 
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
+    @Test
+    fun `given search will fail, when search is performed, then Error state is shown with search input state preserved`() =
+        runTest {
+            // GIVEN
+            val query = "test query"
+            whenever(dataSource.searchOrders(eq(query), any())).thenReturn(SearchOrdersResult.Error("search failed"))
+            whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
+                .thenReturn("Unable to load orders")
+            whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+                .thenReturn("Please try again.")
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+            )
 
-        // THEN
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
-        val content = state as WooPosOrdersState.Content
-        assertThat(content.items).isInstanceOf(WooPosOrdersState.Content.Items.Error::class.java)
-        val error = content.items as WooPosOrdersState.Content.Items.Error
-        assertThat(error.title).isEqualTo("Unable to load orders")
-        assertThat(error.message).isEqualTo("Please try again.")
-        assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
-    }
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+            advanceUntilIdle()
+
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+            val content = state as WooPosOrdersState.Content
+            assertThat(content.items).isInstanceOf(WooPosOrdersState.Content.Items.Error::class.java)
+            val error = content.items as WooPosOrdersState.Content.Items.Error
+            assertThat(error.title).isEqualTo("Unable to load orders")
+            assertThat(error.message).isEqualTo("Please try again.")
+            assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+        }
 
     @Test
     fun `given more pages, when end reached and loadMore succeeds, then items append and pagination None`() = runTest {
@@ -667,30 +671,31 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selected order, when appending next page, then selectedOrderDetails content remains correct`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(10), order(20)))) }
-        )
-        whenever(dataSource.hasMorePages).thenReturn(true)
-        whenever(dataSource.loadMore()).thenReturn(Result.success(ordersMap(order(30), order(40))))
+    fun `given selected order, when appending next page, then selectedOrderDetails content remains correct`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(10), order(20)))) }
+            )
+            whenever(dataSource.hasMorePages).thenReturn(true)
+            whenever(dataSource.loadMore()).thenReturn(Result.success(ordersMap(order(30), order(40))))
 
-        // WHEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.onOrderSelected(20L)
-        advanceUntilIdle()
-        viewModel.onEndOfOrdersListReached()
-        advanceUntilIdle()
+            // WHEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            viewModel.onOrderSelected(20L)
+            advanceUntilIdle()
+            viewModel.onEndOfOrdersListReached()
+            advanceUntilIdle()
 
-        // THEN
-        val content = viewModel.state.value as WooPosOrdersState.Content
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        val details = content.selectedDetails!!
-        assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
-        assertThat(details.id).isEqualTo(20L)
-        assertThat(details.totalPaid).isEqualTo("$106.00")
-    }
+            // THEN
+            val content = viewModel.state.value as WooPosOrdersState.Content
+            val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+            val details = content.selectedDetails!!
+            assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
+            assertThat(details.id).isEqualTo(20L)
+            assertThat(details.totalPaid).isEqualTo("$106.00")
+        }
 
     @Test
     fun `given orders reloaded, when refreshing, then first order details are auto-populated`() = runTest {
@@ -804,82 +809,85 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.onOrderSelected(200L)
-        advanceUntilIdle()
+            viewModel.onOrderSelected(200L)
+            advanceUntilIdle()
 
-        whenever(dataSource.refreshOrderById(200L)).thenReturn(Result.success(order(200)))
+            whenever(dataSource.refreshOrderById(200L)).thenReturn(Result.success(order(200)))
 
-        // WHEN
-        viewModel.onBackFromSuccessfullySendingEmailReceipt()
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onBackFromSuccessfullySendingEmailReceipt()
+            advanceUntilIdle()
 
-        // THEN
-        val state = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(state.selectedDetails?.id).isEqualTo(200L)
-        verify(dataSource).refreshOrderById(200L)
-    }
-
-    @Test
-    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.onOrderSelected(1L)
-        advanceUntilIdle()
-        val before = viewModel.state.value as WooPosOrdersState.Content
-        val beforeDetails = before.selectedDetails
-
-        whenever(dataSource.refreshOrderById(1L)).thenReturn(Result.failure(RuntimeException("boom")))
-
-        // WHEN
-        viewModel.onBackFromSuccessfullySendingEmailReceipt()
-        advanceUntilIdle()
-
-        // THEN
-        val after = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(after.selectedDetails).isEqualTo(beforeDetails)
-        verify(dataSource).refreshOrderById(1L)
-    }
+            // THEN
+            val state = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(state.selectedDetails?.id).isEqualTo(200L)
+            verify(dataSource).refreshOrderById(200L)
+        }
 
     @Test
-    fun `given orders loaded, when selecting an order, then tracks OrdersListRowTapped and OrderDetailsLoaded`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2), order(3)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        // WHEN
-        viewModel.onOrderSelected(3L)
-        advanceUntilIdle()
+            viewModel.onOrderSelected(1L)
+            advanceUntilIdle()
+            val before = viewModel.state.value as WooPosOrdersState.Content
+            val beforeDetails = before.selectedDetails
 
-        // THEN
-        verify(ordersAnalyticsTracker).trackOrdersListRowTapped(
-            orderId = eq(3L),
-            orderStatus = any(),
-            listPosition = eq(2),
-            createdAtMillis = any()
-        )
+            whenever(dataSource.refreshOrderById(1L)).thenReturn(Result.failure(RuntimeException("boom")))
 
-        verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
-            orderId = eq(3L),
-            orderStatus = any(),
-            createdAtMillis = any()
-        )
-    }
+            // WHEN
+            viewModel.onBackFromSuccessfullySendingEmailReceipt()
+            advanceUntilIdle()
+
+            // THEN
+            val after = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(after.selectedDetails).isEqualTo(beforeDetails)
+            verify(dataSource).refreshOrderById(1L)
+        }
+
+    @Test
+    fun `given orders loaded, when selecting an order, then tracks OrdersListRowTapped and OrderDetailsLoaded`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2), order(3)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onOrderSelected(3L)
+            advanceUntilIdle()
+
+            // THEN
+            verify(ordersAnalyticsTracker).trackOrdersListRowTapped(
+                orderId = eq(3L),
+                orderStatus = any(),
+                listPosition = eq(2),
+                createdAtMillis = any()
+            )
+
+            verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
+                orderId = eq(3L),
+                orderStatus = any(),
+                createdAtMillis = any()
+            )
+        }
 
     @Test
     fun `when remote load succeeds, then tracks OrdersListFetched`() = runTest {
@@ -925,52 +933,54 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order with zero discount and zero shipping, when mapped, then discount and shipping are absent`() = runTest {
-        // GIVEN
-        val base = order(1)
-        val withZeros = base.copy(
-            discountTotal = BigDecimal("0.00"),
-            shippingTotal = BigDecimal("0.00")
-        )
+    fun `given order with zero discount and zero shipping, when mapped, then discount and shipping are absent`() =
+        runTest {
+            // GIVEN
+            val base = order(1)
+            val withZeros = base.copy(
+                discountTotal = BigDecimal("0.00"),
+                shippingTotal = BigDecimal("0.00")
+            )
 
-        // WHEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withZeros))) }
-        )
+            // WHEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withZeros))) }
+            )
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        // THEN
-        val content = viewModel.state.value as WooPosOrdersState.Content
-        val breakdown = content.selectedDetails!!.breakdown
-        assertThat(breakdown.discount).isNull()
-        assertThat(breakdown.shipping).isNull()
-    }
+            // THEN
+            val content = viewModel.state.value as WooPosOrdersState.Content
+            val breakdown = content.selectedDetails!!.breakdown
+            assertThat(breakdown.discount).isNull()
+            assertThat(breakdown.shipping).isNull()
+        }
 
     @Test
-    fun `given order with non-zero discount and shipping, when mapped, then discount and shipping are formatted`() = runTest {
-        // GIVEN
-        val base = order(2)
-        val withValues = base.copy(
-            discountTotal = BigDecimal("3.50"),
-            shippingTotal = BigDecimal("4.00")
-        )
+    fun `given order with non-zero discount and shipping, when mapped, then discount and shipping are formatted`() =
+        runTest {
+            // GIVEN
+            val base = order(2)
+            val withValues = base.copy(
+                discountTotal = BigDecimal("3.50"),
+                shippingTotal = BigDecimal("4.00")
+            )
 
-        // WHEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
-        )
+            // WHEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
+            )
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        // THEN
-        val content = viewModel.state.value as WooPosOrdersState.Content
-        val breakdown = content.selectedDetails!!.breakdown
-        assertThat(breakdown.discount).isEqualTo("-$3.50")
-        assertThat(breakdown.shipping).isEqualTo("$4.00")
-    }
+            // THEN
+            val content = viewModel.state.value as WooPosOrdersState.Content
+            val breakdown = content.selectedDetails!!.breakdown
+            assertThat(breakdown.discount).isEqualTo("-$3.50")
+            assertThat(breakdown.shipping).isEqualTo("$4.00")
+        }
 
     @Test
     fun `given search returns no results, when search performed, then selectedDetails is null`() = runTest {
@@ -999,111 +1009,114 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order selected and search returns results with selected order, when search performed, then selected order preserved`() = runTest {
-        // GIVEN
-        val query = "test query"
-        val order1 = order(1)
-        val order2 = order(2)
-        val searchResults = listOf(order1, order2, order(3))
+    fun `given order selected and search returns results with selected order, when search performed, then selected order preserved`() =
+        runTest {
+            // GIVEN
+            val query = "test query"
+            val order1 = order(1)
+            val order2 = order(2)
+            val searchResults = listOf(order1, order2, order(3))
 
-        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
-            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
-        )
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
+                SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+            )
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.onOrderSelected(2L)
-        advanceUntilIdle()
+            viewModel.onOrderSelected(2L)
+            advanceUntilIdle()
 
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+            advanceUntilIdle()
 
-        // THEN
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
-        val content = state as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.id).isEqualTo(2L)
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+            val content = state as WooPosOrdersState.Content
+            assertThat(content.selectedDetails?.id).isEqualTo(2L)
 
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        val selectedItem = loadedItems.items.keys.first { it.isSelected }
-        assertThat(selectedItem.id).isEqualTo(2L)
-    }
-
-    @Test
-    fun `given order selected and search returns results without selected order, when search performed, then first order selected`() = runTest {
-        // GIVEN
-        val query = "test query"
-        val order1 = order(1)
-        val order2 = order(2)
-        val searchResults = listOf(order(3), order(4))
-
-        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
-            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
-        )
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.onOrderSelected(2L)
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
-
-        // THEN
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
-        val content = state as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.id).isEqualTo(3L)
-
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        val selectedItem = loadedItems.items.keys.first { it.isSelected }
-        assertThat(selectedItem.id).isEqualTo(3L)
-    }
+            val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+            val selectedItem = loadedItems.items.keys.first { it.isSelected }
+            assertThat(selectedItem.id).isEqualTo(2L)
+        }
 
     @Test
-    fun `given no order selected and search returns results, when search performed, then first order selected`() = runTest {
-        // GIVEN
-        val query = "test query"
-        val searchResults = listOf(order(5), order(6))
+    fun `given order selected and search returns results without selected order, when search performed, then first order selected`() =
+        runTest {
+            // GIVEN
+            val query = "test query"
+            val order1 = order(1)
+            val order2 = order(2)
+            val searchResults = listOf(order(3), order(4))
 
-        whenever(dataSource.searchOrders(eq("empty"), any())).thenReturn(
-            SearchOrdersResult.Success(emptyMap())
-        )
-        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
-            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
-        )
+            whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
+                SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+            )
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel.onOrderSelected(2L)
+            advanceUntilIdle()
 
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("empty", 5))
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+            advanceUntilIdle()
 
-        // WHEN
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+            val content = state as WooPosOrdersState.Content
+            assertThat(content.selectedDetails?.id).isEqualTo(3L)
 
-        // THEN
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
-        val content = state as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.id).isEqualTo(5L)
+            val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+            val selectedItem = loadedItems.items.keys.first { it.isSelected }
+            assertThat(selectedItem.id).isEqualTo(3L)
+        }
 
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        val selectedItem = loadedItems.items.keys.first { it.isSelected }
-        assertThat(selectedItem.id).isEqualTo(5L)
-    }
+    @Test
+    fun `given no order selected and search returns results, when search performed, then first order selected`() =
+        runTest {
+            // GIVEN
+            val query = "test query"
+            val searchResults = listOf(order(5), order(6))
+
+            whenever(dataSource.searchOrders(eq("empty"), any())).thenReturn(
+                SearchOrdersResult.Success(emptyMap())
+            )
+            whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
+                SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+            )
+
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search("empty", 5))
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+            advanceUntilIdle()
+
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+            val content = state as WooPosOrdersState.Content
+            assertThat(content.selectedDetails?.id).isEqualTo(5L)
+
+            val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+            val selectedItem = loadedItems.items.keys.first { it.isSelected }
+            assertThat(selectedItem.id).isEqualTo(5L)
+        }
 
     @Test
     fun `given search fails, when search performed, then no order selected`() = runTest {
@@ -1175,28 +1188,30 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed called, then dialog is hidden`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(456)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed called, then dialog is hidden`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(456)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.onIssueRefundButtonClicked(456L)
-        advanceUntilIdle()
+            viewModel.onIssueRefundButtonClicked(456L)
+            advanceUntilIdle()
 
-        val beforeState = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(beforeState.dialogState).isInstanceOf(WooPosOrdersState.Content.DialogState.IssueRefund::class.java)
+            val beforeState = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(beforeState.dialogState)
+                .isInstanceOf(WooPosOrdersState.Content.DialogState.IssueRefund::class.java)
 
-        // WHEN
-        viewModel.onIssueRefundDialogDismissed()
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
 
-        // THEN
-        val afterState = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(afterState.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
-    }
+            // THEN
+            val afterState = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(afterState.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
+        }
 
     @Test
     fun `given non-Content state, when onIssueRefundDialogDismissed called, then state remains unchanged`() = runTest {
@@ -1219,48 +1234,49 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given Content state, when showing and hiding dialog, then other state properties remain unchanged`() = runTest {
-        // GIVEN
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
-        )
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given Content state, when showing and hiding dialog, then other state properties remain unchanged`() =
+        runTest {
+            // GIVEN
+            whenever(dataSource.loadOrders(any())).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
+            )
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.onOrderSelected(200L)
-        advanceUntilIdle()
+            viewModel.onOrderSelected(200L)
+            advanceUntilIdle()
 
-        val initialState = viewModel.state.value as WooPosOrdersState.Content
-        val initialItems = initialState.items
-        val initialSelectedDetails = initialState.selectedDetails
-        val initialPullToRefreshState = initialState.pullToRefreshState
-        val initialPaginationState = initialState.paginationState
-        val initialSearchInputState = initialState.searchInputState
+            val initialState = viewModel.state.value as WooPosOrdersState.Content
+            val initialItems = initialState.items
+            val initialSelectedDetails = initialState.selectedDetails
+            val initialPullToRefreshState = initialState.pullToRefreshState
+            val initialPaginationState = initialState.paginationState
+            val initialSearchInputState = initialState.searchInputState
 
-        // WHEN
-        viewModel.onIssueRefundButtonClicked(200L)
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onIssueRefundButtonClicked(200L)
+            advanceUntilIdle()
 
-        // THEN
-        var currentState = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(currentState.items).isEqualTo(initialItems)
-        assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
-        assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
-        assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
-        assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+            // THEN
+            var currentState = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(currentState.items).isEqualTo(initialItems)
+            assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
+            assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
+            assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
+            assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
 
-        // WHEN
-        viewModel.onIssueRefundDialogDismissed()
-        advanceUntilIdle()
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
 
-        // THEN
-        currentState = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(currentState.items).isEqualTo(initialItems)
-        assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
-        assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
-        assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
-        assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
-    }
+            // THEN
+            currentState = viewModel.state.value as WooPosOrdersState.Content
+            assertThat(currentState.items).isEqualTo(initialItems)
+            assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
+            assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
+            assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
+            assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+        }
 
     @Test
     fun `given completed order, when order details loaded, then Issue Refund action is available`() = runTest {

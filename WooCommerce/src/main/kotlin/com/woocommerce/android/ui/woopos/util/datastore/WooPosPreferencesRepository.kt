@@ -106,19 +106,6 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun isPeriodicSyncEnabledForSite(siteId: LocalOrRemoteId.LocalId): Boolean {
-        val key = buildPeriodicSyncEnabledKey(siteId)
-        val preferences = dataStore.data.map { it[key] ?: true }.first()
-        return preferences
-    }
-
-    suspend fun disablePeriodicSyncForSite(siteId: LocalOrRemoteId.LocalId) {
-        val key = buildPeriodicSyncEnabledKey(siteId)
-        dataStore.edit { preferences ->
-            preferences[key] = false
-        }
-    }
-
     suspend fun getWooVersionSunsetBannerDismissalTimestamp(): Long? {
         return dataStore.data.map { preferences ->
             preferences[wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey]
@@ -152,9 +139,6 @@ class WooPosPreferencesRepository @Inject constructor(
         }
         return attempts
     }
-
-    private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
-        booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
 
     private fun buildFileBasedSyncPollAttemptsKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Int> =
         intPreferencesKey("pos_file_based_sync_poll_attempts_${siteId.value}")

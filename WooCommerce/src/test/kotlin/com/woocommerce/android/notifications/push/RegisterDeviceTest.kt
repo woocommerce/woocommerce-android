@@ -5,6 +5,8 @@ import com.woocommerce.android.notifications.push.PushNotificationRegistrationSt
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -28,19 +30,21 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val selectedSite: SelectedSite = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val siteModel: SiteModel = mock()
 
     @Before
-    fun setUp() {
+    fun setUp() = testBlocking {
         setupDefaultMocks()
         createSut()
     }
 
-    private fun setupDefaultMocks() {
+    private suspend fun setupDefaultMocks() {
         whenever(appPrefs.getFCMToken()).thenReturn(TEST_TOKEN)
         whenever(accountStore.hasAccessToken()).thenReturn(true)
         whenever(siteModel.siteId).thenReturn(TEST_SITE_ID)
         whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)).thenReturn(false)
     }
 
     private fun createSut() {
@@ -49,6 +53,7 @@ class RegisterDeviceTest : BaseUnitTest() {
             accountStore,
             pushNotificationRegistrationStatus,
             pushNotificationRepository,
+            featureFlagRepository,
             selectedSite
         )
     }

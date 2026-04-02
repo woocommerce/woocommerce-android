@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -498,6 +499,46 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+    }
+
+    @Test
+    fun `given CIAB site, when admin button clicked, then launch url in chrome tab`() = testBlocking {
+        // GIVEN
+        selectedSiteFlow.update {
+            it.apply {
+                setIsGardenSite(true)
+                gardenName = SiteModel.CIAB_GARDEN_NAME
+            }
+        }
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_wс_admin }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        // THEN
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.LaunchUrlInChromeTab::class.java)
+    }
+
+    @Test
+    fun `given non-CIAB site, when admin button clicked, then launch url in authenticated web view`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_wс_admin }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        // THEN
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView::class.java)
     }
 
     @Test

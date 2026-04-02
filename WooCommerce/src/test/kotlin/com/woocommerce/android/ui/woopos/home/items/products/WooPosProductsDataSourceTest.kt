@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
@@ -27,9 +26,6 @@ class WooPosProductsDataSourceTest {
     private val remoteDataSource: WooPosProductsRemoteDataSource = mock()
     private val localDbDataSource: WooPosProductsInDbDataSource = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock {
-        on { invoke() }.thenReturn(false)
-    }
 
     @Rule
     @JvmField
@@ -318,6 +314,5 @@ class WooPosProductsDataSourceTest {
         remoteDataSource = remoteDataSource,
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
-        fileApproachEnabled = fileApproachEnabled
     )
 }

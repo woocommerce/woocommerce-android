@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ class AgeEligibilityChecker @Inject constructor(
     private val client: AgeSignalsClient,
     private val prefsWrapper: AppPrefsWrapper,
     private val accountRepository: AccountRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val trackerWrapper: AnalyticsTrackerWrapper
 ) {
 
@@ -35,7 +37,7 @@ class AgeEligibilityChecker @Inject constructor(
     val ageEligibilityState: StateFlow<AgeEligibilityState> = _ageEligibilityState.asStateFlow()
 
     suspend fun checkAge() {
-        if (FeatureFlag.AGE_ELIGIBILITY_CHECKS.isEnabled()) {
+        if (featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)) {
             val trackingProperties = mutableMapOf<String, Any>()
             try {
                 val result = client.checkAge()
