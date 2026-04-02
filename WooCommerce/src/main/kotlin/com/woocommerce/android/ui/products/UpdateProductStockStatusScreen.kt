@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -30,6 +32,7 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Sto
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Common
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Mixed
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
@@ -60,6 +63,7 @@ fun UpdateProductStockStatusScreen(
                 onNavigationButtonClick = onNavigationUpClicked,
                 onActionButtonClick = onUpdateClicked,
                 actionButtonText = stringResource(id = R.string.product_update_stock_status_done),
+                windowInsets = TopAppBarDefaults.windowInsets,
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
