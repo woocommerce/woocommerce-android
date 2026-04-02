@@ -29,7 +29,6 @@ import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCDataStoreTest {
-
     private val context = ApplicationProvider.getApplicationContext<Application>()
 
     @Rule
@@ -56,7 +55,7 @@ class WCDataStoreTest {
 
         store = WCDataStore(restClient, initCoroutineEngine(), locationsDao)
 
-        TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
+        TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
     }
 
     @Test

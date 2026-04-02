@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -39,6 +40,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.AccountStore
@@ -55,10 +57,9 @@ import kotlin.test.assertEquals
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WooCommerceStoreTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Rule
     @JvmField
@@ -71,6 +72,7 @@ class WooCommerceStoreTest {
 
     private val appContext = ApplicationProvider.getApplicationContext<Application>()
     private val restClient = mock<WooSystemRestClient>()
+    private val siteSqlUtils = SiteSqlUtils()
     private val siteStore = mock<SiteStore>()
     private val wcrestClient = mock<WooCommerceRestClient>()
     private val accountStore = mock<AccountStore>()
@@ -87,7 +89,7 @@ class WooCommerceStoreTest {
             siteStore = siteStore,
             systemRestClient = restClient,
             wcCoreRestClient = wcrestClient,
-            siteSqlUtils = TestSiteSqlUtils.siteSqlUtils,
+            siteSqlUtils = siteSqlUtils,
             settingsMapper = settingsMapper,
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
@@ -314,11 +316,15 @@ class WooCommerceStoreTest {
     @Test
     fun `when fetching api version succeeds, then update application passwords authorization URL`() {
         runBlocking {
+            whenever(siteStore.insertOrUpdateSite(any())).doAnswer {
+                TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
+            }
+
             // Sanity check
             assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
 
             val authorizationUrl = "https://example.com/authorization-url"
-            TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
+            TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
 
             fetchSupportedWooApiVersion(
                 response = RootWPAPIRestResponse(
@@ -330,7 +336,7 @@ class WooCommerceStoreTest {
                 )
             )
 
-            val updateSite = TestSiteSqlUtils.siteSqlUtils.getSiteWithLocalId(site.localId())
+            val updateSite = siteSqlUtils.getSiteWithLocalId(site.localId())
             assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
         }
     }

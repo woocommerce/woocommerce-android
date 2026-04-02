@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -13,25 +12,17 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.AccountMapper
-import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 class ProductTagsDaoTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
-
-    @Rule
-    @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val site = SiteModel().apply {
         email = "test@example.org"
@@ -44,7 +35,7 @@ class ProductTagsDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productTagsDao
-        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
+        siteSqlUtils = SiteSqlUtils()
     }
 
     @Test

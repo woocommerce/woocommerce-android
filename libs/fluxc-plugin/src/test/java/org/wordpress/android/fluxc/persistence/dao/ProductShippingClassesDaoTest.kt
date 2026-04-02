@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -15,23 +14,15 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.AccountMapper
-import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 
 @RunWith(RobolectricTestRunner::class)
 class ProductShippingClassesDaoTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
-
-    @Rule
-    @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductShippingClassesDao
     private lateinit var siteSqlUtils: SiteSqlUtils
@@ -45,7 +36,7 @@ class ProductShippingClassesDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productShippingClassesDao
-        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
+        siteSqlUtils = SiteSqlUtils()
     }
 
     @Test

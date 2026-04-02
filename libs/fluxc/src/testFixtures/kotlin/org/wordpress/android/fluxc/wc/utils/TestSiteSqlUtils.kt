@@ -7,14 +7,14 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.AccountMapper
 import org.wordpress.android.fluxc.persistence.AccountStorePersistence
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 
 object TestSiteSqlUtils {
     private val accountStorePersistence: AccountStorePersistence = mock {
         on { getDefaultAccount() } doReturn AccountModel().apply { userId = 1L }
     }
-    val siteSqlUtils = SiteSqlUtils(accountStorePersistence)
+    val siteStorePersistence = SiteStorePersistence(accountStorePersistence)
 
     @Suppress("MagicNumber")
     fun insertTestAccountAndSiteIntoDb(
@@ -28,7 +28,7 @@ object TestSiteSqlUtils {
         val site = SiteModel()
         site.siteId = 6347
 
-        SiteSqlUtils(accountStorePersistence).insertOrUpdateSite(site)
+        SiteStorePersistence(accountStorePersistence).insertOrUpdateSite(site)
         return site
     }
 }
