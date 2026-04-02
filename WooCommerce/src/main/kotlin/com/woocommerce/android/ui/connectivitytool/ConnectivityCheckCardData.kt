@@ -93,10 +93,8 @@ sealed class ConnectivityCheckStatus : Parcelable {
     data object NotStarted : ConnectivityCheckStatus()
     data object InProgress : ConnectivityCheckStatus()
 
-    @Parcelize
     data class Success(override val durationMs: Long = 0L) : ConnectivityCheckStatus(), Parcelable
 
-    @Parcelize
     data class Failure(
         val error: FailureType? = null,
         val technicalDetails: String? = null,
