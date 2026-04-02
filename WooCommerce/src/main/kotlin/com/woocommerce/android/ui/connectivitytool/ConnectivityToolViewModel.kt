@@ -119,6 +119,7 @@ class ConnectivityToolViewModel @Inject constructor(
 
     private suspend fun executeNextCheck() {
         val checks = checksFlow.value
+        if (checks.any { it.status is Failure }) return
         val nextCheck = checks.firstOrNull { it.status is NotStarted || it.status is InProgress } ?: return
 
         val flow = when (nextCheck.type) {

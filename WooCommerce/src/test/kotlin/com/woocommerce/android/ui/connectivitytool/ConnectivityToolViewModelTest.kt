@@ -71,6 +71,34 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when a check previously failed, then startConnectionChecks does not execute the next check`() = testBlocking {
+        // Given
+        val checks = listOf(
+            ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, Success()),
+            ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, Failure()),
+            ConnectivityCheckCardData(ConnectivityCheckType.STORE, NotStarted)
+        )
+        val savedStateHandle = SavedStateHandle(mapOf("checksFlow" to checks))
+        
+        sut = ConnectivityToolViewModel(
+            internetConnectionCheck = internetConnectionCheck,
+            wpComConnectionCheck = wpComConnectionCheck,
+            storeConnectionCheck = storeConnectionCheck,
+            storeOrdersCheck = storeOrdersCheck,
+            storeProductsCheck = storeProductsCheck,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            selectedSite = selectedSite,
+            savedState = savedStateHandle
+        )
+
+        // When
+        sut.startConnectionChecks()
+
+        // Then
+        verify(storeConnectionCheck, never()).invoke()
+    }
+
+    @Test
     fun `when internetConnectionCheck use case starts, then internet check status updates as expected`() = testBlocking {
         // Given
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
