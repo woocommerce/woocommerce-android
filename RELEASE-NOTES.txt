@@ -4,7 +4,8 @@
 
 24.6
 -----
-- [Internal] Migrated UpdateProductStockStatusScreen, PlanSubscriptionScreen, and PurchaseSuccessfulScreen from Material 2 to Material 3
+- [Internal] Migrated UpdateProductStockStatusScreen and PlanSubscriptionScreen from Material 2 to Material 3
+- [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
 
 24.5
 -----
