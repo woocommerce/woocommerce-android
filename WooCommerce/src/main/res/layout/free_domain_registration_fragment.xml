@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/color_surface"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/domain_registration_details_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/register_domain_button_container"
+        android:layout_alignParentTop="true"
+        android:fillViewport="true"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/TextAppearance.Woo.Headline6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/major_75"
+                    android:paddingBottom="@dimen/minor_100"
+                    android:text="@string/domain_registration_privacy_protection_title" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/TextAppearance.Woo.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/minor_100"
+                    android:text="@string/domain_registration_privacy_protection_description" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tos_explanation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Woo.Body1"
+                    tools:text="@string/domain_registration_privacy_protection_tos" />
+
+                <RadioGroup
+                    android:id="@+id/domain_privacy_options_radiogroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginBottom="@dimen/minor_100"
+                    android:checkedButton="@+id/domain_privacy_on_radio_button"
+                    tools:ignore="UnusedAttribute">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        style="@style/Woo.RadioButton"
+                        android:id="@+id/domain_privacy_on_radio_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/domain_privacy_option_on_title"
+                        tools:checked="true" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        style="@style/Woo.RadioButton"
+                        android:id="@+id/domain_privacy_off_radio_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/domain_privacy_option_off_title" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <View style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/minor_75"
+                android:layout_marginBottom="@dimen/minor_75" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                tools:ignore="UselessParent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/TextAppearance.Woo.Headline6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    android:paddingTop="@dimen/major_75"
+                    android:paddingBottom="@dimen/minor_100"
+                    android:text="@string/domain_contact_information_title" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/TextAppearance.Woo.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_200"
+                    android:text="@string/domain_contact_information_description" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/first_name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/order_detail_edit_address_details_first_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        tools:ignore="HardcodedText"
+                        tools:text="John" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/last_name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/order_detail_edit_address_details_last_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        tools:text="Smith" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/organization_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_organization_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/email"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        tools:text="email@wordpress.com" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/country_code_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_country_code_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        tools:text="44" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phone_number_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_phone_number_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        tools:text="3127924444" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/country_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:hint="@string/domain_contact_information_country_hint"
+                        android:inputType="none" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/address_first_line_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_address_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/address_second_line_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_address_hint_two"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/city_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_city_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPostalAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <RelativeLayout
+                    android:id="@+id/state_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/state_input_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Woo.TextInputLayout">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/state_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:hint="@string/domain_contact_information_state_hint"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ProgressBar
+                        android:id="@+id/states_loading_progress_indicator"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="@dimen/progress_bar_mid"
+                        android:layout_height="@dimen/progress_bar_mid"
+                        android:layout_alignTop="@+id/state_input_container"
+                        android:layout_alignBottom="@+id/state_input_container"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/postal_code_input_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Woo.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/postal_code_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/domain_contact_information_postal_code_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPostalAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/register_domain_button_container"
+        style="@style/Widget.LoginFlow.CardView.BottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/register_domain_button"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:text="@string/domain_contact_information_register_domain_button"
+            android:textAllCaps="false" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <RelativeLayout
+        android:id="@+id/form_progress_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -16,6 +16,7 @@ interface MainSettingsContract {
         fun setupApplicationPasswordsSettings()
         fun onNotificationsClicked()
 
+        val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
         val wooPluginVersion: String
