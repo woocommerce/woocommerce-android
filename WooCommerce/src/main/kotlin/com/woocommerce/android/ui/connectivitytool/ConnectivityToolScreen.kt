@@ -158,7 +158,9 @@ fun ConnectivityCheckCard(
         onRetryConnectionClicked = onRetryClick,
         shouldDisplayReadMoreButton = shouldDisplayReadMoreButton,
         onViewTechnicalDetailsClicked = failure?.technicalDetails?.let { details ->
-            { onViewTechnicalDetailsClicked(details) }
+            {
+                onViewTechnicalDetailsClicked(details)
+            }
         }
     )
 }

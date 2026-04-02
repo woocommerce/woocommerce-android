@@ -79,7 +79,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             ConnectivityCheckCardData(ConnectivityCheckType.STORE, NotStarted)
         )
         val savedStateHandle = SavedStateHandle(mapOf("checksFlow" to checks))
-        
+
         sut = ConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wpComConnectionCheck = wpComConnectionCheck,

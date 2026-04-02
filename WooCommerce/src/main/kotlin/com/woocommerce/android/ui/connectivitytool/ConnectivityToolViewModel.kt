@@ -118,23 +118,27 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private suspend fun executeNextCheck() {
-        val checks = checksFlow.value
-        if (checks.any { it.status is Failure }) return
-        val nextCheck = checks.firstOrNull { it.status is NotStarted || it.status is InProgress } ?: return
+        while (true) {
+            val checks = checksFlow.value
+            if (checks.any { it.status is Failure }) return
+            val nextCheck = checks.firstOrNull { it.status is NotStarted || it.status is InProgress } ?: return
 
-        val flow = when (nextCheck.type) {
-            ConnectivityCheckType.INTERNET -> internetConnectionCheck()
-            ConnectivityCheckType.WP_COM -> wpComConnectionCheck()
-            ConnectivityCheckType.STORE -> storeConnectionCheck()
-            ConnectivityCheckType.ORDERS -> storeOrdersCheck()
-            ConnectivityCheckType.PRODUCTS -> storeProductsCheck()
-        }
+            val flow = when (nextCheck.type) {
+                ConnectivityCheckType.INTERNET -> internetConnectionCheck()
+                ConnectivityCheckType.WP_COM -> wpComConnectionCheck()
+                ConnectivityCheckType.STORE -> storeConnectionCheck()
+                ConnectivityCheckType.ORDERS -> storeOrdersCheck()
+                ConnectivityCheckType.PRODUCTS -> storeProductsCheck()
+            }
 
-        flow.collect { status ->
-            trackChanges(status, nextCheck.type.analyticsValue)
-            updateCheckStatus(nextCheck.type, status)
-            if (status is Success) {
-                executeNextCheck()
+            flow.collect { status ->
+                trackChanges(status, nextCheck.type.analyticsValue)
+                updateCheckStatus(nextCheck.type, status)
+            }
+
+            val finalStatus = checksFlow.value.first { it.type == nextCheck.type }.status
+            if (finalStatus !is Success) {
+                return
             }
         }
     }
@@ -173,11 +177,10 @@ class ConnectivityToolViewModel @Inject constructor(
                 appendLine("Took: ${check.status.durationMs}ms")
                 val resultStr = when (val status = check.status) {
                     is Success -> "Success"
-                    is Failure -> buildString {
-                        append(status.error?.name ?: "Failed")
-                        status.technicalDetails?.let { details ->
-                            append("\n$details")
-                        }
+                    is Failure -> {
+                        val errorName = status.error?.name ?: "Failed"
+                        val details = status.technicalDetails?.let { "\n$it" } ?: ""
+                        errorName + details
                     }
                     else -> "Unknown"
                 }
