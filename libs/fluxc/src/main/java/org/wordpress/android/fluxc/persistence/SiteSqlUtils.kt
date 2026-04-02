@@ -5,20 +5,12 @@ import android.database.Cursor
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SiteSqlUtils @Inject constructor() {
-    fun getSiteWithLocalId(id: LocalId): SiteModel? = WellSql.select(SiteModel::class.java)
-            .where()
-            .equals(SiteModelTable.ID, id.value)
-            .endWhere()
-            .asModel
-            .firstOrNull()
-
     fun getSitesWithLocalId(id: Int): List<SiteModel> {
         return WellSql.select(SiteModel::class.java)
                 .where().equals(SiteModelTable.ID, id).endWhere().asModel

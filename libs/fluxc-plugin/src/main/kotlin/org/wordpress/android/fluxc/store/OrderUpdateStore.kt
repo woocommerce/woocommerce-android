@@ -17,7 +17,6 @@ import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDtoMapper.Companion.toDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -42,7 +41,7 @@ class OrderUpdateStore @Inject internal constructor(
     private val wcOrderRestClient: OrderRestClient,
     private val ordersDaoDecorator: OrdersDaoDecorator,
     private val metaDataDao: MetaDataDao,
-    private val siteSqlUtils: SiteSqlUtils,
+    private val siteStore: SiteStore,
     private val orderSummaryDao: OrderSummaryDao
 ) {
     fun updateCustomerOrderNote(
@@ -295,7 +294,7 @@ class OrderUpdateStore @Inject internal constructor(
         predicate: UpdateOrderFlowPredicate
     ) {
         ordersDaoDecorator.getOrder(orderId, localSiteId)?.let { initialOrder ->
-            siteSqlUtils.getSiteWithLocalId(initialOrder.localSiteId)
+            siteStore.getSiteByLocalId(initialOrder.localSiteId.value)
                 ?.let { predicate(initialOrder, it) }
                 ?: emitNoEntityFound("Site with local id ${initialOrder.localSiteId} not found")
         } ?: emitNoEntityFound("Order with id $orderId not found")

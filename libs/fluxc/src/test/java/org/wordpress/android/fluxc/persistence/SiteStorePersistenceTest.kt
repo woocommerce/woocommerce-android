@@ -24,7 +24,7 @@ class SiteStorePersistenceTest {
         on { getDefaultAccount() } doReturn AccountModel().apply { userId = 1L }
     }
 
-    private lateinit var siteSqlUtils: SiteSqlUtils
+    private val siteSqlUtils = SiteSqlUtils()
     private lateinit var sut: SiteStorePersistence
 
     @Before
@@ -33,7 +33,6 @@ class SiteStorePersistenceTest {
         WellSql.init(config)
         config.reset()
 
-        siteSqlUtils = SiteSqlUtils()
         sut = SiteStorePersistence(accountStorePersistence)
     }
 

@@ -27,7 +27,6 @@ class ProductReviewsDaoTest {
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductReviewsDao
-    private lateinit var siteSqlUtils: SiteSqlUtils
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -38,7 +37,6 @@ class ProductReviewsDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productReviewsDao
-        siteSqlUtils = SiteSqlUtils()
     }
 
     @Test
@@ -137,7 +135,7 @@ class ProductReviewsDaoTest {
         assertEquals(reviews.size, savedReviews.size)
 
         // Delete site and verify reviews deleted via foreign key constraint
-        siteSqlUtils.deleteSite(site)
+        SiteSqlUtils().deleteSite(site)
         savedReviews = sut.getProductReviews(siteId = site.localId())
         assertEquals(0, savedReviews.size)
     }

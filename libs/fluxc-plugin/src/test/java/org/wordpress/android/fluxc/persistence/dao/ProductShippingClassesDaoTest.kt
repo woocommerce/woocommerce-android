@@ -25,7 +25,6 @@ class ProductShippingClassesDaoTest {
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductShippingClassesDao
-    private lateinit var siteSqlUtils: SiteSqlUtils
 
     private val site = SiteModel().apply {
         email = "test@example.org"
@@ -36,7 +35,6 @@ class ProductShippingClassesDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productShippingClassesDao
-        siteSqlUtils = SiteSqlUtils()
     }
 
     @Test
@@ -129,7 +127,7 @@ class ProductShippingClassesDaoTest {
         assertEquals(shippingClassList.size, savedShippingClassList.size)
 
         // Delete site and verify shipping class list  deleted via foreign key constraint
-        siteSqlUtils.deleteSite(site)
+        SiteSqlUtils().deleteSite(site)
         savedShippingClassList = sut.getProductShippingClasses(site.localId())
         assertEquals(0, savedShippingClassList.size)
     }

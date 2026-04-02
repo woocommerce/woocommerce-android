@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.wc
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -73,7 +74,6 @@ class WooCommerceStoreTest {
 
     private val appContext = ApplicationProvider.getApplicationContext<Application>()
     private val restClient = mock<WooSystemRestClient>()
-    private val siteSqlUtils = SiteSqlUtils()
     private val siteStore = mock<SiteStore>()
     private val wcrestClient = mock<WooCommerceRestClient>()
     private val accountStore = mock<AccountStore>()
@@ -90,7 +90,6 @@ class WooCommerceStoreTest {
             siteStore = siteStore,
             systemRestClient = restClient,
             wcCoreRestClient = wcrestClient,
-            siteSqlUtils = siteSqlUtils,
             settingsMapper = settingsMapper,
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
@@ -145,6 +144,10 @@ class WooCommerceStoreTest {
 
     @Test
     fun testGetWooCommerceSites() {
+        whenever(siteStore.getWooCommerceSites()).doAnswer {
+            SiteSqlUtils().getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+        }
+
         val nonWooSite = SiteModel().apply { siteId = 42 }
         WellSql.insert(nonWooSite).execute()
 
@@ -375,7 +378,7 @@ class WooCommerceStoreTest {
                 )
             )
 
-            val updateSite = siteSqlUtils.getSiteWithLocalId(site.localId())
+            val updateSite = SiteSqlUtils().getSitesWithLocalId(site.localId().value).firstOrNull()
             assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
         }
     }

@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import android.content.Context
-import com.wellsql.generated.SiteModelTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -34,7 +33,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -60,7 +58,6 @@ open class WooCommerceStore @Inject internal constructor(
     private val systemRestClient: WooSystemRestClient,
     private val wcCoreRestClient: WooCommerceRestClient,
     private val settingsMapper: WCSettingsMapper,
-    private val siteSqlUtils: SiteSqlUtils,
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
     private val sitePluginDao: SitePluginDao,
@@ -127,7 +124,7 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     fun getWooCommerceSites(): MutableList<SiteModel> =
-        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+        siteStore.getWooCommerceSites().toMutableList()
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.

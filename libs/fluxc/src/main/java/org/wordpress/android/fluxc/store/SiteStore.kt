@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
+import com.wellsql.generated.SiteModelTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.greenrobot.eventbus.Subscribe
@@ -388,17 +389,8 @@ open class SiteStore @Inject constructor(
 
     /**
      * Obtains the site with the given (local) id and returns it as a [SiteModel].
-     *
-     * NOTE: This method needs to be open because it's mocked in android tests in the WPAndroid project.
-     *       TODO: consider adding https://kotlinlang.org/docs/all-open-plugin.html
      */
-    @Suppress("ForbiddenComment")
-    open fun getSiteByLocalId(id: Int): SiteModel? {
-        val result = siteSqlUtils.getSitesWithLocalId(id)
-        return if (result.isNotEmpty()) {
-            result[0]
-        } else null
-    }
+    fun getSiteByLocalId(id: Int) = siteSqlUtils.getSitesWithLocalId(id).firstOrNull()
 
     /**
      * Checks whether the store contains a site matching the given (local) id.
@@ -481,6 +473,9 @@ open class SiteStore @Inject constructor(
 
     @Throws(SiteStorePersistence.DuplicateSiteException::class)
     fun insertOrUpdateSite(site: SiteModel?): Int = siteStorePersistence.insertOrUpdateSite(site)
+
+    fun getWooCommerceSites(): List<SiteModel> =
+        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
 
     @Subscribe(threadMode = ASYNC)
     @Suppress("LongMethod", "ComplexMethod")
