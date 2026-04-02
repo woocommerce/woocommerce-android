@@ -44,7 +44,7 @@ class ConnectivityToolViewModel @Inject constructor(
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
-    private val initialChecks = ArrayList<ConnectivityCheckCardData>().apply {
+    private val initialChecks = buildList {
         add(ConnectivityCheckCardData(ConnectivityCheckType.INTERNET))
         if (!isAppPasswordSite) {
             add(ConnectivityCheckCardData(ConnectivityCheckType.WP_COM))
@@ -102,7 +102,7 @@ class ConnectivityToolViewModel @Inject constructor(
         checksFlow.update { checks ->
             checks.map {
                 if (it.type == type) it.copy(status = NotStarted) else it
-            }.toCollection(ArrayList())
+            }
         }
         launch {
             executeNextCheck()
@@ -142,7 +142,7 @@ class ConnectivityToolViewModel @Inject constructor(
         checksFlow.update { checks ->
             checks.map {
                 if (it.type == type) it.copy(status = status) else it
-            }.toCollection(ArrayList())
+            }
         }
     }
 
