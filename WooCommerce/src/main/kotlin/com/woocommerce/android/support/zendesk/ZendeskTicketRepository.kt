@@ -71,7 +71,7 @@ class ZendeskTicketRepository @Inject constructor(
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
         val attachmentTokens = if (diagnosticLog != null) {
-            listOfNotNull(uploadDiagnosticLog(context, diagnosticLog))
+            listOfNotNull(uploadDiagnosticLog(diagnosticLog))
         } else {
             emptyList()
         }
@@ -131,11 +131,10 @@ class ZendeskTicketRepository @Inject constructor(
     }
 
     private suspend fun uploadDiagnosticLog(
-        context: Context,
         diagnosticLog: String
     ): String? {
         val tempFile = withContext(dispatchers.io) {
-            File(context.cacheDir, DIAGNOSTIC_LOG_FILENAME).also {
+            File.createTempFile(DIAGNOSTIC_LOG_FILENAME, null).also {
                 it.writeText(diagnosticLog)
             }
         }
@@ -148,12 +147,16 @@ class ZendeskTicketRepository @Inject constructor(
                     "text/plain",
                     object : ZendeskCallback<UploadResponse>() {
                         override fun onSuccess(result: UploadResponse?) {
-                            continuation.resume(result?.token)
+                            if (continuation.isActive) {
+                                continuation.resume(result?.token)
+                            }
                         }
 
                         override fun onError(error: ErrorResponse?) {
                             wooLog.e(WooLog.T.SUPPORT, "Failed to upload diagnostic log")
-                            continuation.resume(null)
+                            if (continuation.isActive) {
+                                continuation.resume(null)
+                            }
                         }
                     }
                 ) ?: run {

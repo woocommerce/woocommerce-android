@@ -292,6 +292,8 @@ class ConnectivityToolViewModel @Inject constructor(
             add(StoreProductsCheckUseCase.OPERATION_NAME to currentState.productsCheckData.connectivityCheckStatus)
         }.filter { it.second is Success || it.second is Failure }
 
+        if (checks.isEmpty()) return null
+
         return buildString {
             checks.forEachIndexed { index, (name, status) ->
                 appendLine("## ${index + 1}. $name")
