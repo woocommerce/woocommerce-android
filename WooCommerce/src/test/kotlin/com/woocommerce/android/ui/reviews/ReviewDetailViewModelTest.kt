@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
@@ -28,6 +29,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
@@ -51,6 +53,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val markReviewAsSeen: MarkReviewAsSeen = mock()
     private val reviewModerationHandler: ReviewModerationHandler = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -59,12 +62,13 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         viewModel = ReviewDetailViewModel(
-            savedState,
             networkStatus,
             repository,
             markReviewAsSeen,
             reviewModerationHandler,
-            analyticsTracker
+            analyticsTracker,
+            selectedSite,
+            savedState
         )
     }
 
@@ -194,8 +198,15 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When review reply button is pressed, open reply view`() {
+    fun `given non-AI site, when reply clicked, then Reply event is triggered`() = testBlocking {
         // given
+        doReturn(review).whenever(repository).getCachedProductReview(any())
+        doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
+        doReturn(SiteModel()).whenever(selectedSite).get()
+
+        viewModel.start(REVIEW_ID, launchedFromNotification = false)
+
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever(events::add)
 

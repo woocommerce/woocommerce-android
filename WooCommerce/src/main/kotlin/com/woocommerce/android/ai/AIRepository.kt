@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIAssistantFeatureResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIQueryResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.ResponseFormat
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
@@ -22,6 +23,8 @@ class AIRepository @Inject constructor(
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
         const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
+        const val REVIEW_REPLY_FEATURE = "woo_android_review_reply"
+        private const val REPLY_SEPARATOR = "---REPLY_SEPARATOR---"
     }
 
     suspend fun generateProductSharingText(
@@ -97,6 +100,35 @@ class AIRepository @Inject constructor(
             languageISOCode = languageISOCode
         )
         return fetchJetpackAIQuery(prompt, ORDER_DETAIL_THANK_YOU_NOTE)
+    }
+
+    @Suppress("LongParameterList")
+    suspend fun generateReviewReplySuggestions(
+        reviewerName: String,
+        rating: Int,
+        productName: String,
+        reviewText: String,
+        languageISOCode: String = "en"
+    ): Result<List<String>> {
+        val prompt = AIPrompts.generateReviewReplyPrompt(
+            reviewerName = reviewerName,
+            rating = rating,
+            productName = productName,
+            reviewText = reviewText,
+            languageISOCode = languageISOCode
+        )
+        return fetchJetpackAIQuery(prompt, REVIEW_REPLY_FEATURE).map { response ->
+            response.split(REPLY_SEPARATOR)
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+        }
+    }
+
+    suspend fun fetchUpgradeUrl(): String? = withContext(Dispatchers.IO) {
+        when (val response = jetpackAIStore.fetchJetpackAIAssistantFeature(selectedSite.get())) {
+            is JetpackAIAssistantFeatureResponse.Success -> response.model.upgradeUrl
+            is JetpackAIAssistantFeatureResponse.Error -> null
+        }
     }
 
     suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {

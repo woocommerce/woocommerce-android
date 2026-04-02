@@ -9,9 +9,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.AIReply
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Reply
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
@@ -29,12 +32,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReviewDetailViewModel @Inject constructor(
-    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository,
     private val markReviewAsSeen: MarkReviewAsSeen,
     private val reviewModerationHandler: ReviewModerationHandler,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
@@ -167,7 +171,19 @@ class ReviewDetailViewModel @Inject constructor(
     }
 
     fun onReplyClicked() {
-        triggerEvent(Reply)
+        val review = viewState.productReview ?: return
+        if (selectedSite.get().isEligibleForAI) {
+            triggerEvent(
+                AIReply(
+                    reviewerName = review.reviewerName,
+                    reviewText = review.review,
+                    productName = review.product?.name.orEmpty(),
+                    rating = review.rating
+                )
+            )
+        } else {
+            triggerEvent(Reply)
+        }
     }
 
     @Parcelize
@@ -178,6 +194,12 @@ class ReviewDetailViewModel @Inject constructor(
 
     sealed class ReviewDetailEvent : Event() {
         object Reply : ReviewDetailEvent()
+        data class AIReply(
+            val reviewerName: String,
+            val reviewText: String,
+            val productName: String,
+            val rating: Int
+        ) : ReviewDetailEvent()
         object NavigateBackFromNotification : ReviewDetailEvent()
     }
 }

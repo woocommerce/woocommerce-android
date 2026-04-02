@@ -34,8 +34,10 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.AIReply
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Reply
+import com.woocommerce.android.ui.reviews.ai.AIReviewReplyViewModel.Companion.AI_REVIEW_REPLY_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -104,6 +106,10 @@ class ReviewDetailFragment :
         handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
             viewModel.onReviewReplied(it)
         }
+
+        handleResult<String>(AI_REVIEW_REPLY_RESULT) {
+            viewModel.onReviewReplied(it)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,7 +164,19 @@ class ReviewDetailFragment :
                 is Exit -> findNavController().popBackStack()
                 is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
                 is Reply -> navigateToReply()
+                is AIReply -> navigateToAIReply(event)
             }
+        }
+    }
+
+    private fun navigateToAIReply(event: AIReply) {
+        ReviewDetailFragmentDirections.actionReviewDetailFragmentToAiReviewReplyFragment(
+            reviewerName = event.reviewerName,
+            reviewText = event.reviewText,
+            productName = event.productName,
+            rating = event.rating
+        ).let {
+            findNavController().navigateSafely(it)
         }
     }
 

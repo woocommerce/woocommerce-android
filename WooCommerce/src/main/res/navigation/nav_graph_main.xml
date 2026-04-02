@@ -456,6 +456,27 @@
             android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
             app:destination="@id/reviews"
             app:popUpTo="@+id/moreMenu" />
+        <action
+            android:id="@+id/action_reviewDetailFragment_to_aiReviewReplyFragment"
+            app:destination="@id/aiReviewReplyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/aiReviewReplyFragment"
+        android:name="com.woocommerce.android.ui.reviews.ai.AIReviewReplyFragment"
+        android:label="AIReviewReplyFragment">
+        <argument
+            android:name="reviewerName"
+            app:argType="string" />
+        <argument
+            android:name="reviewText"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+        <argument
+            android:name="rating"
+            app:argType="integer" />
     </fragment>
 
     <fragment

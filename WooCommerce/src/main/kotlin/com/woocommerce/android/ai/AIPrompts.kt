@@ -191,6 +191,34 @@ object AIPrompts {
         )
     }
 
+    private const val REVIEW_REPLY_PROMPT = "You are a helpful WooCommerce store owner. " +
+        "A customer named \"%1\$s\" left a %2\$d-star review for the product \"%3\$s\":\n" +
+        "\"%4\$s\"\n\n" +
+        "Write exactly 3 different short, professional reply options. " +
+        "Each reply should be 1-3 sentences. " +
+        "Your response should be in the ISO language code \"%5\$s\". \n" +
+        "Use a 9th grade reading level.\n" +
+        "Separate each reply with the delimiter \"---REPLY_SEPARATOR---\".\n" +
+        "Do not number the replies or add any other text."
+
+    @Suppress("LongParameterList")
+    fun generateReviewReplyPrompt(
+        reviewerName: String,
+        rating: Int,
+        productName: String,
+        reviewText: String,
+        languageISOCode: String = "en"
+    ): String {
+        return String.format(
+            REVIEW_REPLY_PROMPT,
+            reviewerName,
+            rating,
+            productName,
+            reviewText,
+            languageISOCode
+        )
+    }
+
     private const val LANGUAGE_IDENTIFICATION_PROMPT = "What is the ISO language code of the language used in the " +
         "below text? Do not include any explanations and only provide the ISO language code in your response. \n" +
         "Text: ```(%1\$s)```"

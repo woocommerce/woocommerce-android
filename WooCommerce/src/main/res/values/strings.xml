@@ -1798,6 +1798,21 @@
     <string name="review_card_detail_transition_name">review_card_detail</string>
     <string name="review_reply_success">Reply sent!</string>
     <string name="review_reply_failure">There was an error sending the reply</string>
+    <string name="review_reply_screen_title">Reply to review</string>
+    <string name="review_reply_hint">Write your reply…</string>
+    <string name="review_ai_reply_overlay_title">AI-suggested replies</string>
+    <string name="review_ai_reply_generating">Generating suggestions…</string>
+    <string name="review_ai_reply_failed">Failed to generate suggestions</string>
+    <string name="review_ai_reply_write_manually">Write manually</string>
+    <string name="review_ai_reply_retry">Try again</string>
+    <string name="review_ai_reply_button_text">Suggest replies with AI</string>
+    <string name="review_ai_reply_confirm_title">Generate AI replies</string>
+    <string name="review_ai_reply_confirm_message">AI will suggest replies based on this review.</string>
+    <string name="review_ai_reply_confirm_generate">Generate</string>
+    <string name="review_ai_reply_limit_title">AI usage limit reached</string>
+    <string name="review_ai_reply_limit_message">You\'ve reached the AI usage limit for your current plan. Upgrade to get more AI-powered replies.</string>
+    <string name="review_ai_reply_limit_upgrade">Upgrade plan</string>
+    <string name="review_ai_reply_limit_dismiss">Maybe later</string>
     <!--
         Product Reviews List
     -->
