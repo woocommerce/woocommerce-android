@@ -77,4 +77,4 @@ val SiteModel?.isSitePublic: Boolean
     get() = this?.let { !isWPComAtomic || publishedStatus == PUBLIC.value() } ?: false
 
 val SiteModel.isEligibleForAI: Boolean
-    get() = isWPComAtomic || planActiveFeatures.orEmpty().contains("ai-assistant")
+    get() = isWPComAtomic || isCIABSite || planActiveFeatures.orEmpty().contains("ai-assistant")
