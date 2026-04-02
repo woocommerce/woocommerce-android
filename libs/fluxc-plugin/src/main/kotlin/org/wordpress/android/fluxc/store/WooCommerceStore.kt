@@ -284,7 +284,7 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
-                    siteSqlUtils.insertOrUpdateSite(site)
+                    siteStore.insertOrUpdateSite(site)
 
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {

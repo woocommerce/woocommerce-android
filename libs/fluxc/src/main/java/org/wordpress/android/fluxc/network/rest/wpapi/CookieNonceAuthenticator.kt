@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class CookieNonceAuthenticator @Inject constructor(
     private val nonceRestClient: NonceRestClient,
     private val discoveryWPAPIRestClient: DiscoveryWPAPIRestClient,
-    private val siteSqlUtils: SiteSqlUtils,
+    private val siteStore: SiteStore,
     private val coroutineEngine: CoroutineEngine
 ) {
     suspend fun authenticate(
@@ -55,7 +55,7 @@ class CookieNonceAuthenticator @Inject constructor(
         val usingSavedRestUrl = site.wpApiRestUrl != null
         if (!usingSavedRestUrl) {
             site.wpApiRestUrl = discoverApiEndpoint(site.url)
-            (siteSqlUtils::insertOrUpdateSite)(site)
+            siteStore.insertOrUpdateSite(site)
         }
 
         val response = makeAuthenticatedWPAPIRequest(
@@ -71,7 +71,7 @@ class CookieNonceAuthenticator @Inject constructor(
             response.error.volleyError?.networkResponse?.statusCode == STATUS_CODE_NOT_FOUND) {
             // call failed with 'not found' so clear the (failing) rest url
             site.wpApiRestUrl = null
-            (siteSqlUtils::insertOrUpdateSite)(site)
+            siteStore.insertOrUpdateSite(site)
 
             if (usingSavedRestUrl) {
                 // If we did the previous call with a saved rest url, try again by making

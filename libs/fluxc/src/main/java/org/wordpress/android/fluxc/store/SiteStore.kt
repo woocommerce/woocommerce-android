@@ -46,7 +46,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedStateResponse
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorType.INVALID_COUNTRY_CODE
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_LAUNCHED
@@ -78,6 +78,7 @@ open class SiteStore @Inject constructor(
     private val siteXMLRPCClient: SiteXMLRPCClient,
     private val siteWPAPIRestClient: SiteWPAPIRestClient,
     private val siteSqlUtils: SiteSqlUtils,
+    private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
     private val coroutineEngine: CoroutineEngine
 ) : Store(dispatcher) {
@@ -478,6 +479,9 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    @Throws(SiteStorePersistence.DuplicateSiteException::class)
+    fun insertOrUpdateSite(site: SiteModel?): Int = siteStorePersistence.insertOrUpdateSite(site)
+
     @Subscribe(threadMode = ASYNC)
     @Suppress("LongMethod", "ComplexMethod")
     override fun onAction(action: Action<*>) {
@@ -555,8 +559,8 @@ open class SiteStore @Inject constructor(
             event.error = SiteErrorUtils.genericToSiteError(siteModel.error)
         } else {
             try {
-                siteSqlUtils.insertOrUpdateSite(siteModel)
-            } catch (e: DuplicateSiteException) {
+                insertOrUpdateSite(siteModel)
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 event.error = SiteError(DUPLICATE_SITE)
             }
         }
@@ -571,7 +575,7 @@ open class SiteStore @Inject constructor(
         } else {
             try {
                 OnSiteChanged(createOrUpdateSite(siteModel, includesAppPasswordsUrl = true))
-            } catch (e: DuplicateSiteException) {
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 OnSiteChanged(SiteError(DUPLICATE_SITE))
             }
         }
@@ -623,7 +627,7 @@ open class SiteStore @Inject constructor(
                     rowsAffected++
                     updatedSites.add(site)
                 }
-            } catch (e: DuplicateSiteException) {
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 duplicateSiteFound = true
             }
         }
@@ -644,7 +648,7 @@ open class SiteStore @Inject constructor(
             }
         }
 
-        return siteSqlUtils.insertOrUpdateSite(site)
+        return insertOrUpdateSite(site)
     }
 
     private fun removeSite(site: SiteModel) {

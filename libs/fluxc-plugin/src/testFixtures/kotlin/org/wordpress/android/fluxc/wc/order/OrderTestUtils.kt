@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderNoteApiRespo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderShipmentTrackingApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderSummaryApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.toDataModel
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.site.SiteUtils
@@ -175,8 +176,8 @@ object OrderTestUtils {
         var siteModel = SiteUtils.generateTestSite(556, "", "", false, true).apply {
             name = "Generic WP site"
         }
-        TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(siteModel)
-        siteModel = TestSiteSqlUtils.siteSqlUtils.getSitesByNameOrUrlMatching("Generic").firstOrNull()
+        TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(siteModel)
+        siteModel = SiteSqlUtils().getSitesByNameOrUrlMatching("Generic").firstOrNull()
         assert(siteModel != null)
 
         return siteModel

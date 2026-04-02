@@ -5,8 +5,10 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -26,6 +28,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.PlansResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
@@ -53,6 +56,10 @@ class SiteStoreTest {
     private val plansErrorResponse: Response.Error<PlansResponse> = mock()
     private lateinit var siteStore: SiteStore
 
+    private val siteStorePersistence: SiteStorePersistence = mock {
+        on { insertOrUpdateSite(any()) } doReturn 1
+    }
+
     @Before
     fun setUp() {
         siteStore = SiteStore(
@@ -61,6 +68,7 @@ class SiteStoreTest {
             siteXMLRPCClient,
             siteWPAPIClient,
             siteSqlUtils,
+            siteStorePersistence,
             domainsDao,
             initCoroutineEngine()
         )
@@ -123,13 +131,13 @@ class SiteStoreTest {
         site: SiteModel
     ) {
         val rowsChanged = 1
-        whenever(siteSqlUtils.insertOrUpdateSite(updatedSite)).thenReturn(rowsChanged)
+        whenever(siteStorePersistence.insertOrUpdateSite(updatedSite)).thenReturn(rowsChanged)
 
         val onSiteChanged = siteStore.fetchSite(site)
 
         assertThat(onSiteChanged.rowsAffected).isEqualTo(rowsChanged)
         assertThat(onSiteChanged.error).isNull()
-        verify(siteSqlUtils).insertOrUpdateSite(updatedSite)
+        verify(siteStorePersistence).insertOrUpdateSite(updatedSite)
     }
 
     @Test
@@ -140,16 +148,16 @@ class SiteStoreTest {
         val siteB = SiteModel().apply { url = "siteB.com" }
         sitesModel.sites = listOf(siteA, siteB)
         whenever(siteRestClient.fetchSites(payload.filters, false)).thenReturn(sitesModel)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteA)).thenReturn(1)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteB)).thenReturn(1)
+        whenever(siteStorePersistence.insertOrUpdateSite(siteA)).thenReturn(1)
+        whenever(siteStorePersistence.insertOrUpdateSite(siteB)).thenReturn(1)
 
         val onSiteChanged = siteStore.fetchSites(payload)
 
         assertThat(onSiteChanged.rowsAffected).isEqualTo(2)
         assertThat(onSiteChanged.error).isNull()
-        val inOrder = inOrder(siteSqlUtils)
-        inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteA)
-        inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteB)
+        val inOrder = inOrder(siteStorePersistence, siteSqlUtils)
+        inOrder.verify(siteStorePersistence).insertOrUpdateSite(siteA)
+        inOrder.verify(siteStorePersistence).insertOrUpdateSite(siteB)
         inOrder.verify(siteSqlUtils).removeWPComRestSitesAbsentFromList(sitesModel.sites)
     }
 
