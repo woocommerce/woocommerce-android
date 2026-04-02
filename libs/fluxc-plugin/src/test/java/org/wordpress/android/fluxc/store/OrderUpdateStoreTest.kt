@@ -24,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -45,8 +44,8 @@ class OrderUpdateStoreTest {
     private lateinit var sut: OrderUpdateStore
     private lateinit var orderRestClient: OrderRestClient
 
-    private val siteSqlUtils: SiteSqlUtils = mock {
-        on { getSiteWithLocalId(any()) } doReturn site
+    private val siteStore: SiteStore = mock {
+        on { getSiteByLocalId(any()) } doReturn site
     }
     private val orderSummaryDao: OrderSummaryDao = mock()
     private val ordersDaoDecorator: OrdersDaoDecorator = mock {
@@ -63,7 +62,7 @@ class OrderUpdateStoreTest {
                 ),
                 wcOrderRestClient = orderRestClient,
                 ordersDaoDecorator = ordersDaoDecorator,
-                siteSqlUtils = siteSqlUtils,
+                siteStore = siteStore,
                 orderSummaryDao = orderSummaryDao,
                 metaDataDao = metaDataDao
         )
@@ -330,7 +329,7 @@ class OrderUpdateStoreTest {
         // given
         setUp {
             orderRestClient = mock()
-            whenever(siteSqlUtils.getSiteWithLocalId(any())).thenReturn(null)
+            whenever(siteStore.getSiteByLocalId(any())).thenReturn(null)
         }
 
         // when

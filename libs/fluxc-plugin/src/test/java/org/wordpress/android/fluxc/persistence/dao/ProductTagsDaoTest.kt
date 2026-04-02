@@ -30,12 +30,10 @@ class ProductTagsDaoTest {
         siteId = 24
     }
     private lateinit var sut: ProductTagsDao
-    private lateinit var siteSqlUtils: SiteSqlUtils
 
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productTagsDao
-        siteSqlUtils = SiteSqlUtils()
     }
 
     @Test
@@ -144,7 +142,7 @@ class ProductTagsDaoTest {
         assertEquals(tags.size, savedTags.size)
 
         // Delete site and verify tags are deleted via foreign key constraint
-        siteSqlUtils.deleteSite(site)
+        SiteSqlUtils().deleteSite(site)
         savedTags = sut.getProductTags(site.localId())
         assertEquals(0, savedTags.size)
     }
