@@ -150,7 +150,6 @@
 
     <style name="Theme.Woo.MediaPicker" parent="Theme.Woo.DayNight">
         <item name="colorPrimary">@color/color_on_surface</item>
-        <item name="colorSecondary">@color/color_on_surface</item>
         <item name="colorAccent">@color/color_on_surface</item>
     </style>
 
