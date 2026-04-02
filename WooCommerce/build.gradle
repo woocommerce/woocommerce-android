@@ -2,6 +2,7 @@ import io.sentry.android.gradle.extensions.InstrumentationFeature
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
@@ -77,6 +78,7 @@ def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properti
 
 android {
     namespace = "com.woocommerce.android"
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     compileSdk = gradle.ext.compileSdkVersion
 
@@ -215,6 +217,9 @@ android {
 }
 
 dependencies {
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
+    screenshotTestImplementation(libs.google.screenshot.validation.api)
+
     implementation(libs.wordpress.libaddressinput.common) {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
