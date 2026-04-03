@@ -232,7 +232,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionTroubleshootConnection.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SETTINGS_TROUBLESHOOT_CONNECTION_TAPPED)
             findNavController()
-                .navigateSafely(R.id.action_mainSettingsFragment_to_connectivityToolFragment)
+                .navigateSafely(R.id.action_mainSettingsFragment_to_troubleshootConnectionFragment)
         }
 
         binding.pluginsContainer.isVisible = presenter.isPluginsSectionVisible

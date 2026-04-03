@@ -1,15 +1,15 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

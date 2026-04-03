@@ -1,23 +1,23 @@
-package com.woocommerce.android.ui.connectivitytool.useCases
+package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.connectivitytool.FailureType
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.troubleshooting.FailureType
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class StoreProductsCheckUseCase @Inject constructor(
-    private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+class StoreConnectionCheckUseCase @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
@@ -25,7 +25,7 @@ class StoreProductsCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val startTime = System.currentTimeMillis()
-        val result = productStore.fetchProducts(selectedSite.get())
+        val result = ssrFetcher.load(selectedSite.get())
         val durationMs = System.currentTimeMillis() - startTime
         if (result.isError) {
             emit(result.parseError(durationMs))
@@ -34,11 +34,11 @@ class StoreProductsCheckUseCase @Inject constructor(
         }
     }
 
-    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long): Failure {
+    private fun WooResult<WCSSRModel>.parseError(durationMs: Long): Failure {
         val failureType = when (error.type) {
             WooErrorType.TIMEOUT -> FailureType.TIMEOUT
-            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
             WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
             else -> FailureType.GENERIC
         }
 
@@ -54,6 +54,6 @@ class StoreProductsCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "Fetching products in your store"
+        const val OPERATION_NAME = "Connecting to your site"
     }
 }
