@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -114,12 +113,31 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Jetpack site, when fetchProducts returns API_NOT_FOUND, then emit JETPACK Failure`() = testBlocking {
+    fun `when fetchProducts returns API_NOT_FOUND, then emit GENERIC Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         whenever(productStore.fetchProducts(selectedSite.get()))
             .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
+    }
+
+    @Test
+    fun `when fetchProducts returns unknown_token error, then emit JETPACK Failure`() = testBlocking {
+        // GIVEN
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(productStore.fetchProducts(selectedSite.get()))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN, apiErrorCode = "unknown_token")))
 
         // WHEN
         sut.invoke().onEach {
@@ -135,12 +153,11 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app-password site, when fetchProducts returns API_NOT_FOUND, then emit GENERIC Failure`() = testBlocking {
+    fun `when fetchProducts returns invalid_blog error, then emit JETPACK Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         whenever(productStore.fetchProducts(selectedSite.get()))
-            .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN, apiErrorCode = "invalid_blog")))
 
         // WHEN
         sut.invoke().onEach {
@@ -151,7 +168,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
-        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.JETPACK)
         assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 }
