@@ -8,11 +8,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,10 +21,7 @@ import javax.inject.Singleton
 class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncAction: WooPosSyncAction,
     private val posFileBasedSyncAction: WooPosFileBasedSyncAction,
-    private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
-    private val featureFlagRepository: FeatureFlagRepository,
     private val syncTimestampManager: WooPosSyncTimestampManager,
-    private val preferencesRepository: WooPosPreferencesRepository,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
@@ -37,10 +31,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 ) {
     companion object {
         const val PAGE_SIZE = 100
-        const val MAX_PAGES_PER_FULL_SYNC = 10
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = Int.MAX_VALUE
-        const val MAX_TOTAL_ITEMS_FULL_SYNC = 1000
-        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = Int.MAX_VALUE
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
@@ -51,28 +42,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             )
         )
 
-        return@withContext if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
-            performFileBasedSync(site)
-        } else {
-            performSync(
-                site = site,
-                pageSize = PAGE_SIZE,
-                maxPages = MAX_PAGES_PER_FULL_SYNC,
-                maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
-            )
-        }.also { result ->
+        return@withContext performFileBasedSync(site).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge && !featureFlagRepository.isEnabled(
-                            FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH
-                        )
-                    ) {
-                        preferencesRepository.disablePeriodicSyncForSite(site.localId())
-                    }
                     trackSyncFailed(SyncType.FULL, result)
                 }
             }
@@ -95,7 +71,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             modifiedAfterGmt = modifiedAfterGmt,
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
-            maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
         ).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
@@ -150,7 +125,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         result: PosLocalCatalogSyncResult.Failure
     ) {
         val errorType = when (result) {
-            is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> SyncErrorType.CATALOG_TOO_LARGE
             is PosLocalCatalogSyncResult.Failure.NetworkError -> SyncErrorType.NETWORK_ERROR
             is PosLocalCatalogSyncResult.Failure.DatabaseError -> SyncErrorType.DATABASE_ERROR
             is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
@@ -174,23 +148,11 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         site: SiteModel,
         pageSize: Int,
         maxPages: Int,
-        maxTotalItems: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
         val startTime = dateTimeProvider.now()
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
-
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
-            val catalogSizeCheckResult = posCheckCatalogSizeAction.execute(
-                site = site,
-                modifiedAfterGmt = modifiedAfterGmt,
-                maxTotalItems = maxTotalItems
-            )
-            if (catalogSizeCheckResult is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
-                return catalogSizeCheckResult.toPosLocalCatalogSyncFailure()
-            }
-        }
 
         val syncResult = posSyncAction.syncCatalog(site, modifiedAfterGmt, pageSize, maxPages)
         if (syncResult is WooPosSyncResult.Failed) {
@@ -232,7 +194,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 private fun WooPosSyncResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
     return when (this) {
         is WooPosSyncResult.Failed.CatalogTooLarge -> {
-            PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+            PosLocalCatalogSyncResult.Failure.UnexpectedError(
                 error = "Catalog too large: $totalPages pages exceed maximum of $maxPages pages",
             )
         }
@@ -253,11 +215,4 @@ private fun WooPosSyncResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCata
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
     }
-}
-
-private fun WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge.toPosLocalCatalogSyncFailure():
-    PosLocalCatalogSyncResult.Failure {
-    return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-        error = error,
-    )
 }

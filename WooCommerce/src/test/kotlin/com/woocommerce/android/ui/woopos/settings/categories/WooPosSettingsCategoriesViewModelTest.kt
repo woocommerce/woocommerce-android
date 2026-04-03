@@ -38,7 +38,7 @@ class WooPosSettingsCategoriesViewModelTest {
     fun `given local catalog supported, when viewmodel is initialized, then LOCAL_CATALOG is visible`() = runTest {
         // GIVEN
         whenever(productDataSource.getCurrentSyncStrategy())
-            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
 
         // WHEN
         sut = createViewModel()
@@ -69,7 +69,7 @@ class WooPosSettingsCategoriesViewModelTest {
     fun `given local catalog supported, when viewmodel is initialized, then all categories are visible`() = runTest {
         // GIVEN
         whenever(productDataSource.getCurrentSyncStrategy())
-            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
 
         // WHEN
         sut = createViewModel()
