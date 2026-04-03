@@ -1,726 +1,752 @@
-package org.wordpress.android.fluxc.store;
+package org.wordpress.android.fluxc.store
 
-import android.content.Context;
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.wellsql.generated.SiteModelTable
+import com.yarolegovich.wellsql.WellSql
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.SitesModel
+import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
+import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
+import org.wordpress.android.fluxc.persistence.AccountMapper
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence.DuplicateSiteException
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
+import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.domains.DomainDao
+import org.wordpress.android.fluxc.site.SiteUtils
+import org.wordpress.android.fluxc.store.SiteStore.UpdateSitesResult
+import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import java.lang.reflect.InvocationTargetException
 
-import com.wellsql.generated.SiteModelTable;
-import com.yarolegovich.wellsql.WellSql;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.robolectric.RobolectricTestRunner;
-import org.wordpress.android.fluxc.Dispatcher;
-import org.wordpress.android.fluxc.model.AccountModel;
-import org.wordpress.android.fluxc.model.SiteModel;
-import org.wordpress.android.fluxc.model.SitesModel;
-import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient;
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient;
-import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient;
-import org.wordpress.android.fluxc.persistence.AccountMapper;
-import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils;
-import org.wordpress.android.fluxc.persistence.SiteStorePersistence;
-import org.wordpress.android.fluxc.persistence.SiteStorePersistence.DuplicateSiteException;
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule;
-import org.wordpress.android.fluxc.persistence.WellSqlConfig;
-import org.wordpress.android.fluxc.persistence.domains.DomainDao;
-import org.wordpress.android.fluxc.store.SiteStore.UpdateSitesResult;
-import org.wordpress.android.fluxc.tools.CoroutineEngineUtilsKt;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.test.core.app.ApplicationProvider;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateJetpackSiteOverRestOnly;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateJetpackSiteOverXMLRPC;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateSelfHostedNonJPSite;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateSelfHostedSiteFutureJetpack;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateSiteWithZendeskMetaData;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateTestSite;
-import static org.wordpress.android.fluxc.site.SiteUtils.generateWPComSite;
-
-@RunWith(RobolectricTestRunner.class)
-public class SiteStoreUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class SiteStoreUnitTest {
     @Rule
-    public WPDatabaseTestRule wpDatabaseRule = new WPDatabaseTestRule(ApplicationProvider.getApplicationContext());
+    var wpDatabaseRule: WPDatabaseTestRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext<Context?>())
 
-    private SiteSqlUtils mSiteSqlUtils;
-    private SiteStorePersistence mSiteStorePersistence;
-    private SiteStore mSiteStore;
+    private var mSiteSqlUtils: SiteSqlUtils? = null
+    private var mSiteStorePersistence: SiteStorePersistence? = null
+    private var mSiteStore: SiteStore? = null
 
     @Before
-    public void setUp() {
-        WellSqlConfig config = new WellSqlConfig(ApplicationProvider.getApplicationContext());
-        WellSql.init(config);
-        config.reset();
+    fun setUp() {
+        val config = WellSqlConfig(ApplicationProvider.getApplicationContext<Context?>())
+        WellSql.init(config)
+        config.reset()
 
-        AccountStorePersistence accountStorePersistence = new AccountStorePersistence(
-                wpDatabaseRule.getDb(),
-                new AccountMapper()
-        );
-        AccountModel account = new AccountModel();
-        account.setUserId(20151021);
-        accountStorePersistence.insertOrUpdateDefaultAccount(account);
+        val accountStorePersistence = AccountStorePersistence(
+            wpDatabaseRule.db,
+            AccountMapper()
+        )
+        val account = AccountModel()
+        account.setUserId(20151021)
+        accountStorePersistence.insertOrUpdateDefaultAccount(account)
 
-        mSiteSqlUtils = new SiteSqlUtils();
-        mSiteStorePersistence = new SiteStorePersistence(accountStorePersistence);
-        mSiteStore = new SiteStore(
-                new Dispatcher(),
-                Mockito.mock(SiteRestClient.class),
-                Mockito.mock(SiteXMLRPCClient.class),
-                Mockito.mock(SiteWPAPIRestClient.class),
-                mSiteSqlUtils,
-                new SiteStorePersistence(accountStorePersistence),
-                Mockito.mock(DomainDao.class),
-                CoroutineEngineUtilsKt.initCoroutineEngine()
-        );
+        mSiteSqlUtils = SiteSqlUtils()
+        mSiteStorePersistence = SiteStorePersistence(accountStorePersistence)
+        mSiteStore = SiteStore(
+            Dispatcher(),
+            Mockito.mock<SiteRestClient?>(SiteRestClient::class.java),
+            Mockito.mock<SiteXMLRPCClient?>(SiteXMLRPCClient::class.java),
+            Mockito.mock<SiteWPAPIRestClient?>(SiteWPAPIRestClient::class.java),
+            mSiteSqlUtils!!,
+            SiteStorePersistence(accountStorePersistence),
+            Mockito.mock<DomainDao?>(DomainDao::class.java),
+            initCoroutineEngine()
+        )
     }
 
     @Test
-    public void testSimpleInsertionAndRetrieval() {
-        SiteModel siteModel = new SiteModel();
-        siteModel.setSiteId(42);
-        WellSql.insert(siteModel).execute();
+    fun testSimpleInsertionAndRetrieval() {
+        val siteModel = SiteModel()
+        siteModel.setSiteId(42)
+        WellSql.insert<SiteModel?>(siteModel).execute()
 
-        assertEquals(1, mSiteStore.getSites().size());
+        Assert.assertEquals(1, mSiteStore!!.sites.size.toLong())
 
-        assertEquals(42, mSiteStore.getSites().get(0).getSiteId());
+        Assert.assertEquals(42, mSiteStore!!.sites.get(0).getSiteId())
     }
 
     @Test
-    public void testInsertOrUpdateSite() throws DuplicateSiteException {
-        SiteModel site = generateWPComSite();
-        mSiteStorePersistence.insertOrUpdateSite(site);
+    @Throws(DuplicateSiteException::class)
+    fun testInsertOrUpdateSite() {
+        val site = SiteUtils.generateWPComSite()
+        mSiteStorePersistence!!.insertOrUpdateSite(site)
 
-        assertTrue(mSiteStore.hasSiteWithLocalId(site.getId()));
-        assertEquals(site.getSiteId(), mSiteStore.getSiteByLocalId(site.getId()).getSiteId());
+        Assert.assertTrue(mSiteStore!!.hasSiteWithLocalId(site.getId()))
+        Assert.assertEquals(site.getSiteId(), mSiteStore!!.getSiteByLocalId(site.getId())!!.getSiteId())
     }
 
     @Test
-    public void testSelfHostedAndJetpackSites() throws DuplicateSiteException {
+    @Throws(DuplicateSiteException::class)
+    fun testSelfHostedAndJetpackSites() {
         // Note: not using the helper methods to make sure of the SiteModel definition
-        SiteModel ponySite = new SiteModel();
-        ponySite.setXmlRpcUrl("http://pony.com/xmlrpc.php");
-        ponySite.setSiteId(1);
-        ponySite.setIsWPCom(false);
-        ponySite.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        mSiteStorePersistence.insertOrUpdateSite(ponySite);
+        val ponySite = SiteModel()
+        ponySite.setXmlRpcUrl("http://pony.com/xmlrpc.php")
+        ponySite.setSiteId(1)
+        ponySite.setIsWPCom(false)
+        ponySite.setOrigin(SiteModel.ORIGIN_XMLRPC)
+        mSiteStorePersistence!!.insertOrUpdateSite(ponySite)
 
-        SiteModel jetpackOverXMLRPC = new SiteModel();
-        jetpackOverXMLRPC.setXmlRpcUrl("http://pony2.com/xmlrpc.php");
-        jetpackOverXMLRPC.setSiteId(2);
-        jetpackOverXMLRPC.setIsWPCom(false);
-        jetpackOverXMLRPC.setIsJetpackInstalled(true);
-        jetpackOverXMLRPC.setIsJetpackConnected(true);
-        jetpackOverXMLRPC.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackOverXMLRPC);
+        val jetpackOverXMLRPC = SiteModel()
+        jetpackOverXMLRPC.setXmlRpcUrl("http://pony2.com/xmlrpc.php")
+        jetpackOverXMLRPC.setSiteId(2)
+        jetpackOverXMLRPC.setIsWPCom(false)
+        jetpackOverXMLRPC.setIsJetpackInstalled(true)
+        jetpackOverXMLRPC.setIsJetpackConnected(true)
+        jetpackOverXMLRPC.setOrigin(SiteModel.ORIGIN_XMLRPC)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackOverXMLRPC)
 
-        SiteModel jetpackOverRest = new SiteModel();
-        jetpackOverRest.setXmlRpcUrl("http://pony3.com/xmlrpc.php");
-        jetpackOverRest.setSiteId(3);
-        jetpackOverRest.setIsWPCom(false);
-        jetpackOverRest.setIsJetpackInstalled(true);
-        jetpackOverRest.setIsJetpackConnected(true);
-        jetpackOverRest.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackOverRest);
+        val jetpackOverRest = SiteModel()
+        jetpackOverRest.setXmlRpcUrl("http://pony3.com/xmlrpc.php")
+        jetpackOverRest.setSiteId(3)
+        jetpackOverRest.setIsWPCom(false)
+        jetpackOverRest.setIsJetpackInstalled(true)
+        jetpackOverRest.setIsJetpackConnected(true)
+        jetpackOverRest.setOrigin(SiteModel.ORIGIN_WPCOM_REST)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackOverRest)
 
-        assertEquals(3, mSiteStore.getSites().size());
+        Assert.assertEquals(3, mSiteStore!!.sites.size.toLong())
 
         // User "install and connect" ponySite site to Jetpack via his connected .com account
+        ponySite.setIsJetpackInstalled(true)
+        ponySite.setIsJetpackConnected(true)
+        ponySite.setOrigin(SiteModel.ORIGIN_WPCOM_REST)
+        mSiteStorePersistence!!.insertOrUpdateSite(ponySite)
 
-        ponySite.setIsJetpackInstalled(true);
-        ponySite.setIsJetpackConnected(true);
-        ponySite.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        mSiteStorePersistence.insertOrUpdateSite(ponySite);
-
-        assertEquals(3, mSiteStore.getSites().size());
+        Assert.assertEquals(3, mSiteStore!!.sites.size.toLong())
     }
 
     @Test
-    public void testWPComSiteVisibility() throws DuplicateSiteException {
+    @Throws(DuplicateSiteException::class)
+    fun testWPComSiteVisibility() {
         // Should not cause any errors
-        mSiteStore.isWPComSiteVisibleByLocalId(45);
-        mSiteSqlUtils.setSiteVisibility(null, true);
+        mSiteStore!!.isWPComSiteVisibleByLocalId(45)
+        mSiteSqlUtils!!.setSiteVisibility(null, true)
 
-        SiteModel selfHostedNonJPSite = generateSelfHostedNonJPSite();
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedNonJPSite);
+        val selfHostedNonJPSite = SiteUtils.generateSelfHostedNonJPSite()
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedNonJPSite)
 
         // Attempt to use with id of self-hosted site
-        mSiteSqlUtils.setSiteVisibility(selfHostedNonJPSite, false);
+        mSiteSqlUtils!!.setSiteVisibility(selfHostedNonJPSite, false)
         // The self-hosted site should not be affected
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.getId()).isVisible());
+        Assert.assertTrue(mSiteStore!!.getSiteByLocalId(selfHostedNonJPSite.getId())!!.isVisible())
 
 
-        SiteModel wpComSite = generateWPComSite();
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
+        val wpComSite = SiteUtils.generateWPComSite()
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
 
         // Attempt to use with legitimate .com site
-        mSiteSqlUtils.setSiteVisibility(selfHostedNonJPSite, false);
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite.getId()).isVisible());
-        assertFalse(mSiteStore.isWPComSiteVisibleByLocalId(wpComSite.getId()));
+        mSiteSqlUtils!!.setSiteVisibility(selfHostedNonJPSite, false)
+        Assert.assertFalse(mSiteStore!!.getSiteByLocalId(wpComSite.getId())!!.isVisible())
+        Assert.assertFalse(mSiteStore!!.isWPComSiteVisibleByLocalId(wpComSite.getId()))
     }
 
     @Test
-    public void testSetAllWPComSitesVisibility() throws DuplicateSiteException {
-        SiteModel selfHostedNonJPSite = generateSelfHostedNonJPSite();
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedNonJPSite);
+    @Throws(DuplicateSiteException::class)
+    fun testSetAllWPComSitesVisibility() {
+        val selfHostedNonJPSite = SiteUtils.generateSelfHostedNonJPSite()
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedNonJPSite)
 
         // Attempt to use with id of self-hosted site
-        for (SiteModel site : mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
-            mSiteSqlUtils.setSiteVisibility(site, false);
+        for (site in mSiteSqlUtils!!.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
+            mSiteSqlUtils!!.setSiteVisibility(site, false)
         }
         // The self-hosted site should not be affected
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.getId()).isVisible());
+        Assert.assertTrue(mSiteStore!!.getSiteByLocalId(selfHostedNonJPSite.getId())!!.isVisible())
 
-        SiteModel wpComSite1 = generateWPComSite();
-        SiteModel wpComSite2 = generateWPComSite();
-        wpComSite2.setId(44);
-        wpComSite2.setSiteId(284);
+        val wpComSite1 = SiteUtils.generateWPComSite()
+        val wpComSite2 = SiteUtils.generateWPComSite()
+        wpComSite2.setId(44)
+        wpComSite2.setSiteId(284)
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite1);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite2);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite1)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite2)
 
         // Attempt to use with legitimate .com site
-        for (SiteModel site : mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
-            mSiteSqlUtils.setSiteVisibility(site, false);
+        for (site in mSiteSqlUtils!!.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
+            mSiteSqlUtils!!.setSiteVisibility(site, false)
         }
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.getId()).isVisible());
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite1.getId()).isVisible());
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite2.getId()).isVisible());
+        Assert.assertTrue(mSiteStore!!.getSiteByLocalId(selfHostedNonJPSite.getId())!!.isVisible())
+        Assert.assertFalse(mSiteStore!!.getSiteByLocalId(wpComSite1.getId())!!.isVisible())
+        Assert.assertFalse(mSiteStore!!.getSiteByLocalId(wpComSite2.getId())!!.isVisible())
     }
 
     @Test
-    public void testGetIdForIdMethods() throws DuplicateSiteException {
-        assertEquals(0, mSiteStore.getLocalIdForRemoteSiteId(555));
-        assertEquals(0, mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(2626, ""));
-        assertEquals(0, mSiteStore.getSiteIdForLocalId(5577));
+    @Throws(DuplicateSiteException::class)
+    fun testGetIdForIdMethods() {
+        Assert.assertEquals(0, mSiteStore!!.getLocalIdForRemoteSiteId(555).toLong())
+        Assert.assertEquals(0, mSiteStore!!.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(2626, "").toLong())
+        Assert.assertEquals(0, mSiteStore!!.getSiteIdForLocalId(5577))
 
-        SiteModel selfHostedSite = generateSelfHostedNonJPSite();
-        SiteModel wpComSite = generateWPComSite();
-        SiteModel jetpackSite = generateJetpackSiteOverXMLRPC();
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackSite);
+        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        val wpComSite = SiteUtils.generateWPComSite()
+        val jetpackSite = SiteUtils.generateJetpackSiteOverXMLRPC()
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackSite)
 
-        assertEquals(selfHostedSite.getId(),
-                mSiteStore.getLocalIdForRemoteSiteId(selfHostedSite.getSelfHostedSiteId()));
-        assertEquals(wpComSite.getId(), mSiteStore.getLocalIdForRemoteSiteId(wpComSite.getSiteId()));
+        Assert.assertEquals(
+            selfHostedSite.getId().toLong(),
+            mSiteStore!!.getLocalIdForRemoteSiteId(selfHostedSite.getSelfHostedSiteId()).toLong()
+        )
+        Assert.assertEquals(
+            wpComSite.getId().toLong(),
+            mSiteStore!!.getLocalIdForRemoteSiteId(wpComSite.getSiteId()).toLong()
+        )
 
         // Should be able to look up a Jetpack site by .com and by .org id (assuming it's been set)
-        assertEquals(jetpackSite.getId(), mSiteStore.getLocalIdForRemoteSiteId(jetpackSite.getSiteId()));
-        assertEquals(jetpackSite.getId(), mSiteStore.getLocalIdForRemoteSiteId(jetpackSite.getSelfHostedSiteId()));
+        Assert.assertEquals(
+            jetpackSite.getId().toLong(),
+            mSiteStore!!.getLocalIdForRemoteSiteId(jetpackSite.getSiteId()).toLong()
+        )
+        Assert.assertEquals(
+            jetpackSite.getId().toLong(),
+            mSiteStore!!.getLocalIdForRemoteSiteId(jetpackSite.getSelfHostedSiteId()).toLong()
+        )
 
-        assertEquals(selfHostedSite.getId(), mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
-                selfHostedSite.getSelfHostedSiteId(), selfHostedSite.getXmlRpcUrl()));
-        assertEquals(jetpackSite.getId(), mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
-                jetpackSite.getSelfHostedSiteId(), jetpackSite.getXmlRpcUrl()));
+        Assert.assertEquals(
+            selfHostedSite.getId().toLong(), mSiteStore!!.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
+                selfHostedSite.getSelfHostedSiteId(), selfHostedSite.getXmlRpcUrl()
+            ).toLong()
+        )
+        Assert.assertEquals(
+            jetpackSite.getId().toLong(), mSiteStore!!.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
+                jetpackSite.getSelfHostedSiteId(), jetpackSite.getXmlRpcUrl()
+            ).toLong()
+        )
 
-        assertEquals(selfHostedSite.getSelfHostedSiteId(), mSiteStore.getSiteIdForLocalId(selfHostedSite.getId()));
-        assertEquals(wpComSite.getSiteId(), mSiteStore.getSiteIdForLocalId(wpComSite.getId()));
-        assertEquals(jetpackSite.getSiteId(), mSiteStore.getSiteIdForLocalId(jetpackSite.getId()));
+        Assert.assertEquals(
+            selfHostedSite.getSelfHostedSiteId(),
+            mSiteStore!!.getSiteIdForLocalId(selfHostedSite.getId())
+        )
+        Assert.assertEquals(wpComSite.getSiteId(), mSiteStore!!.getSiteIdForLocalId(wpComSite.getId()))
+        Assert.assertEquals(jetpackSite.getSiteId(), mSiteStore!!.getSiteIdForLocalId(jetpackSite.getId()))
     }
 
     @Test
-    public void testGetSiteBySiteId() throws DuplicateSiteException {
-        assertNull(mSiteStore.getSiteBySiteId(555));
+    @Throws(DuplicateSiteException::class)
+    fun testGetSiteBySiteId() {
+        Assert.assertNull(mSiteStore!!.getSiteBySiteId(555))
 
-        SiteModel selfHostedSite = generateSelfHostedNonJPSite();
-        SiteModel wpComSite = generateWPComSite();
-        SiteModel jetpackSiteOverXMLRPC = generateJetpackSiteOverXMLRPC();
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverXMLRPC);
+        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        val wpComSite = SiteUtils.generateWPComSite()
+        val jetpackSiteOverXMLRPC = SiteUtils.generateJetpackSiteOverXMLRPC()
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackSiteOverXMLRPC)
 
-        assertEquals(1, mSiteSqlUtils.getSitesAccessedViaWPComRest().getAsCursor().getCount());
-        assertNotNull(mSiteStore.getSiteBySiteId(wpComSite.getSiteId()));
-        assertNotNull(mSiteStore.getSiteBySiteId(jetpackSiteOverXMLRPC.getSiteId()));
-        assertNull(mSiteStore.getSiteBySiteId(selfHostedSite.getSiteId()));
+        Assert.assertEquals(1, mSiteSqlUtils!!.sitesAccessedViaWPComRest.getAsCursor().getCount().toLong())
+        Assert.assertNotNull(mSiteStore!!.getSiteBySiteId(wpComSite.getSiteId()))
+        Assert.assertNotNull(mSiteStore!!.getSiteBySiteId(jetpackSiteOverXMLRPC.getSiteId()))
+        Assert.assertNull(mSiteStore!!.getSiteBySiteId(selfHostedSite.getSiteId()))
     }
 
     @Test
-    public void testDeleteSite() throws DuplicateSiteException {
-        SiteModel wpComSite = generateWPComSite();
+    @Throws(DuplicateSiteException::class)
+    fun testDeleteSite() {
+        val wpComSite = SiteUtils.generateWPComSite()
 
         // Should not cause any errors
-        mSiteSqlUtils.deleteSite(wpComSite);
+        mSiteSqlUtils!!.deleteSite(wpComSite)
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
-        int affectedRows = mSiteSqlUtils.deleteSite(wpComSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
+        val affectedRows = mSiteSqlUtils!!.deleteSite(wpComSite)
 
-        assertEquals(1, affectedRows);
-        assertEquals(0, mSiteStore.getSites().size());
+        Assert.assertEquals(1, affectedRows.toLong())
+        Assert.assertEquals(0, mSiteStore!!.sites.size.toLong())
     }
 
     @Test
-    public void testGetWPComSites() throws DuplicateSiteException {
-        SiteModel wpComSite = generateWPComSite();
-        SiteModel jetpackSiteOverXMLRPC = generateJetpackSiteOverXMLRPC();
-        SiteModel jetpackSiteOverRestOnly = generateJetpackSiteOverRestOnly();
+    @Throws(DuplicateSiteException::class)
+    fun testGetWPComSites() {
+        val wpComSite = SiteUtils.generateWPComSite()
+        val jetpackSiteOverXMLRPC = SiteUtils.generateJetpackSiteOverXMLRPC()
+        val jetpackSiteOverRestOnly = SiteUtils.generateJetpackSiteOverRestOnly()
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverXMLRPC);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverRestOnly);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackSiteOverXMLRPC)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackSiteOverRestOnly)
 
-        assertEquals(2, mSiteSqlUtils.getSitesAccessedViaWPComRest().getAsCursor().getCount());
+        Assert.assertEquals(2, mSiteSqlUtils!!.sitesAccessedViaWPComRest.getAsCursor().getCount().toLong())
 
-        List<SiteModel> wpComSites = mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel();
-        assertEquals(1, wpComSites.size());
-        for (SiteModel site : wpComSites) {
-            assertNotEquals(jetpackSiteOverXMLRPC.getId(), site.getId());
+        val wpComSites = mSiteSqlUtils!!.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()
+        Assert.assertEquals(1, wpComSites.size.toLong())
+        for (site in wpComSites) {
+            Assert.assertNotEquals(jetpackSiteOverXMLRPC.getId().toLong(), site.getId().toLong())
         }
     }
 
     @Test
-    public void testInsertDuplicateSites() throws DuplicateSiteException {
-        SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
-        SiteModel jetpack = generateJetpackSiteOverRestOnly();
+    @Throws(DuplicateSiteException::class)
+    fun testInsertDuplicateSites() {
+        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
+        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
         // Insert a self hosted site that will later be converted to Jetpack
-        mSiteStorePersistence.insertOrUpdateSite(futureJetpack);
+        mSiteStorePersistence!!.insertOrUpdateSite(futureJetpack)
 
         // Insert the same site but Jetpack powered this time
-        mSiteStorePersistence.insertOrUpdateSite(jetpack);
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpack)
 
         // Previous site should be converted to a Jetpack site and we should see only one site
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
 
-        List<SiteModel> wpComSites = mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel();
-        assertEquals(0, wpComSites.size());
-        assertEquals(1, mSiteSqlUtils.getSitesAccessedViaWPComRest().getAsCursor().getCount());
-        List<SiteModel> jetpackSites =
-                mSiteSqlUtils.getSitesWith(SiteModelTable.IS_JETPACK_CONNECTED, true).getAsModel();
-        assertEquals(jetpack.getSiteId(), jetpackSites.get(0).getSiteId());
-        assertTrue(jetpackSites.get(0).isJetpackConnected());
-        assertFalse(jetpackSites.get(0).isWPCom());
+        val wpComSites = mSiteSqlUtils!!.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()
+        Assert.assertEquals(0, wpComSites.size.toLong())
+        Assert.assertEquals(1, mSiteSqlUtils!!.sitesAccessedViaWPComRest.getAsCursor().getCount().toLong())
+        val jetpackSites =
+            mSiteSqlUtils!!.getSitesWith(SiteModelTable.IS_JETPACK_CONNECTED, true).getAsModel()
+        Assert.assertEquals(jetpack.getSiteId(), jetpackSites.get(0)!!.getSiteId())
+        Assert.assertTrue(jetpackSites.get(0)!!.isJetpackConnected())
+        Assert.assertFalse(jetpackSites.get(0)!!.isWPCom())
     }
 
     @Test
-    public void testInsertDuplicateSitesError() throws DuplicateSiteException {
-        SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
-        SiteModel jetpack = generateJetpackSiteOverRestOnly();
+    @Throws(DuplicateSiteException::class)
+    fun testInsertDuplicateSitesError() {
+        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
+        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
         // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack);
-        boolean duplicate = false;
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpack)
+        var duplicate = false
         try {
             // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(futureJetpack)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertTrue(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertTrue(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testInsertDuplicateSitesDifferentSchemesError1() throws DuplicateSiteException {
-        SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
-        SiteModel jetpack = generateJetpackSiteOverRestOnly();
+    @Throws(DuplicateSiteException::class)
+    fun testInsertDuplicateSitesDifferentSchemesError1() {
+        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
+        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
-        futureJetpack.setXmlRpcUrl("https://pony.com/xmlrpc.php");
-        jetpack.setXmlRpcUrl("http://pony.com/xmlrpc.php");
+        futureJetpack.setXmlRpcUrl("https://pony.com/xmlrpc.php")
+        jetpack.setXmlRpcUrl("http://pony.com/xmlrpc.php")
 
         // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack);
-        boolean duplicate = false;
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpack)
+        var duplicate = false
         try {
             // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(futureJetpack)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertTrue(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertTrue(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testInsertDuplicateSitesDifferentSchemesError2() throws DuplicateSiteException {
-        SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
-        SiteModel jetpack = generateJetpackSiteOverRestOnly();
+    @Throws(DuplicateSiteException::class)
+    fun testInsertDuplicateSitesDifferentSchemesError2() {
+        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
+        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
-        futureJetpack.setXmlRpcUrl("http://pony.com/xmlrpc.php");
-        jetpack.setXmlRpcUrl("https://pony.com/xmlrpc.php");
+        futureJetpack.setXmlRpcUrl("http://pony.com/xmlrpc.php")
+        jetpack.setXmlRpcUrl("https://pony.com/xmlrpc.php")
 
         // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack);
-        boolean duplicate = false;
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpack)
+        var duplicate = false
         try {
             // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(futureJetpack)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertTrue(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertTrue(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testInsertDuplicateXmlRpcJetpackSite() throws DuplicateSiteException {
-        SiteModel jetpackXmlRpcSite = generateJetpackSiteOverXMLRPC();
+    @Throws(DuplicateSiteException::class)
+    fun testInsertDuplicateXmlRpcJetpackSite() {
+        val jetpackXmlRpcSite = SiteUtils.generateJetpackSiteOverXMLRPC()
 
-        jetpackXmlRpcSite.setUrl("http://some.url");
+        jetpackXmlRpcSite.setUrl("http://some.url")
 
         // Insert a Jetpack powered site over XML-RPC
-        mSiteStorePersistence.insertOrUpdateSite(jetpackXmlRpcSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackXmlRpcSite)
 
         // Set up the same site (by URL/XML-RPC URL), but don't identify it as a Jetpack site
         // This simulates sites resulting from wp.getUsersBlogs, which don't have the site ID and can't be identified
         // as Jetpack or not (wp.getOptions is the call that returns that information)
-        SiteModel jetpackXmlRpcSite2 = generateSelfHostedNonJPSite();
-        jetpackXmlRpcSite2.setXmlRpcUrl(jetpackXmlRpcSite.getXmlRpcUrl());
-        jetpackXmlRpcSite2.setUrl(jetpackXmlRpcSite.getUrl());
-        jetpackXmlRpcSite2.setSelfHostedSiteId(jetpackXmlRpcSite.getSelfHostedSiteId());
-        jetpackXmlRpcSite2.setUsername(jetpackXmlRpcSite.getUsername());
-        jetpackXmlRpcSite2.setPassword(jetpackXmlRpcSite.getPassword());
+        val jetpackXmlRpcSite2 = SiteUtils.generateSelfHostedNonJPSite()
+        jetpackXmlRpcSite2.setXmlRpcUrl(jetpackXmlRpcSite.getXmlRpcUrl())
+        jetpackXmlRpcSite2.setUrl(jetpackXmlRpcSite.getUrl())
+        jetpackXmlRpcSite2.setSelfHostedSiteId(jetpackXmlRpcSite.getSelfHostedSiteId())
+        jetpackXmlRpcSite2.setUsername(jetpackXmlRpcSite.getUsername())
+        jetpackXmlRpcSite2.setPassword(jetpackXmlRpcSite.getPassword())
 
-        boolean duplicate = false;
+        var duplicate = false
         try {
             // Insert the same site but not identified as a Jetpack site
             // (this should succeed, replacing the existing site, because the site replaced is not using the REST API)
-            mSiteStorePersistence.insertOrUpdateSite(jetpackXmlRpcSite2);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(jetpackXmlRpcSite2)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertFalse(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertFalse(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testSearchSitesByNameMatching() throws DuplicateSiteException {
-        SiteModel wpComSite1 = generateWPComSite();
-        wpComSite1.setName("Doctor Emmet Brown Homepage");
-        SiteModel wpComSite2 = generateWPComSite();
-        wpComSite2.setName("Shield Eyes from light");
-        wpComSite2.setSiteId(557);
-        SiteModel wpComSite3 = generateWPComSite();
-        wpComSite3.setName("I remember when this was all farmland as far as the eye could see");
-        wpComSite2.setSiteId(558);
+    @Throws(DuplicateSiteException::class)
+    fun testSearchSitesByNameMatching() {
+        val wpComSite1 = SiteUtils.generateWPComSite()
+        wpComSite1.setName("Doctor Emmet Brown Homepage")
+        val wpComSite2 = SiteUtils.generateWPComSite()
+        wpComSite2.setName("Shield Eyes from light")
+        wpComSite2.setSiteId(557)
+        val wpComSite3 = SiteUtils.generateWPComSite()
+        wpComSite3.setName("I remember when this was all farmland as far as the eye could see")
+        wpComSite2.setSiteId(558)
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite1);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite2);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite3);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite1)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite2)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite3)
 
-        List<SiteModel> matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("eye");
-        assertEquals(2, matchingSites.size());
+        var matchingSites: MutableList<SiteModel?> = mSiteSqlUtils!!.getSitesByNameOrUrlMatching("eye")
+        Assert.assertEquals(2, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("EYE");
-        assertEquals(2, matchingSites.size());
+        matchingSites = mSiteSqlUtils!!.getSitesByNameOrUrlMatching("EYE")
+        Assert.assertEquals(2, matchingSites.size.toLong())
     }
 
     @Test
-    public void testSearchSitesByNameOrUrlMatching() throws DuplicateSiteException {
-        SiteModel wpComSite1 = generateWPComSite();
-        wpComSite1.setName("Doctor Emmet Brown Homepage");
-        SiteModel wpComSite2 = generateWPComSite();
-        wpComSite2.setUrl("shieldeyesfromlight.wordpress.com");
-        SiteModel selfHostedSite = generateSelfHostedNonJPSite();
-        selfHostedSite.setName("I remember when this was all farmland as far as the eye could see.");
+    @Throws(DuplicateSiteException::class)
+    fun testSearchSitesByNameOrUrlMatching() {
+        val wpComSite1 = SiteUtils.generateWPComSite()
+        wpComSite1.setName("Doctor Emmet Brown Homepage")
+        val wpComSite2 = SiteUtils.generateWPComSite()
+        wpComSite2.setUrl("shieldeyesfromlight.wordpress.com")
+        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        selfHostedSite.setName("I remember when this was all farmland as far as the eye could see.")
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite1);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite2);
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite1)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite2)
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedSite)
 
-        List<SiteModel> matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("eye");
-        assertEquals(2, matchingSites.size());
+        var matchingSites: MutableList<SiteModel?> = mSiteSqlUtils!!.getSitesByNameOrUrlMatching("eye")
+        Assert.assertEquals(2, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("EYE");
-        assertEquals(2, matchingSites.size());
+        matchingSites = mSiteSqlUtils!!.getSitesByNameOrUrlMatching("EYE")
+        Assert.assertEquals(2, matchingSites.size.toLong())
     }
 
     @Test
-    public void testSearchWPComSitesByNameOrUrlMatching() throws DuplicateSiteException {
-        SiteModel wpComSite1 = generateWPComSite();
-        wpComSite1.setName("Doctor Emmet Brown Homepage");
-        SiteModel wpComSite2 = generateWPComSite();
-        wpComSite2.setUrl("shieldeyesfromlight.wordpress.com");
-        SiteModel selfHostedSite = generateSelfHostedNonJPSite();
-        selfHostedSite.setName("I remember when this was all farmland as far as the eye could see.");
+    @Throws(DuplicateSiteException::class)
+    fun testSearchWPComSitesByNameOrUrlMatching() {
+        val wpComSite1 = SiteUtils.generateWPComSite()
+        wpComSite1.setName("Doctor Emmet Brown Homepage")
+        val wpComSite2 = SiteUtils.generateWPComSite()
+        wpComSite2.setUrl("shieldeyesfromlight.wordpress.com")
+        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        selfHostedSite.setName("I remember when this was all farmland as far as the eye could see.")
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite1);
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite2);
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite1)
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite2)
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedSite)
 
-        List<SiteModel> matchingSites = mSiteSqlUtils.getSitesAccessedViaWPComRestByNameOrUrlMatching("eye");
-        assertEquals(1, matchingSites.size());
+        var matchingSites: MutableList<SiteModel?> =
+            mSiteSqlUtils!!.getSitesAccessedViaWPComRestByNameOrUrlMatching("eye")
+        Assert.assertEquals(1, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesAccessedViaWPComRestByNameOrUrlMatching("EYE");
-        assertEquals(1, matchingSites.size());
+        matchingSites = mSiteSqlUtils!!.getSitesAccessedViaWPComRestByNameOrUrlMatching("EYE")
+        Assert.assertEquals(1, matchingSites.size.toLong())
     }
 
     @Test
-    public void testRemoveAllSites() throws DuplicateSiteException {
-        SiteModel wpComSite = generateWPComSite();
-        SiteModel jetpackXMLRPCSite = generateJetpackSiteOverXMLRPC();
-        SiteModel jetpackRestSite = generateJetpackSiteOverRestOnly();
-        SiteModel selfHostedSite = generateSelfHostedNonJPSite();
+    @Throws(DuplicateSiteException::class)
+    fun testRemoveAllSites() {
+        val wpComSite = SiteUtils.generateWPComSite()
+        val jetpackXMLRPCSite = SiteUtils.generateJetpackSiteOverXMLRPC()
+        val jetpackRestSite = SiteUtils.generateJetpackSiteOverRestOnly()
+        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
 
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackXMLRPCSite);
-        mSiteStorePersistence.insertOrUpdateSite(jetpackRestSite);
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackXMLRPCSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(jetpackRestSite)
+        mSiteStorePersistence!!.insertOrUpdateSite(selfHostedSite)
 
         // first make sure sites are inserted successfully
-        assertEquals(4, mSiteStore.getSites().size());
+        Assert.assertEquals(4, mSiteStore!!.sites.size.toLong())
 
-        mSiteSqlUtils.deleteAllSites();
+        mSiteSqlUtils!!.deleteAllSites()
 
-        assertEquals(0, mSiteStore.getSites().size());
+        Assert.assertEquals(0, mSiteStore!!.sites.size.toLong())
     }
 
     @Test
-    public void testWPComAutomatedTransfer() throws DuplicateSiteException {
-        SiteModel wpComSite = generateWPComSite();
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite);
+    @Throws(DuplicateSiteException::class)
+    fun testWPComAutomatedTransfer() {
+        val wpComSite = SiteUtils.generateWPComSite()
+        mSiteStorePersistence!!.insertOrUpdateSite(wpComSite)
 
         // Turn WP.com site into an Automated Transfer (Jetpack) site
-        SiteModel automatedTransferSite = generateWPComSite();
-        automatedTransferSite.setIsJetpackInstalled(true);
-        automatedTransferSite.setIsJetpackConnected(true);
-        automatedTransferSite.setIsWPCom(false);
-        automatedTransferSite.setIsAutomatedTransfer(true);
+        val automatedTransferSite = SiteUtils.generateWPComSite()
+        automatedTransferSite.setIsJetpackInstalled(true)
+        automatedTransferSite.setIsJetpackConnected(true)
+        automatedTransferSite.setIsWPCom(false)
+        automatedTransferSite.setIsAutomatedTransfer(true)
 
-        mSiteStorePersistence.insertOrUpdateSite(automatedTransferSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(automatedTransferSite)
 
-        assertEquals(1, mSiteStore.getSites().size());
+        Assert.assertEquals(1, mSiteStore!!.sites.size.toLong())
     }
 
     @Test
-    public void testBatchInsertSiteNoDuplicateWPCom()
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        List<SiteModel> siteList = new ArrayList<>();
-        siteList.add(generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true, true));
-        siteList.add(generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true, true));
-        siteList.add(generateTestSite(3, "https://pony3.com", "https://pony3.com/xmlrpc.php", true, true));
-        siteList.add(generateTestSite(4, "https://pony4.com", "https://pony4.com/xmlrpc.php", true, true));
-        siteList.add(generateTestSite(5, "https://pony5.com", "https://pony5.com/xmlrpc.php", true, true));
+    @Throws(NoSuchMethodException::class, IllegalAccessException::class, InvocationTargetException::class)
+    fun testBatchInsertSiteNoDuplicateWPCom() {
+        val siteList: MutableList<SiteModel?> = ArrayList<SiteModel?>()
+        siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true, true))
+        siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true, true))
+        siteList.add(SiteUtils.generateTestSite(3, "https://pony3.com", "https://pony3.com/xmlrpc.php", true, true))
+        siteList.add(SiteUtils.generateTestSite(4, "https://pony4.com", "https://pony4.com/xmlrpc.php", true, true))
+        siteList.add(SiteUtils.generateTestSite(5, "https://pony5.com", "https://pony5.com/xmlrpc.php", true, true))
 
-        SitesModel sites = new SitesModel(siteList);
+        val sites = SitesModel(siteList)
 
         // Use reflection to call a private Store method: equivalent to mSiteStore.updateSites(sites)
-        Method createOrUpdateSites = SiteStore.class.getDeclaredMethod("createOrUpdateSites", SitesModel.class);
-        createOrUpdateSites.setAccessible(true);
-        UpdateSitesResult res = (UpdateSitesResult) createOrUpdateSites.invoke(mSiteStore, sites);
+        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod("createOrUpdateSites", SitesModel::class.java)
+        createOrUpdateSites.setAccessible(true)
+        val res = createOrUpdateSites.invoke(mSiteStore, sites) as UpdateSitesResult?
 
-        assertFalse(res.duplicateSiteFound);
-        assertEquals(5, res.rowsAffected);
-        assertEquals(5, mSiteStore.getSites().size());
+        Assert.assertFalse(res!!.duplicateSiteFound)
+        Assert.assertEquals(5, res.rowsAffected.toLong())
+        Assert.assertEquals(5, mSiteStore!!.sites.size.toLong())
     }
 
     @Test
-    public void testInsertSiteDuplicateXmlRpcTrailingSlash() throws DuplicateSiteException {
+    @Throws(DuplicateSiteException::class)
+    fun testInsertSiteDuplicateXmlRpcTrailingSlash() {
         // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`,
         // sometimes just by a trailing slash
         // This test checks that we can still identify two sites as being identical in this case, and that we quietly
         // update the existing site rather than throw a duplicate site exception
-        SiteModel selfhostedSite = generateSelfHostedNonJPSite();
-        selfhostedSite.setUrl("http://some.url");
+        val selfhostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        selfhostedSite.setUrl("http://some.url")
 
-        mSiteStorePersistence.insertOrUpdateSite(selfhostedSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(selfhostedSite)
 
-        SiteModel selfhostedSite2 = generateSelfHostedNonJPSite();
-        selfhostedSite2.setUrl("http://some.url/");
+        val selfhostedSite2 = SiteUtils.generateSelfHostedNonJPSite()
+        selfhostedSite2.setUrl("http://some.url/")
 
-        boolean duplicate = false;
+        var duplicate = false
         try {
             // Insert the same site with a trailing slash (this should succeed, replacing the existing site)
-            mSiteStorePersistence.insertOrUpdateSite(selfhostedSite2);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(selfhostedSite2)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertFalse(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertFalse(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testInsertSiteDuplicateXmlRpcDifferentUrl() throws DuplicateSiteException {
+    @Throws(DuplicateSiteException::class)
+    fun testInsertSiteDuplicateXmlRpcDifferentUrl() {
         // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`
         // This test checks that we can still identify two sites as being identical in this case, and that we quietly
         // update the existing site rather than throw a duplicate site exception
-        SiteModel selfhostedSite = generateSelfHostedNonJPSite();
-        selfhostedSite.setUrl("http://some.url");
-        selfhostedSite.setXmlRpcUrl("http://some.url/xmlrpc.php");
+        val selfhostedSite = SiteUtils.generateSelfHostedNonJPSite()
+        selfhostedSite.setUrl("http://some.url")
+        selfhostedSite.setXmlRpcUrl("http://some.url/xmlrpc.php")
 
-        mSiteStorePersistence.insertOrUpdateSite(selfhostedSite);
+        mSiteStorePersistence!!.insertOrUpdateSite(selfhostedSite)
 
-        SiteModel selfhostedSite2 = generateSelfHostedNonJPSite();
-        selfhostedSite2.setUrl("http://user5242.stagingsite.url");
-        selfhostedSite2.setXmlRpcUrl("http://some.url/xmlrpc.php");
+        val selfhostedSite2 = SiteUtils.generateSelfHostedNonJPSite()
+        selfhostedSite2.setUrl("http://user5242.stagingsite.url")
+        selfhostedSite2.setXmlRpcUrl("http://some.url/xmlrpc.php")
 
-        boolean duplicate = false;
+        var duplicate = false
         try {
             // Insert the same site with a different URL, but the same XML-RPC URL
             // (this should succeed, replacing the existing site)
-            mSiteStorePersistence.insertOrUpdateSite(selfhostedSite2);
-        } catch (DuplicateSiteException e) {
+            mSiteStorePersistence!!.insertOrUpdateSite(selfhostedSite2)
+        } catch (e: DuplicateSiteException) {
             // Caught !
-            duplicate = true;
+            duplicate = true
         }
-        assertFalse(duplicate);
-        int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
-        assertEquals(1, sitesCount);
+        Assert.assertFalse(duplicate)
+        val sitesCount = WellSql.select<SiteModel?>(SiteModel::class.java).getAsCursor().getCount()
+        Assert.assertEquals(1, sitesCount.toLong())
     }
 
     @Test
-    public void testUpdateSiteUniqueConstraintFail() throws DuplicateSiteException {
+    @Throws(DuplicateSiteException::class)
+    fun testUpdateSiteUniqueConstraintFail() {
         // Create 2 test sites
-        SiteModel site1 = generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false, true);
-        mSiteStorePersistence.insertOrUpdateSite(site1);
-        SiteModel site2 = generateTestSite(0, "https://pony2.com", "https://pony2.com/xmlrpc.php", false, true);
-        mSiteStorePersistence.insertOrUpdateSite(site2);
+        val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false, true)
+        mSiteStorePersistence!!.insertOrUpdateSite(site1)
+        val site2 = SiteUtils.generateTestSite(0, "https://pony2.com", "https://pony2.com/xmlrpc.php", false, true)
+        mSiteStorePersistence!!.insertOrUpdateSite(site2)
 
         // Update the second site and reuse the site url and id from the first
-        site2.setUrl("https://pony1.com");
-        boolean duplicate = false;
+        site2.setUrl("https://pony1.com")
+        var duplicate = false
         try {
-            mSiteStorePersistence.insertOrUpdateSite(site2);
-        } catch (DuplicateSiteException e) {
-            duplicate = true;
+            mSiteStorePersistence!!.insertOrUpdateSite(site2)
+        } catch (e: DuplicateSiteException) {
+            duplicate = true
         }
-        assertTrue(duplicate);
+        Assert.assertTrue(duplicate)
     }
 
     @Test
-    public void testJetpackSelfHostedAndForceXMLRPC() {
-        SiteModel jetpackSite = generateJetpackSiteOverXMLRPC();
-        jetpackSite.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        assertTrue(jetpackSite.isUsingWpComRestApi());
+    fun testJetpackSelfHostedAndForceXMLRPC() {
+        val jetpackSite = SiteUtils.generateJetpackSiteOverXMLRPC()
+        jetpackSite.setOrigin(SiteModel.ORIGIN_WPCOM_REST)
+        Assert.assertTrue(jetpackSite.isUsingWpComRestApi())
 
         // Force the origin, it should now use XMLRPC instead of REST.
-        jetpackSite.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        assertFalse(jetpackSite.isUsingWpComRestApi());
+        jetpackSite.setOrigin(SiteModel.ORIGIN_XMLRPC)
+        Assert.assertFalse(jetpackSite.isUsingWpComRestApi())
     }
 
     @Test
-    public void testDefaultUsageWpComRestApi() {
-        SiteModel wpComSite = generateWPComSite();
-        assertTrue(wpComSite.isUsingWpComRestApi());
+    fun testDefaultUsageWpComRestApi() {
+        val wpComSite = SiteUtils.generateWPComSite()
+        Assert.assertTrue(wpComSite.isUsingWpComRestApi())
 
-        SiteModel jetpack1 = generateJetpackSiteOverRestOnly();
-        assertTrue(jetpack1.isUsingWpComRestApi());
+        val jetpack1 = SiteUtils.generateJetpackSiteOverRestOnly()
+        Assert.assertTrue(jetpack1.isUsingWpComRestApi())
 
-        SiteModel jetpack2 = generateJetpackSiteOverXMLRPC();
-        assertFalse(jetpack2.isUsingWpComRestApi());
+        val jetpack2 = SiteUtils.generateJetpackSiteOverXMLRPC()
+        Assert.assertFalse(jetpack2.isUsingWpComRestApi())
 
-        SiteModel pureSelfHosted1 = generateSelfHostedNonJPSite();
-        assertFalse(pureSelfHosted1.isUsingWpComRestApi());
+        val pureSelfHosted1 = SiteUtils.generateSelfHostedNonJPSite()
+        Assert.assertFalse(pureSelfHosted1.isUsingWpComRestApi())
 
-        SiteModel pureSelfHosted2 = generateSelfHostedSiteFutureJetpack();
-        assertFalse(pureSelfHosted2.isUsingWpComRestApi());
+        val pureSelfHosted2 = SiteUtils.generateSelfHostedSiteFutureJetpack()
+        Assert.assertFalse(pureSelfHosted2.isUsingWpComRestApi())
     }
 
     @Test
-    public void testRemoveWPComRestSitesAbsentFromList()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        final List<SiteModel> allSites = new ArrayList<>();
-        final List<SiteModel> sitesToKeep = new ArrayList<>();
+    @Throws(NoSuchMethodException::class, InvocationTargetException::class, IllegalAccessException::class)
+    fun testRemoveWPComRestSitesAbsentFromList() {
+        val allSites: MutableList<SiteModel?> = ArrayList<SiteModel?>()
+        val sitesToKeep: MutableList<SiteModel> = ArrayList<SiteModel>()
 
-        for (int i = 0; i < 15; ++i) {
-            switch (i % 3) {
-                case 0:
+        for (i in 0..14) {
+            when (i % 3) {
+                0 -> {
                     // add a .com site
-                    SiteModel wpComSite = generateWPComSite();
-                    wpComSite.setSiteId(i + 1);
-                    wpComSite.setUrl("https://pony" + i + ".com");
-                    wpComSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php");
-                    allSites.add(wpComSite);
-                    break;
-                case 1:
+                    val wpComSite = SiteUtils.generateWPComSite()
+                    wpComSite.setSiteId((i + 1).toLong())
+                    wpComSite.setUrl("https://pony" + i + ".com")
+                    wpComSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php")
+                    allSites.add(wpComSite)
+                }
+
+                1 -> {
                     // add a self-hosted Jetpack site
-                    SiteModel jetpackSite = generateJetpackSiteOverRestOnly();
-                    jetpackSite.setSiteId(i + 1);
-                    jetpackSite.setUrl("https://pony" + i + ".com");
-                    jetpackSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php");
-                    allSites.add(jetpackSite);
-                    break;
-                case 2:
+                    val jetpackSite = SiteUtils.generateJetpackSiteOverRestOnly()
+                    jetpackSite.setSiteId((i + 1).toLong())
+                    jetpackSite.setUrl("https://pony" + i + ".com")
+                    jetpackSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php")
+                    allSites.add(jetpackSite)
+                }
+
+                2 -> {
                     // add a self-hosted non-Jetpack site
-                    SiteModel selfHostedSite = generateSelfHostedNonJPSite();
-                    selfHostedSite.setSiteId(i + 1);
-                    selfHostedSite.setUrl("https://pony" + i + ".com");
-                    selfHostedSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php");
-                    allSites.add(selfHostedSite);
-                    break;
+                    val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
+                    selfHostedSite.setSiteId((i + 1).toLong())
+                    selfHostedSite.setUrl("https://pony" + i + ".com")
+                    selfHostedSite.setXmlRpcUrl("https://pony" + i + ".com/xmlrpc.php")
+                    allSites.add(selfHostedSite)
+                }
             }
         }
 
         // add all sites to DB
-        Method createOrUpdateSites = SiteStore.class.getDeclaredMethod("createOrUpdateSites", SitesModel.class);
-        createOrUpdateSites.setAccessible(true);
-        UpdateSitesResult res = (UpdateSitesResult) createOrUpdateSites.invoke(mSiteStore, new SitesModel(allSites));
+        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod("createOrUpdateSites", SitesModel::class.java)
+        createOrUpdateSites.setAccessible(true)
+        val res = createOrUpdateSites.invoke(mSiteStore, SitesModel(allSites)) as UpdateSitesResult?
 
-        assertFalse(res.duplicateSiteFound);
-        assertTrue(res.rowsAffected == 15);
-        assertTrue(mSiteStore.getSites().size() == 15);
+        Assert.assertFalse(res!!.duplicateSiteFound)
+        Assert.assertTrue(res.rowsAffected == 15)
+        Assert.assertTrue(mSiteStore!!.sites.size == 15)
 
         // add 2 of each kind of site to keep
-        sitesToKeep.addAll(allSites.subList(0, 6));
+        sitesToKeep.addAll(allSites.subList(0, 6))
 
         // remove six sites (2/3 * (15 - 6))
-        mSiteSqlUtils.removeWPComRestSitesAbsentFromList(sitesToKeep);
+        mSiteSqlUtils!!.removeWPComRestSitesAbsentFromList(sitesToKeep)
 
-        assertTrue(mSiteStore.getSites().size() == 9);
+        Assert.assertTrue(mSiteStore!!.sites.size == 9)
 
         // make sure all sites in sitesToKeep are in the store
-        for (SiteModel site : sitesToKeep) {
-            assertTrue(mSiteStore.getSiteBySiteId(site.getSiteId()) != null);
+        for (site in sitesToKeep) {
+            Assert.assertTrue(mSiteStore!!.getSiteBySiteId(site.getSiteId()) != null)
         }
     }
 
     @Test
-    public void testInsertAndRetrieveForActiveModules() throws DuplicateSiteException {
-        SiteModel site = generateWPComSite();
-        String activeModules = SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE
-                               + ","
-                               + SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS;
-        site.setActiveModules(activeModules);
+    @Throws(DuplicateSiteException::class)
+    fun testInsertAndRetrieveForActiveModules() {
+        val site = SiteUtils.generateWPComSite()
+        val activeModules = (SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE
+                + ","
+                + SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS)
+        site.setActiveModules(activeModules)
 
-        mSiteStorePersistence.insertOrUpdateSite(site);
+        mSiteStorePersistence!!.insertOrUpdateSite(site)
 
-        SiteModel siteFromDb = mSiteSqlUtils.getSites().get(0);
-        assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE));
-        assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS));
+        val siteFromDb = mSiteSqlUtils!!.getSites().get(0)
+        Assert.assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE))
+        Assert.assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS))
     }
 
     @Test
-    public void testInsertAndRetrieveForPublicizePermanentlyDisabled() throws DuplicateSiteException {
-        SiteModel site = generateWPComSite();
-        site.setIsPublicizePermanentlyDisabled(true);
+    @Throws(DuplicateSiteException::class)
+    fun testInsertAndRetrieveForPublicizePermanentlyDisabled() {
+        val site = SiteUtils.generateWPComSite()
+        site.setIsPublicizePermanentlyDisabled(true)
 
-        mSiteStorePersistence.insertOrUpdateSite(site);
+        mSiteStorePersistence!!.insertOrUpdateSite(site)
 
-        SiteModel siteFromDb = mSiteSqlUtils.getSites().get(0);
-        assertTrue(siteFromDb.isPublicizePermanentlyDisabled());
+        val siteFromDb = mSiteSqlUtils!!.getSites().get(0)
+        Assert.assertTrue(siteFromDb.isPublicizePermanentlyDisabled())
     }
 
     @Test
-    public void testZendeskPlanAndAddonsInsertionAndRetrieval() {
-        SiteModel siteModel = generateSiteWithZendeskMetaData();
-        WellSql.insert(siteModel).execute();
+    fun testZendeskPlanAndAddonsInsertionAndRetrieval() {
+        val siteModel = SiteUtils.generateSiteWithZendeskMetaData()
+        WellSql.insert<SiteModel?>(siteModel).execute()
 
-        SiteModel siteFromDb = mSiteStore.getSites().get(0);
-        assertEquals(siteModel.getZendeskPlan(), siteFromDb.getZendeskPlan());
-        assertEquals(siteModel.getZendeskAddOns(), siteFromDb.getZendeskAddOns());
+        val siteFromDb = mSiteStore!!.sites.get(0)
+        Assert.assertEquals(siteModel.getZendeskPlan(), siteFromDb.getZendeskPlan())
+        Assert.assertEquals(siteModel.getZendeskAddOns(), siteFromDb.getZendeskAddOns())
     }
 }
