@@ -184,7 +184,7 @@ fun ConnectivityCheckCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.woo_black)),
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface)),
                 painter = painterResource(id = iconDrawable),
                 contentDescription = stringResource(id = checkTitle),
                 modifier = modifier
