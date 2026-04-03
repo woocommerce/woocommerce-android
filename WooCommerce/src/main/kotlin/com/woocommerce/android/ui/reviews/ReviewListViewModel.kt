@@ -99,8 +99,10 @@ class ReviewListViewModel @Inject constructor(
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
+            // Fetch after cache check to avoid race where fetchReviewList sets
+            // isSkeletonShown = false before the cache check sets it to true.
+            fetchReviewList(loadMore = false)
         }
-        fetchReviewList(loadMore = false)
     }
 
     override fun ReviewModerationConsumer.onReviewModerationSuccess() {
