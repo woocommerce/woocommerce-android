@@ -1,1 +1,6 @@
-Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.
+- [Internal] Hide settings plugins section for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15594]
+- [*] Fixed shipping address showing billing address data when selecting a registered customer during order creation [https://github.com/woocommerce/woocommerce-android/pull/15575]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Treat CIAB sites like atomic sites during site connection [https://github.com/woocommerce/woocommerce-android/pull/15608]
+- [Internal] Unified local and remote feature flag handling [https://github.com/woocommerce/woocommerce-android/pull/15299]
+- [Internal][WEAR] Update watchface complications dependency to 1.3.0 [https://github.com/woocommerce/woocommerce-android/pull/15577]
