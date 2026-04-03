@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.reviews
 
 import android.widget.RatingBar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -26,6 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -190,22 +192,27 @@ private fun ProductReviewsCardContent(
 private fun ReviewListItem(
     review: ProductReview,
     onClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showDivider: Boolean = true,
+    titleColor: Color = colorResource(R.color.color_on_surface_high),
+    descriptionColor: Color = colorResource(R.color.color_on_surface_medium)
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colors.surface)
             .clickable(onClick = onClicked)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
+        val isPending = review.status == ProductReviewStatus.HOLD.toString()
         Icon(
             painter = painterResource(id = R.drawable.ic_comment),
             contentDescription = null,
-            tint = if (review.read == false) {
-                MaterialTheme.colors.primary
+            tint = if (isPending) {
+                colorResource(R.color.woo_purple_60)
             } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                titleColor
             }
         )
 
@@ -222,17 +229,17 @@ private fun ReviewListItem(
                         review.product?.name?.fastStripHtml().orEmpty()
                     )
                 },
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
+                color = titleColor
             )
 
             val reviewText = buildAnnotatedString {
-                if (review.status == ProductReviewStatus.HOLD.toString()) {
+                if (isPending) {
                     withStyle(SpanStyle(color = colorResource(id = R.color.woo_orange_50))) {
                         append(stringResource(id = R.string.pending_review_label))
                     }
 
-                    append(" • ")
+                    append(" \u2022 ")
                 }
 
                 append(StringUtils.getRawTextFromHtml(review.review))
@@ -241,7 +248,8 @@ private fun ReviewListItem(
             Text(
                 text = reviewText,
                 style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                color = descriptionColor,
+                maxLines = 2
             )
 
             if (review.rating > 0) {
@@ -256,8 +264,10 @@ private fun ReviewListItem(
                 )
             }
 
-            Spacer(modifier = Modifier)
-            Divider()
+            if (showDivider) {
+                Spacer(modifier = Modifier)
+                Divider()
+            }
         }
     }
 }
