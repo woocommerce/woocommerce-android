@@ -128,7 +128,8 @@ private fun ReviewListContent(
     ) {
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             groupedReviews.forEach { (timeGroup, groupReviews) ->
                 stickyHeader(key = timeGroup.name) {
