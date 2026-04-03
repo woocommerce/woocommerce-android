@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -20,9 +19,6 @@ class StoreOrdersCheckUseCase @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) {
-    private val isAppPasswordSite: Boolean
-        get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
-
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val startTime = System.currentTimeMillis()
@@ -37,10 +33,10 @@ class StoreOrdersCheckUseCase @Inject constructor(
     }
 
     private fun HasOrdersResult.Failure.parseError(durationMs: Long): Failure {
-        val failureType = when (error.type) {
-            TIMEOUT_ERROR -> FailureType.TIMEOUT
-            PARSE_ERROR -> FailureType.PARSE
-            PLUGIN_NOT_ACTIVE -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+        val failureType = when {
+            error.isJetpackNotConnectedError() -> FailureType.JETPACK
+            error.type == TIMEOUT_ERROR -> FailureType.TIMEOUT
+            error.type == PARSE_ERROR -> FailureType.PARSE
             else -> FailureType.GENERIC
         }
 
