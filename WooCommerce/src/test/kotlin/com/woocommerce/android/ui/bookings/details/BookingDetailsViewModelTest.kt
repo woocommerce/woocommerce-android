@@ -3,6 +3,14 @@ package com.woocommerce.android.ui.bookings.details
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
+import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
+import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
+import com.automattic.eventhorizon.BookingDetailRefundTapEvent
+import com.automattic.eventhorizon.BookingDetailViewLinkedOrderTapEvent
+import com.automattic.eventhorizon.BookingAttendanceValueType
+import com.automattic.eventhorizon.EventHorizon
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
@@ -73,6 +81,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val eventHorizon: EventHorizon = mock()
     private val orderDetailRepository = mock<OrderDetailRepository>()
 
     @Before
@@ -377,20 +386,22 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onAttendanceToggle called, then BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE is tracked`() = testBlocking {
+    fun `when onAttendanceToggle called, then BookingDetailAttendanceStatusUpdateEvent is tracked`() = testBlocking {
         val viewModel = createViewModel()
 
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onAttendanceToggle()
 
-        verify(analyticsTrackerWrapper).track(
-            eq(AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE),
-            argThat<Map<String, Any>> { this["booking_status"] == "attended" }
+        verify(eventHorizon).track(
+            argThat<Trackable> {
+                this is BookingDetailAttendanceStatusUpdateEvent &&
+                    this.bookingStatus == BookingAttendanceValueType.Attended
+            }
         )
     }
 
     @Test
-    fun `when onConfirmCancelBooking called, then BOOKING_DETAIL_CANCEL_BOOKING is tracked`() = testBlocking {
+    fun `when onConfirmCancelBooking called, then BookingDetailCancelBookingEvent is tracked`() = testBlocking {
         whenever(bookingsRepository.cancelBooking(any())).thenReturn(Result.success(Unit))
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
@@ -399,7 +410,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         stateWithDialog.dialogState?.positiveButton?.onClick()
 
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
+        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailCancelBookingEvent })
     }
 
     @Test
@@ -429,23 +440,36 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onNoteClicked called, then BOOKING_DETAIL_ADD_NOTE_TAP is tracked`() = testBlocking {
+    fun `when onNoteClicked called, then BookingDetailAddNoteTapEvent is tracked`() = testBlocking {
         val viewModel = createViewModel()
 
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onNoteClicked?.invoke()
 
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
+        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailAddNoteTapEvent })
     }
 
     @Test
-    fun `when onViewOrderClicked called, then BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP is tracked`() = testBlocking {
+    fun `when onViewOrderClicked called, then BookingDetailViewLinkedOrderTapEvent is tracked`() = testBlocking {
         val viewModel = createViewModel()
 
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onViewOrderClicked?.invoke()
 
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
+        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailViewLinkedOrderTapEvent })
+    }
+
+    @Test
+    fun `when refund button clicked, then BookingDetailRefundTapEvent is tracked`() = testBlocking {
+        val orderId = 99L
+        bookingFlow.value = getSampleBooking(bookingId, orderId = orderId)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.PAID)
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        state.bookingUiState?.onIssueRefundClicked?.invoke()
+
+        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailRefundTapEvent })
     }
 
     @Test
@@ -591,6 +615,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            eventHorizon = eventHorizon,
             orderDetailRepository = orderDetailRepository,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {

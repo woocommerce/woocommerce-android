@@ -200,6 +200,9 @@ class MainActivity :
     @Inject
     lateinit var bookingsTabController: BookingsTabController
 
+    @Inject
+    lateinit var eventHorizon: com.automattic.eventhorizon.EventHorizon
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
@@ -755,15 +758,19 @@ class MainActivity :
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition): Boolean {
-        val stat = when (navPos) {
-            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
-            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
-            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
-            POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECT
-            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
+        if (navPos == BOOKINGS) {
+            eventHorizon.track(com.automattic.eventhorizon.MainTabBookingsSelectEvent)
+        } else {
+            val stat = when (navPos) {
+                MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
+                ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
+                PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+                POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
+                MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
+                BOOKINGS -> error("Handled above")
+            }
+            AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -780,16 +787,20 @@ class MainActivity :
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
-        val stat = when (navPos) {
-            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
-            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
-            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
-            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
-            POS -> null
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECT
-        }
-        stat?.let {
-            AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        if (navPos == BOOKINGS) {
+            eventHorizon.track(com.automattic.eventhorizon.MainTabBookingsReselectEvent)
+        } else {
+            val stat = when (navPos) {
+                MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
+                ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
+                PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
+                MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
+                POS -> null
+                BOOKINGS -> error("Handled above")
+            }
+            stat?.let {
+                AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+            }
         }
 
         // if we're at the root scroll the active fragment to the top

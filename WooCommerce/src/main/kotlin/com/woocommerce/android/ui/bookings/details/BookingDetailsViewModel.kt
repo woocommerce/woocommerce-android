@@ -5,6 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
+import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
+import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
+import com.automattic.eventhorizon.BookingDetailRefundTapEvent
+import com.automattic.eventhorizon.BookingDetailViewLinkedOrderTapEvent
+import com.automattic.eventhorizon.EventHorizon
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.di.AppCoroutineScope
@@ -13,6 +19,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatus
@@ -57,6 +64,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val eventHorizon: EventHorizon,
     private val orderDetailRepository: OrderDetailRepository,
     @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
@@ -222,9 +230,10 @@ class BookingDetailsViewModel @Inject constructor(
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE,
-                mapOf(BookingAnalyticsHelper.KEY_BOOKING_STATUS to status.toAnalyticsValue())
+            eventHorizon.track(
+                BookingDetailAttendanceStatusUpdateEvent(
+                    bookingStatus = status.toEventHorizonValue()
+                )
             )
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel()
@@ -262,7 +271,7 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
+        eventHorizon.track(BookingDetailCancelBookingEvent)
         bookingsRepository.cancelBooking(bookingId)
             .onFailure {
                 with(analyticsHelper) {
@@ -279,16 +288,17 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun openBookingNote(bookingId: Long) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
+        eventHorizon.track(BookingDetailAddNoteTapEvent)
         triggerEvent(NavigateToBookingNote(bookingId))
     }
 
     private fun openOrderDetails(orderId: Long) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
+        eventHorizon.track(BookingDetailViewLinkedOrderTapEvent)
         triggerEvent(NavigateToOrder(orderId))
     }
 
     private fun issueRefund(orderId: Long) {
+        eventHorizon.track(BookingDetailRefundTapEvent)
         triggerEvent(NavigateToIssueRefund(orderId))
     }
 
@@ -375,11 +385,6 @@ class BookingDetailsViewModel @Inject constructor(
 
             else -> BookingLocationStatus.Unavailable
         }
-    }
-
-    private fun BookingAttendanceStatus.toAnalyticsValue(): String = when (this) {
-        BookingAttendanceStatus.Attended -> "attended"
-        BookingAttendanceStatus.Unattended -> "unattended"
     }
 
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
