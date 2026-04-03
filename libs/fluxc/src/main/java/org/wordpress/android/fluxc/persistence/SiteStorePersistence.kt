@@ -27,7 +27,7 @@ class SiteStorePersistence @Inject constructor(
      * 5. Exists in the DB, originally an XML-RPC site, and matches by XMLRPC_URL -> UPDATE
      * 6. Not matching any previous cases -> INSERT
      *
-     * **Return value:** `1` on success (both insert and update), `0` if [site] is null or
+     * **Return value:** `1` on success (both insert and update), `0` if
      * the WP.com account validation fails. The return value does not distinguish between
      * insert and update — callers like [SiteStore.createOrUpdateSites] use it only as a
      * success/failure indicator.
@@ -39,11 +39,7 @@ class SiteStorePersistence @Inject constructor(
      */
     @Suppress("LongMethod", "ComplexMethod", "ReturnCount")
     @Throws(DuplicateSiteException::class)
-    fun insertOrUpdateSite(site: SiteModel?): Int {
-        if (site == null) {
-            return 0
-        }
-
+    fun insertOrUpdateSite(site: SiteModel): Int {
         // If we're inserting or updating a WP.com REST API site, validate that we actually have a WordPress.com
         // account present
         // This prevents a late UPDATE_SITES action from re-populating the database after sign out from WordPress.com

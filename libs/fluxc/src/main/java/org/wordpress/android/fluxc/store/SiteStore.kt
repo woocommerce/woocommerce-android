@@ -472,7 +472,7 @@ open class SiteStore @Inject constructor(
     }
 
     @Throws(SiteStorePersistence.DuplicateSiteException::class)
-    fun insertOrUpdateSite(site: SiteModel?): Int = siteStorePersistence.insertOrUpdateSite(site)
+    fun insertOrUpdateSite(site: SiteModel): Int = siteStorePersistence.insertOrUpdateSite(site)
 
     fun getWooCommerceSites(): List<SiteModel> =
         siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
