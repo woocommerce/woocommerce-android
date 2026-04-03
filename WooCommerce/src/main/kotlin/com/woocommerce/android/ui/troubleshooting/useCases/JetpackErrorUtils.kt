@@ -13,4 +13,3 @@ fun WooError.isJetpackNotConnectedError(): Boolean =
 
 fun WCOrderStore.OrderError.isJetpackNotConnectedError(): Boolean =
     networkError?.errorCode in jetpackErrorCodes
-

@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.PARSE_ERROR
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.PLUGIN_NOT_ACTIVE
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.TIMEOUT_ERROR
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import javax.inject.Inject
 
 class StoreOrdersCheckUseCase @Inject constructor(
@@ -38,8 +36,8 @@ class StoreOrdersCheckUseCase @Inject constructor(
     private fun HasOrdersResult.Failure.parseError(durationMs: Long, isAppPasswordSite: Boolean): Failure {
         val failureType = when {
             !isAppPasswordSite && error.isJetpackNotConnectedError() -> FailureType.JETPACK
-            error.type == TIMEOUT_ERROR -> FailureType.TIMEOUT
-            error.type == PARSE_ERROR -> FailureType.PARSE
+            error.type == OrderErrorType.TIMEOUT_ERROR -> FailureType.TIMEOUT
+            error.type == OrderErrorType.PARSE_ERROR -> FailureType.PARSE
             else -> FailureType.GENERIC
         }
 
