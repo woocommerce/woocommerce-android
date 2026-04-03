@@ -2,7 +2,6 @@
 
 package org.wordpress.android.fluxc.wc.order
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -64,12 +63,9 @@ private const val CUSTOM_PAYMENT_METHOD_TITLE = "Pay in Person"
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 internal class WCOrderStoreTest {
-
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val orderFetcher: WCOrderFetcher = mock()
     private val orderRestClient: OrderRestClient = mock()

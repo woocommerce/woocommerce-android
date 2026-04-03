@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
@@ -29,11 +28,9 @@ import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCDataStoreTest {
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val restClient = mock<WCDataRestClient>()
     private val site = SiteModel().apply { id = 321 }
@@ -46,7 +43,8 @@ class WCDataStoreTest {
     @Before
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
-            context, SiteModel::class.java
+            ApplicationProvider.getApplicationContext(),
+            SiteModel::class.java
         )
         WellSql.init(config)
         config.reset()

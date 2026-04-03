@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
@@ -72,7 +71,6 @@ class WooCommerceStoreTest {
         const val SUPPORTED_API_VERSION = "wc/v3"
     }
 
-    private val appContext = ApplicationProvider.getApplicationContext<Application>()
     private val restClient = mock<WooSystemRestClient>()
     private val siteStore = mock<SiteStore>()
     private val wcrestClient = mock<WooCommerceRestClient>()
@@ -84,7 +82,7 @@ class WooCommerceStoreTest {
 
     private val wooCommerceStore by lazy {
         WooCommerceStore(
-            appContext = appContext,
+            appContext = ApplicationProvider.getApplicationContext(),
             dispatcher = dispatcher,
             coroutineEngine = initCoroutineEngine(),
             siteStore = siteStore,
@@ -131,10 +129,8 @@ class WooCommerceStoreTest {
     @Before
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(
-                SiteModel::class.java
-            )
+            ApplicationProvider.getApplicationContext(),
+            SiteModel::class.java
         )
         WellSql.init(config)
         config.reset()
