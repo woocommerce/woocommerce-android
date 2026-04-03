@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.user
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -31,7 +30,7 @@ class WCUserStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val restClient = mock<WCUserRestClient>()
     private val site = SiteModel().apply { id = 321 }

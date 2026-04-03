@@ -14,7 +14,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
@@ -181,9 +180,8 @@ class WCShippingLabelStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-            appContext,
+            ApplicationProvider.getApplicationContext(),
             SiteModel::class.java
         )
         WellSql.init(config)

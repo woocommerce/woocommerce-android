@@ -2,15 +2,12 @@ package org.wordpress.android.fluxc.store;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import android.content.Context;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.model.AccountModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
@@ -35,12 +32,10 @@ public class AccountStoreTest {
     @Rule
     public WPDatabaseTestRule wpDatabaseRule = new WPDatabaseTestRule(ApplicationProvider.getApplicationContext());
 
-    private Context mContext;
     private AccountStorePersistence mAccountStorePersistence;
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application.getApplicationContext();
         mAccountStorePersistence = new AccountStorePersistence(
                 wpDatabaseRule.getDb(),
                 new AccountMapper()
@@ -91,7 +86,7 @@ public class AccountStoreTest {
     @Test
     public void testSignOut() throws Exception {
         AccountModel testAccount = new AccountModel();
-        AccessToken testToken = new AccessToken(mContext);
+        AccessToken testToken = new AccessToken(ApplicationProvider.getApplicationContext());
         testToken.set("TESTTOKEN");
         testAccount.setUserId(24);
         mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);

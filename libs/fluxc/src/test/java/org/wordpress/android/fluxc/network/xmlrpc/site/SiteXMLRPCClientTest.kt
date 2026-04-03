@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.xmlrpc.site
 
+import androidx.test.core.app.ApplicationProvider
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -14,7 +15,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowLog
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
@@ -73,8 +73,7 @@ class SiteXMLRPCClientTest {
                 mDispatcher, mMockedQueue, Mockito.mock(UserAgent::class.java),
                 Mockito.mock(HTTPAuthManager::class.java), XMLRPCRequestBuilder()
         )
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = WellSqlConfig(appContext)
+        val config = WellSqlConfig(ApplicationProvider.getApplicationContext())
         WellSql.init(config)
         config.reset()
     }

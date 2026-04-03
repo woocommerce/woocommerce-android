@@ -1,11 +1,11 @@
 package org.wordpress.android.fluxc.utils
 
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class WPComRestClientUtilsTest {
@@ -13,8 +13,6 @@ class WPComRestClientUtilsTest {
         private const val LOCALE_PARAM = "locale"
         private const val UNDERSCORE_LOCALE_PARAM = "_locale"
     }
-
-    private val appContext = RuntimeEnvironment.application.applicationContext
 
     @Test
     fun `getLocaleParamName should return _locale for v2 url`() {
@@ -40,7 +38,7 @@ class WPComRestClientUtilsTest {
     @Test
     fun `getHttpUrlWithLocale should add correct locale parameter for v2 url`() {
         val url = "https://public-api.wordpress.com/wpcom/v2/something"
-        val result = WPComRestClientUtils.getHttpUrlWithLocale(appContext, url)
+        val result = WPComRestClientUtils.getHttpUrlWithLocale(ApplicationProvider.getApplicationContext(), url)
 
         assertNotNull(result)
         assertNotNull(result?.queryParameter(UNDERSCORE_LOCALE_PARAM))
@@ -49,7 +47,7 @@ class WPComRestClientUtilsTest {
     @Test
     fun `getHttpUrlWithLocale should add correct locale parameter for v3 url`() {
         val url = "https://public-api.wordpress.com/wpcom/v3/something"
-        val result = WPComRestClientUtils.getHttpUrlWithLocale(appContext, url)
+        val result = WPComRestClientUtils.getHttpUrlWithLocale(ApplicationProvider.getApplicationContext(), url)
 
         assertNotNull(result)
         assertNotNull(result?.queryParameter(UNDERSCORE_LOCALE_PARAM))
@@ -58,7 +56,7 @@ class WPComRestClientUtilsTest {
     @Test
     fun `getHttpUrlWithLocale should add correct locale parameter for other urls`() {
         val url = "https://public-api.wordpress.com/rest/v1/"
-        val result = WPComRestClientUtils.getHttpUrlWithLocale(appContext, url)
+        val result = WPComRestClientUtils.getHttpUrlWithLocale(ApplicationProvider.getApplicationContext(), url)
 
         assertNotNull(result)
         assertNotNull(result?.queryParameter(LOCALE_PARAM))

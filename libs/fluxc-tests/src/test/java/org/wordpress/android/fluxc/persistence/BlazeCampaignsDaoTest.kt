@@ -20,9 +20,7 @@ import kotlin.test.assertEquals
 class BlazeCampaignsDaoTest {
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(
-        ApplicationProvider.getApplicationContext()
-    )
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var dao: BlazeCampaignsDao
 

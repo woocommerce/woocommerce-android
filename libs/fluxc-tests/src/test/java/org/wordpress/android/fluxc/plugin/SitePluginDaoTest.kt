@@ -17,9 +17,7 @@ import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlug
 class SitePluginDaoTest {
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(
-        ApplicationProvider.getApplicationContext()
-    )
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sitePluginDao: SitePluginDao
 

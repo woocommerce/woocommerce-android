@@ -17,9 +17,7 @@ import org.wordpress.android.fluxc.utils.createTestTheme
 class ThemeStoreUnitTest {
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(
-        ApplicationProvider.getApplicationContext()
-    )
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var themeStore: ThemeStore
 
