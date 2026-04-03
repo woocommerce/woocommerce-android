@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppConstants
-import com.woocommerce.android.R
-import com.woocommerce.android.WooException
 import com.automattic.eventhorizon.BookingListBookingTapEvent
 import com.automattic.eventhorizon.BookingListFiltersTapEvent
 import com.automattic.eventhorizon.BookingListSearchTapEvent
@@ -12,8 +9,10 @@ import com.automattic.eventhorizon.BookingListSortByTapEvent
 import com.automattic.eventhorizon.BookingListTabSelectEvent
 import com.automattic.eventhorizon.BookingListViewEvent
 import com.automattic.eventhorizon.BookingTabValueType
-import com.automattic.eventhorizon.EventHorizon
 import com.automattic.eventhorizon.Trackable
+import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
@@ -89,7 +88,6 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking { resolveAll(any()) } doReturn mapOf(1L to PaymentStatus.UNPAID)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val eventHorizon: EventHorizon = mock()
 
     private lateinit var viewModel: BookingListViewModel
     private lateinit var savedStateHandle: SavedStateHandle
@@ -112,7 +110,6 @@ class BookingListViewModelTest : BaseUnitTest() {
             isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            eventHorizon = eventHorizon,
         )
     }
 
@@ -502,7 +499,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.tabState.onTabChanged(BookingListTab.Upcoming)
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListTabSelectEvent &&
                     this.selectedTab == BookingTabValueType.Upcoming
@@ -517,7 +514,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.contentState.onBookingClick(123L)
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListBookingTapEvent &&
                     this.isSearchActive == false &&
@@ -538,7 +535,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             val state = viewModel.state.getOrAwaitValue()
             state.contentState.onBookingClick(123L)
 
-            verify(eventHorizon).track(
+            verify(analyticsTrackerWrapper).track(
                 argThat<Trackable> {
                     this is BookingListBookingTapEvent &&
                         this.isFilteringActive == true
@@ -553,7 +550,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.controlsState.onSortClick()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingListSortByTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingListSortByTapEvent })
     }
 
     @Test
@@ -565,7 +562,7 @@ class BookingListViewModelTest : BaseUnitTest() {
 
         stateWithSheet.sortBottomSheetState?.onSelect?.invoke(BookingListSortOption.OldestToNewest)
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListSortByOptionTapEvent &&
                     this.sortOption == com.automattic.eventhorizon.BookingSortValueType.OldestFirst
@@ -580,7 +577,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.controlsState.onFilterClick()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingListFiltersTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingListFiltersTapEvent })
     }
 
     @Test
@@ -590,7 +587,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.searchState.onQueryChanged("")
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingListSearchTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingListSearchTapEvent })
     }
 
     @Test
@@ -620,7 +617,7 @@ class BookingListViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListViewEvent &&
                     this.selectedTab == BookingTabValueType.Today &&
@@ -642,7 +639,7 @@ class BookingListViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListViewEvent &&
                     this.isFiltered == true

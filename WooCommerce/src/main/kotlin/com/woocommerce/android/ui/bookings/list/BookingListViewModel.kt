@@ -4,9 +4,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppConstants
-import com.woocommerce.android.BookingsArgs
-import com.woocommerce.android.R
 import com.automattic.eventhorizon.BookingListBookingTapEvent
 import com.automattic.eventhorizon.BookingListFiltersTapEvent
 import com.automattic.eventhorizon.BookingListSearchTapEvent
@@ -14,13 +11,15 @@ import com.automattic.eventhorizon.BookingListSortByOptionTapEvent
 import com.automattic.eventhorizon.BookingListSortByTapEvent
 import com.automattic.eventhorizon.BookingListTabSelectEvent
 import com.automattic.eventhorizon.BookingListViewEvent
-import com.automattic.eventhorizon.EventHorizon
+import com.woocommerce.android.AppConstants
+import com.woocommerce.android.BookingsArgs
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
-import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
+import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -64,7 +63,6 @@ class BookingListViewModel @Inject constructor(
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val eventHorizon: EventHorizon,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val analyticsHelper = BookingAnalyticsHelper()
@@ -289,7 +287,7 @@ class BookingListViewModel @Inject constructor(
 
     private fun onBookingClick(bookingId: Long) {
         val enabledFiltersCount = state.value?.controlsState?.enabledFiltersCount ?: 0
-        eventHorizon.track(
+        analyticsTrackerWrapper.track(
             BookingListBookingTapEvent(
                 selectedTab = selectedTab.value.toEventHorizonValue(),
                 isSearchActive = searchQuery.value != null,
@@ -303,7 +301,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onTabChanged(tab: BookingListTab) {
-        eventHorizon.track(
+        analyticsTrackerWrapper.track(
             BookingListTabSelectEvent(selectedTab = tab.toEventHorizonValue())
         )
         didUserSwitchTab = true
@@ -311,12 +309,12 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onSortClicked() {
-        eventHorizon.track(BookingListSortByTapEvent)
+        analyticsTrackerWrapper.track(BookingListSortByTapEvent)
         isSortSheetVisible.value = true
     }
 
     private fun onSortOptionSelected(option: BookingListSortOption) {
-        eventHorizon.track(
+        analyticsTrackerWrapper.track(
             BookingListSortByOptionTapEvent(sortOption = option.toEventHorizonValue())
         )
         sortOption.value = option
@@ -328,7 +326,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onFilterClicked() {
-        eventHorizon.track(BookingListFiltersTapEvent)
+        analyticsTrackerWrapper.track(BookingListFiltersTapEvent)
         triggerEvent(NavigateToFilters)
     }
 
@@ -364,7 +362,7 @@ class BookingListViewModel @Inject constructor(
 
     private fun onSearchQueryChanged(newQuery: String?) {
         if (searchQuery.value == null && newQuery != null) {
-            eventHorizon.track(BookingListSearchTapEvent)
+            analyticsTrackerWrapper.track(BookingListSearchTapEvent)
         }
         searchQuery.value = newQuery
     }
@@ -372,7 +370,7 @@ class BookingListViewModel @Inject constructor(
     fun trackBookingListView() = launch {
         val state = _state.first()
 
-        eventHorizon.track(
+        analyticsTrackerWrapper.track(
             BookingListViewEvent(
                 selectedTab = state.tabState.selectedTab.toEventHorizonValue(),
                 isDefaultTab = !didUserSwitchTab,

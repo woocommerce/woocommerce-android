@@ -1,16 +1,15 @@
 package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
-import com.woocommerce.android.WooException
+import com.automattic.eventhorizon.BookingAttendanceValueType
 import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
 import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
 import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
 import com.automattic.eventhorizon.BookingDetailRefundTapEvent
 import com.automattic.eventhorizon.BookingDetailViewLinkedOrderTapEvent
-import com.automattic.eventhorizon.BookingAttendanceValueType
-import com.automattic.eventhorizon.EventHorizon
 import com.automattic.eventhorizon.Trackable
+import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.GetLocations
@@ -81,7 +80,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val eventHorizon: EventHorizon = mock()
     private val orderDetailRepository = mock<OrderDetailRepository>()
 
     @Before
@@ -392,7 +390,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onAttendanceToggle()
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingDetailAttendanceStatusUpdateEvent &&
                     this.bookingStatus == BookingAttendanceValueType.Attended
@@ -410,7 +408,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         stateWithDialog.dialogState?.positiveButton?.onClick()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailCancelBookingEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingDetailCancelBookingEvent })
     }
 
     @Test
@@ -446,7 +444,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onNoteClicked?.invoke()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailAddNoteTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingDetailAddNoteTapEvent })
     }
 
     @Test
@@ -456,7 +454,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.bookingUiState?.onViewOrderClicked?.invoke()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailViewLinkedOrderTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingDetailViewLinkedOrderTapEvent })
     }
 
     @Test
@@ -469,7 +467,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         state.bookingUiState?.onIssueRefundClicked?.invoke()
 
-        verify(eventHorizon).track(argThat<Trackable> { this is BookingDetailRefundTapEvent })
+        verify(analyticsTrackerWrapper).track(argThat<Trackable> { this is BookingDetailRefundTapEvent })
     }
 
     @Test
@@ -615,7 +613,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            eventHorizon = eventHorizon,
             orderDetailRepository = orderDetailRepository,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {

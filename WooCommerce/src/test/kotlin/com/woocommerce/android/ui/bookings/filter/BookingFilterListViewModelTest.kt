@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.automattic.eventhorizon.BookingListApplyFiltersEvent
-import com.automattic.eventhorizon.EventHorizon
 import com.automattic.eventhorizon.Trackable
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
@@ -32,7 +32,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
     }
-    private val eventHorizon: EventHorizon = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() {
@@ -40,7 +40,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
             bookingsRepository = mock(),
-            eventHorizon = eventHorizon,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -245,7 +245,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
         viewModel.uiState.getOrAwaitValue().onShowBookings()
 
-        verify(eventHorizon).track(
+        verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListApplyFiltersEvent &&
                     this.selectedFilters.contains("attendance_status") &&
@@ -263,7 +263,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
             bookingsRepository = mock(),
-            eventHorizon = mock(),
+            analyticsTrackerWrapper = mock(),
         )
 
         val state = viewModel.uiState.getOrAwaitValue()

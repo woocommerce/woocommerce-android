@@ -4,13 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
 import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
 import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
 import com.automattic.eventhorizon.BookingDetailRefundTapEvent
 import com.automattic.eventhorizon.BookingDetailViewLinkedOrderTapEvent
-import com.automattic.eventhorizon.EventHorizon
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.di.AppCoroutineScope
@@ -19,11 +18,11 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
-import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
+import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
@@ -64,7 +63,6 @@ class BookingDetailsViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val eventHorizon: EventHorizon,
     private val orderDetailRepository: OrderDetailRepository,
     @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
@@ -230,7 +228,7 @@ class BookingDetailsViewModel @Inject constructor(
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
-            eventHorizon.track(
+            analyticsTrackerWrapper.track(
                 BookingDetailAttendanceStatusUpdateEvent(
                     bookingStatus = status.toEventHorizonValue()
                 )
@@ -271,7 +269,7 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        eventHorizon.track(BookingDetailCancelBookingEvent)
+        analyticsTrackerWrapper.track(BookingDetailCancelBookingEvent)
         bookingsRepository.cancelBooking(bookingId)
             .onFailure {
                 with(analyticsHelper) {
@@ -288,17 +286,17 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun openBookingNote(bookingId: Long) {
-        eventHorizon.track(BookingDetailAddNoteTapEvent)
+        analyticsTrackerWrapper.track(BookingDetailAddNoteTapEvent)
         triggerEvent(NavigateToBookingNote(bookingId))
     }
 
     private fun openOrderDetails(orderId: Long) {
-        eventHorizon.track(BookingDetailViewLinkedOrderTapEvent)
+        analyticsTrackerWrapper.track(BookingDetailViewLinkedOrderTapEvent)
         triggerEvent(NavigateToOrder(orderId))
     }
 
     private fun issueRefund(orderId: Long) {
-        eventHorizon.track(BookingDetailRefundTapEvent)
+        analyticsTrackerWrapper.track(BookingDetailRefundTapEvent)
         triggerEvent(NavigateToIssueRefund(orderId))
     }
 

@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R
 import com.automattic.eventhorizon.BookingListApplyFiltersEvent
-import com.automattic.eventhorizon.EventHorizon
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -27,7 +27,7 @@ class BookingFilterListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingFilterRepository: BookingFilterRepository,
     private val bookingsRepository: BookingsRepository,
-    private val eventHorizon: EventHorizon,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
@@ -124,7 +124,7 @@ class BookingFilterListViewModel @Inject constructor(
 
     private fun onShowBookings() {
         val filters = _uiState.value.updatedBookingFilters
-        eventHorizon.track(
+        analyticsTrackerWrapper.track(
             BookingListApplyFiltersEvent(
                 selectedFilters = filters.activeFilterTrackingKeys().sorted().toString()
             )
