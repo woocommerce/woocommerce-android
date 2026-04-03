@@ -86,7 +86,7 @@ class SiteStoreUnitTest {
         val site = SiteUtils.generateWPComSite()
         mSiteStorePersistence.insertOrUpdateSite(site)
 
-        assertTrue(mSiteStore.hasSiteWithLocalId(site.id))
+        assertTrue(mSiteStore.getSiteByLocalId(site.id) != null)
         assertEquals(site.siteId, mSiteStore.getSiteByLocalId(site.id)?.siteId)
     }
 
@@ -128,112 +128,6 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(ponySite)
 
         assertEquals(3, mSiteStore.sites.size.toLong())
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testWPComSiteVisibility() {
-        // Should not cause any errors
-        mSiteStore.isWPComSiteVisibleByLocalId(45)
-        mSiteSqlUtils.setSiteVisibility(null, true)
-
-        val selfHostedNonJPSite = SiteUtils.generateSelfHostedNonJPSite()
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedNonJPSite)
-
-        // Attempt to use with id of self-hosted site
-        mSiteSqlUtils.setSiteVisibility(selfHostedNonJPSite, false)
-        // The self-hosted site should not be affected
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.id)?.isVisible == true)
-
-        val wpComSite = SiteUtils.generateWPComSite()
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite)
-
-        // Attempt to use with legitimate .com site
-        mSiteSqlUtils.setSiteVisibility(selfHostedNonJPSite, false)
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite.id)?.isVisible == true)
-        assertFalse(mSiteStore.isWPComSiteVisibleByLocalId(wpComSite.id))
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testSetAllWPComSitesVisibility() {
-        val selfHostedNonJPSite = SiteUtils.generateSelfHostedNonJPSite()
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedNonJPSite)
-
-        // Attempt to use with id of self-hosted site
-        for (site in mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
-            mSiteSqlUtils.setSiteVisibility(site, false)
-        }
-        // The self-hosted site should not be affected
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.id)?.isVisible == true)
-
-        val wpComSite1 = SiteUtils.generateWPComSite()
-        val wpComSite2 = SiteUtils.generateWPComSite()
-        wpComSite2.id = 44
-        wpComSite2.siteId = 284
-
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite1)
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite2)
-
-        // Attempt to use with legitimate .com site
-        for (site in mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()) {
-            mSiteSqlUtils.setSiteVisibility(site, false)
-        }
-        assertTrue(mSiteStore.getSiteByLocalId(selfHostedNonJPSite.id)?.isVisible == true)
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite1.id)?.isVisible == true)
-        assertFalse(mSiteStore.getSiteByLocalId(wpComSite2.id)?.isVisible == true)
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testGetIdForIdMethods() {
-        assertEquals(0, mSiteStore.getLocalIdForRemoteSiteId(555).toLong())
-        assertEquals(0, mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(2626, "").toLong())
-        assertEquals(0, mSiteStore.getSiteIdForLocalId(5577))
-
-        val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
-        val wpComSite = SiteUtils.generateWPComSite()
-        val jetpackSite = SiteUtils.generateJetpackSiteOverXMLRPC()
-        mSiteStorePersistence.insertOrUpdateSite(selfHostedSite)
-        mSiteStorePersistence.insertOrUpdateSite(wpComSite)
-        mSiteStorePersistence.insertOrUpdateSite(jetpackSite)
-
-        assertEquals(
-            selfHostedSite.id.toLong(),
-            mSiteStore.getLocalIdForRemoteSiteId(selfHostedSite.selfHostedSiteId).toLong()
-        )
-        assertEquals(
-            wpComSite.id.toLong(),
-            mSiteStore.getLocalIdForRemoteSiteId(wpComSite.siteId).toLong()
-        )
-
-        // Should be able to look up a Jetpack site by .com and by .org id (assuming it's been set)
-        assertEquals(
-            jetpackSite.id.toLong(),
-            mSiteStore.getLocalIdForRemoteSiteId(jetpackSite.siteId).toLong()
-        )
-        assertEquals(
-            jetpackSite.id.toLong(),
-            mSiteStore.getLocalIdForRemoteSiteId(jetpackSite.selfHostedSiteId).toLong()
-        )
-
-        assertEquals(
-            selfHostedSite.id.toLong(), mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
-                selfHostedSite.selfHostedSiteId, selfHostedSite.xmlRpcUrl
-            ).toLong()
-        )
-        assertEquals(
-            jetpackSite.id.toLong(), mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(
-                jetpackSite.selfHostedSiteId, jetpackSite.xmlRpcUrl
-            ).toLong()
-        )
-
-        assertEquals(
-            selfHostedSite.selfHostedSiteId,
-            mSiteStore.getSiteIdForLocalId(selfHostedSite.id)
-        )
-        assertEquals(wpComSite.siteId, mSiteStore.getSiteIdForLocalId(wpComSite.id))
-        assertEquals(jetpackSite.siteId, mSiteStore.getSiteIdForLocalId(jetpackSite.id))
     }
 
     @Test

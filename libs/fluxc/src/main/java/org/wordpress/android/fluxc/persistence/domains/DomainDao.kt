@@ -6,19 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.DomainModel
-import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 
 /**
  * DAO for [DomainEntity] access
  */
 @Dao
 abstract class DomainDao {
-    @Transaction
-    @Query("SELECT * from Domains WHERE `siteLocalId` = :siteLocalId")
-    abstract fun getDomains(siteLocalId: Int): Flow<List<DomainEntity>>
-
     suspend fun insert(siteLocalId: Int, domains: List<DomainModel>) {
         insert(domains.map {
             DomainEntity(
