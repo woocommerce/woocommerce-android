@@ -1,2 +1,0 @@
-24.4:
-Gerencie devoluções sem esforço com a nova funcionalidade de reembolsos no WooCommerce POS. O painel da sua loja agora mostra as vendas líquidas para corresponder ao wp-admin com precisão. Também corrigimos o fluxo de compra de etiquetas do Woo Shipping quando os detalhes do endereço de origem estão incompletos.

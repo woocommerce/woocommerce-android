@@ -1,1 +1,0 @@
-O painel da sua loja agora exibe vendas líquidas em vez de vendas totais, o que o deixa alinhado ao wp-admin para fornecer uma visão mais precisa e consistente do desempenho da sua loja diretamente no seu pulso.

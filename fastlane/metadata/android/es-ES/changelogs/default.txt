@@ -1,2 +1,0 @@
-24,4:
-Gestiona las devoluciones sin esfuerzo con la nueva función de reembolsos en WooCommerce POS. Ahora, el escritorio de tu tienda muestra las ventas netas para que coincidan con wp-admin de manera precisa. También hemos corregido el flujo de compra de la etiqueta de Woo Shipping cuando los detalles de la dirección de origen están incompletos.

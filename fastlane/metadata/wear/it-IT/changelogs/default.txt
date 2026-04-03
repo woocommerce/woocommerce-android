@@ -1,1 +1,0 @@
-La bacheca del tuo negozio ora mostra le vendite nette invece delle vendite totali, mettendola in linea con wp-admin per una visualizzazione più accurata e coerente delle prestazioni del tuo negozio, direttamente dal tuo polso.
