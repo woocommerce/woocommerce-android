@@ -1,0 +1,2 @@
+24.4:
+WooCommerce POS'taki yeni Para İadeleri özelliği ile iadeleri zahmetsizce yönetin. Mağaza panonuzda artık wp yöneticisiyle tam olarak eşleşen net satışlar gösteriliyor. Menşe adresi bilgileri eksik olduğunda Woo Shipping etiketi satın alma akışını da düzelttik.

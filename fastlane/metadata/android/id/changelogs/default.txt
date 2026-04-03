@@ -1,0 +1,2 @@
+24.4:
+Kelola pengembalian dengan mudah menggunakan fitur Pengembalian Dana baru di WooCommerce POS. Dasbor toko Anda kini menampilkan penjualan bersih agar selaras dengan wp-admin secara akurat. Kami juga telah memperbaiki alur pembelian label Woo Shipping jika rincian alamat asal tidak lengkap.

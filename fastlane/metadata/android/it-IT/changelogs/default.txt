@@ -1,0 +1,2 @@
+24.4:
+Gestisci i resi senza sforzo con la nuova funzionalità Rimborsi in WooCommerce POS. La bacheca del negozio ora mostra le vendite nette che corrispondono in modo accurato a wp-admin. Abbiamo anche corretto il flusso di acquisto delle etichette di Woo Shipping quando i dettagli dell'indirizzo di origine sono incompleti.

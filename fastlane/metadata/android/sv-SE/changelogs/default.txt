@@ -1,0 +1,2 @@
+24.4:
+Hantera returer smidigt med den nya funktionen Återbetalning i WooCommerce POS. Adminpanelen för din butik visar nu nettoförsäljning för att matcha wp-admin korrekt. Vi har även åtgärdat köpflödet för Woo Shipping-etiketter när avsändarens adressuppgifter är ofullständiga.

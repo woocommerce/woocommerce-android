@@ -1,0 +1,2 @@
+24.4:
+Verwalte Rücksendungen mühelos mit der neuen Rückerstattungsfunktion in WooCommerce POS. Dein Shop-Dashboard zeigt jetzt die Nettoumsätze an, damit es exakt mit der Anzeige in WP Admin übereinstimmt. Wir haben auch den Kaufablauf für Woo Shipping-Etiketten korrigiert, wenn die Details der Ursprungsadresse unvollständig sind.

@@ -1,0 +1,1 @@
+Mağaza panonuzda artık toplam satış yerine net satış gösterilerek, doğrudan bileğinizden mağazanızın performansına ilişkin daha doğru ve tutarlı bir görünüm için wp yöneticisi ile aynı çizgide yer alıyor.

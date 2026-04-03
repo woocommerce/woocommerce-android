@@ -1,0 +1,1 @@
+El escritorio de tu tienda muestra ahora las ventas netas en lugar de las ventas totales, lo que lo alinea con wp-admin para una visión más precisa y coherente del rendimiento de tu tienda, directamente desde tu muñeca.

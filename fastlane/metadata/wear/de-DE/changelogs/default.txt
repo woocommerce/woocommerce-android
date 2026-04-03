@@ -1,0 +1,1 @@
+Dein Shop-Dashboard zeigt jetzt den Nettoumsatz anstelle des Gesamtumsatzes an, damit es mit der Anzeige in WP Admin übereinstimmt. Dadurch wird die Performance deines Shops genauer und konsistenter dargestellt – einfach und unkompliziert.

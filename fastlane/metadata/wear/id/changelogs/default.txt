@@ -1,0 +1,1 @@
+Dasbor toko Anda kini menampilkan penjualan bersih, bukan penjualan total. Perubahan ini menyelaraskan data dengan wp-admin untuk tampilan performa toko yang lebih akurat dan konsisten, langsung dari pergelangan tangan Anda.

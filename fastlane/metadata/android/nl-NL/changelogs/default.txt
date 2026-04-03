@@ -1,0 +1,2 @@
+24.4:
+Beheer retourneringen eenvoudig met de nieuwe functie Terugbetalingen in WooCommerce POS. Je winkeldashboard toont nu de netto-omzet, zodat deze nauwkeurig overeenkomt met wp-admin. We hebben ook het aankoopproces voor Woo Shipping-labels opgelost wanneer de gegevens van het verzendadres van de afzender onvolledig zijn.
