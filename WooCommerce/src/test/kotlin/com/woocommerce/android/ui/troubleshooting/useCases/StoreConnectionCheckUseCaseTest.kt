@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -65,7 +64,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Jetpack site, when fetchSSR returns API_NOT_FOUND error, then emit JETPACK Failure`() = testBlocking {
+    fun `when fetchSSR returns API_NOT_FOUND error, then emit GENERIC Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult<WCSSRModel>(
@@ -74,7 +73,32 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
+    }
+
+    @Test
+    fun `when fetchSSR returns unknown_token error, then emit JETPACK Failure`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        val response = WooResult<WCSSRModel>(
+            WooError(
+                type = WooErrorType.GENERIC_ERROR,
+                original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                apiErrorCode = "unknown_token"
+            )
+        )
         whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
@@ -91,16 +115,16 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app-password site, when fetchSSR returns API_NOT_FOUND error, then emit GENERIC Failure`() = testBlocking {
+    fun `when fetchSSR returns invalid_blog error, then emit JETPACK Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult<WCSSRModel>(
             WooError(
-                type = WooErrorType.API_NOT_FOUND,
-                original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                type = WooErrorType.GENERIC_ERROR,
+                original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                apiErrorCode = "invalid_blog"
             )
         )
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
@@ -112,7 +136,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
-        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.JETPACK)
         assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -19,9 +18,6 @@ class StoreConnectionCheckUseCase @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
-    private val isAppPasswordSite: Boolean
-        get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
-
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val startTime = System.currentTimeMillis()
@@ -35,10 +31,10 @@ class StoreConnectionCheckUseCase @Inject constructor(
     }
 
     private fun WooResult<WCSSRModel>.parseError(durationMs: Long): Failure {
-        val failureType = when (error.type) {
-            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
-            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
-            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+        val failureType = when {
+            error.isJetpackNotConnectedError() -> FailureType.JETPACK
+            error.type == WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            error.type == WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
             else -> FailureType.GENERIC
         }
 
