@@ -1,0 +1,1 @@
+Adminpanelen för din butik visar nu nettoförsäljning istället för total försäljning, så att den stämmer överens med wp-admin och ger en mer korrekt och konsekvent bild av butikens resultat — direkt från handleden.
