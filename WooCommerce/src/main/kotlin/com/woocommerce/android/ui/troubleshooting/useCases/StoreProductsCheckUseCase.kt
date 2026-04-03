@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -23,16 +25,17 @@ class StoreProductsCheckUseCase @Inject constructor(
         val startTime = System.currentTimeMillis()
         val result = productStore.fetchProducts(selectedSite.get())
         val durationMs = System.currentTimeMillis() - startTime
+        val isAppPassword = selectedSite.get().connectionType == SiteConnectionType.ApplicationPasswords
         if (result.isError) {
-            emit(result.parseError(durationMs))
+            emit(result.parseError(durationMs, isAppPassword))
         } else {
             emit(Success(durationMs = durationMs))
         }
     }
 
-    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long): Failure {
+    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long, isAppPasswordSite: Boolean): Failure {
         val failureType = when {
-            error.isJetpackNotConnectedError() -> FailureType.JETPACK
+            !isAppPasswordSite && error.isJetpackNotConnectedError() -> FailureType.JETPACK
             error.type == WooErrorType.TIMEOUT -> FailureType.TIMEOUT
             error.type == WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
             else -> FailureType.GENERIC

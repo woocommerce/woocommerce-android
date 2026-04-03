@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -24,7 +26,8 @@ class StoreOrdersCheckUseCase @Inject constructor(
         val startTime = System.currentTimeMillis()
         val result = orderStore.fetchHasOrders(selectedSite.get(), null)
         val durationMs = System.currentTimeMillis() - startTime
-        val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs)
+        val isAppPassword = selectedSite.get().connectionType == SiteConnectionType.ApplicationPasswords
+        val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs, isAppPassword)
         if (failure != null) {
             emit(failure)
         } else {
@@ -32,9 +35,9 @@ class StoreOrdersCheckUseCase @Inject constructor(
         }
     }
 
-    private fun HasOrdersResult.Failure.parseError(durationMs: Long): Failure {
+    private fun HasOrdersResult.Failure.parseError(durationMs: Long, isAppPasswordSite: Boolean): Failure {
         val failureType = when {
-            error.isJetpackNotConnectedError() -> FailureType.JETPACK
+            !isAppPasswordSite && error.isJetpackNotConnectedError() -> FailureType.JETPACK
             error.type == TIMEOUT_ERROR -> FailureType.TIMEOUT
             error.type == PARSE_ERROR -> FailureType.PARSE
             else -> FailureType.GENERIC
