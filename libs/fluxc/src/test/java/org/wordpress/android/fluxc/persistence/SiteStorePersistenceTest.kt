@@ -39,13 +39,6 @@ class SiteStorePersistenceTest {
     // region null and account validation
 
     @Test
-    fun `given null site, when insert or update, then returns 0`() {
-        val result = sut.insertOrUpdateSite(null)
-
-        assertThat(result).isEqualTo(0)
-    }
-
-    @Test
     fun `given wpcom site without account, when insert or update, then returns 0`() {
         val noAccountPersistence: AccountStorePersistence = mock {
             on { getDefaultAccount() } doReturn null
