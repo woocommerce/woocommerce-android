@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +38,6 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
-import kotlin.test.assertEquals
 
 @Suppress("DoNotMockDataClass", "UnitTestNamingRule")
 class SiteStoreTest {
@@ -202,24 +199,6 @@ class SiteStoreTest {
         verifyNoInteractions(domainsDao)
         assertThat(onSiteDomainsFetched.error).isEqualTo(SiteError(GENERIC_ERROR, null))
         assertThat(onSiteDomainsFetched).isEqualTo(FetchedDomainsPayload(site, onSiteDomainsFetched.domains))
-    }
-
-    @Test
-    fun `getSiteDomains is backed by DomainsDao`() = test {
-        val siteLocalId = 1234
-        val domainEntity = DomainDao.DomainEntity(
-            siteLocalId = siteLocalId,
-            domain = "example.wordpress.com",
-            primaryDomain = true,
-            wpcomDomain = true
-        )
-
-        whenever(domainsDao.getDomains(siteLocalId)).thenReturn(flowOf(listOf(domainEntity)))
-
-        assertEquals(
-            domainsDao.getDomains(siteLocalId).first().map(DomainDao.DomainEntity::toDomainModel),
-            siteStore.getSiteDomains(siteLocalId).first()
-        )
     }
 
     @Test

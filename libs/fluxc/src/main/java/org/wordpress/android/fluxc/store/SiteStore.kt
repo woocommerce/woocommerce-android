@@ -2,8 +2,6 @@ package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
 import com.wellsql.generated.SiteModelTable
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.wordpress.android.fluxc.Dispatcher
@@ -26,7 +24,6 @@ import org.wordpress.android.fluxc.action.SiteAction.SUGGESTED_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.SUGGEST_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.UPDATE_SITE
 import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.model.DomainModel
 import org.wordpress.android.fluxc.model.PlanModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -393,13 +390,6 @@ open class SiteStore @Inject constructor(
     fun getSiteByLocalId(id: Int) = siteSqlUtils.getSitesWithLocalId(id).firstOrNull()
 
     /**
-     * Checks whether the store contains a site matching the given (local) id.
-     */
-    fun hasSiteWithLocalId(id: Int): Boolean {
-        return siteSqlUtils.getSitesWithLocalId(id).isNotEmpty()
-    }
-
-    /**
      * Returns sites accessed via WPCom REST API (WPCom sites or Jetpack sites connected via WPCom REST API).
      */
     val sitesAccessedViaWPComRest: List<SiteModel>
@@ -425,35 +415,6 @@ open class SiteStore @Inject constructor(
      */
     val sitesAccessedViaXMLRPC: List<SiteModel>
         get() = siteSqlUtils.sitesAccessedViaXMLRPC.asModel
-
-    /**
-     * Checks whether the .COM site with the given (local) id is visible.
-     */
-    fun isWPComSiteVisibleByLocalId(id: Int): Boolean {
-        return siteSqlUtils.isWPComSiteVisibleByLocalId(id)
-    }
-
-    /**
-     * Given a (remote) site id, returns the corresponding (local) id.
-     */
-    fun getLocalIdForRemoteSiteId(siteId: Long): Int {
-        return siteSqlUtils.getLocalIdForRemoteSiteId(siteId)
-    }
-
-    /**
-     * Given a (remote) self-hosted site id and XML-RPC url, returns the corresponding (local) id.
-     */
-    fun getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(selfHostedSiteId: Long, xmlRpcUrl: String?): Int {
-        return siteSqlUtils.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(selfHostedSiteId, xmlRpcUrl)
-    }
-
-    /**
-     * Given a (local) id, returns the (remote) site id. Searches first for .COM and Jetpack, then looks for self-hosted
-     * sites.
-     */
-    fun getSiteIdForLocalId(id: Int): Long {
-        return siteSqlUtils.getSiteIdForLocalId(id)
-    }
 
     /**
      * Given a .COM site ID (either a .COM site id, or the .COM id of a Jetpack site), returns the site as a
@@ -742,12 +703,6 @@ open class SiteStore @Inject constructor(
     private suspend fun insertDomainModels(siteModel: SiteModel, domains: List<Domain>) {
         val domainModels = domains.map { it.asDomainModel() }
         domainDao.insert(siteModel.id, domainModels)
-    }
-
-    fun getSiteDomains(siteLocalId: Int): Flow<List<DomainModel>> {
-        return domainDao.getDomains(siteLocalId).map { result ->
-            result.map { it.toDomainModel() }
-        }
     }
 
     suspend fun deleteApplicationPassword(site: SiteModel): OnApplicationPasswordDeleted =
