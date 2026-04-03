@@ -2381,6 +2381,10 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+
+    <string name="support_developer_section_title">DEVELOPER</string>
+    <string name="support_override_feature_flags">Override Feature Flags</string>
+    <string name="support_override_feature_flags_detail">Toggle feature flags before logging in</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
     <string name="support_system_status_report_fetch_error">Error fetching SSR. Please check WooCommerce -&gt; Status in wp-admin.</string>
     <string name="help">Help</string>
