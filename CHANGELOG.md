@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.5
+Creating orders for registered customers is now more reliable. We fixed an issue where billing details could appear in the shipping address, helping you send orders to the right destination.
+
 ## 24.4
 Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.
 

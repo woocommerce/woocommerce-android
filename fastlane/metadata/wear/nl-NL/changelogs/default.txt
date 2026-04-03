@@ -1,1 +1,0 @@
-Je winkeldashboard toont nu de netto-omzet in plaats van de totale omzet, zodat het beter overeenkomt met wp-admin en je een nauwkeuriger en consistenter beeld krijgt van de prestaties van je winkel, gewoon vanaf je pols.

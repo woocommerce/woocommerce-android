@@ -1,2 +1,0 @@
-24.4 :
-Gérez facilement les retours avec la nouvelle fonctionnalité Remboursements de WooCommerce POS. Le tableau de bord de votre boutique affiche désormais les ventes nettes pour refléter exactement wp-admin. Nous avons également corrigé le flux d’achat d’étiquettes Woo Shipping lorsque les informations relatives à l’adresse d’origine sont incomplètes.

@@ -1,1 +1,0 @@
-Le tableau de bord de votre boutique affiche désormais les ventes nettes au lieu des ventes totales, ce qui l’aligne sur wp-admin pour vous donner une vue plus précise et cohérente des performances de votre boutique, directement sur votre poignet.
