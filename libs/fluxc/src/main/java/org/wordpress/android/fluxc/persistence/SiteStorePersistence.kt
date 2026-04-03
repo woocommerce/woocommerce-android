@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.DB
 import org.wordpress.android.util.UrlUtils
@@ -28,6 +29,16 @@ class SiteStorePersistence @Inject constructor(
      * 4. Exists in the DB, originally a WP.com REST site, and matches by XMLRPC_URL -> THROW a DuplicateSiteException
      * 5. Exists in the DB, originally an XML-RPC site, and matches by XMLRPC_URL -> UPDATE
      * 6. Not matching any previous cases -> INSERT
+     *
+     * **Return value:** `1` on success (both insert and update), `0` if [site] is null or
+     * the WP.com account validation fails. The return value does not distinguish between
+     * insert and update — callers like [SiteStore.createOrUpdateSites] use it only as a
+     * success/failure indicator.
+     *
+     * **Side effect:** mutates [site]`.id` to the local ID assigned by the DB (on insert) or
+     * to the existing row's local ID (on update). This is required because callers such as
+     * [SiteStore.createOrUpdateSites] add the same [site] object to the `updatedSites` list
+     * after this call, and downstream consumers expect `site.id` to carry the correct local ID.
      */
     @Suppress("LongMethod", "ComplexMethod")
     @Throws(DuplicateSiteException::class)
