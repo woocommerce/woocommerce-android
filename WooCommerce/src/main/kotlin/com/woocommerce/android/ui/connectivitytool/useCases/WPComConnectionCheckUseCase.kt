@@ -1,16 +1,16 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.store.WhatsNewStore
 import javax.inject.Inject
 
-class WordPressConnectionCheckUseCase @Inject constructor(
+class WPComConnectionCheckUseCase @Inject constructor(
     private val whatsNewStore: WhatsNewStore,
     private val buildConfigWrapper: BuildConfigWrapper
 ) {

@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,8 +19,8 @@ import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewFetchError
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
-    private lateinit var sut: WordPressConnectionCheckUseCase
+class WPComConnectionCheckUseCaseTest : BaseUnitTest() {
+    private lateinit var sut: WPComConnectionCheckUseCase
     private lateinit var whatsNewStore: WhatsNewStore
     private lateinit var buildConfigWrapper: BuildConfigWrapper
 
@@ -28,11 +28,11 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
     fun setUp() {
         whatsNewStore = mock()
         buildConfigWrapper = mock()
-        sut = WordPressConnectionCheckUseCase(whatsNewStore, buildConfigWrapper)
+        sut = WPComConnectionCheckUseCase(whatsNewStore, buildConfigWrapper)
     }
 
     @Test
-    fun `when fetchRemoteAnnouncements returns an error then emit Failure`() = testBlocking {
+    fun `when fetchRemoteAnnouncements returns an error, then emit Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WhatsNewStore.OnWhatsNewFetched(
@@ -55,7 +55,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetchRemoteAnnouncements returns no error then emit Success`() = testBlocking {
+    fun `when fetchRemoteAnnouncements returns no error, then emit Success`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WhatsNewStore.OnWhatsNewFetched()

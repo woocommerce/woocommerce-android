@@ -2329,6 +2329,7 @@
     <string name="restart">Restart</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
+    <string name="settings_troubleshoot_connection">Troubleshoot Connection</string>
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>

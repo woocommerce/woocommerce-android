@@ -1,17 +1,19 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,32 +22,42 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderConnectivityToolViewModelTest : BaseUnitTest() {
-    private lateinit var sut: OrderConnectivityToolViewModel
+class ConnectivityToolViewModelTest : BaseUnitTest() {
+    private lateinit var sut: ConnectivityToolViewModel
     private lateinit var internetConnectionCheck: InternetConnectionCheckUseCase
-    private lateinit var wordPressConnectionCheck: WordPressConnectionCheckUseCase
+    private lateinit var wpComConnectionCheck: WPComConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
     private lateinit var storeOrdersCheck: StoreOrdersCheckUseCase
+    private lateinit var selectedSite: SelectedSite
 
     @Before
     fun setUp() {
         internetConnectionCheck = mock()
-        wordPressConnectionCheck = mock()
+        wpComConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
+        selectedSite = mock()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
-        sut = OrderConnectivityToolViewModel(
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
+        createViewModel()
+    }
+
+    private fun createViewModel() {
+        sut = ConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
-            wordPressConnectionCheck = wordPressConnectionCheck,
+            wpComConnectionCheck = wpComConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
             analyticsTrackerWrapper = mock(),
+            selectedSite = selectedSite,
             savedState = SavedStateHandle()
         )
     }
@@ -68,12 +80,12 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when wordPressConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
+    fun `when wpComConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState
-            .map { it.wordPressCheckData }
+            .map { it.wpComCheckData }
             .distinctUntilChanged()
             .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
@@ -154,7 +166,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<Boolean>()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
@@ -177,5 +189,62 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(events).isEqualTo(listOf(OpenSupportRequest))
+    }
+
+    @Test
+    fun `given app password site, when checks run, then WPCom check is skipped`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        verify(wpComConnectionCheck, never()).invoke()
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then isCheckFinished is true`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+        val stateEvents = mutableListOf<Boolean>()
+        sut.isCheckFinished.observeForever { stateEvents.add(it) }
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        assertThat(stateEvents.last()).isTrue()
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then shouldDisplaySummary is true`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+        var latestState: ConnectivityToolViewModel.ViewState? = null
+        sut.viewState.observeForever { latestState = it }
+
+        // WHEN
+        sut.startConnectionChecks()
+
+        // THEN
+        assertThat(latestState?.shouldDisplaySummary).isTrue()
+    }
+
+    @Test
+    fun `given app password site, when viewState is observed, then isWPComCheckVisible is false`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+
+        // WHEN
+        var latestState: ConnectivityToolViewModel.ViewState? = null
+        sut.viewState.observeForever { latestState = it }
+
+        // THEN
+        assertThat(latestState?.isWPComCheckVisible).isFalse()
     }
 }
