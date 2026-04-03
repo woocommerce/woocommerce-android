@@ -15,9 +15,7 @@ import javax.inject.Singleton
 class SiteStorePersistence @Inject constructor(
     private val accountStorePersistence: AccountStorePersistence,
 ) {
-    object DuplicateSiteException : Exception() {
-        private const val serialVersionUID = -224883903136726226L
-    }
+    class DuplicateSiteException : Exception()
 
     /**
      * Inserts the given SiteModel into the DB, or updates an existing entry where sites match.
@@ -125,7 +123,7 @@ class SiteStorePersistence @Inject constructor(
                     siteResult = emptyList()
                 } else if (siteResult[0].origin == SiteModel.ORIGIN_WPCOM_REST) {
                     AppLog.d(DB, "Site is a duplicate")
-                    throw DuplicateSiteException
+                    throw DuplicateSiteException()
                 }
             }
         }
@@ -148,7 +146,7 @@ class SiteStorePersistence @Inject constructor(
                                 "xmlrpc=${site.xmlRpcUrl}",
                         e
                 )
-                throw DuplicateSiteException
+                throw DuplicateSiteException()
             }
         }
     }
