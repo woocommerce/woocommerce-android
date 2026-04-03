@@ -20,6 +20,7 @@ interface MainSettingsContract {
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
         val isTroubleshootConnectionVisible: Boolean
+        val isPluginsSectionVisible: Boolean
         val wooPluginVersion: String
     }
 

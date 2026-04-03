@@ -95,7 +95,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 customerInfo,
                 customerName,
                 booking.customerNote,
-                booking.customerId
+                booking.userId
             ),
             attendanceSection = buildAttendanceSection(booking),
             paymentSection = buildPaymentSection(booking, paymentStatus),
@@ -193,9 +193,9 @@ class WooPosBookingViewStateMapper @Inject constructor(
         customerInfo: BookingCustomerInfo?,
         customerName: String?,
         customerNote: String?,
-        customerId: Long,
+        userId: Long,
     ): WooPosBookingsState.CustomerSection? {
-        val isGuest = customerId == 0L
+        val isGuest = userId == 0L
         val email = customerInfo?.billingEmail?.ifBlank { null }
         val phone = customerInfo?.billingPhone?.ifBlank { null }
         val billingAddress = buildBillingAddress(customerInfo)

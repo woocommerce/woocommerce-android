@@ -3,11 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -18,10 +14,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val networkStatus: WooPosNetworkStatus,
     private val localCatalogStore: WooPosLocalCatalogStore,
-    private val prefsRepo: WooPosPreferencesRepository,
-    private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
-    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val time: DateTimeProvider,
 ) {
@@ -33,18 +26,12 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.Error("No site selected")
         }
 
-        if (!isLocalCatalogSupported(site.localId())) {
+        if (!isLocalCatalogSupported()) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
 
         val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
-        val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
-
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
-            val catalogTooLarge = checkCatalogSizeIfNeeded(productCount, variationsCount, site)
-            if (catalogTooLarge != null) return catalogTooLarge
-        }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
         val catalogIsEmpty = productCount == 0
@@ -84,24 +71,6 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 WooPosFullSyncRequirement.NonBlockingRequired(lastFullSyncTimestamp, isFullSyncOverdue)
             }
         }
-    }
-
-    private suspend fun checkCatalogSizeIfNeeded(
-        productCount: Int,
-        variationsCount: Int,
-        site: SiteModel,
-    ): WooPosFullSyncRequirement.LocalCatalogDisabled? {
-        val itemsCount = productCount + variationsCount
-        if (productCount == 0 || itemsCount >= WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC) {
-            val size = checkCatalogSizeAction
-                .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
-
-            if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
-                prefsRepo.disablePeriodicSyncForSite(site.localId())
-                return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
-            }
-        }
-        return null
     }
 
     companion object {

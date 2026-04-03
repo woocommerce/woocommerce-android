@@ -25,6 +25,7 @@ data class BookingEntity(
     val cost: String,
     val currency: String,
     val customerId: Long,
+    @ColumnInfo(defaultValue = "0") val userId: Long = 0,
     val productId: Long,
     val resourceId: Long,
     val dateCreated: Instant,

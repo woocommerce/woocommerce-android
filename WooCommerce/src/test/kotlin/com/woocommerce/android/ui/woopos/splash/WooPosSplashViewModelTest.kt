@@ -49,7 +49,7 @@ class WooPosSplashViewModelTest {
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
         whenever(productsDataSource.getCurrentSyncStrategy())
-            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
         whenever(ordersDataSource.loadOrders()).thenReturn(emptyFlow())
     }
 

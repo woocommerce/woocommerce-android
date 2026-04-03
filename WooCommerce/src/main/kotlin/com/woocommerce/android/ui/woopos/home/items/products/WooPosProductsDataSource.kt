@@ -26,8 +26,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWith
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,11 +56,9 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     enum class SyncStrategy {
         REMOTE,
-        LOCAL_CATALOG,
         LOCAL_CATALOG_FILE,
     }
 
@@ -70,11 +66,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
-                SyncStrategy.LOCAL_CATALOG_FILE
-            } else {
-                SyncStrategy.LOCAL_CATALOG
-            }
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
