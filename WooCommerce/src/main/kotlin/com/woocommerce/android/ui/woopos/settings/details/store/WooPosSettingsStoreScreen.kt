@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,13 +10,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +25,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -206,20 +204,7 @@ private fun ReceiptInformationSection(
         Column(
             modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = onEditClicked) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_settings_receipt_edit_button),
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+            StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
@@ -254,6 +239,14 @@ private fun ReceiptInformationSection(
             WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_refund_policy_label),
                 subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButtonSmall(
+                text = stringResource(R.string.woopos_settings_receipt_edit_button),
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onEditClicked
             )
         }
     }
