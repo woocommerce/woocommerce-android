@@ -4,8 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
@@ -25,8 +24,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PlansResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteMapper
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
@@ -45,26 +45,30 @@ class SiteStoreTest {
     private val siteRestClient: SiteRestClient = mock()
     private val siteXMLRPCClient: SiteXMLRPCClient = mock()
     private val siteWPAPIClient: SiteWPAPIRestClient = mock()
-    private val siteSqlUtils: SiteSqlUtils = mock()
+    private val siteDao: SiteDao = mock()
+    private val siteStorePersistence: SiteStorePersistence = mock()
     private val domainsDao: DomainDao = mock()
     private val domainsSuccessResponse: Response.Success<DomainsResponse> = mock()
     private val plansSuccessResponse: Response.Success<PlansResponse> = mock()
     private val domainsErrorResponse: Response.Error<DomainsResponse> = mock()
     private val plansErrorResponse: Response.Error<PlansResponse> = mock()
+    private val siteMapper = SiteMapper()
     private lateinit var siteStore: SiteStore
-
-    private val siteStorePersistence: SiteStorePersistence = mock {
-        on { insertOrUpdateSite(any()) } doReturn 1
-    }
 
     @Before
     fun setUp() {
+        test {
+            whenever(siteStorePersistence.insertOrUpdateSite(any())).thenReturn(1)
+            whenever(siteDao.getByRemoteId(any())).thenReturn(emptyList())
+        }
+
         siteStore = SiteStore(
             dispatcher,
             siteRestClient,
             siteXMLRPCClient,
             siteWPAPIClient,
-            siteSqlUtils,
+            siteDao,
+            siteMapper,
             siteStorePersistence,
             domainsDao,
             initCoroutineEngine()
@@ -120,42 +124,46 @@ class SiteStoreTest {
 
         assertThat(onSiteChanged.rowsAffected).isEqualTo(0)
         assertThat(onSiteChanged.error).isEqualTo(SiteError(GENERIC_ERROR, null))
-        verifyNoInteractions(siteSqlUtils)
+        verifyNoInteractions(siteDao)
     }
 
     private suspend fun assertSiteFetched(
         updatedSite: SiteModel,
         site: SiteModel
     ) {
-        val rowsChanged = 1
-        whenever(siteStorePersistence.insertOrUpdateSite(updatedSite)).thenReturn(rowsChanged)
+        updatedSite.url = "https://test.wordpress.com"
+        updatedSite.xmlRpcUrl = "https://test.wordpress.com/xmlrpc.php"
 
         val onSiteChanged = siteStore.fetchSite(site)
 
-        assertThat(onSiteChanged.rowsAffected).isEqualTo(rowsChanged)
+        assertThat(onSiteChanged.rowsAffected).isEqualTo(1)
         assertThat(onSiteChanged.error).isNull()
-        verify(siteStorePersistence).insertOrUpdateSite(updatedSite)
+        verify(siteStorePersistence).insertOrUpdateSite(any())
     }
 
     @Test
     fun `fetchSites saves fetched sites to DB and removes absent sites`() = test {
         val payload = FetchSitesPayload(listOf(WPCOM))
         val sitesModel = SitesModel()
-        val siteA = SiteModel().apply { url = "siteA.com" }
-        val siteB = SiteModel().apply { url = "siteB.com" }
+        val siteA = SiteModel().apply {
+            url = "siteA.com"
+            xmlRpcUrl = "siteA.com/xmlrpc.php"
+        }
+        val siteB = SiteModel().apply {
+            url = "siteB.com"
+            xmlRpcUrl = "siteB.com/xmlrpc.php"
+        }
         sitesModel.sites = listOf(siteA, siteB)
         whenever(siteRestClient.fetchSites(payload.filters, false)).thenReturn(sitesModel)
-        whenever(siteStorePersistence.insertOrUpdateSite(siteA)).thenReturn(1)
-        whenever(siteStorePersistence.insertOrUpdateSite(siteB)).thenReturn(1)
 
         val onSiteChanged = siteStore.fetchSites(payload)
 
         assertThat(onSiteChanged.rowsAffected).isEqualTo(2)
         assertThat(onSiteChanged.error).isNull()
-        val inOrder = inOrder(siteStorePersistence, siteSqlUtils)
-        inOrder.verify(siteStorePersistence).insertOrUpdateSite(siteA)
-        inOrder.verify(siteStorePersistence).insertOrUpdateSite(siteB)
-        inOrder.verify(siteSqlUtils).removeWPComRestSitesAbsentFromList(sitesModel.sites)
+        verify(siteDao).deleteByOriginNotInList(
+            eq(SiteModel.ORIGIN_WPCOM_REST),
+            eq(listOf(siteA.siteId, siteB.siteId))
+        )
     }
 
     @Test
@@ -169,7 +177,7 @@ class SiteStoreTest {
 
         assertThat(onSiteChanged.rowsAffected).isEqualTo(0)
         assertThat(onSiteChanged.error).isEqualTo(SiteError(GENERIC_ERROR, null))
-        verifyNoInteractions(siteSqlUtils)
+        verifyNoInteractions(siteDao)
     }
 
     @Test

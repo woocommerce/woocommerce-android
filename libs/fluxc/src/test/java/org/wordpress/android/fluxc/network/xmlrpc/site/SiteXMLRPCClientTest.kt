@@ -1,10 +1,8 @@
 package org.wordpress.android.fluxc.network.xmlrpc.site
 
-import androidx.test.core.app.ApplicationProvider
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert
 import org.junit.Before
@@ -23,7 +21,6 @@ import org.wordpress.android.fluxc.network.HTTPAuthManager
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
@@ -73,9 +70,6 @@ class SiteXMLRPCClientTest {
                 mDispatcher, mMockedQueue, Mockito.mock(UserAgent::class.java),
                 Mockito.mock(HTTPAuthManager::class.java), XMLRPCRequestBuilder()
         )
-        val config = WellSqlConfig(ApplicationProvider.getApplicationContext())
-        WellSql.init(config)
-        config.reset()
     }
 
     @Test @Throws(Exception::class) fun testFetchSite() = test {

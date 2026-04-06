@@ -30,17 +30,19 @@ import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AccountDao
 import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.persistence.dao.NotificationDao
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 import org.wordpress.android.fluxc.persistence.entity.AccountEntity
 import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
+import org.wordpress.android.fluxc.persistence.entity.SiteEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 37,
+        version = 38,
         entities = [
             AccountEntity::class,
             FeatureFlag::class,
@@ -57,6 +59,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             ListModel::class,
             ListItemModel::class,
             NotificationEntity::class,
+            SiteEntity::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -78,6 +81,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             AutoMigration(from = 34, to = 35),
             AutoMigration(from = 35, to = 36),
             AutoMigration(from = 36, to = 37),
+            AutoMigration(from = 37, to = 38),
         ]
 )
 @TypeConverters(
@@ -110,6 +114,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     internal abstract fun notificationDao(): NotificationDao
 
     abstract fun sitePluginDao(): SitePluginDao
+
+    abstract fun siteDao(): SiteDao
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {

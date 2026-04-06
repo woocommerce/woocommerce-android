@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.wc.shippinglabels
 
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -16,7 +15,6 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult
@@ -39,7 +37,6 @@ import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
-import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -180,13 +177,6 @@ class WCShippingLabelStoreTest {
 
     @Before
     fun setUp() {
-        val config = SingleStoreWellSqlConfigForTests(
-            ApplicationProvider.getApplicationContext(),
-            SiteModel::class.java
-        )
-        WellSql.init(config)
-        config.reset()
-
         store = WCShippingLabelStore(
             restClient,
             initCoroutineEngine(),
@@ -194,9 +184,6 @@ class WCShippingLabelStoreTest {
             databaseRule.db.shippingLabelDao,
             databaseRule.db.shippingLabelCreationEligibilityDao
         )
-
-        // Insert the site into the db so it's available later when testing shipping labels
-        TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
     }
 
     @Test

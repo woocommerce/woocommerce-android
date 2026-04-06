@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -11,7 +10,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -22,7 +20,6 @@ import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.utils.CountryTestUtils
-import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 
 @Suppress("UnitTestNamingRule")
 @Config(manifest = Config.NONE)
@@ -42,18 +39,9 @@ class WCDataStoreTest {
 
     @Before
     fun setUp() {
-        val config = SingleStoreWellSqlConfigForTests(
-            ApplicationProvider.getApplicationContext(),
-            SiteModel::class.java
-        )
-        WellSql.init(config)
-        config.reset()
-
         locationsDao = databaseRule.db.locationsDao
 
         store = WCDataStore(restClient, initCoroutineEngine(), locationsDao)
-
-        TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
     }
 
     @Test

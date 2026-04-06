@@ -1,9 +1,8 @@
 package org.wordpress.android.fluxc.persistence
 
 import android.database.sqlite.SQLiteConstraintException
-import com.wellsql.generated.SiteModelTable
-import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
@@ -12,6 +11,8 @@ import javax.inject.Singleton
 
 @Singleton
 class SiteStorePersistence @Inject constructor(
+    private val siteDao: SiteDao,
+    private val siteMapper: SiteMapper,
     private val accountStorePersistence: AccountStorePersistence,
 ) {
     class DuplicateSiteException : Exception()
@@ -39,7 +40,7 @@ class SiteStorePersistence @Inject constructor(
      */
     @Suppress("LongMethod", "ComplexMethod", "ReturnCount")
     @Throws(DuplicateSiteException::class)
-    fun insertOrUpdateSite(site: SiteModel): Int {
+    suspend fun insertOrUpdateSite(site: SiteModel): Int {
         // If we're inserting or updating a WP.com REST API site, validate that we actually have a WordPress.com
         // account present
         // This prevents a late UPDATE_SITES action from re-populating the database after sign out from WordPress.com
@@ -52,32 +53,24 @@ class SiteStorePersistence @Inject constructor(
         }
 
         // If the site already exist and has an id, we want to update it.
-        var siteResult = WellSql.select(SiteModel::class.java)
-                .where().beginGroup()
-                .equals(SiteModelTable.ID, site.id)
-                .endGroup().endWhere().asModel
-        if (!siteResult.isEmpty()) {
+        var existingSite = if (site.id > 0) siteDao.getByLocalId(site.id) else null
+        if (existingSite != null) {
             AppLog.d(AppLog.T.DB, "Site found by (local) ID: " + site.id)
         }
 
         // Looks like a new site, make sure we don't already have it.
-        if (siteResult.isEmpty()) {
+        if (existingSite == null) {
             if (site.siteId > 0) {
                 // For WordPress.com and Jetpack sites, the WP.com ID is a unique enough identifier
-                siteResult = WellSql.select(SiteModel::class.java)
-                        .where().beginGroup()
-                        .equals(SiteModelTable.SITE_ID, site.siteId)
-                        .endGroup().endWhere().asModel
-                if (!siteResult.isEmpty()) {
+                val siteResult = siteDao.getByRemoteId(site.siteId).firstOrNull()
+                if (siteResult != null) {
+                    existingSite = siteResult
                     AppLog.d(AppLog.T.DB, "Site found by SITE_ID: " + site.siteId)
                 }
             } else {
-                siteResult = WellSql.select(SiteModel::class.java)
-                        .where().beginGroup()
-                        .equals(SiteModelTable.SITE_ID, site.siteId)
-                        .equals(SiteModelTable.URL, site.url)
-                        .endGroup().endWhere().asModel
-                if (!siteResult.isEmpty()) {
+                val siteResult = siteDao.getBySiteIdAndUrl(site.siteId, site.url).firstOrNull()
+                if (siteResult != null) {
+                    existingSite = siteResult
                     AppLog.d(AppLog.T.DB, "Site found by SITE_ID: " + site.siteId + " and URL: " + site.url)
                 }
             }
@@ -85,18 +78,11 @@ class SiteStorePersistence @Inject constructor(
 
         // If the site is a self hosted, maybe it's already in the DB as a Jetpack site, and we don't want to create
         // a duplicate.
-        if (siteResult.isEmpty()) {
+        if (existingSite == null) {
             val forcedHttpXmlRpcUrl = "http://" + UrlUtils.removeScheme(site.xmlRpcUrl)
             val forcedHttpsXmlRpcUrl = "https://" + UrlUtils.removeScheme(site.xmlRpcUrl)
-            siteResult = WellSql.select(SiteModel::class.java)
-                    .where()
-                    .beginGroup()
-                    .equals(SiteModelTable.XMLRPC_URL, forcedHttpXmlRpcUrl)
-                    .or().equals(SiteModelTable.XMLRPC_URL, forcedHttpsXmlRpcUrl)
-                    .endGroup()
-                    .endWhere()
-                    .asModel
-            if (siteResult.isNotEmpty()) {
+            val siteResult = siteDao.getByXmlRpcUrl(forcedHttpXmlRpcUrl, forcedHttpsXmlRpcUrl).firstOrNull()
+            if (siteResult != null) {
                 AppLog.d(AppLog.T.DB, "Site found using XML-RPC url: " + site.xmlRpcUrl)
                 // Four possibilities here:
                 // 1. DB site is WP.com, new site is WP.com with different siteIds:
@@ -110,30 +96,34 @@ class SiteStorePersistence @Inject constructor(
                 // 4. DB site is XML-RPC, new site is XML-RPC:
                 // An existing self-hosted site was logged-into again, and we couldn't identify it by URL or
                 // by WP.com site ID + URL --> proceed
-                if (siteResult[0].origin == SiteModel.ORIGIN_WPCOM_REST && site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+                if (siteResult.origin == SiteModel.ORIGIN_WPCOM_REST && site.origin == SiteModel.ORIGIN_WPCOM_REST) {
                     AppLog.d(
                         AppLog.T.DB,
                         "Duplicate WPCom sites with same URLs, it could be an Identity Crisis, insert both sites"
                     )
-                    siteResult = emptyList()
-                } else if (siteResult[0].origin == SiteModel.ORIGIN_WPCOM_REST) {
+                } else if (siteResult.origin == SiteModel.ORIGIN_WPCOM_REST) {
                     AppLog.d(AppLog.T.DB, "Site is a duplicate")
                     throw DuplicateSiteException()
+                } else {
+                    existingSite = siteResult
                 }
             }
         }
-        return if (siteResult.isEmpty()) {
+        return if (existingSite == null) {
             // No site with this local ID, REMOTE_ID + URL, or XMLRPC URL, then insert it
             AppLog.d(AppLog.T.DB, "Inserting site: " + site.url)
-            WellSql.insert(site).asSingleTransaction(true).execute()
+            val entity = siteMapper.toEntity(site)
+            val newId = siteDao.insert(entity)
+            site.id = newId.toInt()
             1
         } else {
             // Update old site
             AppLog.d(AppLog.T.DB, "Updating site: " + site.url)
-            val oldId = siteResult[0].id
+            val entity = siteMapper.toEntity(site).copy(id = existingSite.id)
             try {
-                WellSql.update(SiteModel::class.java).whereId(oldId)
-                        .put(site, UpdateAllExceptId(SiteModel::class.java)).execute()
+                siteDao.update(entity)
+                site.id = existingSite.id
+                1
             } catch (e: SQLiteConstraintException) {
                 AppLog.e(
                     AppLog.T.DB,

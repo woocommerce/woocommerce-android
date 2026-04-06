@@ -9,7 +9,7 @@ interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
         fun storeMagicLinkToken(token: String)
-        fun hasMultipleStores(): Boolean
+        suspend fun hasMultipleStores(): Boolean
         fun selectedSiteChanged(site: SiteModel)
         fun fetchSitesAfterDowngrade()
         fun isUserEligible(): Boolean

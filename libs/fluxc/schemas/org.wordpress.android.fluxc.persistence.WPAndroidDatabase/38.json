@@ -1,0 +1,1464 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 38,
+    "identityHash": "11f59d0ab8a096b63836f25b0a8f506d",
+    "entities": [
+      {
+        "tableName": "AccountEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userName` TEXT NOT NULL, `userId` INTEGER NOT NULL, `displayName` TEXT NOT NULL, `profileUrl` TEXT NOT NULL, `avatarUrl` TEXT NOT NULL, `primarySiteId` INTEGER NOT NULL, `emailVerified` INTEGER NOT NULL, `siteCount` INTEGER NOT NULL, `visibleSiteCount` INTEGER NOT NULL, `email` TEXT NOT NULL, `hasUnseenNotes` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `aboutMe` TEXT NOT NULL, `date` TEXT NOT NULL, `newEmail` TEXT NOT NULL, `pendingEmailChange` INTEGER NOT NULL, `twoStepEnabled` INTEGER NOT NULL, `webAddress` TEXT NOT NULL, `tracksOptOut` INTEGER NOT NULL, `usernameCanBeChanged` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userName",
+            "columnName": "userName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileUrl",
+            "columnName": "profileUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatarUrl",
+            "columnName": "avatarUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primarySiteId",
+            "columnName": "primarySiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "emailVerified",
+            "columnName": "emailVerified",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "siteCount",
+            "columnName": "siteCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visibleSiteCount",
+            "columnName": "visibleSiteCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasUnseenNotes",
+            "columnName": "hasUnseenNotes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "firstName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "lastName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aboutMe",
+            "columnName": "aboutMe",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newEmail",
+            "columnName": "newEmail",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pendingEmailChange",
+            "columnName": "pendingEmailChange",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "twoStepEnabled",
+            "columnName": "twoStepEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "webAddress",
+            "columnName": "webAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tracksOptOut",
+            "columnName": "tracksOptOut",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usernameCanBeChanged",
+            "columnName": "usernameCanBeChanged",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "FeatureFlagConfigurations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`key` TEXT NOT NULL, `value` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `modified_at` INTEGER NOT NULL, `source` TEXT NOT NULL, PRIMARY KEY(`key`))",
+        "fields": [
+          {
+            "fieldPath": "key",
+            "columnName": "key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modifiedAt",
+            "columnName": "modified_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "key"
+          ]
+        }
+      },
+      {
+        "tableName": "Domains",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteLocalId` INTEGER NOT NULL, `domain` TEXT NOT NULL, `primaryDomain` INTEGER NOT NULL, `wpcomDomain` INTEGER NOT NULL, PRIMARY KEY(`domain`))",
+        "fields": [
+          {
+            "fieldPath": "siteLocalId",
+            "columnName": "siteLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "domain",
+            "columnName": "domain",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primaryDomain",
+            "columnName": "primaryDomain",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wpcomDomain",
+            "columnName": "wpcomDomain",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "domain"
+          ]
+        }
+      },
+      {
+        "tableName": "BlazeCampaigns",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `campaignId` TEXT NOT NULL, `title` TEXT NOT NULL, `imageUrl` TEXT, `startTime` TEXT NOT NULL, `durationInDays` INTEGER NOT NULL, `uiStatus` TEXT NOT NULL, `impressions` INTEGER NOT NULL, `clicks` INTEGER NOT NULL, `targetUrn` TEXT, `totalBudget` REAL NOT NULL, `spentBudget` REAL NOT NULL, `isEndlessCampaign` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`siteId`, `campaignId`))",
+        "fields": [
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "campaignId",
+            "columnName": "campaignId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationInDays",
+            "columnName": "durationInDays",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uiStatus",
+            "columnName": "uiStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "impressions",
+            "columnName": "impressions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clicks",
+            "columnName": "clicks",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetUrn",
+            "columnName": "targetUrn",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "totalBudget",
+            "columnName": "totalBudget",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spentBudget",
+            "columnName": "spentBudget",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEndlessCampaign",
+            "columnName": "isEndlessCampaign",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "siteId",
+            "campaignId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_BlazeCampaigns_siteId",
+            "unique": false,
+            "columnNames": [
+              "siteId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_BlazeCampaigns_siteId` ON `${TABLE_NAME}` (`siteId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "BlazeCampaignObjectives",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `suitableForDescription` TEXT NOT NULL, `locale` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suitableForDescription",
+            "columnName": "suitableForDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locale",
+            "columnName": "locale",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "BlazeTargetingLanguages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `locale` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locale",
+            "columnName": "locale",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "BlazeTargetingDevices",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `locale` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locale",
+            "columnName": "locale",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "BlazeTargetingTopics",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `description` TEXT NOT NULL, `locale` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locale",
+            "columnName": "locale",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "ThemeEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `themeId` TEXT NOT NULL, `name` TEXT NOT NULL, `demoUrl` TEXT, `active` INTEGER NOT NULL, `isWpComTheme` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `themeId`, `isWpComTheme`))",
+        "fields": [
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "themeId",
+            "columnName": "themeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "demoUrl",
+            "columnName": "demoUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWpComTheme",
+            "columnName": "isWpComTheme",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "siteId",
+            "themeId",
+            "isWpComTheme"
+          ]
+        }
+      },
+      {
+        "tableName": "WhatsNewAnnouncementEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `minimumAppVersion` TEXT NOT NULL, `maximumAppVersion` TEXT NOT NULL, `appVersionTargets` TEXT NOT NULL, `detailsUrl` TEXT NOT NULL DEFAULT '', `localized` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
+        "fields": [
+          {
+            "fieldPath": "announcementId",
+            "columnName": "announcementId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minimumAppVersion",
+            "columnName": "minimumAppVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maximumAppVersion",
+            "columnName": "maximumAppVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVersionTargets",
+            "columnName": "appVersionTargets",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detailsUrl",
+            "columnName": "detailsUrl",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "localized",
+            "columnName": "localized",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "announcementId"
+          ]
+        }
+      },
+      {
+        "tableName": "WhatsNewAnnouncementFeatureEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT, `iconUrl` TEXT, `iconBase64` TEXT, PRIMARY KEY(`announcementId`, `title`), FOREIGN KEY(`announcementId`) REFERENCES `WhatsNewAnnouncementEntity`(`announcementId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "announcementId",
+            "columnName": "announcementId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtitle",
+            "columnName": "subtitle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "iconUrl",
+            "columnName": "iconUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "iconBase64",
+            "columnName": "iconBase64",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "announcementId",
+            "title"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "WhatsNewAnnouncementEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "announcementId"
+            ],
+            "referencedColumns": [
+              "announcementId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SitePluginEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `slug` TEXT NOT NULL, `authorName` TEXT NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `name`, `slug`))",
+        "fields": [
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "slug",
+            "columnName": "slug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "authorName",
+            "columnName": "authorName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "siteId",
+            "name",
+            "slug"
+          ]
+        }
+      },
+      {
+        "tableName": "ListEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastModified` TEXT, `descriptorUniqueIdentifierDbValue` INTEGER NOT NULL, `descriptorTypeIdentifierDbValue` INTEGER NOT NULL, `stateDbValue` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastModified",
+            "columnName": "lastModified",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "descriptorUniqueIdentifierDbValue",
+            "columnName": "descriptorUniqueIdentifierDbValue",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descriptorTypeIdentifierDbValue",
+            "columnName": "descriptorTypeIdentifierDbValue",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stateDbValue",
+            "columnName": "stateDbValue",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue",
+            "unique": true,
+            "columnNames": [
+              "descriptorUniqueIdentifierDbValue",
+              "descriptorTypeIdentifierDbValue"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue` ON `${TABLE_NAME}` (`descriptorUniqueIdentifierDbValue`, `descriptorTypeIdentifierDbValue`)"
+          }
+        ]
+      },
+      {
+        "tableName": "ListItemEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`listId` INTEGER NOT NULL, `remoteItemId` INTEGER NOT NULL, PRIMARY KEY(`listId`, `remoteItemId`), FOREIGN KEY(`listId`) REFERENCES `ListEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "listId",
+            "columnName": "listId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteItemId",
+            "columnName": "remoteItemId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "listId",
+            "remoteItemId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "ListEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "listId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "NotificationEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`remoteSiteId` INTEGER NOT NULL, `remoteNoteId` INTEGER NOT NULL, `noteHash` INTEGER NOT NULL, `type` TEXT NOT NULL, `subtype` TEXT, `read` INTEGER NOT NULL, `icon` TEXT, `noticon` TEXT, `timestamp` TEXT, `url` TEXT, `title` TEXT, `formattableBody` TEXT, `formattableSubject` TEXT, `formattableMeta` TEXT, PRIMARY KEY(`remoteSiteId`, `remoteNoteId`))",
+        "fields": [
+          {
+            "fieldPath": "remoteSiteId",
+            "columnName": "remoteSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteNoteId",
+            "columnName": "remoteNoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noteHash",
+            "columnName": "noteHash",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtype",
+            "columnName": "subtype",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "read",
+            "columnName": "read",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "noticon",
+            "columnName": "noticon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableBody",
+            "columnName": "formattableBody",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableSubject",
+            "columnName": "formattableSubject",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableMeta",
+            "columnName": "formattableMeta",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "remoteSiteId",
+            "remoteNoteId"
+          ]
+        }
+      },
+      {
+        "tableName": "SiteEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `siteId` INTEGER NOT NULL, `url` TEXT NOT NULL, `adminUrl` TEXT NOT NULL, `loginUrl` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isWPCom` INTEGER NOT NULL, `isWPComAtomic` INTEGER NOT NULL, `publishedStatus` INTEGER NOT NULL, `isFeaturedImageSupported` INTEGER NOT NULL, `isWpForTeamsSite` INTEGER NOT NULL, `defaultCommentStatus` TEXT NOT NULL, `timezone` TEXT NOT NULL, `frameNonce` TEXT NOT NULL, `maxUploadSize` INTEGER NOT NULL, `memoryLimit` INTEGER NOT NULL, `origin` INTEGER NOT NULL, `organizationId` INTEGER NOT NULL, `showOnFront` TEXT NOT NULL, `pageOnFront` INTEGER NOT NULL, `pageForPosts` INTEGER NOT NULL, `selfHostedSiteId` INTEGER NOT NULL, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `xmlRpcUrl` TEXT NOT NULL, `wpApiRestUrl` TEXT NOT NULL, `softwareVersion` TEXT NOT NULL, `isSelfHostedAdmin` INTEGER NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT NOT NULL, `isJetpackInstalled` INTEGER NOT NULL, `isJetpackConnected` INTEGER NOT NULL, `isJetpackCPConnected` INTEGER NOT NULL, `jetpackVersion` TEXT NOT NULL, `jetpackUserEmail` TEXT NOT NULL, `isAutomatedTransfer` INTEGER NOT NULL, `isWpComStore` INTEGER NOT NULL, `hasWooCommerce` INTEGER NOT NULL, `isVisible` INTEGER NOT NULL, `isPrivate` INTEGER NOT NULL, `isComingSoon` INTEGER NOT NULL, `isVideoPressSupported` INTEGER NOT NULL, `planId` INTEGER NOT NULL, `planShortName` TEXT NOT NULL, `planProductSlug` TEXT NOT NULL, `iconUrl` TEXT NOT NULL, `hasFreePlan` INTEGER NOT NULL, `unmappedUrl` TEXT NOT NULL, `webEditor` TEXT NOT NULL, `mobileEditor` TEXT NOT NULL, `hasCapabilityEditPages` INTEGER NOT NULL, `hasCapabilityEditPosts` INTEGER NOT NULL, `hasCapabilityEditOthersPosts` INTEGER NOT NULL, `hasCapabilityEditOthersPages` INTEGER NOT NULL, `hasCapabilityDeletePosts` INTEGER NOT NULL, `hasCapabilityDeleteOthersPosts` INTEGER NOT NULL, `hasCapabilityEditThemeOptions` INTEGER NOT NULL, `hasCapabilityEditUsers` INTEGER NOT NULL, `hasCapabilityListUsers` INTEGER NOT NULL, `hasCapabilityManageCategories` INTEGER NOT NULL, `hasCapabilityManageOptions` INTEGER NOT NULL, `hasCapabilityActivateWordads` INTEGER NOT NULL, `hasCapabilityPromoteUsers` INTEGER NOT NULL, `hasCapabilityPublishPosts` INTEGER NOT NULL, `hasCapabilityUploadFiles` INTEGER NOT NULL, `hasCapabilityDeleteUser` INTEGER NOT NULL, `hasCapabilityRemoveUsers` INTEGER NOT NULL, `hasCapabilityViewStats` INTEGER NOT NULL, `spaceAvailable` INTEGER NOT NULL, `spaceAllowed` INTEGER NOT NULL, `spaceUsed` INTEGER NOT NULL, `spacePercentUsed` REAL NOT NULL, `activeModules` TEXT NOT NULL, `isPublicizePermanentlyDisabled` INTEGER NOT NULL, `activeJetpackConnectionPlugins` TEXT NOT NULL, `jetpackModules` TEXT NOT NULL, `zendeskPlan` TEXT NOT NULL, `zendeskAddOns` TEXT NOT NULL, `isBloggingPromptsOptedIn` INTEGER NOT NULL, `isBloggingPromptsCardOptedIn` INTEGER NOT NULL, `isPotentialBloggingSite` INTEGER NOT NULL, `isBloggingReminderOnMonday` INTEGER NOT NULL, `isBloggingReminderOnTuesday` INTEGER NOT NULL, `isBloggingReminderOnWednesday` INTEGER NOT NULL, `isBloggingReminderOnThursday` INTEGER NOT NULL, `isBloggingReminderOnFriday` INTEGER NOT NULL, `isBloggingReminderOnSaturday` INTEGER NOT NULL, `isBloggingReminderOnSunday` INTEGER NOT NULL, `bloggingReminderHour` INTEGER NOT NULL, `bloggingReminderMinute` INTEGER NOT NULL, `applicationPasswordsAuthorizeUrl` TEXT NOT NULL, `canBlaze` INTEGER NOT NULL, `planActiveFeatures` TEXT NOT NULL, `wasEcommerceTrial` INTEGER, `isSingleUserSite` INTEGER, `isGardenSite` INTEGER NOT NULL, `gardenName` TEXT NOT NULL, `gardenPartner` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "adminUrl",
+            "columnName": "adminUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "loginUrl",
+            "columnName": "loginUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWPCom",
+            "columnName": "isWPCom",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWPComAtomic",
+            "columnName": "isWPComAtomic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publishedStatus",
+            "columnName": "publishedStatus",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFeaturedImageSupported",
+            "columnName": "isFeaturedImageSupported",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWpForTeamsSite",
+            "columnName": "isWpForTeamsSite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultCommentStatus",
+            "columnName": "defaultCommentStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timezone",
+            "columnName": "timezone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "frameNonce",
+            "columnName": "frameNonce",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxUploadSize",
+            "columnName": "maxUploadSize",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memoryLimit",
+            "columnName": "memoryLimit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "organizationId",
+            "columnName": "organizationId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showOnFront",
+            "columnName": "showOnFront",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pageOnFront",
+            "columnName": "pageOnFront",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pageForPosts",
+            "columnName": "pageForPosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selfHostedSiteId",
+            "columnName": "selfHostedSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "xmlRpcUrl",
+            "columnName": "xmlRpcUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wpApiRestUrl",
+            "columnName": "wpApiRestUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "softwareVersion",
+            "columnName": "softwareVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSelfHostedAdmin",
+            "columnName": "isSelfHostedAdmin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isJetpackInstalled",
+            "columnName": "isJetpackInstalled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isJetpackConnected",
+            "columnName": "isJetpackConnected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isJetpackCPConnected",
+            "columnName": "isJetpackCPConnected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jetpackVersion",
+            "columnName": "jetpackVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jetpackUserEmail",
+            "columnName": "jetpackUserEmail",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAutomatedTransfer",
+            "columnName": "isAutomatedTransfer",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWpComStore",
+            "columnName": "isWpComStore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasWooCommerce",
+            "columnName": "hasWooCommerce",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVisible",
+            "columnName": "isVisible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPrivate",
+            "columnName": "isPrivate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isComingSoon",
+            "columnName": "isComingSoon",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVideoPressSupported",
+            "columnName": "isVideoPressSupported",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "planId",
+            "columnName": "planId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "planShortName",
+            "columnName": "planShortName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "planProductSlug",
+            "columnName": "planProductSlug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iconUrl",
+            "columnName": "iconUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasFreePlan",
+            "columnName": "hasFreePlan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unmappedUrl",
+            "columnName": "unmappedUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "webEditor",
+            "columnName": "webEditor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mobileEditor",
+            "columnName": "mobileEditor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditPages",
+            "columnName": "hasCapabilityEditPages",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditPosts",
+            "columnName": "hasCapabilityEditPosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditOthersPosts",
+            "columnName": "hasCapabilityEditOthersPosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditOthersPages",
+            "columnName": "hasCapabilityEditOthersPages",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityDeletePosts",
+            "columnName": "hasCapabilityDeletePosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityDeleteOthersPosts",
+            "columnName": "hasCapabilityDeleteOthersPosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditThemeOptions",
+            "columnName": "hasCapabilityEditThemeOptions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityEditUsers",
+            "columnName": "hasCapabilityEditUsers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityListUsers",
+            "columnName": "hasCapabilityListUsers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityManageCategories",
+            "columnName": "hasCapabilityManageCategories",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityManageOptions",
+            "columnName": "hasCapabilityManageOptions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityActivateWordads",
+            "columnName": "hasCapabilityActivateWordads",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityPromoteUsers",
+            "columnName": "hasCapabilityPromoteUsers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityPublishPosts",
+            "columnName": "hasCapabilityPublishPosts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityUploadFiles",
+            "columnName": "hasCapabilityUploadFiles",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityDeleteUser",
+            "columnName": "hasCapabilityDeleteUser",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityRemoveUsers",
+            "columnName": "hasCapabilityRemoveUsers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCapabilityViewStats",
+            "columnName": "hasCapabilityViewStats",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spaceAvailable",
+            "columnName": "spaceAvailable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spaceAllowed",
+            "columnName": "spaceAllowed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spaceUsed",
+            "columnName": "spaceUsed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spacePercentUsed",
+            "columnName": "spacePercentUsed",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activeModules",
+            "columnName": "activeModules",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPublicizePermanentlyDisabled",
+            "columnName": "isPublicizePermanentlyDisabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activeJetpackConnectionPlugins",
+            "columnName": "activeJetpackConnectionPlugins",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jetpackModules",
+            "columnName": "jetpackModules",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zendeskPlan",
+            "columnName": "zendeskPlan",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zendeskAddOns",
+            "columnName": "zendeskAddOns",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingPromptsOptedIn",
+            "columnName": "isBloggingPromptsOptedIn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingPromptsCardOptedIn",
+            "columnName": "isBloggingPromptsCardOptedIn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPotentialBloggingSite",
+            "columnName": "isPotentialBloggingSite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnMonday",
+            "columnName": "isBloggingReminderOnMonday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnTuesday",
+            "columnName": "isBloggingReminderOnTuesday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnWednesday",
+            "columnName": "isBloggingReminderOnWednesday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnThursday",
+            "columnName": "isBloggingReminderOnThursday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnFriday",
+            "columnName": "isBloggingReminderOnFriday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnSaturday",
+            "columnName": "isBloggingReminderOnSaturday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBloggingReminderOnSunday",
+            "columnName": "isBloggingReminderOnSunday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bloggingReminderHour",
+            "columnName": "bloggingReminderHour",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bloggingReminderMinute",
+            "columnName": "bloggingReminderMinute",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "applicationPasswordsAuthorizeUrl",
+            "columnName": "applicationPasswordsAuthorizeUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "canBlaze",
+            "columnName": "canBlaze",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "planActiveFeatures",
+            "columnName": "planActiveFeatures",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wasEcommerceTrial",
+            "columnName": "wasEcommerceTrial",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isSingleUserSite",
+            "columnName": "isSingleUserSite",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isGardenSite",
+            "columnName": "isGardenSite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gardenName",
+            "columnName": "gardenName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gardenPartner",
+            "columnName": "gardenPartner",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SiteEntity_siteId_url",
+            "unique": true,
+            "columnNames": [
+              "siteId",
+              "url"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SiteEntity_siteId_url` ON `${TABLE_NAME}` (`siteId`, `url`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11f59d0ab8a096b63836f25b0a8f506d')"
+    ]
+  }
+}

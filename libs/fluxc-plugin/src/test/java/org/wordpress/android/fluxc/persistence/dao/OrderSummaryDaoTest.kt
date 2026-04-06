@@ -14,7 +14,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.utils.FakeOrderSummaryGenerator.asOrderSummaries
 
 @RunWith(RobolectricTestRunner::class)
@@ -22,6 +22,10 @@ class OrderSummaryDaoTest {
     @Rule
     @JvmField
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: OrderSummaryDao
 
@@ -66,7 +70,7 @@ class OrderSummaryDaoTest {
         val orderSummaries = (1..3).asOrderSummaries(site.localId())
         sut.upsertOrderSummaries(orderSummaries)
 
-        SiteSqlUtils().deleteSite(site)
+        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
 
         val result = sut.getOrderSummaries(
             site.localId(),

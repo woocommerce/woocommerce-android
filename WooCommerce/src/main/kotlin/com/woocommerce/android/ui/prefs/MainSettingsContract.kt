@@ -9,7 +9,7 @@ interface MainSettingsContract {
         val isChaChingSoundEnabled: Boolean
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
-        fun hasMultipleStores(): Boolean
+        suspend fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
         fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()

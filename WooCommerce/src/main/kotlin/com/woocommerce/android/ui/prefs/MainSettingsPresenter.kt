@@ -61,7 +61,7 @@ class MainSettingsPresenter @Inject constructor(
         } ?: ""
     }
 
-    override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
+    override suspend fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
 
     override fun setupAnnouncementOption() {
         coroutineScope.launch {

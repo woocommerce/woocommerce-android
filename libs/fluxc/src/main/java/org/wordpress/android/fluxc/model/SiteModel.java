@@ -6,12 +6,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.yarolegovich.wellsql.core.Identifiable;
-import com.yarolegovich.wellsql.core.annotation.Column;
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.RawConstraints;
-import com.yarolegovich.wellsql.core.annotation.Table;
-
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId;
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId;
@@ -27,9 +21,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 // WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
-@Table
-@RawConstraints({"UNIQUE (SITE_ID, URL)"})
-public class SiteModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {
+public class SiteModel extends Payload<BaseNetworkError> implements Serializable {
     private static final long serialVersionUID = -7641813766771796252L;
 
     @Retention(SOURCE)
@@ -48,239 +40,137 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     public static final String ACTIVE_MODULES_KEY_SHARING_BUTTONS = "sharedaddy";
     public static final String CIAB_GARDEN_NAME = "commerce";
 
-    @PrimaryKey
-    @Column
     private int mId;
     // Only given a value for wpcom and Jetpack sites - self-hosted sites use mSelfHostedSiteId
-    @Column
     private long mSiteId;
-    @Column
     private String mUrl;
-    @Column
     private String mAdminUrl;
-    @Column
     private String mLoginUrl;
-    @Column
     private String mName;
-    @Column
     private String mDescription;
-    @Column
     private boolean mIsWPCom;
-    @Column
     private boolean mIsWPComAtomic;
-    @Column
     private int mPublishedStatus = -1;
-    @Column
     private boolean mIsFeaturedImageSupported;
-    @Column
     private boolean mIsWpForTeamsSite;
-    @Column
     private String mDefaultCommentStatus = "open";
-    @Column
     private String mTimezone; // Expressed as an offset relative to GMT (e.g. '-8')
-    @Column
     private String mFrameNonce; // only wpcom and Jetpack sites
-    @Column
     private long mMaxUploadSize; // only set for Jetpack sites
-    @Column
     private long mMemoryLimit; // only set for Jetpack sites
-    @Column
     private int mOrigin = ORIGIN_UNKNOWN; // Does this site come from a WPCOM REST or XMLRPC fetch_sites call?
-    @Column
     private int mOrganizationId = -1;
 
-    @Column
     private String mShowOnFront;
-    @Column
     private long mPageOnFront = -1;
-    @Column
     private long mPageForPosts = -1;
 
     // Self hosted specifics
     // The siteId for self hosted sites. Jetpack sites will also have a mSiteId, which is their id on wpcom
-    @Column
     private long mSelfHostedSiteId;
-    @Column
     private String mUsername;
-    @Column
     private String mPassword;
-    @Column(name = "XMLRPC_URL")
     private String mXmlRpcUrl;
-    @Column
     private String mWpApiRestUrl;
-    @Column
     private String mSoftwareVersion;
-    @Column
     private boolean mIsSelfHostedAdmin;
 
     // Self hosted user's profile data
-    @Column
     private String mEmail;
-    @Column
     private String mDisplayName;
 
     // mIsJetpackInstalled is true if Jetpack is installed and activated on the self hosted site, but Jetpack can
     // be disconnected.
-    @Column
     private boolean mIsJetpackInstalled;
     // mIsJetpackConnected is true if Jetpack is installed, activated and connected to a WordPress.com account.
-    @Column
     private boolean mIsJetpackConnected;
     // mIsJetpackCPConnected is true for self hosted sites that use Jetpack Connection Package,
     // but don't have full jetpack plugin
-    @Column(name = "IS_JETPACK_CP_CONNECTED")
     private boolean mIsJetpackCPConnected;
-    @Column
     private String mJetpackVersion;
-    @Column
     private String mJetpackUserEmail;
-    @Column
     private boolean mIsAutomatedTransfer;
-    @Column
     private boolean mIsWpComStore;
-    @Column
     private boolean mHasWooCommerce;
 
     // WPCom specifics
-    @Column
     private boolean mIsVisible = true;
-    @Column
     private boolean mIsPrivate;
-    @Column
     private boolean mIsComingSoon;
-    @Column
     private boolean mIsVideoPressSupported;
-    @Column
     private long mPlanId;
-    @Column
     private String mPlanShortName;
-    @Column
     private String mPlanProductSlug;
-    @Column
     private String mIconUrl;
-    @Column
     private boolean mHasFreePlan;
-    @Column
     private String mUnmappedUrl;
-    @Column
     private String mWebEditor;
-    @Column
     private String mMobileEditor;
 
     // WPCom capabilities
-    @Column
     private boolean mHasCapabilityEditPages;
-    @Column
     private boolean mHasCapabilityEditPosts;
-    @Column
     private boolean mHasCapabilityEditOthersPosts;
-    @Column
     private boolean mHasCapabilityEditOthersPages;
-    @Column
     private boolean mHasCapabilityDeletePosts;
-    @Column
     private boolean mHasCapabilityDeleteOthersPosts;
-    @Column
     private boolean mHasCapabilityEditThemeOptions;
-    @Column
     private boolean mHasCapabilityEditUsers;
-    @Column
     private boolean mHasCapabilityListUsers;
-    @Column
     private boolean mHasCapabilityManageCategories;
-    @Column
     private boolean mHasCapabilityManageOptions;
-    @Column
     private boolean mHasCapabilityActivateWordads;
-    @Column
     private boolean mHasCapabilityPromoteUsers;
-    @Column
     private boolean mHasCapabilityPublishPosts;
-    @Column
     private boolean mHasCapabilityUploadFiles;
-    @Column
     private boolean mHasCapabilityDeleteUser;
-    @Column
     private boolean mHasCapabilityRemoveUsers;
-    @Column
     private boolean mHasCapabilityViewStats;
 
     // WPCOM and Jetpack Disk Quota information
-    @Column
     private long mSpaceAvailable;
-    @Column
     private long mSpaceAllowed;
-    @Column
     private long mSpaceUsed;
-    @Column
     private double mSpacePercentUsed;
 
-    @Column
     private String mActiveModules;
-    @Column
     private boolean mIsPublicizePermanentlyDisabled;
-    @Column
     private String mActiveJetpackConnectionPlugins;
-    @Column
     private String mJetpackModules;
 
     // Zendesk meta
-    @Column
     private String mZendeskPlan;
-    @Column
     private String mZendeskAddOns;
 
     // Blogging Reminder options
-    @Column
     private boolean mIsBloggingPromptsOptedIn;
-    @Column
     private boolean mIsBloggingPromptsCardOptedIn;
-    @Column
     private boolean mIsPotentialBloggingSite;
-    @Column
     private boolean mIsBloggingReminderOnMonday;
-    @Column
     private boolean mIsBloggingReminderOnTuesday;
-    @Column
     private boolean mIsBloggingReminderOnWednesday;
-    @Column
     private boolean mIsBloggingReminderOnThursday;
-    @Column
     private boolean mIsBloggingReminderOnFriday;
-    @Column
     private boolean mIsBloggingReminderOnSaturday;
-    @Column
     private boolean mIsBloggingReminderOnSunday;
-    @Column
     private int mBloggingReminderHour;
-    @Column
     private int mBloggingReminderMinute;
-    @Column
     private String mApplicationPasswordsAuthorizeUrl;
-    @Column
     private boolean mCanBlaze;
     // Comma-separated list of active features in the site's plan
-    @Column
     private String mPlanActiveFeatures;
-    @Column
     private Boolean mWasEcommerceTrial;
-    @Column
     private Boolean mIsSingleUserSite;
-    @Column
     private boolean mIsGardenSite;
-    @Column
     @Nullable
     private String mGardenName;
-    @Column
     @Nullable
     private String mGardenPartner;
 
-    @Override
     public int getId() {
         return mId;
     }
 
-    @Override
     public void setId(int id) {
         mId = id;
     }
