@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,16 +29,20 @@ class WooPosActivity : AppCompatActivity() {
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
     @Inject
-    lateinit var wooPosAnalyticsTracker: WooPosAnalyticsTracker
-
-    @Inject
     lateinit var wooPosCouponCreationFacade: WooPosCouponCreationFacade
 
     @Inject
     lateinit var wooPosPeriodicSyncFacade: WooPosPeriodicSyncFacade
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        // POS is session-based: cart, product cache, order cache, and data source selection
+        // all live in in-memory singletons. On process death these are lost, but Compose
+        // Navigation restores the back stack to the home screen, skipping the splash flow
+        // that initializes them — causing IllegalStateException in WooPosProductsDataSource.
+        // Passing null forces a fresh start from the splash screen, which re-initializes
+        // everything. On config changes the process stays alive and singletons survive,
+        // so going through splash again is instant (no loading screen).
+        super.onCreate(null)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
