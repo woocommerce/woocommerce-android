@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
+import kotlin.time.measureTimedValue
 
 class StoreProductsCheckUseCase @Inject constructor(
     private val productStore: WCProductStore,
@@ -23,14 +24,13 @@ class StoreProductsCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val site = selectedSite.get()
-        val startTime = System.currentTimeMillis()
-        val result = productStore.fetchProducts(site)
-        val durationMs = System.currentTimeMillis() - startTime
-        val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
+        val (result, duration) = measureTimedValue { productStore.fetchProducts(site) }
+
         if (result.isError) {
-            emit(result.parseError(durationMs, isAppPassword))
+            val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
+            emit(result.parseError(duration.inWholeMilliseconds, isAppPassword))
         } else {
-            emit(Success(durationMs = durationMs))
+            emit(Success(durationMs = duration.inWholeMilliseconds))
         }
     }
 

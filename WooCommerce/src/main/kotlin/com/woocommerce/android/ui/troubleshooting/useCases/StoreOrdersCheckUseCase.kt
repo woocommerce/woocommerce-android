@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import javax.inject.Inject
+import kotlin.time.measureTimedValue
 
 class StoreOrdersCheckUseCase @Inject constructor(
     private val orderStore: WCOrderStore,
@@ -22,15 +23,16 @@ class StoreOrdersCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val site = selectedSite.get()
-        val startTime = System.currentTimeMillis()
-        val result = orderStore.fetchHasOrders(site, null)
-        val durationMs = System.currentTimeMillis() - startTime
-        val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
-        val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs, isAppPassword)
+        val (result, duration) = measureTimedValue { orderStore.fetchHasOrders(site, null) }
+
+        val failure = (result as? HasOrdersResult.Failure)?.let {
+            val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
+            it.parseError(duration.inWholeMilliseconds, isAppPassword)
+        }
         if (failure != null) {
             emit(failure)
         } else {
-            emit(Success(durationMs = durationMs))
+            emit(Success(durationMs = duration.inWholeMilliseconds))
         }
     }
 

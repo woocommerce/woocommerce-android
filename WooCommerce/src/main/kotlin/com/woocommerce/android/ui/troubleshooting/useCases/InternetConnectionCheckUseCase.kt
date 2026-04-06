@@ -8,19 +8,19 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Succes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlin.time.measureTimedValue
 
 class InternetConnectionCheckUseCase @Inject constructor(
     private val networkStatus: NetworkStatus
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        val startTime = System.currentTimeMillis()
-        val isConnected = networkStatus.isConnected()
-        val durationMs = System.currentTimeMillis() - startTime
+        val (isConnected, duration) = measureTimedValue { networkStatus.isConnected() }
+
         if (isConnected) {
-            emit(Success(durationMs = durationMs))
+            emit(Success(durationMs = duration.inWholeMilliseconds))
         } else {
-            emit(Failure(durationMs = durationMs))
+            emit(Failure(durationMs = duration.inWholeMilliseconds))
         }
     }
 

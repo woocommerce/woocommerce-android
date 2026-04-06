@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.store.WhatsNewStore
 import javax.inject.Inject
+import kotlin.time.measureTimedValue
 
 class WPComConnectionCheckUseCase @Inject constructor(
     private val whatsNewStore: WhatsNewStore,
@@ -16,15 +17,16 @@ class WPComConnectionCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        val startTime = System.currentTimeMillis()
-        val result = whatsNewStore.fetchRemoteAnnouncements(
-            versionName = buildConfigWrapper.versionName
-        )
-        val durationMs = System.currentTimeMillis() - startTime
+        val (result, duration) = measureTimedValue {
+            whatsNewStore.fetchRemoteAnnouncements(
+                versionName = buildConfigWrapper.versionName
+            )
+        }
+
         if (result.fetchError != null) {
-            emit(Failure(durationMs = durationMs))
+            emit(Failure(durationMs = duration.inWholeMilliseconds))
         } else {
-            emit(Success(durationMs = durationMs))
+            emit(Success(durationMs = duration.inWholeMilliseconds))
         }
     }
 

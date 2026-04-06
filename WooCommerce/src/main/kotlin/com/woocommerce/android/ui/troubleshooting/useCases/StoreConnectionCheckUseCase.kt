@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import javax.inject.Inject
+import kotlin.time.measureTimedValue
 
 class StoreConnectionCheckUseCase @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -23,14 +24,13 @@ class StoreConnectionCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val site = selectedSite.get()
-        val startTime = System.currentTimeMillis()
-        val result = ssrFetcher.load(site)
-        val durationMs = System.currentTimeMillis() - startTime
-        val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
+        val (result, duration) = measureTimedValue { ssrFetcher.load(site) }
+
         if (result.isError) {
-            emit(result.parseError(durationMs, isAppPassword))
+            val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
+            emit(result.parseError(duration.inWholeMilliseconds, isAppPassword))
         } else {
-            emit(Success(durationMs = durationMs))
+            emit(Success(durationMs = duration.inWholeMilliseconds))
         }
     }
 
