@@ -22,10 +22,11 @@ class StoreConnectionCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
+        val site = selectedSite.get()
         val startTime = System.currentTimeMillis()
-        val result = ssrFetcher.load(selectedSite.get())
+        val result = ssrFetcher.load(site)
         val durationMs = System.currentTimeMillis() - startTime
-        val isAppPassword = selectedSite.get().connectionType == SiteConnectionType.ApplicationPasswords
+        val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
         if (result.isError) {
             emit(result.parseError(durationMs, isAppPassword))
         } else {

@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -30,31 +31,37 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     private lateinit var sut: StoreOrdersCheckUseCase
     private lateinit var orderStore: WCOrderStore
     private lateinit var selectedSite: SelectedSite
+    private val siteModel = SiteModel().apply {
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
+    }
 
     @Before
     fun setUp() {
         orderStore = mock()
-        selectedSite = mock()
+        selectedSite = mock {
+            on { get() }.thenReturn(siteModel)
+        }
         sut = StoreOrdersCheckUseCase(orderStore, selectedSite)
     }
 
     @Test
     fun `when fetchHasOrders returns success then emit Success`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Success(hasOrders = true))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Success::class.java)
@@ -62,21 +69,21 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns PLUGIN_NOT_ACTIVE failure, then emit GENERIC Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(PLUGIN_NOT_ACTIVE)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
@@ -86,7 +93,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns unknown_token error, then emit JETPACK Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val wpapiNetworkError = WPAPINetworkError(
             baseError = org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError(GenericErrorType.UNKNOWN),
@@ -94,17 +101,17 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
         )
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(GENERIC_ERROR, networkError = wpapiNetworkError)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
@@ -114,7 +121,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns invalid_blog error, then emit JETPACK Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val wpapiNetworkError = WPAPINetworkError(
             baseError = org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError(GenericErrorType.UNKNOWN),
@@ -122,17 +129,17 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
         )
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(GENERIC_ERROR, networkError = wpapiNetworkError)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
@@ -142,21 +149,21 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns GENERIC_ERROR failure then emit GENERIC Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(GENERIC_ERROR)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
@@ -166,21 +173,21 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns TIMEOUT_ERROR failure then emit GENERIC Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(TIMEOUT_ERROR)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
@@ -190,25 +197,54 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchHasOrders returns PARSE_ERROR failure then emit PARSE Failure`() = testBlocking {
-        // Given
+        // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
-                site = selectedSite.get(),
+                site = siteModel,
                 status = null
             )
         ).thenReturn(HasOrdersResult.Failure(OrderError(PARSE_ERROR)))
 
-        // When
+        // WHEN
         sut.invoke().onEach {
             stateEvents.add(it)
         }.launchIn(this)
 
-        // Then
+        // THEN
         assertThat(stateEvents).hasSize(2)
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
         assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.PARSE)
         assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
+    }
+
+    @Test
+    fun `given app passwords site, when fetchHasOrders returns unknown_token error, then emit GENERIC Failure`() = testBlocking {
+        // GIVEN
+        val appPasswordSite = SiteModel()
+        whenever(selectedSite.get()).thenReturn(appPasswordSite)
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        val wpapiNetworkError = WPAPINetworkError(
+            baseError = org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError(GenericErrorType.UNKNOWN),
+            errorCode = "unknown_token"
+        )
+        whenever(
+            orderStore.fetchHasOrders(
+                site = appPasswordSite,
+                status = null
+            )
+        ).thenReturn(HasOrdersResult.Failure(OrderError(GENERIC_ERROR, networkError = wpapiNetworkError)))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
     }
 }

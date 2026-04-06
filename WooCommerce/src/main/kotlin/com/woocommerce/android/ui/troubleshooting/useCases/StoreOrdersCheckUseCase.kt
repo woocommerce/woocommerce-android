@@ -21,10 +21,11 @@ class StoreOrdersCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
+        val site = selectedSite.get()
         val startTime = System.currentTimeMillis()
-        val result = orderStore.fetchHasOrders(selectedSite.get(), null)
+        val result = orderStore.fetchHasOrders(site, null)
         val durationMs = System.currentTimeMillis() - startTime
-        val isAppPassword = selectedSite.get().connectionType == SiteConnectionType.ApplicationPasswords
+        val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords
         val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs, isAppPassword)
         if (failure != null) {
             emit(failure)

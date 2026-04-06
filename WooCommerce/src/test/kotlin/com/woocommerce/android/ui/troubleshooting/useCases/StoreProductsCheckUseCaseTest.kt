@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -26,11 +27,17 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     private lateinit var sut: StoreProductsCheckUseCase
     private lateinit var productStore: WCProductStore
     private lateinit var selectedSite: SelectedSite
+    private val siteModel = SiteModel().apply {
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
+    }
 
     @Before
     fun setUp() {
         productStore = mock()
-        selectedSite = mock()
+        selectedSite = mock {
+            on { get() }.thenReturn(siteModel)
+        }
         sut = StoreProductsCheckUseCase(productStore, selectedSite)
     }
 
@@ -38,7 +45,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns success, then emit Success`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(emptyList()))
 
         // WHEN
@@ -56,7 +63,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns GENERIC_ERROR, then emit GENERIC Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN)))
 
         // WHEN
@@ -76,7 +83,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns TIMEOUT, then emit TIMEOUT Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.TIMEOUT, UNKNOWN)))
 
         // WHEN
@@ -96,7 +103,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns INVALID_RESPONSE, then emit PARSE Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN)))
 
         // WHEN
@@ -116,7 +123,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns API_NOT_FOUND, then emit GENERIC Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, UNKNOWN)))
 
         // WHEN
@@ -136,7 +143,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns unknown_token error, then emit JETPACK Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN, apiErrorCode = "unknown_token")))
 
         // WHEN
@@ -156,7 +163,7 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchProducts returns invalid_blog error, then emit JETPACK Failure`() = testBlocking {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(productStore.fetchProducts(selectedSite.get()))
+        whenever(productStore.fetchProducts(siteModel))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN, apiErrorCode = "invalid_blog")))
 
         // WHEN
@@ -170,5 +177,26 @@ class StoreProductsCheckUseCaseTest : BaseUnitTest() {
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
         assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.JETPACK)
         assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
+    }
+
+    @Test
+    fun `given app passwords site, when fetchProducts returns unknown_token error, then emit GENERIC Failure`() = testBlocking {
+        // GIVEN
+        val appPasswordSite = SiteModel()
+        whenever(selectedSite.get()).thenReturn(appPasswordSite)
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(productStore.fetchProducts(appPasswordSite))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN, apiErrorCode = "unknown_token")))
+
+        // WHEN
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // THEN
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
     }
 }
