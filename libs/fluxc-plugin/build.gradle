@@ -68,7 +68,6 @@ dependencies {
 
     implementation libs.androidx.core.ktx
 
-    implementation libs.wellsql
     // FluxC annotations
     api project(":libs:fluxc-annotations")
     kapt project(":libs:fluxc-processor")

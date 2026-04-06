@@ -2,7 +2,6 @@ package com.woocommerce.android
 
 import android.app.Application
 import androidx.work.Configuration
-import com.yarolegovich.wellsql.WellSql
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -24,12 +23,6 @@ open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Pr
     @InstallIn(SingletonComponent::class)
     interface AndroidInjectorEntryPoint {
         fun injector(): DispatchingAndroidInjector<Any>
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        val wellSqlConfig = WooWellSqlConfig(this)
-        WellSql.init(wellSqlConfig)
     }
 
     override fun androidInjector(): AndroidInjector<Any> {

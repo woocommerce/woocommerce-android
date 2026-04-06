@@ -103,7 +103,6 @@ stripe-terminal = '5.1.1'
 swiperefreshlayout = "1.2.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
-wellsql = "2.0.0"
 wiremock = '2.26.3'
 wordpress-aztec = 'v2.1.7'
 wordpress-libaddressinput = '0.0.2'
@@ -273,8 +272,6 @@ stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", ver
 stripe-terminal-ktx = { group = "com.stripe", name = "stripeterminal-ktx", version.ref = "stripe-terminal" }
 tinder-statemachine = { group = "com.tinder.statemachine", name = "statemachine", version.ref = "tinder-statemachine" }
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
-wellsql = { module = "org.wordpress:wellsql", version.ref = "wellsql" }
-wellsql-processor = { module = "org.wordpress.wellsql:wellsql-processor", version.ref = "wellsql" }
 wiremock = { group = "com.github.tomakehurst", name = "wiremock", version.ref = "wiremock" }
 wordpress-libaddressinput-common = { group = "org.wordpress", name = "libaddressinput.common", version.ref = "wordpress-libaddressinput" }
 wordpress-lint = { module = "org.wordpress:lint", version.ref = "wordpress-lint" }

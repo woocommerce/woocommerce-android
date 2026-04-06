@@ -132,7 +132,6 @@ dependencyResolutionManagement {
             url = 'https://a8c-libs.s3.amazonaws.com/android'
             content {
                 includeGroup "org.wordpress"
-                includeGroup "org.wordpress.wellsql"
                 includeGroup "org.wordpress.mediapicker"
                 includeGroup "com.automattic"
                 includeGroup "com.automattic.tracks"
@@ -153,8 +152,6 @@ dependencyResolutionManagement {
                 includeVersion "com.android.volley", "volley", "1.1.1"
                 includeVersion "com.google.android", "flexbox", "2.0.1"
                 includeVersion "com.jraska", "falcon", "2.1.1"
-                includeVersion "org.wordpress", "wellsql", "1.6.0"
-                includeVersion "org.wordpress", "wellsql-core", "1.6.0"
             }
         }
         maven {

@@ -36,6 +36,4 @@ updates:
       - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
       - dependency-name: "com.jayway.jsonpath:json-path"
       - dependency-name: "commons-fileupload:commons-fileupload"
-      - dependency-name: "org.wordpress:wellsql"
-      - dependency-name: "org.wordpress.wellsql:wellsql-processor"
       - dependency-name: "com.github.PhilJay:MPAndroidChart"
