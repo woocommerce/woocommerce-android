@@ -42,7 +42,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
@@ -60,7 +59,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateVariationPay
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateVariationPayload
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -76,10 +74,6 @@ class WCProductStoreTest {
     @Rule
     @JvmField
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
-
-    @Rule
-    @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Before
     fun setUp() {
@@ -368,7 +362,7 @@ class WCProductStoreTest {
 
     @Test
     fun `given product review exists, when fetch product review, then local database updated`() = runTest {
-        val site = insertTestAccountAndSiteIntoDb()
+        val site = SiteModel().apply { id = 1 }
         val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy(
             localSiteId = site.localId()
         )
@@ -464,7 +458,7 @@ class WCProductStoreTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
             productsDao.upsertProduct(product)
-            val site = insertTestAccountAndSiteIntoDb()
+            val site = SiteModel().apply { id = 1 }
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -517,7 +511,7 @@ class WCProductStoreTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
             productsDao.upsertProduct(product)
-            val site = insertTestAccountAndSiteIntoDb()
+            val site = SiteModel().apply { id = 1 }
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -869,8 +863,4 @@ class WCProductStoreTest {
             IncludeType.fromValue("invalid")
         ).isNull()
     }
-
-    /* HELPER */
-
-    private fun insertTestAccountAndSiteIntoDb() = TestSiteSqlUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
 }
