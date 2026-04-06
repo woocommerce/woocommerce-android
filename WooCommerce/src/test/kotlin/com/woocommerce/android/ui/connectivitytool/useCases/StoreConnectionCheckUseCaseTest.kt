@@ -1,11 +1,12 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.FailureType
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.FailureType
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,7 +61,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetchSSR returns an PLUGIN_NOT_ACTIVE error then emit JETPACK Failure`() = testBlocking {
+    fun `given Jetpack site, when fetchSSR returns API_NOT_FOUND error, then emit JETPACK Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult<WCSSRModel>(
@@ -69,6 +70,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
@@ -78,6 +80,28 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.JETPACK)))
+    }
+
+    @Test
+    fun `given app-password site, when fetchSSR returns API_NOT_FOUND error, then emit GENERIC Failure`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        val response = WooResult<WCSSRModel>(
+            WooError(
+                type = WooErrorType.API_NOT_FOUND,
+                original = BaseRequest.GenericErrorType.NETWORK_ERROR
+            )
+        )
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
     }
 
     @Test

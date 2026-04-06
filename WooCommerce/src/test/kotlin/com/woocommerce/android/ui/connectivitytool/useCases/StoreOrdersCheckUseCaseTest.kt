@@ -1,11 +1,12 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.FailureType
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.FailureType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -57,9 +58,10 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetchHasOrders returns PLUGIN_NOT_ACTIVE failure then emit JETPACK Failure`() = testBlocking {
+    fun `given Jetpack site, when fetchHasOrders returns PLUGIN_NOT_ACTIVE failure, then emit JETPACK Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         whenever(
             orderStore.fetchHasOrders(
                 site = selectedSite.get(),
@@ -74,6 +76,27 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.JETPACK)))
+    }
+
+    @Test
+    fun `given app-password site, when fetchHasOrders returns PLUGIN_NOT_ACTIVE failure, then emit GENERIC Failure`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        whenever(
+            orderStore.fetchHasOrders(
+                site = selectedSite.get(),
+                status = null
+            )
+        ).thenReturn(HasOrdersResult.Failure(OrderError(PLUGIN_NOT_ACTIVE)))
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
     }
 
     @Test

@@ -6,4 +6,5 @@
    Reference: https://developer.android.com/guide/topics/data/autobackup#define-device-conditions
    -->
   <exclude domain="sharedpref" path="com.woocommerce.android_deletable_preferences.xml"/>
+  <exclude domain="sharedpref" path="com.woocommerce.android_fluxc-preferences.xml"/>
 </full-backup-content>

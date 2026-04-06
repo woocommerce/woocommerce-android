@@ -1,11 +1,12 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.FailureType
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.FailureType
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,6 +19,9 @@ class StoreConnectionCheckUseCase @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
+    private val isAppPasswordSite: Boolean
+        get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         ssrFetcher.load(selectedSite.get())
@@ -30,7 +34,8 @@ class StoreConnectionCheckUseCase @Inject constructor(
     private fun WooResult<WCSSRModel>.parseError() =
         when (error.type) {
             WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.API_NOT_FOUND -> Failure(FailureType.JETPACK)
+            WooErrorType.API_NOT_FOUND ->
+                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
             WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
             else -> Failure(FailureType.GENERIC)
         }
