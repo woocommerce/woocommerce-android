@@ -34,6 +34,7 @@ class SiteStorePersistenceTest {
     fun setUp() {
         siteDao = wpDatabaseRule.db.siteDao()
         sut = SiteStorePersistence(
+            database = wpDatabaseRule.db,
             siteDao = siteDao,
             siteMapper = mapper,
             accountStorePersistence = accountStorePersistence,
@@ -48,6 +49,7 @@ class SiteStorePersistenceTest {
             on { getDefaultAccount() } doReturn null
         }
         val sutNoAccount = SiteStorePersistence(
+            database = wpDatabaseRule.db,
             siteDao = siteDao,
             siteMapper = mapper,
             accountStorePersistence = noAccountPersistence,

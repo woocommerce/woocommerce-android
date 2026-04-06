@@ -56,6 +56,7 @@ class SiteStoreUnitTest {
         accountStorePersistence.insertOrUpdateDefaultAccount(account)
 
         mSiteStorePersistence = SiteStorePersistence(
+            database = wpDatabaseRule.db,
             siteDao = mSiteDao,
             siteMapper = mSiteMapper,
             accountStorePersistence = accountStorePersistence,
