@@ -45,10 +45,6 @@
 -keep class org.wordpress.android.fluxc** { *; }
 ###### FluxC - end
 
-###### FluxC - WellSql (needed for Addon support) - begin
--keep class com.wellsql** { *; }
-###### FluxC - end
-
 ###### Dagger - begin
 -dontwarn com.google.errorprone.annotations.*
 ###### Dagger - end

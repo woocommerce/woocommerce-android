@@ -74,10 +74,6 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    // Custom WellSql version
-    api libs.wellsql
-    kapt libs.wellsql.processor
-
     // FluxC annotations
     api project(":libs:fluxc-annotations")
     kapt project(":libs:fluxc-processor")
@@ -113,7 +109,6 @@ dependencies {
     testFixturesCompileOnly libs.mockito.kotlin
     testFixturesCompileOnly libs.kotlinx.coroutines.core
     testFixturesCompileOnly libs.google.gson
-    testFixturesCompileOnly libs.wellsql
     testFixturesCompileOnly libs.junit
     testFixturesCompileOnly libs.androidx.room.runtime
 

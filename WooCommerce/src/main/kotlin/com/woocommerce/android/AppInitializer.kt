@@ -234,9 +234,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         notificationChannelsHandler.init()
 
-        // Developers can uncomment the line below to clear the db tables at startup
-        // wellSqlConfig.resetDatabase()
-
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
         application.registerComponentCallbacks(lifecycleMonitor)
