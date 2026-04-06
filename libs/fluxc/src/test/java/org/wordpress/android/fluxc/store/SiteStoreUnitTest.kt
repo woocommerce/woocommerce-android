@@ -1,11 +1,8 @@
 package org.wordpress.android.fluxc.store
 
 import androidx.test.core.app.ApplicationProvider
-import com.wellsql.generated.SiteModelTable
-import com.yarolegovich.wellsql.WellSql
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -21,15 +18,18 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.persistence.AccountMapper
 import org.wordpress.android.fluxc.persistence.AccountStorePersistence
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteMapper
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence.DuplicateSiteException
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.store.SiteStore.UpdateSitesResult
+import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import java.lang.reflect.InvocationTargetException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 @Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
@@ -38,15 +38,14 @@ class SiteStoreUnitTest {
     @JvmField
     var wpDatabaseRule: WPDatabaseTestRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
-    private val mSiteSqlUtils = SiteSqlUtils()
+    private lateinit var mSiteDao: SiteDao
+    private val mSiteMapper = SiteMapper()
     private lateinit var mSiteStorePersistence: SiteStorePersistence
     private lateinit var mSiteStore: SiteStore
 
     @Before
     fun setUp() {
-        val config = WellSqlConfig(ApplicationProvider.getApplicationContext())
-        WellSql.init(config)
-        config.reset()
+        mSiteDao = wpDatabaseRule.db.siteDao()
 
         val accountStorePersistence = AccountStorePersistence(
             wpDatabaseRule.db,
@@ -56,33 +55,37 @@ class SiteStoreUnitTest {
         account.userId = 20151021
         accountStorePersistence.insertOrUpdateDefaultAccount(account)
 
-        mSiteStorePersistence = SiteStorePersistence(accountStorePersistence)
+        mSiteStorePersistence = SiteStorePersistence(
+            siteDao = mSiteDao,
+            siteMapper = mSiteMapper,
+            accountStorePersistence = accountStorePersistence,
+        )
         mSiteStore = SiteStore(
             Dispatcher(),
             mock(),
             mock(),
             mock(),
-            mSiteSqlUtils,
-            SiteStorePersistence(accountStorePersistence),
+            mSiteDao,
+            mSiteMapper,
+            mSiteStorePersistence,
             mock(),
             initCoroutineEngine()
         )
     }
 
     @Test
-    fun testSimpleInsertionAndRetrieval() {
+    fun testSimpleInsertionAndRetrieval() = test {
         val siteModel = SiteModel()
         siteModel.siteId = 42
-        WellSql.insert(siteModel).execute()
+        mSiteDao.insert(mSiteMapper.toEntity(siteModel))
 
         assertEquals(1, mSiteStore.sites.size.toLong())
-
         assertEquals(42, mSiteStore.sites[0].siteId)
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testInsertOrUpdateSite() {
+    fun testInsertOrUpdateSite() = test {
         val site = SiteUtils.generateWPComSite()
         mSiteStorePersistence.insertOrUpdateSite(site)
 
@@ -92,7 +95,7 @@ class SiteStoreUnitTest {
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testSelfHostedAndJetpackSites() {
+    fun testSelfHostedAndJetpackSites() = test {
         // Note: not using the helper methods to make sure of the SiteModel definition
         val ponySite = SiteModel()
         ponySite.xmlRpcUrl = "http://pony.com/xmlrpc.php"
@@ -132,7 +135,7 @@ class SiteStoreUnitTest {
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testGetSiteBySiteId() {
+    fun testGetSiteBySiteId() = test {
         assertNull(mSiteStore.getSiteBySiteId(555))
 
         val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
@@ -142,7 +145,7 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(wpComSite)
         mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverXMLRPC)
 
-        assertEquals(1, mSiteSqlUtils.sitesAccessedViaWPComRest.getAsCursor().count.toLong())
+        assertEquals(1, mSiteStore.sitesAccessedViaWPComRest().size.toLong())
         assertNotNull(mSiteStore.getSiteBySiteId(wpComSite.siteId))
         assertNotNull(mSiteStore.getSiteBySiteId(jetpackSiteOverXMLRPC.siteId))
         assertNull(mSiteStore.getSiteBySiteId(selfHostedSite.siteId))
@@ -150,22 +153,21 @@ class SiteStoreUnitTest {
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testDeleteSite() {
+    fun testDeleteSite() = test {
         val wpComSite = SiteUtils.generateWPComSite()
 
         // Should not cause any errors
-        mSiteSqlUtils.deleteSite(wpComSite)
+        mSiteDao.deleteByLocalId(wpComSite.id)
 
         mSiteStorePersistence.insertOrUpdateSite(wpComSite)
-        val affectedRows = mSiteSqlUtils.deleteSite(wpComSite)
+        mSiteDao.deleteByLocalId(wpComSite.id)
 
-        assertEquals(1, affectedRows.toLong())
         assertEquals(0, mSiteStore.sites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testGetWPComSites() {
+    fun testGetWPComSites() = test {
         val wpComSite = SiteUtils.generateWPComSite()
         val jetpackSiteOverXMLRPC = SiteUtils.generateJetpackSiteOverXMLRPC()
         val jetpackSiteOverRestOnly = SiteUtils.generateJetpackSiteOverRestOnly()
@@ -174,18 +176,15 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverXMLRPC)
         mSiteStorePersistence.insertOrUpdateSite(jetpackSiteOverRestOnly)
 
-        assertEquals(2, mSiteSqlUtils.sitesAccessedViaWPComRest.getAsCursor().count.toLong())
+        assertEquals(2, mSiteStore.sitesAccessedViaWPComRest().size.toLong())
 
-        val wpComSites = mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()
-        assertEquals(1, wpComSites.size.toLong())
-        for (site in wpComSites) {
-            assertNotEquals(jetpackSiteOverXMLRPC.id.toLong(), site.id.toLong())
-        }
+        val wpComOnlySites = mSiteStore.sites.filter { it.isWPCom }
+        assertEquals(1, wpComOnlySites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSites() {
+    fun testInsertDuplicateSites() = test {
         val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
         val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
@@ -196,15 +195,14 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(jetpack)
 
         // Previous site should be converted to a Jetpack site and we should see only one site
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
 
-        val wpComSites = mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()
+        val wpComSites = mSiteStore.sites.filter { it.isWPCom }
         assertEquals(0, wpComSites.size.toLong())
-        assertEquals(1, mSiteSqlUtils.sitesAccessedViaWPComRest.getAsCursor().count.toLong())
-        val jetpackSites =
-            mSiteSqlUtils.getSitesWith(SiteModelTable.IS_JETPACK_CONNECTED, true).getAsModel()
-        assertEquals(jetpack.siteId, jetpackSites[0]?.siteId)
+        assertEquals(1, mSiteStore.sitesAccessedViaWPComRest().size.toLong())
+        val jetpackSites = mSiteStore.sites.filter { it.isJetpackConnected }
+        assertEquals(jetpack.siteId, jetpackSites[0].siteId)
         assertTrue(jetpackSites[0].isJetpackConnected)
         assertFalse(jetpackSites[0].isWPCom)
     }
@@ -212,7 +210,7 @@ class SiteStoreUnitTest {
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesError() {
+    fun testInsertDuplicateSitesError() = test {
         val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
         val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
@@ -227,14 +225,14 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesDifferentSchemesError1() {
+    fun testInsertDuplicateSitesDifferentSchemesError1() = test {
         val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
         val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
@@ -252,14 +250,14 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesDifferentSchemesError2() {
+    fun testInsertDuplicateSitesDifferentSchemesError2() = test {
         val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
         val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
 
@@ -277,14 +275,14 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateXmlRpcJetpackSite() {
+    fun testInsertDuplicateXmlRpcJetpackSite() = test {
         val jetpackXmlRpcSite = SiteUtils.generateJetpackSiteOverXMLRPC()
 
         jetpackXmlRpcSite.url = "http://some.url"
@@ -312,13 +310,13 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testSearchSitesByNameMatching() {
+    fun testSearchSitesByNameMatching() = test {
         val wpComSite1 = SiteUtils.generateWPComSite()
         wpComSite1.name = "Doctor Emmet Brown Homepage"
         val wpComSite2 = SiteUtils.generateWPComSite()
@@ -332,16 +330,16 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(wpComSite2)
         mSiteStorePersistence.insertOrUpdateSite(wpComSite3)
 
-        var matchingSites: List<SiteModel> = mSiteSqlUtils.getSitesByNameOrUrlMatching("eye")
+        var matchingSites: List<SiteModel> = mSiteStore.getSitesByNameOrUrlMatching("eye")
         assertEquals(2, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("EYE")
+        matchingSites = mSiteStore.getSitesByNameOrUrlMatching("EYE")
         assertEquals(2, matchingSites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testSearchSitesByNameOrUrlMatching() {
+    fun testSearchSitesByNameOrUrlMatching() = test {
         val wpComSite1 = SiteUtils.generateWPComSite()
         wpComSite1.name = "Doctor Emmet Brown Homepage"
         val wpComSite2 = SiteUtils.generateWPComSite()
@@ -353,16 +351,16 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(wpComSite2)
         mSiteStorePersistence.insertOrUpdateSite(selfHostedSite)
 
-        var matchingSites: List<SiteModel> = mSiteSqlUtils.getSitesByNameOrUrlMatching("eye")
+        var matchingSites: List<SiteModel> = mSiteStore.getSitesByNameOrUrlMatching("eye")
         assertEquals(2, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesByNameOrUrlMatching("EYE")
+        matchingSites = mSiteStore.getSitesByNameOrUrlMatching("EYE")
         assertEquals(2, matchingSites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testSearchWPComSitesByNameOrUrlMatching() {
+    fun testSearchWPComSitesByNameOrUrlMatching() = test {
         val wpComSite1 = SiteUtils.generateWPComSite()
         wpComSite1.name = "Doctor Emmet Brown Homepage"
         val wpComSite2 = SiteUtils.generateWPComSite()
@@ -374,16 +372,16 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(wpComSite2)
         mSiteStorePersistence.insertOrUpdateSite(selfHostedSite)
 
-        var matchingSites: List<SiteModel?> = mSiteSqlUtils.getSitesAccessedViaWPComRestByNameOrUrlMatching("eye")
+        var matchingSites: List<SiteModel> = mSiteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching("eye")
         assertEquals(1, matchingSites.size.toLong())
 
-        matchingSites = mSiteSqlUtils.getSitesAccessedViaWPComRestByNameOrUrlMatching("EYE")
+        matchingSites = mSiteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching("EYE")
         assertEquals(1, matchingSites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testRemoveAllSites() {
+    fun testRemoveAllSites() = test {
         val wpComSite = SiteUtils.generateWPComSite()
         val jetpackXMLRPCSite = SiteUtils.generateJetpackSiteOverXMLRPC()
         val jetpackRestSite = SiteUtils.generateJetpackSiteOverRestOnly()
@@ -397,14 +395,14 @@ class SiteStoreUnitTest {
         // first make sure sites are inserted successfully
         assertEquals(4, mSiteStore.sites.size.toLong())
 
-        mSiteSqlUtils.deleteAllSites()
+        mSiteDao.deleteAll()
 
         assertEquals(0, mSiteStore.sites.size.toLong())
     }
 
     @Test
     @Throws(DuplicateSiteException::class)
-    fun testWPComAutomatedTransfer() {
+    fun testWPComAutomatedTransfer() = test {
         val wpComSite = SiteUtils.generateWPComSite()
         mSiteStorePersistence.insertOrUpdateSite(wpComSite)
 
@@ -421,7 +419,7 @@ class SiteStoreUnitTest {
 
     @Test
     @Throws(NoSuchMethodException::class, IllegalAccessException::class, InvocationTargetException::class)
-    fun testBatchInsertSiteNoDuplicateWPCom() {
+    fun testBatchInsertSiteNoDuplicateWPCom() = test {
         val siteList: MutableList<SiteModel?> = ArrayList()
         siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true))
         siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true))
@@ -431,12 +429,18 @@ class SiteStoreUnitTest {
 
         val sites = SitesModel(siteList)
 
-        // Use reflection to call a private Store method: equivalent to mSiteStore.updateSites(sites)
-        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod("createOrUpdateSites", SitesModel::class.java)
+        // Use reflection to call a private suspend method via coroutine
+        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod(
+            "createOrUpdateSites",
+            SitesModel::class.java,
+            Continuation::class.java
+        )
         createOrUpdateSites.isAccessible = true
-        val res = createOrUpdateSites.invoke(mSiteStore, sites) as UpdateSitesResult?
+        val res = suspendCoroutineUninterceptedOrReturn<UpdateSitesResult> { cont ->
+            createOrUpdateSites.invoke(mSiteStore, sites, cont)
+        }
 
-        assertFalse(res!!.duplicateSiteFound)
+        assertFalse(res.duplicateSiteFound)
         assertEquals(5, res.rowsAffected.toLong())
         assertEquals(5, mSiteStore.sites.size.toLong())
     }
@@ -444,7 +448,7 @@ class SiteStoreUnitTest {
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertSiteDuplicateXmlRpcTrailingSlash() {
+    fun testInsertSiteDuplicateXmlRpcTrailingSlash() = test {
         // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`,
         // sometimes just by a trailing slash
         // This test checks that we can still identify two sites as being identical in this case, and that we quietly
@@ -466,14 +470,14 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertSiteDuplicateXmlRpcDifferentUrl() {
+    fun testInsertSiteDuplicateXmlRpcDifferentUrl() = test {
         // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`
         // This test checks that we can still identify two sites as being identical in this case, and that we quietly
         // update the existing site rather than throw a duplicate site exception
@@ -497,14 +501,14 @@ class SiteStoreUnitTest {
             duplicate = true
         }
         assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
+        val sitesCount = mSiteDao.getAllSites().size
         assertEquals(1, sitesCount.toLong())
     }
 
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testUpdateSiteUniqueConstraintFail() {
+    fun testUpdateSiteUniqueConstraintFail() = test {
         // Create 2 test sites
         val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false)
         mSiteStorePersistence.insertOrUpdateSite(site1)
@@ -553,7 +557,7 @@ class SiteStoreUnitTest {
 
     @Test
     @Throws(NoSuchMethodException::class, InvocationTargetException::class, IllegalAccessException::class)
-    fun testRemoveWPComRestSitesAbsentFromList() {
+    fun testRemoveWPComRestSitesAbsentFromList() = test {
         val allSites: MutableList<SiteModel> = ArrayList()
         val sitesToKeep: MutableList<SiteModel> = ArrayList()
 
@@ -589,11 +593,17 @@ class SiteStoreUnitTest {
         }
 
         // add all sites to DB
-        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod("createOrUpdateSites", SitesModel::class.java)
+        val createOrUpdateSites = SiteStore::class.java.getDeclaredMethod(
+            "createOrUpdateSites",
+            SitesModel::class.java,
+            Continuation::class.java
+        )
         createOrUpdateSites.isAccessible = true
-        val res = createOrUpdateSites.invoke(mSiteStore, SitesModel(allSites)) as UpdateSitesResult?
+        val res = suspendCoroutineUninterceptedOrReturn<UpdateSitesResult> { cont ->
+            createOrUpdateSites.invoke(mSiteStore, SitesModel(allSites), cont)
+        }
 
-        assertFalse(res!!.duplicateSiteFound)
+        assertFalse(res.duplicateSiteFound)
         assertTrue(res.rowsAffected == 15)
         assertTrue(mSiteStore.sites.size == 15)
 
@@ -601,7 +611,8 @@ class SiteStoreUnitTest {
         sitesToKeep.addAll(allSites.subList(0, 6))
 
         // remove six sites (2/3 * (15 - 6))
-        mSiteSqlUtils.removeWPComRestSitesAbsentFromList(sitesToKeep)
+        val siteIds = sitesToKeep.map { it.siteId }
+        mSiteDao.deleteByOriginNotInList(SiteModel.ORIGIN_WPCOM_REST, siteIds)
 
         assertTrue(mSiteStore.sites.size == 9)
 

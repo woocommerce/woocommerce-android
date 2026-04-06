@@ -75,7 +75,7 @@ class MainPresenter @Inject constructor(
         dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
     }
 
-    override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
+    override suspend fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
 
     override fun selectedSiteChanged(site: SiteModel) {
         productImageMap.reset()

@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.persistence
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteTable
@@ -30,17 +31,19 @@ import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AccountDao
 import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.persistence.dao.NotificationDao
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 import org.wordpress.android.fluxc.persistence.entity.AccountEntity
 import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
+import org.wordpress.android.fluxc.persistence.entity.SiteEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 37,
+        version = 38,
         entities = [
             AccountEntity::class,
             FeatureFlag::class,
@@ -57,6 +60,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             ListModel::class,
             ListItemModel::class,
             NotificationEntity::class,
+            SiteEntity::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -111,6 +115,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
 
     abstract fun sitePluginDao(): SitePluginDao
 
+    abstract fun siteDao(): SiteDao
+
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
         const val WP_DB_NAME = "wp-android-database"
@@ -132,6 +138,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
                 .addMigrations(MIGRATION_19_20)
                 .addMigrations(MIGRATION_20_21)
                 .addMigrations(MIGRATION_26_27)
+                .addMigrations(migration37To38(applicationContext))
                 .build()
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -337,6 +344,135 @@ abstract class WPAndroidDatabase : RoomDatabase() {
                 }
             }
         }
+        // Room column name → WellSQL column name.
+        // Each line is one reviewable mapping; SQL is derived from this map at runtime.
+        // CRITICAL: "id" → "_id" preserves localSiteId so WC table foreign keys stay valid.
+        // Columns here follow SiteEntity field order. INTEGER = boolean/numeric, TEXT = string.
+        private val SITE_INTEGER_COLUMNS = linkedMapOf(
+            "id"                         to "_id",         // Primary key — always non-null
+            "siteId"                     to "SITE_ID",
+            "isWPCom"                    to "IS_WPCOM",
+            "isWPComAtomic"              to "IS_WPCOM_ATOMIC",
+            "publishedStatus"            to "PUBLISHED_STATUS",
+            "origin"                     to "ORIGIN",
+            "selfHostedSiteId"           to "SELF_HOSTED_SITE_ID",
+            "isJetpackInstalled"         to "IS_JETPACK_INSTALLED",
+            "isJetpackConnected"         to "IS_JETPACK_CONNECTED",
+            "isJetpackCPConnected"       to "IS_JETPACK_CP_CONNECTED",
+            "isWpComStore"               to "IS_WP_COM_STORE",
+            "hasWooCommerce"             to "HAS_WOO_COMMERCE",
+            "isPrivate"                  to "IS_PRIVATE",
+            "planId"                     to "PLAN_ID",
+            "hasCapabilityManageOptions" to "HAS_CAPABILITY_MANAGE_OPTIONS",
+            "canBlaze"                   to "CAN_BLAZE",
+            "isGardenSite"               to "IS_GARDEN_SITE",
+        )
+
+        private val SITE_TEXT_COLUMNS = linkedMapOf(
+            "url"                              to "URL",
+            "adminUrl"                         to "ADMIN_URL",
+            "loginUrl"                         to "LOGIN_URL",
+            "name"                             to "NAME",
+            "timezone"                         to "TIMEZONE",
+            "username"                         to "USERNAME",
+            "password"                         to "PASSWORD",
+            "xmlRpcUrl"                        to "XMLRPC_URL",
+            "wpApiRestUrl"                     to "WP_API_REST_URL",
+            "email"                            to "EMAIL",
+            "displayName"                      to "DISPLAY_NAME",
+            "jetpackVersion"                   to "JETPACK_VERSION",
+            "jetpackUserEmail"                 to "JETPACK_USER_EMAIL",
+            "planShortName"                    to "PLAN_SHORT_NAME",
+            "planProductSlug"                  to "PLAN_PRODUCT_SLUG",
+            "activeJetpackConnectionPlugins"   to "ACTIVE_JETPACK_CONNECTION_PLUGINS",
+            "jetpackModules"                   to "JETPACK_MODULES",
+            "applicationPasswordsAuthorizeUrl" to "APPLICATION_PASSWORDS_AUTHORIZE_URL",
+            "planActiveFeatures"               to "PLAN_ACTIVE_FEATURES",
+            "gardenName"                       to "GARDEN_NAME",
+            "gardenPartner"                    to "GARDEN_PARTNER",
+        )
+
+        fun migration37To38(context: Context) = object : Migration(37, 38) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `SiteEntity` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                        "`siteId` INTEGER NOT NULL," +
+                        "`url` TEXT NOT NULL," +
+                        "`adminUrl` TEXT NOT NULL," +
+                        "`loginUrl` TEXT NOT NULL," +
+                        "`name` TEXT NOT NULL," +
+                        "`isWPCom` INTEGER NOT NULL," +
+                        "`isWPComAtomic` INTEGER NOT NULL," +
+                        "`publishedStatus` INTEGER NOT NULL," +
+                        "`timezone` TEXT NOT NULL," +
+                        "`origin` INTEGER NOT NULL," +
+                        "`selfHostedSiteId` INTEGER NOT NULL," +
+                        "`username` TEXT NOT NULL," +
+                        "`password` TEXT NOT NULL," +
+                        "`xmlRpcUrl` TEXT NOT NULL," +
+                        "`wpApiRestUrl` TEXT NOT NULL," +
+                        "`email` TEXT NOT NULL," +
+                        "`displayName` TEXT NOT NULL," +
+                        "`isJetpackInstalled` INTEGER NOT NULL," +
+                        "`isJetpackConnected` INTEGER NOT NULL," +
+                        "`isJetpackCPConnected` INTEGER NOT NULL," +
+                        "`jetpackVersion` TEXT NOT NULL," +
+                        "`jetpackUserEmail` TEXT NOT NULL," +
+                        "`isWpComStore` INTEGER NOT NULL," +
+                        "`hasWooCommerce` INTEGER NOT NULL," +
+                        "`isPrivate` INTEGER NOT NULL," +
+                        "`planId` INTEGER NOT NULL," +
+                        "`planShortName` TEXT NOT NULL," +
+                        "`planProductSlug` TEXT NOT NULL," +
+                        "`hasCapabilityManageOptions` INTEGER NOT NULL," +
+                        "`activeJetpackConnectionPlugins` TEXT NOT NULL," +
+                        "`jetpackModules` TEXT NOT NULL," +
+                        "`applicationPasswordsAuthorizeUrl` TEXT NOT NULL," +
+                        "`canBlaze` INTEGER NOT NULL," +
+                        "`planActiveFeatures` TEXT NOT NULL," +
+                        "`isGardenSite` INTEGER NOT NULL," +
+                        "`gardenName` TEXT NOT NULL," +
+                        "`gardenPartner` TEXT NOT NULL" +
+                        ")"
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_SiteEntity_siteId_url` " +
+                        "ON `SiteEntity` (`siteId`, `url`)"
+                )
+
+                val wellSqlFile = context.getDatabasePath("wp-fluxc")
+                if (!wellSqlFile.exists()) return
+
+                database.execSQL("ATTACH DATABASE '${wellSqlFile.absolutePath}' AS wellsql")
+                try {
+                    val tableExists = database.query(
+                        "SELECT name FROM wellsql.sqlite_master WHERE type='table' AND name='SiteModel'"
+                    ).use { it.count > 0 }
+                    if (!tableExists) return
+
+                    // Build SELECT expressions: INTEGER cols default to 0, TEXT cols to ''
+                    val allColumns = (SITE_INTEGER_COLUMNS + SITE_TEXT_COLUMNS)
+                    val roomCols = allColumns.keys.joinToString(", ") { "`$it`" }
+                    val wellSqlExprs = buildString {
+                        SITE_INTEGER_COLUMNS.entries.forEachIndexed { i, (_, wellSqlCol) ->
+                            if (i > 0) append(", ")
+                            append("COALESCE($wellSqlCol, 0)")
+                        }
+                        SITE_TEXT_COLUMNS.entries.forEach { (_, wellSqlCol) ->
+                            append(", COALESCE($wellSqlCol, '')")
+                        }
+                    }
+                    database.execSQL(
+                        "INSERT OR IGNORE INTO SiteEntity ($roomCols) " +
+                            "SELECT $wellSqlExprs FROM wellsql.SiteModel"
+                    )
+                } finally {
+                    try { database.execSQL("DETACH DATABASE wellsql") } catch (_: Exception) {}
+                }
+            }
+        }
+
         val MIGRATION_26_27 = object : Migration(26, 27) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.apply {

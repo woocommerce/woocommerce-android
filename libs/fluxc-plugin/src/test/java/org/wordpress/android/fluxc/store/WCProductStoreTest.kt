@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.store
 
 import androidx.test.core.app.ApplicationProvider
 import com.google.gson.JsonObject
-import com.yarolegovich.wellsql.WellSql
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
@@ -24,7 +23,6 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -88,13 +86,6 @@ class WCProductStoreTest {
 
     @Before
     fun setUp() {
-        val config = SingleStoreWellSqlConfigForTests(
-            ApplicationProvider.getApplicationContext(),
-            SiteModel::class.java
-        )
-        WellSql.init(config)
-        config.reset()
-
         productsDao = wcDatabaseRule.db.productsDao
         productsVariationsDao = wcDatabaseRule.db.productVariationsDao
 
@@ -494,10 +485,11 @@ class WCProductStoreTest {
         whenever(productRestClient.fetchProductReviewById(site, reviewModel.remoteProductReviewId.value))
             .thenReturn(RemoteProductReviewPayload(site, reviewModel))
 
-        productStore.fetchSingleProductReview(FetchSingleProductReviewPayload(site, reviewModel.remoteProductReviewId.value))
+        productStore.fetchSingleProductReview(
+            FetchSingleProductReviewPayload(site, reviewModel.remoteProductReviewId.value)
+        )
 
         assertThat(productStore.getProductReviewByRemoteId(site.localId(), reviewModel.remoteProductReviewId)).isNotNull
-        Unit
     }
 
     @Test
@@ -534,7 +526,6 @@ class WCProductStoreTest {
             // then
             assertThat(result.isError).isFalse
             assertThat(result.model).isNotNull
-            Unit
         }
 
     @Test
@@ -568,7 +559,6 @@ class WCProductStoreTest {
 
             // then
             assertThat(result.isError).isTrue
-            Unit
         }
 
     @Test

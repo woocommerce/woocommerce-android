@@ -64,7 +64,6 @@ class AccountRepositoryTest : BaseUnitTest() {
         prefs = appPrefs,
         appCoroutineScope = appCoroutineScope,
         siteVisibilityDataStore = visibleWooSitesDataStore,
-        dispatchers = coroutinesTestRule.testDispatchers,
         pushNotificationRepository = pushNotificationRepository,
         posDataStore = posDataStore
     )
@@ -74,6 +73,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             given(accountStore.hasAccessToken()).willReturn(true)
+            given(siteStore.sitesAccessedViaWPComRest()).willReturn(emptyList())
 
             // WHEN
             repository.logout()
@@ -88,7 +88,7 @@ class AccountRepositoryTest : BaseUnitTest() {
             // GIVEN
             given(accountStore.hasAccessToken()).willReturn(true)
             val sites = List(3) { SiteModel().apply { siteId = it.toLong() } }
-            given(siteStore.sitesAccessedViaWPComRest).willReturn(sites)
+            given(siteStore.sitesAccessedViaWPComRest()).willReturn(sites)
             val sitesDeleted = mutableListOf<SiteModel>()
             given(siteStore.deleteApplicationPassword(any())).willAnswer {
                 val site = it.getArgument(0) as SiteModel

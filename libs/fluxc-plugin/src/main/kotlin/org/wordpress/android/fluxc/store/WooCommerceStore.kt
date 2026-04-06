@@ -101,7 +101,7 @@ open class WooCommerceStore @Inject internal constructor(
 
         emitChange(fetchResult)
 
-        return withContext(Dispatchers.IO) { WooResult(getWooCommerceSites()) }
+        return WooResult(getWooCommerceSites())
     }
 
     suspend fun fetchWooCommerceSite(site: SiteModel): WooResult<SiteModel> {
@@ -124,7 +124,7 @@ open class WooCommerceStore @Inject internal constructor(
         return WooResult(updatedSite)
     }
 
-    fun getWooCommerceSites(): MutableList<SiteModel> =
+    suspend fun getWooCommerceSites(): MutableList<SiteModel> =
         siteStore.getWooCommerceSites().toMutableList()
 
     /**
