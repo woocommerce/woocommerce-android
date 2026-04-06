@@ -5,6 +5,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -25,10 +28,14 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val fetchShippingPackages: FetchShippingPackages = mock()
     private val selectedSite: SelectedSite = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_SHIPPING_FEDEX) } doReturn true
+    }
     private val observeShippingPackages = ObserveShippingPackages(
         selectedSite,
         packageRepository,
-        fetchShippingPackages
+        fetchShippingPackages,
+        featureFlagRepository
     )
 
     @Test
@@ -101,6 +108,55 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
         val result = observeShippingPackages().toList()
 
         assertTrue(result.size == 1)
+    }
+
+    @Test
+    fun `when invoke with fedex carrier packages, then return fedex carrier packages`() = testBlocking {
+        val shippingPackages = generatePackagesData().copy(
+            carrierPackageGroups = listOf(
+                WooShippingPackagesEntity.CarrierPackageGroups(
+                    carrierType = WooShippingPackagesEntity.CarrierType.FEDEX,
+                    packageGroups = listOf(
+                        WooShippingPackagesEntity.CarrierPackageGroup(
+                            description = "FedEx Express Packages",
+                            packages = listOf(
+                                WooShippingPackagesEntity.Package(
+                                    id = "FedExPak",
+                                    name = "Large Pak",
+                                    dimensions = "39.37 x 30.48 x 1.9",
+                                    weight = "0",
+                                    isLetter = true,
+                                    dimensionUnit = "cm",
+                                    weightUnit = "kg",
+                                    saved = false
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        val site = SiteModel().apply { id = 1 }
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(shippingPackages))
+
+        val result = observeShippingPackages().first() as PackagesState.Data
+
+        assertThat(result.carrierPackages[Carrier.FEDEX]).containsExactly(
+            CarrierPackageGroup(
+                groupName = "FedEx Express Packages",
+                packages = listOf(
+                    PackageData(
+                        id = "FedExPak",
+                        name = "Large Pak",
+                        dimensions = "39.37 x 30.48 x 1.9",
+                        weight = "0",
+                        isSelected = false,
+                        isLetter = true,
+                    )
+                )
+            )
+        )
     }
 
     private fun generatePackagesData() = WooShippingPackagesEntity(

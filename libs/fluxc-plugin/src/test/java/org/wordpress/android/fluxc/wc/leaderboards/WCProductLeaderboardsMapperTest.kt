@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.wc.leaderboards
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -12,9 +11,6 @@ import org.mockito.Mockito.spy
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
@@ -25,10 +21,8 @@ import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.ge
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateStubbedProductIdList
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.stubSite
 
-@Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCProductLeaderboardsMapperTest {
-
     private val context = ApplicationProvider.getApplicationContext<Application>()
 
     @Rule
@@ -48,14 +42,6 @@ class WCProductLeaderboardsMapperTest {
 
     @Before
     fun setUp() {
-        SingleStoreWellSqlConfigForTests(
-                context,
-                SiteModel::class.java
-        ).let {
-            WellSql.init(it)
-            it.reset()
-        }
-
         mapperUnderTest = WCProductLeaderboardsMapper()
         productStore = spy(
             WCProductStore(

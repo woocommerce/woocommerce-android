@@ -13,8 +13,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.AccountMapper
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -24,7 +27,11 @@ class ProductTagsDaoTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val site = SiteModel().apply {
         email = "test@example.org"
@@ -32,10 +39,12 @@ class ProductTagsDaoTest {
         siteId = 24
     }
     private lateinit var sut: ProductTagsDao
+    private lateinit var siteSqlUtils: SiteSqlUtils
 
     @Before
     fun setUp() {
-        sut = databaseRule.db.productTagsDao
+        sut = wcDatabaseRule.db.productTagsDao
+        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
     }
 
     @Test
@@ -144,7 +153,7 @@ class ProductTagsDaoTest {
         assertEquals(tags.size, savedTags.size)
 
         // Delete site and verify tags are deleted via foreign key constraint
-        SiteSqlUtils().deleteSite(site)
+        siteSqlUtils.deleteSite(site)
         savedTags = sut.getProductTags(site.localId())
         assertEquals(0, savedTags.size)
     }

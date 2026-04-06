@@ -6,21 +6,25 @@ import com.wellsql.generated.SiteModelTable;
 import com.yarolegovich.wellsql.WellSql;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
-import org.wordpress.android.fluxc.WellSqlTestUtils;
+import org.wordpress.android.fluxc.model.AccountModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.SitesModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookie;
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient;
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient;
+import org.wordpress.android.fluxc.persistence.AccountMapper;
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils;
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException;
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.persistence.domains.DomainDao;
 import org.wordpress.android.fluxc.store.SiteStore;
@@ -31,6 +35,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,17 +54,11 @@ import static org.wordpress.android.fluxc.site.SiteUtils.generateWPComSite;
 
 @RunWith(RobolectricTestRunner.class)
 public class SiteStoreUnitTest {
-    private SiteSqlUtils mSiteSqlUtils = new SiteSqlUtils();
-    private SiteStore mSiteStore = new SiteStore(
-            new Dispatcher(),
-            Mockito.mock(SiteRestClient.class),
-            Mockito.mock(SiteXMLRPCClient.class),
-            Mockito.mock(SiteWPAPIRestClient.class),
-            Mockito.mock(PrivateAtomicCookie.class),
-            mSiteSqlUtils,
-            Mockito.mock(DomainDao.class),
-            CoroutineEngineUtilsKt.initCoroutineEngine()
-    );
+    @Rule
+    public WPDatabaseTestRule wpDatabaseRule = new WPDatabaseTestRule(ApplicationProvider.getApplicationContext());
+
+    private SiteSqlUtils mSiteSqlUtils;
+    private SiteStore mSiteStore;
 
     @Before
     public void setUp() {
@@ -67,6 +67,26 @@ public class SiteStoreUnitTest {
         WellSqlConfig config = new WellSqlConfig(appContext);
         WellSql.init(config);
         config.reset();
+
+        AccountStorePersistence accountStorePersistence = new AccountStorePersistence(
+                wpDatabaseRule.getDb(),
+                new AccountMapper()
+        );
+        AccountModel account = new AccountModel();
+        account.setUserId(20151021);
+        accountStorePersistence.insertOrUpdateDefaultAccount(account);
+
+        mSiteSqlUtils = new SiteSqlUtils(accountStorePersistence);
+        mSiteStore = new SiteStore(
+                new Dispatcher(),
+                Mockito.mock(SiteRestClient.class),
+                Mockito.mock(SiteXMLRPCClient.class),
+                Mockito.mock(SiteWPAPIRestClient.class),
+                Mockito.mock(PrivateAtomicCookie.class),
+                mSiteSqlUtils,
+                Mockito.mock(DomainDao.class),
+                CoroutineEngineUtilsKt.initCoroutineEngine()
+        );
     }
 
     @Test
@@ -82,8 +102,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertOrUpdateSite() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel site = generateWPComSite();
         mSiteSqlUtils.insertOrUpdateSite(site);
 
@@ -93,8 +111,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testHasSiteAndgetCountMethods() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         assertFalse(mSiteStore.hasSite());
         assertTrue(mSiteStore.getSites().isEmpty());
 
@@ -138,8 +154,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testSelfHostedAndJetpackSites() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         // Note: not using the helper methods to make sure of the SiteModel definition
         SiteModel ponySite = new SiteModel();
         ponySite.setXmlRpcUrl("http://pony.com/xmlrpc.php");
@@ -187,8 +201,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testWPComSiteVisibility() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         // Should not cause any errors
         mSiteStore.isWPComSiteVisibleByLocalId(45);
         mSiteSqlUtils.setSiteVisibility(null, true);
@@ -213,8 +225,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testSetAllWPComSitesVisibility() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel selfHostedNonJPSite = generateSelfHostedNonJPSite();
         mSiteSqlUtils.insertOrUpdateSite(selfHostedNonJPSite);
 
@@ -244,8 +254,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testGetIdForIdMethods() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         assertEquals(0, mSiteStore.getLocalIdForRemoteSiteId(555));
         assertEquals(0, mSiteStore.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(2626, ""));
         assertEquals(0, mSiteStore.getSiteIdForLocalId(5577));
@@ -277,8 +285,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testGetSiteBySiteId() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         assertNull(mSiteStore.getSiteBySiteId(555));
 
         SiteModel selfHostedSite = generateSelfHostedNonJPSite();
@@ -296,8 +302,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testDeleteSite() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite = generateWPComSite();
 
         // Should not cause any errors
@@ -312,8 +316,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testGetWPComSites() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite = generateWPComSite();
         SiteModel jetpackSiteOverXMLRPC = generateJetpackSiteOverXMLRPC();
         SiteModel jetpackSiteOverRestOnly = generateJetpackSiteOverRestOnly();
@@ -333,8 +335,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertDuplicateSites() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
         SiteModel jetpack = generateJetpackSiteOverRestOnly();
 
@@ -360,8 +360,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertDuplicateSitesError() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
         SiteModel jetpack = generateJetpackSiteOverRestOnly();
 
@@ -382,8 +380,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertDuplicateSitesDifferentSchemesError1() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
         SiteModel jetpack = generateJetpackSiteOverRestOnly();
 
@@ -407,8 +403,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertDuplicateSitesDifferentSchemesError2() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel futureJetpack = generateSelfHostedSiteFutureJetpack();
         SiteModel jetpack = generateJetpackSiteOverRestOnly();
 
@@ -465,8 +459,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testSearchSitesByNameMatching() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite1 = generateWPComSite();
         wpComSite1.setName("Doctor Emmet Brown Homepage");
         SiteModel wpComSite2 = generateWPComSite();
@@ -489,8 +481,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testSearchSitesByNameOrUrlMatching() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite1 = generateWPComSite();
         wpComSite1.setName("Doctor Emmet Brown Homepage");
         SiteModel wpComSite2 = generateWPComSite();
@@ -511,8 +501,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testSearchWPComSitesByNameOrUrlMatching() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite1 = generateWPComSite();
         wpComSite1.setName("Doctor Emmet Brown Homepage");
         SiteModel wpComSite2 = generateWPComSite();
@@ -533,8 +521,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testRemoveAllSites() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite = generateWPComSite();
         SiteModel jetpackXMLRPCSite = generateJetpackSiteOverXMLRPC();
         SiteModel jetpackRestSite = generateJetpackSiteOverRestOnly();
@@ -555,8 +541,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testWPComAutomatedTransfer() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         SiteModel wpComSite = generateWPComSite();
         mSiteSqlUtils.insertOrUpdateSite(wpComSite);
 
@@ -576,8 +560,6 @@ public class SiteStoreUnitTest {
     @Test
     public void testBatchInsertSiteNoDuplicateWPCom()
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         List<SiteModel> siteList = new ArrayList<>();
         siteList.add(generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true, true));
         siteList.add(generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true, true));
@@ -704,8 +686,6 @@ public class SiteStoreUnitTest {
     @Test
     public void testRemoveWPComRestSitesAbsentFromList()
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        WellSqlTestUtils.setupWordPressComAccount();
-
         final List<SiteModel> allSites = new ArrayList<>();
         final List<SiteModel> sitesToKeep = new ArrayList<>();
 
@@ -763,7 +743,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertAndRetrieveForActiveModules() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
         SiteModel site = generateWPComSite();
         String activeModules = SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE
                                + ","
@@ -779,7 +758,6 @@ public class SiteStoreUnitTest {
 
     @Test
     public void testInsertAndRetrieveForPublicizePermanentlyDisabled() throws DuplicateSiteException {
-        WellSqlTestUtils.setupWordPressComAccount();
         SiteModel site = generateWPComSite();
         site.setIsPublicizePermanentlyDisabled(true);
 

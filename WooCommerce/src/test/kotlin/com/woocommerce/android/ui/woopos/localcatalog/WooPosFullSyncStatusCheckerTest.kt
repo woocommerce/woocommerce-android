@@ -2,20 +2,15 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -35,10 +30,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
-    private val prefsRepo: WooPosPreferencesRepository = mock()
-    private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private val time: DateTimeProvider = mock()
 
     private val siteModel = SiteModel().apply {
@@ -55,10 +47,7 @@ class WooPosFullSyncStatusCheckerTest {
         selectedSite = selectedSite,
         networkStatus = networkStatus,
         localCatalogStore = localCatalogStore,
-        prefsRepo = prefsRepo,
-        checkCatalogSizeAction = checkCatalogSizeAction,
         isLocalCatalogSupported = isLocalCatalogSupported,
-        fileApproachEnabled = fileApproachEnabled,
         wooPosLogWrapper = wooPosLogWrapper,
         time = time
     )
@@ -67,24 +56,19 @@ class WooPosFullSyncStatusCheckerTest {
     fun setup() = runTest {
         val recentTimestamp = NOW - 1.days.inWholeMilliseconds
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(time.now()).thenReturn(NOW)
-        whenever(fileApproachEnabled()).thenReturn(false)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
             .thenReturn(Result.success(15))
-        whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-            .thenReturn(Result.success(5))
-        whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
-            .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
     }
 
     @Test
     fun `given local catalog not supported, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
         runTest {
             // GIVEN
-            whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(false)
+            whenever(isLocalCatalogSupported()).thenReturn(false)
 
             val sut = createSut()
 
@@ -192,8 +176,6 @@ class WooPosFullSyncStatusCheckerTest {
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -247,8 +229,6 @@ class WooPosFullSyncStatusCheckerTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.failure(Exception("Database error")))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -257,112 +237,5 @@ class WooPosFullSyncStatusCheckerTest {
 
             // THEN
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NonBlockingRequired::class.java)
-        }
-
-    @Test
-    fun `given empty catalog and catalog too large, when checkSyncRequirement called, then should disable sync and return LocalCatalogDisabled`() =
-        runTest {
-            // GIVEN
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
-                .thenReturn(
-                    WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge("Too many products")
-                )
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            verify(prefsRepo).disablePeriodicSyncForSite(siteModel.localId())
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
-        }
-
-    @Test
-    fun `given empty catalog and catalog size acceptable, when checkSyncRequirement called, then should check sync requirement normally`() =
-        runTest {
-            // GIVEN
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
-                .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
-            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
-            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
-        }
-
-    @Test
-    fun `given empty catalog and catalog size unknown, when checkSyncRequirement called, then should check sync requirement normally`() =
-        runTest {
-            // GIVEN
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
-                .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeUnknown)
-            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
-            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
-        }
-
-    @Test
-    fun `given non-empty catalog, when checkSyncRequirement called, then should not check catalog size`() =
-        runTest {
-            // GIVEN
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(100))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(50))
-            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
-            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
-
-            val sut = createSut()
-
-            // WHEN
-            sut.checkSyncRequirement()
-
-            // THEN
-            verify(checkCatalogSizeAction, never()).execute(any(), any(), any())
-        }
-
-    @Test
-    fun `given file-based sync enabled, when checkSyncRequirement, then should skip catalog size check`() =
-        runTest {
-            // GIVEN
-            whenever(fileApproachEnabled()).thenReturn(true)
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(0))
-
-            val sut = createSut()
-
-            // WHEN
-            sut.checkSyncRequirement()
-
-            // THEN
-            verify(checkCatalogSizeAction, never()).execute(any(), any(), any())
-            verify(prefsRepo, never()).disablePeriodicSyncForSite(any())
         }
 }

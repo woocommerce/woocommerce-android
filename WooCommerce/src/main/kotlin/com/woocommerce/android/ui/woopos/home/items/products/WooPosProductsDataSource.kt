@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -57,11 +56,9 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
 ) {
     enum class SyncStrategy {
         REMOTE,
-        LOCAL_CATALOG,
         LOCAL_CATALOG_FILE,
     }
 
@@ -69,11 +66,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> if (fileApproachEnabled()) {
-                SyncStrategy.LOCAL_CATALOG_FILE
-            } else {
-                SyncStrategy.LOCAL_CATALOG
-            }
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }

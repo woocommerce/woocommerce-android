@@ -894,6 +894,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
     <string name="order_status_updated">Order status updated</string>
+    <string name="ciab_order_status_open">Open</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
@@ -2328,6 +2329,7 @@
     <string name="restart">Restart</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
+    <string name="settings_troubleshoot_connection">Troubleshoot Connection</string>
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>

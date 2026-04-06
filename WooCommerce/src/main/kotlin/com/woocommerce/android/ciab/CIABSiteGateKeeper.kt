@@ -9,7 +9,7 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     ): Boolean {
         return when (feature) {
             CIABAffectedFeature.POS -> true
-            CIABAffectedFeature.InPersonPayments -> !isCurrentSiteNonProCIAB()
+            CIABAffectedFeature.InPersonPayments -> !isCurrentSiteCIAB() || isCurrentSiteProCIAB()
             else -> !isCurrentSiteCIAB()
         }
     }
@@ -21,10 +21,9 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     fun isCurrentSiteCIAB(): Boolean =
         selectedSite.getOrNull()?.isCIABSite() ?: false
 
-    private fun isCurrentSiteNonProCIAB(): Boolean {
+    private fun isCurrentSiteProCIAB(): Boolean {
         val site = selectedSite.getOrNull() ?: return false
-        if (!site.isCIABSite()) return false
-        return !CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)
+        return site.isCIABSite() && CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)
     }
 
     fun buildPlanUpgradeUrl(): String {

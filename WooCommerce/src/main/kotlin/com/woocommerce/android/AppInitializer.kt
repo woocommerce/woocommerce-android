@@ -52,6 +52,7 @@ import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
@@ -128,6 +129,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
     @Inject lateinit var sendTelemetry: SendTelemetry
+
+    // Required to ensure feature flags are initialized
+    @Inject lateinit var featureFlagRepository: FeatureFlagRepository
 
     @Inject lateinit var siteObserver: SiteObserver
 
