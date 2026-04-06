@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
-import com.wellsql.generated.SiteModelTable
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.wordpress.android.fluxc.Dispatcher
@@ -43,8 +43,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainSuggestionRespo
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedStateResponse
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteMapper
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
+import org.wordpress.android.fluxc.persistence.dao.SiteDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorType.INVALID_COUNTRY_CODE
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_LAUNCHED
@@ -75,7 +76,8 @@ open class SiteStore @Inject constructor(
     private val siteRestClient: SiteRestClient,
     private val siteXMLRPCClient: SiteXMLRPCClient,
     private val siteWPAPIRestClient: SiteWPAPIRestClient,
-    private val siteSqlUtils: SiteSqlUtils,
+    private val siteDao: SiteDao,
+    private val siteMapper: SiteMapper,
     private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
     private val coroutineEngine: CoroutineEngine
@@ -197,8 +199,8 @@ open class SiteStore @Inject constructor(
         constructor(siteError: SiteError) : this(0, siteError)
     }
 
-    data class OnSiteRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
-    data class OnAllSitesRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
+    class OnSiteRemoved : OnChanged<SiteError>()
+    class OnAllSitesRemoved : OnChanged<SiteError>()
 
     data class OnConnectSiteInfoChecked(@JvmField val info: ConnectSiteInfoPayload) : OnChanged<SiteError>()
 
@@ -382,61 +384,59 @@ open class SiteStore @Inject constructor(
      * Returns all sites in the store as a [SiteModel] list.
      */
     val sites: List<SiteModel>
-        get() = siteSqlUtils.getSites()
+        get() = runBlocking { siteDao.getAllSites() }
+            .map { siteMapper.toModel(it) }
 
     /**
      * Obtains the site with the given (local) id and returns it as a [SiteModel].
      */
-    fun getSiteByLocalId(id: Int) = siteSqlUtils.getSitesWithLocalId(id).firstOrNull()
+    fun getSiteByLocalId(id: Int) = runBlocking { siteDao.getByLocalId(id) }
+        ?.let { siteMapper.toModel(it) }
 
     /**
      * Returns sites accessed via WPCom REST API (WPCom sites or Jetpack sites connected via WPCom REST API).
      */
-    val sitesAccessedViaWPComRest: List<SiteModel>
-        get() = siteSqlUtils.sitesAccessedViaWPComRest.asModel
+    suspend fun sitesAccessedViaWPComRest(): List<SiteModel> =
+        siteDao.getByOrigin(SiteModel.ORIGIN_WPCOM_REST)
+            .map { siteMapper.toModel(it) }
 
     /**
      * Returns sites with a name or url matching the search string.
      */
-    fun getSitesByNameOrUrlMatching(searchString: String): List<SiteModel> {
-        return siteSqlUtils.getSitesByNameOrUrlMatching(searchString)
-    }
+    suspend fun getSitesByNameOrUrlMatching(searchString: String): List<SiteModel> =
+        siteDao.getByNameOrUrlMatching(searchString)
+            .map { siteMapper.toModel(it) }
 
     /**
      * Returns sites accessed via WPCom REST API (WPCom sites or Jetpack sites connected via WPCom REST API) with a
      * name or url matching the search string.
      */
-    fun getSitesAccessedViaWPComRestByNameOrUrlMatching(searchString: String): List<SiteModel> {
-        return siteSqlUtils.getSitesAccessedViaWPComRestByNameOrUrlMatching(searchString)
-    }
+    suspend fun getSitesAccessedViaWPComRestByNameOrUrlMatching(searchString: String): List<SiteModel> =
+        siteDao.getByOriginAndNameOrUrlMatching(SiteModel.ORIGIN_WPCOM_REST, searchString)
+            .map { siteMapper.toModel(it) }
 
     /**
      * Returns sites accessed via XMLRPC (self-hosted sites or Jetpack sites accessed via XMLRPC).
      */
     val sitesAccessedViaXMLRPC: List<SiteModel>
-        get() = siteSqlUtils.sitesAccessedViaXMLRPC.asModel
+        get() = runBlocking { siteDao.getByOrigin(SiteModel.ORIGIN_XMLRPC)
+            .map { siteMapper.toModel(it) } }
 
     /**
      * Given a .COM site ID (either a .COM site id, or the .COM id of a Jetpack site), returns the site as a
      * [SiteModel].
      */
     fun getSiteBySiteId(siteId: Long): SiteModel? {
-        if (siteId == 0L) {
-            return null
-        }
-        val sites = siteSqlUtils.getSitesWithRemoteId(siteId)
-        return if (sites.isEmpty()) {
-            null
-        } else {
-            sites[0]
-        }
+        if (siteId == 0L) return null
+        return runBlocking { siteDao.getByRemoteId(siteId).firstOrNull() }
+            ?.let { siteMapper.toModel(it) }
     }
 
     @Throws(SiteStorePersistence.DuplicateSiteException::class)
-    fun insertOrUpdateSite(site: SiteModel): Int = siteStorePersistence.insertOrUpdateSite(site)
+    suspend fun insertOrUpdateSite(site: SiteModel): Int = siteStorePersistence.insertOrUpdateSite(site)
 
-    fun getWooCommerceSites(): List<SiteModel> =
-        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+    suspend fun getWooCommerceSites(): List<SiteModel> = siteDao.getWooSites()
+        .map { siteMapper.toModel(it) }
 
     @Subscribe(threadMode = ASYNC)
     @Suppress("LongMethod", "ComplexMethod")
@@ -444,7 +444,9 @@ open class SiteStore @Inject constructor(
         val actionType = action.type as? SiteAction ?: return
         when (actionType) {
             FETCH_PROFILE_XML_RPC -> fetchProfileXmlRpc(action.payload as SiteModel)
-            FETCHED_PROFILE_XML_RPC -> updateSiteProfile(action.payload as SiteModel)
+            FETCHED_PROFILE_XML_RPC -> coroutineEngine.launch(T.API, this, "updateSiteProfile") {
+                updateSiteProfile(action.payload as SiteModel)
+            }
             FETCH_SITE -> coroutineEngine.launch(T.MAIN, this, "Fetch site") {
                 emitChange(fetchSite(action.payload as SiteModel))
             }
@@ -454,18 +456,22 @@ open class SiteStore @Inject constructor(
             FETCH_SITES_XML_RPC -> coroutineEngine.launch(T.MAIN, this, "Fetch XMLRPC sites") {
                 emitChange(fetchSitesXmlRpc(action.payload as RefreshSitesXMLRPCPayload))
             }
-            UPDATE_SITE -> {
+            UPDATE_SITE -> coroutineEngine.launch(T.API, this, "updateSite") {
                 emitChange(updateSite(action.payload as SiteModel))
             }
-            REMOVE_SITE -> removeSite(action.payload as SiteModel)
-            REMOVE_ALL_SITES -> removeAllSites()
+            REMOVE_SITE -> coroutineEngine.launch(T.API, this, "removeSite") {
+                removeSite(action.payload as SiteModel)
+            }
+            REMOVE_ALL_SITES -> coroutineEngine.launch(T.API, this, "removeAllSites") {
+                removeAllSites()
+            }
             FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as String)
             FETCHED_CONNECT_SITE_INFO -> handleFetchedConnectSiteInfo(action.payload as ConnectSiteInfoPayload)
             SUGGEST_DOMAINS -> suggestDomains(action.payload as SuggestDomainsPayload)
             SUGGESTED_DOMAINS -> handleSuggestedDomains(action.payload as SuggestDomainsResponsePayload)
             FETCH_DOMAIN_SUPPORTED_STATES -> fetchSupportedStates(action.payload as String)
             FETCHED_DOMAIN_SUPPORTED_STATES -> handleFetchedSupportedStates(
-                    action.payload as DomainSupportedStatesResponsePayload
+                action.payload as DomainSupportedStatesResponsePayload
             )
             DESIGNATE_PRIMARY_DOMAIN -> designatePrimaryDomain(action.payload as DesignatePrimaryDomainPayload)
             DESIGNATED_PRIMARY_DOMAIN -> handleDesignatedPrimaryDomain(action.payload as DesignatedPrimaryDomainPayload)
@@ -508,7 +514,7 @@ open class SiteStore @Inject constructor(
     }
 
     @Suppress("ForbiddenComment", "SwallowedException")
-    private fun updateSiteProfile(siteModel: SiteModel) {
+    private suspend fun updateSiteProfile(siteModel: SiteModel) {
         val event = OnProfileFetched(siteModel)
         if (siteModel.isError) {
             // TODO: what kind of error could we get here?
@@ -524,7 +530,7 @@ open class SiteStore @Inject constructor(
     }
 
     @Suppress("ForbiddenComment", "SwallowedException")
-    private fun updateSite(siteModel: SiteModel): OnSiteChanged {
+    private suspend fun updateSite(siteModel: SiteModel): OnSiteChanged {
         return if (siteModel.isError) {
             // TODO: what kind of error could we get here?
             OnSiteChanged(SiteErrorUtils.genericToSiteError(siteModel.error))
@@ -538,7 +544,7 @@ open class SiteStore @Inject constructor(
     }
 
     @Suppress("ForbiddenComment")
-    private fun updateSites(sitesModel: SitesModel): OnSiteChanged {
+    private suspend fun updateSites(sitesModel: SitesModel): OnSiteChanged {
         val event = if (sitesModel.isError) {
             // TODO: what kind of error could we get here?
             OnSiteChanged(SiteErrorUtils.genericToSiteError(sitesModel.error))
@@ -554,7 +560,7 @@ open class SiteStore @Inject constructor(
     }
 
     @Suppress("ForbiddenComment")
-    private fun handleFetchedSitesWPComRest(fetchedSites: SitesModel): OnSiteChanged {
+    private suspend fun handleFetchedSitesWPComRest(fetchedSites: SitesModel): OnSiteChanged {
         return if (fetchedSites.isError) {
             // TODO: what kind of error could we get here?
             OnSiteChanged(SiteErrorUtils.genericToSiteError(fetchedSites.error))
@@ -565,14 +571,17 @@ open class SiteStore @Inject constructor(
             } else {
                 OnSiteChanged(res.rowsAffected, res.updatedSites)
             }
-            siteSqlUtils.removeWPComRestSitesAbsentFromList(fetchedSites.sites)
+            siteDao.deleteByOriginNotInList(
+                SiteModel.ORIGIN_WPCOM_REST,
+                fetchedSites.sites.map { it.siteId }
+            )
 
             result
         }
     }
 
     @Suppress("SwallowedException")
-    private fun createOrUpdateSites(sites: SitesModel): UpdateSitesResult {
+    private suspend fun createOrUpdateSites(sites: SitesModel): UpdateSitesResult {
         var rowsAffected = 0
         var duplicateSiteFound = false
         val updatedSites = mutableListOf<SiteModel>()
@@ -590,7 +599,7 @@ open class SiteStore @Inject constructor(
         return UpdateSitesResult(rowsAffected, updatedSites, duplicateSiteFound)
     }
 
-    private fun createOrUpdateSite(site: SiteModel, includesAppPasswordsUrl: Boolean): Int {
+    private suspend fun createOrUpdateSite(site: SiteModel, includesAppPasswordsUrl: Boolean): Int {
         val freshSiteFromDB = getSiteBySiteId(site.siteId)
         // Update the site with existing values from the DB that are not returned by the REST API
         if (freshSiteFromDB != null) {
@@ -607,14 +616,14 @@ open class SiteStore @Inject constructor(
         return insertOrUpdateSite(site)
     }
 
-    private fun removeSite(site: SiteModel) {
-        val rowsAffected = siteSqlUtils.deleteSite(site)
-        emitChange(OnSiteRemoved(rowsAffected))
+    private suspend fun removeSite(site: SiteModel) {
+        siteDao.deleteByLocalId(site.id)
+        emitChange(OnSiteRemoved())
     }
 
-    private fun removeAllSites() {
-        val rowsAffected = siteSqlUtils.deleteAllSites()
-        val event = OnAllSitesRemoved(rowsAffected)
+    private suspend fun removeAllSites() {
+        siteDao.deleteAll()
+        val event = OnAllSitesRemoved()
 
         emitChange(event)
     }

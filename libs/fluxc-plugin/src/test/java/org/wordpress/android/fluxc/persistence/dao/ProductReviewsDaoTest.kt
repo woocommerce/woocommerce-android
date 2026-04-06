@@ -15,7 +15,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -25,6 +25,10 @@ class ProductReviewsDaoTest {
     @Rule
     @JvmField
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductReviewsDao
 
@@ -135,7 +139,7 @@ class ProductReviewsDaoTest {
         assertEquals(reviews.size, savedReviews.size)
 
         // Delete site and verify reviews deleted via foreign key constraint
-        SiteSqlUtils().deleteSite(site)
+        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
         savedReviews = sut.getProductReviews(siteId = site.localId())
         assertEquals(0, savedReviews.size)
     }

@@ -15,7 +15,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 
 @RunWith(RobolectricTestRunner::class)
@@ -23,6 +23,10 @@ class ProductShippingClassesDaoTest {
     @Rule
     @JvmField
     val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductShippingClassesDao
 
@@ -127,7 +131,7 @@ class ProductShippingClassesDaoTest {
         assertEquals(shippingClassList.size, savedShippingClassList.size)
 
         // Delete site and verify shipping class list  deleted via foreign key constraint
-        SiteSqlUtils().deleteSite(site)
+        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
         savedShippingClassList = sut.getProductShippingClasses(site.localId())
         assertEquals(0, savedShippingClassList.size)
     }

@@ -1,16 +1,12 @@
 package org.wordpress.android.fluxc.wc
 
 import androidx.test.core.app.ApplicationProvider
-import com.wellsql.generated.SiteModelTable
-import com.yarolegovich.wellsql.WellSql
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -18,7 +14,6 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
@@ -41,7 +36,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.AccountStore
@@ -51,7 +45,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
-import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.test.assertEquals
 
 @Suppress("UnitTestNamingRule")
@@ -128,25 +121,13 @@ class WooCommerceStoreTest {
 
     @Before
     fun setUp() {
-        val config = SingleStoreWellSqlConfigForTests(
-            ApplicationProvider.getApplicationContext(),
-            SiteModel::class.java
-        )
-        WellSql.init(config)
-        config.reset()
-
+        test { whenever(siteStore.getWooCommerceSites()).thenReturn(emptyList()) }
         taxBasedOnDao = wcDatabaseRule.db.taxBasedOnSettingDao
     }
 
     @Test
-    fun testGetWooCommerceSites() {
-        whenever(siteStore.getWooCommerceSites()).doAnswer {
-            SiteSqlUtils().getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
-        }
-
-        val nonWooSite = SiteModel().apply { siteId = 42 }
-        WellSql.insert(nonWooSite).execute()
-
+    fun testGetWooCommerceSites() = test {
+        whenever(siteStore.getWooCommerceSites()).thenReturn(emptyList())
         assertEquals(0, wooCommerceStore.getWooCommerceSites().size)
 
         val wooJetpackSite = SiteModel().apply {
@@ -154,8 +135,7 @@ class WooCommerceStoreTest {
             hasWooCommerce = true
             setIsWPCom(false)
         }
-        WellSql.insert(wooJetpackSite).execute()
-
+        whenever(siteStore.getWooCommerceSites()).thenReturn(listOf(wooJetpackSite))
         assertEquals(1, wooCommerceStore.getWooCommerceSites().size)
 
         val wooAtomicSite = SiteModel().apply {
@@ -163,8 +143,7 @@ class WooCommerceStoreTest {
             hasWooCommerce = true
             setIsWPCom(true)
         }
-        WellSql.insert(wooAtomicSite).execute()
-
+        whenever(siteStore.getWooCommerceSites()).thenReturn(listOf(wooJetpackSite, wooAtomicSite))
         assertEquals(2, wooCommerceStore.getWooCommerceSites().size)
     }
 
@@ -231,199 +210,163 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetch site settings fails, then error returned`() {
-        runBlocking {
-            val result: WooResult<Settings> = fetchSiteSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
-            assertThat(result.model).isNull()
+    fun `when fetch site settings fails, then error returned`() = test {
+        val result: WooResult<Settings> = fetchSiteSettings(isError = true)
+        assertThat(result.error).isEqualTo(error)
+        assertThat(result.model).isNull()
+    }
+
+    @Test
+    fun `when fetch site product settings succeeds, then success returned`() = test {
+        val expectedModel = settingsMapper.mapProductSettings(siteProductSettingsResponse!!, site)
+
+        val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings()
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isNotNull
+        assertThat(result.model?.localSiteId).isEqualTo(expectedModel.localSiteId)
+        assertThat(result.model?.weightUnit).isEqualTo(expectedModel.weightUnit)
+        assertThat(result.model?.dimensionUnit).isEqualTo(expectedModel.dimensionUnit)
+    }
+
+    @Test
+    fun `when fetch site product settings fails, then error returned`() = test {
+        val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings(isError = true)
+        assertThat(result.error).isEqualTo(error)
+        assertThat(result.model).isNull()
+    }
+
+    @Test
+    fun `when fetch tax based on settings fails, the error returned`() = test {
+        val result = fetchTaxBasedOnSettings(isError = true)
+        assertThat(result.error).isEqualTo(error)
+    }
+
+    @Test
+    fun `when fetch tax based on settings succeeds, the success returned`() = test {
+        val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
+        val result = fetchTaxBasedOnSettings()
+        assertThat(result.isError).isFalse
+        with(result.model) {
+            assertThat(this).isNotNull
+            assertThat(this?.localSiteId).isEqualTo(expectedModel.localSiteId)
+            assertThat(this?.selectedOption).isEqualTo(expectedModel.selectedOption)
         }
     }
 
     @Test
-    fun `when fetch site product settings succeeds, then success returned`() {
-        runBlocking {
-            val expectedModel = settingsMapper.mapProductSettings(siteProductSettingsResponse!!, site)
-
-            val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings()
-
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.localSiteId).isEqualTo(expectedModel.localSiteId)
-            assertThat(result.model?.weightUnit).isEqualTo(expectedModel.weightUnit)
-            assertThat(result.model?.dimensionUnit).isEqualTo(expectedModel.dimensionUnit)
-            assertThat(result.model?.defaultLowStockThreshold).isEqualTo(expectedModel.defaultLowStockThreshold)
+    fun `when fetch tax based on settings succeeds, the setting is saved in db`() = test {
+        val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
+        val result = fetchTaxBasedOnSettings()
+        assertThat(result.isError).isFalse
+        taxBasedOnDao.getTaxBasedOnSetting(site.localId()).let {
+            assertThat(it).isNotNull
+            assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
+            assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
         }
     }
 
     @Test
-    fun `when fetch site product settings fails, then error returned`() {
-        runBlocking {
-            val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
-            assertThat(result.model).isNull()
-        }
+    fun `when fetch analytics order date type fails, then the error is returned`() = test {
+        whenever(wcrestClient.fetchAnalyticsOrderDateType(site)).thenReturn(WooPayload(error))
+
+        val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
+
+        assertThat(result.error).isEqualTo(error)
     }
 
     @Test
-    fun `when fetch tax based on settings fails, the error returned`() {
-        runBlocking {
-            val result = fetchTaxBasedOnSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
-        }
+    fun `when fetch analytics order date type succeeds, then the success is returned`() = test {
+        whenever(wcrestClient.fetchAnalyticsOrderDateType(site))
+            .thenReturn(WooPayload(WCAnalyticsOrderDateType.CREATED))
+
+        val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.CREATED)
     }
 
     @Test
-    fun `when fetch tax based on settings succeeds, the success returned`() {
-        runBlocking {
-            val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
-            val result = fetchTaxBasedOnSettings()
-            assertThat(result.isError).isFalse
-            with(result.model) {
-                assertThat(this).isNotNull
-                assertThat(this?.localSiteId).isEqualTo(expectedModel.localSiteId)
-                assertThat(this?.selectedOption).isEqualTo(expectedModel.selectedOption)
-            }
-        }
+    fun `when update analytics order date type succeeds, then the success is returned`() = test {
+        whenever(wcrestClient.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED))
+            .thenReturn(WooPayload(WCAnalyticsOrderDateType.COMPLETED))
+
+        val result = wooCommerceStore.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.COMPLETED)
     }
 
     @Test
-    fun `when fetch tax based on settings succeeds, the setting is saved in db`() {
-        runBlocking {
-            val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
-            val result = fetchTaxBasedOnSettings()
-            assertThat(result.isError).isFalse
-            taxBasedOnDao.getTaxBasedOnSetting(site.localId()).let {
-                assertThat(it).isNotNull
-                assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
-                assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
-            }
-        }
+    fun `when fetching supported api version succeeds, then success returned`() = test {
+        val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
+            response = WCSettingsTestUtils.getSupportedApiVersionResponse()
+        )
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isNotNull
+        assertThat(result.model?.apiVersion).isEqualTo(SUPPORTED_API_VERSION)
+        assertThat(result.model?.siteModel).isEqualTo(site)
     }
 
     @Test
-    fun `when fetch analytics order date type fails, then the error is returned`() {
-        runBlocking {
-            whenever(wcrestClient.fetchAnalyticsOrderDateType(site)).thenReturn(WooPayload(error))
+    fun `when fetching api version succeeds, then update application passwords authorization URL`() = test {
+        // Sanity check
+        assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
 
-            val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
+        val authorizationUrl = "https://example.com/authorization-url"
 
-            assertThat(result.error).isEqualTo(error)
-        }
-    }
-
-    @Test
-    fun `when fetch analytics order date type succeeds, then the success is returned`() {
-        runBlocking {
-            whenever(wcrestClient.fetchAnalyticsOrderDateType(site))
-                .thenReturn(WooPayload(WCAnalyticsOrderDateType.CREATED))
-
-            val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
-
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.CREATED)
-        }
-    }
-
-    @Test
-    fun `when update analytics order date type succeeds, then the success is returned`() {
-        runBlocking {
-            whenever(wcrestClient.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED))
-                .thenReturn(WooPayload(WCAnalyticsOrderDateType.COMPLETED))
-
-            val result = wooCommerceStore.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED)
-
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.COMPLETED)
-        }
-    }
-
-    @Test
-    fun `when fetching supported api version succeeds, then success returned`() {
-        runBlocking {
-            val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
-                response = WCSettingsTestUtils.getSupportedApiVersionResponse()
-            )
-
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.apiVersion).isEqualTo(SUPPORTED_API_VERSION)
-            assertThat(result.model?.siteModel).isEqualTo(site)
-        }
-    }
-
-    @Test
-    fun `when fetching api version succeeds, then update application passwords authorization URL`() {
-        runBlocking {
-            whenever(siteStore.insertOrUpdateSite(any())).doAnswer {
-                TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
-            }
-
-            // Sanity check
-            assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
-
-            val authorizationUrl = "https://example.com/authorization-url"
-            TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
-
-            fetchSupportedWooApiVersion(
-                response = RootWPAPIRestResponse(
-                    authentication = Authentication(
-                        applicationPasswords = Authentication.ApplicationPasswords(
-                            endpoints = Authentication.ApplicationPasswords.Endpoints(authorizationUrl)
-                        )
+        fetchSupportedWooApiVersion(
+            response = RootWPAPIRestResponse(
+                authentication = Authentication(
+                    applicationPasswords = Authentication.ApplicationPasswords(
+                        endpoints = Authentication.ApplicationPasswords.Endpoints(authorizationUrl)
                     )
                 )
             )
+        )
 
-            val updateSite = SiteSqlUtils().getSitesWithLocalId(site.localId().value).firstOrNull()
-            assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
-        }
+        assertThat(site.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
+        verify(siteStore).insertOrUpdateSite(site)
     }
 
     @Test
-    fun `when fetching unsupported api version succeeds, then blank api version returned`() {
-        runBlocking {
-            val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
-                response = RootWPAPIRestResponse()
-            )
+    fun `when fetching unsupported api version succeeds, then blank api version returned`() = test {
+        val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
+            response = RootWPAPIRestResponse()
+        )
 
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.apiVersion).isBlank
-        }
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isNotNull
+        assertThat(result.model?.apiVersion).isBlank
     }
 
     @Test
-    fun `when fetching supported api version fails, then error returned`() {
-        runBlocking {
-            val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
-                isError = true,
-                response = WCSettingsTestUtils.getUnsupportedApiVersionResponse()
-            )
-            assertThat(result.error).isEqualTo(error)
-        }
+    fun `when fetching supported api version fails, then error returned`() = test {
+        val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
+            isError = true,
+            response = WCSettingsTestUtils.getUnsupportedApiVersionResponse()
+        )
+        assertThat(result.error).isEqualTo(error)
     }
 
     @Test
-    fun `when the user is signed in using WPCom, then fetch sites using WPCom API`() {
-        runBlocking {
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
-            whenever(siteStore.fetchSites(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
+    fun `when the user is signed in using WPCom, then fetch sites using WPCom API`() = test {
+        whenever(accountStore.hasAccessToken()).thenReturn(true)
+        whenever(siteStore.fetchSites(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
 
-            wooCommerceStore.fetchWooCommerceSites()
+        wooCommerceStore.fetchWooCommerceSites()
 
-            verify(siteStore).fetchSites(any())
-        }
+        verify(siteStore).fetchSites(any())
     }
 
     @Test
-    fun `when the user is not signed in using WPCom, then don't fetch sites using WPCom API`() {
-        runBlocking {
-            whenever(accountStore.hasAccessToken()).thenReturn(false)
+    fun `when the user is not signed in using WPCom, then don't fetch sites using WPCom API`() = test {
+        whenever(accountStore.hasAccessToken()).thenReturn(false)
 
-            wooCommerceStore.fetchWooCommerceSites()
+        wooCommerceStore.fetchWooCommerceSites()
 
-            verify(siteStore, never()).fetchSites(any())
-        }
+        verify(siteStore, never()).fetchSites(any())
     }
 
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {

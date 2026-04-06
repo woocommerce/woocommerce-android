@@ -179,7 +179,7 @@ class JetpackActivationRepository @Inject constructor(
         }.firstOrNull()
     }
 
-    fun setSelectedSiteAndCleanOldSites(jetpackSite: SiteModel) {
+    suspend fun setSelectedSiteAndCleanOldSites(jetpackSite: SiteModel) {
         val baseUrl = UrlUtils.removeScheme(jetpackSite.url).trim('/')
 
         // Remove all previous entries that don't use WPCom REST API
