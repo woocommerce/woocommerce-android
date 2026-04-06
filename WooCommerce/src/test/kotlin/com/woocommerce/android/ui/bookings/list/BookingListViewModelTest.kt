@@ -8,7 +8,7 @@ import com.automattic.eventhorizon.BookingListSortByOptionTapEvent
 import com.automattic.eventhorizon.BookingListSortByTapEvent
 import com.automattic.eventhorizon.BookingListTabSelectEvent
 import com.automattic.eventhorizon.BookingListViewEvent
-import com.automattic.eventhorizon.BookingTabValueType
+import com.automattic.eventhorizon.BookingTabValue
 import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
@@ -502,7 +502,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListTabSelectEvent &&
-                    this.selectedTab == BookingTabValueType.Upcoming
+                    this.selectedTab == BookingTabValue.Upcoming
             }
         )
     }
@@ -519,7 +519,7 @@ class BookingListViewModelTest : BaseUnitTest() {
                 this is BookingListBookingTapEvent &&
                     this.isSearchActive == false &&
                     this.isFilteringActive == false &&
-                    this.selectedTab == BookingTabValueType.Today
+                    this.selectedTab == BookingTabValue.Today
             }
         )
     }
@@ -565,7 +565,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListSortByOptionTapEvent &&
-                    this.sortOption == com.automattic.eventhorizon.BookingSortValueType.OldestFirst
+                    this.sortOption == com.automattic.eventhorizon.BookingSortValue.OldestFirst
             }
         )
     }
@@ -620,7 +620,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingListViewEvent &&
-                    this.selectedTab == BookingTabValueType.Today &&
+                    this.selectedTab == BookingTabValue.Today &&
                     this.isDefaultTab == true &&
                     this.isListEmpty == false &&
                     this.isFiltered == false

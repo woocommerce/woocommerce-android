@@ -1,24 +1,24 @@
 package com.woocommerce.android.ui.bookings
 
-import com.automattic.eventhorizon.BookingAttendanceValueType
-import com.automattic.eventhorizon.BookingSortValueType
-import com.automattic.eventhorizon.BookingTabValueType
+import com.automattic.eventhorizon.BookingAttendanceValue
+import com.automattic.eventhorizon.BookingSortValue
+import com.automattic.eventhorizon.BookingTabValue
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.bookings.list.BookingListTab
 
-fun BookingListTab.toEventHorizonValue(): BookingTabValueType = when (this) {
-    BookingListTab.Today -> BookingTabValueType.Today
-    BookingListTab.Upcoming -> BookingTabValueType.Upcoming
-    BookingListTab.All -> BookingTabValueType.All
+fun BookingListTab.toEventHorizonValue(): BookingTabValue = when (this) {
+    BookingListTab.Today -> BookingTabValue.Today
+    BookingListTab.Upcoming -> BookingTabValue.Upcoming
+    BookingListTab.All -> BookingTabValue.All
 }
 
-fun BookingListSortOption.toEventHorizonValue(): BookingSortValueType = when (this) {
-    BookingListSortOption.NewestToOldest -> BookingSortValueType.NewestFirst
-    BookingListSortOption.OldestToNewest -> BookingSortValueType.OldestFirst
+fun BookingListSortOption.toEventHorizonValue(): BookingSortValue = when (this) {
+    BookingListSortOption.NewestToOldest -> BookingSortValue.NewestFirst
+    BookingListSortOption.OldestToNewest -> BookingSortValue.OldestFirst
 }
 
-fun BookingAttendanceStatus.toEventHorizonValue(): BookingAttendanceValueType = when (this) {
-    BookingAttendanceStatus.Attended -> BookingAttendanceValueType.Attended
-    BookingAttendanceStatus.Unattended -> BookingAttendanceValueType.Unattended
+fun BookingAttendanceStatus.toEventHorizonValue(): BookingAttendanceValue = when (this) {
+    BookingAttendanceStatus.Attended -> BookingAttendanceValue.Attended
+    BookingAttendanceStatus.Unattended -> BookingAttendanceValue.Unattended
 }

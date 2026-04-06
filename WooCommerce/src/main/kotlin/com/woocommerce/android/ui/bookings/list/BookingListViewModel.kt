@@ -19,8 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.PaymentStatusResolver
-import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
+import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -379,7 +379,6 @@ class BookingListViewModel @Inject constructor(
             )
         )
     }
-
 
     private data class FetchParams(
         val searchQuery: String?,

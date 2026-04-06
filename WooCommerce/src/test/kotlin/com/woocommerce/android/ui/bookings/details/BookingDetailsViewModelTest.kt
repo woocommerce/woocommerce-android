@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
-import com.automattic.eventhorizon.BookingAttendanceValueType
+import com.automattic.eventhorizon.BookingAttendanceValue
 import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
 import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
 import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
@@ -393,7 +393,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             argThat<Trackable> {
                 this is BookingDetailAttendanceStatusUpdateEvent &&
-                    this.bookingStatus == BookingAttendanceValueType.Attended
+                    this.bookingStatus == BookingAttendanceValue.Attended
             }
         )
     }

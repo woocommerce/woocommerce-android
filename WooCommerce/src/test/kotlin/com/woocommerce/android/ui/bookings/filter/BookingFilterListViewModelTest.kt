@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.bookings.filter
 import androidx.lifecycle.SavedStateHandle
 import com.automattic.eventhorizon.BookingListApplyFiltersEvent
 import com.automattic.eventhorizon.Trackable
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
