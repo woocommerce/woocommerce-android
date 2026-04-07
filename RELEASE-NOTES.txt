@@ -5,6 +5,7 @@
 24.6
 -----
 - [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
+- [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
 - [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
 - [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
 - [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]

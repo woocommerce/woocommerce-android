@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreProductsConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
@@ -60,6 +61,7 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
         wpComConnectionCheckData = viewState?.wpComCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
         storeOrdersCheckData = viewState?.ordersCheckData,
+        storeProductsCheckData = viewState?.productsCheckData,
         isWPComCheckVisible = viewState?.isWPComCheckVisible ?: true,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onReturnClick = viewModel::onReturnClicked
@@ -74,6 +76,7 @@ fun ConnectivityToolScreen(
     wpComConnectionCheckData: WPComConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
     storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
+    storeProductsCheckData: StoreProductsConnectivityCheckData?,
     isWPComCheckVisible: Boolean,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
@@ -105,6 +108,7 @@ fun ConnectivityToolScreen(
         }
         ConnectivityCheckCard(storeConnectionCheckData)
         ConnectivityCheckCard(storeOrdersCheckData)
+        ConnectivityCheckCard(storeProductsCheckData)
 
         ConnectivitySummary(
             shouldDisplaySummarySection = shouldDisplaySummarySection,
@@ -323,6 +327,9 @@ fun ConnectivityToolScreenPreview() {
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
+            ),
+            storeProductsCheckData = StoreProductsConnectivityCheckData(
+                connectivityCheckStatus = NotStarted
             ),
             isWPComCheckVisible = true,
             onContactSupportClicked = {},

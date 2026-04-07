@@ -526,6 +526,7 @@
     <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes, or contact our support team and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_store_check_title">Connecting to your site</string>
     <string name="orderlist_connectivity_tool_store_orders_check_title">Fetching your site orders</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Fetching products in your store</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
     <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
     <string name="orderlist_connectivity_tool_retry_action">Retry connection</string>
@@ -2383,6 +2384,10 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+
+    <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
+    <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>
+    <string name="support_override_feature_flags_detail" translatable="false">Toggle feature flags before logging in</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
     <string name="support_system_status_report_fetch_error">Error fetching SSR. Please check WooCommerce -&gt; Status in wp-admin.</string>
     <string name="help">Help</string>
