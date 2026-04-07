@@ -30,7 +30,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val connectionTypeProvider: WooPosConnectionTypeProvider,
 ) {
-    val syncProgress: StateFlow<WooPosFileBasedSyncAction.SyncProgress?> = posFileBasedSyncAction.syncProgress
+    val syncState: StateFlow<WooPosFileBasedSyncAction.SyncState?> = posFileBasedSyncAction.syncState
 
     companion object {
         const val PAGE_SIZE = 100

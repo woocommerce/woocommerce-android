@@ -30,7 +30,7 @@ class WooPosProductsDataSourceTest {
     private val localDbDataSource: WooPosProductsInDbDataSource = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val syncRepository: WooPosLocalCatalogSyncRepository = mock {
-        on { syncProgress }.thenReturn(MutableStateFlow(null))
+        on { syncState }.thenReturn(MutableStateFlow(null))
     }
 
     @Rule

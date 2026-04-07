@@ -34,10 +34,13 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
     }
-    data class SyncProgress(val processed: Int, val total: Int)
+    sealed class SyncState {
+        data object Preparing : SyncState()
+        data class Progress(val processed: Int, val total: Int) : SyncState()
+    }
 
-    private val _syncProgress = MutableStateFlow<SyncProgress?>(null)
-    val syncProgress: StateFlow<SyncProgress?> = _syncProgress
+    private val _syncState = MutableStateFlow<SyncState?>(null)
+    val syncState: StateFlow<SyncState?> = _syncState
 
     sealed class WooPosFileBasedSyncResult {
         data class Success(
@@ -51,7 +54,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
-        _syncProgress.value = null
+        _syncState.value = null
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
@@ -183,12 +186,16 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 val processed = result.processed
                 val total = result.total
                 if (processed != null && total != null) {
-                    _syncProgress.value = SyncProgress(processed = processed, total = total)
+                    _syncState.value = SyncState.Progress(processed = processed, total = total)
                 }
                 null
             }
 
-            WooPosGenerateCatalogState.SCHEDULED,
+            WooPosGenerateCatalogState.SCHEDULED -> {
+                _syncState.value = SyncState.Preparing
+                null
+            }
+
             WooPosGenerateCatalogState.UNKNOWN -> null
         }
     }

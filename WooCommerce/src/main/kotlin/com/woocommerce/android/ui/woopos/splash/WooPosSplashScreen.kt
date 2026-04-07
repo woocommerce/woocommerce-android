@@ -46,10 +46,15 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
             Loading()
         }
         is WooPosSplashState.Syncing,
+        is WooPosSplashState.SyncPreparing,
         is WooPosSplashState.SyncProgress -> {
-            val progressText = (currentState as? WooPosSplashState.SyncProgress)
-                ?.takeIf { it.total > 0 }
-                ?.let { stringResource(R.string.woopos_home_syncing_catalog_progress, it.processed, it.total) }
+            val progressText = when (currentState) {
+                is WooPosSplashState.SyncPreparing ->
+                    stringResource(R.string.woopos_home_syncing_catalog_preparing)
+                is WooPosSplashState.SyncProgress ->
+                    stringResource(R.string.woopos_home_syncing_catalog_progress, currentState.processed, currentState.total)
+                else -> null
+            }
 
             SyncingCatalog(
                 progressText = progressText,

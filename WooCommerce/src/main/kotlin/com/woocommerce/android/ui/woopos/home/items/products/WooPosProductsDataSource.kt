@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSync
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -100,14 +101,20 @@ class WooPosProductsDataSource @Inject constructor(
                 activeSource = localDbDataSource
 
                 val progressJob = launch {
-                    syncRepository.syncProgress.collect { progress ->
-                        if (progress != null) {
-                            send(
-                                WooPosPrepopulatingDataStatus.SyncProgress(
-                                    processed = progress.processed,
-                                    total = progress.total
+                    syncRepository.syncState.collect { state ->
+                        when (state) {
+                            is WooPosFileBasedSyncAction.SyncState.Preparing ->
+                                send(WooPosPrepopulatingDataStatus.SyncPreparing)
+
+                            is WooPosFileBasedSyncAction.SyncState.Progress ->
+                                send(
+                                    WooPosPrepopulatingDataStatus.SyncProgress(
+                                        processed = state.processed,
+                                        total = state.total
+                                    )
                                 )
-                            )
+
+                            null -> Unit
                         }
                     }
                 }
@@ -196,6 +203,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     sealed class WooPosPrepopulatingDataStatus {
         data object Syncing : WooPosPrepopulatingDataStatus()
+        data object SyncPreparing : WooPosPrepopulatingDataStatus()
         data class SyncProgress(val processed: Int, val total: Int) : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
         data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
