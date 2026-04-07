@@ -17,6 +17,7 @@
         android:visibility="gone"
         android:contentDescription="@string/product_type_edit"
         android:src="@drawable/ic_product"
+        app:tint="@color/color_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintTop_toTopOf="parent"
