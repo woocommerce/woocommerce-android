@@ -29,6 +29,7 @@
 
     <ProgressBar
         android:id="@+id/productDetailInfo_progress"
+        android:indeterminateTint="@color/color_primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

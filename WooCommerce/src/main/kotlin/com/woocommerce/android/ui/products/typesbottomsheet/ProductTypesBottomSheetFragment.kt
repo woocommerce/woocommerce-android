@@ -102,7 +102,11 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
                         requireView(),
                         getString(event.message),
                         Snackbar.LENGTH_SHORT
-                    ).show()
+                    ).let {
+                        // Set a high z-index here to make sure the Snackbar is shown above the bottom sheet content
+                        it.view.z = 200f
+                        it.show()
+                    }
                 }
 
                 is ProductNavigationTarget -> navigator.navigate(this, event)
