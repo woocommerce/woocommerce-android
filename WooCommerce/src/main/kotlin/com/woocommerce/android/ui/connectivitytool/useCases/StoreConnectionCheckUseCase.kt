@@ -25,7 +25,7 @@ class StoreConnectionCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val startTime = System.currentTimeMillis()
-        val result = ssrFetcher.load(selectedSite.get())
+        val result = ssrFetcher.load(selectedSite.get(), forceRefresh = true)
         val durationMs = System.currentTimeMillis() - startTime
         if (result.isError) {
             emit(result.parseError(durationMs))
