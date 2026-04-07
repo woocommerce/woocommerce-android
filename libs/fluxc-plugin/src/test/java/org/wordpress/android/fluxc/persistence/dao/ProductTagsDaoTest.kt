@@ -5,7 +5,6 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +17,7 @@ import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class ProductTagsDaoTest {
     @Rule
@@ -129,24 +129,6 @@ class ProductTagsDaoTest {
 
         // Delete tags for site and verify
         sut.deleteProductTagsForSite(site.localId())
-        savedTags = sut.getProductTags(site.localId())
-        assertEquals(0, savedTags.size)
-    }
-
-    @Test
-    @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
-    fun testDeleteSiteDeletesProductTags() = runTest {
-        val tags = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tags.isNotEmpty())
-
-        sut.upsertProductTags(tags)
-
-        // Verify tags inserted
-        var savedTags = sut.getProductTags(site.localId())
-        assertEquals(tags.size, savedTags.size)
-
-        // Delete site and verify tags are deleted via foreign key constraint
-        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
         savedTags = sut.getProductTags(site.localId())
         assertEquals(0, savedTags.size)
     }

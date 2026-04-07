@@ -616,11 +616,25 @@ open class SiteStore @Inject constructor(
         return insertOrUpdateSite(site)
     }
 
+    /**
+     * Deletes a single site from the database (`wp-android-database`). Note: this does NOT cascade to WC entities
+     * (orders, products, tags, etc.) because they live in a separate database file
+     * (`wc-android-database`). If cascade delete is needed, WC DAOs must be called explicitly.
+     *
+     * @see [docs/site-entity-foreign-keys.md] for details on the cross-database FK limitation.
+     */
     private suspend fun removeSite(site: SiteModel) {
         siteDao.deleteByLocalId(site.id)
         emitChange(OnSiteRemoved())
     }
 
+    /**
+     * Deletes all sites from the database (`wp-android-database`). Note: this does NOT cascade to WC entities
+     * (orders, products, tags, etc.) because they live in a separate database file
+     * (`wc-android-database`). If cascade delete is needed, WC DAOs must be called explicitly.
+     *
+     * @see [docs/site-entity-foreign-keys.md] for details on the cross-database FK limitation.
+     */
     private suspend fun removeAllSites() {
         siteDao.deleteAll()
         val event = OnAllSitesRemoved()

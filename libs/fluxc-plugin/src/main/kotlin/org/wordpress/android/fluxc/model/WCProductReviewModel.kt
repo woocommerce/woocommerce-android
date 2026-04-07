@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-// todo: as soon as SiteModel is migrated to Room, add foreign key constraint
 @Entity(
     tableName = "ProductReviewEntity",
     primaryKeys = ["localSiteId", "remoteProductReviewId", "remoteProductId"],

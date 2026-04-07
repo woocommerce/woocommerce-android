@@ -4,7 +4,6 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,9 +16,8 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class ProductReviewsDaoTest {
     @Rule
@@ -125,23 +123,6 @@ class ProductReviewsDaoTest {
         assertThat(
             sut.getProductReviews(siteId = site.localId())
         ).isEmpty()
-    }
-
-    @Test
-    @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
-    fun testDeleteSiteDeletesAllProductReviews() = runTest {
-        val reviews = getProductReviews(site.id)
-        assertTrue(reviews.isNotEmpty())
-        sut.upsertProductReviews(reviews)
-
-        // Verify products inserted
-        var savedReviews = sut.getProductReviews(siteId = site.localId())
-        assertEquals(reviews.size, savedReviews.size)
-
-        // Delete site and verify reviews deleted via foreign key constraint
-        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
-        savedReviews = sut.getProductReviews(siteId = site.localId())
-        assertEquals(0, savedReviews.size)
     }
 
     private fun getProductReviews(localSiteId: Int): List<WCProductReviewModel> {

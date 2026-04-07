@@ -5,7 +5,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.ListAssert
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +16,7 @@ import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.utils.FakeOrderSummaryGenerator.asOrderSummaries
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class OrderSummaryDaoTest {
     @Rule
@@ -62,21 +62,6 @@ class OrderSummaryDaoTest {
             listOf(1, 2).asRemoteIds()
         )
         assertThat(result).containsOnlyIds(2)
-    }
-
-    @Test
-    @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
-    fun testDeleteSiteDeletesAllOrderSummaries() = runTest {
-        val orderSummaries = (1..3).asOrderSummaries(site.localId())
-        sut.upsertOrderSummaries(orderSummaries)
-
-        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
-
-        val result = sut.getOrderSummaries(
-            site.localId(),
-            listOf(RemoteId(1L), RemoteId(2L), RemoteId(3L))
-        )
-        assertThat(result).isEmpty()
     }
 
     @Test

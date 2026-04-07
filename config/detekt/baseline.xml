@@ -1266,10 +1266,6 @@
     <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderStatusOption_NotExists()</ID>
     <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderStatusOptions_Empty()</ID>
     <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testInsertOrUpdateOrderStatusOptions()</ID>
-    <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added") fun testDeleteSiteDeletesAllOrderSummaries()</ID>
-    <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test fun testDeleteOrderSummaryById()</ID>
-    <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test fun testGetOrderSummariesForRemoteIds()</ID>
-    <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test fun testQueryingLargeNumberOfOrderSummaries()</ID>
     <ID>UnitTestNamingRule:OrderUpdateStoreTest.kt$OrderUpdateStoreTest$@Test fun `should create simple payment with correct amount, tax status, and order status`(): Unit</ID>
     <ID>UnitTestNamingRule:OrderUpdateStoreTest.kt$OrderUpdateStoreTest$@Test fun `should delete local copy of order when delete request succeeds`(): Unit</ID>
     <ID>UnitTestNamingRule:OrderUpdateStoreTest.kt$OrderUpdateStoreTest$@Test fun `should emit empty billing email address if its likely that that's the error`(): Unit</ID>
@@ -1552,14 +1548,6 @@
     <ID>UnitTestNamingRule:ProductReliabilityTest.kt$ProductReliabilityTest$@Test fun testBooleansWrongFormatted()</ID>
     <ID>UnitTestNamingRule:ProductRestClientTest.kt$ProductRestClientTest$@Test fun `do not send any properties if entities do not differ`()</ID>
     <ID>UnitTestNamingRule:ProductRestClientTest.kt$ProductRestClientTest$@Test fun `send only updated parameters with id if products differ`()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added") fun testDeleteSiteDeletesAllProductReviews()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testDeleteAllProductReviewsForSite()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testGetProductReviewsForNonExistingProduct()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testGetProductReviewsForProduct()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testInsertAndQueryProductReviews()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testInsertProductReview()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testQueryProductReviewsForNonExistingSite()</ID>
-    <ID>UnitTestNamingRule:ProductReviewsDaoTest.kt$ProductReviewsDaoTest$@Test fun testUpdateProductReview()</ID>
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `Displays the product list view correctly`()</ID>
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `Do not fetch product list from api when not connected`()</ID>
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `ExitWithResult event dispatched correctly when done menu button clicked`()</ID>
@@ -1601,12 +1589,6 @@
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `when search query is entered in default mode, should track analytics event`()</ID>
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `when variable product is tapped, should redirect to variation picker`()</ID>
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `when variable subscription is tapped, should redirect to variation picker`()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added") fun testDeleteSiteDeletesProductShippingClassList()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test fun testDeleteProductShippingListForSite()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test fun testGetProductShippingClassByRemoteShippingId()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test fun testGetProductShippingClassListForSite()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test fun testInsertOrUpdateProductShippingClass()</ID>
-    <ID>UnitTestNamingRule:ProductShippingClassesDaoTest.kt$ProductShippingClassesDaoTest$@Test fun testInsertOrUpdateProductShippingClassList()</ID>
     <ID>UnitTestNamingRule:ProductShippingViewModelTest.kt$ProductShippingViewModelTest$@Test fun `Send tracks event upon exit if there was a change`()</ID>
     <ID>UnitTestNamingRule:ProductShippingViewModelTest.kt$ProductShippingViewModelTest$@Test fun `Send tracks event upon exit if there was no changes`()</ID>
     <ID>UnitTestNamingRule:ProductShippingViewModelTest.kt$ProductShippingViewModelTest$@Test fun `Test that a discard dialog isn't shown if no data changed`()</ID>
@@ -1622,12 +1604,6 @@
     <ID>UnitTestNamingRule:ProductStockRepositoryTest.kt$ProductStockRepositoryTest$@Test fun `given stock is cached, when fetching stock again, don't fetch sales if stock report has not changed`()</ID>
     <ID>UnitTestNamingRule:ProductSubscriptionFreeTrialViewModelTest.kt$ProductSubscriptionFreeTrialViewModelTest$@Test fun `verify state update when length changed`()</ID>
     <ID>UnitTestNamingRule:ProductSubscriptionFreeTrialViewModelTest.kt$ProductSubscriptionFreeTrialViewModelTest$@Test fun `verify state update when period changed`()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added") fun testDeleteSiteDeletesProductTags()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test fun testDeleteProductTagsForSite()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test fun testGetProductTagByName()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test fun testGetProductTagsByNames()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test fun testGetProductTagsForSite()</ID>
-    <ID>UnitTestNamingRule:ProductTagsDaoTest.kt$ProductTagsDaoTest$@Test fun testInsertOrUpdateProductTag()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun `order should ignore case`()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testDeleteProduct()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testGetProductsForSite()</ID>

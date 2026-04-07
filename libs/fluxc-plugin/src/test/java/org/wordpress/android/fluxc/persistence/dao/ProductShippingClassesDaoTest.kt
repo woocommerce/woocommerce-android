@@ -3,10 +3,7 @@ package org.wordpress.android.fluxc.persistence.dao
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +15,7 @@ import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class ProductShippingClassesDaoTest {
     @Rule
@@ -116,23 +114,5 @@ class ProductShippingClassesDaoTest {
         assertThat(
             sut.getProductShippingClasses(site.localId())
         ).isEmpty()
-    }
-
-    @Test
-    @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
-    fun testDeleteSiteDeletesProductShippingClassList() = runTest {
-        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-        assertTrue(shippingClassList.isNotEmpty())
-
-        sut.upsertProductShippingClasses(shippingClassList)
-
-        // Verify products inserted
-        var savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(shippingClassList.size, savedShippingClassList.size)
-
-        // Delete site and verify shipping class list  deleted via foreign key constraint
-        wpDatabaseRule.db.siteDao().deleteByLocalId(site.id)
-        savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(0, savedShippingClassList.size)
     }
 }
