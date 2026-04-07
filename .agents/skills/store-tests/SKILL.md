@@ -1,6 +1,6 @@
 ---
 name: store-tests
-description: Main app unit testing patterns (BaseUnitTest, BDD naming, mockito-kotlin, AssertJ, StateFlow/LiveData capture, coroutine dispatchers). Use when writing, editing, exploring, debugging, or reviewing unit tests in the store management app. For POS (WooPos*) tests, use the `pos` skill instead.
+description: Main app unit testing patterns (BaseUnitTest, BDD naming, mockito-kotlin, AssertJ, StateFlow/LiveData capture, coroutine dispatchers). Use when writing, editing, exploring, debugging, or reviewing unit tests in the store management app. For POS (WooPos*) tests, use the `pos-tests` skill instead.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 user-invocable: true
 ---

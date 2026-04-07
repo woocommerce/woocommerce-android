@@ -1,6 +1,6 @@
 ---
 name: pos
-description: POS (Point of Sale) architecture and patterns. Use when writing, editing, exploring, debugging, or reviewing WooPos-prefixed classes or files under ui/woopos/. POS uses a different architecture than the main app — plain ViewModel (not ScopedViewModel), pure Compose (no Fragments), Compose Navigation (no nav graphs), parent-child SharedFlow event bus, WooPosAnalyticsTracker, and WooPosCoroutineTestRule. Loading this skill prevents applying main-app patterns that would be wrong for POS.
+description: POS (Point of Sale) architecture and patterns. Use when writing, editing, exploring, debugging, or reviewing WooPos-prefixed classes or files under ui/woopos/. POS uses a different architecture than the main app — plain ViewModel (not ScopedViewModel), pure Compose (no Fragments), Compose Navigation (no nav graphs), parent-child SharedFlow event bus. Loading this skill prevents applying main-app patterns that would be wrong for POS. For analytics use `pos-analytics`, for tests use `pos-tests`.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 user-invocable: true
 ---
@@ -175,75 +175,6 @@ Key differences from main app Compose:
 - Pass events via `onUIEvent` callback (not individual lambdas)
 - Navigation uses Compose Navigation (`NavHost`, `composable()`) — see `WooPosHomeNavigation.kt`
 - Landscape-only, tablet-optimized
-
-## POS Analytics
-
-Use `WooPosAnalyticsTracker` (not `AnalyticsTrackerWrapper`). It's a suspend function that switches to `Dispatchers.IO`:
-
-```kotlin
-viewModelScope.launch {
-    analyticsTracker.track(WooPosAnalyticsEvent.Event.MyActionTapped)
-}
-```
-
-Events are defined as data objects/classes inside `WooPosAnalyticsEvent.Event`:
-```kotlin
-// In WooPosAnalyticsEvent.kt
-data object MyActionTapped : Event() {
-    override val name: String = "my_action_tapped"
-}
-```
-
-For errors use `WooPosAnalyticsEvent.Error`:
-```kotlin
-data class MyActionFailed(
-    override val errorContext: KClass<out Any>,
-    override val errorType: String?,
-    override val errorDescription: String?,
-) : Error() {
-    override val name: String = "my_action_failed"
-}
-```
-
-## POS Tests
-
-Do NOT extend `BaseUnitTest`. Use `WooPosCoroutineTestRule` and `runTest`:
-
-```kotlin
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosMyFeatureViewModelTest {
-    @Rule @JvmField
-    val coroutineTestRule = WooPosCoroutineTestRule()
-
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
-    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val analyticsTracker: WooPosAnalyticsTracker = mock()
-
-    @Test
-    fun `when action clicked, then event is tracked`() = runTest {
-        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.onUIEvent(WooPosMyFeatureUIEvent.ActionClicked)
-
-        verify(analyticsTracker).track(argThat { this is WooPosAnalyticsEvent.Event.ActionTapped })
-    }
-
-    private fun createViewModel() = WooPosMyFeatureViewModel(
-        parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-        childrenToParentEventSender = childrenToParentEventSender,
-        analyticsTracker = analyticsTracker,
-    )
-}
-```
-
-Key testing differences:
-- Mock `WooPosParentToChildrenEventReceiver.events` — return `flowOf()` for default, `MutableSharedFlow` when testing event handling
-- Mock `WooPosChildrenToParentEventSender` — verify `sendToParent()` calls
-- Use `advanceUntilIdle()` after creating ViewModel (to let init coroutines run)
-- Use `argThat { this is EventType }` for analytics verification (POS events are data objects)
-- Use `runTest` (not `testBlocking`)
 
 ## File Locations
 
