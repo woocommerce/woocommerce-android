@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -41,7 +42,7 @@ fun WooPosPhoneCartFab(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-            modifier = Modifier.size(60.dp),
+            modifier = Modifier.size(56.dp),
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_add_shopping_cart_24dp),
@@ -54,14 +55,14 @@ fun WooPosPhoneCartFab(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = 4.dp, y = (-4).dp)
-                    .size(18.dp)
+                    .offset(x = 6.dp, y = (-6).dp)
+                    .size(22.dp)
                     .background(
                         color = Color.White,
                         shape = CircleShape,
                     )
                     .border(
-                        width = 2.dp,
+                        width = 1.5.dp,
                         color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape,
                     ),
@@ -70,6 +71,7 @@ fun WooPosPhoneCartFab(
                 WooPosText(
                     text = itemCount.toString(),
                     style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }

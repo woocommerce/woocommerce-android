@@ -6,9 +6,9 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.ui.draw.rotate
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -120,110 +120,117 @@ fun WooPosPhoneCheckoutScreen(
 
         // Bottom section: order summary + buttons (only when checkout state)
         if (showOrderSummary) {
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant,
-                thickness = 1.dp,
-            )
-
-            // Order summary header row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isOrderSummaryExpanded = !isOrderSummaryExpanded }
-                    .padding(
-                        horizontal = WooPosSpacing.Large.value,
-                        vertical = WooPosSpacing.Medium.value,
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                WooPosText(
-                    text = "Order summary",
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                WooPosText(
-                    text = "$itemCount items",
-                    style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-
-                val totalText = (totalsState as? WooPosTotalsViewState.Checkout)
-                    ?.totals
-                    ?.let { it as? WooPosTotalsViewState.Totals.Visible }
-                    ?.orderTotalText
-                if (totalText != null) {
-                    WooPosText(
-                        text = totalText,
-                        style = WooPosTypography.BodyLarge,
-                    )
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-                }
-
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
-                    contentDescription = if (isOrderSummaryExpanded) "Collapse" else "Expand",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .rotate(if (isOrderSummaryExpanded) -90f else 90f),
-                )
-            }
-
-            // Expanded product cards (same card design as cart)
-            AnimatedVisibility(
-                visible = isOrderSummaryExpanded,
-                enter = expandVertically(),
-                exit = shrinkVertically(),
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 300.dp)
-                        .padding(horizontal = WooPosSpacing.Large.value),
-                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-                ) {
-                    items(
-                        items = items.filterIsInstance<WooPosCartItemViewState.Product>(),
-                        key = { it.itemNumber }
-                    ) { product ->
-                        OrderSummaryProductCard(product = product)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-            // Payment buttons pinned at bottom
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Large.value)
-                    .padding(bottom = WooPosSpacing.Large.value),
-                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             ) {
-                val checkoutState = totalsState as? WooPosTotalsViewState.Checkout
-                val readerStatus = checkoutState?.readerStatus
-                if (readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected) {
-                    WooPosButton(
-                        text = readerStatus.actionButtonLabel,
-                        onClick = {
-                            totalsViewModel.onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
-                        },
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    thickness = 1.dp,
+                )
+
+                // Order summary header row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isOrderSummaryExpanded = !isOrderSummaryExpanded }
+                        .padding(
+                            horizontal = WooPosSpacing.Large.value,
+                            vertical = WooPosSpacing.Medium.value,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    WooPosText(
+                        text = "Order summary",
+                        style = WooPosTypography.BodyLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                    WooPosText(
+                        text = "$itemCount items",
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    val totalText = (totalsState as? WooPosTotalsViewState.Checkout)
+                        ?.totals
+                        ?.let { it as? WooPosTotalsViewState.Totals.Visible }
+                        ?.orderTotalText
+                    if (totalText != null) {
+                        WooPosText(
+                            text = totalText,
+                            style = WooPosTypography.BodyLarge,
+                        )
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+                    }
+
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
+                        contentDescription = if (isOrderSummaryExpanded) "Collapse" else "Expand",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(if (isOrderSummaryExpanded) 90f else -90f),
+                    )
+                }
+
+                // Expanded product cards (same card design as cart)
+                AnimatedVisibility(
+                    visible = isOrderSummaryExpanded,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(),
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 300.dp)
+                            .padding(horizontal = WooPosSpacing.Large.value),
+                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                        contentPadding = PaddingValues(bottom = WooPosSpacing.Medium.value),
+                    ) {
+                        items(
+                            items = items.filterIsInstance<WooPosCartItemViewState.Product>(),
+                            key = { it.itemNumber }
+                        ) { product ->
+                            OrderSummaryProductCard(product = product)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+                // Payment buttons pinned at bottom
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = WooPosSpacing.Large.value)
+                        .padding(bottom = WooPosSpacing.Large.value),
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                ) {
+                    val checkoutState = totalsState as? WooPosTotalsViewState.Checkout
+                    val readerStatus = checkoutState?.readerStatus
+                    if (readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected) {
+                        WooPosButton(
+                            text = readerStatus.actionButtonLabel,
+                            onClick = {
+                                totalsViewModel.onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                        )
+                    }
+                    WooPosOutlinedButton(
+                        text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                        onClick = { totalsViewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp)
                     )
                 }
-                WooPosOutlinedButton(
-                    text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-                    onClick = { totalsViewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                )
-            }
+            } // end white background Column
         }
     }
 }

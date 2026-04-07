@@ -337,10 +337,11 @@ private fun CardReaderStatusButton(
         }
     }
 
-    val cardHeight = if (isCompact) 56.dp else 80.dp
+    val cardSize = if (isCompact) 56.dp else 80.dp
     WooPosCard(
         modifier = modifier
-            .height(cardHeight),
+            .height(cardSize)
+            .then(if (isCompact) Modifier.width(cardSize) else Modifier),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),

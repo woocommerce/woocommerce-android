@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.woocommerce.android.R
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosPhoneCheckoutScreen
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 
 @Composable
@@ -26,6 +27,11 @@ fun WooPosPhoneHomeScreen(
     state: WooPosHomeState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
+    // Pre-create the totals VM so it starts collecting parent events immediately.
+    // Without this, the CheckoutClicked event is lost on the first checkout attempt
+    // because MutableSharedFlow(replay=0) drops events when there are no collectors.
+    hiltViewModel<WooPosTotalsViewModel>()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
