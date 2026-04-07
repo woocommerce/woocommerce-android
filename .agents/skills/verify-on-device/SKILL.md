@@ -11,6 +11,25 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
 
+## Critical Rule: Default to Main App (Store Management)
+
+Unless the task explicitly mentions **POS**, **Point of Sale**, or **WooPos**, always operate in the **main app** (store management) context — `MainActivity` with bottom navigation tabs. This applies to all workflows: creating orders, viewing products, collecting payments, etc. The main app is the default; POS is only used when specifically requested.
+
+## Critical Rule: Always Restart the App
+
+Do NOT attempt to recover from the current screen state. Always force-stop the app and relaunch it to start from a known state (the dashboard). This avoids wasted time navigating out of unknown screens.
+
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
+```
+
+For POS tasks (only when explicitly requested):
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
+
 ## Critical Rule: Always Use the Accessibility Tree for Tapping
 
 **NEVER estimate tap coordinates from screenshots.** Screenshots are scaled down from the actual device resolution (e.g., a 1080x2400 device produces a ~480x1065 screenshot). Coordinates derived from screenshots will be systematically wrong.
@@ -158,15 +177,22 @@ Optionally call `mobile_list_apps` first to check if the app is already installe
 
 If the user requests verification of a specific scenario (error states, empty data, custom responses), set up ApiFaker mock endpoints **before** launching the app. See the "API Mocking with ApiFaker" section and `docs/api-faker-adb.md` for commands and workflow.
 
-### 7. Launch the App
+### 7. Restart and Launch the App
 
-Launch `MainActivity` explicitly to ensure the app always opens to the main screen (not a deep link handler or login redirect):
+Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active.
 
 ```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
 ```
 
 Do NOT use `mobile_launch_app` — it launches the default launcher intent which may not always resolve to `MainActivity`.
+
+**For POS (only when explicitly requested):** Launch directly into POS with:
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
 
 ### 8. Handle Post-Launch Dialogs
 
@@ -322,9 +348,23 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 
 All resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's theme.
 
-### Global Elements (Always Present)
+The app has two distinct navigation domains with different architectures. **Only load the reference files you need for the task** — each file adds significant context cost.
 
-These elements exist across all screens within `MainActivity`.
+### Always load first
+- [Overview & Feature Tree](references/main-app-navigation.md) -- lightweight index of all screens, bottom tabs, global elements. Read this first to orient yourself, then load only the detailed references you need.
+
+### Load on demand — match task keywords to the right reference
+
+| If the task involves… | Load this reference |
+|---|---|
+| **Login**, authentication, store selection, credentials | [Login](references/main-app-login.md) |
+| **Dashboard**, stats, analytics, onboarding, date ranges | [Dashboard](references/main-app-dashboard.md) |
+| **Orders**, creating orders, **adding products to orders**, payment collection (cash/card/tap-to-pay), refunds, fulfillment, shipping labels, receipts | [Orders](references/main-app-orders.md) |
+| **Product catalog** management — creating, editing, deleting, searching products in the Products tab | [Products](references/main-app-products.md) |
+| **Settings**, payments hub, reviews, coupons, customers, Blaze, Google Ads | [More Menu](references/main-app-more.md) |
+| **POS**, Point of Sale, WooPos, landscape checkout, cash register | [POS](references/pos-navigation.md) |
+
+**Key distinction:** "Adding products to an order" is an **Orders** workflow (order creation screen), NOT a Products workflow. Only load the Products reference when the task is about the standalone product catalog (Products tab).
 
 | Element | Resource ID | Notes |
 |---------|------------|-------|
