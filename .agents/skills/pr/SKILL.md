@@ -39,7 +39,12 @@ Create a pull request following the project's PR conventions and template.
 
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 
-8. **Create the PR.** Use the template format from `.github/PULL_REQUEST_TEMPLATE.md`:
+8. **Create the PR.** Use the template below. For the `### Images/gif` section:
+   - **Before/after pair**: Use a comparison table with `| Before | After |` headers
+   - **Multiple images**: Use a table with appropriate column headers, or list with captions
+   - **Single image or video**: Embed directly (e.g., `![Screenshot](url-or-path)`)
+   - **Nothing provided**: Use "N/A"
+   - Constrain image width to 400px using HTML: `<img src="url" width="400" />`
 
 ```bash
 gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
@@ -51,13 +56,12 @@ Fixes WOOMOB-XYZ
 <numbered steps to verify the changes>
 
 ### Images/gif
-<if applicable, otherwise "N/A">
+<screenshots, before/after tables, or N/A>
 
 - [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
 EOF
 )"
 ```
-
 9. **Add labels.** After creating the PR, add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
    - **Type** (pick one): `type: bug`, `type: crash`, `type: enhancement`, `type: task`, `type: technical debt`, `type: documentation`, `type: question`
    - **Feature** (pick one if applicable): match the changed area to a `feature: *` label (e.g., `feature: order list`, `feature: point of sale`, `feature: product details`, `feature: login`, etc.)

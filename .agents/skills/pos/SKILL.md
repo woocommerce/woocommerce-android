@@ -1,11 +1,11 @@
 ---
-name: pos-architecture
-description: Architecture guide for the WooCommerce POS (Point of Sale) feature. Use when writing, debugging, reviewing, or exploring WooPos-prefixed classes or files under ui/woopos/. POS uses a different architecture than the main app. Loading this skill prevents applying main-app patterns that would be wrong for POS.
+name: pos
+description: POS (Point of Sale) architecture and patterns. Use when writing, editing, exploring, debugging, or reviewing WooPos-prefixed classes or files under ui/woopos/. POS uses a different architecture than the main app — plain ViewModel (not ScopedViewModel), pure Compose (no Fragments), Compose Navigation (no nav graphs), parent-child SharedFlow event bus, WooPosAnalyticsTracker, and WooPosCoroutineTestRule. Loading this skill prevents applying main-app patterns that would be wrong for POS.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 user-invocable: true
 ---
 
-# Write POS Code
+# POS Architecture & Patterns
 
 POS has its own architecture. Do NOT apply main-app patterns (ScopedViewModel, Fragments, MultiLiveEvent, nav graphs) to POS code.
 
