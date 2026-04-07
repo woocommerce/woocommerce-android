@@ -21,7 +21,18 @@
       "Bash(gh issue *)",
       "Bash(gh api *)",
       "Bash(adb *)",
-      "Bash(emulator *)"
+      "Bash(emulator *)",
+      "Skill(write-tests)",
+      "Skill(write-pos)",
+      "Skill(write-compose)",
+      "Skill(write-viewmodel)",
+      "Skill(write-analytics)",
+      "Skill(store-management)",
+      "Skill(pos)",
+      "Skill(pr)",
+      "Skill(review)",
+      "Skill(woo-android-code-review)",
+      "Skill(simplify)"
     ],
     "deny": [
       "Bash(git push --force *)",
