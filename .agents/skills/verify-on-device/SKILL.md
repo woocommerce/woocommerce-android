@@ -3,6 +3,7 @@ name: verify-on-device
 description: Build, install, and visually verify the app on an Android emulator or device
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
 user-invocable: true
+context: fork
 ---
 
 # Verify on Device
@@ -132,6 +133,8 @@ When `mobile_list_elements_on_screen` does not return the element you expect, it
 Plan your verification flow accordingly. If the user wants to test post-login features, ensure the app is already logged in.
 
 ## Steps
+
+**Shortcut:** If the app is already installed and logged in, skip to step 7 (Restart and Launch the App).
 
 ### 1. Discover Devices
 
