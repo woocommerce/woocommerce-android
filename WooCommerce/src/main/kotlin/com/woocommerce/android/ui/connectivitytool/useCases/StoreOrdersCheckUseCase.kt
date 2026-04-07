@@ -32,12 +32,21 @@ class StoreOrdersCheckUseCase @Inject constructor(
             ?: emit(Success)
     }
 
-    private fun HasOrdersResult.Failure.parseError() =
-        when (error.type) {
-            TIMEOUT_ERROR -> Failure(FailureType.TIMEOUT)
-            PARSE_ERROR -> Failure(FailureType.PARSE)
-            PLUGIN_NOT_ACTIVE ->
-                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
-            else -> Failure(FailureType.GENERIC)
+    private fun HasOrdersResult.Failure.parseError(): Failure {
+        val failureType = when (error.type) {
+            TIMEOUT_ERROR -> FailureType.TIMEOUT
+            PARSE_ERROR -> FailureType.PARSE
+            PLUGIN_NOT_ACTIVE -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            else -> FailureType.GENERIC
         }
+
+        return Failure(
+            error = failureType,
+            technicalDetails = formatErrorDetails(
+                operation = "Fetch Orders",
+                errorType = error.type.name,
+                message = error.message
+            )
+        )
+    }
 }

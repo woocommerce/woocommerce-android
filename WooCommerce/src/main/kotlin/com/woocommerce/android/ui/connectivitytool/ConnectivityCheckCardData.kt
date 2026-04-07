@@ -93,7 +93,10 @@ sealed class ConnectivityCheckStatus : Parcelable {
     data object Success : ConnectivityCheckStatus()
 
     @Parcelize
-    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable
+    data class Failure(
+        val error: FailureType? = null,
+        val technicalDetails: String? = null
+    ) : ConnectivityCheckStatus(), Parcelable
 }
 
 @Parcelize

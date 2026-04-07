@@ -57,7 +57,11 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 
     @Test
@@ -79,7 +83,11 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.JETPACK)))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.JETPACK)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 
     @Test
@@ -101,7 +109,11 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.GENERIC)))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 
     @Test
@@ -122,7 +134,11 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.PARSE)))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.PARSE)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 
     @Test
@@ -143,7 +159,11 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure(FailureType.TIMEOUT)))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.TIMEOUT)
+        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
     }
 
     @Test

@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.connectivitytool
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
@@ -15,6 +17,7 @@ import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheck
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,6 +39,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     private lateinit var storeOrdersCheck: StoreOrdersCheckUseCase
     private lateinit var storeProductsCheck: StoreProductsCheckUseCase
     private lateinit var selectedSite: SelectedSite
+    private lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
 
     @Before
     fun setUp() {
@@ -45,6 +49,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         storeOrdersCheck = mock()
         storeProductsCheck = mock()
         selectedSite = mock()
+        analyticsTrackerWrapper = mock()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
@@ -61,7 +66,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
             storeProductsCheck = storeProductsCheck,
-            analyticsTrackerWrapper = mock(),
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
             selectedSite = selectedSite,
             savedState = SavedStateHandle()
         )
@@ -282,5 +287,42 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(latestState?.isWPComCheckVisible).isFalse()
+    }
+
+    @Test
+    fun `when onViewTechnicalDetailsClicked is called, then technicalDetailsToShow is updated`() = testBlocking {
+        // GIVEN
+        val details = "Operation: Site Connection\nError Type: TIMEOUT"
+
+        // WHEN
+        sut.technicalDetailsToShow.observeForTesting {
+            sut.onViewTechnicalDetailsClicked(details)
+
+            // THEN
+            assertThat(sut.technicalDetailsToShow.value).isEqualTo(details)
+        }
+    }
+
+    @Test
+    fun `when onViewTechnicalDetailsClicked is called, then analytics event is tracked`() = testBlocking {
+        // WHEN
+        sut.onViewTechnicalDetailsClicked("some details")
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.CONNECTIVITY_TOOL_TECHNICAL_DETAILS_TAPPED)
+    }
+
+    @Test
+    fun `when onTechnicalDetailsDismissed is called, then technicalDetailsToShow is cleared`() = testBlocking {
+        sut.technicalDetailsToShow.observeForTesting {
+            // GIVEN
+            sut.onViewTechnicalDetailsClicked("some details")
+
+            // WHEN
+            sut.onTechnicalDetailsDismissed()
+
+            // THEN
+            assertThat(sut.technicalDetailsToShow.value).isNull()
+        }
     }
 }

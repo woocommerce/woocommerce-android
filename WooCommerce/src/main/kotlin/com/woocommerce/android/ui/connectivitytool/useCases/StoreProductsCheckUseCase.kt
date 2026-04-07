@@ -31,12 +31,21 @@ class StoreProductsCheckUseCase @Inject constructor(
             ?: emit(Success)
     }
 
-    private fun WooResult<List<WCProductModel>>.parseError() =
-        when (error.type) {
-            WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
-            WooErrorType.API_NOT_FOUND ->
-                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
-            else -> Failure(FailureType.GENERIC)
+    private fun WooResult<List<WCProductModel>>.parseError(): Failure {
+        val failureType = when (error.type) {
+            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            else -> FailureType.GENERIC
         }
+
+        return Failure(
+            error = failureType,
+            technicalDetails = formatErrorDetails(
+                operation = "Fetch Products",
+                errorType = error.type.name,
+                message = error.message
+            )
+        )
+    }
 }

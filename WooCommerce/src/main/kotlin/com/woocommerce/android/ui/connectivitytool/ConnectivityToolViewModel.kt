@@ -39,6 +39,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -119,6 +120,18 @@ class ConnectivityToolViewModel @Inject constructor(
     }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
+
+    private val _technicalDetailsToShow = MutableStateFlow<String?>(null)
+    val technicalDetailsToShow = _technicalDetailsToShow.asLiveData()
+
+    fun onViewTechnicalDetailsClicked(details: String) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_TECHNICAL_DETAILS_TAPPED)
+        _technicalDetailsToShow.value = details
+    }
+
+    fun onTechnicalDetailsDismissed() {
+        _technicalDetailsToShow.value = null
+    }
 
     private val nextStep
         get() = when (stateMachine.value) {

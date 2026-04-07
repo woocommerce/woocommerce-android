@@ -31,12 +31,21 @@ class StoreConnectionCheckUseCase @Inject constructor(
             ?: emit(Success)
     }
 
-    private fun WooResult<WCSSRModel>.parseError() =
-        when (error.type) {
-            WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.API_NOT_FOUND ->
-                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
-            WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
-            else -> Failure(FailureType.GENERIC)
+    private fun WooResult<WCSSRModel>.parseError(): Failure {
+        val failureType = when (error.type) {
+            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+            else -> FailureType.GENERIC
         }
+
+        return Failure(
+            error = failureType,
+            technicalDetails = formatErrorDetails(
+                operation = "Site Connection",
+                errorType = error.type.name,
+                message = error.message
+            )
+        )
+    }
 }
