@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -56,6 +58,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val syncRepository: WooPosLocalCatalogSyncRepository,
 ) {
     enum class SyncStrategy {
         REMOTE,
@@ -72,16 +75,16 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
-    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
                 remoteDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
@@ -89,24 +92,40 @@ class WooPosProductsDataSource @Inject constructor(
             is WooPosFullSyncRequirement.NotRequired,
             is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 activeSource = localDbDataSource
-                emit(WooPosPrepopulatingDataStatus.Completed)
+                send(WooPosPrepopulatingDataStatus.Completed)
             }
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
-                emit(WooPosPrepopulatingDataStatus.Syncing)
+                send(WooPosPrepopulatingDataStatus.Syncing)
                 activeSource = localDbDataSource
+
+                val progressJob = launch {
+                    syncRepository.syncProgress.collect { progress ->
+                        if (progress != null) {
+                            send(
+                                WooPosPrepopulatingDataStatus.SyncProgress(
+                                    processed = progress.processed,
+                                    total = progress.total
+                                )
+                            )
+                        }
+                    }
+                }
+
                 localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
 
             is WooPosFullSyncRequirement.Error -> {
-                emit(WooPosPrepopulatingDataStatus.Failed(requirement.message))
+                send(WooPosPrepopulatingDataStatus.Failed(requirement.message))
             }
         }
     }
@@ -177,6 +196,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     sealed class WooPosPrepopulatingDataStatus {
         data object Syncing : WooPosPrepopulatingDataStatus()
+        data class SyncProgress(val processed: Int, val total: Int) : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
         data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
     }

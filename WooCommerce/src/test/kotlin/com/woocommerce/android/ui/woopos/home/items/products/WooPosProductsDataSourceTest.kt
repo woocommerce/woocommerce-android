@@ -6,9 +6,12 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSy
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -26,6 +29,9 @@ class WooPosProductsDataSourceTest {
     private val remoteDataSource: WooPosProductsRemoteDataSource = mock()
     private val localDbDataSource: WooPosProductsInDbDataSource = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
+    private val syncRepository: WooPosLocalCatalogSyncRepository = mock {
+        on { syncProgress }.thenReturn(MutableStateFlow(null))
+    }
 
     @Rule
     @JvmField
@@ -314,5 +320,6 @@ class WooPosProductsDataSourceTest {
         remoteDataSource = remoteDataSource,
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
+        syncRepository = syncRepository,
     )
 }

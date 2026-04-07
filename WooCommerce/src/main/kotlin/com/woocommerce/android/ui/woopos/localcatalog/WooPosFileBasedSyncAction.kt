@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogResult
@@ -32,6 +34,11 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
     }
+    data class SyncProgress(val processed: Int, val total: Int)
+
+    private val _syncProgress = MutableStateFlow<SyncProgress?>(null)
+    val syncProgress: StateFlow<SyncProgress?> = _syncProgress
+
     sealed class WooPosFileBasedSyncResult {
         data class Success(
             val result: PosLocalCatalogSyncResult.Success,
@@ -44,6 +51,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
+        _syncProgress.value = null
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
@@ -152,6 +160,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
         startTime: Long,
         pollAttempts: Int
     ): WooPosFileBasedSyncResult? {
+        logger.d(
+            "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
+                "out of ${result.total} items"
+        )
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
                 if (result.url != null) {
@@ -167,12 +179,17 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 }
             }
 
-            else -> null.also {
-                logger.d(
-                    "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
-                        "out of ${result.total} items"
-                )
+            WooPosGenerateCatalogState.IN_PROGRESS -> {
+                val processed = result.processed
+                val total = result.total
+                if (processed != null && total != null) {
+                    _syncProgress.value = SyncProgress(processed = processed, total = total)
+                }
+                null
             }
+
+            WooPosGenerateCatalogState.SCHEDULED,
+            WooPosGenerateCatalogState.UNKNOWN -> null
         }
     }
 
