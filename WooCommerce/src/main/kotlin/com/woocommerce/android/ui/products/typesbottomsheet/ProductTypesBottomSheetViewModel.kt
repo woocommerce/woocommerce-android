@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.typesbottomsheet
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +12,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,13 +22,15 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
@@ -59,6 +64,19 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(Locale.ROOT))
             AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
+            if (productTypeUiItem.type == ProductType.BOOKABLE_SERVICE) {
+                val url = selectedSite.get().adminUrlOrDefault
+                    .slashJoin(BOOKABLE_SERVICE_CREATION_PATH)
+                triggerEvent(
+                    MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                        url = url,
+                        fallbackToChromeTab = false
+                    )
+                )
+                triggerEvent(MultiLiveEvent.Event.Exit)
+                return
+            }
+
             saveUserSelection(productTypeUiItem)
             triggerEvent(ProductNavigationTarget.ViewProductAdd(navArgs.source))
             triggerEvent(MultiLiveEvent.Event.ExitWithResult(productTypeUiItem))
@@ -91,4 +109,9 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         val isVirtual: Boolean = false,
         val isVisible: Boolean = true
     ) : Parcelable
+
+    companion object {
+        @VisibleForTesting
+        const val BOOKABLE_SERVICE_CREATION_PATH = "admin.php?page=next-admin&p=/woocommerce/services/new"
+    }
 }
