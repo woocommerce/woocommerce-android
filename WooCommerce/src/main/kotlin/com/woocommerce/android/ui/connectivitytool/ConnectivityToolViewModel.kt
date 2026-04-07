@@ -62,6 +62,7 @@ class ConnectivityToolViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+
     private val stateMachine = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetCheck
@@ -160,7 +161,7 @@ class ConnectivityToolViewModel @Inject constructor(
 
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
-        triggerEvent(OpenSupportRequest)
+        triggerEvent(OpenSupportRequest(diagnosticLog = generateDiagnosticLog()))
     }
 
     fun onReturnClicked() {
@@ -188,27 +189,24 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startInternetCheck() {
-        val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_INTERNET, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_INTERNET)
             status.startNextCheck()
             internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startWPComCheck() {
-        val startTime = System.currentTimeMillis()
         wpComConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_WP_COM, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_WP_COM)
             status.startNextCheck()
             wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreCheck() {
-        val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_SITE, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_SITE)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
@@ -224,9 +222,8 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startStoreOrdersCheck() {
-        val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_ORDERS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_ORDERS)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
@@ -242,9 +239,8 @@ class ConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startProductsCheck() {
-        val startTime = System.currentTimeMillis()
         storeProductsCheck().onEach { status ->
-            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS, startTime)
+            trackChanges(status, VALUE_CONNECTIVITY_PRODUCTS)
             status.startNextCheck()
             productsCheckFlow.update {
                 if (status is Failure) {
@@ -271,11 +267,7 @@ class ConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun trackChanges(
-        status: ConnectivityCheckStatus,
-        type: String,
-        startTime: Long
-    ) {
+    private fun trackChanges(status: ConnectivityCheckStatus, type: String) {
         if (status is InProgress || status is NotStarted) return
 
         analyticsTrackerWrapper.track(
@@ -283,12 +275,46 @@ class ConnectivityToolViewModel @Inject constructor(
             mapOf(
                 AnalyticsTracker.KEY_SUCCESS to (status is Success),
                 KEY_CONNECTIVITY_TEST to type,
-                AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime)
+                AnalyticsTracker.KEY_TIME_TAKEN to status.durationMs
             )
         )
     }
 
-    object OpenSupportRequest : MultiLiveEvent.Event()
+    private fun generateDiagnosticLog(): String? {
+        val currentState = viewState.value ?: return null
+        val checks = buildList {
+            add(InternetConnectionCheckUseCase.OPERATION_NAME to currentState.internetCheckData.connectivityCheckStatus)
+            if (currentState.isWPComCheckVisible) {
+                add(WPComConnectionCheckUseCase.OPERATION_NAME to currentState.wpComCheckData.connectivityCheckStatus)
+            }
+            add(StoreConnectionCheckUseCase.OPERATION_NAME to currentState.storeCheckData.connectivityCheckStatus)
+            add(StoreOrdersCheckUseCase.OPERATION_NAME to currentState.ordersCheckData.connectivityCheckStatus)
+            add(StoreProductsCheckUseCase.OPERATION_NAME to currentState.productsCheckData.connectivityCheckStatus)
+        }.filter { it.second is Success || it.second is Failure }
+
+        if (checks.isEmpty()) return null
+
+        return buildString {
+            checks.forEachIndexed { index, (name, status) ->
+                appendLine("## ${index + 1}. $name")
+                appendLine("Took: ${status.durationMs}ms")
+                val resultStr = when (status) {
+                    is Success -> "Success"
+                    is Failure -> buildString {
+                        append(status.error?.name ?: "Failed")
+                        status.technicalDetails?.let { details ->
+                            append("\n$details")
+                        }
+                    }
+                    else -> "Unknown"
+                }
+                appendLine("Result: $resultStr")
+                appendLine()
+            }
+        }.trimEnd()
+    }
+
+    data class OpenSupportRequest(val diagnosticLog: String?) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
     data class ViewState(

@@ -353,7 +353,7 @@ fun ConnectivityToolScreenPreview() {
                 connectivityCheckStatus = NotStarted
             ),
             wpComConnectionCheckData = WPComConnectivityCheckData(
-                connectivityCheckStatus = Success
+                connectivityCheckStatus = Success()
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
                 connectivityCheckStatus = Failure(

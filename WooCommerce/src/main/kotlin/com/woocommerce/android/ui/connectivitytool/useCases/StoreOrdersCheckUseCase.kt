@@ -25,14 +25,18 @@ class StoreOrdersCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        orderStore.fetchHasOrders(selectedSite.get(), null)
-            .run { this as? HasOrdersResult.Failure }
-            ?.parseError()
-            ?.let { emit(it) }
-            ?: emit(Success)
+        val startTime = System.currentTimeMillis()
+        val result = orderStore.fetchHasOrders(selectedSite.get(), null)
+        val durationMs = System.currentTimeMillis() - startTime
+        val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs)
+        if (failure != null) {
+            emit(failure)
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
     }
 
-    private fun HasOrdersResult.Failure.parseError(): Failure {
+    private fun HasOrdersResult.Failure.parseError(durationMs: Long): Failure {
         val failureType = when (error.type) {
             TIMEOUT_ERROR -> FailureType.TIMEOUT
             PARSE_ERROR -> FailureType.PARSE
@@ -43,10 +47,15 @@ class StoreOrdersCheckUseCase @Inject constructor(
         return Failure(
             error = failureType,
             technicalDetails = formatErrorDetails(
-                operation = "Fetch Orders",
+                operation = OPERATION_NAME,
                 errorType = error.type.name,
                 message = error.message
-            )
+            ),
+            durationMs = durationMs
         )
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Fetching your site orders"
     }
 }

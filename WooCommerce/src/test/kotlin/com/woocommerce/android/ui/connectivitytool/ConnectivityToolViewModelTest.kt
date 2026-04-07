@@ -50,11 +50,11 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         storeProductsCheck = mock()
         selectedSite = mock()
         analyticsTrackerWrapper = mock()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
-        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success()))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success()))
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success()))
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         createViewModel()
     }
@@ -76,7 +76,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when internetConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.internetCheckData }
             .distinctUntilChanged()
@@ -86,14 +86,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when wpComConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wpComConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.wpComCheckData }
             .distinctUntilChanged()
@@ -103,14 +103,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when storeConnectionCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.storeCheckData }
             .distinctUntilChanged()
@@ -120,14 +120,14 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
     fun `when storeOrdersCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.ordersCheckData }
             .distinctUntilChanged()
@@ -137,7 +137,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
@@ -175,7 +175,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when checks are still running, then isCheckFinished is false`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success()))
         whenever(wpComConnectionCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
@@ -192,7 +192,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when storeProductsCheck use case starts, then update ViewState as expected`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        whenever(storeProductsCheck()).thenReturn(flowOf(Success))
+        whenever(storeProductsCheck()).thenReturn(flowOf(Success()))
         sut.viewState
             .map { it.productsCheckData }
             .distinctUntilChanged()
@@ -202,7 +202,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success()))
     }
 
     @Test
@@ -220,17 +220,24 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event`() {
-        // Given
-        val events = mutableListOf<MultiLiveEvent.Event>()
-        sut.event.observeForever { events.add(it) }
+    fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event with diagnostic log`() =
+        testBlocking {
+            // Given
+            sut.viewState.observeForever {}
+            sut.startConnectionChecks()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever { events.add(it) }
 
-        // When
-        sut.onContactSupportClicked()
+            // When
+            sut.onContactSupportClicked()
 
-        // Then
-        assertThat(events).isEqualTo(listOf(OpenSupportRequest))
-    }
+            // Then
+            assertThat(events).hasSize(1)
+            assertThat(events.first()).isInstanceOf(OpenSupportRequest::class.java)
+            val log = (events.first() as OpenSupportRequest).diagnosticLog
+            assertThat(log).contains("## 1. Internet Connection")
+            assertThat(log).contains("Result: Success")
+        }
 
     @Test
     fun `given app password site, when checks run, then WPCom check is skipped`() = testBlocking {
@@ -324,5 +331,93 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(sut.technicalDetailsToShow.value).isNull()
         }
+    }
+
+    @Test
+    fun `when all checks succeed, then diagnostic log contains all SUCCESS entries`() = testBlocking {
+        // GIVEN
+        sut.viewState.observeForever {}
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // WHEN
+        sut.onContactSupportClicked()
+
+        // THEN
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
+        assertThat(log).contains("## 1. Internet Connection")
+        assertThat(log).contains("## 2. Connecting to WordPress.com Servers")
+        assertThat(log).contains("## 3. Connecting to your site")
+        assertThat(log).contains("## 4. Fetching your site orders")
+        assertThat(log).contains("## 5. Fetching products in your store")
+        assertThat(log!!.lines().filter { it == "Result: Success" }).hasSize(5)
+    }
+
+    @Test
+    fun `when a check fails, then diagnostic log contains FAILED entry with error info`() = testBlocking {
+        // GIVEN
+        val failure = Failure(
+            error = FailureType.TIMEOUT,
+            technicalDetails = "Operation: Site Connection\nError Type: TIMEOUT"
+        )
+        whenever(storeConnectionCheck()).thenReturn(flowOf(failure))
+        createViewModel()
+        sut.viewState.observeForever {}
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // WHEN
+        sut.onContactSupportClicked()
+
+        // THEN
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
+        assertThat(log).contains("## 3. Connecting to your site")
+        assertThat(log).contains("Result: TIMEOUT")
+        assertThat(log).contains("Operation: Site Connection")
+    }
+
+    @Test
+    fun `given app password site, when all checks succeed, then diagnostic log skips WPCom entry`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        createViewModel()
+        sut.viewState.observeForever {}
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // WHEN
+        sut.onContactSupportClicked()
+
+        // THEN
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
+        assertThat(log).contains("## 1. Internet Connection")
+        assertThat(log).doesNotContain("WordPress.com Servers")
+        assertThat(log).contains("## 2. Connecting to your site")
+        assertThat(log).contains("## 3. Fetching your site orders")
+        assertThat(log).contains("## 4. Fetching products in your store")
+    }
+
+    @Test
+    fun `when check fails early, then diagnostic log only contains completed checks`() = testBlocking {
+        // GIVEN
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Failure()))
+        createViewModel()
+        sut.viewState.observeForever {}
+        sut.startConnectionChecks()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // WHEN
+        sut.onContactSupportClicked()
+
+        // THEN
+        val log = (events.first() as OpenSupportRequest).diagnosticLog
+        assertThat(log).contains("## 1. Internet Connection")
+        assertThat(log).contains("Result: Failed")
+        assertThat(log).doesNotContain("WordPress.com Servers")
+        assertThat(log).doesNotContain("Connecting to your site")
     }
 }
