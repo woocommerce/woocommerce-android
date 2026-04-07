@@ -67,7 +67,13 @@ EOF
    - If the feature is behind a flag, also add `status: feature-flagged`
    - Infer labels from the diff and branch name. If unsure about feature label, ask the user.
 
-10. **Report the PR URL** to the user.
+10. **Set milestone.** Find the closest open milestone and assign it to the PR:
+    - List open milestones: `gh api repos/{owner}/{repo}/milestones?state=open&sort=due_on&direction=asc`
+    - Pick the one with the earliest `due_on` date
+    - Assign it: `gh api repos/{owner}/{repo}/issues/{number} -X PATCH -F milestone={milestone_number}`
+    - **If the milestone due date is less than 1 day away**, warn the user after assigning (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
+
+11. **Report the PR URL** to the user.
 
 ## Troubleshooting
 
