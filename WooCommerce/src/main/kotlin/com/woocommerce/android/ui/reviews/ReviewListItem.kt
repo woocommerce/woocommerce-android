@@ -111,6 +111,8 @@ fun ReviewListItem(
                             RatingBar(context, null, androidx.appcompat.R.attr.ratingBarStyleSmall)
                         },
                         update = { ratingBar ->
+                            // Set rating higher than numStars to fill all visible stars,
+                            // hiding the unfilled star background
                             ratingBar.rating = 100F
                             ratingBar.numStars = review.rating
                         }
