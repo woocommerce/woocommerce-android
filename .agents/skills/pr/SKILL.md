@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Create a pull request following project conventions
+description: Create a pull request following project conventions. Triggers on any request to create, open, make, submit, file, send, push, spin up, put up, draft, raise, or prepare a PR/pull request.
 allowed-tools: Bash, Read, Grep, Glob
 user-invocable: true
 ---
