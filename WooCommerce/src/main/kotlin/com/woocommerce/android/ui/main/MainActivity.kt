@@ -314,7 +314,8 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        super.onCreate(savedInstanceState)
+        val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
+        super.onCreate(bundle)
         setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
