@@ -21,6 +21,8 @@ Create a pull request following the project's PR conventions and template.
 
 ## Steps
 
+**IMPORTANT: Follow ALL steps in order. Do not skip any step, even if the PR seems simple.**
+
 1. **Verify branch.** Confirm you are NOT on `trunk`. If on trunk, stop and ask the user to create a feature branch first.
 
 2. **Check for uncommitted changes.** Run `git status`. If there are uncommitted changes, stop and ask the user whether to commit them first.
@@ -58,7 +60,7 @@ EOF
 )"
 ```
 
-9. **Add labels.** After creating the PR, add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
+9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
    - **Type** (pick one): `type: bug`, `type: crash`, `type: enhancement`, `type: task`, `type: technical debt`, `type: documentation`, `type: question`
    - **Feature** (pick one if applicable): match the changed area to a `feature: *` label (e.g., `feature: order list`, `feature: point of sale`, `feature: product details`, `feature: login`, etc.)
    - **Category** (pick any that apply): `category: accessibility`, `category: design`, `category: performance`, `category: tracks`, `category: unit tests`, `category: ui tests`, `category: tooling`, `category: parity`, etc.
@@ -66,3 +68,12 @@ EOF
    - Infer labels from the diff and branch name. If unsure about feature label, ask the user.
 
 10. **Report the PR URL** to the user.
+
+## Troubleshooting
+
+If `gh pr edit` fails with a GraphQL `Projects (classic)` error, fall back to the REST API:
+```bash
+gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f body='...'
+gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f title='...'
+gh api repos/{owner}/{repo}/issues/{number}/labels -X POST --input - <<< '{"labels":["label1","label2"]}'
+```
