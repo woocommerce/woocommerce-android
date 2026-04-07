@@ -14,5 +14,6 @@ enum class CIABAffectedFeature {
     Onboarding,
     OrderStatusEditing,
     Plugins,
-    POS
+    POS,
+    BookableServiceCreation
 }

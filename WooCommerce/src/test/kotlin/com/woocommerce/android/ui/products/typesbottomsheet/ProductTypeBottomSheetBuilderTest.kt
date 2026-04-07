@@ -98,9 +98,10 @@ class ProductTypeBottomSheetBuilderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given CIAB site, when building bottom sheet list, then bookable service is visible`() =
+    fun `given bookable service creation supported, when building bottom sheet list, then bookable service is visible`() =
         testBlocking {
-            given(ciabSiteGateKeeper.isCurrentSiteCIAB()).willReturn(true)
+            given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation))
+                .willReturn(true)
 
             val result = sut.buildBottomSheetList()
 
@@ -109,9 +110,10 @@ class ProductTypeBottomSheetBuilderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given non-CIAB site, when building bottom sheet list, then bookable service is not visible`() =
+    fun `given bookable service creation not supported, when building bottom sheet list, then bookable service is not visible`() =
         testBlocking {
-            given(ciabSiteGateKeeper.isCurrentSiteCIAB()).willReturn(false)
+            given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation))
+                .willReturn(false)
 
             val result = sut.buildBottomSheetList()
 

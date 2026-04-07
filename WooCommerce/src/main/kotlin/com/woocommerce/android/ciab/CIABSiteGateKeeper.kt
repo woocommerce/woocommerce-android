@@ -10,6 +10,7 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
         return when (feature) {
             CIABAffectedFeature.POS -> true
             CIABAffectedFeature.InPersonPayments -> !isCurrentSiteCIAB() || isCurrentSiteProCIAB()
+            CIABAffectedFeature.BookableServiceCreation -> isCurrentSiteCIAB()
             else -> !isCurrentSiteCIAB()
         }
     }
