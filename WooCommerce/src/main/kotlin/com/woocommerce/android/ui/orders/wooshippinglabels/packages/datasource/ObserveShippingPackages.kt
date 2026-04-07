@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformLatest
@@ -18,7 +20,8 @@ import javax.inject.Inject
 class ObserveShippingPackages @Inject constructor(
     private val selectedSite: SelectedSite,
     private val packageRepository: WooShippingLabelPackageRepository,
-    private val fetchShippingPackages: FetchShippingPackages
+    private val fetchShippingPackages: FetchShippingPackages,
+    private val featureFlagRepository: FeatureFlagRepository
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<PackagesState> = packageRepository.observeShippingPackages(selectedSite.get())
@@ -55,6 +58,12 @@ class ObserveShippingPackages @Inject constructor(
             carrierPackageGroups.parseCarrierData(WooShippingPackagesEntity.CarrierType.USPS)
                 .takeIf { it.isNotEmpty() }
                 ?.let { packageGroups -> put(Carrier.USPS, packageGroups) }
+
+            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SHIPPING_FEDEX)) {
+                carrierPackageGroups.parseCarrierData(WooShippingPackagesEntity.CarrierType.FEDEX)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { packageGroups -> put(Carrier.FEDEX, packageGroups) }
+            }
 
             carrierPackageGroups.parseCarrierData(WooShippingPackagesEntity.CarrierType.DHL)
                 .takeIf { it.isNotEmpty() }

@@ -114,7 +114,10 @@ class WooFileLogger(
                 }
             }.onFailure {
                 it.printStackTrace()
-                crashLogging?.get()?.sendReport(it, message = "Error reading log file: $fileName")
+                if (!it.isDiskSpaceError()) {
+                    // Report any error that is not due to disk space issues
+                    crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+                }
             }.getOrNull()
         }
     }
@@ -126,8 +129,15 @@ class WooFileLogger(
             )
         }.onFailure {
             it.printStackTrace()
-            crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            if (!it.isDiskSpaceError()) {
+                // Report any error that is not due to disk space issues
+                crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            }
         }
+    }
+
+    private fun Throwable.isDiskSpaceError() = message.orEmpty().let { msg ->
+        msg.contains("ENOSPC") || msg.contains("No space left on device", ignoreCase = true)
     }
 
     companion object {

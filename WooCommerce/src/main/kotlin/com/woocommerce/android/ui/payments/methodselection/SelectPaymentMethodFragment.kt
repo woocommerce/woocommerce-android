@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -35,12 +36,16 @@ import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_payment_method), BackPressListener {
+    @Inject lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
     private val viewModel: SelectPaymentMethodViewModel by viewModels()
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -123,10 +128,20 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             binding.container.addView(MaterialDivider(requireContext()))
         }
 
-        with(binding.learnMoreIppPaymentMethodsTv) {
-            learnMore.setOnClickListener { state.learnMoreIpp.onClick.invoke() }
-            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
-            learnMore.isVisible = state.learnMoreIpp.isVisible
+        when (val footer = state.learnMoreIpp) {
+            is Success.LearnMoreIpp.Standard -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = footer.isVisible
+                binding.learnMoreIppPaymentMethodsTv.learnMore.setOnClickListener { footer.onClick() }
+                UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, footer.label)
+            }
+            is Success.LearnMoreIpp.CiabUpgrade -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = true
+                UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, footer.text)
+                binding.learnMoreIppPaymentMethodsTv.learnMore.setOnClickListener { footer.onLearnMoreClick() }
+            }
+            is Success.LearnMoreIpp.Hidden -> {
+                binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = false
+            }
         }
     }
 
@@ -242,6 +257,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     findNavController().navigateSafely(action)
                 }
 
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
+                }
+
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
@@ -321,6 +340,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        viewModel.onResumed()
     }
 
     override fun onStop() {

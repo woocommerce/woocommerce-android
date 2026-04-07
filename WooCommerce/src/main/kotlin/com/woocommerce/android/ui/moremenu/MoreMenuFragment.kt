@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -113,6 +114,8 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab ->
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
             }

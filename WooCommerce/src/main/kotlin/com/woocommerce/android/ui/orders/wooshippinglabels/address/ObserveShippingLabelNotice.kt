@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_ITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.VERIFIED_DESTINATION_ADDRESS
@@ -73,8 +74,16 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
             UNVERIFIED_DESTINATION_ADDRESS
         }
 
-        addresses.shipFrom.isVerified && previousNotice == UNVERIFIED_ORIGIN_ADDRESS &&
-            isDismissed[VERIFIED_ORIGIN_ADDRESS] == false -> {
+        addresses.shipFrom.isVerified && addressValidationHelper.isMissingOriginAddress(addresses.shipFrom) &&
+            isDismissed[MISSING_ORIGIN_ADDRESS] == false -> {
+            MISSING_ORIGIN_ADDRESS
+        }
+
+        addresses.shipFrom.isVerified &&
+            (
+                previousNotice == UNVERIFIED_ORIGIN_ADDRESS ||
+                    (previousNotice == MISSING_ORIGIN_ADDRESS && isDismissed[MISSING_ORIGIN_ADDRESS] == false)
+                ) && isDismissed[VERIFIED_ORIGIN_ADDRESS] == false -> {
             VERIFIED_ORIGIN_ADDRESS
         }
 
@@ -91,6 +100,14 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
     }
 
     private fun getNoticeBannerUiState(noticeType: NoticeType) = when (noticeType) {
+        MISSING_ORIGIN_ADDRESS -> NoticeBannerUiState(
+            message = R.string.woo_shipping_address_notification_origin_missing_or_invalid,
+            type = MISSING_ORIGIN_ADDRESS,
+            autoDismiss = false,
+            error = true,
+            onDismissed = onDismissed(MISSING_ORIGIN_ADDRESS)
+        )
+
         UNVERIFIED_ORIGIN_ADDRESS -> NoticeBannerUiState(
             message = R.string.woo_shipping_address_notification_origin_unverified,
             type = UNVERIFIED_ORIGIN_ADDRESS,

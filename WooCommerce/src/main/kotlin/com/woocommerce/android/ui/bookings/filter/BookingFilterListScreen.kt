@@ -172,7 +172,7 @@ private fun FiltersNavHost(
                 customer.customerId?.let { id ->
                     state.onUpdateFilterOption(
                         BookingsFilterOption.Customer(
-                            customerId = id,
+                            userId = id,
                             customerName = "${customer.firstName} ${customer.lastName}".trim()
                                 .ifBlank { customer.email }.orEmpty()
                         )

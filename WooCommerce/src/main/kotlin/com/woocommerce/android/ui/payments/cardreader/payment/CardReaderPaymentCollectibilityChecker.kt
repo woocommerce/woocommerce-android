@@ -22,7 +22,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
     suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
-        return ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments) &&
+        return ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments) &&
             with(order) {
                 cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
                     isStatusCollectable(allowCancelledStatus) &&

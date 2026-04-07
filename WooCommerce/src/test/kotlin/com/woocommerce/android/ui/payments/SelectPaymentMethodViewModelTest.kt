@@ -117,7 +117,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.WooPayments) } doReturn true
+        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
     }
 
     @Test
@@ -917,7 +917,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
+        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
@@ -934,7 +934,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
+        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1200,14 +1200,14 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given WooPayments unsupported by CIAB, when view model initialized, then hide IPP learn more link`() =
         testBlocking {
             // GIVEN
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)).thenReturn(false)
+            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)).thenReturn(false)
 
             // WHEN
             val viewModel = initViewModel(Payment(1L, ORDER))
 
             // THEN
             val state = (viewModel.viewStateData.value as Success).learnMoreIpp
-            assertThat(state.isVisible).isFalse()
+            assertThat(state).isInstanceOf(Success.LearnMoreIpp.Hidden::class.java)
         }
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
@@ -1230,7 +1230,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
-            ciabSiteGateKeeper = ciabSiteGateKeeper
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
+            resourceProvider = mock()
         )
     }
 

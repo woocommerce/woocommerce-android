@@ -1394,7 +1394,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.first().code).isEqualTo("TEST")
+            assertThat(childToParentEvent.data.updatedCoupons.first().code).isEqualTo("TEST")
         }
 
     @Test
@@ -1420,7 +1420,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.size).isEqualTo(1)
+            assertThat(childToParentEvent.data.updatedCoupons.size).isEqualTo(1)
         }
 
     @Test
@@ -1612,7 +1612,7 @@ class WooPosTotalsViewModelTest {
 
             whenever(resourceProvider.getString(any())).thenReturn("")
             whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
-                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
             )
 
             // WHEN
@@ -1625,7 +1625,7 @@ class WooPosTotalsViewModelTest {
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedScreenShown(
                     reason = "deleted",
-                    syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                    syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
                 )
             )
         }
@@ -1721,7 +1721,7 @@ class WooPosTotalsViewModelTest {
         runTest {
             // GIVEN
             whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
-                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
             )
             val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
@@ -1745,7 +1745,7 @@ class WooPosTotalsViewModelTest {
                 WooPosAnalyticsEvent.Event
                     .CheckoutOutdatedItemDetectedScreenShown(
                         reason = "deleted",
-                        syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                        syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
                     )
             )
         }
@@ -1754,7 +1754,7 @@ class WooPosTotalsViewModelTest {
     fun `when edit order tapped after product not found, then tracks edit order tapped event`() = runTest {
         // GIVEN
         whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
-            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
         )
         val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
@@ -1778,7 +1778,7 @@ class WooPosTotalsViewModelTest {
         verify(analyticsTracker).track(
             WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedEditOrderTapped(
                 reason = "deleted",
-                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
             )
         )
     }
@@ -1787,7 +1787,7 @@ class WooPosTotalsViewModelTest {
     fun `when remove products tapped after product not found, then tracks remove tapped event`() = runTest {
         // GIVEN
         whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
-            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
         )
         val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
@@ -1811,7 +1811,7 @@ class WooPosTotalsViewModelTest {
         verify(analyticsTracker).track(
             WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedRemoveTapped(
                 reason = "deleted",
-                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
             )
         )
     }

@@ -244,6 +244,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         noticeBannerUiState = noticeBanner?.copy(
                             onTapped = {
                                 when (noticeBanner.type) {
+                                    NoticeType.MISSING_ORIGIN_ADDRESS,
                                     NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
                                         shippingAddresses.value.getOrNull(selectedShipmentIndex)
                                             ?.shipFrom?.let { shipFrom ->
@@ -877,9 +878,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun getSelectedOriginAddress(
         originAddresses: List<OriginShippingAddress>,
         selectedIndex: Int
-    ): OriginShippingAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom?.takeIf {
-        it != OriginShippingAddress.EMPTY
-    } ?: originAddresses.first()
+    ): OriginShippingAddress {
+        val selectedAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom
+            ?.takeIf { it != OriginShippingAddress.EMPTY }
+
+        return selectedAddress?.let { currentAddress ->
+            originAddresses.firstOrNull { it.id == currentAddress.id } ?: currentAddress
+        } ?: originAddresses.first()
+    }
 
     fun onSelectedShipmentChanged(index: Int) {
         if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
@@ -986,11 +992,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
+        if (addressValidationHelper.isMissingOriginAddress(selectedAddress.shipFrom)) {
+            showPurchaseOriginAddressErrorSnackbar(selectedAddress.shipFrom)
+            return
+        }
+
         if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
-            snackbarData = ShippingLabelsSnackbarData(
-                message = R.string.woo_shipping_labels_purchase_phone_error,
-                actionLabel = R.string.edit,
-            ) { onEditDestinationAddress(selectedAddress.shipTo) }
+            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             return
         }
 
@@ -1036,6 +1044,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    private fun showPurchaseOriginAddressErrorSnackbar(originAddress: OriginShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_origin_address_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditOriginAddress(originAddress)
+        }
+    }
+
+    private fun showPurchasePhoneErrorSnackbar(destinationAddress: DestinationShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_phone_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditDestinationAddress(destinationAddress)
+        }
+    }
+
     private fun handlePurchaseFailure(
         exception: Throwable,
         selectedShipmentIndex: Int,
@@ -1045,22 +1073,19 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedShipmentIndex,
             shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
         )
-        when {
-            exception is WooException &&
-                exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+        when (exception) {
+            is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
                 triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
             }
-            exception is WooException &&
-                exception.error.message?.contains("phone", ignoreCase = true) == true -> {
+
+            is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
                     mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to "invalid_phone")
                 )
-                snackbarData = ShippingLabelsSnackbarData(
-                    message = R.string.woo_shipping_labels_purchase_phone_error,
-                    actionLabel = R.string.edit,
-                ) { onEditDestinationAddress(selectedAddress.shipTo) }
+                showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             }
+
             else -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
@@ -1069,7 +1094,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 snackbarData = ShippingLabelsSnackbarData(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
-                ) { onPurchaseShippingLabel() }
+                ) {
+                    snackbarData = null
+                    onPurchaseShippingLabel()
+                }
             }
         }
     }
@@ -1437,6 +1465,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     enum class Carrier(val pickupUrl: String) {
         USPS("https://tools.usps.com/schedule-pickup-steps.htm"),
+        FEDEX("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"),
         UPS("https://wwwapps.ups.com/pickup/request"),
         DHL("https://mydhl.express.dhl/us/en/schedule-pickup.html#/schedule-pickup#label-reference");
 
@@ -1444,6 +1473,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             fun fromCarrierId(carrierId: String): Carrier? {
                 return when (carrierId) {
                     "usps" -> USPS
+                    "fedex" -> FEDEX
                     "ups" -> UPS
                     "dhlexpress" -> DHL
                     else -> null

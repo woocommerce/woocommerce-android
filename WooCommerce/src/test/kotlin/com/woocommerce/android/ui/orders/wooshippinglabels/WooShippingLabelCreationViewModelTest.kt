@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
@@ -71,6 +72,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -286,6 +288,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
         on { isPhoneValidForShippingLabel(any()) } doReturn true
+        on { isMissingOriginAddress(any()) } doReturn false
     }
 
     private val observeOriginAddresses: ObserveOriginAddresses = mock {
@@ -425,6 +428,27 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
         val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
+    }
+
+    @Test
+    fun `when selected origin address is refreshed, then update selected shipFrom`() = testBlocking {
+        val updatedOriginAddress = defaultOriginAddresses.first().copy(email = "updated@example.com")
+        val originAddressesFlow = MutableStateFlow(defaultOriginAddresses)
+        whenever(observeOriginAddresses.invoke()) doReturn originAddressesFlow
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        originAddressesFlow.value = listOf(updatedOriginAddress)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.shippingAddresses.first().shipFrom.email).isEqualTo(updatedOriginAddress.email)
     }
 
     @Test
@@ -1004,6 +1028,61 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when origin address is missing on purchase, then show edit origin snackbar`() = testBlocking {
+        whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(sut.snackbarData).matches {
+            it?.message == R.string.woo_shipping_labels_purchase_origin_address_error
+        }
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
+    fun `when edit origin snackbar action is tapped, then dismiss snackbar and navigate to edit origin`() = testBlocking {
+        whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        val events = sut.event.captureValues()
+
+        sut.snackbarData?.action?.invoke()
+
+        assertThat(sut.snackbarData).isNull()
+        assertThat(events.last()).isEqualTo(NavigateToOriginAddressEdit(defaultOriginAddresses.first()))
+    }
+
+    @Test
     fun `when label is purchased, then track purchase_success`() = testBlocking {
         whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
             ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
@@ -1443,6 +1522,26 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onSchedulePickUpClicked()
 
         assertThat(event).isEqualTo(OpenUrl("https://tools.usps.com/schedule-pickup-steps.htm"))
+    }
+
+    @Test
+    fun `when fedex pickup is requested, then OpenUrl event is triggered`() = testBlocking {
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(carrierId = "fedex")
+            )
+        )
+
+        createViewModel()
+
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onSchedulePickUpClicked()
+
+        assertThat(event).isEqualTo(OpenUrl("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"))
     }
 
     @Test

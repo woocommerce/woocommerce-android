@@ -37,7 +37,7 @@ class AppShortcutsHandler @Inject constructor(
 
     private fun buildShortcutsList(): List<ShortcutInfoCompat> {
         return buildList {
-            if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)) {
+            if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)) {
                 add(AppShortcut.Payments.toShortcutInfo())
             }
 

@@ -885,6 +885,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class IneligibleUILearnMoreTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_learn_more_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
         data object LocalCatalogDownloadingScreenShown : Event() {
             override val name: String = "local_catalog_downloading_screen_shown"
         }
@@ -1339,13 +1351,13 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> "ciab_plan_upgrade_required"
     }
 }
 
 internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
-        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
         SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }
