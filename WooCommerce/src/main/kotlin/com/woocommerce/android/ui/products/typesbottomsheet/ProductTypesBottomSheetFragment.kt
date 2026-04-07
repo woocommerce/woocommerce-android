@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -62,6 +64,11 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
             showProductTypeOptions(it)
         }
 
+        viewModel.isCreatingProduct.observe(viewLifecycleOwner) { isCreating ->
+            binding.productDetailInfoContent.isVisible = !isCreating
+            binding.productDetailInfoProgress.isVisible = isCreating
+        }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
@@ -88,6 +95,14 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
                     (event.data as? ProductTypesBottomSheetUiItem)?.let {
                         navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
                     }
+                }
+
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    Snackbar.make(
+                        requireView(),
+                        getString(event.message),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
 
                 is ProductNavigationTarget -> navigator.navigate(this, event)

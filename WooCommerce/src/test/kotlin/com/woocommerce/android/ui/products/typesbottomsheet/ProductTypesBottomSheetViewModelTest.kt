@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.products.typesbottomsheet
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,6 +26,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             }
         )
     }
+    private val productDetailRepository: ProductDetailRepository = mock()
 
     @Before
     fun setUp() = testBlocking {
@@ -36,6 +39,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
             bottomSheetBuilder,
             selectedSite,
+            productDetailRepository,
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value).isEqualTo(uiItems)
@@ -51,6 +55,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             bottomSheetBuilder,
             selectedSite,
+            productDetailRepository,
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
@@ -66,6 +71,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             bottomSheetBuilder,
             selectedSite,
+            productDetailRepository,
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
@@ -73,11 +79,16 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when bookable service type selected for add product, then webview event is triggered`() = testBlocking {
+    fun `when bookable service type selected, then auto-draft is created and webview opens with edit URL`() = testBlocking {
+        val fakeProductId = 123L
+        whenever(productDetailRepository.createAutoDraftProduct(any()))
+            .thenReturn(Result.success(fakeProductId))
+
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
             bottomSheetBuilder,
             selectedSite,
+            productDetailRepository,
         )
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -95,9 +106,39 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
         )
         val webViewEvent = events.filterIsInstance<MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView>().first()
         assertThat(webViewEvent.url).contains(
-            ProductTypesBottomSheetViewModel.BOOKABLE_SERVICE_CREATION_PATH
+            ProductTypesBottomSheetViewModel.BOOKABLE_SERVICE_EDIT_PATH
         )
+        assertThat(webViewEvent.url).contains("$fakeProductId")
         assertThat(events).hasAtLeastOneElementOfType(MultiLiveEvent.Event.Exit::class.java)
+        assertThat(viewModel.isCreatingProduct.value).isFalse()
+    }
+
+    @Test
+    fun `when bookable service creation fails, then snackbar is shown`() = testBlocking {
+        whenever(productDetailRepository.createAutoDraftProduct(any()))
+            .thenReturn(Result.failure(Exception("Failed")))
+
+        viewModel = ProductTypesBottomSheetViewModel(
+            ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
+            bottomSheetBuilder,
+            selectedSite,
+            productDetailRepository,
+        )
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        val bookableServiceItem = ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem(
+            type = ProductType.BOOKABLE_SERVICE,
+            titleResource = 0,
+            descResource = 0,
+            iconResource = 0
+        )
+        viewModel.onProductTypeSelected(bookableServiceItem)
+
+        assertThat(events).hasAtLeastOneElementOfType(
+            MultiLiveEvent.Event.ShowSnackbar::class.java
+        )
+        assertThat(viewModel.isCreatingProduct.value).isFalse()
     }
 
     private val uiItems: List<ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem> = listOf(

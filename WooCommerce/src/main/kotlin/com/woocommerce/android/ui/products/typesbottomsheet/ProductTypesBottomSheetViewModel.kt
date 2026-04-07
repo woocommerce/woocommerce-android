@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -16,10 +17,12 @@ import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
@@ -30,12 +33,16 @@ import javax.inject.Inject
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
+
+    private val _isCreatingProduct = MutableStateFlow(false)
+    val isCreatingProduct: LiveData<Boolean> = _isCreatingProduct.asLiveData()
 
     init {
         viewModelScope.launch {
@@ -65,15 +72,27 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             if (productTypeUiItem.type == ProductType.BOOKABLE_SERVICE) {
-                val url = selectedSite.get().adminUrlOrDefault
-                    .slashJoin(BOOKABLE_SERVICE_CREATION_PATH)
-                triggerEvent(
-                    MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                        url = url,
-                        fallbackToChromeTab = false
-                    )
-                )
-                triggerEvent(MultiLiveEvent.Event.Exit)
+                launch {
+                    _isCreatingProduct.value = true
+                    productDetailRepository.createAutoDraftProduct(ProductType.BOOKABLE_SERVICE)
+                        .onSuccess { productId ->
+                            _isCreatingProduct.value = false
+                            val url = selectedSite.get().adminUrlOrDefault
+                                .slashJoin(BOOKABLE_SERVICE_EDIT_PATH)
+                                .slashJoin("$productId")
+                            triggerEvent(
+                                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                                    url = url,
+                                    fallbackToChromeTab = false
+                                )
+                            )
+                            triggerEvent(MultiLiveEvent.Event.Exit)
+                        }
+                        .onFailure {
+                            _isCreatingProduct.value = false
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
+                        }
+                }
                 return
             }
 
@@ -112,6 +131,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     companion object {
         @VisibleForTesting
-        const val BOOKABLE_SERVICE_CREATION_PATH = "admin.php?page=next-admin&p=/woocommerce/services/new"
+        const val BOOKABLE_SERVICE_EDIT_PATH = "admin.php?page=next-admin&p=/woocommerce/services/edit"
     }
 }

@@ -17,6 +17,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toMetaData
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -39,6 +40,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.metadata.MetadataChanges
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
@@ -188,6 +190,28 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun addProduct(product: Product): Pair<Boolean, Long> = addProduct(ProductAggregate(product, null))
+
+    suspend fun createAutoDraftProduct(type: ProductType): Result<Long> {
+        return try {
+            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(AppConstants.REQUEST_TIMEOUT) {
+                continuationAddProduct = it
+                val model = WCProductModel().copy(
+                    type = type.value,
+                    status = "auto-draft"
+                )
+                val payload = WCProductStore.AddProductPayload(
+                    site = selectedSite.get(),
+                    product = model
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
+            }?.let { (success, remoteId) ->
+                if (success) Result.success(remoteId) else Result.failure(Exception("Failed to create product"))
+            } ?: Result.failure(Exception("Request timed out"))
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "Exception encountered while creating an auto-draft product", e)
+            Result.failure(e)
+        }
+    }
 
     /**
      * Fires the request to update the product password
