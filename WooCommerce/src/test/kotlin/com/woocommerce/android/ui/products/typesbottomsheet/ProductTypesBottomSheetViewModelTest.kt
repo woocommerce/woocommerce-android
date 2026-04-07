@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.typesbottomsheet
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.webview.ProductDetailWebViewViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -106,7 +107,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
         )
         val webViewEvent = events.filterIsInstance<MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView>().first()
         assertThat(webViewEvent.url).contains(
-            ProductTypesBottomSheetViewModel.BOOKABLE_SERVICE_EDIT_PATH
+            ProductDetailWebViewViewModel.BOOKABLE_SERVICE_PATH
         )
         assertThat(webViewEvent.url).contains("$fakeProductId")
         assertThat(events).hasAtLeastOneElementOfType(MultiLiveEvent.Event.Exit::class.java)

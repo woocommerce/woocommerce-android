@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.details.webview
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.liveData
@@ -59,7 +58,6 @@ class ProductDetailWebViewViewModel @Inject constructor(
     )
 
     companion object {
-        @VisibleForTesting
         const val BOOKABLE_SERVICE_PATH = "admin.php?page=next-admin&p=/woocommerce/services/edit"
     }
 }

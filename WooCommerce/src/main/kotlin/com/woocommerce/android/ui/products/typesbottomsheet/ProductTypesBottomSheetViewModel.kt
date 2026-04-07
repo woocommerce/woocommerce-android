@@ -18,6 +18,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.webview.ProductDetailWebViewViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -78,7 +79,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
                         .onSuccess { productId ->
                             _isCreatingProduct.value = false
                             val url = selectedSite.get().adminUrlOrDefault
-                                .slashJoin(BOOKABLE_SERVICE_EDIT_PATH)
+                                .slashJoin(ProductDetailWebViewViewModel.BOOKABLE_SERVICE_PATH)
                                 .slashJoin("$productId")
                             triggerEvent(
                                 MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
@@ -128,9 +129,4 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         val isVirtual: Boolean = false,
         val isVisible: Boolean = true
     ) : Parcelable
-
-    companion object {
-        @VisibleForTesting
-        const val BOOKABLE_SERVICE_EDIT_PATH = "admin.php?page=next-admin&p=/woocommerce/services/edit"
-    }
 }
