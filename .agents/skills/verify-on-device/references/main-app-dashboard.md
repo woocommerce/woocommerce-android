@@ -1,7 +1,6 @@
 # Dashboard Tab
 
 Fragment: `DashboardFragment` -- Tap `dashboard` bottom tab.
-Logcat events are prefixed with `woocommerceandroid_`.
 
 ## Screen Identifiers
 
@@ -45,47 +44,47 @@ The dashboard uses a dynamic widget system. Cards can be added, removed, and reo
 
 ### Dashboard Navigation
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap "My Store" tab | id: `dashboard` | `dashboard_main_stats_loaded` |
-| 2 | Pull to refresh | swipe down on dashboard | `dashboard_pulled_to_refresh` |
-| 3 | Change date range | tag: `stats_range_dropdown_button` | `dashboard_main_stats_date` |
-| 4 | Set custom date range | date picker dialog | `dashboard_stats_custom_range_confirmed` |
-| 5 | View analytics hub | text: "View all store analytics" | `dashboard_see_more_analytics_tapped` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap "My Store" tab | id: `dashboard` |
+| 2 | Pull to refresh | swipe down on dashboard |
+| 3 | Change date range | tag: `stats_range_dropdown_button` |
+| 4 | Set custom date range | date picker dialog |
+| 5 | View analytics hub | text: "View all store analytics" |
 
 ### Analytics Hub
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Navigate from Dashboard | text: "View all store analytics" | |
-| 2 | Change date range | `analyticsDateSelectorCard` | `analytics_hub_date_range_selected` |
-| 3 | Pull to refresh | swipe down | `analytics_hub_pull_to_refresh_triggered` |
-| 4 | Open settings | settings icon | `analytics_hub_settings_opened` |
-| 5 | View full report | report link on card | `analytics_hub_view_full_report_tapped` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Navigate from Dashboard | text: "View all store analytics" |
+| 2 | Change date range | `analyticsDateSelectorCard` |
+| 3 | Pull to refresh | swipe down |
+| 4 | Open settings | settings icon |
+| 5 | View full report | report link on card |
 
 ### Widget Editor (Customize Dashboard)
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap "Edit layout" on dashboard | edit button | `dynamic_dashboard_edit_layout_button_tapped` |
-| 2 | Toggle cards on/off | card toggle switches | `dynamic_dashboard_hide_card_tapped` |
-| 3 | Reorder cards | drag handles | |
-| 4 | Tap "Save" | save button | `dynamic_dashboard_editor_save_tapped` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap "Edit layout" on dashboard | edit button |
+| 2 | Toggle cards on/off | card toggle switches |
+| 3 | Reorder cards | drag handles |
+| 4 | Tap "Save" | save button |
 
 ### Store Onboarding (New Stores)
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap onboarding task | task item in onboarding card | |
-| 2 | "About your store" | about store screen | |
-| 3 | "Name your store" | name dialog | |
-| 4 | "Launch your store" | launch store screen | |
-| 5 | Payments setup | payments pre-setup screen | |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap onboarding task | task item in onboarding card |
+| 2 | "About your store" | about store screen |
+| 3 | "Name your store" | name dialog |
+| 4 | "Launch your store" | launch store screen |
+| 5 | Payments setup | payments pre-setup screen |
 
 ### Inbox
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap inbox card or navigate from menu | inbox card / menu item | |
-| 2 | View message | message row | |
-| 3 | Take action (archive, view, etc.) | action button on message | |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap inbox card or navigate from menu | inbox card / menu item |
+| 2 | View message | message row |
+| 3 | Take action (archive, view, etc.) | action button on message |

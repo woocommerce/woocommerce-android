@@ -1,7 +1,6 @@
 # Login Flow
 
 Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on login method.
-Logcat events are prefixed with `woocommerceandroid_`.
 
 ## Screen Detection
 
@@ -24,70 +23,70 @@ Logcat events are prefixed with `woocommerceandroid_`.
 
 ### Happy Path: WPCom Email + Password
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap "Log in with WordPress.com" | id: `buttonLoginWpcom` | |
-| 2 | Enter email | email text field | `login_email_form_viewed` |
-| 3 | Tap Continue | continue button | |
-| 4 | Enter password | password text field | `login_password_form_viewed` |
-| 5 | Tap Continue | continue button | `signed_in` |
-| 6 | Select store (if multi-site) | store list row | `site_picker_stores_shown` |
-| 7 | Tap Continue | text: "Continue" | `site_picker_continue_tapped` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap "Log in with WordPress.com" | id: `buttonLoginWpcom` |
+| 2 | Enter email | email text field |
+| 3 | Tap Continue | continue button |
+| 4 | Enter password | password text field |
+| 5 | Tap Continue | continue button |
+| 6 | Select store (if multi-site) | store list row |
+| 7 | Tap Continue | text: "Continue" |
 
 ### Happy Path: Site Address
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap "Log in with site address" | id: `buttonLoginStore` | |
-| 2 | Enter store URL | URL text field | `login_url_form_viewed` |
-| 3 | Tap Continue | continue button | `login_site_address_site_info_requested` |
-| 4 | Enter WPCom email (if Jetpack connected) | email text field | `login_email_form_viewed` |
-| 5 | Enter password | password text field | `login_password_form_viewed` |
-| 6 | Login success | | `signed_in` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap "Log in with site address" | id: `buttonLoginStore` |
+| 2 | Enter store URL | URL text field |
+| 3 | Tap Continue | continue button |
+| 4 | Enter WPCom email (if Jetpack connected) | email text field |
+| 5 | Enter password | password text field |
+| 6 | Login success | |
 
 ### 2FA Flow (after password)
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Enter 6-digit code | OTP input field | `login_two_factor_form_viewed` |
-| 2 | Tap Continue | continue button | |
-| 3 | (Alternative) Tap "Use security key" | security key button | `login_security_key_success` |
-| 4 | (Alternative) Tap "Send SMS" | SMS link | |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Enter 6-digit code | OTP input field |
+| 2 | Tap Continue | continue button |
+| 3 | (Alternative) Tap "Use security key" | security key button |
+| 4 | (Alternative) Tap "Send SMS" | SMS link |
 
 ### Magic Link Flow
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Enter email | email text field | `login_email_form_viewed` |
-| 2 | Request magic link | magic link button | `login_magic_link_requested` |
-| 3 | Tap "Open email client" | id: `login_open_email_client` | `login_magic_link_open_email_client_clicked` |
-| 4 | (Magic link opened from email) | | `login_magic_link_succeeded` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Enter email | email text field |
+| 2 | Request magic link | magic link button |
+| 3 | Tap "Open email client" | id: `login_open_email_client` |
+| 4 | (Magic link opened from email) | |
 
 ### Google SSO
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Tap Google sign-in button | Google button | `login_social_button_click` |
-| 2 | Complete Google auth | Google account picker | `login_social_success` |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Tap Google sign-in button | Google button |
+| 2 | Complete Google auth | Google account picker |
 
 ### Jetpack Activation (when Jetpack not installed)
 
-| Step | Action | Element | Logcat Event |
-|------|--------|---------|-------------|
-| 1 | Site discovered without Jetpack | | `login_jetpack_required_screen_viewed` |
-| 2 | Tap "Continue" / "Install Jetpack" | continue button | `login_jetpack_setup_button_tapped` |
-| 3 | Enter site credentials (if needed) | username/password fields | `login_jetpack_site_credential_screen_viewed` |
-| 4 | Jetpack installation progress | progress indicator | `login_jetpack_setup_completed` |
-| 5 | Authorize connection | WebView auth | |
+| Step | Action | Element |
+|------|--------|---------|
+| 1 | Site discovered without Jetpack | |
+| 2 | Tap "Continue" / "Install Jetpack" | continue button |
+| 3 | Enter site credentials (if needed) | username/password fields |
+| 4 | Jetpack installation progress | progress indicator |
+| 5 | Authorize connection | WebView auth |
 
 ### Error Flows
 
-| Error | Detection | Logcat Event |
-|-------|-----------|-------------|
-| Invalid URL | text: error + "Try again" button | `login_discovery_error_screen_viewed` |
-| Not WordPress | dialog: "not a WordPress site" | |
-| Wrong account | account mismatch screen with avatar | |
-| No WPCom account | dialog: account not found | |
-| Login failed | error message on password screen | `login_failed` |
-| Insufficient role | permission error | `login_insufficient_role` |
-| Site discovery failed | error + "Troubleshoot" link | `login_site_address_site_info_failed` |
+| Error | Detection |
+|-------|-----------|
+| Invalid URL | text: error + "Try again" button |
+| Not WordPress | dialog: "not a WordPress site" |
+| Wrong account | account mismatch screen with avatar |
+| No WPCom account | dialog: account not found |
+| Login failed | error message on password screen |
+| Insufficient role | permission error |
+| Site discovery failed | error + "Troubleshoot" link |
