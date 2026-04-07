@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
@@ -39,13 +41,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReviewListViewModel @Inject constructor(
-    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val reviewRepository: ReviewListRepository,
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -126,6 +129,7 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun forceRefreshReviews() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.REVIEWS_LIST_PULLED_TO_REFRESH)
         viewState = viewState.copy(isRefreshing = true)
         fetchReviewList(loadMore = false)
     }
