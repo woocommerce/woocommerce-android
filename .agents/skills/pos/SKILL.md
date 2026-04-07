@@ -176,6 +176,55 @@ Key differences from main app Compose:
 - Navigation uses Compose Navigation (`NavHost`, `composable()`) — see `WooPosHomeNavigation.kt`
 - Landscape-only, tablet-optimized
 
+## Design System
+
+POS has its own design system — do NOT use main app's `WooTheme`. All POS UI must be wrapped in `WooPosTheme`.
+
+### Theme
+
+`WooPosTheme` — Material 3 theme with light/dark support. Use `MaterialTheme.colorScheme.*` for standard colors and `WooPosTheme.colors.*` for POS custom colors (success, alert, disabled, info, error variants). See `WooPosTheme.kt` for available custom colors.
+
+### Spacing
+
+Use `WooPosSpacing` enum — values scale adaptively based on screen size. Never use raw `dp` values for padding/margins:
+
+```kotlin
+Modifier.padding(WooPosSpacing.Medium.value)
+```
+
+See `WooPosSizes.kt` for available sizes and adaptive scaling logic.
+
+### Corner Radius and Elevation
+
+Use `WooPosCornerRadius` and `WooPosElevation` enums (fixed, not adaptive):
+
+```kotlin
+RoundedCornerShape(WooPosCornerRadius.Medium.value)
+Modifier.shadow(elevation = WooPosElevation.Medium.value)
+```
+
+### Typography
+
+Use `WooPosTypography` sealed class with the `WooPosText` component:
+
+```kotlin
+WooPosText(
+    text = "Title",
+    style = WooPosTypography.Heading,
+    color = MaterialTheme.colorScheme.onSurface,
+)
+```
+
+See `WooPosTypography.kt` for available styles.
+
+### Design System Source
+
+All definitions in `.../ui/woopos/common/composeui/designsystem/` — read these files for current values:
+- `WooPosTheme.kt` — theme, color schemes, custom colors
+- `WooPosSizes.kt` — spacing, corner radius, elevation enums
+- `WooPosTypography.kt` — text styles
+- `WooPosIcons.kt` — theme-aware icons (very large file — avoid reading unless you need to find a specific icon)
+
 ## File Locations
 
 - Source: `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/`

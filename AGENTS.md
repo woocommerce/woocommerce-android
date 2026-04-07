@@ -62,6 +62,12 @@ docs/                        Development guidelines
 
 ## Architecture
 
+The app has two distinct parts with **different architectures**. Identify which one you're working in before writing code — using the wrong patterns is a common mistake.
+
+### Store Management (main app)
+
+The store management app lets merchants manage orders, products, analytics, etc. from their phone. It uses MVVM with Fragments hosting Compose UI.
+
 ```
 ┌─────────────────────────────────┐
 │  Fragment (hosts ComposeView)   │   UI layer — Jetpack Compose inside Fragments
@@ -74,10 +80,44 @@ docs/                        Development guidelines
 └─────────────────────────────────┘
 ```
 
-This project uses **MVVM** with Kotlin Coroutines and Hilt DI. Key boundaries:
-- Compose screens live inside Fragments (1:1 relationship)
+- Code: everything under `ui/` **except** `ui/woopos/`
+- Navigation: XML nav graphs with `NavController`
+- ViewModels extend `ScopedViewModel`
+- Events via `triggerEvent()` / `MultiLiveEvent`
+- Skills: `store-compose`, `store-viewmodel`, `store-analytics`, `store-tests`
+
+### POS (Point of Sale)
+
+POS is a tablet-only, landscape-only register interface for in-person sales. It runs in its own Activity with a completely separate architecture.
+
+```
+┌─────────────────────────────────┐
+│  WooPosActivity (setContent)    │   100% Compose — no Fragments, no XML layouts
+├─────────────────────────────────┤
+│  ViewModel (plain ViewModel)    │   State via StateFlow, parent-child SharedFlow event bus
+├─────────────────────────────────┤
+│  Repository / Use Case          │   Domain — coordinates data sources
+├─────────────────────────────────┤
+│  FluxC Store → REST API / Room  │   Data — networking + local persistence
+└─────────────────────────────────┘
+```
+
+- Code: `ui/woopos/` — all classes prefixed with `WooPos`
+- Navigation: Compose Navigation (`NavHost`)
+- ViewModels extend plain `ViewModel()` — NOT `ScopedViewModel`
+- Events via parent-child SharedFlow bus
+- Own design system: `WooPosTheme`, `WooPosSpacing`, `WooPosTypography`
+- Skills: `pos`, `pos-analytics`, `pos-tests`
+
+### How to tell which one you're in
+
+- File path contains `woopos/` or class name starts with `WooPos` → **POS**
+- Everything else → **Store Management**
+
+### Shared across both
+
+Both parts use Kotlin Coroutines, Hilt DI, and the same data layer:
 - ViewModels MUST NOT import Android framework classes
-- Navigation uses XML nav graphs with `NavController`
 - Data flows: FluxC DTOs → Room entities → domain models → ViewModels → Compose UI
 - ViewModels never access Room or network directly — always through repositories
 
@@ -112,12 +152,13 @@ This project uses **MVVM** with Kotlin Coroutines and Hilt DI. Key boundaries:
 ## Common Pitfalls
 
 - Don't import Android framework classes (Context, View, etc.) in ViewModels
-- Don't use `Thread.sleep` in Compose tests — use `waitUntil`
-- Don't use `LiveData` for new state in ViewModels — prefer `StateFlow` (existing `LiveData` is fine)
 - Don't force unwrap with `!!` — handle nullability properly
-- Don't create new XML layouts for Compose screens — use `ComposeView` in Fragment
+- Don't use `LiveData` for new state in ViewModels — prefer `StateFlow` (existing `LiveData` is fine)
 - Don't use `remember` outside of `@Composable` functions
 - Don't pass `ViewModel` instances between composables — pass state and callbacks instead
+- Don't apply store patterns to POS or vice versa (see Architecture section above)
+
+For app-specific pitfalls, see the relevant skills (`pos`, `store-compose`, `store-viewmodel`, etc.).
 
 ## Environment Setup
 
