@@ -75,7 +75,7 @@ class WooPosSplashViewModel @Inject constructor(
 
     fun onExitPosClicked() {
         viewModelScope.launch {
-            if (_state.value is WooPosSplashState.Syncing) {
+            if (_state.value is WooPosSplashState.Syncing || _state.value is WooPosSplashState.SyncProgress) {
                 analyticsTracker.track(LocalCatalogDownloadingScreenExitPosTapped)
             }
         }
@@ -88,6 +88,13 @@ class WooPosSplashViewModel @Inject constructor(
             WooPosPrepopulatingDataStatus.Syncing -> {
                 _state.value = WooPosSplashState.Syncing
                 analyticsTracker.track(LocalCatalogDownloadingScreenShown)
+            }
+
+            is WooPosPrepopulatingDataStatus.SyncProgress -> {
+                _state.value = WooPosSplashState.SyncProgress(
+                    processed = state.processed,
+                    total = state.total,
+                )
             }
 
             WooPosPrepopulatingDataStatus.Completed -> {

@@ -3632,6 +3632,7 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d of %2$d items</string>
     <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
