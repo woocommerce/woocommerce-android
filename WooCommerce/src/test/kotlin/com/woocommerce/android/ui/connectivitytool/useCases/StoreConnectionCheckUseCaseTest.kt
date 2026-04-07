@@ -49,7 +49,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -75,7 +75,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
             )
         )
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -91,30 +91,31 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app-password site, when fetchSSR returns API_NOT_FOUND error, then emit GENERIC Failure`() = testBlocking {
-        // Given
-        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
-        val response = WooResult<WCSSRModel>(
-            WooError(
-                type = WooErrorType.API_NOT_FOUND,
-                original = BaseRequest.GenericErrorType.NETWORK_ERROR
+    fun `given app-password site, when fetchSSR returns API_NOT_FOUND error, then emit GENERIC Failure`() =
+        testBlocking {
+            // Given
+            val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+            val response = WooResult<WCSSRModel>(
+                WooError(
+                    type = WooErrorType.API_NOT_FOUND,
+                    original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                )
             )
-        )
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+            whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+            whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
-        // When
-        sut.invoke().onEach {
-            stateEvents.add(it)
-        }.launchIn(this)
+            // When
+            sut.invoke().onEach {
+                stateEvents.add(it)
+            }.launchIn(this)
 
-        // Then
-        assertThat(stateEvents).hasSize(2)
-        assertThat(stateEvents[0]).isEqualTo(InProgress)
-        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
-        assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
-        assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
-    }
+            // Then
+            assertThat(stateEvents).hasSize(2)
+            assertThat(stateEvents[0]).isEqualTo(InProgress)
+            assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
+            assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
+            assertThat((stateEvents[1] as Failure).technicalDetails).isNotNull()
+        }
 
     @Test
     fun `when fetchSSR returns an INVALID_RESPONSE error then emit PARSE Failure`() = testBlocking {
@@ -126,7 +127,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -151,7 +152,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -171,7 +172,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult(WCSSRModel(remoteSiteId = 123L))
-        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get(), true)).thenReturn(response)
 
         // When
         sut.invoke().onEach {
