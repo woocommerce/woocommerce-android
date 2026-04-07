@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSy
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule

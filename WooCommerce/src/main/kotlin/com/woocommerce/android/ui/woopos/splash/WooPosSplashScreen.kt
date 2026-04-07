@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.splash
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +51,11 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
                 is WooPosSplashState.SyncPreparing ->
                     stringResource(R.string.woopos_home_syncing_catalog_preparing)
                 is WooPosSplashState.SyncProgress ->
-                    stringResource(R.string.woopos_home_syncing_catalog_progress, currentState.processed, currentState.total)
+                    stringResource(
+                        R.string.woopos_home_syncing_catalog_progress,
+                        currentState.processed,
+                        currentState.total
+                    )
                 else -> null
             }
 
