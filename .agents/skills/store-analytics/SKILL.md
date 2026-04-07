@@ -1,17 +1,17 @@
 ---
-name: analytics
-description: Analytics tracking patterns for both main app and POS. Use when writing, editing, exploring, debugging, or reviewing analytics tracking — AnalyticsEvent enum entries, AnalyticsTrackerWrapper calls, KEY_*/VALUE_* constants, or tests that verify tracking. Covers both main app (AnalyticsEvent) and POS (WooPosAnalyticsEvent) patterns.
+name: store-analytics
+description: Main app analytics tracking patterns (AnalyticsEvent enum, AnalyticsTrackerWrapper, KEY_*/VALUE_* constants). Use when writing, editing, exploring, debugging, or reviewing analytics tracking in the store management app. NOT for POS (WooPos*) code — use the `pos-analytics` skill instead.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 user-invocable: true
 ---
 
-# Analytics Tracking
+# Store App Analytics Tracking
 
 ## Workflow
 
 Follow these steps when adding analytics tracking:
 
-1. **Add enum constant** to `AnalyticsEvent.kt` (or `WooPosAnalyticsEvent.kt` for POS)
+1. **Add enum constant** to `AnalyticsEvent.kt`
 2. **Add property key/value constants** to `AnalyticsTracker.companion` if needed
 3. **Track the event** via injected `AnalyticsTrackerWrapper` in ViewModels/repositories
 4. **Write tests** verifying the track call with `verify(analyticsTrackerWrapper).track(...)`
@@ -26,9 +26,6 @@ File: `WooCommerce/src/main/kotlin/com/woocommerce/android/analytics/AnalyticsEv
 - For regular events: `MY_EVENT,`
 
 Existing sections follow the pattern `// -- Feature Name`. Find the matching section or add a new one.
-
-**POS exception:** POS events use `WooPosAnalyticsEvent` sealed class at:
-`WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/util/analytics/WooPosAnalyticsEvent.kt`
 
 ## Step 2: Add Property Constants
 
@@ -72,8 +69,6 @@ analyticsTrackerWrapper.track(
     errorDescription = error.message
 )
 ```
-
-**POS exception:** POS uses `WooPosAnalyticsTracker` which wraps `AnalyticsTrackerWrapper` and adds common POS properties automatically.
 
 **Dedicated tracker classes:** When a feature has many tracking calls with shared property logic, extract a dedicated tracker class (e.g., `BarcodeScanningTracker`) that wraps `AnalyticsTrackerWrapper`. Inject this tracker into ViewModels instead of `AnalyticsTrackerWrapper` directly.
 
