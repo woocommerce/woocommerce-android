@@ -7,10 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppUrls
@@ -22,7 +18,7 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -47,33 +43,14 @@ class ReviewListFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-            )
-            setContent {
-                WooThemeWithBackground {
-                    val viewState by viewModel.viewStateData.liveData.observeAsState()
-                    val reviews by viewModel.reviewList.observeAsState()
-
-                    viewState?.let { state ->
-                        ReviewListScreen(
-                            reviews = reviews.orEmpty(),
-                            viewState = state,
-                            onReviewClick = { review -> onReviewClick(review) },
-                            onRefresh = {
-                                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_PULLED_TO_REFRESH)
-                                viewModel.forceRefreshReviews()
-                            },
-                            onLoadMore = { viewModel.loadMoreReviews() },
-                            onUnreadFilterChanged = { viewModel.onUnreadReviewsFilterChanged(it) },
-                            onLearnMoreClick = {
-                                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
-                            }
-                        )
-                    }
+        return composeView {
+            ReviewListScreen(
+                viewModel = viewModel,
+                onReviewClick = { review -> onReviewClick(review) },
+                onLearnMoreClick = {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
                 }
-            }
+            )
         }
     }
 
