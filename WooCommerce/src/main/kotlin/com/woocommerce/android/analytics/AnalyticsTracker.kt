@@ -408,9 +408,12 @@ class AnalyticsTracker private constructor(
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
         // -- Connectivity Tool
-        const val VALUE_INTERNET = "internet"
-        const val VALUE_SITE = "site"
-        const val VALUE_JETPACK_TUNNEL = "jetpack_tunnel"
+        const val KEY_CONNECTIVITY_TEST = "test"
+        const val VALUE_CONNECTIVITY_INTERNET = "internet"
+        const val VALUE_CONNECTIVITY_WP_COM = "wpCom"
+        const val VALUE_CONNECTIVITY_SITE = "site"
+        const val VALUE_CONNECTIVITY_ORDERS = "orders"
+        const val VALUE_CONNECTIVITY_PRODUCTS = "products"
 
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),
