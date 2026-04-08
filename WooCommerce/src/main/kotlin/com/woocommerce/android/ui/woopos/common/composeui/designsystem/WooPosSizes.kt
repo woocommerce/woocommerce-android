@@ -42,8 +42,8 @@ enum class WooPosElevation(val value: Dp) {
 fun Dp.toAdaptiveComponentSize(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
-        longestSide < 880.dp -> this * 0.7f
-        longestSide < 1200.dp -> this * 0.85f
+        longestSide < 880.dp -> this * 0.75f
+        longestSide < 1200.dp -> this * 0.9f
         else -> this
     }
 }
