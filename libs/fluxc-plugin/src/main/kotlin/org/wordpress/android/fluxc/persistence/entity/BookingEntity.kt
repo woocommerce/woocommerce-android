@@ -145,5 +145,12 @@ val BookingEntity.isCancellable: Boolean
         BookingEntity.Status.Complete
     )
 
+val BookingEntity.isReschedulable: Boolean
+    get() = status !in listOf(
+        BookingEntity.Status.Cancelled,
+        BookingEntity.Status.Complete,
+        BookingEntity.Status.InCart,
+    ) && status.key != "failed"
+
 val BookingEntity.isAttendanceStatusEditable: Boolean
     get() = status != BookingEntity.Status.Cancelled
