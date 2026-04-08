@@ -4448,6 +4448,7 @@
     <string name="booking_mark_as_unattended">Mark as unattended</string>
     <string name="booking_attendance_status_cancelled">Canceled</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
+    <string name="booking_details_reschedule_button">Reschedule</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>
