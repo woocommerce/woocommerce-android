@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -152,7 +156,21 @@ private fun WooPosHomePhoneContent(
                 }
             }
 
-            composable(PHONE_CART_ROUTE) {
+            composable(
+                PHONE_CART_ROUTE,
+                enterTransition = {
+                    slideInVertically(initialOffsetY = { it })
+                },
+                exitTransition = {
+                    slideOutVertically(targetOffsetY = { -it })
+                },
+                popEnterTransition = {
+                    slideInVertically(initialOffsetY = { -it })
+                },
+                popExitTransition = {
+                    slideOutVertically(targetOffsetY = { it })
+                },
+            ) {
                 CompositionLocalProvider(
                     LocalViewModelStoreOwner provides parentViewModelStoreOwner
                 ) {
@@ -165,7 +183,21 @@ private fun WooPosHomePhoneContent(
                 }
             }
 
-            composable(PHONE_TOTALS_ROUTE) {
+            composable(
+                PHONE_TOTALS_ROUTE,
+                enterTransition = {
+                    slideInHorizontally(initialOffsetX = { it })
+                },
+                exitTransition = {
+                    slideOutHorizontally(targetOffsetX = { -it })
+                },
+                popEnterTransition = {
+                    slideInHorizontally(initialOffsetX = { -it })
+                },
+                popExitTransition = {
+                    slideOutHorizontally(targetOffsetX = { it })
+                },
+            ) {
                 CompositionLocalProvider(
                     LocalViewModelStoreOwner provides parentViewModelStoreOwner
                 ) {

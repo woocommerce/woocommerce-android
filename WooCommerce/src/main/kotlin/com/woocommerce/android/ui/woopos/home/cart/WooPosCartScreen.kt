@@ -342,13 +342,7 @@ private fun CartToolbar(
     onPhoneBackClick: (() -> Unit)? = null,
 ) {
     val iconSize = 28.dp
-    val iconTitlePadding = WooPosSpacing.Medium.value
     val showBackButton = toolbar.backIconVisible || onPhoneBackClick != null
-    val titleOffset by animateDpAsState(
-        targetValue = if (showBackButton) iconSize + iconTitlePadding else 0.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "titleOffset"
-    )
 
     ConstraintLayout(
         modifier = modifier
@@ -361,15 +355,14 @@ private fun CartToolbar(
         AnimatedVisibility(
             visible = showBackButton,
             enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally(),
+            modifier = Modifier.constrainAs(backButton) {
+                start.linkTo(parent.start)
+                centerVerticallyTo(parent)
+            }
         ) {
             WooPosBackButton(
-                modifier = Modifier
-                    .constrainAs(backButton) {
-                        start.linkTo(parent.start)
-                        centerVerticallyTo(parent)
-                    }
-                    .padding(start = WooPosSpacing.Small.value),
+                modifier = Modifier.padding(start = WooPosSpacing.Small.value),
                 contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                 iconModifier = Modifier
                     .size(iconSize)
@@ -383,6 +376,7 @@ private fun CartToolbar(
             }
         }
 
+        val titleStartMargin = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(R.string.woopos_cart_title),
             style = WooPosTypography.Heading,
@@ -390,13 +384,14 @@ private fun CartToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    start.linkTo(parent.start, margin = titleOffset)
+                    if (showBackButton) {
+                        start.linkTo(backButton.end, margin = titleStartMargin)
+                    } else {
+                        start.linkTo(parent.start, margin = titleStartMargin)
+                    }
                     centerVerticallyTo(parent)
                 }
-                .padding(
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.XSmall.value,
-                )
+                .padding(end = WooPosSpacing.XSmall.value)
         )
 
         Spacer(

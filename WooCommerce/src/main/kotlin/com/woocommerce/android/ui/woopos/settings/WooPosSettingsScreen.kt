@@ -112,6 +112,7 @@ private fun WooPosSettingsContent(
                 state = state,
                 onNavigate = onNavigate,
                 onBack = onBack,
+                onBackToCategories = onBackToCategories,
                 onShowProductInfoDialog = onShowProductInfoDialog,
                 onShowScanningSetupDialog = onShowScanningSetupDialog,
                 modifier = Modifier

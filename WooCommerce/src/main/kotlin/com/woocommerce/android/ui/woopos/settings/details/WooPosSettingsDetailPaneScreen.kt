@@ -33,14 +33,25 @@ fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
+    onBackToCategories: (() -> Unit)? = null,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
 
-    BackHandler(enabled = state.canGoBack) {
-        onBack()
+    BackHandler(enabled = state.canGoBack || onBackToCategories != null) {
+        if (state.canGoBack) {
+            onBack()
+        } else {
+            onBackToCategories?.invoke()
+        }
+    }
+
+    val backAction = when {
+        state.canGoBack -> onBack
+        onBackToCategories != null -> onBackToCategories
+        else -> null
     }
 
     Column(
@@ -54,7 +65,7 @@ fun WooPosSettingsDetailPaneScreen(
                     end = WooPosSpacing.Medium.value,
                 ),
             titleText = stringResource(state.currentDestination.titleRes),
-            onBackClicked = if (state.canGoBack) onBack else null,
+            onBackClicked = backAction,
             titleStyle = WooPosTypography.Heading,
             titleFontWeight = FontWeight.Bold
         )
