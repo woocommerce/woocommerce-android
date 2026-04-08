@@ -38,11 +38,11 @@ class SiteDaoTest {
 
     @Test
     fun `given site inserted, when get by local id, then returns site`() = runTest {
-        val sideId = 100L
+        val siteId = 100L
         val url = "https://example.com"
-        val entity = createSiteEntity(siteId = sideId, url = url)
+        val entity = createSiteEntity(siteId = siteId, url = url)
         dao.insert(entity)
-        val inserted = dao.getByRemoteId(sideId).first()
+        val inserted = dao.getByRemoteId(siteId).first()
 
         val result = dao.getByLocalId(inserted.id)
 
@@ -57,15 +57,15 @@ class SiteDaoTest {
 
     @Test
     fun `given site inserted, when get by remote id, then returns site`() = runTest {
-        val sideId = 200L
+        val siteId = 200L
         val url = "https://remote.com"
-        val entity = createSiteEntity(siteId = sideId, url = url)
+        val entity = createSiteEntity(siteId = siteId, url = url)
         dao.insert(entity)
 
-        val result = dao.getByRemoteId(sideId)
+        val result = dao.getByRemoteId(siteId)
 
         assertThat(result).hasSize(1)
-        assertThat(result[0].siteId).isEqualTo(sideId)
+        assertThat(result[0].siteId).isEqualTo(siteId)
         assertThat(result[0].url).isEqualTo(url)
     }
 
