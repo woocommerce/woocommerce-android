@@ -73,6 +73,10 @@ data class BookingEntity(
             override val key = "in-cart"
         }
 
+        data object Failed : Status {
+            override val key = "failed"
+        }
+
         data class Unknown(override val key: String) : Status
 
         companion object Companion {
@@ -85,6 +89,7 @@ data class BookingEntity(
                     Cancelled.key -> Cancelled
                     Complete.key -> Complete
                     InCart.key -> InCart
+                    Failed.key -> Failed
                     else -> Unknown(key)
                 }
             }
@@ -150,7 +155,8 @@ val BookingEntity.isReschedulable: Boolean
         BookingEntity.Status.Cancelled,
         BookingEntity.Status.Complete,
         BookingEntity.Status.InCart,
-    ) && status.key != "failed"
+        BookingEntity.Status.Failed,
+    )
 
 val BookingEntity.isAttendanceStatusEditable: Boolean
     get() = status != BookingEntity.Status.Cancelled

@@ -656,6 +656,21 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
         }
 
+    @Test
+    fun `given reschedule flag enabled and failed booking, when state observed, then reschedule button not visible`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(true)
+            bookingFlow.value = getSampleBooking(bookingId, status = BookingEntity.Status.Failed)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
+        }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
