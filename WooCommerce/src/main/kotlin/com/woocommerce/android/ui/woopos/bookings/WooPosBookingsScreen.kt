@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,6 +63,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosListDetailLayout
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
@@ -132,6 +132,7 @@ fun WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
+        onBackFromDetail = viewModel::onBackFromDetail,
         onRefresh = viewModel::onPullToRefresh,
         onBookingSelected = viewModel::onBookingSelected,
         onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
@@ -150,6 +151,7 @@ private fun WooPosBookingsScreen(
     state: WooPosBookingsState,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
+    onBackFromDetail: () -> Unit,
     onRefresh: () -> Unit,
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
@@ -170,6 +172,7 @@ private fun WooPosBookingsScreen(
             is WooPosBookingsState.Content -> WooPosBookingsContent(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
+                onBackFromDetail = onBackFromDetail,
                 onRefresh = onRefresh,
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
@@ -218,6 +221,7 @@ private fun WooPosBookingsScreen(
 private fun WooPosBookingsContent(
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
+    onBackFromDetail: () -> Unit,
     onRefresh: () -> Unit,
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
@@ -225,40 +229,37 @@ private fun WooPosBookingsContent(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            WooPosBookingsListPane(
-                state = state,
-                scrollToTopEvent = scrollToTopEvent,
-                onRefresh = onRefresh,
-                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-                onBookingSelected = onBookingSelected,
-                onEndOfBookingsListReached = onEndOfBookingsListReached,
-                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onUIEvent = onUIEvent,
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceBright)
-            )
-
-            Box(
-                modifier = Modifier
-                    .weight(0.7f)
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
+        WooPosListDetailLayout(
+            isDetailVisible = state.selectedDetails != null,
+            onBackFromDetail = onBackFromDetail,
+            listPane = {
+                WooPosBookingsListPane(
+                    state = state,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                    onBookingSelected = onBookingSelected,
+                    onEndOfBookingsListReached = onEndOfBookingsListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onUIEvent = onUIEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceBright)
+                )
+            },
+            detailPane = {
+                WooPosBookingDetails(
+                    modifier = Modifier.fillMaxSize(),
+                    details = state.selectedDetails!!,
+                    onUIEvent = onUIEvent
+                )
+            },
+            emptyDetailPane = {
                 when {
-                    state.selectedDetails != null -> {
-                        WooPosBookingDetails(
-                            modifier = Modifier
-                                .fillMaxHeight(),
-                            details = state.selectedDetails,
-                            onUIEvent = onUIEvent
-                        )
-                    }
                     state.items is WooPosBookingsState.Content.Items.Loading -> {
                         BookingDetailsLoadingPane(
                             modifier = Modifier
-                                .fillMaxHeight()
+                                .fillMaxSize()
                                 .padding(
                                     start = WooPosSpacing.Medium.value,
                                     end = WooPosSpacing.Medium.value,
@@ -277,8 +278,8 @@ private fun WooPosBookingsContent(
                         )
                     }
                 }
-            }
-        }
+            },
+        )
 
         val cancelDialog =
             state.dialogState as? WooPosBookingsState.Content.DialogState.CancelBooking
@@ -678,6 +679,7 @@ fun WooPosBookingsScreenPreview() {
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
+            onBackFromDetail = {},
             onRefresh = {},
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
@@ -712,6 +714,7 @@ fun WooPosBookingsNothingFoundStatePreview() {
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
+            onBackFromDetail = {},
             onRefresh = {},
             onBookingSelected = {},
             onEndOfBookingsListReached = {},

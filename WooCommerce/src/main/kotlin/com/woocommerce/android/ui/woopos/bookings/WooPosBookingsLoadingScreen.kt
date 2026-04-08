@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosListDetailLayout
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -42,40 +42,43 @@ fun WooPosBookingsLoadingScreen(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceBright)
-                .weight(0.3f)
-                .fillMaxHeight()
-                .statusBarsPadding()
-        ) {
+    WooPosListDetailLayout(
+        isDetailVisible = false,
+        onBackFromDetail = {},
+        modifier = modifier,
+        listPane = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .statusBarsPadding()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = WooPosSpacing.Medium.value)
+                        .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
+                )
+
+                WooPosBookingsDateSelector(
+                    dateSelectorState = dateSelectorState,
+                    onUIEvent = onUIEvent,
+                )
+
+                WooPosBookingsListLoadingPane(
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        },
+        detailPane = {},
+        emptyDetailPane = {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = WooPosSpacing.Medium.value)
-                    .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
             )
-
-            WooPosBookingsDateSelector(
-                dateSelectorState = dateSelectorState,
-                onUIEvent = onUIEvent,
-            )
-
-            WooPosBookingsListLoadingPane(
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
-        )
-    }
+        },
+    )
 }
 
 @Composable

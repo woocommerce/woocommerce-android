@@ -243,6 +243,11 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    fun onBackFromDetail() {
+        val current = _state.value as? WooPosBookingsState.Content ?: return
+        _state.value = current.copy(selectedDetails = null)
+    }
+
     fun onBookingSelected(bookingId: Long) {
         viewModelScope.launch { analyticsTracker.trackListItemTapped() }
         selectedBookingId = bookingId
