@@ -92,11 +92,14 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemoved
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosCartScreen(modifier: Modifier = Modifier) {
+fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
+    onPhoneBackClick: (() -> Unit)? = null,
+) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
+        WooPosCartScreen(modifier, it, viewModel::onUIEvent, onPhoneBackClick)
     }
 }
 
@@ -106,6 +109,7 @@ private fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
+    onPhoneBackClick: (() -> Unit)? = null,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -123,6 +127,7 @@ private fun WooPosCartScreen(
             toolbar = state.toolbar,
             onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
             onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+            onPhoneBackClick = onPhoneBackClick,
         )
 
         when (state.body) {
@@ -333,12 +338,14 @@ private fun CartToolbar(
     modifier: Modifier = Modifier,
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onPhoneBackClick: (() -> Unit)? = null,
 ) {
     val iconSize = 28.dp
     val iconTitlePadding = WooPosSpacing.Medium.value
+    val showBackButton = toolbar.backIconVisible || onPhoneBackClick != null
     val titleOffset by animateDpAsState(
-        targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
+        targetValue = if (showBackButton) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "titleOffset"
     )
@@ -352,7 +359,7 @@ private fun CartToolbar(
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
         AnimatedVisibility(
-            visible = toolbar.backIconVisible,
+            visible = showBackButton,
             enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
             exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
@@ -367,7 +374,13 @@ private fun CartToolbar(
                 iconModifier = Modifier
                     .size(iconSize)
                     .offset(y = 4.dp)
-            ) { onBackClicked() }
+            ) {
+                if (!toolbar.backIconVisible && onPhoneBackClick != null) {
+                    onPhoneBackClick()
+                } else {
+                    onBackClicked()
+                }
+            }
         }
 
         WooPosText(

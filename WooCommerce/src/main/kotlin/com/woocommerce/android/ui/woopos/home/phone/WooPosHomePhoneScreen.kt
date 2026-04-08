@@ -159,7 +159,9 @@ private fun WooPosHomePhoneContent(
                     BackHandler {
                         navController.popBackStack()
                     }
-                    WooPosPhoneCartScreen()
+                    WooPosPhoneCartScreen(
+                        onBackClick = { navController.popBackStack() }
+                    )
                 }
             }
 

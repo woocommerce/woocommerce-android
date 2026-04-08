@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -28,6 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -168,13 +170,19 @@ fun WooPosPhoneProductsScreen(
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-            PhoneCartButton(
-                itemCount = cartItemCount,
-                onClick = onCartClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(WooPosSpacing.Medium.value)
-            )
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceBright,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                PhoneCartButton(
+                    itemCount = cartItemCount,
+                    onClick = onCartClicked,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding()
+                )
+            }
         }
     }
 }

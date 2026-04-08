@@ -7,9 +7,11 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 
 @Composable
 fun WooPosPhoneCartScreen(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WooPosCartScreen(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        onPhoneBackClick = onBackClick,
     )
 }
