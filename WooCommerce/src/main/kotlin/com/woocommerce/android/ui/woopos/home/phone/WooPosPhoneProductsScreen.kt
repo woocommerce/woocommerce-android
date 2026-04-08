@@ -32,8 +32,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +60,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
@@ -79,112 +85,185 @@ fun WooPosPhoneProductsScreen(
 ) {
     val itemsViewModel: WooPosItemsViewModel = hiltViewModel()
     val toolbarViewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
+    val cartViewModel: WooPosCartViewModel = hiltViewModel()
     val itemsState by itemsViewModel.viewState.collectAsState()
     val toolbarState by toolbarViewModel.state.collectAsState()
+    val cartState by cartViewModel.state.observeAsState()
     val menu = toolbarState.menu
 
     val productsListState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            PhoneItemsToolbar(
-                state = itemsState,
-                onMenuClicked = {
-                    toolbarViewModel.onUiEvent(
-                        WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
-                    )
-                },
-                onTabClicked = { itemsViewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
-                onSearchEvent = { event ->
-                    when (event) {
-                        WooPosSearchUIEvent.Clear ->
-                            itemsViewModel.onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
-                        WooPosSearchUIEvent.Close ->
-                            itemsViewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
-                        is WooPosSearchUIEvent.Search ->
-                            itemsViewModel.onUIEvent(
-                                WooPosItemsUIEvent.SearchChanged(
-                                    query = event.query,
-                                    cursorPosition = event.cursorPosition,
+    val cartOverlay = remember(cartState) {
+        buildPhoneCartOverlay(
+            cartState = cartState,
+            cartViewModel = cartViewModel,
+        )
+    }
+
+    CompositionLocalProvider(LocalPhoneCartOverlay provides cartOverlay) {
+        Box(modifier = modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                PhoneItemsToolbar(
+                    state = itemsState,
+                    onMenuClicked = {
+                        toolbarViewModel.onUiEvent(
+                            WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
+                        )
+                    },
+                    onTabClicked = { itemsViewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
+                    onSearchEvent = { event ->
+                        when (event) {
+                            WooPosSearchUIEvent.Clear ->
+                                itemsViewModel.onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
+                            WooPosSearchUIEvent.Close ->
+                                itemsViewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
+                            is WooPosSearchUIEvent.Search ->
+                                itemsViewModel.onUIEvent(
+                                    WooPosItemsUIEvent.SearchChanged(
+                                        query = event.query,
+                                        cursorPosition = event.cursorPosition,
+                                    )
                                 )
-                            )
-                        WooPosSearchUIEvent.SearchIconClicked ->
-                            itemsViewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
-                    }
-                },
-                onBackClicked = {
-                    itemsViewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
-                },
-                onAddCouponEvent = {
-                    itemsViewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
-                },
-            )
+                            WooPosSearchUIEvent.SearchIconClicked ->
+                                itemsViewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+                        }
+                    },
+                    onBackClicked = {
+                        itemsViewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                    },
+                    onAddCouponEvent = {
+                        itemsViewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+                    },
+                )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-            PhoneItemsContent(
-                state = itemsState,
-                productsListState = productsListState,
-                couponsListState = couponsListState,
-                onBackFromVariations = {
-                    itemsViewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
-                },
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        // Menu overlay and popup
-        WooPosBackgroundOverlay(
-            modifier = Modifier.fillMaxSize(),
-            isVisible = menu is Menu.Visible,
-            onClick = {
-                toolbarViewModel.onUiEvent(
-                    WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
+                PhoneItemsContent(
+                    state = itemsState,
+                    productsListState = productsListState,
+                    couponsListState = couponsListState,
+                    onBackFromVariations = {
+                        itemsViewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                    },
+                    modifier = Modifier.weight(1f),
                 )
             }
-        )
 
-        if (menu is Menu.Visible) {
-            PhonePopUpMenu(
-                menuItems = menu.items,
-                onClick = { menuItem ->
+            // Menu overlay and popup
+            WooPosBackgroundOverlay(
+                modifier = Modifier.fillMaxSize(),
+                isVisible = menu is Menu.Visible,
+                onClick = {
                     toolbarViewModel.onUiEvent(
-                        WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem)
+                        WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
                     )
-                },
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .align(Alignment.TopStart)
-                    .padding(
-                        start = WooPosSpacing.Small.value,
-                        top = WooPosSpacing.XXXLarge.value
-                    )
+                }
             )
-        }
 
-        // Floating cart button
-        AnimatedVisibility(
-            visible = cartItemCount > 0,
-            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceBright,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                PhoneCartButton(
-                    itemCount = cartItemCount,
-                    onClick = onCartClicked,
+            if (menu is Menu.Visible) {
+                PhonePopUpMenu(
+                    menuItems = menu.items,
+                    onClick = { menuItem ->
+                        toolbarViewModel.onUiEvent(
+                            WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem)
+                        )
+                    },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding()
+                        .statusBarsPadding()
+                        .align(Alignment.TopStart)
+                        .padding(
+                            start = WooPosSpacing.Small.value,
+                            top = WooPosSpacing.XXXLarge.value
+                        )
                 )
+            }
+
+            // Floating cart button
+            AnimatedVisibility(
+                visible = cartItemCount > 0,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceBright,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PhoneCartButton(
+                        itemCount = cartItemCount,
+                        onClick = onCartClicked,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(WooPosSpacing.Medium.value)
+                            .navigationBarsPadding()
+                    )
+                }
             }
         }
     }
+}
+
+private fun buildPhoneCartOverlay(
+    cartState: WooPosCartState?,
+    cartViewModel: WooPosCartViewModel,
+): PhoneCartOverlayData {
+    val body = cartState?.body
+    val cartItems = (body as? WooPosCartState.Body.WithItems)?.itemsInCart ?: emptyList()
+
+    val quantities = buildCartQuantities(cartItems)
+
+    return PhoneCartOverlayData(
+        quantities = quantities,
+        onIncrement = { itemId ->
+            val cartItem = cartItems
+                .filterIsInstance<WooPosCartItemViewState.Product>()
+                .firstOrNull { cartItemMatchesProductId(it, itemId) }
+            if (cartItem != null) {
+                val variationId = (cartItem as? WooPosCartItemViewState.Product.Variation)?.variationId
+                cartViewModel.onUIEvent(
+                    WooPosCartUIEvent.ItemIncrementedFromProductCard(
+                        productId = cartItem.id,
+                        variationId = variationId,
+                    )
+                )
+            }
+        },
+        onDecrement = { itemId ->
+            val lastCartItem = cartItems
+                .filterIsInstance<WooPosCartItemViewState.Product>()
+                .lastOrNull { cartItemMatchesProductId(it, itemId) }
+            if (lastCartItem != null) {
+                cartViewModel.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(lastCartItem))
+            }
+        },
+    )
+}
+
+private fun buildCartQuantities(
+    cartItems: List<WooPosCartItemViewState>
+): Map<Long, Int> {
+    val quantities = mutableMapOf<Long, Int>()
+    for (item in cartItems) {
+        when (item) {
+            is WooPosCartItemViewState.Product.Simple -> {
+                quantities[item.id] = (quantities[item.id] ?: 0) + 1
+            }
+            is WooPosCartItemViewState.Product.Variation -> {
+                quantities[item.variationId] = (quantities[item.variationId] ?: 0) + 1
+            }
+            else -> Unit
+        }
+    }
+    return quantities
+}
+
+private fun cartItemMatchesProductId(
+    cartItem: WooPosCartItemViewState.Product,
+    productId: Long
+): Boolean = when (cartItem) {
+    is WooPosCartItemViewState.Product.Simple -> cartItem.id == productId
+    is WooPosCartItemViewState.Product.Variation -> cartItem.variationId == productId
 }
 
 @Composable

@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +57,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.home.phone.LocalPhoneCartOverlay
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -244,6 +247,10 @@ fun WooPosProductCard(
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     item: Product
 ) {
+    val cartOverlay = LocalPhoneCartOverlay.current
+    val showQuantityControls = item !is Product.Variable &&
+        cartOverlay.quantities.getOrDefault(item.id, 0) > 0
+
     WooPosCard(
         modifier = modifier
             .wrapContentHeight()
@@ -270,7 +277,13 @@ fun WooPosProductCard(
 
             ProductInfo(modifier = Modifier.weight(1f), item = item)
 
-            if (item is Product.Variable) {
+            if (showQuantityControls) {
+                PhoneQuantityControl(
+                    quantity = cartOverlay.quantities.getValue(item.id),
+                    onIncrement = { cartOverlay.onIncrement(item.id) },
+                    onDecrement = { cartOverlay.onDecrement(item.id) },
+                )
+            } else if (item is Product.Variable) {
                 Image(
                     modifier = Modifier
                         .padding(end = WooPosSpacing.XLarge.value)
@@ -280,6 +293,51 @@ fun WooPosProductCard(
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PhoneQuantityControl(
+    quantity: Int,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.padding(end = WooPosSpacing.Medium.value),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+    ) {
+        IconButton(
+            onClick = onDecrement,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_remove_24dp),
+                contentDescription = stringResource(R.string.woopos_phone_quantity_remove_one),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+
+        WooPosText(
+            text = quantity.toString(),
+            style = WooPosTypography.BodyLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        IconButton(
+            onClick = onIncrement,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                contentDescription = stringResource(R.string.woopos_phone_quantity_add_one),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
 }
