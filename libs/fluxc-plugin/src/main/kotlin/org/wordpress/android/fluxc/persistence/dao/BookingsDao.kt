@@ -21,7 +21,7 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
+            AND (:userId IS NULL OR userId = :userId)
             AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
@@ -42,7 +42,7 @@ interface BookingsDao {
         limit: Int?,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
         attendanceStatus: String?,
@@ -59,7 +59,7 @@ interface BookingsDao {
         limit: Int?,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
         attendanceStatus: String?,
@@ -97,7 +97,7 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
+            AND (:userId IS NULL OR userId = :userId)
             AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
@@ -109,7 +109,7 @@ interface BookingsDao {
         localSiteId: LocalId,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
         attendanceStatus: String?,
@@ -133,7 +133,7 @@ interface BookingsDao {
             localSiteId = localSiteId,
             startDateBefore = filters.dateRange.before?.epochSecond,
             startDateAfter = filters.dateRange.after?.epochSecond,
-            customerId = filters.customer?.customerId,
+            userId = filters.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatus = filters.attendanceStatus.value?.key,
@@ -177,7 +177,7 @@ interface BookingsDao {
             limit = limit,
             startDateBefore = filters?.dateRange?.before?.epochSecond,
             startDateAfter = filters?.dateRange?.after?.epochSecond,
-            customerId = filters?.customer?.customerId,
+            userId = filters?.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatus = filters?.attendanceStatus?.value?.key,
@@ -202,7 +202,7 @@ interface BookingsDao {
             limit = limit,
             startDateBefore = filters?.dateRange?.before?.epochSecond,
             startDateAfter = filters?.dateRange?.after?.epochSecond,
-            customerId = filters?.customer?.customerId,
+            userId = filters?.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatus = filters?.attendanceStatus?.value?.key,

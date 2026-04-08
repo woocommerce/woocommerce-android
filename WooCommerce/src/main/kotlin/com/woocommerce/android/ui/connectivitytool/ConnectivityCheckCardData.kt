@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.connectivitytool
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -32,7 +32,7 @@ sealed class ConnectivityCheckCardData(
     )
 
     @Parcelize
-    data class WordPressConnectivityCheckData(
+    data class WPComConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null
     ) : Parcelable, ConnectivityCheckCardData(
@@ -70,16 +70,36 @@ sealed class ConnectivityCheckCardData(
         retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
+
+    @Parcelize
+    data class StoreProductsConnectivityCheckData(
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null,
+        @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
+    ) : Parcelable, ConnectivityCheckCardData(
+        title = R.string.orderlist_connectivity_tool_store_products_check_title,
+        suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
+        icon = R.drawable.ic_product,
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
+        readMoreAction = readMoreAction
+    )
 }
 
 @Parcelize
 sealed class ConnectivityCheckStatus : Parcelable {
+    open val durationMs: Long get() = 0L
+
     data object NotStarted : ConnectivityCheckStatus()
     data object InProgress : ConnectivityCheckStatus()
-    data object Success : ConnectivityCheckStatus()
 
-    @Parcelize
-    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable
+    data class Success(override val durationMs: Long = 0L) : ConnectivityCheckStatus(), Parcelable
+
+    data class Failure(
+        val error: FailureType? = null,
+        val technicalDetails: String? = null,
+        override val durationMs: Long = 0L
+    ) : ConnectivityCheckStatus(), Parcelable
 }
 
 @Parcelize

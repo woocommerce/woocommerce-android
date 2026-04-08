@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,14 +52,17 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
         }.thenReturn(bookingsCountFlow)
     }
 
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private lateinit var sut: ObserveBookingsVisibility
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_MVP)).thenReturn(true)
         sut = ObserveBookingsVisibility(
             productListRepository = productListRepository,
             bookingsRepository = bookingsRepository,
+            featureFlagRepository = featureFlagRepository,
             selectedSite = selectedSite,
             appCoroutineScope = testScope,
         )

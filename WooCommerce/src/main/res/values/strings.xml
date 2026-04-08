@@ -526,6 +526,7 @@
     <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes, or contact our support team and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_store_check_title">Connecting to your site</string>
     <string name="orderlist_connectivity_tool_store_orders_check_title">Fetching your site orders</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Fetching products in your store</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
     <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
     <string name="orderlist_connectivity_tool_retry_action">Retry connection</string>
@@ -536,6 +537,10 @@
     <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
     <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
+    <string name="connectivity_tool_view_technical_details">View technical details</string>
+    <string name="connectivity_tool_technical_details_title">Technical details</string>
+    <string name="connectivity_tool_technical_details_copied">Technical details have been copied to your clipboard.</string>
+    <string name="connectivity_tool_copy">Copy</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
     <string name="orderlist_selection_count">%d orders selected</string>
@@ -894,6 +899,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
     <string name="order_status_updated">Order status updated</string>
+    <string name="ciab_order_status_open">Open</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
@@ -2328,6 +2334,7 @@
     <string name="restart">Restart</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
+    <string name="settings_troubleshoot_connection">Troubleshoot Connection</string>
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>
@@ -2381,6 +2388,10 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+
+    <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
+    <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>
+    <string name="support_override_feature_flags_detail" translatable="false">Toggle feature flags before logging in</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
     <string name="support_system_status_report_fetch_error">Error fetching SSR. Please check WooCommerce -&gt; Status in wp-admin.</string>
     <string name="help">Help</string>
@@ -4032,6 +4043,10 @@
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
     <string name="woopos_eligibility_screen_US_country_name">the United States</string>
     <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
+    <string name="woopos_eligibility_ciab_title">Pro plan required</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accept payments in person for just 2.70% + $0.10 per transaction. &lt;b&gt;Upgrade to Pro&lt;/b&gt; to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
+    <string name="woopos_eligibility_learn_more_label">Learn More</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>

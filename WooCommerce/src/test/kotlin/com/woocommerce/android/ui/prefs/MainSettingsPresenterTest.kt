@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
@@ -25,6 +27,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainSettingsPresenterTest : BaseUnitTest() {
@@ -38,6 +42,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val appPrefs: AppPrefsWrapper = mock()
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock()
 
     private val view: MainSettingsContract.View = mock()
@@ -56,7 +61,8 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             notificationChannelsHandler = notificationChannelsHandler,
             analyticsTracker = analyticsTracker,
             getWooVersion = getWooVersion,
-            appPrefs = appPrefs
+            appPrefs = appPrefs,
+            ciabSiteGateKeeper = ciabSiteGateKeeper
         )
         presenter.takeView(view)
     }
@@ -155,6 +161,28 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(true)
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(false)
+        }
+
+    @Test
+    fun `given CIAB site, when checking plugins section visibility, then plugins section is hidden`() =
+        testBlocking {
+            setup {
+                whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins))
+                    .thenReturn(false)
+            }
+
+            assertFalse(presenter.isPluginsSectionVisible)
+        }
+
+    @Test
+    fun `given non-CIAB site, when checking plugins section visibility, then plugins section is visible`() =
+        testBlocking {
+            setup {
+                whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins))
+                    .thenReturn(true)
+            }
+
+            assertTrue(presenter.isPluginsSectionVisible)
         }
 
     @Test

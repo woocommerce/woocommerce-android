@@ -80,6 +80,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -212,6 +213,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -281,7 +283,9 @@ class OrderCreateEditViewModel @Inject constructor(
         .distinctUntilChanged()
         .map { status ->
             withContext(dispatchers.io) {
-                orderDetailRepository.getOrderStatus(status.value)
+                ciabOrderStatusMapper.mapOrderStatus(
+                    orderDetailRepository.getOrderStatus(status.value)
+                )
             }
         }.asLiveData()
 

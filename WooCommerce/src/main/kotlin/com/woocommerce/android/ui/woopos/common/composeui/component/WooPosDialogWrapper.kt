@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -49,9 +50,7 @@ fun WooPosDialogWrapper(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         WooPosBackgroundOverlay(
             modifier = Modifier
@@ -80,7 +79,10 @@ fun WooPosDialogWrapper(
                 shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
                 backgroundColor = MaterialTheme.colorScheme.surfaceBright,
                 elevation = if (isFullyVisible) WooPosElevation.Medium else WooPosElevation.None,
-                modifier = modifier.fillMaxWidth(0.75f),
+                modifier = modifier
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .fillMaxWidth(0.75f),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)

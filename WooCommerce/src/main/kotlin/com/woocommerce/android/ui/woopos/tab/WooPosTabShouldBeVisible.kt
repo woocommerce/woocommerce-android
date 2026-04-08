@@ -7,8 +7,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -19,7 +19,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val wooCommerceStore: WooCommerceStore,
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val wooPosLog: WooPosLogWrapper,
 ) {
@@ -38,7 +38,9 @@ class WooPosTabShouldBeVisible @Inject constructor(
             }
         }
 
-        if (!isRemoteFeatureFlagEnabled(WOO_POS)) {
+        featureFlagRepository.awaitRemoteFlagsLoaded()
+
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)) {
             appPrefs.clearPOSTabVisibilityForSite(site.id)
             return@withContext Result.success(false).also {
                 wooPosLog.i("POS Tab Not visible reason: Remote feature flag is disabled")
