@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -61,6 +62,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -246,12 +248,16 @@ fun WooPosCardReaderConnectionDialogContent(
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val configuration = LocalConfiguration.current
+    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
+    val dialogFraction = if (shortSide < 674) 0.92f else 0.55f
+
     WooPosDialogWrapper(
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_card_reader_connection_dialog_background_content_description
         ),
-        widthFraction = 0.55f,
+        widthFraction = dialogFraction,
         onCloseClick = if (state.showCloseButton) onDismiss else null,
         onDismissRequest = onBackPressed,
     ) {
@@ -410,7 +416,10 @@ private fun CardReaderDialogContent(
             Image(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(width = 160.dp, height = 143.dp),
+                modifier = Modifier.size(
+                    width = 160.dp.toAdaptiveComponentSize(),
+                    height = 143.dp.toAdaptiveComponentSize()
+                ),
             )
         },
         content = content,
@@ -525,7 +534,7 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
 
         Row(
             modifier = Modifier
-                .height(80.dp),
+                .height(80.dp.toAdaptiveComponentSize()),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -746,7 +755,7 @@ private fun UpdateRequiredContent(
             WooPosUpdateProgressIndicator(
                 progress = progress,
                 isComplete = false,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(120.dp.toAdaptiveComponentSize())
             )
         },
     ) {
@@ -797,7 +806,7 @@ private fun UpdateOptionalContent(
             WooPosUpdateProgressIndicator(
                 progress = progress,
                 isComplete = false,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(120.dp.toAdaptiveComponentSize())
             )
         },
     ) {
@@ -836,7 +845,7 @@ private fun UpdateCompletedContent() {
             WooPosUpdateProgressIndicator(
                 progress = 1f,
                 isComplete = true,
-                modifier = Modifier.size(140.dp)
+                modifier = Modifier.size(140.dp.toAdaptiveComponentSize())
             )
         },
     ) {

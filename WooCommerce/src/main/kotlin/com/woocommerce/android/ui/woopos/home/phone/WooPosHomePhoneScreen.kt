@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
@@ -200,4 +201,11 @@ private fun PhoneDialogs(
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
+
+    if (dialogState is WooPosHomeState.DialogState.CardReaderConnectionDialog) {
+        WooPosCardReaderConnectionDialog(
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) },
+            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
+        )
+    }
 }
