@@ -51,7 +51,7 @@ enum class ConnectivityCheckType(
     PRODUCTS(
         title = R.string.orderlist_connectivity_tool_store_products_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
-        icon = R.drawable.ic_product,
+        icon = R.drawable.ic_tintable_product,
         analyticsValue = AnalyticsTracker.VALUE_CONNECTIVITY_PRODUCTS,
         operationName = StoreProductsCheckUseCase.OPERATION_NAME
     )

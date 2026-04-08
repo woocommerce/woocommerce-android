@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -183,9 +184,9 @@ fun ConnectivityCheckCard(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface)),
+            Icon(
                 painter = painterResource(id = iconDrawable),
+                tint = MaterialTheme.colors.onSurface,
                 contentDescription = stringResource(id = checkTitle),
                 modifier = modifier
                     .size(dimensionResource(id = R.dimen.major_100))
