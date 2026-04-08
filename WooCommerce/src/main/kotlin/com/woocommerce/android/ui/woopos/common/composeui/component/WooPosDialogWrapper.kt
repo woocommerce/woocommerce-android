@@ -34,6 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 private const val ENTER_EXIT_DURATION_MS = 300
 
@@ -96,7 +97,7 @@ fun WooPosDialogWrapper(
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                                     contentDescription = closeContentDescription,
-                                    modifier = Modifier.size(40.dp),
+                                    modifier = Modifier.size(40.dp.toAdaptiveComponentSize()),
                                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
                             }

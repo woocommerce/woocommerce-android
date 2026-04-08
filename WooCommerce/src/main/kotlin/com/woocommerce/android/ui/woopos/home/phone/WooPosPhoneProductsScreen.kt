@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -174,7 +173,7 @@ fun WooPosPhoneProductsScreen(
                         .align(Alignment.TopStart)
                         .padding(
                             start = WooPosSpacing.Small.value,
-                            top = WooPosSpacing.XXXLarge.value
+                            top = WooPosSpacing.Gigantic.value
                         )
                 )
             }
@@ -183,7 +182,7 @@ fun WooPosPhoneProductsScreen(
             AnimatedVisibility(
                 visible = cartItemCount > 0,
                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                exit = fadeOut(animationSpec = tween(100)),
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 Surface(

@@ -61,7 +61,6 @@ fun WooPosSettingsDetailPaneScreen(
             modifier = Modifier
                 .padding(
                     top = WooPosSpacing.None.value,
-                    start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
                 ),
             titleText = stringResource(state.currentDestination.titleRes),

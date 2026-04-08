@@ -33,10 +33,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -295,16 +299,30 @@ private fun OrdersListWithDetails(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onBackFromDetail: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
+
     WooPosListDetailLayout(
-        isDetailVisible = state.selectedDetails != null,
-        onBackFromDetail = onBackFromDetail,
+        isDetailVisible = if (isPhone) {
+            userHasSelectedItem && state.selectedDetails != null
+        } else {
+            state.selectedDetails != null
+        },
+        onBackFromDetail = {
+            userHasSelectedItem = false
+            onBackFromDetail()
+        },
         listPane = {
             OrdersListPane(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
                 isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-                onOrderSelected = onOrderSelected,
+                onOrderSelected = { orderId ->
+                    userHasSelectedItem = true
+                    onOrderSelected(orderId)
+                },
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,

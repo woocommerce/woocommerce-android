@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -112,11 +113,13 @@ private fun PaymentSuccessContent(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.constrainAs(title) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(message.top, margin = textsMargin)
-                }
+                modifier = Modifier
+                    .padding(horizontal = WooPosSpacing.Large.value)
+                    .constrainAs(title) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(message.top, margin = textsMargin)
+                    }
             )
 
             WooPosText(
@@ -124,11 +127,13 @@ private fun PaymentSuccessContent(
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(message) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(receiptSent.top, margin = receiptSentMargin)
-                }
+                modifier = Modifier
+                    .padding(horizontal = WooPosSpacing.Large.value)
+                    .constrainAs(message) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(receiptSent.top, margin = receiptSentMargin)
+                    }
             )
 
             WooPosText(
@@ -136,11 +141,13 @@ private fun PaymentSuccessContent(
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(receiptSent) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(buttonDone.top, margin = marginBetweenButtonAndText)
-                }
+                modifier = Modifier
+                    .padding(horizontal = WooPosSpacing.Large.value)
+                    .constrainAs(receiptSent) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(buttonDone.top, margin = marginBetweenButtonAndText)
+                    }
             )
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
@@ -151,7 +158,7 @@ private fun PaymentSuccessContent(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
+                    .height(80.dp.toAdaptiveComponentSize())
                     .widthIn(max = 604.dp)
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value),
@@ -166,7 +173,7 @@ private fun PaymentSuccessContent(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
+                    .height(80.dp.toAdaptiveComponentSize())
                     .widthIn(max = 604.dp)
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value),

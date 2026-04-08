@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -117,6 +118,7 @@ fun WooPosItemList(
                     )
                 }
 
+                // TODO: add a selected indicator for coupons in the cart (phone layout)
                 is Coupon -> CouponItem(
                     modifier = itemModifier,
                     item = posItem,
@@ -282,6 +284,7 @@ fun WooPosProductCard(
                     quantity = cartOverlay.quantities.getValue(item.id),
                     onIncrement = { cartOverlay.onIncrement(item.id) },
                     onDecrement = { cartOverlay.onDecrement(item.id) },
+                    modifier = Modifier.widthIn(min = 100.dp),
                 )
             } else if (item is Product.Variable) {
                 Image(

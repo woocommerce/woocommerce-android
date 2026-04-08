@@ -42,7 +42,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCardPaymentViewModel @Inject constructor(
-    savedState: SavedStateHandle,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val networkStatus: WooPosNetworkStatus,
@@ -52,6 +51,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
     @ApplicationContext private val context: Context,
+    savedState: SavedStateHandle,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])

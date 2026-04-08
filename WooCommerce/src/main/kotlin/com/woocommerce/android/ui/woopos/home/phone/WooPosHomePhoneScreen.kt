@@ -162,10 +162,10 @@ private fun WooPosHomePhoneContent(
                     slideInVertically(initialOffsetY = { it })
                 },
                 exitTransition = {
-                    slideOutVertically(targetOffsetY = { -it })
+                    slideOutHorizontally(targetOffsetX = { -it })
                 },
                 popEnterTransition = {
-                    slideInVertically(initialOffsetY = { -it })
+                    slideInHorizontally(initialOffsetX = { -it })
                 },
                 popExitTransition = {
                     slideOutVertically(targetOffsetY = { it })
