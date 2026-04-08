@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
@@ -47,6 +48,8 @@ fun WooPosDialogWrapper(
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     val closeContentDescription = stringResource(R.string.close)
+
+    BackHandler(enabled = isVisible) { onDismissRequest() }
 
     Box(
         contentAlignment = Alignment.Center,
