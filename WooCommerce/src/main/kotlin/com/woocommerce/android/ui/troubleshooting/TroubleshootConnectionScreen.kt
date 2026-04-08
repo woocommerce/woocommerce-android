@@ -264,7 +264,7 @@ fun ConnectivityCheckCard(
                     WCTextButton(
                         allCaps = false,
                         onClick = onClick,
-                        icon = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                        icon = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.connectivity_tool_view_technical_details),
                         contentPadding = PaddingValues(
