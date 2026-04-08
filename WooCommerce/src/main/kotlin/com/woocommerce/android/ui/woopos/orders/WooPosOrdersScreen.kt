@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosListDetailLayout
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -114,6 +115,7 @@ fun WooPosOrdersScreen(
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
+        onBackFromDetail = viewModel::onBackFromDetail,
         onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onRefundDetailsDialogDismissed = viewModel::onRefundDetailsDialogDismissed,
         onNavigationEvent = onNavigationEvent,
@@ -137,6 +139,7 @@ private fun WooPosOrdersScreen(
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onBackFromDetail: () -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
     onRefundDetailsDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -164,7 +167,8 @@ private fun WooPosOrdersScreen(
                     onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                     onSearchEvent = onSearchEvent,
                     onSearchErrorRetry = onSearchErrorRetry,
-                    onUIEvent = onUIEvent
+                    onUIEvent = onUIEvent,
+                    onBackFromDetail = onBackFromDetail
                 )
             }
 
@@ -288,31 +292,46 @@ private fun OrdersListWithDetails(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onBackFromDetail: () -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListPane(
-            state = state,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = onOrderSelected,
-            onEndOfOrdersListReached = onEndOfOrdersListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            onSearchEvent = onSearchEvent,
-            onSearchErrorRetry = onSearchErrorRetry,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        )
-        OrderDetailsPane(
-            state = state,
-            onUIEvent = onUIEvent,
-            showOrderNumber = true,
-            modifier = Modifier.weight(0.7f)
-        )
-    }
+    WooPosListDetailLayout(
+        isDetailVisible = state.selectedDetails != null,
+        onBackFromDetail = onBackFromDetail,
+        listPane = {
+            OrdersListPane(
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            )
+        },
+        detailPane = {
+            OrderDetailsPane(
+                state = state,
+                onUIEvent = onUIEvent,
+                showOrderNumber = true,
+                modifier = Modifier.fillMaxSize()
+            )
+        },
+        emptyDetailPane = {
+            WooPosEmptyScreen(
+                modifier = Modifier.fillMaxSize(),
+                icon = WooPosIcons.OrdersEmpty,
+                title = stringResource(R.string.woopos_orders_no_order_selected),
+                message = "",
+                contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+            )
+        },
+    )
 }
 
 @Composable
@@ -688,6 +707,7 @@ fun WooPosOrdersScreenPreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onBackFromDetail = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -726,6 +746,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onBackFromDetail = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -764,6 +785,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onBackFromDetail = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -791,6 +813,7 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onBackFromDetail = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {},

@@ -139,6 +139,11 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun onBackFromDetail() {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        _state.value = current.copy(selectedDetails = null)
+    }
+
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return

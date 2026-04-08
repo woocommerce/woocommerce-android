@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +30,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosListDetailLayout
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -42,26 +42,29 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 
 @Composable
 fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxSize()
-    ) {
-        WooPosOrdersListLoadingPane(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
-                .weight(0.3f)
-                .fillMaxHeight()
-        )
-
-        OrderDetailsLoadingPane(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = WooPosSpacing.Medium.value)
-        )
-    }
+    WooPosListDetailLayout(
+        isDetailVisible = false,
+        onBackFromDetail = {},
+        modifier = modifier,
+        listPane = {
+            WooPosOrdersListLoadingPane(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
+            )
+        },
+        detailPane = {},
+        emptyDetailPane = {
+            OrderDetailsLoadingPane(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .statusBarsPadding()
+                    .padding(horizontal = WooPosSpacing.Medium.value)
+            )
+        },
+    )
 }
 
 @Composable
