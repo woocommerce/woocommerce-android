@@ -40,7 +40,12 @@ internal class EndpointProcessor @Inject constructor(
                 )
             }
         }.firstOrNull()?.response?.let {
-            it.copy(body = it.body?.wrapBodyIfNecessary(request.url))
+            if (it.statusCode in 200..299) {
+                // Wrap the response body with necessary data if status code is successful
+                it.copy(body = it.body?.wrapBodyIfNecessary(request.url))
+            } else {
+                it
+            }
         }
     }
 
