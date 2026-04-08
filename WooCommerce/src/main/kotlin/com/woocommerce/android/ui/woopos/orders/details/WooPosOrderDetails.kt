@@ -57,16 +57,17 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     showOrderNumber: Boolean = true,
+    includeStatusBarPadding: Boolean = true,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .statusBarsPadding()
+            .then(if (includeStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
             .verticalScroll(rememberScrollState())
             .padding(
-                start = WooPosSpacing.Medium.value,
-                end = WooPosSpacing.Medium.value,
+                start = 16.dp,
+                end = 16.dp,
                 bottom = WooPosSpacing.XLarge.value
             )
     ) {

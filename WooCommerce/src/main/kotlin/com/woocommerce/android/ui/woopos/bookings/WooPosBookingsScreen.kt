@@ -240,11 +240,6 @@ private fun WooPosBookingsContent(
     val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
 
-    if (isPhone) {
-        val isDetailVisible = userHasSelectedItem && state.selectedDetails != null
-        BackHandler(enabled = !isDetailVisible) { onBackClicked() }
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
         WooPosListDetailLayout(
             isDetailVisible = if (isPhone) {
@@ -257,6 +252,9 @@ private fun WooPosBookingsContent(
                 onBackFromDetail()
             },
             listPane = {
+                if (isPhone) {
+                    BackHandler { onBackClicked() }
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -289,8 +287,14 @@ private fun WooPosBookingsContent(
             detailPane = {
                 Column(modifier = Modifier.fillMaxSize()) {
                     if (isPhone) {
+                        val bookingTitle = state.selectedDetails?.let {
+                            stringResource(
+                                R.string.woopos_bookings_details_title,
+                                it.number.removePrefix("#")
+                            )
+                        }.orEmpty()
                         WooPosToolbar(
-                            titleText = stringResource(R.string.woopos_bookings_title),
+                            titleText = bookingTitle,
                             onBackClicked = {
                                 userHasSelectedItem = false
                                 onBackFromDetail()
@@ -301,7 +305,9 @@ private fun WooPosBookingsContent(
                         WooPosBookingDetails(
                             modifier = Modifier.fillMaxSize(),
                             details = details,
-                            onUIEvent = onUIEvent
+                            onUIEvent = onUIEvent,
+                            showHeader = !isPhone,
+                            includeStatusBarPadding = !isPhone,
                         )
                     }
                 }
@@ -518,7 +524,7 @@ private fun WooPosLoadedBookingsList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(
-            horizontal = WooPosSpacing.Large.value,
+            horizontal = 16.dp,
             vertical = WooPosSpacing.Medium.value,
         ),
         state = listState,

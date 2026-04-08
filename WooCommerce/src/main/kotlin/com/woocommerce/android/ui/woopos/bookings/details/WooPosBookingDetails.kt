@@ -64,7 +64,9 @@ private const val SHOW_PAYMENT_SECTION = false
 fun WooPosBookingDetails(
     modifier: Modifier = Modifier,
     details: WooPosBookingsState.BookingDetailsViewState,
-    onUIEvent: (WooPosBookingsUIEvent) -> Unit
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    showHeader: Boolean = true,
+    includeStatusBarPadding: Boolean = true,
 ) {
     val hasCollectButton = details.paymentSection.collectPaymentLabel != null
     val scrollState = rememberScrollState()
@@ -72,15 +74,15 @@ fun WooPosBookingDetails(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .statusBarsPadding()
+            .then(if (includeStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
+                    start = 16.dp,
+                    end = 16.dp,
                     bottom = if (hasCollectButton) {
                         92.dp + WooPosSpacing.Large.value + WooPosSpacing.Medium.value
                     } else {
@@ -88,9 +90,11 @@ fun WooPosBookingDetails(
                     }
                 )
         ) {
-            BookingHeader(details = details, onUIEvent = onUIEvent)
+            if (showHeader) {
+                BookingHeader(details = details, onUIEvent = onUIEvent)
 
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+            }
 
             BookingDetailsCard(details = details)
 

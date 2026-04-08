@@ -254,6 +254,7 @@ private fun OrderDetailsPane(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     modifier: Modifier = Modifier,
     showOrderNumber: Boolean = true,
+    includeStatusBarPadding: Boolean = true,
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
         when {
@@ -262,6 +263,7 @@ private fun OrderDetailsPane(
                     modifier = Modifier.fillMaxHeight(),
                     details = state.selectedDetails,
                     showOrderNumber = showOrderNumber,
+                    includeStatusBarPadding = includeStatusBarPadding,
                     onUIEvent = onUIEvent
                 )
             }
@@ -309,11 +311,6 @@ private fun OrdersListWithDetails(
     val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
 
-    if (isPhone) {
-        val isDetailVisible = userHasSelectedItem && state.selectedDetails != null
-        BackHandler(enabled = !isDetailVisible) { onBackClicked() }
-    }
-
     WooPosListDetailLayout(
         isDetailVisible = if (isPhone) {
             userHasSelectedItem && state.selectedDetails != null
@@ -325,6 +322,9 @@ private fun OrdersListWithDetails(
             onBackFromDetail()
         },
         listPane = {
+            if (isPhone) {
+                BackHandler { onBackClicked() }
+            }
             OrdersListPane(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
@@ -346,8 +346,11 @@ private fun OrdersListWithDetails(
         detailPane = {
             Column(modifier = Modifier.fillMaxSize()) {
                 if (isPhone) {
+                    val orderTitle = state.selectedDetails?.let {
+                        stringResource(R.string.woopos_order_title, it.number)
+                    }.orEmpty()
                     WooPosToolbar(
-                        titleText = stringResource(R.string.woopos_orders_title),
+                        titleText = orderTitle,
                         onBackClicked = {
                             userHasSelectedItem = false
                             onBackFromDetail()
@@ -357,7 +360,8 @@ private fun OrdersListWithDetails(
                 OrderDetailsPane(
                     state = state,
                     onUIEvent = onUIEvent,
-                    showOrderNumber = true,
+                    showOrderNumber = !isPhone,
+                    includeStatusBarPadding = !isPhone,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -558,7 +562,7 @@ private fun LoadedOrdersList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(
-            horizontal = WooPosSpacing.Large.value,
+            horizontal = 16.dp,
             vertical = WooPosSpacing.Medium.value,
         ),
         state = listState,

@@ -64,7 +64,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(
-                    horizontal = WooPosSpacing.Large.value,
+                    horizontal = 16.dp,
                     vertical = WooPosSpacing.Medium.value
                 )
         ) {
