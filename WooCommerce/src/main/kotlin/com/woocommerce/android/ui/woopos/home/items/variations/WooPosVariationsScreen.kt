@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -126,7 +127,7 @@ private fun WooPosVariationsScreens(
 
             is WooPosVariationsViewState.Error -> {
                 VariationsError(
-                    modifier = Modifier.width(640.dp)
+                    modifier = Modifier.widthIn(max = 640.dp).fillMaxWidth()
                 ) {
                     onRetryClicked()
                 }

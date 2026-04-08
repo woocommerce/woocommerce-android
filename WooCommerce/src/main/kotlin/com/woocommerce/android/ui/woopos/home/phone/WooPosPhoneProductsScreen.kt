@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -124,6 +125,9 @@ fun WooPosPhoneProductsScreen(
                 state = itemsState,
                 productsListState = productsListState,
                 couponsListState = couponsListState,
+                onBackFromVariations = {
+                    itemsViewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                },
                 modifier = Modifier.weight(1f),
             )
         }
@@ -282,6 +286,7 @@ private fun PhoneItemsContent(
     state: WooPosItemsToolbarViewState,
     productsListState: androidx.compose.foundation.lazy.LazyListState,
     couponsListState: androidx.compose.foundation.lazy.LazyListState,
+    onBackFromVariations: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Crossfade(
@@ -303,7 +308,7 @@ private fun PhoneItemsContent(
             is PhoneScreenState.Variations -> WooPosVariationsScreen(
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
                 variableProductData = screenState.variableProductData,
-                onBackClicked = {},
+                onBackClicked = onBackFromVariations,
             )
         }
     }
@@ -357,7 +362,9 @@ private fun PhonePopUpMenu(
     modifier: Modifier = Modifier,
 ) {
     WooPosCard(
-        modifier = modifier.width(IntrinsicSize.Max),
+        modifier = modifier
+            .widthIn(max = 280.dp)
+            .width(IntrinsicSize.Max),
         elevation = WooPosElevation.Medium,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
