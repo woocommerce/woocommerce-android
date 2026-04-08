@@ -164,7 +164,7 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,
-                    is ParentToChildrenEvent.SettingsEvent -> refreshBannerState()
+                    is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> refreshBannerState()
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
 
