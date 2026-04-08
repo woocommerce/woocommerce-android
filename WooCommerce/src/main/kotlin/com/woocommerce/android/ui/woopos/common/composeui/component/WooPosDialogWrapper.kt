@@ -10,7 +10,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -34,11 +33,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
+private const val DEFAULT_WIDTH_FRACTION = 0.75f
+
 @Composable
 fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
+    widthFraction: Float = DEFAULT_WIDTH_FRACTION,
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
@@ -47,7 +49,9 @@ fun WooPosDialogWrapper(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
         WooPosBackgroundOverlay(
             modifier = Modifier
@@ -72,10 +76,7 @@ fun WooPosDialogWrapper(
                 shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
                 backgroundColor = MaterialTheme.colorScheme.surfaceBright,
                 elevation = WooPosElevation.Medium,
-                modifier = modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .fillMaxWidth(0.75f),
+                modifier = modifier.fillMaxWidth(widthFraction),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)

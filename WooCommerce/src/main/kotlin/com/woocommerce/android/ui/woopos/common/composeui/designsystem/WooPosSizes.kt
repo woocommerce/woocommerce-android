@@ -49,7 +49,7 @@ fun Dp.toAdaptiveComponentSize(): Dp {
 }
 
 @Composable
-fun Dp.toAdaptivePadding(): Dp {
+private fun Dp.toAdaptivePadding(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
         longestSide < 880.dp -> {

@@ -163,10 +163,9 @@
             android:theme="@style/Theme.WooPos"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"
+            android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity"
             android:theme="@style/Theme.WooPos.Transparent"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name="com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity"
             android:theme="@style/Theme.WooPos.DayNight.Transparent"

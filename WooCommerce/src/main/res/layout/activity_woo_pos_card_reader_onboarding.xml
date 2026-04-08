@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/woopos_card_reader_nav_host_fragment"
+        android:id="@+id/woopos_card_reader_onboarding_nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
