@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -22,6 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderUpdateDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosListDetailLayout
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -41,8 +43,13 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
+    val configuration = LocalConfiguration.current
+    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
     LaunchedEffect(Unit) {
         containerViewModel.onSettingsOpened()
+        if (isPhone) {
+            containerViewModel.onPhoneDetected()
+        }
     }
 
     val backHandler = {
@@ -56,6 +63,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         state = state,
         onBackClicked = backHandler,
         onCategorySelected = containerViewModel::onCategorySelected,
+        onBackToCategories = containerViewModel::onBackToCategories,
         onNavigate = containerViewModel::navigateToDetail,
         onBack = containerViewModel::navigateBack,
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
@@ -70,6 +78,7 @@ private fun WooPosSettingsContent(
     state: WooPosSettingsState,
     onBackClicked: () -> Unit,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
+    onBackToCategories: () -> Unit,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
@@ -77,37 +86,40 @@ private fun WooPosSettingsContent(
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(0.3f)
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        ) {
-            WooPosToolbar(
-                titleText = stringResource(R.string.woopos_settings_title),
-                onBackClicked = onBackClicked,
-            )
+    WooPosListDetailLayout(
+        isDetailVisible = state.isDetailPaneOpen,
+        onBackFromDetail = onBackToCategories,
+        listPane = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            ) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_settings_title),
+                    onBackClicked = onBackClicked,
+                )
 
-            WooPosSettingsCategoriesPaneScreen(
-                selectedCategory = state.selectedCategory,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier.fillMaxSize()
+                WooPosSettingsCategoriesPaneScreen(
+                    selectedCategory = state.selectedCategory,
+                    onCategorySelected = onCategorySelected,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        },
+        detailPane = {
+            WooPosSettingsDetailPaneScreen(
+                state = state,
+                onNavigate = onNavigate,
+                onBack = onBack,
+                onShowProductInfoDialog = onShowProductInfoDialog,
+                onShowScanningSetupDialog = onShowScanningSetupDialog,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
             )
-        }
-
-        WooPosSettingsDetailPaneScreen(
-            state = state,
-            onNavigate = onNavigate,
-            onBack = onBack,
-            onShowProductInfoDialog = onShowProductInfoDialog,
-            onShowScanningSetupDialog = onShowScanningSetupDialog,
-            modifier = Modifier
-                .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        )
-    }
+        },
+    )
 
     val dialogState = state.dialogState
     WooPosSettingsProductInfoDialog(

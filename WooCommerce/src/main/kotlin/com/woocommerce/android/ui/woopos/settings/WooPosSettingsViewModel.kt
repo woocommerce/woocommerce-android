@@ -67,9 +67,18 @@ class WooPosSettingsViewModel @Inject constructor(
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
-                currentDestination = category.rootDestination
+                currentDestination = category.rootDestination,
+                isDetailPaneOpen = true
             )
         }
+    }
+
+    fun onBackToCategories() {
+        _state.update { it.copy(isDetailPaneOpen = false) }
+    }
+
+    fun onPhoneDetected() {
+        _state.update { it.copy(isDetailPaneOpen = false) }
     }
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
