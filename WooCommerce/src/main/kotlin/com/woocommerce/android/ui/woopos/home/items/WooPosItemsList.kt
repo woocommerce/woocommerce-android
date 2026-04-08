@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -118,7 +117,6 @@ fun WooPosItemList(
                     )
                 }
 
-                // TODO: add a selected indicator for coupons in the cart (phone layout)
                 is Coupon -> CouponItem(
                     modifier = itemModifier,
                     item = posItem,
@@ -277,16 +275,27 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            ProductInfo(modifier = Modifier.weight(1f), item = item)
+            ProductInfo(
+                modifier = Modifier.weight(1f),
+                item = item,
+                phoneQuantity = if (showQuantityControls) {
+                    cartOverlay.quantities.getValue(item.id)
+                } else {
+                    0
+                },
+                onPhoneIncrement = if (showQuantityControls) {
+                    { cartOverlay.onIncrement(item.id) }
+                } else {
+                    null
+                },
+                onPhoneDecrement = if (showQuantityControls) {
+                    { cartOverlay.onDecrement(item.id) }
+                } else {
+                    null
+                },
+            )
 
-            if (showQuantityControls) {
-                PhoneQuantityControl(
-                    quantity = cartOverlay.quantities.getValue(item.id),
-                    onIncrement = { cartOverlay.onIncrement(item.id) },
-                    onDecrement = { cartOverlay.onDecrement(item.id) },
-                    modifier = Modifier.widthIn(min = 100.dp),
-                )
-            } else if (item is Product.Variable) {
+            if (item is Product.Variable) {
                 Image(
                     modifier = Modifier
                         .padding(end = WooPosSpacing.XLarge.value)
@@ -308,7 +317,7 @@ private fun PhoneQuantityControl(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(end = WooPosSpacing.Medium.value),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
     ) {
@@ -346,7 +355,13 @@ private fun PhoneQuantityControl(
 }
 
 @Composable
-private fun ProductInfo(modifier: Modifier, item: Product) {
+private fun ProductInfo(
+    modifier: Modifier,
+    item: Product,
+    phoneQuantity: Int = 0,
+    onPhoneIncrement: (() -> Unit)? = null,
+    onPhoneDecrement: (() -> Unit)? = null,
+) {
     Column(
         modifier = modifier
             .fillMaxHeight()
@@ -370,10 +385,63 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
         when (item) {
-            is Product.Simple -> SimpleProductDetails(item = item)
+            is Product.Simple -> {
+                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        SimpleProductDetails(item = item)
+                        PhoneQuantityControl(
+                            quantity = phoneQuantity,
+                            onIncrement = onPhoneIncrement,
+                            onDecrement = onPhoneDecrement,
+                        )
+                    }
+                } else {
+                    SimpleProductDetails(item = item)
+                }
+            }
             is Product.Variable -> VariableProductDetails()
-            is Product.Variation -> VariationProductDetails(item = item)
-            is Product.VariationSearchResult -> VariationSearchResultDetails(item = item)
+            is Product.Variation -> {
+                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        VariationProductDetails(item = item)
+                        PhoneQuantityControl(
+                            quantity = phoneQuantity,
+                            onIncrement = onPhoneIncrement,
+                            onDecrement = onPhoneDecrement,
+                        )
+                    }
+                } else {
+                    VariationProductDetails(item = item)
+                }
+            }
+            is Product.VariationSearchResult -> {
+                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
+                    VariationSearchResultName(item = item)
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        VariationSearchResultPrice(item = item)
+                        PhoneQuantityControl(
+                            quantity = phoneQuantity,
+                            onIncrement = onPhoneIncrement,
+                            onDecrement = onPhoneDecrement,
+                        )
+                    }
+                } else {
+                    VariationSearchResultDetails(item = item)
+                }
+            }
         }
     }
 }
@@ -398,6 +466,9 @@ fun WooPosCouponCard(
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     item: Coupon
 ) {
+    val cartOverlay = LocalPhoneCartOverlay.current
+    val isInCart = cartOverlay.couponIdsInCart.contains(item.id)
+
     WooPosCard(
         modifier = modifier
             .wrapContentHeight(),
@@ -425,15 +496,42 @@ fun WooPosCouponCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            CouponInfo(item.name, item.summary, item.expiredState)
+            CouponInfo(
+                modifier = Modifier.weight(1f),
+                name = item.name,
+                summary = item.summary,
+                expiredState = item.expiredState,
+            )
+
+            if (isInCart) {
+                IconButton(
+                    onClick = { cartOverlay.onRemoveCoupon(item.id) },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
+                        contentDescription = stringResource(
+                            R.string.woopos_totals_coupons_validation_failed_remove_coupons
+                        ),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+            }
         }
     }
 }
 
 @Composable
-private fun CouponInfo(name: String, summary: String, expiredState: Coupon.ExpiredState) {
+private fun CouponInfo(
+    name: String,
+    summary: String,
+    expiredState: Coupon.ExpiredState,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 end = WooPosSpacing.Medium.value,
@@ -523,6 +621,13 @@ fun VariationProductDetails(item: Product.Variation) {
 
 @Composable
 private fun VariationSearchResultDetails(item: Product.VariationSearchResult) {
+    VariationSearchResultName(item = item)
+    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+    VariationSearchResultPrice(item = item)
+}
+
+@Composable
+private fun VariationSearchResultName(item: Product.VariationSearchResult) {
     WooPosText(
         text = item.name,
         style = WooPosTypography.BodyLarge,
@@ -530,7 +635,10 @@ private fun VariationSearchResultDetails(item: Product.VariationSearchResult) {
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
-    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+}
+
+@Composable
+private fun VariationSearchResultPrice(item: Product.VariationSearchResult) {
     WooPosText(
         text = item.price,
         style = WooPosTypography.BodyLarge,

@@ -212,8 +212,14 @@ private fun buildPhoneCartOverlay(
 
     val quantities = buildCartQuantities(cartItems)
 
+    val couponIds = cartItems
+        .filterIsInstance<WooPosCartItemViewState.Coupon>()
+        .map { it.id }
+        .toSet()
+
     return PhoneCartOverlayData(
         quantities = quantities,
+        couponIdsInCart = couponIds,
         onIncrement = { itemId ->
             val cartItem = cartItems
                 .filterIsInstance<WooPosCartItemViewState.Product>()
@@ -234,6 +240,14 @@ private fun buildPhoneCartOverlay(
                 .lastOrNull { cartItemMatchesProductId(it, itemId) }
             if (lastCartItem != null) {
                 cartViewModel.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(lastCartItem))
+            }
+        },
+        onRemoveCoupon = { couponId ->
+            val couponItem = cartItems
+                .filterIsInstance<WooPosCartItemViewState.Coupon>()
+                .firstOrNull { it.id == couponId }
+            if (couponItem != null) {
+                cartViewModel.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(couponItem))
             }
         },
     )
