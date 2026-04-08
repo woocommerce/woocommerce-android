@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -52,7 +53,7 @@ fun WooPosPaymentInProgressScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
             LottieAnimation(
-                modifier = Modifier.size(256.dp),
+                modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
                 composition = composition,
                 iterations = LottieConstants.IterateForever,
                 clipToCompositionBounds = false,

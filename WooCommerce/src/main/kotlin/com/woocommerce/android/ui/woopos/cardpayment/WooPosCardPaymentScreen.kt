@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -180,7 +181,7 @@ private fun CardPaymentInitiating() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
     }
 }
 
@@ -195,10 +196,10 @@ private fun CardPaymentPreparingReader(
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
-                    modifier = Modifier.size(256.dp),
+                    modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
                     contentAlignment = Alignment.Center,
                 ) {
-                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
                 }
                 Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
                 WooPosText(
@@ -247,7 +248,7 @@ private fun CardPaymentReadyForPayment(
                     LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
                 )
                 LottieAnimation(
-                    modifier = Modifier.size(256.dp),
+                    modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
                     composition = tapCardAnimation,
                     clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
                     iterations = LottieConstants.IterateForever,
@@ -301,7 +302,7 @@ private fun CardPaymentReaderDisconnected(
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(
-                    modifier = Modifier.size(140.dp),
+                    modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
                     imageVector = WooPosIcons.CardReaderNotConnected,
                     contentDescription = stringResource(
                         id = R.string.woopos_reader_not_connected_description
@@ -371,7 +372,7 @@ private fun CardPaymentInProgress(
                 LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
             )
             LottieAnimation(
-                modifier = Modifier.size(256.dp),
+                modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
                 composition = composition,
                 iterations = LottieConstants.IterateForever,
                 clipToCompositionBounds = false,

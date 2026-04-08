@@ -63,7 +63,7 @@ fun WooPosPaymentSuccessScreen(
         val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
         val textsMargin = WooPosSpacing.Small.value
 
-        ConstraintLayout {
+        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(

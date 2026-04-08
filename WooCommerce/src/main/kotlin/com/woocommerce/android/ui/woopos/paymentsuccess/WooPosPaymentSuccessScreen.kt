@@ -91,7 +91,7 @@ private fun PaymentSuccessContent(
         val textsMargin = WooPosSpacing.Small.value
         val receiptSentMargin = WooPosSpacing.Medium.value
 
-        ConstraintLayout {
+        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (icon, title, message, buttonDone, buttonEmailReceipts) = createRefs()
             val receiptSent = createRef()
 

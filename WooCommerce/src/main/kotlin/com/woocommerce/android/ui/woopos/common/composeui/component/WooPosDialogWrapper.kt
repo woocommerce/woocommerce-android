@@ -27,20 +27,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
-private const val DEFAULT_WIDTH_FRACTION = 0.75f
-
 @Composable
 fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
-    widthFraction: Float = DEFAULT_WIDTH_FRACTION,
+    widthFraction: Float = defaultDialogWidthFraction(),
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
@@ -104,4 +103,11 @@ fun WooPosDialogWrapper(
             }
         }
     }
+}
+
+@Composable
+private fun defaultDialogWidthFraction(): Float {
+    val configuration = LocalConfiguration.current
+    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
+    return if (shortSide < 674) 0.92f else 0.75f
 }

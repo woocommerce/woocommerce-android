@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -251,7 +252,7 @@ private fun TotalsLoaded(
 
 @Composable
 private fun PreparingReader(title: String, subtitle: String) {
-    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
     WooPosText(
         text = title,
@@ -270,7 +271,7 @@ private fun PreparingReader(title: String, subtitle: String) {
 private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
     val tapCardAnimation by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
     LottieAnimation(
-        modifier = Modifier.size(256.dp),
+        modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
         composition = tapCardAnimation,
         clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
         iterations = LottieConstants.IterateForever,
@@ -303,7 +304,7 @@ private fun ReaderDisconnected(
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         Image(
-            modifier = Modifier.size(140.dp),
+            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
             imageVector = WooPosIcons.CardReaderNotConnected,
             contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
         )
