@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -271,29 +272,28 @@ fun WooPosProductCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ProductImage(item)
+            Box {
+                ProductImage(item)
+
+                if (showQuantityControls) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        PhoneQuantityControl(
+                            quantity = cartOverlay.quantities.getValue(item.id),
+                            onIncrement = { cartOverlay.onIncrement(item.id) },
+                            onDecrement = { cartOverlay.onDecrement(item.id) },
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            ProductInfo(
-                modifier = Modifier.weight(1f),
-                item = item,
-                phoneQuantity = if (showQuantityControls) {
-                    cartOverlay.quantities.getValue(item.id)
-                } else {
-                    0
-                },
-                onPhoneIncrement = if (showQuantityControls) {
-                    { cartOverlay.onIncrement(item.id) }
-                } else {
-                    null
-                },
-                onPhoneDecrement = if (showQuantityControls) {
-                    { cartOverlay.onDecrement(item.id) }
-                } else {
-                    null
-                },
-            )
+            ProductInfo(modifier = Modifier.weight(1f), item = item)
 
             if (item is Product.Variable) {
                 Image(
@@ -317,38 +317,43 @@ private fun PhoneQuantityControl(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+            )
+            .padding(horizontal = WooPosSpacing.XSmall.value),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XXSmall.value),
     ) {
         IconButton(
             onClick = onDecrement,
-            modifier = Modifier.size(36.dp)
+            modifier = Modifier.size(32.dp)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_remove_24dp),
                 contentDescription = stringResource(R.string.woopos_phone_quantity_remove_one),
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(18.dp),
             )
         }
 
         WooPosText(
             text = quantity.toString(),
-            style = WooPosTypography.BodyLarge,
+            style = WooPosTypography.BodyMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
 
         IconButton(
             onClick = onIncrement,
-            modifier = Modifier.size(36.dp)
+            modifier = Modifier.size(32.dp)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                 contentDescription = stringResource(R.string.woopos_phone_quantity_add_one),
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(18.dp),
             )
         }
     }
@@ -358,9 +363,6 @@ private fun PhoneQuantityControl(
 private fun ProductInfo(
     modifier: Modifier,
     item: Product,
-    phoneQuantity: Int = 0,
-    onPhoneIncrement: (() -> Unit)? = null,
-    onPhoneDecrement: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -385,63 +387,10 @@ private fun ProductInfo(
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
         when (item) {
-            is Product.Simple -> {
-                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        SimpleProductDetails(item = item)
-                        PhoneQuantityControl(
-                            quantity = phoneQuantity,
-                            onIncrement = onPhoneIncrement,
-                            onDecrement = onPhoneDecrement,
-                        )
-                    }
-                } else {
-                    SimpleProductDetails(item = item)
-                }
-            }
+            is Product.Simple -> SimpleProductDetails(item = item)
             is Product.Variable -> VariableProductDetails()
-            is Product.Variation -> {
-                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        VariationProductDetails(item = item)
-                        PhoneQuantityControl(
-                            quantity = phoneQuantity,
-                            onIncrement = onPhoneIncrement,
-                            onDecrement = onPhoneDecrement,
-                        )
-                    }
-                } else {
-                    VariationProductDetails(item = item)
-                }
-            }
-            is Product.VariationSearchResult -> {
-                if (phoneQuantity > 0 && onPhoneIncrement != null && onPhoneDecrement != null) {
-                    VariationSearchResultName(item = item)
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        VariationSearchResultPrice(item = item)
-                        PhoneQuantityControl(
-                            quantity = phoneQuantity,
-                            onIncrement = onPhoneIncrement,
-                            onDecrement = onPhoneDecrement,
-                        )
-                    }
-                } else {
-                    VariationSearchResultDetails(item = item)
-                }
-            }
+            is Product.Variation -> VariationProductDetails(item = item)
+            is Product.VariationSearchResult -> VariationSearchResultDetails(item = item)
         }
     }
 }
@@ -492,7 +441,32 @@ fun WooPosCouponCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CouponImage()
+            Box {
+                CouponImage()
+
+                if (isInCart) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        IconButton(
+                            onClick = { cartOverlay.onRemoveCoupon(item.id) },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
+                                contentDescription = stringResource(
+                                    R.string.woopos_totals_coupons_validation_failed_remove_coupons
+                                ),
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
@@ -502,23 +476,6 @@ fun WooPosCouponCard(
                 summary = item.summary,
                 expiredState = item.expiredState,
             )
-
-            if (isInCart) {
-                IconButton(
-                    onClick = { cartOverlay.onRemoveCoupon(item.id) },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
-                        contentDescription = stringResource(
-                            R.string.woopos_totals_coupons_validation_failed_remove_coupons
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-            }
         }
     }
 }
