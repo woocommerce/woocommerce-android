@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderC
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
@@ -104,6 +105,7 @@ private fun WooPosHomePhoneContent(
 
     val cartState = cartViewModel.state.observeAsState()
     val cartItemCount = cartState.value?.body?.amountOfItems ?: 0
+    val cartItemsLabel = cartState.value?.toolbar?.itemsCount
 
     var previousState by remember {
         mutableStateOf<WooPosHomeState.ScreenPositionState?>(null)
@@ -182,7 +184,8 @@ private fun WooPosHomePhoneContent(
                             slideOutHorizontally(animationSpec = tween(300), targetOffsetX = { -it })
                         },
                         popEnterTransition = {
-                            slideInHorizontally(animationSpec = tween(300), initialOffsetX = { -it })
+                            slideInHorizontally(animationSpec = tween(300), initialOffsetX = { -it }) +
+                                fadeIn(animationSpec = tween(150))
                         },
                         popExitTransition = {
                             slideOutVertically(animationSpec = tween(300), targetOffsetY = { it })
@@ -230,6 +233,7 @@ private fun WooPosHomePhoneContent(
             PhonePersistentBottomButton(
                 currentRoute = currentRoute,
                 cartItemCount = cartItemCount,
+                cartItemsLabel = cartItemsLabel,
                 isCheckoutEnabled = isCheckoutEnabled,
                 screenPositionState = state.screenPositionState,
                 onCartClicked = {
@@ -256,6 +260,7 @@ private fun WooPosHomePhoneContent(
 private fun PhonePersistentBottomButton(
     currentRoute: String?,
     cartItemCount: Int,
+    cartItemsLabel: String?,
     isCheckoutEnabled: Boolean,
     screenPositionState: WooPosHomeState.ScreenPositionState,
     onCartClicked: () -> Unit,
@@ -282,8 +287,10 @@ private fun PhonePersistentBottomButton(
             modifier = Modifier.fillMaxWidth()
         ) {
             val buttonText = when (currentRoute) {
-                PHONE_PRODUCTS_ROUTE ->
-                    stringResource(R.string.woopos_cart_title) + " ($cartItemCount)"
+                PHONE_PRODUCTS_ROUTE -> {
+                    val label = cartItemsLabel ?: "$cartItemCount"
+                    stringResource(R.string.woopos_cart_title) + " - $label"
+                }
                 PHONE_CART_ROUTE ->
                     stringResource(R.string.woopos_checkout_button)
                 PHONE_TOTALS_ROUTE ->
@@ -302,15 +309,26 @@ private fun PhonePersistentBottomButton(
                 WooPosButtonState.ENABLED
             }
 
-            WooPosButton(
-                text = buttonText,
-                onClick = onClick,
-                state = buttonState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(WooPosSpacing.Medium.value)
-                    .navigationBarsPadding()
-            )
+            if (currentRoute == PHONE_TOTALS_ROUTE) {
+                WooPosOutlinedButton(
+                    text = buttonText,
+                    onClick = onClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding()
+                )
+            } else {
+                WooPosButton(
+                    text = buttonText,
+                    onClick = onClick,
+                    state = buttonState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding()
+                )
+            }
         }
     }
 }

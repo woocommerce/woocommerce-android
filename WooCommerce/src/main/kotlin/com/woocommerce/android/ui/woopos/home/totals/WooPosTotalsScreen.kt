@@ -65,13 +65,17 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
+fun WooPosTotalsScreen(
+    modifier: Modifier = Modifier,
+    hideCashPaymentButton: Boolean = false,
+) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
         onUIEvent = viewModel::onUIEvent,
+        hideCashPaymentButton = hideCashPaymentButton,
     )
 }
 
@@ -80,6 +84,7 @@ private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    hideCashPaymentButton: Boolean = false,
 ) {
     Box(modifier = modifier) {
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Checkout) {
@@ -87,6 +92,7 @@ private fun WooPosTotalsScreen(
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent,
+                    hideCashPaymentButton = hideCashPaymentButton,
                 )
             }
         }
@@ -171,6 +177,7 @@ private fun StateChangeAnimated(
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    hideCashPaymentButton: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -238,15 +245,17 @@ private fun TotalsLoaded(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-                .padding(bottom = WooPosSpacing.XLarge.value)
-                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
-        )
+        if (!hideCashPaymentButton) {
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
+                    .padding(bottom = WooPosSpacing.XLarge.value)
+                    .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+            )
+        }
     }
 }
 

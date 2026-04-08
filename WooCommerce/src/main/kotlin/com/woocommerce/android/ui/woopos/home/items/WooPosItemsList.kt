@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -283,7 +284,7 @@ fun WooPosProductCard(
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .background(Color.Black.copy(alpha = 0.4f)),
+                            .background(Color.Black.copy(alpha = 0.35f)),
                         contentAlignment = Alignment.Center,
                     ) {
                         PhoneQuantityControl(
@@ -323,10 +324,11 @@ private fun PhoneQuantityControl(
     Row(
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.Black.copy(alpha = 0.55f),
                 shape = RoundedCornerShape(50),
             )
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(50))
+            .padding(horizontal = 6.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {

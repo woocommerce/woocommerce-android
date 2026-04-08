@@ -10,6 +10,7 @@ fun WooPosPhoneTotalsScreen(
     modifier: Modifier = Modifier,
 ) {
     WooPosTotalsScreen(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        hideCashPaymentButton = true,
     )
 }
