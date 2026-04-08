@@ -24,19 +24,36 @@ class StoreProductsCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        productStore.fetchProducts(selectedSite.get())
-            .takeIf { it.isError }
-            ?.parseError()
-            ?.let { emit(it) }
-            ?: emit(Success)
+        val startTime = System.currentTimeMillis()
+        val result = productStore.fetchProducts(selectedSite.get())
+        val durationMs = System.currentTimeMillis() - startTime
+        if (result.isError) {
+            emit(result.parseError(durationMs))
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
     }
 
-    private fun WooResult<List<WCProductModel>>.parseError() =
-        when (error.type) {
-            WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
-            WooErrorType.API_NOT_FOUND ->
-                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
-            else -> Failure(FailureType.GENERIC)
+    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long): Failure {
+        val failureType = when (error.type) {
+            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            else -> FailureType.GENERIC
         }
+
+        return Failure(
+            error = failureType,
+            technicalDetails = formatErrorDetails(
+                operation = OPERATION_NAME,
+                errorType = error.type.name,
+                message = error.message
+            ),
+            durationMs = durationMs
+        )
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Fetching products in your store"
+    }
 }

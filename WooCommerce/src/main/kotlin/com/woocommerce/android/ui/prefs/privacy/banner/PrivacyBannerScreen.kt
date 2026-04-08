@@ -13,16 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -58,19 +57,19 @@ fun PrivacyBannerScreen(
     onSavePressed: () -> Unit,
     onSettingsPressed: () -> Unit,
 ) {
-    Box(Modifier.background(MaterialTheme.colors.surface)) {
+    Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
         Column(
             Modifier.padding(vertical = 16.dp).verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = stringResource(R.string.privacy_banner_title),
                 modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
 
             Text(
                 modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 text = stringResource(R.string.privacy_banner_description)
             )
 
@@ -88,9 +87,6 @@ fun PrivacyBannerScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
                     modifier = Modifier.padding(end = 16.dp),
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colors.primary
-                    ),
                     checked = state.analyticsSwitchEnabled,
                     onCheckedChange = { onSwitchChanged(it) },
                 )
@@ -109,21 +105,9 @@ fun PrivacyBannerScreen(
                     .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Button(
+                OutlinedButton(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        contentColor = contentColorFor(MaterialTheme.colors.surface)
-                    ),
-                    border = ButtonDefaults.outlinedBorder,
-                    shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 0.dp,
-                        pressedElevation = 0.dp,
-                        disabledElevation = 0.dp,
-                        hoveredElevation = 0.dp,
-                        focusedElevation = 0.dp
-                    ),
+                    shape = RoundedCornerShape(8.dp),
                     onClick = onSettingsPressed
                 ) {
                     Text(stringResource(R.string.privacy_banner_settings))
@@ -132,11 +116,11 @@ fun PrivacyBannerScreen(
                 Button(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     onClick = { onSavePressed() },
-                    shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
+                    shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White,
                     ),
-                    elevation = ButtonDefaults.elevation(
+                    elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 0.dp,
                         pressedElevation = 0.dp,
                         disabledElevation = 0.dp,
@@ -164,7 +148,7 @@ fun PrivacyBannerScreen(
 // Style of TextAppearance.Woo.Body2
 private fun textAppearanceWooBody2() = TextStyle(
     lineHeight = 20.sp,
-    color = MaterialTheme.colors.onSurface.copy(
+    color = MaterialTheme.colorScheme.onSurface.copy(
         alpha = 0.60f
     ),
     fontSize = 14.sp,

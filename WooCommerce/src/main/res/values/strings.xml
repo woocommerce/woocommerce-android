@@ -537,6 +537,10 @@
     <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
     <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
+    <string name="connectivity_tool_view_technical_details">View technical details</string>
+    <string name="connectivity_tool_technical_details_title">Technical details</string>
+    <string name="connectivity_tool_technical_details_copied">Technical details have been copied to your clipboard.</string>
+    <string name="connectivity_tool_copy">Copy</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
     <string name="orderlist_selection_count">%d orders selected</string>

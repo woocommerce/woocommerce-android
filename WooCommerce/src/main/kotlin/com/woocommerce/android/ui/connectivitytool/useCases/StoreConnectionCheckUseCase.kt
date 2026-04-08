@@ -24,19 +24,36 @@ class StoreConnectionCheckUseCase @Inject constructor(
 
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        ssrFetcher.load(selectedSite.get())
-            .takeIf { it.isError }
-            ?.parseError()
-            ?.let { emit(it) }
-            ?: emit(Success)
+        val startTime = System.currentTimeMillis()
+        val result = ssrFetcher.load(selectedSite.get(), forceRefresh = true)
+        val durationMs = System.currentTimeMillis() - startTime
+        if (result.isError) {
+            emit(result.parseError(durationMs))
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
     }
 
-    private fun WooResult<WCSSRModel>.parseError() =
-        when (error.type) {
-            WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.API_NOT_FOUND ->
-                if (isAppPasswordSite) Failure(FailureType.GENERIC) else Failure(FailureType.JETPACK)
-            WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
-            else -> Failure(FailureType.GENERIC)
+    private fun WooResult<WCSSRModel>.parseError(durationMs: Long): Failure {
+        val failureType = when (error.type) {
+            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+            else -> FailureType.GENERIC
         }
+
+        return Failure(
+            error = failureType,
+            technicalDetails = formatErrorDetails(
+                operation = OPERATION_NAME,
+                errorType = error.type.name,
+                message = error.message
+            ),
+            durationMs = durationMs
+        )
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Connecting to your site"
+    }
 }

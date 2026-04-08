@@ -149,11 +149,13 @@ private fun WooPosItemsSearchScreen(
 
                 WooPosItemsSearchViewState.Loading::class.java -> {
                     WooPosItemsLoadingIndicator(
-                        modifier = Modifier.padding(
-                            start = WooPosSpacing.Medium.value,
-                            end = WooPosSpacing.Medium.value,
-                            top = WooPosSpacing.Large.value
-                        ),
+                        modifier = Modifier
+                            .padding(
+                                start = WooPosSpacing.Medium.value,
+                                end = WooPosSpacing.Medium.value,
+                                top = WooPosSpacing.Small.value
+                            )
+                            .padding(top = WooPosSpacing.XSmall.value),
                         itemsCount = 5
                     )
                 }
@@ -185,7 +187,7 @@ private fun WooPosItemsSearchContent(
         }
     }
     WooPosItemList(
-        modifier = modifier.padding(top = WooPosSpacing.Large.value),
+        modifier = modifier.padding(top = WooPosSpacing.XSmall.value),
         state = state,
         listState = listState,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },
