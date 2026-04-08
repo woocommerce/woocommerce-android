@@ -33,7 +33,10 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.store.SiteStore
@@ -52,6 +55,8 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
     @Inject lateinit var selectedSite: SelectedSite
+
+    @Inject lateinit var featureFlagRepository: FeatureFlagRepository
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -102,6 +107,11 @@ class HelpActivity : AppCompatActivity() {
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
             binding.ssrContainer.setOnClickListener { showSSR() }
+        }
+
+        if (!userIsLoggedIn() && featureFlagRepository.isEnabled(FeatureFlag.LOGGED_OUT_FF_PANEL)) {
+            binding.developerSection.show()
+            binding.featureFlagsContainer.setOnClickListener { showFeatureFlagsOverride() }
         }
 
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
@@ -224,6 +234,10 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
+    }
+
+    private fun showFeatureFlagsOverride() {
+        startActivity(DevFeatureFlagsActivity.createIntent(this, skipRemoteLoad = true))
     }
 
     private fun openSupportRequestForm(extraTags: List<String>) {

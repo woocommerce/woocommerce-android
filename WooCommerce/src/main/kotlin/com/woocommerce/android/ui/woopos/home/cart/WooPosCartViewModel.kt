@@ -248,8 +248,8 @@ class WooPosCartViewModel @Inject constructor(
         val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return
         val result = updateCartItemsWithChanges(
             itemsInCart = body.itemsInCart,
-            updatedProducts = event.updatedProducts,
-            updatedCoupons = event.updatedCoupons,
+            updatedProducts = event.data.updatedProducts,
+            updatedCoupons = event.data.updatedCoupons,
         )
         if (result.productsChanged || result.couponsChanged) {
             _state.value = _state.value.copy(

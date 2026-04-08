@@ -8,8 +8,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -28,7 +26,6 @@ class WooPosProductsDataSourceTest {
     private val remoteDataSource: WooPosProductsRemoteDataSource = mock()
     private val localDbDataSource: WooPosProductsInDbDataSource = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     @Rule
     @JvmField
@@ -40,7 +37,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
@@ -62,7 +58,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
@@ -82,7 +77,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp = 0L, isOverdue = true)
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
@@ -102,7 +96,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.BlockingRequired
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
@@ -124,7 +117,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.BlockingRequired
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         val errorMessage = "Failed to prepopulate cache"
         whenever(localDbDataSource.prepopulateCache()).thenReturn(
             Result.failure(Exception(errorMessage))
@@ -146,7 +138,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.Error("No network connection")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         val sut = createSut()
 
         // WHEN
@@ -167,7 +158,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
@@ -187,7 +177,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
         sut.prepopulateCache().toList()
@@ -206,7 +195,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.hasMoreProductsPages).thenReturn(true)
         val sut = createSut()
@@ -238,7 +226,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshProducts()).thenReturn(
             Result.success(
@@ -262,7 +249,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.refreshProducts()).thenReturn(
             Result.success(
                 PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
@@ -285,7 +271,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshVariations(123L)).thenReturn(
             Result.success(
@@ -309,7 +294,6 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
             Result.success(
                 PosLocalCatalogVariationSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
@@ -330,6 +314,5 @@ class WooPosProductsDataSourceTest {
         remoteDataSource = remoteDataSource,
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
-        featureFlagRepository = featureFlagRepository
     )
 }

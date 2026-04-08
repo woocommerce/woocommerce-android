@@ -45,6 +45,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
         intent.extras?.getStringArrayList(EXTRA_TAGS_KEY) ?: emptyList()
     }
 
+    private val diagnosticLog by lazy {
+        intent.extras?.getString(DIAGNOSTIC_LOG_KEY)
+    }
+
     private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,7 +131,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             viewModel.submitSupportRequest(
                 context = this,
                 helpOrigin = helpOrigin,
-                extraTags = extraTags
+                extraTags = extraTags,
+                diagnosticLog = diagnosticLog
             )
         }
     }
@@ -197,6 +202,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 context = this,
                 helpOrigin = helpOrigin,
                 extraTags = extraTags,
+                diagnosticLog = diagnosticLog,
                 selectedEmail = email,
                 selectedName = name
             )
@@ -207,15 +213,18 @@ class SupportRequestFormActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val DIAGNOSTIC_LOG_KEY = "DIAGNOSTIC_LOG_KEY"
 
         @JvmStatic
         fun createIntent(
             context: Context,
             origin: HelpOrigin,
-            extraTags: java.util.ArrayList<String>
+            extraTags: java.util.ArrayList<String>,
+            diagnosticLog: String? = null
         ) = Intent(context, SupportRequestFormActivity::class.java).apply {
             putExtra(ORIGIN_KEY, origin)
             putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
+            diagnosticLog?.let { putExtra(DIAGNOSTIC_LOG_KEY, it) }
         }
     }
 }

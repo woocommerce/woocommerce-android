@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard.reviews
 
-import android.widget.RatingBar
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,21 +17,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.ProductReview
@@ -49,7 +39,7 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.ui.reviews.ReviewListItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -182,82 +172,6 @@ private fun ProductReviewsCardContent(
                     onClicked = { onReviewClicked(productReview) }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ReviewListItem(
-    review: ProductReview,
-    onClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClicked)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_comment),
-            contentDescription = null,
-            tint = if (review.read == false) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            }
-        )
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = if (review.product == null) {
-                    stringResource(R.string.product_review_list_item_title, review.reviewerName)
-                } else {
-                    stringResource(
-                        R.string.review_list_item_title,
-                        review.reviewerName,
-                        review.product?.name?.fastStripHtml().orEmpty()
-                    )
-                },
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface
-            )
-
-            val reviewText = buildAnnotatedString {
-                if (review.status == ProductReviewStatus.HOLD.toString()) {
-                    withStyle(SpanStyle(color = colorResource(id = R.color.woo_orange_50))) {
-                        append(stringResource(id = R.string.pending_review_label))
-                    }
-
-                    append(" • ")
-                }
-
-                append(StringUtils.getRawTextFromHtml(review.review))
-            }
-
-            Text(
-                text = reviewText,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            )
-
-            if (review.rating > 0) {
-                AndroidView(
-                    factory = { context ->
-                        RatingBar(context, null, androidx.appcompat.R.attr.ratingBarStyleSmall)
-                    },
-                    update = { ratingBar ->
-                        ratingBar.rating = 100F
-                        ratingBar.numStars = review.rating
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier)
-            Divider()
         }
     }
 }

@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.orders.connectivitytool.useCases
+package com.woocommerce.android.ui.connectivitytool.useCases
 
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -38,7 +38,9 @@ class InternetConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Success::class.java)
     }
 
     @Test
@@ -53,6 +55,8 @@ class InternetConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure()))
+        assertThat(stateEvents).hasSize(2)
+        assertThat(stateEvents[0]).isEqualTo(InProgress)
+        assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
     }
 }
