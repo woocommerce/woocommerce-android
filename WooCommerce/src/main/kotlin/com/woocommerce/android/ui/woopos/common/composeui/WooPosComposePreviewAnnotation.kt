@@ -34,4 +34,16 @@ import androidx.compose.ui.tooling.preview.Preview
     device = "spec:width=411dp,height=891dp,dpi=420",
     uiMode = Configuration.UI_MODE_TYPE_NORMAL or Configuration.UI_MODE_NIGHT_YES
 )
+@Preview(
+    name = "Phone Vertical Light",
+    showSystemUi = true,
+    device = "spec:width=411dp,height=891dp,dpi=420",
+    uiMode = Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+    name = "Phone Horizontal Light",
+    showSystemUi = true,
+    device = "spec:width=411dp,height=891dp,dpi=420,orientation=landscape",
+    uiMode = Configuration.UI_MODE_TYPE_NORMAL
+)
 annotation class WooPosPreview

@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
@@ -39,8 +40,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
-private const val CONTENT_WIDTH_FRACTION = 0.6f
-private const val BUTTON_WIDTH_FRACTION = 0.5f
 
 @Composable
 fun WooPosEligibilityScreen(
@@ -95,6 +94,12 @@ fun WooPosEligibilityScreen(
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
 
+    val configuration = LocalConfiguration.current
+    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
+    val isPhone = shortSide < 674
+    val contentWidthFraction = if (isPhone) 0.9f else 0.6f
+    val buttonWidthFraction = if (isPhone) 0.85f else 0.5f
+
     val title = when (retryState) {
         is WooPosEligibilityRetryState.Ineligible -> retryState.title
         is WooPosEligibilityRetryState.Loading -> retryState.title
@@ -131,13 +136,13 @@ fun WooPosEligibilityScreen(
             text = suggestionText,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION)
+            modifier = Modifier.fillMaxWidth(contentWidthFraction)
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         val buttonModifier = Modifier
-            .fillMaxWidth(BUTTON_WIDTH_FRACTION)
+            .fillMaxWidth(buttonWidthFraction)
 
         when (retryState) {
             is WooPosEligibilityRetryState.RetryableIneligible -> {
