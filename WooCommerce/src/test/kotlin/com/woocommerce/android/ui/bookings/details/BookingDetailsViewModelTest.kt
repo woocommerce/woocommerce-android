@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -74,6 +76,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val orderDetailRepository = mock<OrderDetailRepository>()
+    private val featureFlagRepository = mock<FeatureFlagRepository>()
 
     @Before
     fun setup() {
@@ -580,6 +583,79 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
                 .hasSize(1)
         }
 
+    @Test
+    fun `given reschedule flag enabled and confirmed booking, when state observed, then reschedule button visible`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(true)
+            bookingFlow.value = getSampleBooking(bookingId, status = BookingEntity.Status.Confirmed)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isTrue()
+        }
+
+    @Test
+    fun `given reschedule flag disabled, when state observed, then reschedule button not visible`() =
+        testBlocking {
+            // GIVEN — flag defaults to false (not enabled)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given reschedule flag enabled and cancelled booking, when state observed, then reschedule button not visible`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(true)
+            bookingFlow.value = getSampleBooking(bookingId, status = BookingEntity.Status.Cancelled)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given reschedule flag enabled and completed booking, when state observed, then reschedule button not visible`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(true)
+            bookingFlow.value = getSampleBooking(bookingId, status = BookingEntity.Status.Complete)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given reschedule flag enabled and in-cart booking, when state observed, then reschedule button not visible`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(true)
+            bookingFlow.value = getSampleBooking(bookingId, status = BookingEntity.Status.InCart)
+
+            // WHEN
+            val viewModel = createViewModel()
+            val state = viewModel.state.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.bookingUiState?.bookingsAppointmentDetails?.rescheduleButtonVisible).isFalse()
+        }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
@@ -592,20 +668,26 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             paymentStatusResolver = paymentStatusResolver,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             orderDetailRepository = orderDetailRepository,
+            featureFlagRepository = featureFlagRepository,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
         ).apply {
             state.observeForever { }
         }
     }
 
-    private fun getSampleBooking(id: Long, orderId: Long = id, location: String? = null): Booking {
+    private fun getSampleBooking(
+        id: Long,
+        orderId: Long = id,
+        location: String? = null,
+        status: BookingEntity.Status = BookingEntity.Status.Confirmed,
+    ): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id),
             localSiteId = LocalOrRemoteId.LocalId(1),
             start = Instant.now(),
             end = Instant.now() + Duration.ofDays(1),
             allDay = false,
-            status = BookingEntity.Status.Confirmed,
+            status = status,
             cost = "100.00",
             currency = "USD",
             customerId = 1L,
