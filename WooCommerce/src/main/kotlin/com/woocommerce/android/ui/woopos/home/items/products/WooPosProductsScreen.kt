@@ -139,6 +139,7 @@ private fun Content(
     onEndOfItemListReached: () -> Unit
 ) {
     WooPosItemList(
+        modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
         state = itemsState,
         listState = listState,
         onItemClicked = onItemClicked,

@@ -16,10 +16,19 @@ class WPComConnectionCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        whatsNewStore.fetchRemoteAnnouncements(
+        val startTime = System.currentTimeMillis()
+        val result = whatsNewStore.fetchRemoteAnnouncements(
             versionName = buildConfigWrapper.versionName
-        ).fetchError?.let {
-            emit(Failure())
-        } ?: emit(Success)
+        )
+        val durationMs = System.currentTimeMillis() - startTime
+        if (result.fetchError != null) {
+            emit(Failure(durationMs = durationMs))
+        } else {
+            emit(Success(durationMs = durationMs))
+        }
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Connecting to WordPress.com Servers"
     }
 }

@@ -14,10 +14,17 @@ class InternetConnectionCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        if (networkStatus.isConnected()) {
-            emit(Success)
+        val startTime = System.currentTimeMillis()
+        val isConnected = networkStatus.isConnected()
+        val durationMs = System.currentTimeMillis() - startTime
+        if (isConnected) {
+            emit(Success(durationMs = durationMs))
         } else {
-            emit(Failure())
+            emit(Failure(durationMs = durationMs))
         }
+    }
+
+    companion object {
+        const val OPERATION_NAME = "Internet Connection"
     }
 }

@@ -5,40 +5,27 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INTERNET
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_TUNNEL
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTIVITY_TEST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.Finished
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.ConnectivityCheckStep.WPComCheck
 import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,106 +36,80 @@ class ConnectivityToolViewModel @Inject constructor(
     private val wpComConnectionCheck: WPComConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
+    private val storeProductsCheck: StoreProductsCheckUseCase,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val isAppPasswordSite: Boolean
         get() = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
-    private val stateMachine = savedState.getStateFlow(
+
+    private val initialChecks = buildList {
+        add(ConnectivityCheckCardData(ConnectivityCheckType.INTERNET))
+        if (!isAppPasswordSite) {
+            add(ConnectivityCheckCardData(ConnectivityCheckType.WP_COM))
+        }
+        add(ConnectivityCheckCardData(ConnectivityCheckType.STORE))
+        add(ConnectivityCheckCardData(ConnectivityCheckType.ORDERS))
+        add(ConnectivityCheckCardData(ConnectivityCheckType.PRODUCTS))
+    }
+
+    private val checksFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = InternetCheck
+        initialValue = initialChecks,
+        key = "checksFlow"
     )
 
-    private val internetCheckFlow = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = InternetConnectivityCheckData(
-            retryConnectionAction = { handleRetryConnectionClick(InternetCheck) }
-        )
-    )
-
-    private val wpComCheckFlow = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = WPComConnectivityCheckData(
-            retryConnectionAction = { handleRetryConnectionClick(WPComCheck) }
-        )
-    )
-
-    private val storeCheckFlow = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = StoreConnectivityCheckData(
-            retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
-        )
-    )
-
-    private val ordersCheckFlow = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = StoreOrdersConnectivityCheckData(
-            retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
-        )
-    )
-
-    val viewState = combine(
-        internetCheckFlow,
-        wpComCheckFlow,
-        storeCheckFlow,
-        ordersCheckFlow
-    ) { internet, wpCom, store, orders ->
+    val viewState = checksFlow.map { checks ->
         ViewState(
-            internetCheckData = internet,
-            wpComCheckData = wpCom,
-            storeCheckData = store,
-            ordersCheckData = orders,
-            isWPComCheckVisible = !isAppPasswordSite
+            checks = checks,
+            shouldDisplaySummary = checks.all { it.status is Success }
         )
     }.distinctUntilChanged().asLiveData()
 
-    val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
+    val isCheckFinished = checksFlow.map { checks ->
+        checks.any { it.status is Failure } || checks.all { it.status is Success }
+    }.distinctUntilChanged().asLiveData()
 
-    private val nextStep
-        get() = when (stateMachine.value) {
-            InternetCheck -> if (isAppPasswordSite) StoreCheck else WPComCheck
-            WPComCheck -> StoreCheck
-            StoreCheck -> StoreOrdersCheck
-            StoreOrdersCheck -> Finished
-            Finished -> error("Cannot move to next state from Finished")
-        }
+    private val _technicalDetailsToShow = MutableStateFlow<String?>(null)
+    val technicalDetailsToShow = _technicalDetailsToShow.asLiveData()
+
+    fun onViewTechnicalDetailsClicked(details: String) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_TECHNICAL_DETAILS_TAPPED)
+        _technicalDetailsToShow.value = details
+    }
+
+    fun onTechnicalDetailsDismissed() {
+        _technicalDetailsToShow.value = null
+    }
 
     fun startConnectionChecks() {
         launch {
-            stateMachine.collect {
-                when (it) {
-                    InternetCheck -> startInternetCheck()
-                    WPComCheck -> startWPComCheck()
-                    StoreCheck -> startStoreCheck()
-                    StoreOrdersCheck -> startStoreOrdersCheck()
-                    Finished -> { /* No-op */ }
-                }
-            }
+            executeNextCheck()
         }
     }
 
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
-        triggerEvent(OpenSupportRequest)
+        triggerEvent(OpenSupportRequest(diagnosticLog = generateDiagnosticLog()))
     }
 
     fun onReturnClicked() {
         triggerEvent(Exit)
     }
 
-    private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
-        when (step) {
-            InternetCheck -> internetCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
-            WPComCheck -> wpComCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
-            StoreCheck -> storeCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
-            StoreOrdersCheck -> ordersCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
-            Finished -> { /* No-op */ }
+    fun onRetryClicked(type: ConnectivityCheckType) {
+        checksFlow.update { checks ->
+            checks.map {
+                if (it.type == type) it.copy(status = NotStarted) else it
+            }
         }
-        stateMachine.update { step }
+        launch {
+            executeNextCheck()
+        }
     }
 
-    private fun handleReadMoreClick(failureType: FailureType) {
+    fun onReadMoreClicked(failureType: FailureType) {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_READ_MORE_TAPPED)
         when (failureType) {
             FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
@@ -156,113 +117,86 @@ class ConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun startInternetCheck() {
-        val startTime = System.currentTimeMillis()
-        internetConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_INTERNET, startTime)
-            status.startNextCheck()
-            internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
-        }.launchIn(viewModelScope)
-    }
+    private suspend fun executeNextCheck() {
+        while (true) {
+            val checks = checksFlow.value
+            if (checks.any { it.status is Failure }) return
+            val nextCheck = checks.firstOrNull { it.status is NotStarted || it.status is InProgress } ?: return
 
-    private fun startWPComCheck() {
-        val startTime = System.currentTimeMillis()
-        wpComConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_WP_COM, startTime)
-            status.startNextCheck()
-            wpComCheckFlow.update { it.copy(connectivityCheckStatus = status) }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun startStoreCheck() {
-        val startTime = System.currentTimeMillis()
-        storeConnectionCheck().onEach { status ->
-            trackChanges(status, VALUE_SITE, startTime)
-            status.startNextCheck()
-            storeCheckFlow.update {
-                if (status is Failure) {
-                    it.copy(
-                        connectivityCheckStatus = status,
-                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
-                    )
-                } else {
-                    it.copy(connectivityCheckStatus = status)
-                }
+            val flow = when (nextCheck.type) {
+                ConnectivityCheckType.INTERNET -> internetConnectionCheck()
+                ConnectivityCheckType.WP_COM -> wpComConnectionCheck()
+                ConnectivityCheckType.STORE -> storeConnectionCheck()
+                ConnectivityCheckType.ORDERS -> storeOrdersCheck()
+                ConnectivityCheckType.PRODUCTS -> storeProductsCheck()
             }
-        }.launchIn(viewModelScope)
-    }
 
-    private fun startStoreOrdersCheck() {
-        val startTime = System.currentTimeMillis()
-        storeOrdersCheck().onEach { status ->
-            trackChanges(status, VALUE_JETPACK_TUNNEL, startTime)
-            status.startNextCheck()
-            ordersCheckFlow.update {
-                if (status is Failure) {
-                    it.copy(
-                        connectivityCheckStatus = status,
-                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
-                    )
-                } else {
-                    it.copy(connectivityCheckStatus = status)
-                }
+            flow.collect { status ->
+                trackChanges(status, nextCheck.type.analyticsValue)
+                updateCheckStatus(nextCheck.type, status)
             }
-        }.launchIn(viewModelScope)
-    }
 
-    private fun ConnectivityCheckStatus.startNextCheck() {
-        if (stateMachine.value == Finished) return
-
-        stateMachine.update {
-            when (this) {
-                is Success -> nextStep
-                is Failure -> Finished
-                else -> it
+            val finalStatus = checksFlow.value.first { it.type == nextCheck.type }.status
+            if (finalStatus !is Success) {
+                return
             }
         }
     }
 
-    private fun trackChanges(
-        status: ConnectivityCheckStatus,
-        type: String,
-        startTime: Long
-    ) {
+    private fun updateCheckStatus(type: ConnectivityCheckType, status: ConnectivityCheckStatus) {
+        checksFlow.update { checks ->
+            checks.map {
+                if (it.type == type) it.copy(status = status) else it
+            }
+        }
+    }
+
+    private fun trackChanges(status: ConnectivityCheckStatus, type: String) {
         if (status is InProgress || status is NotStarted) return
 
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
             mapOf(
                 AnalyticsTracker.KEY_SUCCESS to (status is Success),
-                AnalyticsTracker.KEY_TYPE to type,
-                AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime)
+                KEY_CONNECTIVITY_TEST to type,
+                AnalyticsTracker.KEY_TIME_TAKEN to status.durationMs
             )
         )
     }
 
-    object OpenSupportRequest : MultiLiveEvent.Event()
+    private fun generateDiagnosticLog(): String? {
+        val completedChecks = checksFlow.value.filter {
+            it.status is Success || it.status is Failure
+        }
+
+        if (completedChecks.isEmpty()) return null
+
+        return buildString {
+            completedChecks.forEachIndexed { index, check ->
+                appendLine("## ${index + 1}. ${check.type.operationName}")
+                appendLine("Took: ${check.status.durationMs}ms")
+                val resultStr = when (val status = check.status) {
+                    is Success -> "Success"
+                    is Failure -> {
+                        val errorName = status.error?.name ?: "Failed"
+                        val details = status.technicalDetails?.let { "\n$it" } ?: ""
+                        errorName + details
+                    }
+                    else -> "Unknown"
+                }
+                appendLine("Result: $resultStr")
+                appendLine()
+            }
+        }.trimEnd()
+    }
+
+    data class OpenSupportRequest(val diagnosticLog: String?) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
     data class ViewState(
-        val internetCheckData: InternetConnectivityCheckData,
-        val wpComCheckData: WPComConnectivityCheckData,
-        val storeCheckData: StoreConnectivityCheckData,
-        val ordersCheckData: StoreOrdersConnectivityCheckData,
-        val isWPComCheckVisible: Boolean
-    ) {
+        val checks: List<ConnectivityCheckCardData>,
         val shouldDisplaySummary: Boolean
-            get() = internetCheckData.connectivityCheckStatus is Success &&
-                (wpComCheckData.connectivityCheckStatus is Success || !isWPComCheckVisible) &&
-                storeCheckData.connectivityCheckStatus is Success &&
-                ordersCheckData.connectivityCheckStatus is Success
-    }
-
-    enum class ConnectivityCheckStep {
-        InternetCheck,
-        WPComCheck,
-        StoreCheck,
-        StoreOrdersCheck,
-        Finished
-    }
+    )
 
     companion object {
         const val jetpackTroubleshootingUrl =
