@@ -63,7 +63,10 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(WooPosSpacing.Medium.value)
+                .padding(
+                    horizontal = WooPosSpacing.Large.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
         ) {
             scrollableCategories.forEach { item ->
                 CategoryItem(
@@ -131,7 +134,7 @@ private fun FixedCategoryItem(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(
-                horizontal = WooPosSpacing.Medium.value,
+                horizontal = WooPosSpacing.Large.value,
                 vertical = WooPosSpacing.Large.value
             ),
         verticalAlignment = Alignment.CenterVertically

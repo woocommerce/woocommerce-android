@@ -337,18 +337,18 @@ private fun BookingAttendanceSection(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosCard(shadowType = ShadowType.Soft) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(WooPosSpacing.Medium.value),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
             ) {
                 WooPosText(
                     text = stringResource(R.string.woopos_bookings_details_attendance_title),
                     style = WooPosTypography.BodyXLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
+
+                Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
@@ -357,12 +357,14 @@ private fun BookingAttendanceSection(
                         text = stringResource(R.string.woopos_bookings_details_attendance_attended),
                         isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.ATTENDED,
                         onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true)) },
+                        modifier = Modifier.weight(1f),
                     )
 
                     WooPosToggleButton(
                         text = stringResource(R.string.woopos_bookings_details_attendance_unattended),
                         isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.UNATTENDED,
                         onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false)) },
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }

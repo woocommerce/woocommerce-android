@@ -250,6 +250,7 @@ private fun TotalsLoaded(
                 text = stringResource(R.string.woopos_payment_take_cash_payment_label),
                 onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
                 modifier = Modifier
+                    .widthIn(max = 450.dp)
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value)
                     .padding(bottom = WooPosSpacing.XLarge.value)
@@ -331,6 +332,8 @@ private fun ReaderDisconnected(
         WooPosText(
             text = status.subtitle,
             style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Large.value),
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(

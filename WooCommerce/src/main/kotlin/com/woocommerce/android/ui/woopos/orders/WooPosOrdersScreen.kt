@@ -149,7 +149,11 @@ private fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
 ) {
-    BackHandler { onBackClicked() }
+    val configuration = LocalConfiguration.current
+    val isPhoneOrders = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    BackHandler(enabled = !isPhoneOrders || state !is WooPosOrdersState.Content || isSingleOrderMode) {
+        onBackClicked()
+    }
 
     Box(
         modifier = Modifier
@@ -165,6 +169,7 @@ private fun WooPosOrdersScreen(
                 OrdersListWithDetails(
                     state = state,
                     scrollToTopEvent = scrollToTopEvent,
+                    onBackClicked = onBackClicked,
                     onRefresh = onRefresh,
                     onOrderSelected = onOrderSelected,
                     onEndOfOrdersListReached = onEndOfOrdersListReached,
@@ -290,6 +295,7 @@ private fun OrderDetailsPane(
 private fun OrdersListWithDetails(
     state: WooPosOrdersState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
+    onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
@@ -302,6 +308,11 @@ private fun OrdersListWithDetails(
     val configuration = LocalConfiguration.current
     val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
+
+    if (isPhone) {
+        val isDetailVisible = userHasSelectedItem && state.selectedDetails != null
+        BackHandler(enabled = !isDetailVisible) { onBackClicked() }
+    }
 
     WooPosListDetailLayout(
         isDetailVisible = if (isPhone) {

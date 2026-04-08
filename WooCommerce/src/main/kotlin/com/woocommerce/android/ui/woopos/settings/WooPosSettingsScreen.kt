@@ -14,6 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -45,11 +48,14 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     val configuration = LocalConfiguration.current
     val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    var hasInitialized by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         containerViewModel.onSettingsOpened()
         if (isPhone) {
             containerViewModel.onPhoneDetected()
         }
+        hasInitialized = true
     }
 
     val backHandler = {
@@ -59,8 +65,14 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     BackHandler { backHandler() }
 
+    val effectiveDetailOpen = if (!hasInitialized && isPhone) {
+        false
+    } else {
+        state.isDetailPaneOpen
+    }
+
     WooPosSettingsContent(
-        state = state,
+        state = state.copy(isDetailPaneOpen = effectiveDetailOpen),
         onBackClicked = backHandler,
         onCategorySelected = containerViewModel::onCategorySelected,
         onBackToCategories = containerViewModel::onBackToCategories,

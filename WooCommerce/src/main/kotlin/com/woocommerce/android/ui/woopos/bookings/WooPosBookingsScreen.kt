@@ -164,7 +164,9 @@ private fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
 ) {
-    BackHandler { onBackClicked() }
+    val configuration = LocalConfiguration.current
+    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    BackHandler(enabled = !isPhone || state !is WooPosBookingsState.Content) { onBackClicked() }
 
     Box(
         modifier = Modifier
@@ -174,6 +176,7 @@ private fun WooPosBookingsScreen(
             is WooPosBookingsState.Content -> WooPosBookingsContent(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
+                onBackClicked = onBackClicked,
                 onBackFromDetail = onBackFromDetail,
                 onRefresh = onRefresh,
                 onBookingSelected = onBookingSelected,
@@ -193,13 +196,15 @@ private fun WooPosBookingsScreen(
             )
         }
 
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_bookings_title),
-            onBackClicked = onBackClicked,
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-        )
+        if (state !is WooPosBookingsState.Content) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_bookings_title),
+                onBackClicked = onBackClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+            )
+        }
 
         if (state is WooPosBookingsState.Content) {
             when (val dialogState = state.dialogState) {
@@ -223,6 +228,7 @@ private fun WooPosBookingsScreen(
 private fun WooPosBookingsContent(
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
+    onBackClicked: () -> Unit,
     onBackFromDetail: () -> Unit,
     onRefresh: () -> Unit,
     onBookingSelected: (Long) -> Unit,
@@ -233,6 +239,11 @@ private fun WooPosBookingsContent(
     val configuration = LocalConfiguration.current
     val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
+
+    if (isPhone) {
+        val isDetailVisible = userHasSelectedItem && state.selectedDetails != null
+        BackHandler(enabled = !isDetailVisible) { onBackClicked() }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         WooPosListDetailLayout(
@@ -246,22 +257,34 @@ private fun WooPosBookingsContent(
                 onBackFromDetail()
             },
             listPane = {
-                WooPosBookingsListPane(
-                    state = state,
-                    scrollToTopEvent = scrollToTopEvent,
-                    onRefresh = onRefresh,
-                    isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-                    onBookingSelected = { bookingId ->
-                        userHasSelectedItem = true
-                        onBookingSelected(bookingId)
-                    },
-                    onEndOfBookingsListReached = onEndOfBookingsListReached,
-                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                    onUIEvent = onUIEvent,
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surfaceBright)
-                )
+                ) {
+                    WooPosBookingsListPane(
+                        state = state,
+                        scrollToTopEvent = scrollToTopEvent,
+                        onRefresh = onRefresh,
+                        isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                        onBookingSelected = { bookingId ->
+                            userHasSelectedItem = true
+                            onBookingSelected(bookingId)
+                        },
+                        onEndOfBookingsListReached = onEndOfBookingsListReached,
+                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                        onUIEvent = onUIEvent,
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    WooPosToolbar(
+                        titleText = stringResource(R.string.woopos_bookings_title),
+                        onBackClicked = onBackClicked,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                    )
+                }
             },
             detailPane = {
                 WooPosBookingDetails(
