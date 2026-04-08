@@ -94,11 +94,12 @@ import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     onPhoneBackClick: (() -> Unit)? = null,
+    hideCheckoutButton: Boolean = false,
 ) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(modifier, it, viewModel::onUIEvent, onPhoneBackClick)
+        WooPosCartScreen(modifier, it, viewModel::onUIEvent, onPhoneBackClick, hideCheckoutButton)
     }
 }
 
@@ -109,6 +110,7 @@ private fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
     onPhoneBackClick: (() -> Unit)? = null,
+    hideCheckoutButton: Boolean = false,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -162,7 +164,8 @@ private fun WooPosCartScreen(
         }
 
         AnimatedVisibility(
-            visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
+            visible = !hideCheckoutButton &&
+                state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
             enter = fadeIn(animationSpec = tween(300)),
             exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier

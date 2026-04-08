@@ -1,12 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -18,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -28,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -48,7 +42,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
@@ -78,8 +71,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarV
 
 @Composable
 fun WooPosPhoneProductsScreen(
-    cartItemCount: Int,
-    onCartClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val itemsViewModel: WooPosItemsViewModel = hiltViewModel()
@@ -178,27 +169,6 @@ fun WooPosPhoneProductsScreen(
                 )
             }
 
-            // Floating cart button
-            AnimatedVisibility(
-                visible = cartItemCount > 0,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = fadeOut(animationSpec = tween(100)),
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceBright,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    PhoneCartButton(
-                        itemCount = cartItemCount,
-                        onClick = onCartClicked,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(WooPosSpacing.Medium.value)
-                            .navigationBarsPadding()
-                    )
-                }
-            }
         }
     }
 }
@@ -506,15 +476,3 @@ private fun PhonePopUpMenuItem(
     }
 }
 
-@Composable
-private fun PhoneCartButton(
-    itemCount: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    WooPosButton(
-        modifier = modifier.height(56.dp),
-        onClick = onClick,
-        text = stringResource(R.string.woopos_cart_title) + " ($itemCount)"
-    )
-}

@@ -1,14 +1,23 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -25,13 +34,20 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import org.wordpress.android.util.ToastUtils
@@ -120,6 +136,12 @@ private fun WooPosHomePhoneContent(
         previousState = state.screenPositionState
     }
 
+    val currentEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentEntry?.destination?.route
+
+    val isCheckoutEnabled =
+        cartState.value?.checkoutButtonState == WooPosCartState.CheckoutButtonState.Enabled
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -134,82 +156,149 @@ private fun WooPosHomePhoneContent(
                     ) && state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
             )
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = PHONE_PRODUCTS_ROUTE,
-        ) {
-            composable(PHONE_PRODUCTS_ROUTE) {
-                CompositionLocalProvider(
-                    LocalViewModelStoreOwner provides parentViewModelStoreOwner
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.weight(1f)) {
+                NavHost(
+                    navController = navController,
+                    startDestination = PHONE_PRODUCTS_ROUTE,
                 ) {
-                    BackHandler {
-                        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-                    }
-                    WooPosPhoneProductsScreen(
-                        cartItemCount = cartItemCount,
-                        onCartClicked = {
-                            navController.navigate(PHONE_CART_ROUTE) {
-                                launchSingleTop = true
+                    composable(PHONE_PRODUCTS_ROUTE) {
+                        CompositionLocalProvider(
+                            LocalViewModelStoreOwner provides parentViewModelStoreOwner
+                        ) {
+                            BackHandler {
+                                onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
                             }
+                            WooPosPhoneProductsScreen()
+                        }
+                    }
+
+                    composable(
+                        PHONE_CART_ROUTE,
+                        enterTransition = {
+                            slideInVertically(initialOffsetY = { it })
                         },
-                    )
+                        exitTransition = {
+                            slideOutHorizontally(targetOffsetX = { -it })
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally(initialOffsetX = { -it })
+                        },
+                        popExitTransition = {
+                            slideOutVertically(targetOffsetY = { it })
+                        },
+                    ) {
+                        CompositionLocalProvider(
+                            LocalViewModelStoreOwner provides parentViewModelStoreOwner
+                        ) {
+                            BackHandler {
+                                navController.popBackStack()
+                            }
+                            WooPosPhoneCartScreen(
+                                onBackClick = { navController.popBackStack() }
+                            )
+                        }
+                    }
+
+                    composable(
+                        PHONE_TOTALS_ROUTE,
+                        enterTransition = {
+                            slideInHorizontally(initialOffsetX = { it })
+                        },
+                        exitTransition = {
+                            slideOutHorizontally(targetOffsetX = { -it })
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally(initialOffsetX = { -it })
+                        },
+                        popExitTransition = {
+                            slideOutHorizontally(targetOffsetX = { it })
+                        },
+                    ) {
+                        CompositionLocalProvider(
+                            LocalViewModelStoreOwner provides parentViewModelStoreOwner
+                        ) {
+                            BackHandler {
+                                onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+                            }
+                            WooPosPhoneTotalsScreen()
+                        }
+                    }
                 }
             }
 
-            composable(
-                PHONE_CART_ROUTE,
-                enterTransition = {
-                    slideInVertically(initialOffsetY = { it })
-                },
-                exitTransition = {
-                    slideOutHorizontally(targetOffsetX = { -it })
-                },
-                popEnterTransition = {
-                    slideInHorizontally(initialOffsetX = { -it })
-                },
-                popExitTransition = {
-                    slideOutVertically(targetOffsetY = { it })
-                },
-            ) {
-                CompositionLocalProvider(
-                    LocalViewModelStoreOwner provides parentViewModelStoreOwner
-                ) {
-                    BackHandler {
-                        navController.popBackStack()
+            PhonePersistentBottomButton(
+                currentRoute = currentRoute,
+                cartItemCount = cartItemCount,
+                isCheckoutEnabled = isCheckoutEnabled,
+                onCartClicked = {
+                    navController.navigate(PHONE_CART_ROUTE) {
+                        launchSingleTop = true
                     }
-                    WooPosPhoneCartScreen(
-                        onBackClick = { navController.popBackStack() }
-                    )
-                }
-            }
-
-            composable(
-                PHONE_TOTALS_ROUTE,
-                enterTransition = {
-                    slideInHorizontally(initialOffsetX = { it })
                 },
-                exitTransition = {
-                    slideOutHorizontally(targetOffsetX = { -it })
+                onCheckoutClicked = {
+                    cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
                 },
-                popEnterTransition = {
-                    slideInHorizontally(initialOffsetX = { -it })
-                },
-                popExitTransition = {
-                    slideOutHorizontally(targetOffsetX = { it })
-                },
-            ) {
-                CompositionLocalProvider(
-                    LocalViewModelStoreOwner provides parentViewModelStoreOwner
-                ) {
-                    BackHandler {
-                        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-                    }
-                    WooPosPhoneTotalsScreen()
-                }
-            }
+            )
         }
 
         PhoneDialogs(state.dialogState, onHomeUIEvent)
+    }
+}
+
+@Composable
+private fun PhonePersistentBottomButton(
+    currentRoute: String?,
+    cartItemCount: Int,
+    isCheckoutEnabled: Boolean,
+    onCartClicked: () -> Unit,
+    onCheckoutClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isVisible = when (currentRoute) {
+        PHONE_PRODUCTS_ROUTE -> cartItemCount > 0
+        PHONE_CART_ROUTE -> true
+        else -> false
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(animationSpec = tween(100)),
+        modifier = modifier,
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceBright,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val buttonText = when (currentRoute) {
+                PHONE_PRODUCTS_ROUTE ->
+                    stringResource(R.string.woopos_cart_title) + " ($cartItemCount)"
+                PHONE_CART_ROUTE ->
+                    stringResource(R.string.woopos_checkout_button)
+                else -> ""
+            }
+            val onClick = when (currentRoute) {
+                PHONE_PRODUCTS_ROUTE -> onCartClicked
+                PHONE_CART_ROUTE -> onCheckoutClicked
+                else -> ({})
+            }
+            val buttonState = if (currentRoute == PHONE_CART_ROUTE && !isCheckoutEnabled) {
+                WooPosButtonState.DISABLED
+            } else {
+                WooPosButtonState.ENABLED
+            }
+
+            WooPosButton(
+                text = buttonText,
+                onClick = onClick,
+                state = buttonState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.Medium.value)
+                    .navigationBarsPadding()
+            )
+        }
     }
 }
 

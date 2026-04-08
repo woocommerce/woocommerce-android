@@ -13,5 +13,6 @@ fun WooPosPhoneCartScreen(
     WooPosCartScreen(
         modifier = modifier.fillMaxSize(),
         onPhoneBackClick = onBackClick,
+        hideCheckoutButton = true,
     )
 }
