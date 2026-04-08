@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToBookingsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -41,6 +43,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
 
@@ -114,6 +117,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
             R.string.woopos_bookings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToBookings)
+                    analyticsTracker.track(GoToBookingsTapped)
                 }
             }
 
@@ -179,16 +183,18 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems by lazy {
         buildList {
+            if (ciabSiteGateKeeper.isCurrentSiteCIAB()) {
+                add(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_bookings_title,
+                        icon = R.drawable.ic_analytics_calendar,
+                    )
+                )
+            }
             add(
                 WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_orders_title,
                     icon = R.drawable.ic_description_filled_24dp,
-                )
-            )
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_bookings_title,
-                    icon = R.drawable.ic_bookings_tab,
                 )
             )
             add(
