@@ -13,8 +13,4 @@ sealed class WooPosCartUIEvent {
         val result: BarcodeInputDetector.BarcodeResult
     ) : WooPosCartUIEvent()
     data object BarcodeSetupClicked : WooPosCartUIEvent()
-    data class ItemIncrementedFromProductCard(
-        val productId: Long,
-        val variationId: Long? = null,
-    ) : WooPosCartUIEvent()
 }

@@ -5,8 +5,6 @@ import androidx.compose.runtime.compositionLocalOf
 data class PhoneCartOverlayData(
     val quantities: Map<Long, Int> = emptyMap(),
     val couponIdsInCart: Set<Long> = emptySet(),
-    val onIncrement: (Long) -> Unit = {},
-    val onDecrement: (Long) -> Unit = {},
     val onRemoveCoupon: (Long) -> Unit = {},
 )
 

@@ -190,28 +190,6 @@ private fun buildPhoneCartOverlay(
     return PhoneCartOverlayData(
         quantities = quantities,
         couponIdsInCart = couponIds,
-        onIncrement = { itemId ->
-            val cartItem = cartItems
-                .filterIsInstance<WooPosCartItemViewState.Product>()
-                .firstOrNull { cartItemMatchesProductId(it, itemId) }
-            if (cartItem != null) {
-                val variationId = (cartItem as? WooPosCartItemViewState.Product.Variation)?.variationId
-                cartViewModel.onUIEvent(
-                    WooPosCartUIEvent.ItemIncrementedFromProductCard(
-                        productId = cartItem.id,
-                        variationId = variationId,
-                    )
-                )
-            }
-        },
-        onDecrement = { itemId ->
-            val lastCartItem = cartItems
-                .filterIsInstance<WooPosCartItemViewState.Product>()
-                .lastOrNull { cartItemMatchesProductId(it, itemId) }
-            if (lastCartItem != null) {
-                cartViewModel.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(lastCartItem))
-            }
-        },
         onRemoveCoupon = { couponId ->
             val couponItem = cartItems
                 .filterIsInstance<WooPosCartItemViewState.Coupon>()
@@ -241,13 +219,6 @@ private fun buildCartQuantities(
     return quantities
 }
 
-private fun cartItemMatchesProductId(
-    cartItem: WooPosCartItemViewState.Product,
-    productId: Long
-): Boolean = when (cartItem) {
-    is WooPosCartItemViewState.Product.Simple -> cartItem.id == productId
-    is WooPosCartItemViewState.Product.Variation -> cartItem.variationId == productId
-}
 
 @Composable
 private fun PhoneItemsToolbar(

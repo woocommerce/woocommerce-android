@@ -142,31 +142,7 @@ class WooPosCartViewModel @Inject constructor(
                 sendEventToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
             }
 
-            is WooPosCartUIEvent.ItemIncrementedFromProductCard -> {
-                handleIncrementFromProductCard(event.productId, event.variationId)
-            }
         }
-    }
-
-    private fun handleIncrementFromProductCard(productId: Long, variationId: Long?) {
-        val itemData = if (variationId != null) {
-            WooPosItemsViewModel.ItemClickedData.Product.Variation(
-                productId = productId,
-                id = variationId
-            )
-        } else {
-            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = productId)
-        }
-        sendEventToParent(
-            ChildToParentEvent.ItemClickedInItemsList(
-                itemData = itemData,
-                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
-                    item = itemData,
-                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
-                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-                ),
-            )
-        )
     }
 
     private fun removeItemsFromCart(

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -283,14 +281,21 @@ fun WooPosProductCard(
                 if (showQuantityControls) {
                     Box(
                         modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.Black.copy(alpha = 0.35f)),
+                            .align(Alignment.BottomEnd)
+                            .padding(6.dp)
+                            .size(24.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = CircleShape,
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        PhoneQuantityControl(
-                            quantity = cartOverlay.quantities.getValue(item.id),
-                            onIncrement = { cartOverlay.onIncrement(item.id) },
-                            onDecrement = { cartOverlay.onDecrement(item.id) },
+                        WooPosText(
+                            text = cartOverlay.quantities.getValue(item.id).toString(),
+                            color = Color.White,
+                            style = WooPosTypography.BodySmall,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -314,64 +319,6 @@ fun WooPosProductCard(
     }
 }
 
-@Composable
-private fun PhoneQuantityControl(
-    quantity: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .background(
-                color = Color.Black.copy(alpha = 0.55f),
-                shape = RoundedCornerShape(50),
-            )
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(50))
-            .padding(horizontal = 6.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .clickable(onClick = onDecrement),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_remove_24dp),
-                contentDescription = stringResource(R.string.woopos_phone_quantity_remove_one),
-                tint = Color.White,
-                modifier = Modifier.size(16.dp),
-            )
-        }
-
-        WooPosText(
-            text = quantity.toString(),
-            style = WooPosTypography.BodySmall,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.widthIn(min = 20.dp),
-            textAlign = TextAlign.Center,
-        )
-
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .clickable(onClick = onIncrement),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_add),
-                contentDescription = stringResource(R.string.woopos_phone_quantity_add_one),
-                tint = Color.White,
-                modifier = Modifier.size(16.dp),
-            )
-        }
-    }
-}
 
 @Composable
 private fun ProductInfo(
