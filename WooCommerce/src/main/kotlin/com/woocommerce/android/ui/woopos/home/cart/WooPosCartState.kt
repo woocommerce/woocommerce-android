@@ -33,6 +33,7 @@ data class WooPosCartState(
         val backIconVisible: Boolean = false,
         val itemsCount: String? = null,
         val isClearAllButtonVisible: Boolean = false,
+        val formattedSubtotal: String? = null,
     ) : Parcelable
 
     enum class CheckoutButtonState {

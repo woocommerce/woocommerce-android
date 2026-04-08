@@ -50,6 +50,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -88,8 +89,14 @@ class WooPosCartViewModel @Inject constructor(
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 
+    private val rawPricesByItemNumber = mutableMapOf<Int, BigDecimal>()
+    private var cachedCurrencyCode: String? = null
+
     init {
         listenEventsFromParent()
+        viewModelScope.launch {
+            cachedCurrencyCode = getCachedStoreCurrency()
+        }
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
         }
@@ -125,6 +132,7 @@ class WooPosCartViewModel @Inject constructor(
 
             WooPosCartUIEvent.ClearAllClicked -> {
                 viewModelScope.launch { analyticsTracker.track(ClearCartTapped) }
+                rawPricesByItemNumber.clear()
                 val currentState = _state.value
                 _state.value = currentState.copy(
                     body = WooPosCartState.Body.Empty
@@ -400,6 +408,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun clearCart() {
+        rawPricesByItemNumber.clear()
         _state.value = WooPosCartState()
     }
 
@@ -547,12 +556,14 @@ class WooPosCartViewModel @Inject constructor(
             zero = R.string.woopos_items_in_cart_multiple,
             one = R.string.woopos_items_in_cart,
         )
+        val formattedSubtotal = computeFormattedSubtotal(newState.body)
         val newToolbar = when (newState.cartStatus) {
             EDITABLE -> {
                 WooPosCartState.Toolbar(
                     backIconVisible = false,
                     itemsCount = itemsCount,
-                    isClearAllButtonVisible = newState.body is WooPosCartState.Body.WithItems
+                    isClearAllButtonVisible = newState.body is WooPosCartState.Body.WithItems,
+                    formattedSubtotal = formattedSubtotal,
                 )
             }
 
@@ -560,7 +571,8 @@ class WooPosCartViewModel @Inject constructor(
                 WooPosCartState.Toolbar(
                     backIconVisible = true,
                     itemsCount = itemsCount,
-                    isClearAllButtonVisible = false
+                    isClearAllButtonVisible = false,
+                    formattedSubtotal = formattedSubtotal,
                 )
             }
 
@@ -568,11 +580,22 @@ class WooPosCartViewModel @Inject constructor(
                 WooPosCartState.Toolbar(
                     backIconVisible = false,
                     itemsCount = null,
-                    isClearAllButtonVisible = false
+                    isClearAllButtonVisible = false,
+                    formattedSubtotal = null,
                 )
             }
         }
         return newState.copy(toolbar = newToolbar)
+    }
+
+    private fun computeFormattedSubtotal(body: WooPosCartState.Body): String? {
+        val items = (body as? WooPosCartState.Body.WithItems)?.itemsInCart ?: return null
+        val currencyCode = cachedCurrencyCode ?: return null
+        val itemNumbers = items.filterIsInstance<Product>().map { it.itemNumber }.toSet()
+        val subtotal = rawPricesByItemNumber.entries
+            .filter { it.key in itemNumbers }
+            .fold(BigDecimal.ZERO) { acc, entry -> acc + entry.value }
+        return formatPrice(subtotal, currencyCode)
     }
 
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =
@@ -627,20 +650,24 @@ class WooPosCartViewModel @Inject constructor(
             }
         }
 
-    private suspend fun WooPosProductModel.toCartListItem(itemNumber: Int): Product.Simple = Product.Simple(
-        itemNumber = itemNumber,
-        id = this.remoteId,
-        name = name,
-        description = null,
-        price = formatPrice(pricing.displayPrice),
-        imageUrl = firstImageUrl,
-    )
+    private suspend fun WooPosProductModel.toCartListItem(itemNumber: Int): Product.Simple {
+        rawPricesByItemNumber[itemNumber] = pricing.displayPrice ?: BigDecimal.ZERO
+        return Product.Simple(
+            itemNumber = itemNumber,
+            id = this.remoteId,
+            name = name,
+            description = null,
+            price = formatPrice(pricing.displayPrice),
+            imageUrl = firstImageUrl,
+        )
+    }
 
     private suspend fun WooPosVariation.toCartListItem(
         itemNumber: Int,
         product: WooPosProductModel
-    ): Product.Variation =
-        Product.Variation(
+    ): Product.Variation {
+        rawPricesByItemNumber[itemNumber] = this.price ?: BigDecimal.ZERO
+        return Product.Variation(
             itemNumber = itemNumber,
             id = product.remoteId,
             variationId = this.remoteVariationId,
@@ -649,6 +676,7 @@ class WooPosCartViewModel @Inject constructor(
             price = formatPrice(price),
             imageUrl = image?.source,
         )
+    }
 
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
@@ -666,6 +694,7 @@ class WooPosCartViewModel @Inject constructor(
         return when (this) {
             is WooPosSearchByIdentifierResult.Success -> {
                 val product = this.product
+                rawPricesByItemNumber[itemNumber] = product.pricing.displayPrice ?: BigDecimal.ZERO
                 Product.Simple(
                     itemNumber = itemNumber,
                     id = product.remoteId,
@@ -677,6 +706,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosSearchByIdentifierResult.VariationSuccess -> {
+                rawPricesByItemNumber[itemNumber] = variation.price ?: BigDecimal.ZERO
                 Product.Variation(
                     itemNumber = itemNumber,
                     id = variation.remoteProductId,

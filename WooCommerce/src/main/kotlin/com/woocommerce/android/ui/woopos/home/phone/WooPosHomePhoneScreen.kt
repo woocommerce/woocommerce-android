@@ -106,6 +106,7 @@ private fun WooPosHomePhoneContent(
     val cartState = cartViewModel.state.observeAsState()
     val cartItemCount = cartState.value?.body?.amountOfItems ?: 0
     val cartItemsLabel = cartState.value?.toolbar?.itemsCount
+    val cartFormattedSubtotal = cartState.value?.toolbar?.formattedSubtotal
 
     var previousState by remember {
         mutableStateOf<WooPosHomeState.ScreenPositionState?>(null)
@@ -234,6 +235,7 @@ private fun WooPosHomePhoneContent(
                 currentRoute = currentRoute,
                 cartItemCount = cartItemCount,
                 cartItemsLabel = cartItemsLabel,
+                cartFormattedSubtotal = cartFormattedSubtotal,
                 isCheckoutEnabled = isCheckoutEnabled,
                 screenPositionState = state.screenPositionState,
                 onCartClicked = {
@@ -261,6 +263,7 @@ private fun PhonePersistentBottomButton(
     currentRoute: String?,
     cartItemCount: Int,
     cartItemsLabel: String?,
+    cartFormattedSubtotal: String?,
     isCheckoutEnabled: Boolean,
     screenPositionState: WooPosHomeState.ScreenPositionState,
     onCartClicked: () -> Unit,
@@ -288,7 +291,7 @@ private fun PhonePersistentBottomButton(
         ) {
             val buttonText = when (currentRoute) {
                 PHONE_PRODUCTS_ROUTE -> {
-                    val label = cartItemsLabel ?: "$cartItemCount"
+                    val label = cartFormattedSubtotal ?: cartItemsLabel ?: "$cartItemCount"
                     stringResource(R.string.woopos_cart_title) + " - $label"
                 }
                 PHONE_CART_ROUTE ->
