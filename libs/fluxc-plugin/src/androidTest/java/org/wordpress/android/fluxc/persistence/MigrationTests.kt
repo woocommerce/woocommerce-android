@@ -561,6 +561,17 @@ class MigrationTests {
         }
     }
 
+    @Test
+    fun testMigration80to81_addsOrderFulfillmentEntity() {
+        helper.createDatabase(TEST_DB, 80).close()
+
+        helper.runMigrationsAndValidate(TEST_DB, 81, true).query(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'OrderFulfillmentEntity'"
+        ).use { cursor ->
+            assertThat(cursor.count).isEqualTo(1)
+        }
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
     }
