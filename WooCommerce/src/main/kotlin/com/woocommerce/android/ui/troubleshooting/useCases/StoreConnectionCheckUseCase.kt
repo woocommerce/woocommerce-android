@@ -24,7 +24,7 @@ class StoreConnectionCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val site = selectedSite.get()
-        val (result, duration) = measureTimedValue { ssrFetcher.load(site) }
+        val (result, duration) = measureTimedValue { ssrFetcher.load(site, forceRefresh = true) }
 
         if (result.isError) {
             val isAppPassword = site.connectionType == SiteConnectionType.ApplicationPasswords

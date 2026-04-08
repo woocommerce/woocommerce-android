@@ -52,7 +52,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -77,7 +77,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -103,7 +103,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 apiErrorCode = "unknown_token"
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -129,7 +129,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 apiErrorCode = "invalid_blog"
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -154,7 +154,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -179,7 +179,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -199,7 +199,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         // GIVEN
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult(WCSSRModel(remoteSiteId = 123L))
-        whenever(ssrFetcher.load(siteModel)).thenReturn(response)
+        whenever(ssrFetcher.load(siteModel, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
@@ -225,7 +225,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 apiErrorCode = "unknown_token"
             )
         )
-        whenever(ssrFetcher.load(appPasswordSite)).thenReturn(response)
+        whenever(ssrFetcher.load(appPasswordSite, true)).thenReturn(response)
 
         // WHEN
         sut.invoke().onEach {
