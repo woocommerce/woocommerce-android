@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardpayment
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
@@ -21,10 +23,12 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentCont
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +51,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
     private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -63,6 +68,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private lateinit var orderTotals: WooPosOrderTotalsViewState
+
+    private val cardReaderType: CardReaderType
+        get() = if (context.isWooPosPhoneLayout()) CardReaderType.BUILT_IN else CardReaderType.EXTERNAL
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
@@ -148,6 +156,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+            cardReaderType = cardReaderType,
             allowCancelledStatus = source == CardPaymentSource.BOOKINGS,
         )
         cardReaderPaymentController?.start()
@@ -191,14 +200,13 @@ class WooPosCardPaymentViewModel @Inject constructor(
                         handlePaymentSuccessful()
                     }
 
-                    is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                    is CardReaderPaymentState.PaymentFailed -> {
                         _state.value = buildPaymentFailedState(paymentState)
                     }
 
                     CardReaderPaymentState.ReFetchingOrder -> Unit
 
                     is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
-                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
                     is CardReaderPaymentState.PrintingReceipt,
                     CardReaderPaymentState.SharingReceipt -> {
                         throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
@@ -263,7 +271,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun buildPaymentFailedState(
-        state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
+        state: CardReaderPaymentState.PaymentFailed
     ): WooPosCardPaymentState.PaymentFailed {
         val isRetryAvailable = state.onRetry != null
         val actionButtonLabel = if (isRetryAvailable) {
@@ -311,7 +319,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         check(paymentState != null) {
             "Retry clicked but payment controller is null"
         }
-        check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+        check(paymentState is CardReaderPaymentState.PaymentFailed) {
             "Retry clicked but payment state is not PaymentFailed"
         }
         val onRetry = paymentState.onRetry

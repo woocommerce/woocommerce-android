@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
@@ -37,11 +39,13 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,6 +71,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
+    @ApplicationContext private val context: Context,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -99,11 +104,15 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
 
+    private val cardReaderType: CardReaderType
+        get() = if (context.isWooPosPhoneLayout()) CardReaderType.BUILT_IN else CardReaderType.EXTERNAL
+
     private fun createCardReaderPaymentController(orderId: Long) {
         cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+            cardReaderType = cardReaderType,
         )
     }
 
@@ -222,7 +231,7 @@ class WooPosTotalsViewModel @Inject constructor(
             check(paymentState != null) {
                 "Retry failed transaction clicked but payment controller is null"
             }
-            check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+            check(paymentState is CardReaderPaymentState.PaymentFailed) {
                 "Retry failed transaction clicked but payment state is not PaymentFailed"
             }
             when {
@@ -403,7 +412,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 
-                    is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                    is CardReaderPaymentState.PaymentFailed -> {
                         uiState.value = buildPaymentFailedState(paymentState)
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                     }
@@ -411,7 +420,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     CardReaderPaymentState.ReFetchingOrder -> Unit
 
                     is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
-                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
                     is CardReaderPaymentState.PrintingReceipt,
                     CardReaderPaymentState.SharingReceipt -> {
                         throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
@@ -473,7 +481,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun buildPaymentFailedState(
-        state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
+        state: CardReaderPaymentState.PaymentFailed
     ): PaymentFailed {
         val isRetryAvailable = state.onRetry != null
         val retryButtonLabel = if (isRetryAvailable) {
