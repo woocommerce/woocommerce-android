@@ -344,12 +344,23 @@ private fun OrdersListWithDetails(
             )
         },
         detailPane = {
-            OrderDetailsPane(
-                state = state,
-                onUIEvent = onUIEvent,
-                showOrderNumber = true,
-                modifier = Modifier.fillMaxSize()
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (isPhone) {
+                    WooPosToolbar(
+                        titleText = stringResource(R.string.woopos_orders_title),
+                        onBackClicked = {
+                            userHasSelectedItem = false
+                            onBackFromDetail()
+                        },
+                    )
+                }
+                OrderDetailsPane(
+                    state = state,
+                    onUIEvent = onUIEvent,
+                    showOrderNumber = true,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         },
         emptyDetailPane = {
             WooPosEmptyScreen(
@@ -546,7 +557,10 @@ private fun LoadedOrdersList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        contentPadding = PaddingValues(WooPosSpacing.Medium.value),
+        contentPadding = PaddingValues(
+            horizontal = WooPosSpacing.Large.value,
+            vertical = WooPosSpacing.Medium.value,
+        ),
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->

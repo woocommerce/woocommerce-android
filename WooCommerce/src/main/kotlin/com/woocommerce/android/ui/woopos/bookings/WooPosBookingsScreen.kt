@@ -287,11 +287,24 @@ private fun WooPosBookingsContent(
                 }
             },
             detailPane = {
-                WooPosBookingDetails(
-                    modifier = Modifier.fillMaxSize(),
-                    details = state.selectedDetails!!,
-                    onUIEvent = onUIEvent
-                )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    if (isPhone) {
+                        WooPosToolbar(
+                            titleText = stringResource(R.string.woopos_bookings_title),
+                            onBackClicked = {
+                                userHasSelectedItem = false
+                                onBackFromDetail()
+                            },
+                        )
+                    }
+                    state.selectedDetails?.let { details ->
+                        WooPosBookingDetails(
+                            modifier = Modifier.fillMaxSize(),
+                            details = details,
+                            onUIEvent = onUIEvent
+                        )
+                    }
+                }
             },
             emptyDetailPane = {
                 when {
@@ -504,7 +517,10 @@ private fun WooPosLoadedBookingsList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        contentPadding = PaddingValues(WooPosSpacing.Medium.value),
+        contentPadding = PaddingValues(
+            horizontal = WooPosSpacing.Large.value,
+            vertical = WooPosSpacing.Medium.value,
+        ),
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->

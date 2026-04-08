@@ -222,7 +222,7 @@ private fun CardPaymentPreparingReader(
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(80.dp.toAdaptiveComponentSize())
                         .widthIn(max = 604.dp)
                         .fillMaxWidth()
                         .padding(horizontal = WooPosSpacing.XLarge.value),
@@ -276,7 +276,7 @@ private fun CardPaymentReadyForPayment(
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(80.dp.toAdaptiveComponentSize())
                         .widthIn(max = 604.dp)
                         .fillMaxWidth()
                         .padding(horizontal = WooPosSpacing.XLarge.value),
@@ -300,7 +300,10 @@ private fun CardPaymentReaderDisconnected(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         onBackClicked = onBackClicked,
         content = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+            ) {
                 Image(
                     modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
                     imageVector = WooPosIcons.CardReaderNotConnected,
@@ -313,11 +316,13 @@ private fun CardPaymentReaderDisconnected(
                     text = state.title,
                     style = WooPosTypography.Heading,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosText(
                     text = state.subtitle,
                     style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Center,
                 )
             }
         },
@@ -329,7 +334,7 @@ private fun CardPaymentReaderDisconnected(
                 text = state.actionButtonLabel,
                 onClick = onConnectReaderClicked,
                 modifier = Modifier
-                    .height(80.dp)
+                    .height(80.dp.toAdaptiveComponentSize())
                     .widthIn(max = 604.dp)
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value)
@@ -338,7 +343,7 @@ private fun CardPaymentReaderDisconnected(
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(80.dp.toAdaptiveComponentSize())
                         .widthIn(max = 604.dp)
                         .fillMaxWidth()
                         .padding(horizontal = WooPosSpacing.XLarge.value),
@@ -435,7 +440,7 @@ private fun CardPaymentFailed(
                 WooPosButton(
                     text = state.actionButtonLabel,
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(80.dp.toAdaptiveComponentSize())
                         .widthIn(max = 604.dp)
                         .fillMaxWidth()
                         .padding(horizontal = WooPosSpacing.XLarge.value),
@@ -484,7 +489,7 @@ private fun CardPaymentCenteredLayout(
                     .defaultMinSize(minHeight = maxHeight)
                     .padding(vertical = WooPosSpacing.XXXLarge.value),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly,
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 content()
                 if (summary != null) {
