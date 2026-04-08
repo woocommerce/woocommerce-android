@@ -6,8 +6,8 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -33,7 +33,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
     }
@@ -46,7 +46,8 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         siteModel = SiteModel().also { it.id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(isScreenSizeAllowed()).thenReturn(true)
-        whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(true)
+        whenever(featureFlagRepository.awaitRemoteFlagsLoaded()).thenReturn(Unit)
         whenever(appPrefs.isPOSTabVisibleForSite(any())).thenReturn(false)
         val siteSettings = buildSiteSettings()
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
@@ -56,7 +57,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
             selectedSite = selectedSite,
             isScreenSizeAllowed = isScreenSizeAllowed,
             wooCommerceStore = wooCommerceStore,
-            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+            featureFlagRepository = featureFlagRepository,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
             wooPosLog = mock()
         )
@@ -71,7 +72,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
 
     @Test
     fun `given feature flag disabled, when invoked with forceRefresh, then return success false`() = testBlocking {
-        whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(false)
         val r = sut(forceRefresh = true)
         assertTrue(r.isSuccess)
         assertFalse(r.getOrThrow())

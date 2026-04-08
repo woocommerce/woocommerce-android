@@ -15,15 +15,16 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 sealed interface WooPosEligibilityRetryState {
-    data class Loading(val suggestionText: String?) : WooPosEligibilityRetryState
-    object Eligible : WooPosEligibilityRetryState
+    data class Loading(val title: String, val suggestionText: String) : WooPosEligibilityRetryState
 
     sealed interface Ineligible : WooPosEligibilityRetryState {
         val title: String
@@ -54,8 +55,11 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val getCountryCode: WooPosGetStoreCountryCode,
 ) : ViewModel() {
 
-    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState>(WooPosEligibilityRetryState.Loading(null))
-    val retryState: StateFlow<WooPosEligibilityRetryState> = _retryState
+    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
+    val retryState: StateFlow<WooPosEligibilityRetryState?> = _retryState
+
+    private val _navigateToPos = Channel<Unit>(Channel.BUFFERED)
+    val navigateToPos = _navigateToPos.receiveAsFlow()
 
     private var currentReason: WooPosLaunchability.NonLaunchabilityReason? = null
     private var hasOpenedLearnMore = false
@@ -89,24 +93,26 @@ class WooPosEligibilityViewModel @Inject constructor(
 
     private fun recheckEligibility() {
         viewModelScope.launch {
-            val currentSuggestionText =
-                (_retryState.value as? WooPosEligibilityRetryState.Ineligible)?.suggestionText
-            _retryState.value = WooPosEligibilityRetryState.Loading(currentSuggestionText)
+            val currentState = _retryState.value as WooPosEligibilityRetryState.Ineligible
+            _retryState.value = WooPosEligibilityRetryState.Loading(
+                title = currentState.title,
+                suggestionText = currentState.suggestionText,
+            )
 
             selectedSite.getOrNull()?.let { site ->
                 wooCommerceStore.fetchWooCommerceSite(site).model?.let { selectedSite.set(it) }
             }
             val result = canBeLaunchedInTab(forceRefresh = true)
 
-            _retryState.value = when (result) {
+            when (result) {
                 is WooPosLaunchability.Launchable -> {
                     currentReason = null
-                    WooPosEligibilityRetryState.Eligible
+                    _navigateToPos.trySend(Unit)
                 }
                 is WooPosLaunchability.NotLaunchable -> {
                     currentReason = result.reason
                     tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(result.reason))
-                    buildIneligibleState(result.reason)
+                    _retryState.value = buildIneligibleState(result.reason)
                 }
             }
         }

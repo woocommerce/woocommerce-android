@@ -40,7 +40,8 @@ fun WooPosItemsEmptySearchQueryStateScreen(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(top = WooPosSpacing.Large.value)
+            .padding(top = WooPosSpacing.Small.value)
+            .padding(top = WooPosSpacing.XSmall.value)
             .verticalScroll(scrollState)
     ) {
         if (state.recentSearches.isNotEmpty()) {

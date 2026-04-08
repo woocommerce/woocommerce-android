@@ -47,9 +47,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         variationsSynced = 0,
         syncDurationMs = 1000
     )
-    private val catalogTooLargeResponse = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-        error = "Catalog too large: 29 pages exceed maximum of 10 pages",
-    )
     private val incrementalSuccessResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 5,
         variationsSynced = 2,
@@ -170,21 +167,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when sync fails with catalog too large, then returns failure without failure`() = testBlocking {
-        // GIVEN
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(catalogTooLargeResponse)
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-    }
-
-    @Test
     fun `when sync fails with unexpected error, then returns failure with retry`() = testBlocking {
         // GIVEN
         whenever(syncRepository.syncLocalCatalogFull(site))
@@ -243,23 +225,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `given full sync fails with catalog too large, when worker executes, then incremental sync is not called`() = testBlocking {
-        // GIVEN
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(catalogTooLargeResponse)
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
     }

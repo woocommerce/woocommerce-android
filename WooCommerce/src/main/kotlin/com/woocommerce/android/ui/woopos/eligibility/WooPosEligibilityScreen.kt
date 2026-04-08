@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -60,7 +64,18 @@ fun WooPosEligibilityScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val retryState = viewModel.retryState.collectAsState().value
+    var isNavigatingAway by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigateToPos.collect {
+            isNavigatingAway = true
+            onNavigationEvent(WooPosNavigationEvent.OpenSplashScreen)
+        }
+    }
+
+    if (isNavigatingAway) return
+
+    val retryState = viewModel.retryState.collectAsState().value ?: return
     WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
         retryState = retryState,
@@ -76,26 +91,18 @@ fun WooPosEligibilityScreen(
     onRetry: () -> Unit,
     onLearnMoreTapped: () -> Unit,
 ) {
-    LaunchedEffect(retryState) {
-        if (retryState is WooPosEligibilityRetryState.Eligible) {
-            onNavigationEvent(WooPosNavigationEvent.OpenSplashScreen)
-        }
-    }
-
     BackHandler {
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
 
     val title = when (retryState) {
         is WooPosEligibilityRetryState.Ineligible -> retryState.title
-        is WooPosEligibilityRetryState.Loading,
-        is WooPosEligibilityRetryState.Eligible -> null
+        is WooPosEligibilityRetryState.Loading -> retryState.title
     }
 
     val suggestionText = when (retryState) {
         is WooPosEligibilityRetryState.Ineligible -> retryState.suggestionText
         is WooPosEligibilityRetryState.Loading -> retryState.suggestionText
-        is WooPosEligibilityRetryState.Eligible -> null
     }
 
     Column(
@@ -112,26 +119,22 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        title?.let {
-            WooPosText(
-                text = it,
-                style = WooPosTypography.Heading,
-                textAlign = TextAlign.Center
-            )
+        WooPosText(
+            text = title,
+            style = WooPosTypography.Heading,
+            textAlign = TextAlign.Center
+        )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        }
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        suggestionText?.let { text ->
-            WooPosText(
-                text = text,
-                style = WooPosTypography.BodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION)
-            )
+        WooPosText(
+            text = suggestionText,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION)
+        )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        }
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         val buttonModifier = Modifier
             .fillMaxWidth(BUTTON_WIDTH_FRACTION)
@@ -170,8 +173,6 @@ fun WooPosEligibilityScreen(
                     modifier = buttonModifier,
                 )
             }
-
-            is WooPosEligibilityRetryState.Eligible -> { /* navigating away */ }
         }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

@@ -3,11 +3,9 @@ package org.wordpress.android.fluxc.persistence
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
-import com.wellsql.generated.AccountModelTable
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
-import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.AppLog
@@ -17,8 +15,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SiteSqlUtils
-@Inject constructor() {
+class SiteSqlUtils @Inject constructor(
+    private val accountStorePersistence: AccountStorePersistence,
+) {
     object DuplicateSiteException : Exception() {
         private const val serialVersionUID = -224883903136726226L
     }
@@ -101,15 +100,11 @@ class SiteSqlUtils
         }
 
         // If we're inserting or updating a WP.com REST API site, validate that we actually have a WordPress.com
-        // AccountModel present
+        // account present
         // This prevents a late UPDATE_SITES action from re-populating the database after sign out from WordPress.com
         if (site.isUsingWpComRestApi) {
-            val accountModel = WellSql.select(AccountModel::class.java)
-                    .where()
-                    .not().equals(AccountModelTable.USER_ID, 0)
-                    .endWhere()
-                    .asModel
-            if (accountModel.isEmpty()) {
+            val account = accountStorePersistence.getDefaultAccount()
+            if (account == null || account.userId == 0L) {
                 AppLog.w(DB, "Can't insert WP.com site " + site.url + ", missing user account")
                 return 0
             }

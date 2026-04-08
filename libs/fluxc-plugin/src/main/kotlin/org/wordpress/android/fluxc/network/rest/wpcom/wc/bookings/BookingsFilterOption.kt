@@ -34,7 +34,7 @@ sealed interface BookingsFilterOption {
 
     object PaymentStatus : BookingsFilterOption
 
-    data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
+    data class Customer(val userId: Long, val customerName: String) : BookingsFilterOption
 
     data class DateRange(
         val before: Instant?,

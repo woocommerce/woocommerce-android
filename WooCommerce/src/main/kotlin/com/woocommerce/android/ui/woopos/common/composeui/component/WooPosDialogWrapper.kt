@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -33,6 +35,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
+private const val ENTER_EXIT_DURATION_MS = 300
+
 @Composable
 fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
@@ -46,9 +50,7 @@ fun WooPosDialogWrapper(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         WooPosBackgroundOverlay(
             modifier = Modifier
@@ -60,20 +62,27 @@ fun WooPosDialogWrapper(
         )
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
+            enter = fadeIn(animationSpec = tween(ENTER_EXIT_DURATION_MS)) + slideInVertically(
                 initialOffsetY = { it / 8 },
-                animationSpec = tween(300)
+                animationSpec = tween(ENTER_EXIT_DURATION_MS)
             ),
-            exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
+            exit = fadeOut(animationSpec = tween(ENTER_EXIT_DURATION_MS)) + slideOutVertically(
                 targetOffsetY = { it / 8 },
-                animationSpec = tween(300)
+                animationSpec = tween(ENTER_EXIT_DURATION_MS)
             ),
         ) {
+            val isFullyVisible =
+                transition.currentState == EnterExitState.Visible &&
+                    transition.targetState == EnterExitState.Visible
+
             WooPosCard(
                 shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
                 backgroundColor = MaterialTheme.colorScheme.surfaceBright,
-                elevation = WooPosElevation.Medium,
-                modifier = modifier.fillMaxWidth(0.75f),
+                elevation = if (isFullyVisible) WooPosElevation.Medium else WooPosElevation.None,
+                modifier = modifier
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .fillMaxWidth(0.75f),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)
