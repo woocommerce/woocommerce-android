@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -283,7 +282,7 @@ fun WooPosProductCard(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(6.dp)
-                            .size(24.dp)
+                            .size(28.dp)
                             .background(
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = CircleShape,
@@ -293,7 +292,7 @@ fun WooPosProductCard(
                         WooPosText(
                             text = cartOverlay.quantities.getValue(item.id).toString(),
                             color = Color.White,
-                            style = WooPosTypography.BodySmall,
+                            style = WooPosTypography.Caption,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                         )
@@ -396,7 +395,13 @@ fun WooPosCouponCard(
                 .clickable(
                     enabled = item.expiredState is Coupon.ExpiredState.NotExpired,
                     onClickLabel = stringResource(R.string.woopos_add_coupon_to_cart_accessibility_label)
-                ) { onItemClicked(item) }
+                ) {
+                    if (isInCart) {
+                        cartOverlay.onRemoveCoupon(item.id)
+                    } else {
+                        onItemClicked(item)
+                    }
+                }
                 .clearAndSetSemantics { contentDescription = itemContentDescription }
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
@@ -408,23 +413,23 @@ fun WooPosCouponCard(
                 if (isInCart) {
                     Box(
                         modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.Black.copy(alpha = 0.5f)),
+                            .align(Alignment.BottomEnd)
+                            .padding(6.dp)
+                            .size(28.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = CircleShape,
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        IconButton(
-                            onClick = { cartOverlay.onRemoveCoupon(item.id) },
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
-                                contentDescription = stringResource(
-                                    R.string.woopos_totals_coupons_validation_failed_remove_coupons
-                                ),
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
+                            contentDescription = stringResource(
+                                R.string.woopos_totals_coupons_validation_failed_remove_coupons
+                            ),
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp),
+                        )
                     }
                 }
             }
