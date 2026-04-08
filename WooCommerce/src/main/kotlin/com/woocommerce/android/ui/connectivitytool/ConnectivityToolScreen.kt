@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
+import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreProductsConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
@@ -52,6 +53,7 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Succe
 fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
+    val technicalDetails by viewModel.technicalDetailsToShow.observeAsState()
 
     ConnectivityToolScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
@@ -60,10 +62,19 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
         wpComConnectionCheckData = viewState?.wpComCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
         storeOrdersCheckData = viewState?.ordersCheckData,
+        storeProductsCheckData = viewState?.productsCheckData,
         isWPComCheckVisible = viewState?.isWPComCheckVisible ?: true,
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        onReturnClick = viewModel::onReturnClicked
+        onReturnClick = viewModel::onReturnClicked,
+        onViewTechnicalDetailsClicked = viewModel::onViewTechnicalDetailsClicked
     )
+
+    technicalDetails?.let { details ->
+        TechnicalDetailsBottomSheet(
+            technicalDetails = details,
+            onDismiss = viewModel::onTechnicalDetailsDismissed
+        )
+    }
 }
 
 @Composable
@@ -74,9 +85,11 @@ fun ConnectivityToolScreen(
     wpComConnectionCheckData: WPComConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
     storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
+    storeProductsCheckData: StoreProductsConnectivityCheckData?,
     isWPComCheckVisible: Boolean,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
+    onViewTechnicalDetailsClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -99,12 +112,13 @@ fun ConnectivityToolScreen(
             Text(stringResource(id = R.string.orderlist_connectivity_tool_subtitle))
         }
 
-        ConnectivityCheckCard(internetConnectionCheckData)
+        ConnectivityCheckCard(internetConnectionCheckData, onViewTechnicalDetailsClicked)
         if (isWPComCheckVisible) {
-            ConnectivityCheckCard(wpComConnectionCheckData)
+            ConnectivityCheckCard(wpComConnectionCheckData, onViewTechnicalDetailsClicked)
         }
-        ConnectivityCheckCard(storeConnectionCheckData)
-        ConnectivityCheckCard(storeOrdersCheckData)
+        ConnectivityCheckCard(storeConnectionCheckData, onViewTechnicalDetailsClicked)
+        ConnectivityCheckCard(storeOrdersCheckData, onViewTechnicalDetailsClicked)
+        ConnectivityCheckCard(storeProductsCheckData, onViewTechnicalDetailsClicked)
 
         ConnectivitySummary(
             shouldDisplaySummarySection = shouldDisplaySummarySection,
@@ -127,19 +141,28 @@ fun ConnectivityToolScreen(
 
 @Composable
 fun ConnectivityCheckCard(
-    cardData: ConnectivityCheckCardData?
+    cardData: ConnectivityCheckCardData?,
+    onViewTechnicalDetailsClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     cardData
         ?.takeUnless { it.connectivityCheckStatus is NotStarted }
         ?.let {
+            val technicalDetails = (it.connectivityCheckStatus as? Failure)?.technicalDetails
             ConnectivityCheckCard(
+                modifier = modifier,
                 checkTitle = it.title,
                 iconDrawable = it.icon,
                 suggestion = it.suggestion,
                 checkStatus = it.connectivityCheckStatus,
                 onReadMoreClicked = it.readMoreAction ?: {},
                 onRetryConnectionClicked = it.retryConnectionAction ?: {},
-                shouldDisplayReadMoreButton = it.readMoreAction != null
+                shouldDisplayReadMoreButton = it.readMoreAction != null,
+                onViewTechnicalDetailsClicked = technicalDetails?.let { details ->
+                    {
+                        onViewTechnicalDetailsClicked(details)
+                    }
+                }
             )
             Divider(
                 modifier = Modifier
@@ -157,7 +180,8 @@ fun ConnectivityCheckCard(
     checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
     onRetryConnectionClicked: () -> Unit,
-    shouldDisplayReadMoreButton: Boolean = false
+    shouldDisplayReadMoreButton: Boolean = false,
+    onViewTechnicalDetailsClicked: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_100)))
@@ -241,6 +265,20 @@ fun ConnectivityCheckCard(
                         )
                     )
                 }
+
+                onViewTechnicalDetailsClicked?.let { onClick ->
+                    WCTextButton(
+                        allCaps = false,
+                        onClick = onClick,
+                        icon = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                        modifier = modifier.align(Alignment.Start),
+                        text = stringResource(id = R.string.connectivity_tool_view_technical_details),
+                        contentPadding = PaddingValues(
+                            vertical = dimensionResource(id = R.dimen.minor_100),
+                            horizontal = dimensionResource(id = R.dimen.minor_00)
+                        )
+                    )
+                }
             }
         }
     }
@@ -315,18 +353,27 @@ fun ConnectivityToolScreenPreview() {
                 connectivityCheckStatus = NotStarted
             ),
             wpComConnectionCheckData = WPComConnectivityCheckData(
-                connectivityCheckStatus = Success
+                connectivityCheckStatus = Success()
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure(),
+                connectivityCheckStatus = Failure(
+                    error = FailureType.PARSE,
+                    technicalDetails = "Operation: Site Connection\n" +
+                        "Error Type: INVALID_RESPONSE\n" +
+                        "Description: Parse error"
+                ),
                 readMoreAction = {}
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
             ),
+            storeProductsCheckData = StoreProductsConnectivityCheckData(
+                connectivityCheckStatus = NotStarted
+            ),
             isWPComCheckVisible = true,
             onContactSupportClicked = {},
-            onReturnClick = {}
+            onReturnClick = {},
+            onViewTechnicalDetailsClicked = {}
         )
     }
 }
