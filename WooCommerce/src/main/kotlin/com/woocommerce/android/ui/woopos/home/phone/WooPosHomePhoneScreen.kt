@@ -98,7 +98,7 @@ private fun WooPosHomePhoneContent(
     // immediately. On tablet, all screens are composed simultaneously. On phone, only one
     // screen is composed at a time, but the ViewModels must exist to receive events.
     val cartViewModel: WooPosCartViewModel = hiltViewModel()
-    hiltViewModel<com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel>()
+    val totalsViewModel: com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel = hiltViewModel()
     hiltViewModel<com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel>()
     hiltViewModel<com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarViewModel>()
 
@@ -176,16 +176,16 @@ private fun WooPosHomePhoneContent(
                     composable(
                         PHONE_CART_ROUTE,
                         enterTransition = {
-                            slideInVertically(initialOffsetY = { it })
+                            slideInVertically(animationSpec = tween(300), initialOffsetY = { it })
                         },
                         exitTransition = {
-                            slideOutHorizontally(targetOffsetX = { -it })
+                            slideOutHorizontally(animationSpec = tween(300), targetOffsetX = { -it })
                         },
                         popEnterTransition = {
-                            slideInHorizontally(initialOffsetX = { -it })
+                            slideInHorizontally(animationSpec = tween(300), initialOffsetX = { -it })
                         },
                         popExitTransition = {
-                            slideOutVertically(targetOffsetY = { it })
+                            slideOutVertically(animationSpec = tween(300), targetOffsetY = { it })
                         },
                     ) {
                         CompositionLocalProvider(
@@ -203,16 +203,16 @@ private fun WooPosHomePhoneContent(
                     composable(
                         PHONE_TOTALS_ROUTE,
                         enterTransition = {
-                            slideInHorizontally(initialOffsetX = { it })
+                            slideInHorizontally(animationSpec = tween(300), initialOffsetX = { it })
                         },
                         exitTransition = {
-                            slideOutHorizontally(targetOffsetX = { -it })
+                            slideOutHorizontally(animationSpec = tween(300), targetOffsetX = { -it })
                         },
                         popEnterTransition = {
-                            slideInHorizontally(initialOffsetX = { -it })
+                            slideInHorizontally(animationSpec = tween(300), initialOffsetX = { -it })
                         },
                         popExitTransition = {
-                            slideOutHorizontally(targetOffsetX = { it })
+                            slideOutHorizontally(animationSpec = tween(300), targetOffsetX = { it })
                         },
                     ) {
                         CompositionLocalProvider(
@@ -231,6 +231,7 @@ private fun WooPosHomePhoneContent(
                 currentRoute = currentRoute,
                 cartItemCount = cartItemCount,
                 isCheckoutEnabled = isCheckoutEnabled,
+                screenPositionState = state.screenPositionState,
                 onCartClicked = {
                     navController.navigate(PHONE_CART_ROUTE) {
                         launchSingleTop = true
@@ -238,6 +239,11 @@ private fun WooPosHomePhoneContent(
                 },
                 onCheckoutClicked = {
                     cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+                },
+                onCashPaymentClicked = {
+                    totalsViewModel.onUIEvent(
+                        com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnCashPaymentClicked
+                    )
                 },
             )
         }
@@ -251,13 +257,17 @@ private fun PhonePersistentBottomButton(
     currentRoute: String?,
     cartItemCount: Int,
     isCheckoutEnabled: Boolean,
+    screenPositionState: WooPosHomeState.ScreenPositionState,
     onCartClicked: () -> Unit,
     onCheckoutClicked: () -> Unit,
+    onCashPaymentClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isVisible = when (currentRoute) {
         PHONE_PRODUCTS_ROUTE -> cartItemCount > 0
         PHONE_CART_ROUTE -> true
+        PHONE_TOTALS_ROUTE ->
+            screenPositionState !is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
         else -> false
     }
 
@@ -276,11 +286,14 @@ private fun PhonePersistentBottomButton(
                     stringResource(R.string.woopos_cart_title) + " ($cartItemCount)"
                 PHONE_CART_ROUTE ->
                     stringResource(R.string.woopos_checkout_button)
+                PHONE_TOTALS_ROUTE ->
+                    stringResource(R.string.woopos_payment_take_cash_payment_label)
                 else -> ""
             }
             val onClick = when (currentRoute) {
                 PHONE_PRODUCTS_ROUTE -> onCartClicked
                 PHONE_CART_ROUTE -> onCheckoutClicked
+                PHONE_TOTALS_ROUTE -> onCashPaymentClicked
                 else -> ({})
             }
             val buttonState = if (currentRoute == PHONE_CART_ROUTE && !isCheckoutEnabled) {

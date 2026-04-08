@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,6 +43,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -279,7 +283,7 @@ fun WooPosProductCard(
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .background(Color.Black.copy(alpha = 0.5f)),
+                            .background(Color.Black.copy(alpha = 0.4f)),
                         contentAlignment = Alignment.Center,
                     ) {
                         PhoneQuantityControl(
@@ -319,41 +323,49 @@ private fun PhoneQuantityControl(
     Row(
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(50),
             )
-            .padding(horizontal = WooPosSpacing.XSmall.value),
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XXSmall.value),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        IconButton(
-            onClick = onDecrement,
-            modifier = Modifier.size(32.dp)
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onDecrement),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_remove_24dp),
                 contentDescription = stringResource(R.string.woopos_phone_quantity_remove_one),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(18.dp),
+                tint = Color.White,
+                modifier = Modifier.size(16.dp),
             )
         }
 
         WooPosText(
             text = quantity.toString(),
-            style = WooPosTypography.BodyMedium,
+            style = WooPosTypography.BodySmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = Color.White,
+            modifier = Modifier.widthIn(min = 20.dp),
+            textAlign = TextAlign.Center,
         )
 
-        IconButton(
-            onClick = onIncrement,
-            modifier = Modifier.size(32.dp)
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onIncrement),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                 contentDescription = stringResource(R.string.woopos_phone_quantity_add_one),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(18.dp),
+                tint = Color.White,
+                modifier = Modifier.size(16.dp),
             )
         }
     }
