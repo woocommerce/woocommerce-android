@@ -21,12 +21,13 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData.CouponInfo
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
@@ -612,8 +613,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
-                    updatedProducts = mapItemLines(order),
-                    updatedCoupons = mapCouponLines(order)
+                    WooPosOrderCreatedData(
+                        updatedProducts = mapItemLines(order),
+                        updatedCoupons = mapCouponLines(order)
+                    )
                 )
             )
         }
@@ -627,7 +630,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         when {
             it.variationId == 0L -> {
-                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                WooPosOrderCreatedData.ProductInfo.Simple(
                     id = it.productId,
                     name = it.name,
                     finalPrice = it.price,
@@ -637,7 +640,7 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             else -> {
-                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                WooPosOrderCreatedData.ProductInfo.Variation(
                     id = it.productId,
                     name = it.name,
                     finalPrice = it.price,

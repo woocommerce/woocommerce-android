@@ -974,7 +974,7 @@ class OrderListFragment :
 
     private fun openConnectivityTool() {
         findNavController().navigateSafely(
-            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+            OrderListFragmentDirections.actionOrderListFragmentToConnectivityToolFragment()
         )
     }
 

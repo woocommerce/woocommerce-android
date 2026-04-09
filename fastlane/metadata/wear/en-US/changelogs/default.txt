@@ -1,1 +1,1 @@
-Your store dashboard now displays net sales instead of total sales, bringing it in line with wp-admin for a more accurate and consistent view of your store's performance — right from your wrist.
+This release includes internal updates and maintenance improvements for a smoother, more reliable WooCommerce Wear experience.

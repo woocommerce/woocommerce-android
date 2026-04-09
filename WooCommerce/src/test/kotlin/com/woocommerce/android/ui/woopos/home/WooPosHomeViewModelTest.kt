@@ -43,7 +43,7 @@ class WooPosHomeViewModelTest {
         runTest {
             // GIVEN
             whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.OrderCreated(emptyList(), emptyList()))
+                flowOf(ChildToParentEvent.OrderCreated(WooPosOrderCreatedData(emptyList(), emptyList())))
             )
 
             // WHEN
