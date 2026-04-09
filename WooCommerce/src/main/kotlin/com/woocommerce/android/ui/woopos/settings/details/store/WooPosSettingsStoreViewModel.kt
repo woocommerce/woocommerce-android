@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
     private val receiptRepository: WooPosSettingsReceiptRepository,
     private val selectedSite: SelectedSite,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsStoreState())
     val state: StateFlow<WooPosSettingsStoreState> = _state.asStateFlow()
@@ -29,11 +32,11 @@ class WooPosSettingsStoreViewModel @Inject constructor(
 
     init {
         loadStoreData()
-        loadReceiptData()
     }
 
     fun onEditReceiptClicked() {
         viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.EditReceiptTapped)
             val url = buildReceiptSettingsUrl()
             _openEditReceiptEvent.emit(EditReceiptTarget(url))
         }

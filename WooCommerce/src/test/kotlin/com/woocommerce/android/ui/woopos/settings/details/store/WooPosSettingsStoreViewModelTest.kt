@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.store
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -26,9 +27,10 @@ class WooPosSettingsStoreViewModelTest {
     private val receiptRepository: WooPosSettingsReceiptRepository = mock()
     private val selectedSite: SelectedSite = mock()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
-    fun `given init, when repositories return data, then state is updated with loaded store and successful receipt`() = runTest {
+    fun `when screen resumed, then state is updated with loaded store and successful receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -46,6 +48,7 @@ class WooPosSettingsStoreViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -55,7 +58,7 @@ class WooPosSettingsStoreViewModelTest {
     }
 
     @Test
-    fun `given init, when store loads successfully but receipt is not available, then state shows loaded store and not supported receipt`() = runTest {
+    fun `when screen resumed and receipt is not available, then state shows not supported receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -66,6 +69,7 @@ class WooPosSettingsStoreViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -75,7 +79,7 @@ class WooPosSettingsStoreViewModelTest {
     }
 
     @Test
-    fun `given init, when store loads successfully but receipt fails, then state shows loaded store and error receipt`() = runTest {
+    fun `when screen resumed and receipt fails, then state shows error receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -86,6 +90,7 @@ class WooPosSettingsStoreViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -112,7 +117,6 @@ class WooPosSettingsStoreViewModelTest {
             address = ""
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(emptyStoreInfo)
-        whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
 
         // WHEN
         val viewModel = createViewModel()
@@ -186,5 +190,6 @@ class WooPosSettingsStoreViewModelTest {
         receiptRepository = receiptRepository,
         selectedSite = selectedSite,
         ciabSiteGateKeeper = ciabSiteGateKeeper,
+        analyticsTracker = analyticsTracker,
     )
 }
