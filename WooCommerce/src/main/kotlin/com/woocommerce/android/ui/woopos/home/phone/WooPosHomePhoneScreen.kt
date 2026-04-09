@@ -265,6 +265,7 @@ private fun WooPosHomePhoneContent(
 }
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 private fun PhonePersistentBottomButton(
     currentRoute: String?,
     cartItemCount: Int,

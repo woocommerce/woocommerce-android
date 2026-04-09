@@ -54,6 +54,7 @@ import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,

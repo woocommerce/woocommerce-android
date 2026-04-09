@@ -130,6 +130,7 @@ fun WooPosOrdersScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
+@Suppress("CyclomaticComplexMethod")
 private fun WooPosOrdersScreen(
     state: WooPosOrdersState,
     isSingleOrderMode: Boolean = false,
@@ -236,12 +237,14 @@ private fun WooPosOrdersScreen(
                         refundReasonUpdate = refundReasonUpdate
                     )
                 }
+
                 is WooPosOrdersState.Content.DialogState.RefundDetails -> {
                     WooPosRefundDetailsDialog(
                         dialogState = dialogState,
                         onDismissRequest = onRefundDetailsDialogDismissed,
                     )
                 }
+
                 WooPosOrdersState.Content.DialogState.Hidden -> Unit
             }
         }
@@ -269,6 +272,7 @@ private fun OrderDetailsPane(
                     onUIEvent = onUIEvent
                 )
             }
+
             state.items is WooPosOrdersState.Content.Items.Searching -> {
                 OrderDetailsLoadingPane(
                     modifier = Modifier
@@ -282,6 +286,7 @@ private fun OrderDetailsPane(
                         )
                 )
             }
+
             else -> {
                 WooPosEmptyScreen(
                     modifier = Modifier.fillMaxSize(),

@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSet
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
