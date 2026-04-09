@@ -5,9 +5,19 @@
 24.6
 -----
 - [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
+- [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
+- [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
+- [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
+- [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]
 
 24.5
 -----
+- [Internal] Hide settings plugins section for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15594]
+- [*] Fixed shipping address showing billing address data when selecting a registered customer during order creation [https://github.com/woocommerce/woocommerce-android/pull/15575]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Treat CIAB sites like atomic sites during site connection [https://github.com/woocommerce/woocommerce-android/pull/15608]
 - [Internal] Unified local and remote feature flag handling [https://github.com/woocommerce/woocommerce-android/pull/15299]
 - [Internal][WEAR] Update watchface complications dependency to 1.3.0 [https://github.com/woocommerce/woocommerce-android/pull/15577]
 

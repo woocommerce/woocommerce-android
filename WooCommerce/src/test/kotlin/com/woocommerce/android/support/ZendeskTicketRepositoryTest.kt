@@ -49,7 +49,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
     private val ssrFetcher: WCSSRModelCachingFetcher = mock {
-        onBlocking { load(any()) } doReturn WooResult(model = null)
+        onBlocking { load(any(), any()) } doReturn WooResult(model = null)
     }
     private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite = mock()
 
@@ -409,7 +409,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
+                onBlocking { load(selectedSite, false) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -573,7 +573,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
+                onBlocking { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             val siteAddress = "www.test.com"
@@ -607,7 +607,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
+                onBlocking { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -666,7 +666,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(
+                onBlocking { load(any(), any()) } doReturn WooResult(
                     WooError(
                         WooErrorType.GENERIC_ERROR,
                         BaseRequest.GenericErrorType.NETWORK_ERROR

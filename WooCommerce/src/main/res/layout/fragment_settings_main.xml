@@ -22,6 +22,17 @@
             android:layout_height="wrap_content"
             app:optionTitle="@string/support_help" />
 
+        <!--
+            Troubleshoot Connection
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_troubleshoot_connection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:optionTitle="@string/settings_troubleshoot_connection"
+            tools:visibility="visible" />
+
         <View style="@style/Woo.Divider" />
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
@@ -30,13 +41,13 @@
             android:layout_height="wrap_content"
             app:optionTitle="@string/dev_options" />
 
-        <View style="@style/Woo.Divider" />
-
         <LinearLayout
             android:id="@+id/plugins_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <View style="@style/Woo.Divider" />
 
             <!--
                     Plugins
@@ -140,6 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/settings_themes" />
+
         </LinearLayout>
 
         <View style="@style/Woo.Divider" />

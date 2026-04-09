@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 10:43:36+0000
+Translation-Revision-Date: 2026-03-25 09:54:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_payment_status_authorization_voided">Auktorisering ogiltigförklarad</string>
+    <string name="booking_payment_status_authorized">Auktoriserad</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Det gick inte att köpa fraktetikett. Fyll i avsändarens adress.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Originaladress saknas eller ogiltig</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Auktorisering ogiltigförklarad</string>
+    <string name="woopos_bookings_payment_status_authorized">Auktoriserad</string>
+    <string name="woopos_orders_details_refund_details_background">Bakgrund för dialogrutan Återbetalningsinformation</string>
+    <string name="woopos_orders_details_refund_total">Återbetalningsbelopp</string>
+    <string name="woopos_orders_details_refund_tax">Moms</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Delsumma objekt (%d objekt)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Delsumma objekt (%d objekt)</string>
+    <string name="woopos_orders_details_refund_view_details">Visa detaljer</string>
+    <string name="woopos_orders_details_refund_label_numbered">Återbetalning av #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Återbetalda produkter</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Du kan lämna den här sidan så fortsätter importen i bakgrunden.</string>
+    <string name="woopos_home_syncing_catalog_hint">Katalogsynkronisering kan ta några minuter.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Du är ett steg ifrån att få aviseringar om nya beställningar, recensioner med mera.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Få pushnotiser för din butik</string>
+    <string name="my_store_widget_push_notifications_description">Aktivera pushnotiser för att hålla koll på nya beställningar och recensioner.</string>
+    <string name="dashboard_stats_net_sales">Nettoförsäljning</string>
     <string name="woopos_search_products_and_variations">Sök produkter och varianter</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gäst</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Uppdatera tillägg</string>
@@ -132,7 +152,6 @@ Language: sv_SE
     <string name="restart">Starta om</string>
     <string name="dev_feature_flags">Funktionsflaggor</string>
     <string name="settings_enable_push_notifications">Aktivera pushnotiser</string>
-    <string name="my_store_widget_push_notifications_description">Anslut din butik till WordPress.com för att få aviseringar om nya ordrar och recensioner.</string>
     <string name="my_store_widget_push_notifications_menu_title">Aktivera pushnotiser</string>
     <string name="my_store_widget_push_notifications_title">Missa aldrig en ny beställning</string>
     <string name="woo_pos_promo_title">Försäljningsplats från WooCommerce</string>
@@ -242,7 +261,7 @@ Language: sv_SE
     <string name="woopos_search_orders">Sök beställningar</string>
     <string name="woopos_orders_details_totals_card_content_description">Genomgång av beställningsbelopp</string>
     <string name="woopos_orders_details_products_list_content_description">Lista över beställningsprodukter</string>
-    <string name="woopos_orders_details_net_payment_label">Nettobetalning</string>
+    <string name="woopos_orders_details_net_payment_label">Totalt netto</string>
     <string name="woopos_orders_details_refunded_label">Återbetald</string>
     <string name="woopos_orders_details_total_paid_label">Betalat totalt</string>
     <string name="woopos_orders_details_total_label">Totalt</string>
@@ -272,7 +291,6 @@ Language: sv_SE
     <string name="woopos_home_sync_failed_message">Vi kan inte synkronisera din produktkatalog. Kontrollera din internetanslutning och försök igen.</string>
     <string name="woopos_home_sync_failed_title">Kan inte synkronisera</string>
     <string name="woopos_home_syncing_catalog_exit_button">Avsluta POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Synkronisering kommer fortsätta i bakgrunden.</string>
     <string name="woopos_home_syncing_catalog_title">Synkroniserar katalog</string>
     <string name="booking_note_discard_changes_discard">Ignorera ändringarna</string>
     <string name="booking_note_discard_changes_message">Är du säker på att du vill åsidosätta de här ändringarna?</string>
@@ -3767,7 +3785,6 @@ Language: sv_SE
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
     <string name="dashboard_stats_error_content_description">Felbild</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
-    <string name="dashboard_stats_revenue">Intäkter</string>
     <string name="dashboard_stats_orders">Ordrar</string>
     <string name="dashboard_stats_visitors">Besökare</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
