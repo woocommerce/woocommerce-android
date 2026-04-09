@@ -159,16 +159,16 @@ fun WooPosPhoneProductsScreen(
                             WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem)
                         )
                     },
+                    @Suppress("WooPosDesignSystemSpacingUsageRule")
                     modifier = Modifier
                         .statusBarsPadding()
                         .align(Alignment.TopStart)
                         .padding(
                             start = WooPosSpacing.Small.value,
-                            top = 48.dp
+                            top = 48.dp // matches toolbar row heightIn(min = 48.dp)
                         )
                 )
             }
-
         }
     }
 }
@@ -218,7 +218,6 @@ private fun buildCartQuantities(
     }
     return quantities
 }
-
 
 @Composable
 private fun PhoneItemsToolbar(
@@ -447,4 +446,3 @@ private fun PhonePopUpMenuItem(
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
     }
 }
-

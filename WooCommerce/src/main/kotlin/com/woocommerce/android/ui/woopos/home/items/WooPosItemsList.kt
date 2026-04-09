@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -278,6 +277,7 @@ fun WooPosProductCard(
                 ProductImage(item)
 
                 if (showQuantityControls) {
+                    @Suppress("WooPosDesignSystemSpacingUsageRule")
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -289,6 +289,7 @@ fun WooPosProductCard(
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
+                        @Suppress("WooPosDesignSystemColorUsageRule")
                         WooPosText(
                             text = cartOverlay.quantities.getValue(item.id).toString(),
                             color = Color.White,
@@ -317,7 +318,6 @@ fun WooPosProductCard(
         }
     }
 }
-
 
 @Composable
 private fun ProductInfo(
@@ -411,6 +411,7 @@ fun WooPosCouponCard(
                 CouponImage()
 
                 if (isInCart) {
+                    @Suppress("WooPosDesignSystemSpacingUsageRule")
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -422,6 +423,7 @@ fun WooPosCouponCard(
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
+                        @Suppress("WooPosDesignSystemColorUsageRule")
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_check_24dp),
                             contentDescription = stringResource(

@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -17,7 +16,7 @@ import com.woocommerce.android.ui.woopos.home.phone.WooPosHomePhoneScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
-
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 const val HOME_ROUTE = "home"
 const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"

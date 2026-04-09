@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun wooPosErrorAndEmptyStateButtonModifier(): Modifier {

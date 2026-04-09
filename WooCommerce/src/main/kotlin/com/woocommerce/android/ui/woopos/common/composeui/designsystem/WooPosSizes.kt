@@ -86,6 +86,7 @@ private fun Dp.toAdaptiveSpacing(): Dp {
     }
 }
 
+@Suppress("MagicNumber")
 private fun Dp.makeDividableByFour(): Dp {
     val remainder = this.value % 4
     return if (remainder == 0f) {

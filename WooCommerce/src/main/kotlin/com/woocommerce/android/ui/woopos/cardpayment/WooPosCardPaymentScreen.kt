@@ -46,6 +46,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -57,7 +58,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
-import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable

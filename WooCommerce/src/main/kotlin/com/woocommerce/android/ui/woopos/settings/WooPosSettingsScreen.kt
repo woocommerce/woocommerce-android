@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -40,6 +39,7 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPa
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
