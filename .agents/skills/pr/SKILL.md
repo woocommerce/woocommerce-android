@@ -72,7 +72,7 @@ EOF
       ```
       gh api 'repos/{owner}/{repo}/milestones?state=open&sort=due_on&direction=asc'
       ```
-    - Pick the one with the earliest `due_on` date
+    - Pick the one with the earliest `due_on` date that is still in the future
     - Assign it: `gh api repos/{owner}/{repo}/issues/{number} -X PATCH -F milestone={milestone_number}`
     - **If the milestone due date is less than 1 day away**, warn the user after assigning (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
 
