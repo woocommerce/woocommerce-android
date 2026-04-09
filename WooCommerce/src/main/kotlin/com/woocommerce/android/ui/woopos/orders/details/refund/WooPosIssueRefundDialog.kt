@@ -70,6 +70,7 @@ import java.math.BigDecimal
 @Composable
 fun WooPosIssueRefundDialog(
     orderId: Long,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
@@ -101,7 +102,7 @@ fun WooPosIssueRefundDialog(
         viewModel.onUIEvent(event)
     }
 
-    BackHandler {
+    BackHandler(enabled = isVisible) {
         handleDismiss()
     }
 
@@ -109,7 +110,7 @@ fun WooPosIssueRefundDialog(
     val showCloseButton = state is WooPosRefundState.Loading ||
         (state as? WooPosRefundState.Content)?.showCloseButton ?: false
     WooPosDialogWrapper(
-        isVisible = true,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_orders_issue_refund_content_description
         ),

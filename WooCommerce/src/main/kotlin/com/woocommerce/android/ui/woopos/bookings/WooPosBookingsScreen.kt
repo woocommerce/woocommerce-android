@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
@@ -197,19 +198,19 @@ private fun WooPosBookingsScreen(
         )
 
         if (state is WooPosBookingsState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
+            val dialogState = state.dialogState
+
+            rememberRetained(dialogState as? WooPosBookingsState.Content.DialogState.IssueRefund)
+                ?.let { issueRefund ->
                     WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
+                        orderId = issueRefund.orderId,
+                        isVisible = dialogState is WooPosBookingsState.Content.DialogState.IssueRefund,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
                         refundReasonUpdate = refundReasonUpdate,
                         disablePartialRefund = true
                     )
                 }
-                WooPosBookingsState.Content.DialogState.Hidden -> Unit
-                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
-            }
         }
     }
 }

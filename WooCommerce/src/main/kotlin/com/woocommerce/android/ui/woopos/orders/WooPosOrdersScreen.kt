@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
@@ -214,23 +215,27 @@ private fun WooPosOrdersScreen(
         }
 
         if (state is WooPosOrdersState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+            val dialogState = state.dialogState
+
+            rememberRetained(dialogState as? WooPosOrdersState.Content.DialogState.IssueRefund)
+                ?.let { issueRefund ->
                     WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
+                        orderId = issueRefund.orderId,
+                        isVisible = dialogState is WooPosOrdersState.Content.DialogState.IssueRefund,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
                         refundReasonUpdate = refundReasonUpdate
                     )
                 }
-                is WooPosOrdersState.Content.DialogState.RefundDetails -> {
+
+            rememberRetained(dialogState as? WooPosOrdersState.Content.DialogState.RefundDetails)
+                ?.let { refundDetails ->
                     WooPosRefundDetailsDialog(
-                        dialogState = dialogState,
+                        dialogState = refundDetails,
+                        isVisible = dialogState is WooPosOrdersState.Content.DialogState.RefundDetails,
                         onDismissRequest = onRefundDetailsDialogDismissed,
                     )
                 }
-                WooPosOrdersState.Content.DialogState.Hidden -> Unit
-            }
         }
     }
 }
