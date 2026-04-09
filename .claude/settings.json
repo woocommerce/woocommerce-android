@@ -33,7 +33,8 @@
       "Skill(pr)",
       "Skill(review)",
       "Skill(woo-android-code-review)",
-      "Skill(simplify)"
+      "Skill(simplify)",
+      "Skill(pr)"
     ],
     "deny": [
       "Bash(git push --force *)",

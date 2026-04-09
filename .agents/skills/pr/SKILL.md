@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Create a pull request following project conventions
+description: Create a pull request following project conventions. Triggers on any request to create, open, make, submit, file, send, push, spin up, put up, draft, raise, or prepare a PR/pull request.
 allowed-tools: Bash, Read, Grep, Glob
 user-invocable: true
 ---
@@ -20,6 +20,8 @@ Create a pull request following the project's PR conventions and template.
 - **Always start with `Fixes WOOMOB-XYZ`** on the first line of the Description section
 
 ## Steps
+
+**IMPORTANT: Follow ALL steps in order. Do not skip any step, even if the PR seems simple.**
 
 1. **Verify branch.** Confirm you are NOT on `trunk`. If on trunk, stop and ask the user to create a feature branch first.
 
@@ -62,11 +64,30 @@ Fixes WOOMOB-XYZ
 EOF
 )"
 ```
-9. **Add labels.** After creating the PR, add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
+
+9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
    - **Type** (pick one): `type: bug`, `type: crash`, `type: enhancement`, `type: task`, `type: technical debt`, `type: documentation`, `type: question`
    - **Feature** (pick one if applicable): match the changed area to a `feature: *` label (e.g., `feature: order list`, `feature: point of sale`, `feature: product details`, `feature: login`, etc.)
    - **Category** (pick any that apply): `category: accessibility`, `category: design`, `category: performance`, `category: tracks`, `category: unit tests`, `category: ui tests`, `category: tooling`, `category: parity`, etc.
    - If the feature is behind a flag, also add `status: feature-flagged`
    - Infer labels from the diff and branch name. If unsure about feature label, ask the user.
 
-10. **Report the PR URL** to the user.
+10. **Set milestone.** Find the closest open milestone and assign it to the PR:
+    - List open milestones (single-quote the URL to prevent shell `&` interpretation):
+      ```
+      gh api 'repos/{owner}/{repo}/milestones?state=open&sort=due_on&direction=asc'
+      ```
+    - Pick the one with the earliest `due_on` date that is still in the future
+    - Assign it: `gh api repos/{owner}/{repo}/issues/{number} -X PATCH -F milestone={milestone_number}`
+    - **If the milestone due date is less than 1 day away**, warn the user after assigning (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
+
+11. **Report the PR URL** to the user.
+
+## Troubleshooting
+
+If `gh pr edit` fails with a GraphQL `Projects (classic)` error, fall back to the REST API:
+```bash
+gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f body='...'
+gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f title='...'
+gh api repos/{owner}/{repo}/issues/{number}/labels -X POST --input - <<< '{"labels":["label1","label2"]}'
+```
