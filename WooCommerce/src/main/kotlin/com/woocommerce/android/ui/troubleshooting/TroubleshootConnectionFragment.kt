@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,22 +12,22 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.OpenWebView
+import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenWebView
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConnectivityToolFragment : BaseFragment() {
-    val viewModel: ConnectivityToolViewModel by viewModels()
+class TroubleshootConnectionFragment : BaseFragment() {
+    val viewModel: TroubleshootConnectionViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ConnectivityToolScreen(viewModel = viewModel)
+                    TroubleshootConnectionScreen(viewModel = viewModel)
                 }
             }
         }

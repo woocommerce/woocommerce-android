@@ -1,20 +1,20 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
-import com.woocommerce.android.ui.connectivitytool.ConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreConnectionCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreOrdersCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.StoreProductsCheckUseCase
-import com.woocommerce.android.ui.connectivitytool.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -29,8 +29,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ConnectivityToolViewModelTest : BaseUnitTest() {
-    private lateinit var sut: ConnectivityToolViewModel
+class TroubleshootConnectionViewModelTest : BaseUnitTest() {
+    private lateinit var sut: TroubleshootConnectionViewModel
     private lateinit var internetConnectionCheck: InternetConnectionCheckUseCase
     private lateinit var wpComConnectionCheck: WPComConnectionCheckUseCase
     private lateinit var storeConnectionCheck: StoreConnectionCheckUseCase
@@ -58,7 +58,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel() {
-        sut = ConnectivityToolViewModel(
+        sut = TroubleshootConnectionViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wpComConnectionCheck = wpComConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
@@ -80,7 +80,7 @@ class ConnectivityToolViewModelTest : BaseUnitTest() {
         )
         val savedStateHandle = SavedStateHandle(mapOf("checksFlow" to checks))
 
-        sut = ConnectivityToolViewModel(
+        sut = TroubleshootConnectionViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wpComConnectionCheck = wpComConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
