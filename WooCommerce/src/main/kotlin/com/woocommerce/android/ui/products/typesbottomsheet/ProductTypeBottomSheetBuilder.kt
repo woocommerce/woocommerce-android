@@ -12,6 +12,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
+    @Suppress("LongMethod")
     suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
         val isEligibleForSubscriptions = isEligibleForSubscriptions()
 

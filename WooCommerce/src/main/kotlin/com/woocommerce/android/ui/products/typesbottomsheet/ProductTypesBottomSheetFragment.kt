@@ -104,6 +104,7 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
                         Snackbar.LENGTH_SHORT
                     ).let {
                         // Set a high z-index here to make sure the Snackbar is shown above the bottom sheet content
+                        @Suppress("MagicNumber")
                         it.view.z = 200f
                         it.show()
                     }

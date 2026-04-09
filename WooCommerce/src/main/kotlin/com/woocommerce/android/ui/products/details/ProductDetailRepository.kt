@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,7 +17,6 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toMetaData
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.QuantityRules
@@ -24,9 +24,9 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
+import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
