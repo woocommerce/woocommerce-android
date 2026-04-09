@@ -64,7 +64,7 @@ fun WooPosCard(
                     backgroundColor = backgroundColor,
                     border = if (isSelected) {
                         BorderStroke(
-                            width = 2.dp,
+                            width = WooPosSpacing.XXSmall.value,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     } else {

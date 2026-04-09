@@ -140,7 +140,7 @@ fun WooPosOutlinedButtonSmall(
     }
     Button(
         modifier = modifier,
-        height = 40.dp,
+        height = 40.dp.toAdaptiveComponentSize(),
         loadingIndicatorSize = 20.dp,
         textStyle = WooPosTypography.BodySmall,
         text = text,
@@ -192,7 +192,7 @@ fun WooPosCircularIconButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(56.dp)
+            .size(56.dp.toAdaptiveComponentSize())
             .clip(CircleShape)
             .background(backgroundColor)
     ) {
@@ -224,7 +224,7 @@ fun WooPosIconButton(
     ) {
         Icon(
             modifier = Modifier
-                .size(32.dp),
+                .size(32.dp.toAdaptiveComponentSize()),
             imageVector = icon,
             contentDescription = contentDescription,
             tint = if (enabled) {

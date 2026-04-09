@@ -1023,11 +1023,27 @@ These tasks were identified and implemented during iterative on-device testing.
 - **Settings transition fix** - `hasInitialized` flag prevents initial detail->list animation on phone.
 - **16dp fixed horizontal margins** - Applied to Orders/Bookings/Settings list and detail content.
 
+### Completed in Phase 9 (adaptive design system & UI polish)
+
+- **Adaptive corner radius** - Explicit 4dp-grid values per breakpoint instead of multiply-and-round (which was a no-op). XSmall fixed from 2dp to 4dp.
+- **Adaptive elevation** - Same explicit-value approach as corner radius.
+- **3 scaling tiers** - Component (0.75x/0.9x), spacing (0.625x/0.8x), decorative removed (replaced by explicit values). Typography at 0.85x (was 0.75x, too aggressive).
+- **isWooPosPhoneLayout() consolidation** - Replaced 12 inline `< 674` checks across 10 files with single composable utility.
+- **No selection highlight on phone** - Orders/Bookings/Settings list cards don't show selection border on phones.
+- **Hardcoded dp -> adaptive** - Replaced 16.dp/4.dp padding with WooPosSpacing tokens in settings, bookings, splash.
+- **Orders toolbar fix** - Moved toolbar inside list pane Box (was hidden behind list content on phones).
+- **Order detail toolbar with actions** - Added `trailingContent` slot to WooPosToolbar. Order detail on phones shows "#1236" + Issue refund + overflow menu in one row.
+- **Coupon badge: trash -> checkmark** - Checkmark is consistent with badge-as-status pattern.
+- **Phone menu font size** - BodySmall -> BodyMedium, icon 24dp -> 28dp, 3-dot icon 24dp -> 32dp.
+- **Phone menu gap** - Reduced popup top offset to 48dp (matches toolbar row height).
+- **Dialog spacing** - Content padding XLarge -> Large, close-to-content gap XLarge -> Small.
+- **Card reader dialog from bookings** - Connect reader button now shows dialog directly instead of navigating back.
+- **Cart empty -> products** - Phone auto-navigates to products when cart becomes empty.
+
 ### Remaining polish items
 
-- Corner radius could be less rounded on phone (currently using tablet values)
-- Card payment screen buttons could be pushed further to the bottom (currently use SpaceBetween)
-- Bookings "Collect payment" navigates to card payment screen which needs the same adaptive treatment
+- Card payment screen buttons could be pushed further to the bottom
+- Attendance status buttons on booking detail could use more layout refinement
 - Tablet regression testing needed (verify all changes don't break tablet layout)
 - Full end-to-end payment flow testing on phone with simulated reader
 

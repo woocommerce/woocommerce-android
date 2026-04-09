@@ -46,7 +46,7 @@ We tried several approaches before landing on this:
 - Purple pill stepper on the image - still too visually dominant
 - **Simple count badge** - cleanest solution. Merchant sees which products are in cart and how many at a glance. To adjust quantity, they go to the cart.
 
-**Coupons** show a trash icon badge (same style, 28dp purple circle) when added to cart. Second tap on the coupon removes it from cart.
+**Coupons** show a checkmark badge (same style, 28dp purple circle) when applied to cart. This is consistent with using the badge as a status indicator (not an action). Second tap on the coupon removes it from cart.
 
 ---
 
@@ -77,10 +77,12 @@ A shared `WooPosListDetailLayout` component handles this automatically.
 
 **Key phone behaviors:**
 - No auto-selection of first item on phone (on tablet, first item is pre-selected)
-- Detail screen has its own toolbar with back arrow and item-specific title ("Order #526", "Booking #498")
+- No selection highlight (border) on list cards on phone - selecting opens a new screen, so highlight is meaningless
+- Detail screen has its own toolbar with back arrow and item-specific title ("#1236" for orders, "Booking #498" for bookings)
+- Order detail actions (Issue refund, overflow menu) sit in the toolbar via `trailingContent` slot - not on a separate row
 - Parent screen toolbar is hidden when detail is showing on phone
 - Back arrow on detail returns to list, system back from list exits the screen
-- 16dp horizontal margins on list items and detail content
+- Adaptive horizontal margins on list items and detail content (WooPosSpacing.Medium)
 - Detail content skips `statusBarsPadding` since the toolbar handles it
 
 **Settings** starts showing categories list (not detail) on phone. The `isDetailPaneOpen` starts false and becomes true when a category is tapped. No visible animation on first render.
@@ -89,11 +91,22 @@ A shared `WooPosListDetailLayout` component handles this automatically.
 
 ## Sizing and Readability
 
-POS text is **larger than a typical phone app**. Merchants use POS in busy environments - often at arm's length, sometimes in bright light. We scale fonts to 90% of the tablet size for 880-1200dp screens, 75% for screens under 880dp.
+POS text is **larger than a typical phone app**. Merchants use POS in busy environments - often at arm's length, sometimes in bright light. We scale fonts to 90% of the tablet size for 880-1200dp screens, **85% for screens under 880dp** (was 75%, too aggressive on high-DPI phones).
 
-Buttons, product images, and animations scale to 90%/75% too. The goal is a focused experience that feels roomy, not cramped.
+Three scaling tiers for different purposes:
+- **Component sizes** (buttons, icons, images): 0.75x phone / 0.9x small tablet
+- **Spacing** (padding, margins): 0.625x phone / 0.8x small tablet
+- **Typography**: 0.85x phone / 0.9x small tablet (gentler to preserve readability)
 
-Dialogs take 92% of screen width on phone (vs 75% on tablet). Connection dialog uses 92% on phone, 55% on tablet.
+**Corner radius and elevation** use explicit 4dp-grid values per breakpoint instead of multiply-and-round (which was effectively a no-op due to rounding up):
+
+| Token | Tablet | Small tablet | Phone |
+|-------|--------|-------------|-------|
+| Corner Medium | 8dp | 8dp | 4dp |
+| Corner Large | 16dp | 12dp | 8dp |
+| Corner XLarge | 24dp | 20dp | 16dp |
+
+Dialogs take 92% of screen width on phone (vs 75% on tablet). Connection dialog uses 92% on phone, 55% on tablet. Dialog padding reduced from XLarge to Large, close-to-content gap reduced from XLarge to Small.
 
 Dialog close icon (40dp) and Lottie animations (256dp, 160dp) use adaptive component sizing.
 
@@ -109,12 +122,30 @@ The card reader connection dialog (from `woomob-1854` branch) adapts to phone wi
 
 ---
 
+## Cart Behavior on Phone
+
+When the cart becomes empty (last item removed), the phone automatically navigates back to the products list. No empty cart screen is shown.
+
+---
+
+## Card Reader Connection from Bookings
+
+The "Connect reader" button on the card payment screen now shows the `WooPosCardReaderConnectionDialog` directly (instead of navigating back). This fixes the bookings flow where going back would return to the booking detail instead of showing the connection dialog.
+
+---
+
+## Phone Menu
+
+The 3-dot hamburger menu icon is 32dp (larger than the default 24dp for better tap target). Menu items use `BodyMedium` typography and 28dp icons. The popup appears 48dp below the status bar (matching the toolbar row height).
+
+---
+
 ## Known Outstanding Items
 
-- Corner radius may need to be less rounded on phone (currently using tablet values)
-- Card payment screen (from bookings "Collect payment") buttons need to be pushed to bottom of screen
+- Card payment screen buttons could be pushed further to the bottom
 - Attendance status buttons on booking detail could use more layout refinement
 - Price on cart button uses client-side subtotal (pre-tax, no coupon discounts) - same as food delivery apps
+- Tablet regression testing needed
 
 ---
 
@@ -126,7 +157,12 @@ When porting to iOS, carry over:
 - Full-screen linear flow (no bottom sheet for cart)
 - Persistent bottom button that morphs between screens
 - Count badge on product images (not stepper controls)
+- Checkmark badge on applied coupons (not trash icon)
 - Same list-then-detail pattern for Orders/Bookings/Settings with item-specific detail titles
+- No card selection highlight on phone lists
+- Order detail actions in toolbar trailing slot
 - Tap to Pay as default on iPhone
-- 16dp horizontal margins on phone screens
+- Adaptive horizontal margins (not fixed 16dp)
 - Subtotal on cart button
+- Empty cart auto-navigates back to products
+- Consolidated `isWooPosPhoneLayout()` utility for phone detection
