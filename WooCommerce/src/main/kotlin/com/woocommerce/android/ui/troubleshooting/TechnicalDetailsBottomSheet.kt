@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
