@@ -114,6 +114,17 @@ POS is a tablet-only, landscape-only register interface for in-person sales. It 
 - File path contains `woopos/` or class name starts with `WooPos` → **POS**
 - Everything else → **Store Management**
 
+If working in POS code: do NOT use `ScopedViewModel`, `triggerEvent()`, `MultiLiveEvent`, Fragments, or XML nav graphs — these are store-only patterns.
+
+| Aspect | POS | Main App |
+|--------|-----|----------|
+| Base class | `ViewModel()` | `ScopedViewModel(savedStateHandle)` |
+| Coroutines | `viewModelScope.launch {}` | `launch {}` (from CoroutineScope) |
+| State | `StateFlow<T>` | `StateFlow<T>` or `LiveData<T>` |
+| Events | Parent-child SharedFlow bus | `triggerEvent()` / `MultiLiveEvent` |
+| Analytics | `WooPosAnalyticsTracker` | `AnalyticsTrackerWrapper` |
+| Navigation | Compose Navigation | Fragment nav graphs |
+
 ### Shared across both
 
 Both parts use Kotlin Coroutines, Hilt DI, and the same data layer:
