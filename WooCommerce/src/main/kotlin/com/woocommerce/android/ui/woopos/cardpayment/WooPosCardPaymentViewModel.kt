@@ -67,6 +67,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
+    private val _showCardReaderDialog = MutableStateFlow(false)
+    val showCardReaderDialog: StateFlow<Boolean> = _showCardReaderDialog.asStateFlow()
+
     private lateinit var orderTotals: WooPosOrderTotalsViewState
 
     private val cardReaderType: CardReaderType
@@ -361,9 +364,11 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onConnectReaderClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
+        _showCardReaderDialog.value = true
+    }
+
+    fun onCardReaderDialogDismissed() {
+        _showCardReaderDialog.value = false
     }
 
     fun onCashPaymentClicked() {

@@ -6,16 +6,27 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.util.ext.getLongestScreenSideDp
 
-enum class WooPosCornerRadius(private val baseValue: Dp) {
-    None(0.dp),
-    XSmall(2.dp),
-    Small(4.dp),
-    Medium(8.dp),
-    Large(16.dp),
-    XLarge(24.dp);
+enum class WooPosCornerRadius(
+    private val tabletValue: Dp,
+    private val smallTabletValue: Dp,
+    private val phoneValue: Dp,
+) {
+    None(0.dp, 0.dp, 0.dp),
+    XSmall(4.dp, 4.dp, 4.dp),
+    Small(4.dp, 4.dp, 4.dp),
+    Medium(8.dp, 8.dp, 4.dp),
+    Large(16.dp, 12.dp, 8.dp),
+    XLarge(24.dp, 20.dp, 16.dp);
 
     val value: Dp
-        @Composable get() = baseValue.toAdaptiveDecorative()
+        @Composable get() {
+            val longestSide = LocalContext.current.getLongestScreenSideDp()
+            return when {
+                longestSide < 880.dp -> phoneValue
+                longestSide < 1200.dp -> smallTabletValue
+                else -> tabletValue
+            }
+        }
 }
 
 enum class WooPosSpacing(private val baseValue: Dp) {
@@ -35,13 +46,24 @@ enum class WooPosSpacing(private val baseValue: Dp) {
         @Composable get() = baseValue.toAdaptiveSpacing()
 }
 
-enum class WooPosElevation(private val baseValue: Dp) {
-    None(0.dp),
-    Medium(8.dp),
-    Large(24.dp);
+enum class WooPosElevation(
+    private val tabletValue: Dp,
+    private val smallTabletValue: Dp,
+    private val phoneValue: Dp,
+) {
+    None(0.dp, 0.dp, 0.dp),
+    Medium(8.dp, 8.dp, 4.dp),
+    Large(24.dp, 20.dp, 16.dp);
 
     val value: Dp
-        @Composable get() = baseValue.toAdaptiveDecorative()
+        @Composable get() {
+            val longestSide = LocalContext.current.getLongestScreenSideDp()
+            return when {
+                longestSide < 880.dp -> phoneValue
+                longestSide < 1200.dp -> smallTabletValue
+                else -> tabletValue
+            }
+        }
 }
 
 @Composable
@@ -60,16 +82,6 @@ private fun Dp.toAdaptiveSpacing(): Dp {
     return when {
         longestSide < 880.dp -> (this * 0.625f).makeDividableByFour()
         longestSide < 1200.dp -> (this * 0.8f).makeDividableByFour()
-        else -> this
-    }
-}
-
-@Composable
-private fun Dp.toAdaptiveDecorative(): Dp {
-    val longestSide = LocalContext.current.getLongestScreenSideDp()
-    return when {
-        longestSide < 880.dp -> (this * 0.85f).makeDividableByFour()
-        longestSide < 1200.dp -> (this * 0.9f).makeDividableByFour()
         else -> this
     }
 }

@@ -139,6 +139,12 @@ private fun WooPosHomePhoneContent(
         previousState = state.screenPositionState
     }
 
+    LaunchedEffect(cartItemCount) {
+        if (cartItemCount == 0 && navController.currentDestination?.route == PHONE_CART_ROUTE) {
+            navController.popBackStack(PHONE_PRODUCTS_ROUTE, inclusive = false)
+        }
+    }
+
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
 

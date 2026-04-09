@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -65,6 +66,7 @@ fun WooPosCardPaymentScreen(
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val showCardReaderDialog by viewModel.showCardReaderDialog.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
@@ -94,6 +96,13 @@ fun WooPosCardPaymentScreen(
         onBackClicked = viewModel::onBackClicked,
         onCashPaymentClicked = viewModel::onCashPaymentClicked,
     )
+
+    if (showCardReaderDialog) {
+        WooPosCardReaderConnectionDialog(
+            onDismiss = viewModel::onCardReaderDialogDismissed,
+            onConnectionSuccess = viewModel::onCardReaderDialogDismissed,
+        )
+    }
 }
 
 @Composable

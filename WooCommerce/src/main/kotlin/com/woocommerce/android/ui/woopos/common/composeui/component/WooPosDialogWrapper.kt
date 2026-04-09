@@ -86,7 +86,7 @@ fun WooPosDialogWrapper(
                 modifier = modifier.fillMaxWidth(widthFraction),
             ) {
                 Column(
-                    modifier = Modifier.padding(WooPosSpacing.XLarge.value)
+                    modifier = Modifier.padding(WooPosSpacing.Large.value)
                 ) {
                     if (onCloseClick != null) {
                         Box(modifier = Modifier.fillMaxWidth()) {
@@ -103,7 +103,7 @@ fun WooPosDialogWrapper(
                             }
                         }
 
-                        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
+                        Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
                     }
 
                     content()
