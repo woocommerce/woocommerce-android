@@ -9,15 +9,14 @@ import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Succe
 import com.woocommerce.android.ui.connectivitytool.FailureType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.PARSE_ERROR
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.PLUGIN_NOT_ACTIVE
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.TIMEOUT_ERROR
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class StoreOrdersCheckUseCase @Inject constructor(
-    private val orderStore: WCOrderStore,
+class StoreProductsCheckUseCase @Inject constructor(
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
     private val isAppPasswordSite: Boolean
@@ -26,21 +25,20 @@ class StoreOrdersCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         val startTime = System.currentTimeMillis()
-        val result = orderStore.fetchHasOrders(selectedSite.get(), null)
+        val result = productStore.fetchProducts(selectedSite.get())
         val durationMs = System.currentTimeMillis() - startTime
-        val failure = (result as? HasOrdersResult.Failure)?.parseError(durationMs)
-        if (failure != null) {
-            emit(failure)
+        if (result.isError) {
+            emit(result.parseError(durationMs))
         } else {
             emit(Success(durationMs = durationMs))
         }
     }
 
-    private fun HasOrdersResult.Failure.parseError(durationMs: Long): Failure {
+    private fun WooResult<List<WCProductModel>>.parseError(durationMs: Long): Failure {
         val failureType = when (error.type) {
-            TIMEOUT_ERROR -> FailureType.TIMEOUT
-            PARSE_ERROR -> FailureType.PARSE
-            PLUGIN_NOT_ACTIVE -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
+            WooErrorType.TIMEOUT -> FailureType.TIMEOUT
+            WooErrorType.INVALID_RESPONSE -> FailureType.PARSE
+            WooErrorType.API_NOT_FOUND -> if (isAppPasswordSite) FailureType.GENERIC else FailureType.JETPACK
             else -> FailureType.GENERIC
         }
 
@@ -56,6 +54,6 @@ class StoreOrdersCheckUseCase @Inject constructor(
     }
 
     companion object {
-        const val OPERATION_NAME = "Fetching your site orders"
+        const val OPERATION_NAME = "Fetching products in your store"
     }
 }
