@@ -149,7 +149,6 @@ class WooPosCartViewModel @Inject constructor(
                 }
                 sendEventToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
             }
-
         }
     }
 

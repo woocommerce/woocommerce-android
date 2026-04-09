@@ -929,8 +929,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ,
+            ),
             onUIEvent = {},
         )
     }
@@ -996,8 +995,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ,
+            ),
             onUIEvent = {},
         )
     }
@@ -1018,8 +1016,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
-            )
-        ,
+            ),
             onUIEvent = {},
         )
     }
@@ -1056,8 +1053,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
-            )
-        ,
+            ),
             onUIEvent = {},
         )
     }
