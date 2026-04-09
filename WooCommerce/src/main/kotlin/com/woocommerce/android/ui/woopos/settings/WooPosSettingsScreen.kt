@@ -18,7 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,8 +46,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
-    val configuration = LocalConfiguration.current
-    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhone = isWooPosPhoneLayout()
     var hasInitialized by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {

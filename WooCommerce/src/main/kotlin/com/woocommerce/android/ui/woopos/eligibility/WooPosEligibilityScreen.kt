@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
@@ -94,9 +94,7 @@ fun WooPosEligibilityScreen(
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
 
-    val configuration = LocalConfiguration.current
-    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
-    val isPhone = shortSide < 674
+    val isPhone = isWooPosPhoneLayout()
     val contentWidthFraction = if (isPhone) 0.9f else 0.6f
     val buttonWidthFraction = if (isPhone) 0.85f else 0.5f
 

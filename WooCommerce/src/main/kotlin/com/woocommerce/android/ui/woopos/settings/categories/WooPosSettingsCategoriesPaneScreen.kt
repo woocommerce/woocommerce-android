@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -64,7 +65,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(
-                    horizontal = 16.dp,
+                    horizontal = WooPosSpacing.Medium.value,
                     vertical = WooPosSpacing.Medium.value
                 )
         ) {
@@ -96,11 +97,13 @@ private fun CategoryItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val isPhone = isWooPosPhoneLayout()
+
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        isSelected = isSelected,
+        isSelected = isSelected && !isPhone,
     ) {
         Column(
             modifier = Modifier

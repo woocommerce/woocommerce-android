@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,10 +69,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.OrderActions
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -149,8 +150,7 @@ private fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
 ) {
-    val configuration = LocalConfiguration.current
-    val isPhoneOrders = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhoneOrders = isWooPosPhoneLayout()
     BackHandler(enabled = !isPhoneOrders || state !is WooPosOrdersState.Content || isSingleOrderMode) {
         onBackClicked()
     }
@@ -209,14 +209,7 @@ private fun WooPosOrdersScreen(
             }
         }
 
-        // Hide the parent toolbar on phone when showing order detail
-        // (the detail pane has its own toolbar with back-to-list action)
-        val isPhoneShowingDetail = isPhoneOrders &&
-            state is WooPosOrdersState.Content &&
-            !isSingleOrderMode &&
-            (state as? WooPosOrdersState.Content)?.selectedDetails != null
-
-        if (state.searchInputState is WooPosSearchInputState.Closed && !isPhoneShowingDetail) {
+        if (state !is WooPosOrdersState.Content) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (state as? WooPosOrdersState.Content)
                     ?.selectedDetails?.number.orEmpty()
@@ -261,6 +254,7 @@ private fun OrderDetailsPane(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     modifier: Modifier = Modifier,
     showOrderNumber: Boolean = true,
+    showActions: Boolean = true,
     includeStatusBarPadding: Boolean = true,
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
@@ -270,6 +264,7 @@ private fun OrderDetailsPane(
                     modifier = Modifier.fillMaxHeight(),
                     details = state.selectedDetails,
                     showOrderNumber = showOrderNumber,
+                    showActions = showActions,
                     includeStatusBarPadding = includeStatusBarPadding,
                     onUIEvent = onUIEvent
                 )
@@ -314,8 +309,7 @@ private fun OrdersListWithDetails(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onBackFromDetail: () -> Unit
 ) {
-    val configuration = LocalConfiguration.current
-    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhone = isWooPosPhoneLayout()
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
 
     WooPosListDetailLayout(
@@ -332,35 +326,50 @@ private fun OrdersListWithDetails(
             if (isPhone) {
                 BackHandler(enabled = !userHasSelectedItem) { onBackClicked() }
             }
-            OrdersListPane(
-                state = state,
-                scrollToTopEvent = scrollToTopEvent,
-                onRefresh = onRefresh,
-                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-                onOrderSelected = { orderId ->
-                    userHasSelectedItem = true
-                    onOrderSelected(orderId)
-                },
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
-                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent,
-                onSearchErrorRetry = onSearchErrorRetry,
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surfaceBright)
-            )
+            ) {
+                OrdersListPane(
+                    state = state,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                    onOrderSelected = { orderId ->
+                        userHasSelectedItem = true
+                        onOrderSelected(orderId)
+                    },
+                    onEndOfOrdersListReached = onEndOfOrdersListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onSearchEvent = onSearchEvent,
+                    onSearchErrorRetry = onSearchErrorRetry,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (state.searchInputState is WooPosSearchInputState.Closed) {
+                    WooPosToolbar(
+                        titleText = stringResource(R.string.woopos_orders_title),
+                        onBackClicked = onBackClicked,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                    )
+                }
+            }
         },
         detailPane = {
             Column(modifier = Modifier.fillMaxSize()) {
                 if (isPhone) {
-                    val orderTitle = state.selectedDetails?.let {
-                        stringResource(R.string.woopos_order_title, it.number)
-                    }.orEmpty()
+                    val orderTitle = state.selectedDetails?.number.orEmpty()
                     WooPosToolbar(
                         titleText = orderTitle,
                         onBackClicked = {
                             userHasSelectedItem = false
                             onBackFromDetail()
+                        },
+                        trailingContent = state.selectedDetails?.let { details ->
+                            { OrderActions(details, onUIEvent) }
                         },
                     )
                 }
@@ -368,6 +377,7 @@ private fun OrdersListWithDetails(
                     state = state,
                     onUIEvent = onUIEvent,
                     showOrderNumber = !isPhone,
+                    showActions = !isPhone,
                     includeStatusBarPadding = !isPhone,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -565,13 +575,11 @@ private fun LoadedOrdersList(
         }
     }
 
+    val isPhone = isWooPosPhoneLayout()
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        contentPadding = PaddingValues(
-            horizontal = 16.dp,
-            vertical = WooPosSpacing.Medium.value,
-        ),
+        contentPadding = PaddingValues(WooPosSpacing.Medium.value),
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->
@@ -582,7 +590,7 @@ private fun LoadedOrdersList(
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
+                isSelected = item.isSelected && !isPhone,
             ) {
                 Row(
                     modifier = Modifier

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosListDetailLayout(
@@ -25,8 +25,7 @@ fun WooPosListDetailLayout(
     listWeight: Float = 0.3f,
     detailWeight: Float = 0.7f,
 ) {
-    val configuration = LocalConfiguration.current
-    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhone = isWooPosPhoneLayout()
 
     if (isPhone) {
         BackHandler(enabled = isDetailVisible) {

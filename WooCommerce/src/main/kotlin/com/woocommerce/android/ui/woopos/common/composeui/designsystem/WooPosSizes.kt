@@ -6,13 +6,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.util.ext.getLongestScreenSideDp
 
-enum class WooPosCornerRadius(val value: Dp) {
+enum class WooPosCornerRadius(private val baseValue: Dp) {
     None(0.dp),
     XSmall(2.dp),
     Small(4.dp),
     Medium(8.dp),
     Large(16.dp),
-    XLarge(24.dp)
+    XLarge(24.dp);
+
+    val value: Dp
+        @Composable get() = baseValue.toAdaptiveDecorative()
 }
 
 enum class WooPosSpacing(private val baseValue: Dp) {
@@ -29,44 +32,48 @@ enum class WooPosSpacing(private val baseValue: Dp) {
     Gigantic(104.dp);
 
     val value: Dp
-        @Composable get() = baseValue.toAdaptivePadding()
+        @Composable get() = baseValue.toAdaptiveSpacing()
 }
 
-enum class WooPosElevation(val value: Dp) {
+enum class WooPosElevation(private val baseValue: Dp) {
     None(0.dp),
     Medium(8.dp),
-    Large(24.dp)
+    Large(24.dp);
+
+    val value: Dp
+        @Composable get() = baseValue.toAdaptiveDecorative()
 }
 
 @Composable
 fun Dp.toAdaptiveComponentSize(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
-        longestSide < 880.dp -> this * 0.75f
-        longestSide < 1200.dp -> this * 0.9f
+        longestSide < 880.dp -> (this * 0.75f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.9f).makeDividableByFour()
         else -> this
     }
 }
 
 @Composable
-private fun Dp.toAdaptivePadding(): Dp {
+private fun Dp.toAdaptiveSpacing(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
-        longestSide < 880.dp -> {
-            val calculatedMargin = this * 0.5f
-            calculatedMargin.makeDividableByFour()
-        }
-
-        longestSide < 1200.dp -> {
-            val calculatedMargin = this * 0.75f
-            calculatedMargin.makeDividableByFour()
-        }
-
+        longestSide < 880.dp -> (this * 0.625f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.8f).makeDividableByFour()
         else -> this
     }
 }
 
 @Composable
+private fun Dp.toAdaptiveDecorative(): Dp {
+    val longestSide = LocalContext.current.getLongestScreenSideDp()
+    return when {
+        longestSide < 880.dp -> (this * 0.85f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.9f).makeDividableByFour()
+        else -> this
+    }
+}
+
 private fun Dp.makeDividableByFour(): Dp {
     val remainder = this.value % 4
     return if (remainder == 0f) {

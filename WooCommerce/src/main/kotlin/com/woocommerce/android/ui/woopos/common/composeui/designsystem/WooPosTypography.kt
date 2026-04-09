@@ -73,7 +73,7 @@ sealed class WooPosTypography(private val baseStyle: TextStyle) {
 private fun TextStyle.toAdaptiveTextStyle(): TextStyle {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     val multiplier = when {
-        longestSide < 880.dp -> 0.75f
+        longestSide < 880.dp -> 0.85f
         longestSide < 1200.dp -> 0.9f
         else -> return this
     }

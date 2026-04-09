@@ -81,8 +81,8 @@ fun WooPosBookingDetails(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(
-                    start = 16.dp,
-                    end = 16.dp,
+                    start = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.Medium.value,
                     bottom = if (hasCollectButton) {
                         92.dp + WooPosSpacing.Large.value + WooPosSpacing.Medium.value
                     } else {

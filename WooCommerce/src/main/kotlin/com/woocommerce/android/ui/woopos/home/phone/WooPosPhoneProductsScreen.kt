@@ -164,7 +164,7 @@ fun WooPosPhoneProductsScreen(
                         .align(Alignment.TopStart)
                         .padding(
                             start = WooPosSpacing.Small.value,
-                            top = WooPosSpacing.Gigantic.value
+                            top = 48.dp
                         )
                 )
             }
@@ -268,6 +268,7 @@ private fun PhoneItemsToolbar(
                                 R.string.woopos_menu_toolbar_content_description
                             ),
                             tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(32.dp),
                         )
                     }
                 }
@@ -430,7 +431,7 @@ private fun PhonePopUpMenuItem(
             imageVector = ImageVector.vectorResource(menuItem.icon),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(28.dp)
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         WooPosText(
@@ -438,7 +439,7 @@ private fun PhonePopUpMenuItem(
                 .padding(vertical = WooPosSpacing.Small.value)
                 .weight(1f),
             text = stringResource(id = menuItem.title),
-            style = WooPosTypography.BodySmall,
+            style = WooPosTypography.BodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

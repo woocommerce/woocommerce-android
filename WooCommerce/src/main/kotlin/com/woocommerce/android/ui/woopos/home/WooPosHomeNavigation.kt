@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
-private const val PHONE_MAX_SHORT_SIDE_DP = 674
 
 const val HOME_ROUTE = "home"
 const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"
@@ -87,8 +86,7 @@ fun NavGraphBuilder.homeScreen(
             savedStateHandle[HOME_PAYMENT_COMPLETED_VIA_CASH_KEY] = false
         }
 
-        val configuration = LocalConfiguration.current
-        val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < PHONE_MAX_SHORT_SIDE_DP
+        val isPhone = isWooPosPhoneLayout()
 
         if (isPhone) {
             WooPosHomePhoneScreen(

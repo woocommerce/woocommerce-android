@@ -135,7 +135,7 @@ private fun SyncingCatalog(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
                 )
             }
         }

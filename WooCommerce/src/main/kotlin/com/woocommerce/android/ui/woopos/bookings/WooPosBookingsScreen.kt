@@ -43,7 +43,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -164,8 +164,7 @@ private fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
 ) {
-    val configuration = LocalConfiguration.current
-    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhone = isWooPosPhoneLayout()
     BackHandler(enabled = !isPhone || state !is WooPosBookingsState.Content) { onBackClicked() }
 
     Box(
@@ -236,8 +235,7 @@ private fun WooPosBookingsContent(
     onPaginationErrorTryAgain: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
-    val configuration = LocalConfiguration.current
-    val isPhone = minOf(configuration.screenWidthDp, configuration.screenHeightDp) < 674
+    val isPhone = isWooPosPhoneLayout()
     var userHasSelectedItem by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -524,7 +522,7 @@ private fun WooPosLoadedBookingsList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(
-            horizontal = 16.dp,
+            horizontal = WooPosSpacing.Medium.value,
             vertical = WooPosSpacing.Medium.value,
         ),
         state = listState,
@@ -556,6 +554,8 @@ private fun WooPosBookingListItem(
     onBookingSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isPhone = isWooPosPhoneLayout()
+
     WooPosCard(
         modifier = modifier
             .wrapContentHeight(),
@@ -563,7 +563,7 @@ private fun WooPosBookingListItem(
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
-        isSelected = item.isSelected,
+        isSelected = item.isSelected && !isPhone,
     ) {
         Row(
             modifier = Modifier

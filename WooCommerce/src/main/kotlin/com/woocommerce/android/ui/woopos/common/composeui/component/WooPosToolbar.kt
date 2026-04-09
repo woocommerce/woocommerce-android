@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -28,7 +30,8 @@ fun WooPosToolbar(
     titleText: String,
     onBackClicked: (() -> Unit)? = null,
     titleStyle: WooPosTypography = WooPosTypography.Heading,
-    titleFontWeight: FontWeight = FontWeight.Bold
+    titleFontWeight: FontWeight = FontWeight.Bold,
+    trailingContent: @Composable (() -> Unit)? = null,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -36,7 +39,7 @@ fun WooPosToolbar(
             .statusBarsPadding()
             .height(56.dp),
     ) {
-        val (backButton, title) = createRefs()
+        val (backButton, title, trailing) = createRefs()
 
         AnimatedVisibility(
             visible = onBackClicked != null,
@@ -67,10 +70,26 @@ fun WooPosToolbar(
                     } else {
                         start.linkTo(parent.start, margin = startPadding)
                     }
+                    if (trailingContent != null) {
+                        end.linkTo(trailing.start, margin = startPadding)
+                        width = Dimension.fillToConstraints
+                    }
                     bottom.linkTo(parent.bottom)
                     top.linkTo(parent.top)
                 }
         )
+
+        if (trailingContent != null) {
+            Box(
+                modifier = Modifier.constrainAs(trailing) {
+                    end.linkTo(parent.end, margin = startPadding)
+                    bottom.linkTo(parent.bottom)
+                    top.linkTo(parent.top)
+                }
+            ) {
+                trailingContent()
+            }
+        }
     }
 }
 

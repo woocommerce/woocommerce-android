@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
@@ -115,7 +115,5 @@ fun WooPosDialogWrapper(
 
 @Composable
 private fun defaultDialogWidthFraction(): Float {
-    val configuration = LocalConfiguration.current
-    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
-    return if (shortSide < 674) 0.92f else 0.75f
+    return if (isWooPosPhoneLayout()) 0.92f else 0.75f
 }

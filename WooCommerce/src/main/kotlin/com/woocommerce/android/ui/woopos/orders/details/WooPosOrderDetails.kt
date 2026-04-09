@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +56,7 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     showOrderNumber: Boolean = true,
+    showActions: Boolean = true,
     includeStatusBarPadding: Boolean = true,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
@@ -66,26 +66,30 @@ fun WooPosOrderDetails(
             .then(if (includeStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
             .verticalScroll(rememberScrollState())
             .padding(
-                start = 16.dp,
-                end = 16.dp,
+                start = WooPosSpacing.Medium.value,
+                end = WooPosSpacing.Medium.value,
                 bottom = WooPosSpacing.XLarge.value
             )
     ) {
-        Row(
-            modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (showOrderNumber) {
-                WooPosText(
-                    text = details.number,
-                    style = WooPosTypography.Heading,
-                    fontWeight = FontWeight.Bold,
-                )
+        if (showOrderNumber || showActions) {
+            Row(
+                modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showOrderNumber) {
+                    WooPosText(
+                        text = details.number,
+                        style = WooPosTypography.Heading,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                Spacer(Modifier.weight(1f))
+
+                if (showActions) {
+                    OrderActions(details, onUIEvent)
+                }
             }
-
-            Spacer(Modifier.weight(1f))
-
-            OrderActions(details, onUIEvent)
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -105,7 +109,7 @@ fun WooPosOrderDetails(
 }
 
 @Composable
-private fun OrderActions(
+internal fun OrderActions(
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {

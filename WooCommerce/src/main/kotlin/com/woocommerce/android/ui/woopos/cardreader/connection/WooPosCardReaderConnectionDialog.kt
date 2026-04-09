@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -248,9 +248,7 @@ fun WooPosCardReaderConnectionDialogContent(
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
-    val shortSide = minOf(configuration.screenWidthDp, configuration.screenHeightDp)
-    val dialogFraction = if (shortSide < 674) 0.92f else 0.55f
+    val dialogFraction = if (isWooPosPhoneLayout()) 0.92f else 0.55f
 
     WooPosDialogWrapper(
         isVisible = isVisible,

@@ -423,9 +423,9 @@ fun WooPosCouponCard(
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_check_24dp),
                             contentDescription = stringResource(
-                                R.string.woopos_totals_coupons_validation_failed_remove_coupons
+                                R.string.woopos_items_coupon_applied_content_description
                             ),
                             tint = Color.White,
                             modifier = Modifier.size(16.dp),
