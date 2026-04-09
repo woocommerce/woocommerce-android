@@ -4,13 +4,13 @@
 
 24.6
 -----
-- [Internal] Migrated SimpleTextEditor, CardReaderManuals, and MediaUploadErrorList screens from Material 2 to Material 3
 - [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
 - [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
 - [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
 - [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
 - [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
 - [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]
+- [Internal] Migrated SimpleTextEditor, CardReaderManuals, and MediaUploadErrorList screens from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15598]
 
 24.5
 -----
