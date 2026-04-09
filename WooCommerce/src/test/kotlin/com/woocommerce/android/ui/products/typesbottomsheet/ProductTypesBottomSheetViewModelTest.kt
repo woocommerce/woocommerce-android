@@ -47,36 +47,54 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given is not Add Product flow, when loading product types, then product types is filtered`() = testBlocking {
-        viewModel = ProductTypesBottomSheetViewModel(
-            ProductTypesBottomSheetFragmentArgs(
-                isAddProduct = false,
-                currentProductType = "simple",
-                isCurrentProductVirtual = false
-            ).toSavedStateHandle(),
-            bottomSheetBuilder,
-            selectedSite,
-            productDetailRepository,
-        )
+    fun `given is not Add Product flow, when loading product types, then current type and webview-only types are filtered`() =
+        testBlocking {
+            viewModel = ProductTypesBottomSheetViewModel(
+                ProductTypesBottomSheetFragmentArgs(
+                    isAddProduct = false,
+                    currentProductType = "simple",
+                    isCurrentProductVirtual = false
+                ).toSavedStateHandle(),
+                bottomSheetBuilder,
+                selectedSite,
+                productDetailRepository,
+            )
 
-        assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
-    }
+            // Current type (SIMPLE non-virtual) and webview-only type (BOOKABLE_SERVICE) should be filtered out
+            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 2)
+            assertThat(viewModel.productTypesBottomSheetList.value!!.none { !it.supportsNativeEditor }).isTrue()
+        }
 
     @Test
-    fun `given current type is virtual, when loading product types, then only virtual type is filtered out`() = testBlocking {
+    fun `given current type is virtual, when loading product types, then only virtual type and webview-only types are filtered out`() =
+        testBlocking {
+            viewModel = ProductTypesBottomSheetViewModel(
+                ProductTypesBottomSheetFragmentArgs(
+                    isAddProduct = false,
+                    currentProductType = "simple",
+                    isCurrentProductVirtual = true
+                ).toSavedStateHandle(),
+                bottomSheetBuilder,
+                selectedSite,
+                productDetailRepository,
+            )
+
+            // Virtual SIMPLE and webview-only BOOKABLE_SERVICE should be filtered out
+            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 2)
+            assertThat(viewModel.productTypesBottomSheetList.value!![0].isVirtual).isFalse
+            assertThat(viewModel.productTypesBottomSheetList.value!!.none { !it.supportsNativeEditor }).isTrue()
+        }
+
+    @Test
+    fun `given is Add Product flow, when loading product types, then webview-only types are included`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
-            ProductTypesBottomSheetFragmentArgs(
-                isAddProduct = false,
-                currentProductType = "simple",
-                isCurrentProductVirtual = true
-            ).toSavedStateHandle(),
+            ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
             bottomSheetBuilder,
             selectedSite,
             productDetailRepository,
         )
 
-        assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
-        assertThat(viewModel.productTypesBottomSheetList.value!![0].isVirtual).isFalse
+        assertThat(viewModel.productTypesBottomSheetList.value!!.any { !it.supportsNativeEditor }).isTrue()
     }
 
     @Test
@@ -161,6 +179,13 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             titleResource = 0,
             descResource = 0,
             iconResource = 0
+        ),
+        ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem(
+            type = ProductType.BOOKABLE_SERVICE,
+            titleResource = 0,
+            descResource = 0,
+            iconResource = 0,
+            supportsNativeEditor = false
         )
     )
 }
