@@ -152,6 +152,7 @@ fun WooPosPhoneProductsScreen(
             )
 
             if (menu is Menu.Visible) {
+                @Suppress("WooPosDesignSystemSpacingUsageRule")
                 PhonePopUpMenu(
                     menuItems = menu.items,
                     onClick = { menuItem ->
@@ -159,7 +160,6 @@ fun WooPosPhoneProductsScreen(
                             WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem)
                         )
                     },
-                    @Suppress("WooPosDesignSystemSpacingUsageRule")
                     modifier = Modifier
                         .statusBarsPadding()
                         .align(Alignment.TopStart)

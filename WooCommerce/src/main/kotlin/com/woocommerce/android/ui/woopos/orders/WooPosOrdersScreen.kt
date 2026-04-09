@@ -369,7 +369,9 @@ private fun OrdersListWithDetails(
                             onBackFromDetail()
                         },
                         trailingContent = state.selectedDetails?.let { details ->
-                            { OrderActions(details, onUIEvent) }
+                            {
+                                OrderActions(details, onUIEvent)
+                            }
                         },
                     )
                 }
