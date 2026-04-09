@@ -1005,44 +1005,31 @@ These tasks were identified and implemented during iterative on-device testing.
 - **Quantity counter layout** - Moved `- N +` controls to the price row so title gets full width
 - **Coupon trash icon** - Shows trash icon on coupons that are in the cart
 
-### Remaining tasks (to implement)
+### Completed in Phase 8 (additional)
 
-### Task 20: Quantity stepper overlay on product image
+- **Quantity controls -> count badge** - Replaced stepper with simple 28dp purple circle badge at bottom-right of product image (Uber pattern). Much cleaner.
+- **Coupon badge with trash icon** - Same badge pattern, trash icon instead of number. Second tap removes coupon.
+- **Persistent bottom button** - Single button outside NavHost, morphs label by route: "Cart - $37.49" / "Check out" / "Cash payment" (outlined). Eliminates dual-button overlap.
+- **Subtotal on cart button** - Computed client-side from raw BigDecimal prices tracked per item in ViewModel.
+- **Stepper pill iterations** - Tried purple pill, then dark semi-transparent pill, then settled on simple badge.
+- **Orders/Bookings detail titles** - Show "Order #526" / "Booking #498" instead of generic "Orders" / "Bookings".
+- **Orders/Bookings detail back arrows** - Added phone-specific toolbars to detail panes.
+- **Orders/Bookings parent toolbar hidden on phone detail** - Prevents double toolbar.
+- **BackHandler guard with enabled flag** - List pane BackHandler only active when detail is not selected (prevents exit on back from detail).
+- **Card payment screen adaptive buttons** - Applied `toAdaptiveComponentSize()` to all 80dp button heights.
+- **Card payment text margins** - Added horizontal padding and center alignment.
+- **Bookings attendance layout** - Changed from Row to Column so buttons don't wrap text.
+- **Bookings detail crash fix** - Replaced `!!` with safe `?.let` for selectedDetails during back animation.
+- **Settings transition fix** - `hasInitialized` flag prevents initial detail->list animation on phone.
+- **16dp fixed horizontal margins** - Applied to Orders/Bookings/Settings list and detail content.
 
-Move quantity controls from the price row to an overlay centered on the product image:
-- Semi-transparent dark overlay on the image when product is in cart
-- `- N +` pill centered on the image (like Uber Eats / DoorDash pattern)
-- For coupons: similar overlay with "Added" indicator or checkmark, tap to remove
-- Product images are ~100dp on phone - large enough for the stepper
+### Remaining polish items
 
-### Task 21: Persistent bottom button (shared element pattern)
-
-Replace the separate "Cart (N)" and "Check out" buttons with a single persistent bottom button that lives OUTSIDE the NavHost:
-- On Products route: shows "View Cart - $24.00" with locally calculated subtotal
-- On Cart route: shows "Check out"
-- On Totals route: hidden (payment UI handles its own buttons)
-- Button never unmounts/remounts - uses `AnimatedContent` for label crossfade
-- Eliminates the "two identical buttons during transition" problem
-- The subtotal is computed client-side from cart item prices (sum of individual prices, pre-tax - standard pattern used by Square POS, Uber Eats, DoorDash)
-
-Architecture:
-```kotlin
-// In WooPosHomePhoneContent, wrap NavHost + persistent button:
-Column {
-    Box(modifier = Modifier.weight(1f)) {
-        NavHost(...) { /* products, cart, totals routes */ }
-    }
-    // Persistent bottom button - outside NavHost
-    val currentRoute = navController.currentBackStackEntryAsState()
-    PhonePersistentBottomButton(
-        currentRoute = currentRoute,
-        cartSubtotal = cartSubtotal,
-        cartItemCount = cartItemCount,
-        onCartClicked = { navController.navigate(PHONE_CART_ROUTE) },
-        onCheckoutClicked = { /* trigger checkout */ },
-    )
-}
-```
+- Corner radius could be less rounded on phone (currently using tablet values)
+- Card payment screen buttons could be pushed further to the bottom (currently use SpaceBetween)
+- Bookings "Collect payment" navigates to card payment screen which needs the same adaptive treatment
+- Tablet regression testing needed (verify all changes don't break tablet layout)
+- Full end-to-end payment flow testing on phone with simulated reader
 
 ---
 
