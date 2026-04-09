@@ -468,7 +468,10 @@ private fun OrdersTotals(
                 )
             }
 
-            if (breakdown.refunds.isNotEmpty()) {
+            if (breakdown.refundsLoading) {
+                DividerWithSpacing()
+                RefundRowShimmer()
+            } else if (breakdown.refunds.isNotEmpty()) {
                 DividerWithSpacing()
                 breakdown.refunds.forEachIndexed { index, refundRow ->
                     RefundRowContent(
@@ -551,6 +554,38 @@ private fun RefundRowContent(
             style = WooPosTypography.BodyMedium,
             color = MaterialTheme.colorScheme.primary,
             textDecoration = TextDecoration.Underline,
+        )
+    }
+}
+
+@Composable
+private fun RefundRowShimmer() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WooPosShimmerText(
+                text = stringResource(R.string.woopos_orders_details_refund_label_numbered, 1),
+                style = WooPosTypography.BodyLarge.style,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.weight(1f))
+            WooPosShimmerText(
+                text = stringResource(R.string.woopos_orders_details_refund_shimmer_amount_placeholder),
+                style = WooPosTypography.BodyMedium.style,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosShimmerText(
+            text = stringResource(R.string.woopos_orders_details_refund_shimmer_date_placeholder),
+            style = WooPosTypography.BodyMedium.style,
+        )
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerText(
+            text = stringResource(R.string.woopos_orders_details_refund_view_details),
+            style = WooPosTypography.BodyMedium.style,
         )
     }
 }

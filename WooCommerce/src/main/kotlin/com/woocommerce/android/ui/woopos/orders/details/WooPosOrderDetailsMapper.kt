@@ -85,8 +85,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
             else -> LineItemsState.Loaded(emptyList())
         }
+        val hasRefunds = isFullyRefunded || hasPartialRefund
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
-        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo).let {
+            if (hasRefunds) it.copy(refundsLoading = true) else it
+        }
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
