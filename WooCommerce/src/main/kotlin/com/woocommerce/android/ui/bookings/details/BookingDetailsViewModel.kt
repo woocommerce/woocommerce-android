@@ -22,6 +22,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
+import org.wordpress.android.fluxc.persistence.entity.isReschedulable
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,6 +61,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val orderDetailRepository: OrderDetailRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
 
@@ -251,6 +255,11 @@ class BookingDetailsViewModel @Inject constructor(
         BookingAttendanceStatus.Unattended -> BookingEntity.AttendanceStatus.Unattended
     }
 
+    @Suppress("ForbiddenComment")
+    private fun onRescheduleBooking() {
+        // TODO: Navigate to reschedule screen
+    }
+
     private fun onCancelBooking() {
         showCancelBookingDialog.value = true
     }
@@ -321,6 +330,8 @@ class BookingDetailsViewModel @Inject constructor(
                     loadingState = loadingState
                 ),
                 cancelStatus = cancelStatus,
+                rescheduleButtonVisible = featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE) &&
+                    booking.isReschedulable,
                 attendanceUpdateStatus = attendanceUpdateStatus,
                 locationStatus = buildLocationStatus(booking, loadingState),
             ),
@@ -329,6 +340,7 @@ class BookingDetailsViewModel @Inject constructor(
             note = booking.note,
             isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
             onCancelBooking = ::onCancelBooking,
+            onRescheduleBooking = ::onRescheduleBooking,
             onAttendanceToggle = {
                 val targetStatus = when (booking.attendanceStatus) {
                     BookingEntity.AttendanceStatus.Attended -> BookingAttendanceStatus.Unattended
