@@ -1394,7 +1394,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.first().code).isEqualTo("TEST")
+            assertThat(childToParentEvent.data.updatedCoupons.first().code).isEqualTo("TEST")
         }
 
     @Test
@@ -1420,7 +1420,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.size).isEqualTo(1)
+            assertThat(childToParentEvent.data.updatedCoupons.size).isEqualTo(1)
         }
 
     @Test

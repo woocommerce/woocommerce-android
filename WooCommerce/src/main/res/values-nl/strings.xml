@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-09 15:56:07+0000
+Translation-Revision-Date: 2026-03-24 17:55:55+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_payment_status_authorization_voided">Autorisatie nietig verklaard</string>
+    <string name="booking_payment_status_authorized">Geautoriseerd</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Kan het verzendlabel niet aanschaffen. Vul het oorspronkelijke adres in.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Adres van herkomst ontbreekt of is ongeldig</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Autorisatie nietig verklaard</string>
+    <string name="woopos_bookings_payment_status_authorized">Geautoriseerd</string>
+    <string name="woopos_orders_details_refund_details_background">Achtergrond van dialoogvenster Terugbetalingsgegevens</string>
+    <string name="woopos_orders_details_refund_total">Terugbetaling totaal</string>
+    <string name="woopos_orders_details_refund_tax">Belasting</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Subtotaal artikelen (%d artikelen)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Subtotaal artikelen (%d artikel)</string>
+    <string name="woopos_orders_details_refund_view_details">Gegevens weergeven</string>
+    <string name="woopos_orders_details_refund_label_numbered">Terugbetaling #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Gerestitueerde producten</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Je kan deze pagina gewoon verlaten. De synchronisatie zal op de achtergrond verder gaan.</string>
+    <string name="woopos_home_syncing_catalog_hint">Synchronisatie van de catalogus kan enkele minuten duren.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Je bent slechts één stap verwijderd van meldingen voor nieuwe bestellingen, beoordelingen en meer.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Ontvang pushmeldingen voor je winkel</string>
+    <string name="my_store_widget_push_notifications_description">Schakel pushmeldingen in om op de hoogte te blijven van nieuwe bestellingen en beoordelingen.</string>
+    <string name="dashboard_stats_net_sales">Netto-omzet</string>
     <string name="woopos_search_products_and_variations">Producten en variaties zoeken</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gast</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Plugin bijwerken</string>
@@ -132,7 +152,6 @@ Language: nl
     <string name="restart">Opnieuw beginnen</string>
     <string name="dev_feature_flags">Functievlaggen</string>
     <string name="settings_enable_push_notifications">Pushmeldingen inschakelen</string>
-    <string name="my_store_widget_push_notifications_description">Koppel je winkel aan WordPress.com om meldingen over nieuwe bestellingen en beoordelingen te ontvangen.</string>
     <string name="my_store_widget_push_notifications_menu_title">Pushmeldingen inschakelen</string>
     <string name="my_store_widget_push_notifications_title">Mis nooit een nieuwe bestelling</string>
     <string name="woo_pos_promo_title">Verkooppunt van WooCommerce</string>
@@ -242,7 +261,7 @@ Language: nl
     <string name="woopos_search_orders">Bestellingen zoeken</string>
     <string name="woopos_orders_details_totals_card_content_description">Overzicht totaalaantal bestellingen</string>
     <string name="woopos_orders_details_products_list_content_description">Lijst bestelde producten</string>
-    <string name="woopos_orders_details_net_payment_label">Netto betaling</string>
+    <string name="woopos_orders_details_net_payment_label">Totaal netto</string>
     <string name="woopos_orders_details_refunded_label">Terugbetaald</string>
     <string name="woopos_orders_details_total_paid_label">Totaal betaald</string>
     <string name="woopos_orders_details_total_label">Totaal</string>
@@ -272,7 +291,6 @@ Language: nl
     <string name="woopos_home_sync_failed_message">We kunnen je productcatalogus niet synchroniseren. Controleer je internetverbinding en probeer het opnieuw.</string>
     <string name="woopos_home_sync_failed_title">Kan niet synchroniseren</string>
     <string name="woopos_home_syncing_catalog_exit_button">POS afsluiten</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Synchronisatie gaat op de achtergrond door.</string>
     <string name="woopos_home_syncing_catalog_title">Catalogus synchroniseren</string>
     <string name="booking_note_discard_changes_discard">Wijzigingen annuleren</string>
     <string name="booking_note_discard_changes_message">Weet je zeker dat je deze wijzigingen wilt annuleren?</string>
@@ -3767,7 +3785,6 @@ Language: nl
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
     <string name="dashboard_stats_error_content_description">Foutafbeelding</string>
     <string name="dashboard_stats_error">Fout bij ophalen gegevens</string>
-    <string name="dashboard_stats_revenue">Inkomsten</string>
     <string name="dashboard_stats_orders">Bestellingen</string>
     <string name="dashboard_stats_visitors">Bezoekers</string>
     <string name="login_avatar_content_description">Je profielfoto</string>

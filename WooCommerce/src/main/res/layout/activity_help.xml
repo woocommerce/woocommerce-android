@@ -84,6 +84,27 @@
                 app:optionValue="@string/support_system_status_report_detail"
                 android:visibility="gone" />
 
+            <LinearLayout
+                android:id="@+id/developerSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/support_developer_section_title" />
+
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/featureFlagsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/support_override_feature_flags"
+                    app:optionValue="@string/support_override_feature_flags_detail" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

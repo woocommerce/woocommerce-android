@@ -103,6 +103,7 @@ private fun WooPosVariationsScreens(
         when (val itemsState = itemState.value) {
             is WooPosVariationsViewState.Content -> {
                 WooPosItemList(
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
                     state = itemsState,
                     listState = listState,
                     onItemClicked = {

@@ -14,11 +14,7 @@ class WooPOSIsRemotelyEnabled @Inject constructor(
 ) {
 
     suspend operator fun invoke(forceRefresh: Boolean = false): Result<Boolean> {
-        if (forceRefresh) {
-            ssrFetcher.invalidate()
-        }
-
-        val result = ssrFetcher.load(selectedSite.get())
+        val result = ssrFetcher.load(selectedSite.get(), forceRefresh)
 
         if (!result.isError) {
             result.model?.let { ssr ->
