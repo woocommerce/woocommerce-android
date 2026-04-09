@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_CIAB_SETTINGS_PATH
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_SETTINGS_PATH
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,9 +51,9 @@ class WooPosSettingsStoreViewModel @Inject constructor(
     private fun buildReceiptSettingsUrl(): String {
         val siteUrl = selectedSite.get().url.trimEnd('/')
         return if (ciabSiteGateKeeper.isCurrentSiteCIAB()) {
-            "$siteUrl$CIAB_POS_SETTINGS_PATH"
+            "$siteUrl$WOO_POS_CIAB_SETTINGS_PATH"
         } else {
-            "$siteUrl$POS_SETTINGS_PATH"
+            "$siteUrl$WOO_POS_SETTINGS_PATH"
         }
     }
 
@@ -87,10 +89,4 @@ class WooPosSettingsStoreViewModel @Inject constructor(
     }
 
     data class EditReceiptTarget(val url: String)
-
-    private companion object {
-        const val POS_SETTINGS_PATH = "/wp-admin/admin.php?page=wc-settings&tab=point-of-sale"
-        const val CIAB_POS_SETTINGS_PATH =
-            "/wp-admin/admin.php?page=next-admin&p=%2Fwoocommerce%2Fsettings%2Fpayments%2Fpos"
-    }
 }
