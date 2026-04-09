@@ -253,7 +253,7 @@ private fun WooPosBookingsContent(
             },
             listPane = {
                 if (isPhone) {
-                    BackHandler { onBackClicked() }
+                    BackHandler(enabled = !userHasSelectedItem) { onBackClicked() }
                 }
                 Box(
                     modifier = Modifier

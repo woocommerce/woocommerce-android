@@ -209,7 +209,14 @@ private fun WooPosOrdersScreen(
             }
         }
 
-        if (state.searchInputState is WooPosSearchInputState.Closed) {
+        // Hide the parent toolbar on phone when showing order detail
+        // (the detail pane has its own toolbar with back-to-list action)
+        val isPhoneShowingDetail = isPhoneOrders &&
+            state is WooPosOrdersState.Content &&
+            !isSingleOrderMode &&
+            (state as? WooPosOrdersState.Content)?.selectedDetails != null
+
+        if (state.searchInputState is WooPosSearchInputState.Closed && !isPhoneShowingDetail) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (state as? WooPosOrdersState.Content)
                     ?.selectedDetails?.number.orEmpty()
@@ -323,7 +330,7 @@ private fun OrdersListWithDetails(
         },
         listPane = {
             if (isPhone) {
-                BackHandler { onBackClicked() }
+                BackHandler(enabled = !userHasSelectedItem) { onBackClicked() }
             }
             OrdersListPane(
                 state = state,
