@@ -601,7 +601,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `given reschedule flag disabled, when state observed, then reschedule button not visible`() =
         testBlocking {
-            // GIVEN — flag defaults to false (not enabled)
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE)).thenReturn(false)
 
             // WHEN
             val viewModel = createViewModel()
