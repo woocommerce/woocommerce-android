@@ -279,9 +279,8 @@ class OrderDetailRepository @Inject constructor(
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
     }
 
-    fun getOrderFulfillments(orderId: Long): List<OrderFulfillment> = runBlocking {
+    suspend fun getOrderFulfillments(orderId: Long): List<OrderFulfillment> =
         orderStore.getOrderFulfillmentsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
-    }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
