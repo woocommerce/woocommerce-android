@@ -4,6 +4,15 @@
 
 We follow the official [Compose API guidelines for App development](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#api-guidelines-for-jetpack-compose) and Google's Compose best practices. This doc covers only **project-specific** conventions and patterns.
 
+## Content
+
+1. [Fragment Hosting](#fragment-hosting)
+2. [Screen Composable Pattern](#screen-composable-pattern)
+3. [Project-Specific Conventions](#project-specific-conventions)
+4. [Existing Components](#existing-components)
+5. [Previews](#previews)
+6. [File Structure](#file-structure)
+
 ## Fragment Hosting
 
 Compose screens live inside Fragments in a 1:1 relationship. Use the `composeView {}` extension (from `com.woocommerce.android.ui.compose.composeView`) which handles `DisposeOnViewTreeLifecycleDestroyed` and `WooThemeWithBackground` automatically:
