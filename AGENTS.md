@@ -261,6 +261,7 @@ AI agents can use the following skills for common workflows:
 |-------|----------|
 | `review` | "review changes", "check my code", "quality check" |
 | `pr` | "create PR", "open PR", "pull request" |
+| `pr-feedback` | "address PR feedback", "handle review comments", "fix PR comments" |
 | `verify-on-device` | "verify on emulator", "test on device", "take screenshot" |
 
 ## Further Reading
