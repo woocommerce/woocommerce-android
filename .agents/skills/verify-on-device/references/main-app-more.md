@@ -22,8 +22,7 @@ Fully Compose-based. Identify items by text labels.
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
-| **Primary** | text: review items with product name and rating | Compose LazyColumn (no resource ID) |
-| Unread filter | text: "Unread reviews only" with toggle switch | Compose `WCSwitch` (no resource ID) |
+| **Primary** | text: "Unread reviews only" | Compose screen, use this text to confirm you're on the Reviews list |
 
 **Payments Hub** -- Fragment: `PaymentsHubFragment`
 
