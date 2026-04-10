@@ -119,7 +119,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
         )
         return WooPosFileBasedSyncResult.Failure(
             PosLocalCatalogSyncResult.Failure.NetworkError(
-                error = error?.message ?: "API error during catalog sync",
+                error = error?.message?.takeIf { it.isNotBlank() }
+                    ?: "API error during catalog sync (${error?.let { it::class.simpleName } ?: "unknown"})",
                 pollAttempts = totalPollAttempts,
                 lastGenerationState = lastGenerationState?.rawValue
             )
@@ -187,7 +188,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.NetworkError(
-                        error = it.message ?: "Failed to download catalog file"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to download catalog file (${it::class.simpleName})"
                     )
                 )
             }
@@ -197,7 +199,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                        error = it.message ?: "Failed to parse catalog file"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to parse catalog file (${it::class.simpleName})"
                     )
                 )
             }
@@ -210,7 +213,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.DatabaseError(
-                        error = it.message ?: "Failed to store catalog data"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to store catalog data (${it::class.simpleName})"
                     )
                 )
             }
