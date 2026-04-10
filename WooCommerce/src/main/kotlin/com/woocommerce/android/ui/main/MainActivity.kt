@@ -768,7 +768,11 @@ class MainActivity :
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
             BOOKINGS -> {
-                analyticsTrackerWrapper.track(MainTabBookingsSelectEvent(horizontalSizeClass = deviceTypeToAnalyticsString))
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsSelectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
                 null
             }
         }
@@ -796,7 +800,11 @@ class MainActivity :
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
             BOOKINGS -> {
-                analyticsTrackerWrapper.track(MainTabBookingsReselectEvent(horizontalSizeClass = deviceTypeToAnalyticsString))
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsReselectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
                 null
             }
         }
