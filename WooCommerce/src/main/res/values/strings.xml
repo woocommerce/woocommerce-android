@@ -4361,6 +4361,9 @@
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx Terms of Service</string>
+    <string name="wpp_shipping_fedex_tos_description">To purchase FedEx shipping labels, you need to agree to the following terms:</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">I agree to the &lt;a href=\"fedex-tos\"&gt;FedEx Terms of Service&lt;/a&gt;.</string>
 
     <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
     <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
