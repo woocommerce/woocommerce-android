@@ -200,17 +200,24 @@ private fun WooPosBookingsScreen(
         if (state is WooPosBookingsState.Content) {
             val dialogState = state.dialogState
 
-            rememberRetained(dialogState as? WooPosBookingsState.Content.DialogState.IssueRefund)
-                ?.let { issueRefund ->
-                    WooPosIssueRefundDialog(
-                        orderId = issueRefund.orderId,
-                        isVisible = dialogState is WooPosBookingsState.Content.DialogState.IssueRefund,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate,
-                        disablePartialRefund = true
-                    )
+            val retainedIssueRefund: WooPosBookingsState.Content.DialogState.IssueRefund? = rememberRetained(
+                when (dialogState) {
+                    is WooPosBookingsState.Content.DialogState.IssueRefund -> dialogState
+                    is WooPosBookingsState.Content.DialogState.CancelBooking -> null
+                    WooPosBookingsState.Content.DialogState.Hidden -> null
                 }
+            )
+
+            retainedIssueRefund?.let { issueRefund ->
+                WooPosIssueRefundDialog(
+                    orderId = issueRefund.orderId,
+                    isVisible = dialogState is WooPosBookingsState.Content.DialogState.IssueRefund,
+                    onDismissRequest = onIssueRefundDialogDismissed,
+                    onNavigationEvent = onNavigationEvent,
+                    refundReasonUpdate = refundReasonUpdate,
+                    disablePartialRefund = true
+                )
+            }
         }
     }
 }

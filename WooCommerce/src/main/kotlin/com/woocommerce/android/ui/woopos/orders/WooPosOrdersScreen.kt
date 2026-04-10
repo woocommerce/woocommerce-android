@@ -215,28 +215,52 @@ private fun WooPosOrdersScreen(
         }
 
         if (state is WooPosOrdersState.Content) {
-            val dialogState = state.dialogState
-
-            rememberRetained(dialogState as? WooPosOrdersState.Content.DialogState.IssueRefund)
-                ?.let { issueRefund ->
-                    WooPosIssueRefundDialog(
-                        orderId = issueRefund.orderId,
-                        isVisible = dialogState is WooPosOrdersState.Content.DialogState.IssueRefund,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
-                    )
-                }
-
-            rememberRetained(dialogState as? WooPosOrdersState.Content.DialogState.RefundDetails)
-                ?.let { refundDetails ->
-                    WooPosRefundDetailsDialog(
-                        dialogState = refundDetails,
-                        isVisible = dialogState is WooPosOrdersState.Content.DialogState.RefundDetails,
-                        onDismissRequest = onRefundDetailsDialogDismissed,
-                    )
-                }
+            OrdersDialogs(
+                dialogState = state.dialogState,
+                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed,
+                onRefundDetailsDialogDismissed = onRefundDetailsDialogDismissed,
+                onNavigationEvent = onNavigationEvent,
+                refundReasonUpdate = refundReasonUpdate,
+            )
         }
+    }
+}
+
+@Composable
+private fun OrdersDialogs(
+    dialogState: WooPosOrdersState.Content.DialogState,
+    onIssueRefundDialogDismissed: () -> Unit,
+    onRefundDetailsDialogDismissed: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String?,
+) {
+    val retainedDialog = rememberRetained(
+        when (dialogState) {
+            is WooPosOrdersState.Content.DialogState.IssueRefund -> dialogState
+            is WooPosOrdersState.Content.DialogState.RefundDetails -> dialogState
+            WooPosOrdersState.Content.DialogState.Hidden -> null
+        }
+    )
+
+    when (retainedDialog) {
+        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+            WooPosIssueRefundDialog(
+                orderId = retainedDialog.orderId,
+                isVisible = dialogState is WooPosOrdersState.Content.DialogState.IssueRefund,
+                onDismissRequest = onIssueRefundDialogDismissed,
+                onNavigationEvent = onNavigationEvent,
+                refundReasonUpdate = refundReasonUpdate
+            )
+        }
+        is WooPosOrdersState.Content.DialogState.RefundDetails -> {
+            WooPosRefundDetailsDialog(
+                dialogState = retainedDialog,
+                isVisible = dialogState is WooPosOrdersState.Content.DialogState.RefundDetails,
+                onDismissRequest = onRefundDetailsDialogDismissed,
+            )
+        }
+        WooPosOrdersState.Content.DialogState.Hidden,
+        null -> Unit
     }
 }
 
