@@ -212,6 +212,7 @@ private fun buildCartQuantities(
             }
             is WooPosCartItemViewState.Product.Variation -> {
                 quantities[item.variationId] = (quantities[item.variationId] ?: 0) + 1
+                quantities[item.id] = (quantities[item.id] ?: 0) + 1
             }
             else -> Unit
         }

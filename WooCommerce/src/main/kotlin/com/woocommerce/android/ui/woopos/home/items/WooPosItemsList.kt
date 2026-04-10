@@ -250,8 +250,7 @@ fun WooPosProductCard(
     item: Product
 ) {
     val cartOverlay = LocalPhoneCartOverlay.current
-    val showQuantityControls = item !is Product.Variable &&
-        cartOverlay.quantities.getOrDefault(item.id, 0) > 0
+    val showQuantityControls = cartOverlay.quantities.getOrDefault(item.id, 0) > 0
 
     WooPosCard(
         modifier = modifier
