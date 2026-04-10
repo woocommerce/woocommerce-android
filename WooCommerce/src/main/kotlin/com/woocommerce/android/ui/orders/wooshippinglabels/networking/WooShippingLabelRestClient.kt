@@ -328,4 +328,24 @@ class WooShippingLabelRestClient @Inject constructor(
             WooPayload(Unit)
         }
     }
+
+    suspend fun updateFedExAgreement(
+        site: SiteModel,
+        agreementAccepted: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/carrier-strategy/fedex"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf("confirmed" to agreementAccepted),
+            clazz = JsonObject::class.java,
+        )
+
+        return if (result is WPAPIResponse.Error) {
+            WooPayload(error = result.error.toWooError())
+        } else {
+            WooPayload(Unit)
+        }
+    }
 }
