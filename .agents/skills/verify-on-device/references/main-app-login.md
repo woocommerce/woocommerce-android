@@ -12,7 +12,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | 2FA / Verification Code | text: "Verification code" or OTP input |
 | Magic Link Sent | text: "Check your email on this device" and "Open Mail" button |
 | Site Address | text: "Enter the address of the WooCommerce store you'd like to connect.", hint: "Site address" |
-| Site Credentials | text: "Enter your account information for [site URL]." with "Username" and "Password" fields |
+| Site Credentials | text: "Log in with your [site URL] site credentials" with "Username" and "Password" fields |
 | Site Picker | store list with "Connect another store" and "Log in with another account" buttons |
 | Account Mismatch | text: "It looks like [site] is connected to a different WordPress.com account." with avatar |
 | Discovery Error | title: "Connection error" with "Try again" and "Read our troubleshooting tips" options |
