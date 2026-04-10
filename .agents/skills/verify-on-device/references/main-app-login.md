@@ -7,17 +7,17 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | Screen | How to Detect |
 |--------|---------------|
 | Prologue | text: "Log In" button and "Starting a new store?" link |
-| WPCom Email | text: email input field, "Log in to WordPress.com using an email address" |
+| WPCom Email | text: "Log in with your WordPress.com account email address to manage your WooCommerce stores.", hint: "Email address" |
 | Password | text: password input field, "Reset your password" link |
 | 2FA / Verification Code | text: "Verification code" or OTP input |
 | Magic Link Sent | text: "Check your email on this device" and "Open Mail" button |
-| Site Address | text: "Enter your store URL" |
-| Site Credentials | text: "Enter credentials for site:" with username/password fields |
-| Site Picker | store list with "Continue" button |
-| Account Mismatch | text: account mismatch error with avatar |
-| Discovery Error | error message with "Try again" button |
-| Jetpack Activation | text about Jetpack with "Continue" or "Install Jetpack" button |
-| Not WordPress Error | dialog: "This site is not a WordPress site" |
+| Site Address | text: "Enter the address of the WooCommerce store you'd like to connect.", hint: "Site address" |
+| Site Credentials | text: "Enter your account information for [site URL]." with "Username" and "Password" fields |
+| Site Picker | store list with "Connect another store" and "Log in with another account" buttons |
+| Account Mismatch | text: "It looks like [site] is connected to a different WordPress.com account." with avatar |
+| Discovery Error | title: "Connection error" with "Try again" and "Read our troubleshooting tips" options |
+| Jetpack Activation | text: "Please install the free Jetpack plugin" with "Install Jetpack" or "Connect Jetpack" button |
+| Not WordPress Error | text: "We were not able to detect a WordPress site at the address you entered." |
 
 ## Workflows
 
@@ -51,8 +51,8 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 |------|--------|---------|
 | 1 | Enter 6-digit code | OTP input field |
 | 2 | Tap Continue | continue button |
-| 3 | (Alternative) Tap "Use security key" | security key button |
-| 4 | (Alternative) Tap "Send SMS" | SMS link |
+| 3 | (Alternative) Tap "Use a security key" | id: `login_security_key_button` |
+| 4 | (Alternative) Tap "Text me a code instead" | id: `login_otp_button` |
 
 ### Magic Link Flow
 
@@ -67,7 +67,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Tap Google sign-in button | Google button |
+| 1 | Tap "Continue with Google" | id: `continue_with_google` |
 | 2 | Complete Google auth | Google account picker |
 
 ### Jetpack Activation (when Jetpack not installed)
@@ -75,7 +75,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | Step | Action | Element |
 |------|--------|---------|
 | 1 | Site discovered without Jetpack | |
-| 2 | Tap "Continue" / "Install Jetpack" | continue button |
+| 2 | Tap "Install Jetpack" or "Connect Jetpack" | jetpack action button |
 | 3 | Enter site credentials (if needed) | username/password fields |
 | 4 | Jetpack installation progress | progress indicator |
 | 5 | Authorize connection | WebView auth |
@@ -85,7 +85,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | Error | Detection |
 |-------|-----------|
 | Invalid URL | text: error + "Try again" button |
-| Not WordPress | dialog: "not a WordPress site" |
+| Not WordPress | text: "We were not able to detect a WordPress site at the address you entered." |
 | Wrong account | account mismatch screen with avatar |
 | No WPCom account | dialog: account not found |
 | Login failed | error message on password screen |
