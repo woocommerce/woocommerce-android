@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.woocommerce.android.applicationpasswords.IsAppPasswordsSupportedForJetpackSite
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.RequestConstants.DIAGNOSTIC_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
@@ -22,13 +23,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
+import zendesk.support.UploadResponse
+import java.io.File
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 class ZendeskTicketRepository @Inject constructor(
     private val zendeskSettings: ZendeskSettings,
@@ -43,7 +49,7 @@ class ZendeskTicketRepository @Inject constructor(
      * This function creates a new customer Support Request through the Zendesk API Providers.
      */
     @Suppress("LongParameterList")
-    suspend fun createRequest(
+    fun createRequest(
         context: Context,
         origin: HelpOrigin,
         ticketType: TicketType,
@@ -51,7 +57,8 @@ class ZendeskTicketRepository @Inject constructor(
         subject: String,
         description: String,
         extraTags: List<String>,
-        siteAddress: String
+        siteAddress: String,
+        diagnosticLog: String? = null
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
@@ -62,6 +69,12 @@ class ZendeskTicketRepository @Inject constructor(
         val tags = (ticketType.tags + extraTags)
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
+
+        val attachmentTokens = if (diagnosticLog != null) {
+            listOfNotNull(uploadDiagnosticLog(diagnosticLog))
+        } else {
+            emptyList()
+        }
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -79,6 +92,9 @@ class ZendeskTicketRepository @Inject constructor(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
+            if (attachmentTokens.isNotEmpty()) {
+                this.attachments = attachmentTokens
+            }
             this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             val zendeskCustomFieldsParams = ZendeskCustomFieldsParams(
@@ -112,6 +128,44 @@ class ZendeskTicketRepository @Inject constructor(
             wooLog.i(WooLog.T.SUPPORT, "SSR fetched successfully")
         }
         return result.model?.formatResult()
+    }
+
+    private suspend fun uploadDiagnosticLog(
+        diagnosticLog: String
+    ): String? {
+        val tempFile = withContext(dispatchers.io) {
+            File.createTempFile(DIAGNOSTIC_LOG_FILENAME, null).also {
+                it.writeText(diagnosticLog)
+            }
+        }
+
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                zendeskSettings.uploadProvider?.uploadAttachment(
+                    DIAGNOSTIC_LOG_FILENAME,
+                    tempFile,
+                    "text/plain",
+                    object : ZendeskCallback<UploadResponse>() {
+                        override fun onSuccess(result: UploadResponse?) {
+                            if (continuation.isActive) {
+                                continuation.resume(result?.token)
+                            }
+                        }
+
+                        override fun onError(error: ErrorResponse?) {
+                            wooLog.e(WooLog.T.SUPPORT, "Failed to upload diagnostic log")
+                            if (continuation.isActive) {
+                                continuation.resume(null)
+                            }
+                        }
+                    }
+                ) ?: run {
+                    continuation.resume(null)
+                }
+            }
+        } finally {
+            tempFile.delete()
+        }
     }
 
     /**
@@ -154,6 +208,10 @@ class ZendeskTicketRepository @Inject constructor(
                 tags.add(ZendeskTags.applicationPasswordAuthenticated)
             } else if (isAppPasswordsSupportedForJetpackSite(it)) {
                 tags.add(ZendeskTags.jetpackSiteUsingAppPasswords)
+            }
+
+            if (it.isCIABSite) {
+                tags.add(ZendeskTags.ciabTag)
             }
         }
 
@@ -295,6 +353,7 @@ object ZendeskTags {
     const val platformTag = "Android"
     const val wpComTag = "wpcom"
     const val freeTrialTag = "trial"
+    const val ciabTag = "commerce_in_a_box"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {
@@ -307,6 +366,7 @@ private object RequestConstants {
     const val requestCreationTimeout = 10000L
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
+    const val DIAGNOSTIC_LOG_FILENAME = "connectivitytest_log.txt"
 }
 
 private data class ZendeskCustomFieldsParams(

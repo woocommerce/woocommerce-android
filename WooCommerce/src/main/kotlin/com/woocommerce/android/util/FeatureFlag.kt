@@ -28,7 +28,9 @@ enum class FeatureFlag(
     POS_PRODUCTS_FTS("pos_products_fts", localValue = PackageUtils.isDebugBuild()),
     POS_BOOKINGS("pos_bookings", localValue = PackageUtils.isDebugBuild()),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
+    BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1", localValue = false),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2("woo_self_driven_push_notifications_m2", localValue = false),
     WOO_SHIPPING_FEDEX("woo_shipping_fedex", localValue = false),
+    LOGGED_OUT_FF_PANEL("logged_out_ff_panel", localValue = PackageUtils.isDebugBuild()),
 }

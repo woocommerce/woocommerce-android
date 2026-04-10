@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,44 +40,46 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckCardData.WPComConnectivityCheckData
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
 
 @Composable
-fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
+fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
+    val technicalDetails by viewModel.technicalDetailsToShow.observeAsState()
 
-    ConnectivityToolScreen(
+    TroubleshootConnectionScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
-        internetConnectionCheckData = viewState?.internetCheckData,
-        wpComConnectionCheckData = viewState?.wpComCheckData,
-        storeConnectionCheckData = viewState?.storeCheckData,
-        storeOrdersCheckData = viewState?.ordersCheckData,
-        isWPComCheckVisible = viewState?.isWPComCheckVisible ?: true,
+        checks = viewState?.checks ?: emptyList(),
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        onReturnClick = viewModel::onReturnClicked
+        onReturnClick = viewModel::onReturnClicked,
+        onRetryClick = viewModel::onRetryClicked,
+        onReadMoreClick = viewModel::onReadMoreClicked,
+        onViewTechnicalDetailsClicked = viewModel::onViewTechnicalDetailsClicked
     )
+
+    technicalDetails?.let { details ->
+        TechnicalDetailsBottomSheet(
+            technicalDetails = details,
+            onDismiss = viewModel::onTechnicalDetailsDismissed
+        )
+    }
 }
 
 @Composable
-fun ConnectivityToolScreen(
+fun TroubleshootConnectionScreen(
     shouldEnableContactSupportButton: Boolean,
     shouldDisplaySummarySection: Boolean,
-    internetConnectionCheckData: InternetConnectivityCheckData?,
-    wpComConnectionCheckData: WPComConnectivityCheckData?,
-    storeConnectionCheckData: StoreConnectivityCheckData?,
-    storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
-    isWPComCheckVisible: Boolean,
+    checks: List<ConnectivityCheckCardData>,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
+    onRetryClick: (ConnectivityCheckType) -> Unit,
+    onReadMoreClick: (FailureType) -> Unit,
+    onViewTechnicalDetailsClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -99,12 +102,20 @@ fun ConnectivityToolScreen(
             Text(stringResource(id = R.string.orderlist_connectivity_tool_subtitle))
         }
 
-        ConnectivityCheckCard(internetConnectionCheckData)
-        if (isWPComCheckVisible) {
-            ConnectivityCheckCard(wpComConnectionCheckData)
+        checks.forEach { checkData ->
+            if (checkData.status !is NotStarted) {
+                ConnectivityCheckCard(
+                    checkData = checkData,
+                    onRetryClick = { onRetryClick(checkData.type) },
+                    onReadMoreClick = { onReadMoreClick((checkData.status as? Failure)?.error ?: FailureType.GENERIC) },
+                    onViewTechnicalDetailsClicked = onViewTechnicalDetailsClicked
+                )
+                Divider(
+                    modifier = Modifier
+                        .padding(start = dimensionResource(id = R.dimen.major_100))
+                )
+            }
         }
-        ConnectivityCheckCard(storeConnectionCheckData)
-        ConnectivityCheckCard(storeOrdersCheckData)
 
         ConnectivitySummary(
             shouldDisplaySummarySection = shouldDisplaySummarySection,
@@ -127,25 +138,32 @@ fun ConnectivityToolScreen(
 
 @Composable
 fun ConnectivityCheckCard(
-    cardData: ConnectivityCheckCardData?
+    checkData: ConnectivityCheckCardData,
+    onRetryClick: () -> Unit,
+    onReadMoreClick: () -> Unit,
+    onViewTechnicalDetailsClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    cardData
-        ?.takeUnless { it.connectivityCheckStatus is NotStarted }
-        ?.let {
-            ConnectivityCheckCard(
-                checkTitle = it.title,
-                iconDrawable = it.icon,
-                suggestion = it.suggestion,
-                checkStatus = it.connectivityCheckStatus,
-                onReadMoreClicked = it.readMoreAction ?: {},
-                onRetryConnectionClicked = it.retryConnectionAction ?: {},
-                shouldDisplayReadMoreButton = it.readMoreAction != null
-            )
-            Divider(
-                modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
-            )
+    val failure = checkData.status as? Failure
+    val shouldDisplayReadMoreButton = checkData.type != ConnectivityCheckType.INTERNET &&
+        checkData.type != ConnectivityCheckType.WP_COM &&
+        checkData.status is Failure
+
+    ConnectivityCheckCard(
+        modifier = modifier,
+        checkTitle = checkData.type.title,
+        iconDrawable = checkData.type.icon,
+        suggestion = checkData.type.suggestion,
+        checkStatus = checkData.status,
+        onReadMoreClicked = onReadMoreClick,
+        onRetryConnectionClicked = onRetryClick,
+        shouldDisplayReadMoreButton = shouldDisplayReadMoreButton,
+        onViewTechnicalDetailsClicked = failure?.technicalDetails?.let { details ->
+            {
+                onViewTechnicalDetailsClicked(details)
+            }
         }
+    )
 }
 
 @Composable
@@ -157,7 +175,8 @@ fun ConnectivityCheckCard(
     checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
     onRetryConnectionClicked: () -> Unit,
-    shouldDisplayReadMoreButton: Boolean = false
+    shouldDisplayReadMoreButton: Boolean = false,
+    onViewTechnicalDetailsClicked: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_100)))
@@ -165,9 +184,9 @@ fun ConnectivityCheckCard(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.woo_black)),
+            Icon(
                 painter = painterResource(id = iconDrawable),
+                tint = MaterialTheme.colors.onSurface,
                 contentDescription = stringResource(id = checkTitle),
                 modifier = modifier
                     .size(dimensionResource(id = R.dimen.major_100))
@@ -241,6 +260,20 @@ fun ConnectivityCheckCard(
                         )
                     )
                 }
+
+                onViewTechnicalDetailsClicked?.let { onClick ->
+                    WCTextButton(
+                        allCaps = false,
+                        onClick = onClick,
+                        icon = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
+                        modifier = modifier.align(Alignment.Start),
+                        text = stringResource(id = R.string.connectivity_tool_view_technical_details),
+                        contentPadding = PaddingValues(
+                            vertical = dimensionResource(id = R.dimen.minor_100),
+                            horizontal = dimensionResource(id = R.dimen.minor_00)
+                        )
+                    )
+                }
             }
         }
     }
@@ -306,27 +339,31 @@ fun ResultIcon(
 
 @Preview
 @Composable
-fun ConnectivityToolScreenPreview() {
+fun TroubleshootConnectionScreenPreview() {
     WooThemeWithBackground {
-        ConnectivityToolScreen(
+        TroubleshootConnectionScreen(
             shouldEnableContactSupportButton = true,
             shouldDisplaySummarySection = true,
-            internetConnectionCheckData = InternetConnectivityCheckData(
-                connectivityCheckStatus = NotStarted
+            checks = listOf(
+                ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, NotStarted),
+                ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, Success()),
+                ConnectivityCheckCardData(
+                    ConnectivityCheckType.STORE,
+                    Failure(
+                        error = FailureType.PARSE,
+                        technicalDetails = "Operation: Site Connection\n" +
+                            "Error Type: INVALID_RESPONSE\n" +
+                            "Description: Parse error"
+                    )
+                ),
+                ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, InProgress),
+                ConnectivityCheckCardData(ConnectivityCheckType.PRODUCTS, NotStarted)
             ),
-            wpComConnectionCheckData = WPComConnectivityCheckData(
-                connectivityCheckStatus = Success
-            ),
-            storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure(),
-                readMoreAction = {}
-            ),
-            storeOrdersCheckData = StoreOrdersConnectivityCheckData(
-                connectivityCheckStatus = InProgress
-            ),
-            isWPComCheckVisible = true,
             onContactSupportClicked = {},
-            onReturnClick = {}
+            onReturnClick = {},
+            onRetryClick = {},
+            onReadMoreClick = {},
+            onViewTechnicalDetailsClicked = {}
         )
     }
 }

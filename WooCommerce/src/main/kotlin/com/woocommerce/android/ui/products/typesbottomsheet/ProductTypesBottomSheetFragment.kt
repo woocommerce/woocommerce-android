@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
@@ -27,6 +30,10 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
     @Inject
     internal lateinit var navigator: ProductNavigator
+
+    @Inject
+    internal lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
     private val navArgs: ProductTypesBottomSheetFragmentArgs by navArgs()
@@ -57,8 +64,17 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
             showProductTypeOptions(it)
         }
 
+        viewModel.isCreatingProduct.observe(viewLifecycleOwner) { isCreating ->
+            binding.productDetailInfoContent.isVisible = !isCreating
+            binding.productDetailInfoProgress.isVisible = isCreating
+        }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
+                }
+
                 is MultiLiveEvent.Event.Exit -> {
                     dismiss()
                 }
@@ -78,6 +94,19 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     (event.data as? ProductTypesBottomSheetUiItem)?.let {
                         navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
+                    }
+                }
+
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    Snackbar.make(
+                        requireView(),
+                        getString(event.message),
+                        Snackbar.LENGTH_SHORT
+                    ).let {
+                        // Set a high z-index here to make sure the Snackbar is shown above the bottom sheet content
+                        @Suppress("MagicNumber")
+                        it.view.z = 200f
+                        it.show()
                     }
                 }
 

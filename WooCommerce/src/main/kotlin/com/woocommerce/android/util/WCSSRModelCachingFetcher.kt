@@ -28,12 +28,13 @@ class WCSSRModelCachingFetcher @Inject constructor(
     )
 
     suspend fun load(
-        siteModel: SiteModel
+        siteModel: SiteModel,
+        forceRefresh: Boolean = false
     ): WooResult<WCSSRModel> = mutex.withLock {
         val cached = cache[siteModel.siteId]
         val now = System.currentTimeMillis()
 
-        if (cached != null && now - cached.timestamp < cacheTTL) {
+        if (!forceRefresh && cached != null && now - cached.timestamp < cacheTTL) {
             return WooResult(cached.data)
         }
 

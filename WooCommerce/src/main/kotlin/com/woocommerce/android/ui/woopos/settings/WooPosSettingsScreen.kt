@@ -59,7 +59,8 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
         onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
         onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-        onDismissDialog = containerViewModel::hideDialog
+        onDismissDialog = containerViewModel::hideDialog,
+        onNavigationEvent = onNavigationEvent
     )
 }
 
@@ -73,7 +74,8 @@ private fun WooPosSettingsContent(
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
-    onDismissDialog: () -> Unit
+    onDismissDialog: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxSize()
@@ -101,6 +103,7 @@ private fun WooPosSettingsContent(
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
+            onNavigationEvent = onNavigationEvent,
             modifier = Modifier
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surface)
