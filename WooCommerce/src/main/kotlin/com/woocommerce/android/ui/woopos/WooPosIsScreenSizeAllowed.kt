@@ -23,7 +23,7 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
         val shortSize = min(screenWidthDp, screenHeightDp)
         val longSize = max(screenWidthDp, screenHeightDp)
 
-        val isTabletSize = shortSize >= MIN_SCREEN_SHORT_SIZE_DP && longSize >= MIN_SCREEN_LONG_SIZE_DP
+        val isTabletSize = shortSize >= MIN_TABLET_SHORT_SIZE_DP && longSize >= MIN_TABLET_LONG_SIZE_DP
         if (isTabletSize) return true
 
         val isPhoneWithFlagEnabled = context.isWooPosPhoneLayout() &&
@@ -33,13 +33,13 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
         wooPosLog.i(
             "POS Not allowed reason: Screen size is not allowed. " +
                 "Short size: $shortSize, Long size: $longSize, " +
-                "Minimum short size: $MIN_SCREEN_SHORT_SIZE_DP, Minimum long size: $MIN_SCREEN_LONG_SIZE_DP"
+                "Minimum short size: $MIN_TABLET_SHORT_SIZE_DP, Minimum long size: $MIN_TABLET_LONG_SIZE_DP"
         )
         return false
     }
 
-    private companion object {
-        const val MIN_SCREEN_SHORT_SIZE_DP = 674
-        const val MIN_SCREEN_LONG_SIZE_DP = 800
+    companion object {
+        internal const val MIN_TABLET_SHORT_SIZE_DP = 674
+        internal const val MIN_TABLET_LONG_SIZE_DP = 800
     }
 }
