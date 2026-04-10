@@ -46,14 +46,14 @@ fun BookingRescheduleScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center,
         ) {
-            when (state) {
-                is BookingRescheduleState.Loading, null -> {
+            when (state?.availabilityState) {
+                is BookingRescheduleState.AvailabilityState.Loading, null -> {
                     CircularProgressIndicator()
                 }
-                is BookingRescheduleState.Error -> {
+                is BookingRescheduleState.AvailabilityState.Error -> {
                     // Empty for now — error is shown via snackbar
                 }
-                is BookingRescheduleState.Content -> {
+                is BookingRescheduleState.AvailabilityState.Loaded -> {
                     // Availability data loaded — calendar UI will be added here
                 }
             }
