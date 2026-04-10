@@ -320,6 +320,7 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        // Drop stale main-flow state when no site is selected so login can take over cleanly.
         val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
         super.onCreate(bundle)
         setOnBackNavigationCallback()
