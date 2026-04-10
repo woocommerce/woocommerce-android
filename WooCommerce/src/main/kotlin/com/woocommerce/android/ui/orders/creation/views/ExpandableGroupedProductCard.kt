@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -269,8 +268,8 @@ fun ExpandableChildrenProductCard(
                     start.linkTo(parent.start)
                     bottom.linkTo(collapsedStateBottomBarrier)
                 }
-                .padding(start = dimensionResource(id = R.dimen.major_200))
-                .size(dimensionResource(R.dimen.major_250)),
+                .padding(start = dimensionResource(id = R.dimen.major_200)),
+            imageSize = dimensionResource(R.dimen.major_250),
             imageUrl = product.productInfo.imageUrl
         )
         Text(

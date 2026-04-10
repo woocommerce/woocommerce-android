@@ -56,7 +56,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
@@ -260,7 +259,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 R.string.dashboard_top_performers_net_sales,
                 getTotalSpendFormatted(total.toBigDecimal(), currency)
             ),
-            imageUrl = imageUrl?.toImageUrl(),
+            imageUrl = imageUrl,
             onClick = ::onTopPerformerTapped
         )
 
@@ -268,13 +267,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         currencyFormatter.formatCurrency(
             totalSpend,
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
-        )
-
-    private fun String.toImageUrl() =
-        PhotonUtils.getPhotonImageUrl(
-            this,
-            resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100),
-            0
         )
 
     fun onCustomRangeSelected(statsTimeRange: StatsTimeRange) {
