@@ -13,7 +13,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | Magic Link Sent | text: "Check your email on this device" and "Open Mail" button |
 | Site Address | text: "Enter the address of the WooCommerce store you'd like to connect.", hint: "Site address" |
 | Site Credentials | text: "Log in with your [site URL] site credentials" with "Username" and "Password" fields |
-| Site Picker | store list with "Connect another store" and "Log in with another account" buttons |
+| Site Picker | selectable store list with "Continue" button |
 | Account Mismatch | text: "It looks like [site] is connected to a different WordPress.com account." with avatar |
 | Discovery Error | title: "Connection error" with "Try again" and "Read our troubleshooting tips" options |
 | Jetpack Activation | text: "Please install the free Jetpack plugin" with "Install Jetpack" or "Connect Jetpack" button |
