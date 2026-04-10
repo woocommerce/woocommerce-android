@@ -5,30 +5,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Companion.AVAILABLE_STOCK_STATUSES
@@ -36,6 +32,7 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Sto
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Common
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Mixed
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
@@ -61,29 +58,15 @@ fun UpdateProductStockStatusScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarEdgeToEdge(
-                title = { Text(stringResource(id = R.string.product_update_stock_status_title)) },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                navigationIcon = {
-                    IconButton(onClick = onNavigationUpClicked) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(onClick = onUpdateClicked) {
-                        Text(
-                            text = stringResource(id = R.string.product_update_stock_status_done),
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
-                },
-                elevation = 0.dp
+            Toolbar(
+                title = stringResource(id = R.string.product_update_stock_status_title),
+                onNavigationButtonClick = onNavigationUpClicked,
+                onActionButtonClick = onUpdateClicked,
+                actionButtonText = stringResource(id = R.string.product_update_stock_status_done),
+                windowInsets = TopAppBarDefaults.windowInsets,
             )
         },
-        backgroundColor = MaterialTheme.colors.surface
+        containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150)))
@@ -104,17 +87,17 @@ fun UpdateProductStockStatusScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(start = dimensionResource(id = R.dimen.major_75)),
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.titleSmall,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
-            Divider(color = borderColor)
+            HorizontalDivider(color = borderColor)
 
             Text(
                 text = statusMessage,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.titleSmall,
                 color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,7 +109,7 @@ fun UpdateProductStockStatusScreen(
                 textAlign = TextAlign.Center
             )
 
-            Divider(color = borderColor)
+            HorizontalDivider(color = borderColor)
         }
 
         if (isProgressDialogVisible) {

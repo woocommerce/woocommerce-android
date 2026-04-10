@@ -33,6 +33,7 @@ data class BookingUiState(
     val note: String,
     val isAttendanceStatusEditable: Boolean,
     val onCancelBooking: () -> Unit = {},
+    val onRescheduleBooking: () -> Unit = {},
     val onAttendanceToggle: () -> Unit = {},
     val onNoteClicked: () -> Unit = {},
     val onViewOrderClicked: () -> Unit = {},
