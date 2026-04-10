@@ -1,6 +1,6 @@
-# Jetpack Compose Guidelines
+# Store App — Jetpack Compose Guidelines
 
-> **Scope:** Store management app (main app). POS has its own Compose patterns — see [POS Architecture](pos-architecture.md).
+> POS has its own Compose patterns — see [POS Architecture](pos-architecture.md).
 
 We follow the official [Compose API guidelines for App development](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#api-guidelines-for-jetpack-compose) and Google's Compose best practices. This doc covers only **project-specific** conventions and patterns.
 

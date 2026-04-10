@@ -7,7 +7,7 @@ user-invocable: true
 
 # POS Unit Tests
 
-@docs/testing.md
+@docs/pos-testing.md
 
 ## Workflow
 

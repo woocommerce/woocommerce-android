@@ -7,4 +7,4 @@ user-invocable: true
 
 # Store App ViewModel Patterns
 
-@docs/viewmodel-patterns.md
+@docs/store-viewmodel-patterns.md

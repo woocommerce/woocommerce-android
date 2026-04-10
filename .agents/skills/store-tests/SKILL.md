@@ -7,7 +7,7 @@ user-invocable: true
 
 # Store App Unit Tests
 
-@docs/testing.md
+@docs/store-testing.md
 
 ## Workflow
 

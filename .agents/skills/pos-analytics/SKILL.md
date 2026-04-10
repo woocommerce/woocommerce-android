@@ -7,4 +7,4 @@ user-invocable: true
 
 # POS Analytics Tracking
 
-@docs/tracking-events.md
+@docs/pos-tracking-events.md

@@ -9,45 +9,39 @@ user-invocable: true
 
 Review the current changes against the project's conventions and architecture rules.
 
-@docs/compose.md
-@docs/viewmodel-patterns.md
-@docs/tracking-events.md
-@docs/testing.md
-@docs/coding-style.md
+Load the appropriate docs based on which code area is being reviewed:
+- Store code: `@docs/store-compose.md`, `@docs/store-viewmodel-patterns.md`, `@docs/store-tracking-events.md`, `@docs/store-testing.md`
+- POS code: `@docs/pos-architecture.md`, `@docs/pos-tracking-events.md`, `@docs/pos-testing.md`
+- Shared: `@docs/coding-style.md`
 
 ## Steps
 
 1. **Determine the diff to review.** First check `git diff trunk...HEAD` for branch changes (most common: pre-PR review). If empty, fall back to `git diff --cached` for staged changes, then `git diff` for unstaged changes.
 
-2. **Read the changed files** in full to understand context, not just the diff hunks.
+2. **Determine if the code is POS or store.** POS: `ui/woopos/`, `WooPos*` prefix. Everything else: store management. Read the relevant docs above.
 
-3. **Check against each category below.** Only report actual issues found — do not report categories with no issues.
+3. **Read the changed files** in full to understand context, not just the diff hunks.
+
+4. **Check against each category below.** Only report actual issues found — do not report categories with no issues.
 
 ### Architecture
-- Determine if the code is POS (`ui/woopos/`, `WooPos*` prefix) or store management (everything else)
 - POS: ViewModels extend `ViewModel()`, use parent-child SharedFlow event bus, pure Compose, Compose Navigation
 - Store: ViewModels extend `ScopedViewModel`, use `triggerEvent()` / `MultiLiveEvent`, Compose inside Fragments, XML nav graphs
 - Both: `@HiltViewModel` + `@Inject constructor`, data flows through repositories, ViewModels never access Room/network directly
 
 ### Kotlin Style
-- Refer to `docs/coding-style.md` for detekt rules and conventions
 - Max 120 character line length (test names excepted)
 - No wildcard imports, no `FIXME` (use `TODO`), no `!!` force unwraps
 - Constants: `UPPER_SNAKE_CASE`, companion objects at bottom
 
 ### Jetpack Compose
-- Refer to `docs/compose.md` (store) or `docs/pos-architecture.md` (POS) for patterns
-- `@Composable` functions returning Unit use PascalCase noun names
-- `Modifier` is the first optional parameter, named `modifier`
-- State hoisting, containers, `remember {}`, immutable params
+- Check against patterns in `docs/store-compose.md` (store) or `docs/pos-architecture.md` (POS)
 
 ### Testing
-- Refer to `docs/testing.md` for conventions
 - Store: `BaseUnitTest`, `testBlocking`, `captureValues`, AssertJ
 - POS: `WooPosCoroutineTestRule`, `runTest`, `advanceUntilIdle`, AssertJ
 
 ### Analytics
-- Refer to `docs/tracking-events.md` for conventions
 - Store: `AnalyticsEvent` enum, `AnalyticsTrackerWrapper`
 - POS: `WooPosAnalyticsEvent` sealed class, `WooPosAnalyticsTracker`
 

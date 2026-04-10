@@ -1,8 +1,6 @@
-# ViewModel Patterns
+# Store App — ViewModel Patterns
 
-This project has two distinct ViewModel patterns — one for the **store management app** and one for **POS**. Using the wrong one is a common mistake. Check which part of the codebase you're working in before writing a ViewModel.
-
-- File path contains `woopos/` or class name starts with `WooPos` → **POS**
+> POS ViewModels use a different pattern — see [POS Architecture](pos-architecture.md).
 - Everything else → **Store Management**
 
 ## Store App ViewModel
@@ -199,15 +197,4 @@ triggerEvent(NavigateToDetail(item.id))
 
 ## POS ViewModel
 
-POS ViewModels extend plain `ViewModel()` — **NOT** `ScopedViewModel`. See [POS Architecture](pos-architecture.md) for the full POS ViewModel pattern including the event bus, UI events, and state classes.
-
-## Quick Reference: Store vs POS
-
-| Aspect | Store | POS |
-|--------|-------|-----|
-| Base class | `ScopedViewModel(savedStateHandle)` | `ViewModel()` |
-| Coroutines | `launch {}` (from CoroutineScope) | `viewModelScope.launch {}` |
-| State | `StateFlow<T>` or `LiveData<T>` | `StateFlow<T>` |
-| Events | `triggerEvent()` / `MultiLiveEvent` | Parent-child SharedFlow bus |
-| Analytics | `AnalyticsTrackerWrapper` | `WooPosAnalyticsTracker` |
-| Navigation | Fragment nav graphs | Compose Navigation |
+POS ViewModels use a different pattern — see [POS Architecture](pos-architecture.md).

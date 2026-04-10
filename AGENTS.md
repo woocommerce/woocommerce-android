@@ -181,12 +181,14 @@ For app-specific pitfalls, see the relevant skills (`pos`, `store-compose`, `sto
 ## Further Reading
 
 Detailed patterns and conventions are in the `docs/` folder and loaded on-demand via skills. See:
-- `docs/compose.md` — Jetpack Compose guidelines (store app)
-- `docs/viewmodel-patterns.md` — ViewModel patterns (store + POS)
-- `docs/tracking-events.md` — Analytics tracking (store + POS)
-- `docs/testing.md` — Unit testing patterns (store + POS)
+- `docs/store-compose.md` — Jetpack Compose guidelines (store app)
+- `docs/store-viewmodel-patterns.md` — ViewModel patterns (store app)
+- `docs/store-tracking-events.md` — Analytics tracking (store app)
+- `docs/store-testing.md` — Unit testing (store app)
+- `docs/pos-architecture.md` — POS architecture, ViewModel, design system
+- `docs/pos-tracking-events.md` — Analytics tracking (POS)
+- `docs/pos-testing.md` — Unit testing (POS)
 - `docs/pull-request-guidelines.md` — PR conventions
-- `docs/pos-architecture.md` — POS architecture and design system
 - `docs/coding-style.md` — Kotlin coding style and detekt
 
 @CONVENTION.md

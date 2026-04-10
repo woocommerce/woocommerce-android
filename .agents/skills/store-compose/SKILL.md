@@ -7,4 +7,4 @@ user-invocable: true
 
 # Store App Compose UI
 
-@docs/compose.md
+@docs/store-compose.md

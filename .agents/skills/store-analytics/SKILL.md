@@ -7,4 +7,4 @@ user-invocable: true
 
 # Store App Analytics Tracking
 
-@docs/tracking-events.md
+@docs/store-tracking-events.md
