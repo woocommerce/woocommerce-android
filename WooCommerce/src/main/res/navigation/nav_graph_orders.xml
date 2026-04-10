@@ -735,8 +735,8 @@
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditPaymentDialogFragment"
             app:destination="@id/wooShippingEditPaymentDialogFragment" />
         <action
-            android:id="@+id/action_wooShippingLabelCreationFragment_to_upsDapTermsOfServiceBottomSheetFragment"
-            app:destination="@id/upsDapTermsOfServiceBottomSheetFragment" />
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_carrierTermsOfServiceBottomSheetFragment"
+            app:destination="@id/carrierTermsOfServiceBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -823,11 +823,16 @@
         android:label="WooShippingEditPaymentDialogFragment" />
 
     <dialog
-        android:id="@+id/upsDapTermsOfServiceBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment"
-        android:label="UPSDAPTermsOfServiceBottomSheetFragment">
+        android:id="@+id/carrierTermsOfServiceBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsOfServiceBottomSheetFragment"
+        android:label="CarrierTermsOfServiceBottomSheetFragment">
+        <argument
+            android:name="provider"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsProvider" />
         <argument
             android:name="originAddress"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress" />
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress"
+            app:nullable="true" />
     </dialog>
 </navigation>
