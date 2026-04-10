@@ -1,6 +1,7 @@
 package com.woocommerce.android.analytics
 
 import android.content.SharedPreferences
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PREFKEY_SEND_USAGE_STATS
 import dagger.Reusable
@@ -33,6 +34,10 @@ open class AnalyticsTrackerWrapper @Inject constructor() {
 
     fun track(stat: IAnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
         AnalyticsTracker.track(stat, properties)
+    }
+
+    fun track(event: Trackable) {
+        AnalyticsTracker.track(EventHorizonAnalyticsEvent(event), event.analyticsProperties)
     }
 
     /**

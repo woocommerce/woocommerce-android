@@ -572,12 +572,23 @@ private fun ItemsHeaderRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = WooPosSpacing.Medium.value),
+            .padding(bottom = WooPosSpacing.Medium.value)
+            .then(
+                if (enabled) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onSelectAllToggled
+                    )
+                } else {
+                    Modifier
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = allItemsSelected,
-            onCheckedChange = { onSelectAllToggled() },
+            onCheckedChange = null,
             enabled = enabled,
             modifier = Modifier
                 .size(32.dp)
@@ -619,7 +630,6 @@ private fun RefundableItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.XSmall.value)
-            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             .then(
                 if (enabled) {
                     Modifier.clickable(
