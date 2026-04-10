@@ -21,7 +21,9 @@
       "Bash(gh issue *)",
       "Bash(gh api *)",
       "Bash(adb *)",
-      "Bash(emulator *)"
+      "Bash(emulator *)",
+      "Skill(pr-feedback)",
+      "Skill(pr)"
     ],
     "deny": [
       "Bash(git push --force *)",

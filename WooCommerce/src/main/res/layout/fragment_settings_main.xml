@@ -29,9 +29,7 @@
             android:id="@+id/option_troubleshoot_connection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:optionTitle="@string/settings_troubleshoot_connection"
-            tools:visibility="visible" />
+            app:optionTitle="@string/settings_troubleshoot_connection" />
 
         <View style="@style/Woo.Divider" />
 

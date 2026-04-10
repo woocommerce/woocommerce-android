@@ -537,6 +537,10 @@
     <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
     <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
+    <string name="connectivity_tool_view_technical_details">View technical details</string>
+    <string name="connectivity_tool_technical_details_title">Technical details</string>
+    <string name="connectivity_tool_technical_details_copied">Technical details have been copied to your clipboard.</string>
+    <string name="connectivity_tool_copy">Copy</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
     <string name="orderlist_selection_count">%d orders selected</string>
@@ -2583,6 +2587,8 @@
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_title">External product</string>
     <string name="product_type_external_desc">Link a product to an external website</string>
+    <string name="product_type_bookable_service_title">Service</string>
+    <string name="product_type_bookable_service_desc">A service that customers can book online</string>
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
@@ -3637,6 +3643,8 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_preparing">Preparing catalog…</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d of %2$d items</string>
     <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
@@ -4099,6 +4107,7 @@
     <string name="woopos_settings_store_phone_label">Phone number</string>
     <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
+    <string name="woopos_settings_receipt_edit_button">Edit receipt information</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4444,6 +4453,7 @@
     <string name="booking_mark_as_unattended">Mark as unattended</string>
     <string name="booking_attendance_status_cancelled">Canceled</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
+    <string name="booking_details_reschedule_button">Reschedule</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>

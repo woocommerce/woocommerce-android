@@ -40,6 +40,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.automattic.eventhorizon.MainTabBookingsReselectEvent
+import com.automattic.eventhorizon.MainTabBookingsSelectEvent
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -50,6 +52,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
@@ -199,6 +202,9 @@ class MainActivity :
 
     @Inject
     lateinit var bookingsTabController: BookingsTabController
+
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -761,10 +767,17 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECT
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
+            BOOKINGS -> {
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsSelectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
+                null
+            }
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        stat?.let { AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString)) }
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -787,7 +800,14 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECT
+            BOOKINGS -> {
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsReselectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
+                null
+            }
         }
         stat?.let {
             AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
