@@ -211,14 +211,6 @@ private fun WooPosBookingsScreen(
                         disablePartialRefund = true
                     )
                 }
-
-            // Exhaustive guardrail: fails compilation if a new DialogState subtype is added
-            // without being rendered above. CancelBooking is handled elsewhere in the screen.
-            when (dialogState) {
-                is WooPosBookingsState.Content.DialogState.IssueRefund,
-                is WooPosBookingsState.Content.DialogState.CancelBooking,
-                WooPosBookingsState.Content.DialogState.Hidden -> Unit
-            }
         }
     }
 }

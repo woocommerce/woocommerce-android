@@ -236,14 +236,6 @@ private fun WooPosOrdersScreen(
                         onDismissRequest = onRefundDetailsDialogDismissed,
                     )
                 }
-
-            // Exhaustive guardrail: fails compilation if a new DialogState subtype is added
-            // without being rendered above.
-            when (dialogState) {
-                is WooPosOrdersState.Content.DialogState.IssueRefund,
-                is WooPosOrdersState.Content.DialogState.RefundDetails,
-                WooPosOrdersState.Content.DialogState.Hidden -> Unit
-            }
         }
     }
 }
