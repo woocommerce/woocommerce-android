@@ -134,7 +134,7 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 ## Steps
 
-**Shortcut:** If the app is already installed and logged in, skip to step 7 (Restart and Launch the App).
+**Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
 
 ### 1. Discover Devices
 
