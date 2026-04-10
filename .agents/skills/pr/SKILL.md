@@ -52,7 +52,7 @@ EOF
 )"
 ```
 
-9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Pick from the categories described in the guidelines.
+9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Infer labels from the diff and branch name using the categories in the guidelines. If unsure about feature label, ask the user.
 
 10. **Set milestone.** Find the closest open milestone and assign it:
     - List open milestones (single-quote the URL to prevent shell `&` interpretation):
@@ -61,9 +61,17 @@ EOF
       ```
     - Pick the one with the earliest `due_on` date that is still in the future
     - Assign it: `gh api repos/{owner}/{repo}/issues/{number} -X PATCH -F milestone={milestone_number}`
-    - **If the milestone due date is less than 1 day away**, warn the user.
+    - **If the milestone due date is less than 1 day away**, warn the user (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
 
 11. **Report the PR URL** to the user.
+
+## Image Formatting in PR Body
+
+- **Before/after pair**: Use a comparison table with `| Before | After |` headers
+- **Multiple images**: Use a table with appropriate column headers
+- **Single image or video**: Embed directly (e.g., `![Screenshot](url-or-path)`)
+- Constrain image width to 400px using HTML: `<img src="url" width="400" />`
+- If no images provided, use "N/A"
 
 ## Troubleshooting
 
