@@ -10,8 +10,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardItemViewBinding
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.util.PhotonUtils
 
 class AnalyticsHubListCardItemView @JvmOverloads constructor(
     ctx: Context,
@@ -38,7 +38,7 @@ class AnalyticsHubListCardItemView @JvmOverloads constructor(
 
         if (viewState.showImage) {
             Glide.with(binding.root.context)
-                .load(PhotonUtils.getPhotonImageUrl(viewState.imageUri, imageSize, imageSize))
+                .loadPhotonUrlWithFallback(viewState.imageUri, imageSize, imageSize)
                 .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .placeholder(R.drawable.ic_product)
                 .into(binding.analyticsCardListItemImage)

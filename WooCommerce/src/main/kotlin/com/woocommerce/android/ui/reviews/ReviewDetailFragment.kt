@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
@@ -46,7 +47,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -228,9 +228,8 @@ class ReviewDetailFragment :
         // it from the backend. When the request completes it will be captured by the presenter, which will
         // call this method to show the image for the just-downloaded product model
         productImageMap.get(remoteProductId)?.let { productImage ->
-            val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
             Glide.with(activity as Context)
-                .load(imageUrl)
+                .loadPhotonUrlWithFallback(productImage, productIconSize, productIconSize)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
                 .into(binding.reviewProductIcon)
         }

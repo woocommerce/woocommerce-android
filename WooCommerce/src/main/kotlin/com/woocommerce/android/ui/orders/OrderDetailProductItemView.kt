@@ -12,9 +12,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 typealias ViewAddonClickListener = (Order.Item) -> Unit
@@ -66,9 +66,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val imageCornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             Glide.with(context)
-                .load(imageUrl)
+                .loadPhotonUrlWithFallback(it, imageSize, imageSize)
                 .placeholder(R.drawable.ic_product)
                 .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .into(binding.productInfoIcon)
