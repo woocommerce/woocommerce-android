@@ -542,7 +542,7 @@ class SitePickerViewModel @Inject constructor(
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                         },
                         onFailure = {
-                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
                         }
                     )
                 }

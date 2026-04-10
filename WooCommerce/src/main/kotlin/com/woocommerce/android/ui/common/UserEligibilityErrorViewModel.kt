@@ -72,7 +72,7 @@ class UserEligibilityErrorViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    triggerEvent(ShowSnackbar(string.user_role_access_error_fetch_failed))
                 }
             )
 

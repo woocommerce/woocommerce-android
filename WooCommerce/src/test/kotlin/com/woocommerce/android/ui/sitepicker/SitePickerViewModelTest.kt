@@ -558,6 +558,11 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
+            val isProgressShown = ArrayList<Boolean>()
+            viewModel.sitePickerViewStateData.observeForever { old, new ->
+                new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) { isProgressShown.add(it) }
+            }
+
             val selectedSiteModel = defaultExpectedSiteList[1]
 
             viewModel.onSiteSelected(selectedSiteModel)
@@ -567,7 +572,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
             verify(selectedSite, times(0)).set(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
-            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+            assertThat(isProgressShown).containsExactly(false, true, false)
         }
 
     @Test
