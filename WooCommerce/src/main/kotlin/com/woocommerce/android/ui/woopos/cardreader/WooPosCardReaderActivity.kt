@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.parcelable
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupTopAndBottomInsets()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        requestedOrientation = if (isWooPosPhoneLayout()) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_card_reader_nav_host_fragment
