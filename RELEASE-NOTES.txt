@@ -7,6 +7,7 @@
 - [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
 - [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
 - [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
+- [Internal] Hide Inbox for CIAB sites in menu and dashboard [https://github.com/woocommerce/woocommerce-android/pull/15623]
 - [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
 - [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
 - [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
