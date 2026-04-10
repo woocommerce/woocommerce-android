@@ -6,11 +6,11 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Screen | How to Detect |
 |--------|---------------|
-| Prologue | text: "Log in with WordPress.com" and "Log in with site address" |
-| WPCom Email | text: email input field, WooCommerce/Jetpack logo |
-| Password | text: password input field, "Forgot password?" link |
-| 2FA / Verification Code | text: "Enter verification code" or OTP input |
-| Magic Link Sent | text: "Check your email" or "Open email client" |
+| Prologue | text: "Log In" button and "Starting a new store?" link |
+| WPCom Email | text: email input field, "Log in to WordPress.com using an email address" |
+| Password | text: password input field, "Reset your password" link |
+| 2FA / Verification Code | text: "Verification code" or OTP input |
+| Magic Link Sent | text: "Check your email on this device" and "Open Mail" button |
 | Site Address | text: "Enter your store URL" |
 | Site Credentials | text: "Enter credentials for site:" with username/password fields |
 | Site Picker | store list with "Continue" button |
@@ -25,19 +25,20 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Tap "Log in with WordPress.com" | id: `buttonLoginWpcom` |
-| 2 | Enter email | email text field |
+| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
-| 4 | Enter password | password text field |
-| 5 | Tap Continue | continue button |
-| 6 | Select store (if multi-site) | store list row |
-| 7 | Tap Continue | text: "Continue" |
+| 4 | Enter WPCom email (if Jetpack connected) | email text field |
+| 5 | Enter password | password text field |
+| 6 | Tap Continue | continue button |
+| 7 | Select store (if multi-site) | store list row |
+| 8 | Tap Continue | text: "Continue" |
 
 ### Happy Path: Site Address
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Tap "Log in with site address" | id: `buttonLoginStore` |
+| 1 | Tap "Log In" | id: `buttonLoginStore` |
 | 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
 | 4 | Enter WPCom email (if Jetpack connected) | email text field |
@@ -59,7 +60,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 |------|--------|---------|
 | 1 | Enter email | email text field |
 | 2 | Request magic link | magic link button |
-| 3 | Tap "Open email client" | id: `login_open_email_client` |
+| 3 | Tap "Open Mail" | id: `login_open_email_client` |
 | 4 | (Magic link opened from email) | |
 
 ### Google SSO
