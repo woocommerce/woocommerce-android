@@ -179,16 +179,20 @@ class WooPosSyncAction @Inject constructor(
             )
 
             is WooPosLocalCatalogError.NetworkError -> WooPosSyncResult.Failed.NetworkError(
-                errorMessage = error.errorMessage
+                errorMessage = error.errorMessage.ifBlank {
+                    "Network error${error.code?.let { " (code: $it)" } ?: ""}"
+                }
             )
 
             is WooPosLocalCatalogError.DatabaseError -> WooPosSyncResult.Failed.DatabaseError(
-                errorMessage = error.errorMessage,
+                errorMessage = error.errorMessage.ifBlank {
+                    "Database error (${error.throwable?.let { it::class.simpleName } ?: "unknown"})"
+                },
                 throwable = error.throwable
             )
 
             is WooPosLocalCatalogError.InvalidResponse -> WooPosSyncResult.Failed.InvalidResponse(
-                errorMessage = error.errorMessage
+                errorMessage = error.errorMessage.ifBlank { "Invalid response" }
             )
 
             is WooPosLocalCatalogError.EmptyResponse -> WooPosSyncResult.Failed.InvalidResponse(
@@ -196,7 +200,8 @@ class WooPosSyncAction @Inject constructor(
             )
 
             else -> WooPosSyncResult.Failed.UnexpectedError(
-                error.message ?: "Failed to sync catalog"
+                error.message?.takeIf { it.isNotBlank() }
+                    ?: "Failed to sync catalog (${error::class.simpleName})"
             )
         }
     }
@@ -303,7 +308,9 @@ class WooPosSyncAction @Inject constructor(
             is WooPosLocalCatalogError.DatabaseError -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncResult.Failed.DatabaseError(
-                    errorMessage = error.errorMessage,
+                    errorMessage = error.errorMessage.ifBlank {
+                        "Transaction database error (${error.throwable?.let { it::class.simpleName } ?: "unknown"})"
+                    },
                     throwable = error.throwable
                 )
             }
@@ -311,7 +318,8 @@ class WooPosSyncAction @Inject constructor(
             else -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncResult.Failed.UnexpectedError(
-                    error.message ?: "Local Catalog Transaction failed and was rolled back"
+                    error.message?.takeIf { it.isNotBlank() }
+                        ?: "Transaction failed and was rolled back (${error::class.simpleName})"
                 )
             }
         }

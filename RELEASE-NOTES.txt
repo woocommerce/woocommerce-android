@@ -6,6 +6,10 @@
 -----
 
 
+24.5.1
+-----
+- [Internal] POS: Improved error descriptions in catalog sync failure analytics [https://github.com/woocommerce/woocommerce-android/pull/15643]
+
 24.5
 -----
 - [Internal] Hide settings plugins section for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15594]
