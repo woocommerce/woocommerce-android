@@ -530,10 +530,10 @@ class SitePickerViewModel @Inject constructor(
                 siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
                 siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                     experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                    selectedSite.set(siteVerificationModel.siteModel)
                     trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                    userEligibilityFetcher.fetchUserInfo().fold(
+                    userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
                         onSuccess = {
+                            selectedSite.set(siteVerificationModel.siteModel)
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
 
                             trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
@@ -548,10 +548,10 @@ class SitePickerViewModel @Inject constructor(
                 }
 
                 else -> {
-                    sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                     _isWooUpgradeDialogVisible.value = true
                 }
             }
+            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
         }
     }
 

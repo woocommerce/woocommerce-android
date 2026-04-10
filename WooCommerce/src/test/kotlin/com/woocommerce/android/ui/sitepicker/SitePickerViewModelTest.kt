@@ -123,7 +123,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
-        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(SitePickerTestUtils.userModel))
+        whenever(userEligibilityFetcher.fetchUserInfo(any())).thenReturn(Result.success(SitePickerTestUtils.userModel))
     }
 
     private suspend fun whenSitesAreFetched(
@@ -540,13 +540,35 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onContinueButtonClick()
 
         verify(repository, times(1)).verifySiteWooAPIVersion(any())
+        verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
         verify(selectedSite, times(1)).set(any())
-        verify(userEligibilityFetcher, times(1)).fetchUserInfo()
         verify(appPrefsWrapper, times(1)).removeLoginSiteAddress()
 
         assertThat(view).isEqualTo(NavigateToMainActivityEvent)
         assertThat(isProgressShown).containsExactly(false, true, false)
     }
+
+    @Test
+    fun `given eligibility fetch fails after site verification, when continue is tapped, then do not persist selected site`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(SitePickerTestUtils.apiVerificationResponse)
+            )
+            whenever(userEligibilityFetcher.fetchUserInfo(any())).thenReturn(Result.failure(Exception()))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val selectedSiteModel = defaultExpectedSiteList[1]
+
+            viewModel.onSiteSelected(selectedSiteModel)
+            viewModel.onContinueButtonClick()
+
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
+            verify(selectedSite, times(0)).set(any())
+            verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        }
 
     @Test
     fun `given that a site is selected, when verification is initiated, but then returns upgrade error`() =
@@ -569,7 +591,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             verify(repository, times(1)).verifySiteWooAPIVersion(any())
             verify(selectedSite, times(0)).set(any())
-            verify(userEligibilityFetcher, times(0)).fetchUserInfo()
+            verify(userEligibilityFetcher, times(0)).fetchUserInfo(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
 
             assertThat(viewModel.isWooUpgradeDialogVisible.value).isEqualTo(true)
