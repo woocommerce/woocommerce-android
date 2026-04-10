@@ -75,7 +75,7 @@ google-play-services-auth = '21.5.1'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '19.0.0'
 google-protobuf-plugin = '0.9.6'
-google-protobuf-library = '4.33.6'
+google-protobuf-library = '4.34.0'
 google-services = '4.4.4'
 google-zxing = '3.5.4'
 gravatar = '2.5.1'
@@ -187,6 +187,7 @@ apache-commons-text = { group = "org.apache.commons", name = "commons-text", ver
 apache-http-client-android = { group = "org.apache.httpcomponents", name = "httpclient-android", version.ref = "apache-http-client-android" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
+automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-04-09_13-30-41"
 automattic-encryptedlogging = { group = "com.automattic", name = "encryptedlogging", version.ref = "automattic-encryptedlogging" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }

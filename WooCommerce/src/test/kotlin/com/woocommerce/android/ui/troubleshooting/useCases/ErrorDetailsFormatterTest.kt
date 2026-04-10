@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool.useCases
+package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
