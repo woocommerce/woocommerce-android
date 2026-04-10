@@ -1181,7 +1181,7 @@ class OrderRestClient @Inject constructor(
         siteId: LocalId,
         orderId: Long
     ): WCOrderFulfillmentModel {
-        val metaData = response.meta_data
+        val metaData = response.metaData
             ?.takeIf { element -> element.isJsonArray }
             ?.asJsonArray
             ?.mapNotNull { metaElement -> WCMetaData.fromJson(metaElement) }
@@ -1192,8 +1192,8 @@ class OrderRestClient @Inject constructor(
             orderId = RemoteId(orderId),
             fulfillmentId = response.id ?: 0L,
             status = response.status,
-            isFulfilled = response.is_fulfilled ?: false,
-            dateUpdated = response.date_updated,
+            isFulfilled = response.isFulfilled ?: false,
+            dateUpdated = response.dateUpdated,
             dateFulfilled = metaData.firstOrNull { it.key == DATE_FULFILLED_META_KEY }?.valueAsString,
             trackingNumber = metaData.firstOrNull { it.key == TRACKING_NUMBER_META_KEY }?.valueAsString,
             shipmentProvider = metaData.firstOrNull { it.key == SHIPMENT_PROVIDER_META_KEY }?.valueAsString,
