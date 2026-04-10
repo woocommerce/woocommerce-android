@@ -79,7 +79,7 @@ class MoreMenuRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given CIAB site, when checking inbox, then inbox is disabled`() = testBlocking {
+    fun `given Inbox feature is unsupported, when checking inbox, then inbox is disabled`() = testBlocking {
         // GIVEN
         whenever(selectedSite.exists()).thenReturn(true)
         whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Inbox)).thenReturn(true)
