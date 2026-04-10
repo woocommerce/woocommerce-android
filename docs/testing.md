@@ -15,30 +15,12 @@ Backtick-wrapped BDD style:
 - `` `given X, when Y, then Z` `` — when preconditions matter
 - `` `when X, then Y` `` — when no preconditions needed
 
-### Test Body
+Use `// GIVEN`, `// WHEN`, `// THEN` comment sections in the test body. Omit sections that are empty.
 
-Use `// GIVEN`, `// WHEN`, `// THEN` comment sections. Omit sections that are empty:
+### Libraries
 
-```kotlin
-@Test
-fun `given user is logged in, when refresh is pulled, then data reloads`() = testBlocking {
-    // GIVEN
-    whenever(repository.isLoggedIn()).thenReturn(true)
-
-    // WHEN
-    viewModel.onPullToRefresh()
-
-    // THEN
-    assertThat(viewModel.viewState.value?.isLoading).isFalse()
-    verify(repository).fetchData()
-}
-```
-
-### Assertions and Mocking
-
-- **Assertions:** AssertJ only — `assertThat(...).isEqualTo(...)`, `.isTrue()`, `.isInstanceOf(...)`, `.isNotEmpty`, `.doesNotContain(...)`
-- **Mocking:** mockito-kotlin — `mock()`, `whenever(...).thenReturn(...)`, `verify(...)`, `doReturn(...).whenever(...)`, `doSuspendableAnswer { ... }`
-- **NEVER** use JUnit assertions (`assertEquals`, `assertTrue`)
+- **Assertions:** AssertJ only — **NEVER** use JUnit assertions (`assertEquals`, `assertTrue`)
+- **Mocking:** mockito-kotlin
 
 ### Mocking Gotchas
 
@@ -46,30 +28,11 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 - This is critical for suspend functions returning `Result<T>` (inline class).
 - Use `onBlocking` in `mock {}` blocks for suspend functions: `onBlocking { fetch() } doReturn result`
 
-### Helper Methods
+### Conventions
 
-Name private helpers with `given`/`when` prefixes to mirror BDD test names:
-
-```kotlin
-private suspend fun givenFetchReturns(result: Result<Unit>) {
-    whenever(repository.fetch()).thenReturn(result)
-}
-private fun whenViewModelIsCreated() {
-    viewModel = MyViewModel(repository, savedState)
-}
-```
-
-### Test Data
-
-- Use companion objects for constants and sample data
-- Companion objects MUST be at the bottom of the class
+- Name private helpers with `given`/`when` prefixes to mirror BDD test names
+- Use companion objects for constants and sample data — MUST be at the bottom of the class
 - Use existing `*TestUtils` classes when available (e.g., `OrderTestUtils`, `ProductReviewTestUtils`)
-
-### What to Test
-
-- **ViewModels:** State changes after actions, events triggered (`ShowSnackbar`, `Exit`, navigation), analytics tracking, error handling
-- **Repositories:** Data mapping from FluxC/network to domain models, error propagation
-- **Use Cases:** Business logic, edge cases
 
 ---
 
@@ -117,32 +80,7 @@ When the class under test takes `CoroutineDispatchers`, inject test dispatchers:
 MyUseCase(dispatchers = coroutinesTestRule.testDispatchers)
 ```
 
-### Repository Tests
-
-Simple repository tests may skip `BaseUnitTest` and use `runTest` directly:
-
-```kotlin
-class ExampleRepositoryTest {
-    private val store: ExampleStore = mock()
-    private val selectedSite: SelectedSite = mock {
-        on(it.get()).thenReturn(SiteModel())
-    }
-    private val repository = ExampleRepository(store, selectedSite)
-
-    @Test
-    fun `when fetch succeeds, then return mapped items`() = runTest {
-        // GIVEN
-        whenever(store.fetchItems(any())).thenReturn(WooResult(model = listOf(RAW_ITEM)))
-
-        // WHEN
-        val result = repository.fetchItems()
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(listOf(EXPECTED_ITEM))
-    }
-}
-```
+Repository tests may skip `BaseUnitTest` and use `runTest` directly.
 
 ### Observing State
 
@@ -151,11 +89,9 @@ class ExampleRepositoryTest {
 Use `captureValues()` and `runAndCaptureValues {}` from `com.woocommerce.android.util.LiveDataUtils`:
 
 ```kotlin
-// Capture all emitted LiveData values
 val states = viewModel.viewState.captureValues()
 assertThat(states.last()).isInstanceOf(ViewState.Success::class.java)
 
-// Capture LiveData values while performing an action
 val states = viewModel.viewState.runAndCaptureValues {
     viewModel.onRetryClicked()
 }
@@ -186,17 +122,7 @@ assertThat(events.last()).isInstanceOf(ShowSnackbar::class.java)
 
 Use `advanceTimeAndRun(durationMs)` from `com.woocommerce.android.util` (combines `advanceTimeBy` + `runCurrent`).
 
-### Test Run Commands
-
-- Main app: `./gradlew :WooCommerce:testWasabiDebugUnitTest --tests "*.ClassName"`
-- CardReader: `./gradlew :libs:cardreader:testDebugUnitTest --tests "*.ClassName"`
-- Login: `./gradlew :libs:login:testDebugUnitTest --tests "*.ClassName"`
-- FluxC: `./gradlew :libs:fluxc:testDebugUnitTest --tests "*.ClassName"`
-- Commons: `./gradlew :libs:commons:testDebugUnitTest --tests "*.ClassName"`
-
-### Full Examples
-
-#### ViewModel Test (StateFlow + LiveData)
+### Full Example
 
 ```kotlin
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -206,7 +132,6 @@ class ExampleViewModelTest : BaseUnitTest() {
         on { observeItems() } doReturn flowOf(listOf(SAMPLE_ITEM))
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-
     private lateinit var viewModel: ExampleViewModel
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -247,17 +172,6 @@ class ExampleViewModelTest : BaseUnitTest() {
         val SAMPLE_ITEM = ExampleItem(id = 1L, name = "Test")
     }
 }
-```
-
-#### Nav Args Test Setup
-
-```kotlin
-private val savedState = ExampleFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
-
-private fun createViewModel() = ExampleViewModel(
-    repository = repository,
-    savedStateHandle = savedState
-)
 ```
 
 ---
@@ -301,10 +215,7 @@ class WooPosMyFeatureViewModelTest {
 
 ### Mocking the Event Bus
 
-**Default (no events):** Return `flowOf()` for the receiver:
-```kotlin
-whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
-```
+**Default (no events):** `whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())`
 
 **Testing event handling:** Use `MutableSharedFlow` to emit events during the test:
 ```kotlin
@@ -330,33 +241,22 @@ verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.CheckoutClic
 Mock `WooPosAnalyticsTracker` (not `AnalyticsTrackerWrapper`):
 
 ```kotlin
-// Simple event (data object)
+// data object — use argThat since they are singletons
 verify(analyticsTracker).track(argThat { this is WooPosAnalyticsEvent.Event.ActionTapped })
 
-// Event with properties (data class)
+// data class — match by exact values
 verify(analyticsTracker).track(
     WooPosAnalyticsEvent.Event.CheckoutTapped(productsInCart = 3, couponsInCart = 1)
 )
 ```
 
-Use `argThat { this is EventType }` for `data object` events since they are singletons.
-
 ### Timing and Coroutine Control
 
 - Call `advanceUntilIdle()` after creating the ViewModel to let `init` coroutines run
 - Use `advanceUntilIdle()` after emitting events to SharedFlows
-- When tests need controlled timing, use `StandardTestDispatcher` instead of the default `UnconfinedTestDispatcher`
-- With `StandardTestDispatcher`, use `advanceTimeBy(n)` to start coroutines before emitting to SharedFlows
+- When tests need controlled timing, use `StandardTestDispatcher` instead of `UnconfinedTestDispatcher`
 
-### Test Run Command
-
-```
-./gradlew :WooCommerce:testWasabiDebugUnitTest --tests "*.ClassName"
-```
-
-### Test File Location
-
-Tests: `WooCommerce/src/test/kotlin/com/woocommerce/android/ui/woopos/`
+---
 
 ## Key Differences: Store vs POS
 
