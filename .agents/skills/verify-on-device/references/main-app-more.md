@@ -18,12 +18,12 @@ Fully Compose-based. Identify items by text labels.
 
 ## Screen Identifiers
 
-**Reviews List** -- Fragment: `ReviewListFragment`
+**Reviews List** -- Fragment: `ReviewListFragment` (Compose-based via `ReviewListScreen`)
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
-| **Primary** | `reviewsList` | Reviews RecyclerView |
-| Unread filter | `unread_filter_switch` | Toggle to filter unread |
+| **Primary** | text: review items with product name and rating | Compose LazyColumn (no resource ID) |
+| Unread filter | text: "Unread reviews only" with toggle switch | Compose `WCSwitch` (no resource ID) |
 
 **Payments Hub** -- Fragment: `PaymentsHubFragment`
 
