@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 11:55:42+0000
+Translation-Revision-Date: 2026-03-23 15:56:36+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_payment_status_authorization_voided">האישור בוטל</string>
+    <string name="booking_payment_status_authorized">אושר</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">לא ניתן לרכוש את תווית המשלוח. יש להשלים את כתובת המוצא.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">כתובת המוצא חסרה או לא תקפה</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">האישור בוטל</string>
+    <string name="woopos_bookings_payment_status_authorized">אושר</string>
+    <string name="woopos_orders_details_refund_details_background">רקע דיאלוג פרטי ההחזר הכספי</string>
+    <string name="woopos_orders_details_refund_total">סכום החזר כולל</string>
+    <string name="woopos_orders_details_refund_tax">מס</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">סכום ביניים של הפריטים (%d פריטים)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">סכום ביניים של הפריטים (פריט %d)</string>
+    <string name="woopos_orders_details_refund_view_details">להציג פרטים</string>
+    <string name="woopos_orders_details_refund_label_numbered">החזר כספי מס\' ⁦%1$d⁩</string>
+    <string name="woopos_orders_details_refunded_products_title">מוצרים שעליהם ניתן החזר כספי</string>
+    <string name="woopos_home_syncing_catalog_subtitle">אפשר לצאת, והסנכרון ימשיך לפעול ברקע.</string>
+    <string name="woopos_home_syncing_catalog_hint">סנכרון הקטלוג עשוי להימשך מספר דקות.</string>
+    <string name="woo_push_notifications_introduction_connected_body">רק עוד שלב אחד, ותהיה לך אפשרות לקבל הודעות על הזמנות חדשות, ביקורות ועוד.</string>
+    <string name="woo_push_notifications_introduction_connected_title">לקבל הודעות דחיפה עבור החנות שלך</string>
+    <string name="my_store_widget_push_notifications_description">אפשר להפעיל הודעות דחיפה כדי לעקוב אחר הזמנות וביקורות חדשות.</string>
+    <string name="dashboard_stats_net_sales">סכום מכירות נטו</string>
     <string name="woopos_search_products_and_variations">לחפש מוצרים ואפשרויות</string>
     <string name="woopos_bookings_details_customer_guest_badge">אורח</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">יש לעדכן את התוסף</string>
@@ -132,7 +152,6 @@ Language: he_IL
     <string name="restart">הפעל מחדש</string>
     <string name="dev_feature_flags">דגלי האפשרות</string>
     <string name="settings_enable_push_notifications">הפעל התראות דחיפה</string>
-    <string name="my_store_widget_push_notifications_description">לחבר את החנות שלך לWordPress.com כדי לקבל התראות על הזמנות חדשות וביקורות.</string>
     <string name="my_store_widget_push_notifications_menu_title">הפעל התראות דחיפה</string>
     <string name="my_store_widget_push_notifications_title">לעולם לא לפספס הזמנה חדשה</string>
     <string name="woo_pos_promo_title">נקודת מכירה מ-WooCommerce</string>
@@ -242,7 +261,7 @@ Language: he_IL
     <string name="woopos_search_orders">חיפוש הזמנות</string>
     <string name="woopos_orders_details_totals_card_content_description">פירוט הסכומים הכוללים של ההזמנה</string>
     <string name="woopos_orders_details_products_list_content_description">רשימת מוצרים בהזמנה</string>
-    <string name="woopos_orders_details_net_payment_label">תשלום נטו</string>
+    <string name="woopos_orders_details_net_payment_label">סכום נטו כולל</string>
     <string name="woopos_orders_details_refunded_label">הוחזר</string>
     <string name="woopos_orders_details_total_paid_label">סך הכול שולם</string>
     <string name="woopos_orders_details_total_label">סכום כולל</string>
@@ -272,7 +291,6 @@ Language: he_IL
     <string name="woopos_home_sync_failed_message">לא הצלחנו לסנכרן את קטלוג המוצרים שלך. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</string>
     <string name="woopos_home_sync_failed_title">אי אפשר לסנכרן</string>
     <string name="woopos_home_syncing_catalog_exit_button">לצאת מ-POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">הסנכרון יתבצע ברקע.</string>
     <string name="woopos_home_syncing_catalog_title">מסנכרן את הקטלוג</string>
     <string name="booking_note_discard_changes_discard">לבטל שינויים</string>
     <string name="booking_note_discard_changes_message">האם ברצונך לבטל את השינויים האלה?</string>
@@ -3767,7 +3785,6 @@ Language: he_IL
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>
     <string name="dashboard_stats_error_content_description">תמונת השגיאה</string>
     <string name="dashboard_stats_error">שגיאה בעת אחזור הנתונים</string>
-    <string name="dashboard_stats_revenue">הכנסה</string>
     <string name="dashboard_stats_orders">הזמנות</string>
     <string name="dashboard_stats_visitors">מבקרים</string>
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>

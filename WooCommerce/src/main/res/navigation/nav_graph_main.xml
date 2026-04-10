@@ -147,8 +147,8 @@
             android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
             app:destination="@id/createTestOrderDialogFragment" />
         <action
-            android:id="@+id/action_orderListFragment_to_orderConnectivityToolFragment"
-            app:destination="@id/orderConnectivityToolFragment" />
+            android:id="@+id/action_orderListFragment_to_troubleshootConnectionFragment"
+            app:destination="@id/troubleshootConnectionFragment" />
         <action
             android:id="@+id/action_orderListFragment_to_ordersListStatusSelectorDialog"
             app:destination="@id/ordersListStatusSelectorDialog"
@@ -822,9 +822,9 @@
             app:nullable="true" />
     </fragment>
     <fragment
-        android:id="@+id/orderConnectivityToolFragment"
-        android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
-        android:label="OrderConnectivityToolFragment" />
+        android:id="@+id/troubleshootConnectionFragment"
+        android:name="com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionFragment"
+        android:label="TroubleshootConnectionFragment" />
     <fragment
         android:id="@+id/dashboardWidgetEditorFragment"
         android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"

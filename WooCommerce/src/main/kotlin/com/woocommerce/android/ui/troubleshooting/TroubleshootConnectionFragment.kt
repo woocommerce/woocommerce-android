@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,22 +12,22 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenWebView
+import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenWebView
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderConnectivityToolFragment : BaseFragment() {
-    val viewModel: OrderConnectivityToolViewModel by viewModels()
+class TroubleshootConnectionFragment : BaseFragment() {
+    val viewModel: TroubleshootConnectionViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    OrderConnectivityToolScreen(viewModel = viewModel)
+                    TroubleshootConnectionScreen(viewModel = viewModel)
                 }
             }
         }
@@ -37,7 +37,7 @@ class OrderConnectivityToolFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OpenSupportRequest -> openSupportRequestScreen()
+                is OpenSupportRequest -> openSupportRequestScreen(it.diagnosticLog)
                 is OpenWebView -> openWebView(it.url)
                 is Exit -> findNavController().popBackStack()
             }
@@ -47,11 +47,12 @@ class OrderConnectivityToolFragment : BaseFragment() {
 
     override fun getFragmentTitle() = ""
 
-    private fun openSupportRequestScreen() {
+    private fun openSupportRequestScreen(diagnosticLog: String?) {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
             origin = HelpOrigin.CONNECTIVITY_TOOL,
-            extraTags = ArrayList()
+            extraTags = ArrayList(),
+            diagnosticLog = diagnosticLog
         ).let { activity?.startActivity(it) }
     }
 

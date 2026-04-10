@@ -972,9 +972,9 @@ class OrderListFragment :
         )
     }
 
-    private fun openConnectivityTool() {
+    private fun openTroubleshootConnection() {
         findNavController().navigateSafely(
-            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+            OrderListFragmentDirections.actionOrderListFragmentToTroubleshootConnectionFragment()
         )
     }
 
@@ -1196,7 +1196,7 @@ class OrderListFragment :
             troubleshootingClick = {
                 viewModel.changeTroubleshootingBannerVisibility(show = false)
                 viewModel.trackConnectivityTroubleshootClicked()
-                openConnectivityTool()
+                openTroubleshootConnection()
             }
         )
     }
