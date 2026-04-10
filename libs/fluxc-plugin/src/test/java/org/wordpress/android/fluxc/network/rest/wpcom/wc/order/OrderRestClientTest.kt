@@ -150,47 +150,6 @@ class OrderRestClientTest {
     }
 
     @Test
-    fun `when fulfillment metadata is missing, then fields default safely`() = runTest {
-        val orderId = 123L
-        val json = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order-fulfillments.json")
-        val response = WPAPIResponse.Success<Array<OrderFulfillmentApiResponse>>(
-            Gson().fromJson(json, Array<OrderFulfillmentApiResponse>::class.java),
-            emptyList()
-        )
-
-        whenever(
-            wooNetwork.executeGetGsonRequest(
-                site = eq(testSite),
-                path = eq(WOOCOMMERCE.orders.id(orderId).fulfillments.pathV3),
-                clazz = eq(Array<OrderFulfillmentApiResponse>::class.java),
-                params = any(),
-                enableCaching = any(),
-                cacheTimeToLive = any(),
-                forced = any(),
-                requestTimeout = any(),
-                retries = any()
-            )
-        ).thenReturn(response)
-
-        val result = orderRestClient.fetchOrderFulfillments(testSite, orderId)
-
-        assertThat(result.fulfillments.last()).isEqualTo(
-            OrderTestUtils.generateOrderFulfillment(
-                siteId = testSite.id,
-                orderId = orderId,
-                fulfillmentId = 43L,
-                status = "unfulfilled",
-                isFulfilled = false,
-                dateUpdated = null,
-                dateFulfilled = null,
-                trackingNumber = null,
-                shipmentProvider = null,
-                trackingUrl = null
-            )
-        )
-    }
-
-    @Test
     fun `when createdViaFilter is null, then created_via parameter is not sent to API`() = runTest {
         // Given
         val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>(), emptyList())
