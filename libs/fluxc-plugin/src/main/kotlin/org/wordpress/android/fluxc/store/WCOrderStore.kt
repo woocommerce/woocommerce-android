@@ -841,18 +841,11 @@ class WCOrderStore @Inject internal constructor(
             return@withDefaultContext if (result.isError) {
                 OnOrderChanged(orderError = result.error)
             } else {
-                val existingFulfillments = orderFulfillmentDao.getOrderFulfillments(
-                    result.site.localId(),
-                    RemoteId(result.orderId)
+                orderFulfillmentDao.replaceAll(
+                    siteId = result.site.localId(),
+                    orderId = RemoteId(result.orderId),
+                    fulfillments = result.fulfillments
                 )
-                val removedFulfillments = existingFulfillments.filter { existing ->
-                    result.fulfillments.none { fresh ->
-                        fresh.fulfillmentId == existing.fulfillmentId
-                    }
-                }
-
-                removedFulfillments.forEach { orderFulfillmentDao.deleteOrderFulfillment(it) }
-                result.fulfillments.forEach { orderFulfillmentDao.upsertOrderFulfillment(it) }
                 OnOrderChanged()
             }
         }
