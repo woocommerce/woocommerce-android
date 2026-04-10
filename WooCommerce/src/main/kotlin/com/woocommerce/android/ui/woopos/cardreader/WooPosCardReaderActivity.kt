@@ -2,15 +2,10 @@ package com.woocommerce.android.ui.woopos.cardreader
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
@@ -18,8 +13,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
-import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
+import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
+import com.woocommerce.android.ui.woopos.util.ext.setupWooPosTopAndBottomInsets
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.parcelable
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,12 +31,9 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupTopAndBottomInsets()
-        requestedOrientation = if (isWooPosPhoneLayout()) {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        } else {
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setupWooPosTopAndBottomInsets(R.id.snack_root)
+        lockWooPosOrientation()
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_card_reader_nav_host_fragment
@@ -54,30 +46,6 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         }
         setupNavGraph(navHostFragment, flowType)
         observeResult(navHostFragment, flowType)
-    }
-
-    private fun setupTopAndBottomInsets() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        val rootView = findViewById<View>(R.id.snack_root)
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            insets.toWindowInsets()?.let { windowInsets ->
-                val insetsCompat = WindowInsetsCompat.toWindowInsetsCompat(windowInsets, view)
-                val isGestureNavigation = insetsCompat.isGestureNavigation(this)
-
-                val topPadding = insetsCompat.getInsets(WindowInsetsCompat.Type.statusBars()).top
-                val bottomPadding = if (isGestureNavigation) {
-                    0
-                } else {
-                    insetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-                }
-                view.updatePadding(
-                    top = topPadding,
-                    bottom = bottomPadding
-                )
-            }
-
-            insets
-        }
     }
 
     override fun finish() {
