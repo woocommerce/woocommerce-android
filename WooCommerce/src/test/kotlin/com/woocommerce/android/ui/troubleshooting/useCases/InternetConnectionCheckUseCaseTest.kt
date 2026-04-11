@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.connectivitytool.useCases
+package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool.useCases
+package com.woocommerce.android.ui.troubleshooting.useCases
 
 fun formatErrorDetails(
     operation: String,

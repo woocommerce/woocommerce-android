@@ -12,6 +12,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
+    @Suppress("LongMethod")
     suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
         val isEligibleForSubscriptions = isEligibleForSubscriptions()
 
@@ -63,6 +64,14 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 titleResource = R.string.product_type_external_title,
                 descResource = R.string.product_type_external_desc,
                 iconResource = R.drawable.ic_arrow_outward_24dp
+            ),
+            ProductTypesBottomSheetUiItem(
+                type = ProductType.BOOKABLE_SERVICE,
+                titleResource = R.string.product_type_bookable_service_title,
+                descResource = R.string.product_type_bookable_service_desc,
+                iconResource = R.drawable.ic_calendar_add_outline,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation),
+                supportsNativeEditor = false
             )
         )
     }

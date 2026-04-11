@@ -32,6 +32,7 @@ fun BookingAppointmentDetails(
     model: BookingAppointmentDetailsModel,
     onCancelBooking: () -> Unit,
     onAttendanceToggle: () -> Unit,
+    onRescheduleBooking: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -99,39 +100,53 @@ fun BookingAppointmentDetails(
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_duration,
                 value = model.duration,
-                withDivider = model.attendanceButtonVisible || model.cancelButtonVisible,
+                withDivider = model.anyButtonVisible,
             )
-            AnimatedVisibility(model.attendanceButtonVisible) {
-                val text = when (model.attendanceStatus) {
-                    BookingAttendanceStatus.Attended -> stringResource(R.string.booking_mark_as_unattended)
-                    else -> stringResource(R.string.booking_mark_as_attended)
+            AnimatedVisibility(model.anyButtonVisible) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    AnimatedVisibility(model.rescheduleButtonVisible) {
+                        WCOutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            onClick = onRescheduleBooking,
+                            text = stringResource(R.string.booking_details_reschedule_button),
+                        )
+                    }
+                    AnimatedVisibility(model.attendanceButtonVisible) {
+                        val text = when (model.attendanceStatus) {
+                            BookingAttendanceStatus.Attended ->
+                                stringResource(R.string.booking_mark_as_unattended)
+                            else -> stringResource(R.string.booking_mark_as_attended)
+                        }
+                        WCOutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            onClick = onAttendanceToggle,
+                            enabled = model.attendanceButtonEnabled,
+                            text = text,
+                            loading = model.attendanceInProgressShown,
+                        )
+                    }
+                    AnimatedVisibility(model.cancelButtonVisible) {
+                        WCOutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            onClick = onCancelBooking,
+                            enabled = model.cancelButtonEnabled,
+                            text = stringResource(R.string.booking_details_cancel_booking_button),
+                            loading = model.cancelInProgressShown,
+                        )
+                    }
                 }
-                WCOutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    onClick = onAttendanceToggle,
-                    enabled = model.attendanceButtonEnabled,
-                    text = text,
-                    loading = model.attendanceInProgressShown,
-                )
-            }
-            AnimatedVisibility(model.cancelButtonVisible) {
-                WCOutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    onClick = onCancelBooking,
-                    enabled = model.cancelButtonEnabled,
-                    text = stringResource(R.string.booking_details_cancel_booking_button),
-                    loading = model.cancelInProgressShown,
-                )
             }
             HorizontalDivider(thickness = 0.5.dp)
         }
@@ -190,6 +205,7 @@ data class BookingAppointmentDetailsModel(
     val duration: String,
     val cancelButtonVisible: Boolean,
     val cancelStatus: CancelStatus,
+    val rescheduleButtonVisible: Boolean = false,
     val attendanceStatus: BookingAttendanceStatus? = null,
     val isAttendanceStatusEditable: Boolean = false,
     val attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
@@ -199,6 +215,7 @@ data class BookingAppointmentDetailsModel(
     val attendanceButtonVisible: Boolean = isAttendanceStatusEditable
     val attendanceButtonEnabled: Boolean = attendanceUpdateStatus != AttendanceUpdateStatus.InProgress
     val attendanceInProgressShown: Boolean = attendanceUpdateStatus == AttendanceUpdateStatus.InProgress
+    val anyButtonVisible: Boolean = rescheduleButtonVisible || attendanceButtonVisible || cancelButtonVisible
 }
 
 sealed interface BookingLocationStatus {
@@ -226,11 +243,13 @@ private fun BookingAppointmentDetailsPreview() {
                 duration = "60 min",
                 cancelButtonVisible = true,
                 cancelStatus = CancelStatus.Idle,
+                rescheduleButtonVisible = true,
                 attendanceStatus = BookingAttendanceStatus.Unattended,
                 isAttendanceStatusEditable = true,
             ),
             onCancelBooking = {},
             onAttendanceToggle = {},
+            onRescheduleBooking = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -252,6 +271,7 @@ private fun BookingAppointmentDetailsCancelHiddenPreview() {
             ),
             onCancelBooking = {},
             onAttendanceToggle = {},
+            onRescheduleBooking = {},
             modifier = Modifier.fillMaxWidth()
         )
     }

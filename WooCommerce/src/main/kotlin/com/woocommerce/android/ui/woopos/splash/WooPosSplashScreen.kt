@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.woopos.splash
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +44,23 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         is WooPosSplashState.Loading -> {
             Loading()
         }
-        is WooPosSplashState.Syncing -> {
+        is WooPosSplashState.Syncing,
+        is WooPosSplashState.SyncPreparing,
+        is WooPosSplashState.SyncProgress -> {
+            val progressText = when (currentState) {
+                is WooPosSplashState.SyncPreparing ->
+                    stringResource(R.string.woopos_home_syncing_catalog_preparing)
+                is WooPosSplashState.SyncProgress ->
+                    stringResource(
+                        R.string.woopos_home_syncing_catalog_progress,
+                        currentState.processed,
+                        currentState.total
+                    )
+                else -> null
+            }
+
             SyncingCatalog(
+                progressText = progressText,
                 onExitPosClicked = {
                     viewModel.onExitPosClicked()
                     onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
@@ -82,26 +98,36 @@ private fun Loading() {
 @Suppress("WooPosDesignSystemSpacingUsageRule", "WooPosDesignSystemTextUsageRule")
 @Composable
 private fun SyncingCatalog(
-    onExitPosClicked: () -> Unit
+    progressText: String? = null,
+    onExitPosClicked: () -> Unit,
 ) {
     val loadingIndicatorSize = 160.dp
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        WooPosCircularLoadingIndicator(
-            modifier = Modifier
-                .size(loadingIndicatorSize)
-                .align(Alignment.Center)
-        )
-
-        Text(
-            text = stringResource(R.string.woopos_home_syncing_catalog_title),
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = (loadingIndicatorSize / 2 + WooPosSpacing.XLarge.value))
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            WooPosCircularLoadingIndicator(
+                modifier = Modifier.size(loadingIndicatorSize)
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Text(
+                text = stringResource(R.string.woopos_home_syncing_catalog_title),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+            )
+            if (progressText != null) {
+                Text(
+                    text = progressText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = WooPosSpacing.Small.value),
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -174,6 +200,7 @@ fun WooPosSplashScreenLoadingPreview() {
 fun WooPosSplashScreenSyncingPreview() {
     WooPosTheme {
         SyncingCatalog(
+            progressText = "131 of 4512 items",
             onExitPosClicked = {}
         )
     }

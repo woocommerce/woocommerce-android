@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.connectivitytool
+package com.woocommerce.android.ui.troubleshooting
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,18 +40,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
 
 @Composable
-fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
+fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
     val technicalDetails by viewModel.technicalDetailsToShow.observeAsState()
 
-    ConnectivityToolScreen(
+    TroubleshootConnectionScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         checks = viewState?.checks ?: emptyList(),
@@ -70,7 +71,7 @@ fun ConnectivityToolScreen(viewModel: ConnectivityToolViewModel) {
 }
 
 @Composable
-fun ConnectivityToolScreen(
+fun TroubleshootConnectionScreen(
     shouldEnableContactSupportButton: Boolean,
     shouldDisplaySummarySection: Boolean,
     checks: List<ConnectivityCheckCardData>,
@@ -183,9 +184,9 @@ fun ConnectivityCheckCard(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.woo_black)),
+            Icon(
                 painter = painterResource(id = iconDrawable),
+                tint = MaterialTheme.colors.onSurface,
                 contentDescription = stringResource(id = checkTitle),
                 modifier = modifier
                     .size(dimensionResource(id = R.dimen.major_100))
@@ -264,7 +265,7 @@ fun ConnectivityCheckCard(
                     WCTextButton(
                         allCaps = false,
                         onClick = onClick,
-                        icon = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                        icon = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.connectivity_tool_view_technical_details),
                         contentPadding = PaddingValues(
@@ -338,9 +339,9 @@ fun ResultIcon(
 
 @Preview
 @Composable
-fun ConnectivityToolScreenPreview() {
+fun TroubleshootConnectionScreenPreview() {
     WooThemeWithBackground {
-        ConnectivityToolScreen(
+        TroubleshootConnectionScreen(
             shouldEnableContactSupportButton = true,
             shouldDisplaySummarySection = true,
             checks = listOf(

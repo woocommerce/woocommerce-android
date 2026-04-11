@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.eventhorizon.BookingListApplyFiltersEvent
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -16,7 +17,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -236,7 +236,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onShowBookings called with filters, then BOOKING_LIST_APPLY_FILTERS is tracked`() {
+    fun `when onShowBookings called with filters, then BookingListApplyFiltersEvent is tracked`() {
         val state = viewModel.uiState.getOrAwaitValue()
         state.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         state.onUpdateFilterOption(
@@ -246,12 +246,10 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         viewModel.uiState.getOrAwaitValue().onShowBookings()
 
         verify(analyticsTrackerWrapper).track(
-            eq(AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS),
-            argThat<Map<String, Any>> {
-                val filters = this["selected_filters"] as? String
-                filters != null &&
-                    filters.contains("attendance_status") &&
-                    filters.contains("booking_type")
+            argThat<Trackable> {
+                this is BookingListApplyFiltersEvent &&
+                    this.selectedFilters.contains("attendance_status") &&
+                    this.selectedFilters.contains("booking_type")
             }
         )
     }
