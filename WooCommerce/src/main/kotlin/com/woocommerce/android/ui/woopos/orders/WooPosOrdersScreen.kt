@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
@@ -214,24 +215,52 @@ private fun WooPosOrdersScreen(
         }
 
         if (state is WooPosOrdersState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
-                    WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
-                    )
-                }
-                is WooPosOrdersState.Content.DialogState.RefundDetails -> {
-                    WooPosRefundDetailsDialog(
-                        dialogState = dialogState,
-                        onDismissRequest = onRefundDetailsDialogDismissed,
-                    )
-                }
-                WooPosOrdersState.Content.DialogState.Hidden -> Unit
-            }
+            OrdersDialogs(
+                dialogState = state.dialogState,
+                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed,
+                onRefundDetailsDialogDismissed = onRefundDetailsDialogDismissed,
+                onNavigationEvent = onNavigationEvent,
+                refundReasonUpdate = refundReasonUpdate,
+            )
         }
+    }
+}
+
+@Composable
+private fun OrdersDialogs(
+    dialogState: WooPosOrdersState.Content.DialogState,
+    onIssueRefundDialogDismissed: () -> Unit,
+    onRefundDetailsDialogDismissed: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String?,
+) {
+    val retainedDialog = rememberRetained(
+        when (dialogState) {
+            is WooPosOrdersState.Content.DialogState.IssueRefund -> dialogState
+            is WooPosOrdersState.Content.DialogState.RefundDetails -> dialogState
+            WooPosOrdersState.Content.DialogState.Hidden -> null
+        }
+    )
+
+    when (retainedDialog) {
+        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+            WooPosIssueRefundDialog(
+                orderId = retainedDialog.orderId,
+                isVisible = dialogState is WooPosOrdersState.Content.DialogState.IssueRefund,
+                onDismissRequest = onIssueRefundDialogDismissed,
+                onNavigationEvent = onNavigationEvent,
+                refundReasonUpdate = refundReasonUpdate
+            )
+        }
+        is WooPosOrdersState.Content.DialogState.RefundDetails -> {
+            WooPosRefundDetailsDialog(
+                dialogState = retainedDialog,
+                isVisible = dialogState is WooPosOrdersState.Content.DialogState.RefundDetails,
+                onDismissRequest = onRefundDetailsDialogDismissed,
+            )
+        }
+        WooPosOrdersState.Content.DialogState.Hidden,
+        null -> Unit
     }
 }
 
