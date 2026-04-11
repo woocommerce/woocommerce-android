@@ -468,31 +468,35 @@ private fun OrdersTotals(
                 )
             }
 
-            if (breakdown.refundsLoading) {
-                DividerWithSpacing()
-                RefundRowShimmer()
-            } else if (breakdown.refunds.isNotEmpty()) {
-                DividerWithSpacing()
-                breakdown.refunds.forEachIndexed { index, refundRow ->
-                    RefundRowContent(
-                        refundRow = refundRow,
-                        onViewDetailsClicked = {
-                            onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
-                        }
-                    )
-                    if (index < breakdown.refunds.size - 1) {
+            when (val refundsState = breakdown.refundsState) {
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loading -> {
+                    DividerWithSpacing()
+                    RefundRowShimmer()
+                }
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded -> {
+                    if (refundsState.refunds.isNotEmpty()) {
                         DividerWithSpacing()
+                        refundsState.refunds.forEachIndexed { index, refundRow ->
+                            RefundRowContent(
+                                refundRow = refundRow,
+                                onViewDetailsClicked = {
+                                    onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
+                                }
+                            )
+                            if (index < refundsState.refunds.size - 1) {
+                                DividerWithSpacing()
+                            }
+                        }
                     }
                 }
-            }
-
-            breakdown.refundLoadError?.let { error ->
-                DividerWithSpacing()
-                WooPosText(
-                    text = error,
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Error -> {
+                    DividerWithSpacing()
+                    WooPosText(
+                        text = refundsState.message,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
 
             breakdown.netPayment?.let { netPayment ->
@@ -732,18 +736,20 @@ fun WooPosOrderDetailsPreview() {
             discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
-            refunds = listOf(
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #1",
-                    amount = "-$3.00",
-                    date = "Aug 29, 2025 at 12:26 PM",
-                    reason = "Customer bought an extra item.",
-                ),
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #2",
-                    amount = "-$2.00",
-                    date = "Aug 30, 2025 at 2:15 PM",
-                    reason = null,
+            refundsState = WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded(
+                refunds = listOf(
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #1",
+                        amount = "-$3.00",
+                        date = "Aug 29, 2025 at 12:26 PM",
+                        reason = "Customer bought an extra item.",
+                    ),
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #2",
+                        amount = "-$2.00",
+                        date = "Aug 30, 2025 at 2:15 PM",
+                        reason = null,
+                    ),
                 ),
             ),
             netPayment = "$13.00"

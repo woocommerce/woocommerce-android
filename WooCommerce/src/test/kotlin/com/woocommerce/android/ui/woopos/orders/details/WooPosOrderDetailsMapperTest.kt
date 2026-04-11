@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
@@ -74,7 +75,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
                 discountCode = null,
                 taxes = "$0.00",
                 shipping = null,
-                refunds = emptyList(),
+                refundsState = RefundsState.Loaded(refunds = emptyList()),
                 netPayment = null,
             )
         )
@@ -590,7 +591,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then refundsLoading is true`() =
+    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then refundsState is Loading`() =
         testBlocking {
             // GIVEN
             setupDefaults()
@@ -603,11 +604,11 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
-            assertThat(result.breakdown.refundsLoading).isTrue()
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
         }
 
     @Test
-    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then refundsLoading is true`() =
+    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then refundsState is Loading`() =
         testBlocking {
             // GIVEN
             setupDefaults()
@@ -623,11 +624,11 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
-            assertThat(result.breakdown.refundsLoading).isTrue()
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
         }
 
     @Test
-    fun `given order without refunds, when mapOrderDetailsWithoutActions, then refundsLoading is false`() =
+    fun `given order without refunds, when mapOrderDetailsWithoutActions, then refundsState is Loaded empty`() =
         testBlocking {
             // GIVEN
             setupDefaults()
@@ -640,6 +641,6 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val result = sut.mapOrderDetailsWithoutActions(order)
 
             // THEN
-            assertThat(result.breakdown.refundsLoading).isFalse()
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loaded(refunds = emptyList()))
         }
 }

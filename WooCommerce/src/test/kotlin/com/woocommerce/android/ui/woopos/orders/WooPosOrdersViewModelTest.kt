@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosGetNonRefundedItems
 import com.woocommerce.android.ui.woopos.orders.details.WooPosGroupRefundedItems
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
@@ -753,7 +754,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedDetails?.breakdown?.refunds).isEmpty()
+        val refundsState = content.selectedDetails?.breakdown?.refundsState
+        assertThat(refundsState).isEqualTo(RefundsState.Loaded(refunds = emptyList()))
         assertThat(content.selectedDetails?.breakdown?.netPayment).isNull()
     }
 
@@ -801,7 +803,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val refundRows = content.selectedDetails?.breakdown?.refunds
+        val refundsState = content.selectedDetails?.breakdown?.refundsState as? RefundsState.Loaded
+        val refundRows = refundsState?.refunds
         assertThat(refundRows).hasSize(2)
         assertThat(refundRows?.map { it.amount }).containsExactly("-$10.00", "-$5.00")
         assertThat(refundRows?.map { it.label }).containsExactly("Refund #1", "Refund #2")
