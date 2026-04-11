@@ -563,13 +563,13 @@ private fun RefundRowShimmer() {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             WooPosShimmerText(
-                text = stringResource(R.string.woopos_orders_details_refund_label_numbered, 1),
+                text = REFUND_SHIMMER_LABEL_PLACEHOLDER,
                 style = WooPosTypography.BodyLarge.style,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.weight(1f))
             WooPosShimmerText(
-                text = stringResource(R.string.woopos_orders_details_refund_shimmer_amount_placeholder),
+                text = REFUND_SHIMMER_AMOUNT_PLACEHOLDER,
                 style = WooPosTypography.BodyMedium.style,
             )
         }
@@ -577,18 +577,23 @@ private fun RefundRowShimmer() {
         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
 
         WooPosShimmerText(
-            text = stringResource(R.string.woopos_orders_details_refund_shimmer_date_placeholder),
+            text = REFUND_SHIMMER_DATE_PLACEHOLDER,
             style = WooPosTypography.BodyMedium.style,
         )
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
 
         WooPosShimmerText(
-            text = stringResource(R.string.woopos_orders_details_refund_view_details),
+            text = REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER,
             style = WooPosTypography.BodyMedium.style,
         )
     }
 }
+
+private const val REFUND_SHIMMER_LABEL_PLACEHOLDER = "Refund #1"
+private const val REFUND_SHIMMER_AMOUNT_PLACEHOLDER = "-$00.00"
+private const val REFUND_SHIMMER_DATE_PLACEHOLDER = "Jan 01, 2025 at 12:00 PM"
+private const val REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER = "View details"
 
 @Composable
 private fun TotalRowLine(
