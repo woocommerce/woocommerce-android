@@ -58,14 +58,14 @@ Identify by review content, rating stars, and moderation buttons (Approve, Spam,
 
 ### Reviews
 
-| Step | Action | Element |
-|------|--------|---------|
-| 1 | Tap "Reviews" in menu | text: "Reviews" |
-| 2 | Toggle unread filter | `unread_filter_switch` |
-| 3 | Tap a review | review row in `reviewsList` |
-| 4 | Approve review | approve button on detail |
-| 5 | Spam/Trash review | spam or trash button |
-| 6 | Mark all read | toolbar menu option |
+| Step | Action | Element                    |
+|------|--------|----------------------------|
+| 1 | Tap "Reviews" in menu | text: "Reviews"            |
+| 2 | Toggle unread filter | text: "Unread reviews only" |
+| 3 | Tap a review | row in the list |
+| 4 | Approve review | approve button on detail   |
+| 5 | Spam/Trash review | spam or trash button       |
+| 6 | Mark all read | toolbar menu option        |
 
 ### Coupons
 
