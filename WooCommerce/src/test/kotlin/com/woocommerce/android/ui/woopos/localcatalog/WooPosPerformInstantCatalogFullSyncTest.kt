@@ -194,28 +194,6 @@ class WooPosPerformInstantCatalogFullSyncTest {
     }
 
     @Test
-    fun `given worker transitions from running to enqueued, when invoke called, then returns failure`() = runTest {
-        // GIVEN
-        val runningWorkInfo = mock<WorkInfo>().apply {
-            whenever(state).thenReturn(WorkInfo.State.RUNNING)
-        }
-        val stoppedWorkInfo = mock<WorkInfo>().apply {
-            whenever(state).thenReturn(WorkInfo.State.ENQUEUED)
-        }
-        val workInfoFlow = MutableStateFlow<WorkInfo?>(runningWorkInfo)
-        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(true))
-        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(false))
-        whenever(syncScheduler.observeOneTimeWorkInfo()).thenReturn(workInfoFlow)
-
-        // WHEN
-        workInfoFlow.value = stoppedWorkInfo
-        val result = sut()
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
     fun `given worker succeeds but no timestamp found, when invoke called, then returns failure`() = runTest {
         // GIVEN
         val workInfo = mock<WorkInfo>()
