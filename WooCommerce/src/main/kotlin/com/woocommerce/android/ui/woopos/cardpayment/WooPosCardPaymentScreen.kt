@@ -404,7 +404,7 @@ private fun CardPaymentFailed(
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
-                    modifier = Modifier.size(84.dp.toAdaptiveComponentSize()),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     imageVector = WooPosIcons.ErrorX,
                     contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
                     tint = WooPosTheme.colors.unspecified,

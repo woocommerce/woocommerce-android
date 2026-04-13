@@ -88,7 +88,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
@@ -462,7 +461,7 @@ private fun ClearCartButton(
                 expanded = dropdownExpanded,
                 onDismissRequest = { dropdownExpanded = false },
                 modifier = Modifier
-                    .defaultMinSize(minWidth = 200.dp.toAdaptiveComponentSize())
+                    .defaultMinSize(minWidth = WooPosComponentSize.XLarge.value)
                     .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             ) {
                 DropdownMenuItem(

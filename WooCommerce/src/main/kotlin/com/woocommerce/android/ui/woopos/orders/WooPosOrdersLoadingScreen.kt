@@ -178,7 +178,7 @@ fun OrderDetailsLoadingPane(
 
         WooPosShimmerBox(
             modifier = Modifier
-                .width(100.dp.toAdaptiveComponentSize())
+                .width(WooPosComponentSize.Medium.value)
                 .height(24.dp.toAdaptiveComponentSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )

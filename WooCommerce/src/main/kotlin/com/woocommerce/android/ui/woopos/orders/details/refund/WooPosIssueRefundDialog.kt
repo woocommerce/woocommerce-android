@@ -664,7 +664,7 @@ private fun RefundableItemRow(
 
         WooPosItemImage(
             modifier = Modifier
-                .size(56.dp.toAdaptiveIconSize())
+                .size(WooPosComponentSize.XSmall.value)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
             imageUrl = null,
             placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),

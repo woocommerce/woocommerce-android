@@ -74,6 +74,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -624,7 +625,7 @@ private fun ScannerSetupSuccessIcon(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(88.dp.toAdaptiveComponentSize())
+            .size(WooPosComponentSize.Small.value)
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(

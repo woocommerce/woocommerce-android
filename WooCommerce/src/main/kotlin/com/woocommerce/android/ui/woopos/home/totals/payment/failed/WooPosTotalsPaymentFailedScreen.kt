@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -25,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
@@ -45,7 +43,7 @@ fun WooPosPaymentFailedScreen(
     ) {
         Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
         Icon(
-            modifier = Modifier.size(84.dp.toAdaptiveComponentSize()),
+            modifier = Modifier.size(WooPosComponentSize.Small.value),
             imageVector = WooPosIcons.ErrorX,
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,
