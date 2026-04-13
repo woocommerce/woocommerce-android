@@ -81,7 +81,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
@@ -625,7 +624,7 @@ private fun ScannerSetupSuccessIcon(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(88.dp.toAdaptiveIconSize())
+            .size(88.dp.toAdaptiveComponentSize())
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
