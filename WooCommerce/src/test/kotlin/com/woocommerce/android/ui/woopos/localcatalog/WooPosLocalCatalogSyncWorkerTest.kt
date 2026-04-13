@@ -183,12 +183,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(analyticsTracker, never()).track(
-            LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL,
-                skipReason = SyncSkipReason.POS_NOT_OPENED_30_DAYS
-            )
-        )
+        verify(analyticsTracker, never()).track(any())
     }
 
     @Test
