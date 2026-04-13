@@ -60,12 +60,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
@@ -310,7 +310,7 @@ private fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            modifier = Modifier.size(80.dp.toAdaptiveComponentSize()),
+            modifier = Modifier.size(WooPosComponentSize.Small.value),
             imageVector = com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons.ErrorX,
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,

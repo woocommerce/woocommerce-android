@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -252,7 +253,7 @@ private fun TotalsLoaded(
 
 @Composable
 private fun PreparingReader(title: String, subtitle: String) {
-    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
     WooPosText(
         text = title,
@@ -271,7 +272,7 @@ private fun PreparingReader(title: String, subtitle: String) {
 private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
     val tapCardAnimation by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
     LottieAnimation(
-        modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
+        modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
         composition = tapCardAnimation,
         clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
         iterations = LottieConstants.IterateForever,
@@ -329,7 +330,7 @@ private fun ReaderDisconnected(
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(80.dp.toAdaptiveComponentSize())
+                .height(WooPosComponentSize.Small.value)
         )
     }
 }

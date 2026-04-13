@@ -81,6 +81,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyCo
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
@@ -203,7 +204,7 @@ fun CartBodyEmpty(
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_add_shopping_cart_24dp),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(80.dp.toAdaptiveComponentSize()),
+            modifier = Modifier.size(WooPosComponentSize.Small.value),
             tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
         )
 
@@ -349,7 +350,7 @@ private fun CartToolbar(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(56.dp.toAdaptiveComponentSize())
+            .height(WooPosComponentSize.XSmall.value)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
@@ -515,9 +516,9 @@ private fun ProductItem(
             WooPosItemImage(
                 imageUrl = item.imageUrl,
                 modifier = Modifier
-                    .width(96.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                 placeholderIconSize = 36.dp
             )
@@ -617,9 +618,9 @@ private fun CouponItem(
                             is CouponValidationState.Valid -> WooPosTheme.colors.success
                         }
                     )
-                    .width(96.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -711,7 +712,7 @@ private fun LoadingItem(
     )
     WooPosCard(
         modifier = modifier
-            .height(96.dp.toAdaptiveComponentSize())
+            .height(WooPosComponentSize.Medium.value)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -724,7 +725,7 @@ private fun LoadingItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(96.dp.toAdaptiveComponentSize())
+                    .size(WooPosComponentSize.Medium.value)
             ) {
                 WooPosShimmerBox(
                     modifier = Modifier.fillMaxSize()
@@ -789,9 +790,9 @@ private fun ErrorItem(
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.error)
-                    .width(96.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp.toAdaptiveComponentSize()),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 contentAlignment = Alignment.Center
             ) {
                 Image(

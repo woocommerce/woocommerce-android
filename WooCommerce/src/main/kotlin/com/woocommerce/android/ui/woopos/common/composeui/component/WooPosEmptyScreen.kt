@@ -16,13 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosEmptyScreen(
@@ -83,7 +82,7 @@ private fun WooPosItemsEmptyListInternal(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                modifier = Modifier.size(80.dp.toAdaptiveComponentSize()),
+                modifier = Modifier.size(WooPosComponentSize.Small.value),
                 imageVector = icon,
                 contentDescription = contentDescription,
             )

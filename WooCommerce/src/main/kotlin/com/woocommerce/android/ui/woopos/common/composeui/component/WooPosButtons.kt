@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -190,7 +191,7 @@ fun WooPosCircularIconButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(56.dp.toAdaptiveComponentSize())
+            .size(WooPosComponentSize.XSmall.value)
             .clip(CircleShape)
             .background(backgroundColor)
     ) {

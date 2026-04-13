@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -71,7 +72,7 @@ private fun WooPosPaginationErrorIndicatorContent(
     ) {
         Row(
             modifier = Modifier
-                .height(112.dp.toAdaptiveComponentSize())
+                .height(WooPosComponentSize.Large.value)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
@@ -83,7 +84,7 @@ private fun WooPosPaginationErrorIndicatorContent(
             ) {
                 if (icon != null) {
                     Box(
-                        modifier = Modifier.size(112.dp.toAdaptiveComponentSize())
+                        modifier = Modifier.size(WooPosComponentSize.Large.value)
                     ) {
                         Icon(
                             modifier = Modifier

@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -64,7 +65,7 @@ fun WooPosPaymentFailedScreen(
         WooPosButton(
             text = state.retryPaymentButtonLabel,
             modifier = Modifier
-                .height(80.dp.toAdaptiveComponentSize())
+                .height(WooPosComponentSize.Small.value)
                 .adaptiveContentWidth()
         ) { onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked) }
         if (state.isReturnToCheckoutButtonVisible) {

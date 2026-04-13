@@ -51,13 +51,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
 
@@ -214,7 +214,7 @@ private fun MenuButtonWithPopUpMenu(
         TextButton(
             modifier = Modifier
                 .semantics { contentDescription = menuContentDescription }
-                .size(80.dp.toAdaptiveComponentSize()),
+                .size(WooPosComponentSize.Small.value),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
             colors = ButtonDefaults.textButtonColors(
@@ -331,7 +331,7 @@ private fun CardReaderStatusButton(
 
     WooPosCard(
         modifier = modifier
-            .height(80.dp.toAdaptiveComponentSize()),
+            .height(WooPosComponentSize.Small.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),

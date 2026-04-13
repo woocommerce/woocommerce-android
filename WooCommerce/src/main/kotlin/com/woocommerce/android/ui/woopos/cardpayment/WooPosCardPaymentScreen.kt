@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircul
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -181,7 +182,7 @@ private fun CardPaymentInitiating() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     }
 }
 
@@ -196,10 +197,10 @@ private fun CardPaymentPreparingReader(
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
-                    modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
+                    modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
                     contentAlignment = Alignment.Center,
                 ) {
-                    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp.toAdaptiveComponentSize()))
+                    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
                 }
                 Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
                 WooPosText(
@@ -222,7 +223,7 @@ private fun CardPaymentPreparingReader(
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp.toAdaptiveComponentSize())
+                        .height(WooPosComponentSize.Small.value)
                         .adaptiveContentWidth(),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
@@ -246,7 +247,7 @@ private fun CardPaymentReadyForPayment(
                     LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
                 )
                 LottieAnimation(
-                    modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
+                    modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
                     composition = tapCardAnimation,
                     clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
                     iterations = LottieConstants.IterateForever,
@@ -274,7 +275,7 @@ private fun CardPaymentReadyForPayment(
             if (showCashPaymentButton) {
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp.toAdaptiveComponentSize())
+                        .height(WooPosComponentSize.Small.value)
                         .adaptiveContentWidth(),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
@@ -325,14 +326,14 @@ private fun CardPaymentReaderDisconnected(
                 text = state.actionButtonLabel,
                 onClick = onConnectReaderClicked,
                 modifier = Modifier
-                    .height(80.dp.toAdaptiveComponentSize())
+                    .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth()
             )
             if (showCashPaymentButton) {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     modifier = Modifier
-                        .height(80.dp.toAdaptiveComponentSize())
+                        .height(WooPosComponentSize.Small.value)
                         .adaptiveContentWidth(),
                     text = stringResource(R.string.woopos_cash_payment_title),
                     onClick = onCashPaymentClicked,
@@ -364,7 +365,7 @@ private fun CardPaymentInProgress(
                 LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration)
             )
             LottieAnimation(
-                modifier = Modifier.size(256.dp.toAdaptiveComponentSize()),
+                modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
                 composition = composition,
                 iterations = LottieConstants.IterateForever,
                 clipToCompositionBounds = false,
@@ -427,7 +428,7 @@ private fun CardPaymentFailed(
                 WooPosButton(
                     text = state.actionButtonLabel,
                     modifier = Modifier
-                        .height(80.dp.toAdaptiveComponentSize())
+                        .height(WooPosComponentSize.Small.value)
                         .adaptiveContentWidth(),
                     onClick = onRetryClicked,
                 )

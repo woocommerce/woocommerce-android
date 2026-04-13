@@ -34,9 +34,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -155,7 +155,7 @@ fun OrderDetailsLoadingPane(
             WooPosShimmerBox(
                 modifier = Modifier
                     .height(40.dp.toAdaptiveComponentSize())
-                    .width(160.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.XLarge.value)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
