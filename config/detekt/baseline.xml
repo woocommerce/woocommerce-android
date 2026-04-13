@@ -2342,12 +2342,6 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$requiredWidth(360.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(16.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(140.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(256.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(84.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$width(604.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(24.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(56.dp)</ID>
@@ -2364,8 +2358,6 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$size(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(100.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$width(604.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosRefundDetailsDialog.kt$size(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(300.dp, 150.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(40.dp)</ID>
@@ -2373,18 +2365,5 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsCategoriesPaneScreen.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsHardwareCardReaderScreen.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSplashScreen.kt$size(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$size(84.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$width(604.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentInProgressScreen.kt$size(256.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentSuccessScreen.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentSuccessScreen.kt$width(604.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(40.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(140.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(256.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$width(332.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>

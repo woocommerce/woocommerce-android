@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +30,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
@@ -109,8 +110,8 @@ fun WooPosPaymentSuccessScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
-                    .width(604.dp)
+                    .height(80.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
@@ -123,8 +124,8 @@ fun WooPosPaymentSuccessScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
-                    .width(604.dp),
+                    .height(80.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth(),
                 onClick = onReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button)
             )
