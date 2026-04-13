@@ -3,6 +3,7 @@ name: verify-on-device
 description: Build, install, and visually verify the app on an Android emulator or device
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
 user-invocable: true
+context: fork
 ---
 
 # Verify on Device
@@ -10,6 +11,25 @@ user-invocable: true
 Build, install, and visually verify the app on an Android emulator or physical device using mobile-mcp.
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
+
+## Critical Rule: Default to Main App (Store Management)
+
+Unless the task explicitly mentions **POS**, **Point of Sale**, or **WooPos**, always operate in the **main app** (store management) context — `MainActivity` with bottom navigation tabs. This applies to all workflows: creating orders, viewing products, collecting payments, etc. The main app is the default; POS is only used when specifically requested.
+
+## Critical Rule: Always Restart the App
+
+Do NOT attempt to recover from the current screen state when you start a task. Always force-stop the app and relaunch it to start from a known state (the dashboard or POS). This avoids wasted time navigating out of unknown screens.
+
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
+```
+
+For POS tasks (only when explicitly requested):
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
 
 ## Critical Rule: Always Use the Accessibility Tree for Tapping
 
@@ -27,7 +47,7 @@ Only use `mobile_take_screenshot` for **visual verification** — never for deri
 
 After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow this stabilization protocol:
 
-1. Call `mobile_list_elements_on_screen` immediately after the action.
+1. Call `mobile_list_elements_on_screen` after the action.
 2. If the expected target element is NOT present, call `mobile_list_elements_on_screen` again. Each tool round-trip takes ~1-2 seconds, which provides sufficient implicit delay.
 3. Repeat up to 5 times.
 4. If after 5 attempts the expected element is still missing, take a screenshot for diagnosis and report the issue.
@@ -114,6 +134,8 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 ## Steps
 
+**Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
+
 ### 1. Discover Devices
 
 Call `mobile_list_available_devices`. If multiple devices are returned, ask the user which to use. If none are found, instruct the user to boot an emulator or connect a device.
@@ -158,15 +180,22 @@ Optionally call `mobile_list_apps` first to check if the app is already installe
 
 If the user requests verification of a specific scenario (error states, empty data, custom responses), set up ApiFaker mock endpoints **before** launching the app. See the "API Mocking with ApiFaker" section and `docs/api-faker-adb.md` for commands and workflow.
 
-### 7. Launch the App
+### 7. Restart and Launch the App
 
-Launch `MainActivity` explicitly to ensure the app always opens to the main screen (not a deep link handler or login redirect):
+Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active.
 
 ```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
 ```
 
 Do NOT use `mobile_launch_app` — it launches the default launcher intent which may not always resolve to `MainActivity`.
+
+**For POS (only when explicitly requested):** Launch directly into POS with:
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
 
 ### 8. Handle Post-Launch Dialogs
 
@@ -322,31 +351,23 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 
 All resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's theme.
 
-### Global Elements (Always Present)
+The app has two distinct navigation domains with different architectures. **Only load the reference files you need for the task** — each file adds significant context cost.
 
-These elements exist across all screens within `MainActivity`.
+### Always load first
+- [Overview & Feature Tree](references/main-app-navigation.md) -- lightweight index of all screens, bottom tabs, global elements. Read this first to orient yourself, then load only the detailed references you need.
 
-| Element | Resource ID | Notes |
-|---------|------------|-------|
-| Bottom Navigation Bar | `bottom_nav` | Visible on top-level screens, hidden on detail screens |
-| Toolbar | `toolbar` | Material toolbar, shows screen title |
-| Navigation Host | `nav_host_fragment_main` | Container for all fragments |
-| Offline Bar | `offline_bar` | Visible only when device is offline |
+### Load on demand — match task keywords to the right reference
 
-### Bottom Navigation Tabs
+| If the task involves… | Load this reference |
+|---|---|
+| **Login**, authentication, store selection, credentials | [Login](references/main-app-login.md) |
+| **Dashboard**, stats, analytics, onboarding, date ranges | [Dashboard](references/main-app-dashboard.md) |
+| **Orders**, creating orders, **adding products to orders**, payment collection (cash/card/tap-to-pay), refunds, fulfillment, shipping labels, receipts | [Orders](references/main-app-orders.md) |
+| **Product catalog** management — creating, editing, deleting, searching products in the Products tab | [Products](references/main-app-products.md) |
+| **Settings**, payments hub, reviews, coupons, customers, Blaze, Google Ads | [More Menu](references/main-app-more.md) |
+| **POS**, Point of Sale, WooPos, landscape checkout, cash register | [POS](references/pos-navigation.md) |
 
-The bottom bar can show up to 6 tabs depending on store configuration (max 5 shown at once).
-
-| Tab | Resource ID | Label | Target Screen |
-|-----|------------|-------|---------------|
-| My Store | `dashboard` | "My store" | Dashboard |
-| Orders | `orders` | "Orders" | Orders List |
-| Products | `products` | "Products" | Products List |
-| Bookings | `bookings` | "Bookings" | Bookings List (only if extension active) |
-| Point of Sale | `point_of_sale` | "Point of Sale" | POS (only if enabled) |
-| Menu | `moreMenu` | "Menu" | More Menu |
-
-To navigate between tabs, find the target tab by its `identifier`, compute center coordinates, and tap. The active tab has `selected: true` in the accessibility tree.
+**Key distinction:** "Adding products to an order" is an **Orders** workflow (order creation screen), NOT a Products workflow. Only load the Products reference when the task is about the standalone product catalog (Products tab).
 
 ### Common Navigation Patterns
 
@@ -356,162 +377,6 @@ To navigate between tabs, find the target tab by its `identifier`, compute cente
 - **Scroll down a list:** Use `mobile_swipe_on_screen` with direction `up` (swipe up to scroll down).
 - **Open a list item:** Find the item in `mobile_list_elements_on_screen` by its text or identifier, compute center coordinates, and tap.
 - **Toolbar back arrow:** Look for elements in the toolbar area (`com.woocommerce.android.dev:id/toolbar`). If the back arrow is not exposed as a separate element, use `mobile_press_button` with `BACK` instead.
-
-### Screen Identifiers
-
-Use these to confirm which screen is displayed after navigation. After navigating, call `mobile_list_elements_on_screen` and look for the **Primary Identifier**.
-
-#### Top-Level Screens
-
-**Dashboard (My Store)** — Fragment: `DashboardFragment` — Tap `dashboard` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `dashboard_container` | ComposeView hosting dashboard cards |
-| Stats card | testTag: `dashboard_stats_card` | Revenue/visitors stats |
-| Top performers | testTag: `dashboard_top_performers_card` | Top-performing products |
-| Date range dropdown | testTag: `stats_range_dropdown_button` | Date range selector |
-
-**Orders List** — Fragment: `OrderListFragment` — Tap `orders` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `order_list_view` | Order list RecyclerView |
-| Filters card | `order_filters_card` | Status filter chips |
-| Create order FAB | `createOrderButton` | contentDescription: "Create order" |
-
-**Products List** — Fragment: `ProductListFragment` — Tap `products` bottom tab
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `productsRecycler` | Products RecyclerView |
-| Add product FAB | `addProductButton` | contentDescription: "Add product" |
-| Sort/filter card | `products_sort_filter_card` | Filter/sort controls |
-| Empty view | `empty_view` | Shown when no products match |
-
-**More Menu** — Fragment: `MoreMenuFragment` — Tap `moreMenu` bottom tab
-
-Fully Compose-based with no XML resource IDs. Identify by text labels: "Payments", "Settings", "Coupons", etc. Common menu items:
-- "Payments" → Payments Hub
-- "Reviews" → Reviews List
-- "Coupons" → Coupon List
-- "Customers" → Customer List
-- "Blaze" → Blaze Campaign List
-- "Settings" → Settings activity
-- "Subscriptions" → Subscriptions
-- "Google for WooCommerce" → Google Ads
-
-**Reviews List** — Fragment: `ReviewListFragment` — Menu tab → "Reviews"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `reviewsList` | Reviews RecyclerView |
-| Unread filter | `unread_filter_switch` | Toggle to filter unread |
-
-**Analytics Hub** — Fragment: `AnalyticsHubFragment` — Dashboard → "View all store analytics"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `analyticsRefreshLayout` | SwipeRefreshLayout |
-| Date range selector | `analyticsDateSelectorCard` | Date range picker card |
-| Analytics cards | `cards` | RecyclerView with metric cards |
-
-#### Detail Screens
-
-**Order Detail** — Fragment: `OrderDetailFragment` — Orders tab → tap any order row
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `orderDetail_container` | Main content container |
-| Order status | `orderDetail_orderStatus` | Status card at top |
-| Product list | `orderDetail_productList` | Products in the order |
-| Payment info | `orderDetail_paymentInfo` | Payment details card |
-| Customer info | `orderDetail_customerInfo` | Customer details card |
-| Refunds info | `orderDetail_refundsInfo` | Visible if refunds exist |
-| Notes list | `orderDetail_noteList` | Order notes section |
-| Trash button | `orderDetail_trash` | Move to trash |
-
-**Product Detail** — Fragment: `ProductDetailFragment` — Products tab → tap any product row
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `productDetail_root` | Root CoordinatorLayout |
-| Toolbar | `productDetailToolbar` | Shows product name |
-| Image gallery | `imageGallery` | Product image carousel |
-| Product cards | `cardsRecyclerView` | Product detail cards |
-
-**Review Detail** — Fragment: `ReviewDetailFragment` — Reviews → tap any review row
-
-Identify by `fragment_review_detail` layout elements.
-
-#### Settings Screens
-
-Settings is a separate Activity (`AppSettingsActivity`). Use `adb shell dumpsys activity top` to confirm. Items are identified by text labels.
-
-| Screen | Fragment | Nav Path |
-|--------|----------|----------|
-| Main Settings | `MainSettingsFragment` | Menu → "Settings" |
-| Privacy Settings | `PrivacySettingsFragment` | Settings → "Privacy settings" |
-| Experimental features | `BetaFeaturesFragment` | Settings → "Experimental features" |
-| Developer Options | `DeveloperOptionsFragment` | Settings → "Developer options" (debug only) |
-| Manage Notifications | OS Notification Settings | Settings → Manage Notifications |
-| Account Settings | `AccountSettingsFragment` | Settings → Account section |
-| About | `UnifiedAboutScreenActivity` | Settings → "About" |
-| Plugins | `PluginsFragment` | Settings → "Plugins" |
-
-#### Payments & Commerce
-
-**Payments Hub** — Fragment: `PaymentsHubFragment` — Menu tab → "Payments"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `paymentsHubRv` | Payments options RecyclerView |
-| Loading indicator | `paymentsHubLoading` | LinearProgressIndicator |
-
-**Coupon List** — Fragment: `CouponListFragment` — Menu tab → "Coupons"
-
-| Key Element | Identifier | Notes |
-|-------------|-----------|-------|
-| **Primary** | `couponsComposeView` | ComposeView hosting coupon list |
-| Add coupon FAB | `add_coupon_button` | Floating action button |
-
-### Compose Test Tags
-
-These are stable test tags applied via `Modifier.testTag()`. They appear in the accessibility tree as resource IDs.
-
-**Dashboard** (defined in `DashboardStatsTestTags`):
-`dashboard_stats_card`, `dashboard_top_performers_card`, `stats_range_dropdown_button`, `stats_range_dropdown_menu`
-
-**POS** (defined in `WooPosTestTags`):
-`woo_pos_product_item`, `woo_pos_checkout_button`, `woo_pos_cash_payment_button`, `woo_pos_complete_payment_button`, `woo_pos_new_order_button`, `woo_pos_success_checkmark_icon`, `woo_pos_cart_items_count`
-
-### Navigation Flows
-
-Step-by-step paths for reaching common screens from the Dashboard.
-
-```
-Orders List:       Tap bottom nav "orders" tab
-Order Detail:      Orders List → tap any order row → wait for orderDetail_container
-Order Creation:    Orders List → tap createOrderButton (FAB)
-Order Filters:     Orders List → tap filter chip in order_filters_card
-
-Products List:     Tap bottom nav "products" tab
-Product Detail:    Products List → tap any product row → wait for productDetail_root
-Product Creation:  Products List → tap addProductButton (FAB) → select product type
-Product Search:    Products List → tap search icon in toolbar → type in search field
-
-Settings:          Menu tab → tap "Settings" (opens AppSettingsActivity)
-Privacy Settings:  Settings → tap "Privacy settings"
-Experimental Features:     Settings → tap "Experimental features"
-Developer Options: Settings → tap "Developer options" (debug builds only)
-
-Payments Hub:      Menu tab → tap "Payments"
-Coupon List:       Menu tab → tap "Coupons"
-Reviews List:      Menu tab → tap "Reviews"
-Analytics Hub:     Dashboard → tap "View all store analytics"
-Customer List:     Menu tab → tap "Customers"
-Blaze:             Menu tab → tap "Blaze"
-```
 
 ## Error Recovery
 
