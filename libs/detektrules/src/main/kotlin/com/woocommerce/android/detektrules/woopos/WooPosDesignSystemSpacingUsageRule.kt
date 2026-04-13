@@ -10,8 +10,8 @@ import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 class WooPosDesignSystemSpacingUsageRule(config: Config) : WooPosBaseDetektRule(config) {
-    private val dpRegex = Regex("\\d+\\.dp")
-    private val dpWordRegex = Regex("\\b\\d+\\.dp\\b")
+    private val dpRegex = Regex("\\d+(?:\\.\\d+)?\\.dp")
+    private val dpWordRegex = Regex("(?<![\\w.])\\d+(?:\\.\\d+)?\\.dp\\b")
 
     override val issue = Issue(
         javaClass.simpleName,
@@ -27,6 +27,8 @@ class WooPosDesignSystemSpacingUsageRule(config: Config) : WooPosBaseDetektRule(
         when (callName) {
             "padding" -> checkPaddingArguments(expression)
             "Spacer" -> checkSpacerArguments(expression)
+            "PaddingValues" -> checkPaddingValuesArguments(expression)
+            "spacedBy" -> checkSpacedByArguments(expression)
         }
     }
 
@@ -39,6 +41,38 @@ class WooPosDesignSystemSpacingUsageRule(config: Config) : WooPosBaseDetektRule(
                         issue,
                         Entity.from(expression),
                         "Use WooPosSpacing for padding/margins instead of hardcoded values. Found: $argText"
+                    )
+                )
+            }
+        }
+    }
+
+    private fun checkPaddingValuesArguments(expression: KtCallExpression) {
+        expression.valueArguments.forEach { argument ->
+            val argText = argument.getArgumentExpression()?.text ?: return@forEach
+            if (argText.startsWith("WooPosSpacing")) return@forEach
+            dpWordRegex.findAll(argText).forEach { match ->
+                report(
+                    CodeSmell(
+                        issue,
+                        Entity.from(expression),
+                        "Use WooPosSpacing for PaddingValues instead of hardcoded values. Found: ${match.value}"
+                    )
+                )
+            }
+        }
+    }
+
+    private fun checkSpacedByArguments(expression: KtCallExpression) {
+        expression.valueArguments.forEach { argument ->
+            val argText = argument.getArgumentExpression()?.text ?: return@forEach
+            if (argText.startsWith("WooPosSpacing")) return@forEach
+            dpWordRegex.findAll(argText).forEach { match ->
+                report(
+                    CodeSmell(
+                        issue,
+                        Entity.from(expression),
+                        "Use WooPosSpacing for Arrangement.spacedBy instead of hardcoded values. Found: ${match.value}"
                     )
                 )
             }
