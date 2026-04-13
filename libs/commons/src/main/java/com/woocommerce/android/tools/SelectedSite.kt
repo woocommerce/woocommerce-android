@@ -33,6 +33,14 @@ class SelectedSite @Inject constructor(
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
 
         fun getEventBus(): EventBus = EventBus.getDefault()
+
+        private fun getSelectedSiteId(context: Context): Int = PreferenceUtils.getInt(
+            PreferenceManager.getDefaultSharedPreferences(context),
+            SELECTED_SITE_LOCAL_ID,
+            -1
+        )
+
+        fun hasSelectedSiteId(context: Context): Boolean = getSelectedSiteId(context) != -1
     }
 
     private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistence())
@@ -117,7 +125,7 @@ class SelectedSite @Inject constructor(
 
     fun getIfExists(): SiteModel? = if (exists()) get() else null
 
-    fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
+    fun getSelectedSiteId() = getSelectedSiteId(context)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
