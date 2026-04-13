@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -70,7 +71,7 @@ private fun WooPosPaginationErrorIndicatorContent(
     ) {
         Row(
             modifier = Modifier
-                .height(112.dp)
+                .height(112.dp.toAdaptiveComponentSize())
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
@@ -82,11 +83,11 @@ private fun WooPosPaginationErrorIndicatorContent(
             ) {
                 if (icon != null) {
                     Box(
-                        modifier = Modifier.size(112.dp)
+                        modifier = Modifier.size(112.dp.toAdaptiveComponentSize())
                     ) {
                         Icon(
                             modifier = Modifier
-                                .size(54.dp)
+                                .size(54.dp.toAdaptiveComponentSize())
                                 .align(Alignment.Center),
                             imageVector = icon,
                             contentDescription = stringResource(R.string.woopos_error_icon_content_description),

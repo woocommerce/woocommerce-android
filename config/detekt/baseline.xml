@@ -115,6 +115,8 @@
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
+    <ID>NoUnusedImports:WooPosDialogWrapper.kt$com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper.kt</ID>
+    <ID>NoUnusedImports:WooPosSearchInput.kt$com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput.kt</ID>
     <ID>NoWildcardImports:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>NoWildcardImports:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
     <ID>NoWildcardImports:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
@@ -2333,17 +2335,12 @@
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBackButton.kt$size(28.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBackButton.kt$size(48.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$height(40.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$size(20.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$width(160.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$requiredWidth(360.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(16.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$size(32.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$size(56.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$width(600.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$height(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(140.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(160.dp)</ID>
@@ -2359,16 +2356,10 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(96.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$width(96.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosChip.kt$size(26.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosDialogWrapper.kt$size(40.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosEmptyScreen.kt$size(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosErrorAndEmptyStateButtonModifier.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosErrorScreen.kt$size(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(40.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(24.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIcons.kt$size(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(24.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(56.dp)</ID>
@@ -2380,10 +2371,6 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(112.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(24.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$width(112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLazyColumn.kt$height(1.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLazyColumn.kt$height(64.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLoadingIndicators.kt$size(156.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLoadingIndicators.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(14.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(16.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(40.dp)</ID>
@@ -2396,21 +2383,15 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$size(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(100.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$height(112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$size(112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$size(54.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$height(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$width(604.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosRefundDetailsDialog.kt$size(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(300.dp, 150.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(40.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(88.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSearchInput.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSearchInput.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsCategoriesPaneScreen.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsHardwareCardReaderScreen.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSplashScreen.kt$size(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosToolbar.kt$height(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$height(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$size(84.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$width(604.dp)</ID>

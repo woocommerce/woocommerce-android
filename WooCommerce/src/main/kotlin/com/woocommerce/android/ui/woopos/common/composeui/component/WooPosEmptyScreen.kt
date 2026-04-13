@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosEmptyScreen(
@@ -82,7 +83,7 @@ private fun WooPosItemsEmptyListInternal(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(80.dp.toAdaptiveComponentSize()),
                 imageVector = icon,
                 contentDescription = contentDescription,
             )
@@ -111,7 +112,7 @@ private fun WooPosItemsEmptyListInternal(
                 WooPosButton(
                     text = actionLabel,
                     onClick = onActionClicked,
-                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                    modifier = wooPosErrorAndEmptyStateButtonModifier
                 )
             }
         }

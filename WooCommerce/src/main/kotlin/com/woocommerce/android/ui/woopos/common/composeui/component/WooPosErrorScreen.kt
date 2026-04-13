@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosErrorScreen(
@@ -48,7 +49,7 @@ fun WooPosErrorScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(80.dp.toAdaptiveComponentSize()),
                 imageVector = icon,
                 contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
                 tint = WooPosTheme.colors.unspecified,
@@ -75,7 +76,7 @@ fun WooPosErrorScreen(
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                    modifier = wooPosErrorAndEmptyStateButtonModifier
                 )
             }
             secondaryButton?.let {
@@ -83,7 +84,7 @@ fun WooPosErrorScreen(
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                    modifier = wooPosErrorAndEmptyStateButtonModifier
                 )
             }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState.Open.Input
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent.SearchIconClicked
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -202,12 +203,12 @@ private fun SearchInput(
             leadingIcon = {
                 if (state.isLoading) {
                     WooPosCircularLoadingIndicator(
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(WooPosIconSize.Small.value)
                     )
                 } else {
                     IconButton(
                         onClick = {},
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(WooPosIconSize.Medium.value)
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
@@ -221,7 +222,7 @@ private fun SearchInput(
                 if (textFieldValue.text.isNotEmpty()) {
                     IconButton(
                         onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(WooPosIconSize.Medium.value)
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_clear),

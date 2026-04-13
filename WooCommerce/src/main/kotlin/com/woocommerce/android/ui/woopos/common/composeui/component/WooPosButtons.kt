@@ -40,9 +40,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosButton(
@@ -188,7 +190,7 @@ fun WooPosCircularIconButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(56.dp)
+            .size(56.dp.toAdaptiveComponentSize())
             .clip(CircleShape)
             .background(backgroundColor)
     ) {
@@ -220,7 +222,7 @@ fun WooPosIconButton(
     ) {
         Icon(
             modifier = Modifier
-                .size(32.dp),
+                .size(WooPosIconSize.Medium.value),
             imageVector = icon,
             contentDescription = contentDescription,
             tint = if (enabled) {
@@ -300,7 +302,7 @@ fun WooPosButtonsPreview() {
         Column(
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value)
-                .width(600.dp)
+                .width(600.dp.toAdaptiveComponentSize())
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
@@ -377,7 +379,7 @@ fun WooPosSmallButtonsPreview() {
         Column(
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value)
-                .width(600.dp)
+                .width(600.dp.toAdaptiveComponentSize())
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
