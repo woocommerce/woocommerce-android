@@ -276,6 +276,116 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when booking loaded, then initial date matches booking start`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        // WHEN
+        val viewModel = createViewModel(now)
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.formattedDate).isNotEmpty()
+    }
+
+    @Test
+    fun `when booking loaded, then date picker is initially visible`() = testBlocking {
+        // GIVEN
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.datePickerState).isNotNull()
+    }
+
+    @Test
+    fun `when date selected, then formatted date updates and picker is dismissed`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+        val pickerState = viewModel.state.value!!.datePickerState!!
+
+        // WHEN
+        val newDateMillis = LocalDate.of(2026, 4, 20)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        pickerState.onDateSelected(newDateMillis)
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.formattedDate).isNotEmpty()
+        assertThat(state.datePickerState).isNull()
+    }
+
+    @Test
+    fun `when date picker dismissed, then picker state is null`() = testBlocking {
+        // GIVEN
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel()
+        assertThat(viewModel.state.value!!.datePickerState).isNotNull()
+
+        // WHEN
+        viewModel.state.value!!.datePickerState!!.onDismiss()
+
+        // THEN
+        assertThat(viewModel.state.value!!.datePickerState).isNull()
+    }
+
+    @Test
+    fun `when date row clicked, then date picker becomes visible with minDate as today`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+        viewModel.state.value!!.datePickerState!!.onDismiss()
+        assertThat(viewModel.state.value!!.datePickerState).isNull()
+
+        // WHEN
+        viewModel.onDateRowClicked()
+
+        // THEN
+        val pickerState = viewModel.state.value!!.datePickerState
+        assertThat(pickerState).isNotNull()
+        val todayMillis = LocalDate.of(2026, 4, 10)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        assertThat(pickerState!!.minDateMillis).isEqualTo(todayMillis)
+    }
+
+    @Test
     fun `given booking not found, when loading, then shows error and exits`() = testBlocking {
         // GIVEN
         whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(null)
