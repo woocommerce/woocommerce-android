@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingAvailabilityDto
 import java.time.Clock
@@ -53,13 +52,12 @@ class BookingRescheduleViewModel @Inject constructor(
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
         .withZone(ZoneOffset.UTC)
 
-    private var currentSelectedDate: LocalDate? = null
-
-    private val _state = MutableStateFlow(BookingRescheduleState())
-    val state: LiveData<BookingRescheduleState> = _state.asLiveData()
-
     private val teamMemberIdOverride = MutableStateFlow<Long?>(null)
     private val selectedDate = MutableStateFlow<LocalDate?>(null)
+    private val availabilityState = MutableStateFlow<BookingRescheduleState.AvailabilityState>(
+        BookingRescheduleState.AvailabilityState.Loading
+    )
+    private val datePickerState = MutableStateFlow<BookingRescheduleState.DatePickerState?>(null)
 
     private val booking: Flow<Booking> = flow {
         emit(bookingsRepository.getBooking(navArgs.bookingId))
@@ -89,6 +87,31 @@ class BookingRescheduleViewModel @Inject constructor(
         override ?: booking.start.atOffset(ZoneOffset.UTC).toLocalDate()
     }.distinctUntilChanged()
 
+    private val dateUiState = combine(
+        effectiveDate,
+        datePickerState,
+    ) { date, picker ->
+        date to picker
+    }
+
+    val state: LiveData<BookingRescheduleState> = combine(
+        booking.map { it.productId }.distinctUntilChanged(),
+        effectiveResourceId,
+        teamMember,
+        availabilityState,
+        dateUiState,
+    ) { productId, resourceId, member, availability, (date, picker) ->
+        BookingRescheduleState(
+            teamMemberId = resourceId,
+            teamMemberName = member?.name,
+            productId = productId,
+            availabilityState = availability,
+            formattedDate = formatDate(date),
+            datePickerState = picker,
+        )
+    }.asLiveData()
+
+
     init {
         launch {
             combine(
@@ -103,9 +126,6 @@ class BookingRescheduleViewModel @Inject constructor(
                 )
             }.distinctUntilChanged()
                 .collectLatest { key ->
-                    _state.update {
-                        it.copy(teamMemberId = key.resourceId, productId = key.productId)
-                    }
                     loadAvailability(
                         productId = key.productId,
                         resourceId = key.resourceId,
@@ -114,21 +134,11 @@ class BookingRescheduleViewModel @Inject constructor(
                 }
         }
         launch {
-            teamMember.collect { member ->
-                _state.update { it.copy(teamMemberName = member?.name) }
-            }
-        }
-        launch {
             booking.collect { booking ->
-                if (currentSelectedDate == null) {
+                if (selectedDate.value == null) {
                     val initialDate = booking.start.atOffset(ZoneOffset.UTC).toLocalDate()
-                    currentSelectedDate = initialDate
-                    _state.update {
-                        it.copy(
-                            formattedDate = formatDate(initialDate),
-                            datePickerState = buildDatePickerState(initialDate),
-                        )
-                    }
+                    selectedDate.value = initialDate
+                    datePickerState.value = buildDatePickerState(initialDate)
                 }
             }
         }
@@ -139,29 +149,18 @@ class BookingRescheduleViewModel @Inject constructor(
     }
 
     fun onDateRowClicked() {
-        _state.update {
-            it.copy(datePickerState = buildDatePickerState(currentSelectedDate))
-        }
+        datePickerState.value = buildDatePickerState(selectedDate.value)
     }
 
     private fun onDateSelected(dateMillis: Long) {
-        val date = Instant.ofEpochMilli(dateMillis)
-            .atOffset(ZoneOffset.UTC)
-            .toLocalDate()
-        currentSelectedDate = date
-        _state.update {
-            it.copy(
-                formattedDate = formatDate(date),
-                datePickerState = null,
-            )
-        }
+        datePickerState.value = null
         selectedDate.value = Instant.ofEpochMilli(dateMillis)
             .atOffset(ZoneOffset.UTC)
             .toLocalDate()
     }
 
     private fun onDatePickerDismissed() {
-        _state.update { it.copy(datePickerState = null) }
+        datePickerState.value = null
     }
 
     private fun buildDatePickerState(currentDate: LocalDate?): BookingRescheduleState.DatePickerState {
@@ -190,18 +189,16 @@ class BookingRescheduleViewModel @Inject constructor(
         resourceId: Long,
         dateRange: Pair<LocalDateTime, LocalDateTime>,
     ) {
-        _state.update { it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Loading) }
+        availabilityState.value = BookingRescheduleState.AvailabilityState.Loading
         bookingsRepository.fetchProductAvailability(
             productId = productId,
             startDate = dateRange.first,
             endDate = dateRange.second,
             resourceId = resourceId,
         ).onSuccess { availability ->
-            _state.update {
-                it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Loaded(availability))
-            }
+            availabilityState.value = BookingRescheduleState.AvailabilityState.Loaded(availability)
         }.onFailure {
-            _state.update { it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Error) }
+            availabilityState.value = BookingRescheduleState.AvailabilityState.Error
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
         }
     }
