@@ -9,7 +9,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | Prologue | text: "Log In" button and "Starting a new store?" link |
 | WPCom Email | text: "Log in with your WordPress.com account email address to manage your WooCommerce stores.", hint: "Email address" |
 | Password | text: password input field, "Reset your password" link |
-| 2FA / Verification Code | text: "Verification code" or OTP input |
+| 2FA / Verification Code | text: "Almost there! Please enter the verification code", hint: "Verification code" |
 | Magic Link Sent | text: "Check your email on this device" and "Open Mail" button |
 | Site Address | text: "Enter the address of the WooCommerce store you'd like to connect.", hint: "Site address" |
 | Site Credentials | text: "Log in with your [site URL] site credentials" with "Username" and "Password" fields |
