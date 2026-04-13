@@ -88,4 +88,10 @@ data class ProductApiResponse(
     val combine_variations: String? = null,
     @SerializedName("post_password")
     val password: String? = null,
+    @SerializedName("booking_duration")
+    val bookingDuration: Int? = null,
+    @SerializedName("booking_duration_unit")
+    val bookingDurationUnit: String? = null,
+    @SerializedName("booking_resources")
+    val bookingResources: List<Long>? = null,
 )

@@ -94,7 +94,10 @@ data class Product(
     val bundleMaxSize: Float?,
     val groupOfQuantity: Int?,
     val combineVariationQuantities: Boolean?,
-    val password: String?
+    val password: String?,
+    val bookingDuration: Int? = null,
+    val bookingDurationUnit: String? = null,
+    val bookingResourceIds: List<Long> = emptyList(),
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -588,7 +591,10 @@ fun WCProductModel.toAppModel(): Product {
         bundleMaxSize = this.bundleMaxSize,
         groupOfQuantity = this.groupOfQuantity(),
         combineVariationQuantities = this.combineVariationQuantities,
-        password = this.password
+        password = this.password,
+        bookingDuration = this.bookingDuration,
+        bookingDurationUnit = this.bookingDurationUnit,
+        bookingResourceIds = this.bookingResources ?: emptyList(),
     )
 }
 

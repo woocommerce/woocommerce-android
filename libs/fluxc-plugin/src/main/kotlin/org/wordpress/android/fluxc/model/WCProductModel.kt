@@ -115,6 +115,10 @@ data class WCProductModel(
     val combineVariationQuantities: Boolean = false,
     val password: String? = null,
 
+    val bookingDuration: Int? = null,
+    val bookingDurationUnit: String? = null,
+    val bookingResources: List<Long>? = null,
+
     val isSampleProduct: Boolean = false
 ) {
 

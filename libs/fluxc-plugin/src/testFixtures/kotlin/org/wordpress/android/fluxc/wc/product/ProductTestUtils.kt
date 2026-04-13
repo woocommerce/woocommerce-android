@@ -30,6 +30,9 @@ object ProductTestUtils {
         categories: String = "",
         description: String = "",
         shortDescription: String = "",
+        bookingDuration: Int? = null,
+        bookingDurationUnit: String? = null,
+        bookingResources: List<Long>? = null,
     ): WCProductModel {
         return WCProductModel().copy(
             remoteId = RemoteId(remoteId),
@@ -43,6 +46,9 @@ object ProductTestUtils {
             categories = categories,
             description = description,
             shortDescription = shortDescription,
+            bookingDuration = bookingDuration,
+            bookingDurationUnit = bookingDurationUnit,
+            bookingResources = bookingResources,
         )
     }
 

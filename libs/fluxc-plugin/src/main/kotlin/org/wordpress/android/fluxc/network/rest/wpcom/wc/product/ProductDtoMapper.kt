@@ -112,6 +112,10 @@ class ProductDtoMapper @Inject constructor(
 
             password = dto.password,
 
+            bookingDuration = dto.bookingDuration,
+            bookingDurationUnit = dto.bookingDurationUnit,
+            bookingResources = dto.bookingResources,
+
             isSampleProduct = dto.metadata?.any {
                 val metaDataEntry = WCMetaData.fromJson(it.asJsonObject)
                 metaDataEntry?.let { json ->
