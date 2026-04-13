@@ -54,9 +54,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToggleButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
 private const val SHOW_PAYMENT_SECTION = false
 
@@ -206,8 +209,8 @@ private fun BookingActions(
         is WooPosBookingsState.BookingActionsState.Loading -> {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(160.dp)
+                    .height(WooPosIconSize.Large.value)
+                    .width(160.dp.toAdaptiveComponentSize())
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
@@ -535,7 +538,7 @@ private fun CopyableRow(
             imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
             contentDescription = contentDescription,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp.toAdaptiveIconSize())
         )
     }
 }

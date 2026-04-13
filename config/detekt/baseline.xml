@@ -2337,11 +2337,5 @@
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$height(40.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$size(20.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$width(160.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$requiredWidth(360.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(16.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(24.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>
