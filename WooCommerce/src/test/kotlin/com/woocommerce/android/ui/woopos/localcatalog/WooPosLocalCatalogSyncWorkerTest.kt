@@ -192,12 +192,12 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given POS never opened and full sync was within 30 days, when worker runs, then proceeds with sync`() =
+    fun `given POS never opened and initial sync already completed, when worker runs, then skips sync`() =
         testBlocking {
             // GIVEN
             whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
-            val recentFullSync = CURRENT_TIME_MILLIS - (10 * 24 * 60 * 60 * 1000L) // 10 days ago
-            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentFullSync)
+            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp())
+                .thenReturn(CURRENT_TIME_MILLIS)
             val worker = createWorker()
 
             // WHEN
@@ -206,37 +206,14 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(ListenableWorker.Result.success())
-            verify(syncRepository).syncLocalCatalogFull(eq(site))
-            verify(analyticsTracker, never()).track(
+            verify(syncRepository, never()).syncLocalCatalogFull(any())
+            verify(analyticsTracker).track(
                 LocalCatalogSyncSkipped(
                     syncType = SyncType.FULL,
                     skipReason = SyncSkipReason.POS_NOT_OPENED_30_DAYS
                 )
             )
         }
-
-    @Test
-    fun `given POS never opened and full sync was 31 days ago, when worker runs, then skips sync`() = testBlocking {
-        // GIVEN
-        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
-        val thirtyOneDaysAgo = CURRENT_TIME_MILLIS - (31 * 24 * 60 * 60 * 1000L)
-        whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(thirtyOneDaysAgo)
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-        verify(analyticsTracker).track(
-            LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL,
-                skipReason = SyncSkipReason.POS_NOT_OPENED_30_DAYS
-            )
-        )
-    }
 
     @Test
     fun `when sync fails with unexpected error, then returns failure with retry`() = testBlocking {
