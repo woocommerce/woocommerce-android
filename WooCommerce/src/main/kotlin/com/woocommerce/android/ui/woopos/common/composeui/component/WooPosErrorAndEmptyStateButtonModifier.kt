@@ -6,8 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 
-val wooPosErrorAndEmptyStateButtonModifier: Modifier
-    @Composable
-    get() = Modifier
-        .fillMaxWidth(0.5f)
-        .height(WooPosComponentSize.Small.value)
+@Composable
+fun Modifier.wooPosErrorAndEmptyStateButton(): Modifier = this
+    .fillMaxWidth(0.5f)
+    .height(WooPosComponentSize.Small.value)

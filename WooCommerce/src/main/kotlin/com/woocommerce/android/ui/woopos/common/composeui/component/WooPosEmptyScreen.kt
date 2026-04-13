@@ -111,7 +111,7 @@ private fun WooPosItemsEmptyListInternal(
                 WooPosButton(
                     text = actionLabel,
                     onClick = onActionClicked,
-                    modifier = wooPosErrorAndEmptyStateButtonModifier
+                    modifier = Modifier.wooPosErrorAndEmptyStateButton()
                 )
             }
         }
