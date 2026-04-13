@@ -33,24 +33,20 @@ Create a pull request following the project's PR conventions.
 
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 
-8. **Create the PR.** Use the conventions from the guidelines doc above:
+8. **Create the PR.** Read `.github/PULL_REQUEST_TEMPLATE.md` and use it as the body. Strip the HTML comments and fill in each section, following the conventions from the guidelines doc above:
+   - **Description**: start with `Fixes WOOMOB-XYZ` on its own line, then a 1-3 sentence summary of what and why.
+   - **Test Steps**: numbered steps to verify the changes.
+   - **Images/gif**: include if applicable, otherwise `N/A`.
+   - Keep the release-notes checkbox line as-is.
 
-```bash
-gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
-### Description
-Fixes WOOMOB-XYZ
-<1-3 sentence summary of what and why>
+   Pass the filled template via a HEREDOC:
 
-### Test Steps
-<numbered steps to verify the changes>
-
-### Images/gif
-<screenshots, before/after tables, or N/A>
-
-- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
-EOF
-)"
-```
+   ```bash
+   gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
+   <filled template content here>
+   EOF
+   )"
+   ```
 
 9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Infer labels from the diff and branch name using the categories in the guidelines. If unsure about feature label, ask the user.
 
