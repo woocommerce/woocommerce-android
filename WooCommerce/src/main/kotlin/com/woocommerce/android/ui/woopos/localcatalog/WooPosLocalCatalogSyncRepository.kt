@@ -140,7 +140,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 syncType = syncType,
                 errorContext = "WooPosLocalCatalogSyncRepository",
                 errorType = errorType,
-                errorDescription = result.error,
+                errorDescription = result.error.ifBlank { "Unknown error (${result::class.simpleName})" },
                 lastGenerationState = result.lastGenerationState,
                 pollAttempts = result.pollAttempts
             )

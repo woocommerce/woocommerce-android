@@ -19,7 +19,6 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
-        private const val FILTER_QUERY_PARAMETER_SEPERATOR = ","
     }
 
     suspend fun fetchBooking(
@@ -139,14 +138,15 @@ class BookingsRestClient @Inject constructor(
 
     private fun BookingFilters.toQueryParams(): Map<String, String> = buildMap {
         if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) {
-            set(
-                "resource",
-                teamMembers.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() }
-            )
+            teamMembers.values.forEachIndexed { index, resource ->
+                set("resource[$index]", resource.value.toString())
+            }
         }
         if (bookingType != null) TODO()
         if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) {
-            set("product", serviceEvents.values.joinToString(",") { it.productId.toString() })
+            serviceEvents.values.forEachIndexed { index, event ->
+                set("product[$index]", event.productId.toString())
+            }
         }
         attendanceStatus.value?.let { set("attendance_status", it.key) }
         if (excludedBookingStatuses != BookingsFilterOption.ExcludedBookingStatuses.DEFAULT) {
