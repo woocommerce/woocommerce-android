@@ -80,7 +80,7 @@ private fun Loading() {
     }
 }
 
-@Suppress("WooPosDesignSystemSpacingUsageRule", "WooPosDesignSystemTextUsageRule")
+@Suppress("WooPosDesignSystemTextUsageRule")
 @Composable
 private fun SyncingCatalog(
     onExitPosClicked: () -> Unit
@@ -136,7 +136,7 @@ private fun SyncingCatalog(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
                 )
             }
         }
