@@ -2343,11 +2343,5 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$requiredWidth(360.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(16.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(300.dp, 150.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(40.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(88.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsCategoriesPaneScreen.kt$size(32.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsHardwareCardReaderScreen.kt$size(32.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSplashScreen.kt$size(160.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>
