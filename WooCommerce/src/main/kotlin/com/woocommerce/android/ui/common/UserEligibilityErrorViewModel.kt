@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper

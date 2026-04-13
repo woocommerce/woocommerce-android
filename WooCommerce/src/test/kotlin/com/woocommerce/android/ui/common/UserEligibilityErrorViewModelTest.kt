@@ -117,7 +117,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handles retry button correctly when user roles cannot be fetched`() = testBlocking {
+    fun `when user roles cannot be fetched on retry, then show the role verification error`() = testBlocking {
         whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.failure(Exception()))
 
         val isProgressDialogShown = ArrayList<Boolean>()
