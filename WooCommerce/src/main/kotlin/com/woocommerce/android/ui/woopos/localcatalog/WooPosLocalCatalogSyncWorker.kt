@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlin.time.Duration.Companion.milliseconds
@@ -29,6 +30,7 @@ constructor(
     private val timeProvider: DateTimeProvider,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val syncTimestampManager: WooPosSyncTimestampManager,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -108,12 +110,27 @@ constructor(
     }
 
     private suspend fun isPosInactive(): Boolean {
-        val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp() ?: return false
+        val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp()
+            ?: return isPosInactiveForNeverOpened()
         val daysSinceLastUse = (timeProvider.now() - lastUsedTimestamp).milliseconds.inWholeDays
         return if (daysSinceLastUse > DAYS_SINCE_LAST_USE_THRESHOLD) {
             logger.d(
                 "POS not used in the last $DAYS_SINCE_LAST_USE_THRESHOLD days " +
                     "(last used $daysSinceLastUse days ago), skipping background full catalog sync."
+            )
+            true
+        } else {
+            false
+        }
+    }
+
+    private suspend fun isPosInactiveForNeverOpened(): Boolean {
+        val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp() ?: return false
+        val daysSinceLastFullSync = (timeProvider.now() - lastFullSyncTimestamp).milliseconds.inWholeDays
+        return if (daysSinceLastFullSync > DAYS_SINCE_LAST_USE_THRESHOLD) {
+            logger.d(
+                "POS never opened and last full sync was $daysSinceLastFullSync days ago " +
+                    "(> $DAYS_SINCE_LAST_USE_THRESHOLD days), skipping background full catalog sync."
             )
             true
         } else {
