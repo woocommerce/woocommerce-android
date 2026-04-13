@@ -31,12 +31,15 @@ class WooPosMyFeatureViewModelTest {
 
     @Test
     fun `when action clicked, then state updates`() = runTest {
+        // GIVEN
         whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
         val viewModel = createViewModel()
         advanceUntilIdle()
 
+        // WHEN
         viewModel.onUIEvent(WooPosMyFeatureUIEvent.ActionClicked)
 
+        // THEN
         assertThat(viewModel.state.value.isLoading).isFalse()
     }
 
