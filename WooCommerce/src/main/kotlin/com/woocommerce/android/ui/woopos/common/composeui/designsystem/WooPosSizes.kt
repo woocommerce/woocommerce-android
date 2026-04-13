@@ -8,13 +8,24 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-enum class WooPosCornerRadius(val value: Dp) {
-    None(0.dp),
-    XSmall(2.dp),
-    Small(4.dp),
-    Medium(8.dp),
-    Large(16.dp),
-    XLarge(24.dp)
+enum class WooPosCornerRadius(
+    private val tabletValue: Dp,
+    private val smallTabletValue: Dp,
+    private val phoneValue: Dp,
+) {
+    None(0.dp, 0.dp, 0.dp),
+    XSmall(4.dp, 4.dp, 4.dp),
+    Small(4.dp, 4.dp, 4.dp),
+    Medium(8.dp, 8.dp, 4.dp),
+    Large(16.dp, 12.dp, 8.dp),
+    XLarge(24.dp, 20.dp, 16.dp);
+
+    val value: Dp
+        @Composable get() = when (rememberWooPosBreakpoint()) {
+            WooPosBreakpoint.Phone -> phoneValue
+            WooPosBreakpoint.SmallTablet -> smallTabletValue
+            WooPosBreakpoint.Tablet -> tabletValue
+        }
 }
 
 enum class WooPosSpacing(private val baseValue: Dp) {
@@ -34,10 +45,21 @@ enum class WooPosSpacing(private val baseValue: Dp) {
         @Composable get() = baseValue.toAdaptivePadding()
 }
 
-enum class WooPosElevation(val value: Dp) {
-    None(0.dp),
-    Medium(8.dp),
-    Large(24.dp)
+enum class WooPosElevation(
+    private val tabletValue: Dp,
+    private val smallTabletValue: Dp,
+    private val phoneValue: Dp,
+) {
+    None(0.dp, 0.dp, 0.dp),
+    Medium(8.dp, 8.dp, 4.dp),
+    Large(24.dp, 20.dp, 16.dp);
+
+    val value: Dp
+        @Composable get() = when (rememberWooPosBreakpoint()) {
+            WooPosBreakpoint.Phone -> phoneValue
+            WooPosBreakpoint.SmallTablet -> smallTabletValue
+            WooPosBreakpoint.Tablet -> tabletValue
+        }
 }
 
 enum class WooPosIconSize(val value: Dp) {
@@ -46,6 +68,18 @@ enum class WooPosIconSize(val value: Dp) {
     Medium(32.dp),
     Large(40.dp),
     XLarge(48.dp)
+}
+
+enum class WooPosComponentSize(private val baseValue: Dp) {
+    XSmall(56.dp),
+    Small(80.dp),
+    Medium(96.dp),
+    Large(112.dp),
+    XLarge(160.dp),
+    XXLarge(256.dp);
+
+    val value: Dp
+        @Composable get() = baseValue.toAdaptiveComponentSize()
 }
 
 @Composable
