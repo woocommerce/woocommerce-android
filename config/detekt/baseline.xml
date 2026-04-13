@@ -2425,7 +2425,5 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(256.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$width(332.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosVariationsScreen.kt$width(640.dp)</ID>
-    <ID>WooPosDesignSystemSpacingUsageRule:WooPosLazyColumn.kt$PaddingValues(0.dp)</ID>
-    <ID>WooPosDesignSystemSpacingUsageRule:WooPosRefundDetailsDialog.kt$spacedBy(0.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>

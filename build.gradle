@@ -90,7 +90,7 @@ tasks.register("detektAll", Detekt) {
     baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
-    exclude("**/resources/**", "**/build/**", "/vendor/**")
+    exclude("**/resources/**", "**/build/**", "/vendor/**", "**/.claude/**", "**/.git/**")
 
     reports {
         xml.required.set(true)
@@ -107,7 +107,7 @@ tasks.register("detektBaselineAll", DetektCreateBaselineTask) {
     baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
-    exclude("**/resources/**", "**/build/**", "/vendor/**")
+    exclude("**/resources/**", "**/build/**", "/vendor/**", "**/.claude/**", "**/.git/**")
 }
 
 dependencies {

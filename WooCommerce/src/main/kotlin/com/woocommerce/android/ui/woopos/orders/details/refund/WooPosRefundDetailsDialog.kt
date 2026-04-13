@@ -64,7 +64,7 @@ fun WooPosRefundDetailsDialog(
 
             WooPosLazyColumn(
                 modifier = Modifier.weight(1f, fill = false),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.None.value),
                 contentPadding = PaddingValues(bottom = WooPosSpacing.Medium.value),
                 withBottomShadow = true,
             ) {
