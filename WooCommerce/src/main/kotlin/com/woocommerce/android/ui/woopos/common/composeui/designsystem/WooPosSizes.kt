@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -82,12 +81,11 @@ fun Dp.toAdaptiveIconSize(): Dp {
 @Composable
 fun Modifier.adaptiveContentWidth(): Modifier {
     val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp.dp
     val longestSide = maxOf(configuration.screenWidthDp, configuration.screenHeightDp).dp
     return when {
         longestSide < 880.dp -> this.fillMaxWidth()
-        longestSide < 1200.dp -> this.widthIn(max = screenWidthDp * 2 / 3)
-        else -> this.widthIn(max = screenWidthDp * 3 / 5)
+        longestSide < 1200.dp -> this.fillMaxWidth(fraction = 2f / 3f)
+        else -> this.fillMaxWidth(fraction = 3f / 5f)
     }
 }
 
