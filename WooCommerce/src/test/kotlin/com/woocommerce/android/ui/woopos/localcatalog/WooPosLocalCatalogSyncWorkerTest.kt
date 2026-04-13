@@ -187,7 +187,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given POS never opened and initial sync already completed, when worker runs, then skips sync`() =
+    fun `given POS never opened and full sync already completed, when worker runs, then skips sync`() =
         testBlocking {
             // GIVEN
             whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
