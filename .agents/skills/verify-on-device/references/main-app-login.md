@@ -24,26 +24,14 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 ### Happy Path: WPCom Email + Password
 
 | Step | Action | Element |
-|------|--------|---------|
+|---|--------|---------|
 | 1 | Tap "Log In" | id: `buttonLoginStore` |
 | 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
 | 4 | Enter WPCom email (if Jetpack connected) | email text field |
 | 5 | Enter password | password text field |
 | 6 | Tap Continue | continue button |
-| 7 | Select store (if multi-site) | store list row |
-| 8 | Tap Continue | text: "Continue" |
-
-### Happy Path: Site Address
-
-| Step | Action | Element |
-|------|--------|---------|
-| 1 | Tap "Log In" | id: `buttonLoginStore` |
-| 2 | Enter store URL | URL text field |
-| 3 | Tap Continue | continue button |
-| 4 | Enter WPCom email (if Jetpack connected) | email text field |
-| 5 | Enter password | password text field |
-| 6 | Login success | |
+| 7 | Login success | |
 
 ### 2FA Flow (after password)
 
@@ -57,18 +45,24 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 ### Magic Link Flow
 
 | Step | Action | Element |
-|------|--------|---------|
-| 1 | Enter email | email text field |
-| 2 | Request magic link | magic link button |
-| 3 | Tap "Open Mail" | id: `login_open_email_client` |
-| 4 | (Magic link opened from email) | |
+|---|--------|---------|
+| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 2 | Enter store URL | URL text field |
+| 3 | Tap Continue | continue button |
+| 4 | Enter email | email text field |
+| 5 | Request magic link | magic link button |
+| 6 | Tap "Open Mail" | id: `login_open_email_client` |
+| 7 | (Magic link opened from email) | |
 
 ### Google SSO
 
 | Step | Action | Element |
-|------|--------|---------|
-| 1 | Tap "Continue with Google" | id: `continue_with_google` |
-| 2 | Complete Google auth | Google account picker |
+|---|--------|---------|
+| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 2 | Enter store URL | URL text field |
+| 3 | Tap Continue | continue button |
+| 4 | Tap "Continue with Google" | id: `continue_with_google` |
+| 5 | Complete Google auth | Google account picker |
 
 ### Jetpack Activation (when Jetpack not installed)
 
