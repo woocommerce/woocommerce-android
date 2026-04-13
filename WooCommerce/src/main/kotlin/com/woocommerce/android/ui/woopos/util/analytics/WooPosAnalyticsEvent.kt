@@ -646,6 +646,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "get_support_tapped"
         }
 
+        data object EditReceiptTapped : Event() {
+            override val name: String = "edit_receipt_tapped"
+        }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }

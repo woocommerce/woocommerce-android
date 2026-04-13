@@ -11,13 +11,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -40,17 +37,9 @@ fun CardReaderManualsScreen(
     WooThemeWithBackground {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.settings_card_reader_manuals)) },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_back_24dp),
-                                contentDescription = stringResource(R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                Toolbar(
+                    title = stringResource(R.string.settings_card_reader_manuals),
+                    onNavigationButtonClick = { navController.navigateUp() },
                 )
             }
         ) { innerPadding ->
@@ -61,7 +50,7 @@ fun CardReaderManualsScreen(
 
 @Composable
 private fun CardReaderManualsScreen(
-    cardReaderManualsViewModel: CardReaderManualsViewModel = viewModel(),
+    cardReaderManualsViewModel: CardReaderManualsViewModel,
     contentPadding: PaddingValues
 ) {
     ManualsList(
@@ -114,7 +103,7 @@ fun ManualsList(
 ) {
     LazyColumn(
         modifier
-            .background(color = MaterialTheme.colors.surface)
+            .background(color = MaterialTheme.colorScheme.surface)
 
     ) {
         items(
@@ -125,7 +114,7 @@ fun ManualsList(
                 manualIcon = manual.icon,
                 onManualClick = manual.onManualClicked
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.offset(dimensionResource(id = R.dimen.card_reader_manuals_divider)),
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
