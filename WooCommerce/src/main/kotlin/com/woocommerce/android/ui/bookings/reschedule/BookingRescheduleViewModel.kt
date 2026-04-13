@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -33,6 +34,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.YearMonth
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -57,6 +59,7 @@ class BookingRescheduleViewModel @Inject constructor(
     val state: LiveData<BookingRescheduleState> = _state.asLiveData()
 
     private val teamMemberIdOverride = MutableStateFlow<Long?>(null)
+    private val selectedDate = MutableStateFlow<LocalDate?>(null)
 
     private val booking: Flow<Booking> = flow {
         emit(bookingsRepository.getBooking(navArgs.bookingId))
@@ -79,20 +82,36 @@ class BookingRescheduleViewModel @Inject constructor(
     private val teamMember: Flow<BookingResource?> = effectiveResourceId
         .flatMapLatest { bookingsRepository.observeResource(it) }
 
+    private val effectiveDate: Flow<LocalDate> = combine(
+        booking,
+        selectedDate,
+    ) { booking, override ->
+        override ?: booking.start.atOffset(ZoneOffset.UTC).toLocalDate()
+    }.distinctUntilChanged()
+
     init {
         launch {
-            combine(booking, effectiveResourceId) { booking, resourceId ->
-                AvailabilityFetchParams(
-                    productId = booking.productId,
+            combine(
+                booking.map { it.productId },
+                effectiveResourceId,
+                effectiveDate,
+            ) { productId, resourceId, date ->
+                AvailabilityFetchKey(
+                    productId = productId,
                     resourceId = resourceId,
-                    dateRange = buildDateRange(booking),
+                    month = YearMonth.from(date),
                 )
-            }.collectLatest { params ->
-                _state.update {
-                    it.copy(teamMemberId = params.resourceId, productId = params.productId)
+            }.distinctUntilChanged()
+                .collectLatest { key ->
+                    _state.update {
+                        it.copy(teamMemberId = key.resourceId, productId = key.productId)
+                    }
+                    loadAvailability(
+                        productId = key.productId,
+                        resourceId = key.resourceId,
+                        dateRange = buildDateRange(key.month),
+                    )
                 }
-                loadAvailability(params)
-            }
         }
         launch {
             teamMember.collect { member ->
@@ -136,6 +155,9 @@ class BookingRescheduleViewModel @Inject constructor(
                 datePickerState = null,
             )
         }
+        selectedDate.value = Instant.ofEpochMilli(dateMillis)
+            .atOffset(ZoneOffset.UTC)
+            .toLocalDate()
     }
 
     private fun onDatePickerDismissed() {
@@ -163,13 +185,17 @@ class BookingRescheduleViewModel @Inject constructor(
         teamMemberIdOverride.value = newResourceId
     }
 
-    private suspend fun loadAvailability(params: AvailabilityFetchParams) {
+    private suspend fun loadAvailability(
+        productId: Long,
+        resourceId: Long,
+        dateRange: Pair<LocalDateTime, LocalDateTime>,
+    ) {
         _state.update { it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Loading) }
         bookingsRepository.fetchProductAvailability(
-            productId = params.productId,
-            startDate = params.dateRange.first,
-            endDate = params.dateRange.second,
-            resourceId = params.resourceId,
+            productId = productId,
+            startDate = dateRange.first,
+            endDate = dateRange.second,
+            resourceId = resourceId,
         ).onSuccess { availability ->
             _state.update {
                 it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Loaded(availability))
@@ -180,26 +206,23 @@ class BookingRescheduleViewModel @Inject constructor(
         }
     }
 
-    private fun buildDateRange(booking: Booking): Pair<LocalDateTime, LocalDateTime> {
+    private fun buildDateRange(month: YearMonth): Pair<LocalDateTime, LocalDateTime> {
         val today = LocalDate.now(clock)
-        val bookingDate = booking.start.atOffset(ZoneOffset.UTC).toLocalDate()
-        val effectiveDate = maxOf(bookingDate, today)
-        val monthStart = effectiveDate.withDayOfMonth(1)
-        val rangeStartDate = maxOf(monthStart, today)
+        val effectiveMonth = maxOf(month, YearMonth.from(today))
+        val rangeStartDate = maxOf(effectiveMonth.atDay(1), today)
         val startDate = if (rangeStartDate == today) {
             LocalDateTime.now(clock)
         } else {
             rangeStartDate.atStartOfDay()
         }
-        val endDate = effectiveDate.withDayOfMonth(effectiveDate.lengthOfMonth())
-            .atTime(LocalTime.MAX)
+        val endDate = effectiveMonth.atEndOfMonth().atTime(LocalTime.MAX)
         return startDate to endDate
     }
 
-    private data class AvailabilityFetchParams(
+    private data class AvailabilityFetchKey(
         val productId: Long,
         val resourceId: Long,
-        val dateRange: Pair<LocalDateTime, LocalDateTime>,
+        val month: YearMonth,
     )
 }
 

@@ -386,6 +386,70 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when date in different month selected, then availability is re-fetched`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+
+        // WHEN — select a date in May
+        val mayDateMillis = LocalDate.of(2026, 5, 15)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        viewModel.state.value!!.datePickerState!!.onDateSelected(mayDateMillis)
+
+        // THEN — availability fetched for May
+        val expectedStart = LocalDate.of(2026, 5, 1).atStartOfDay()
+        val expectedEnd = LocalDate.of(2026, 5, 31).atTime(LocalTime.MAX)
+        verify(bookingsRepository).fetchProductAvailability(
+            productId = eq(PRODUCT_ID),
+            startDate = eq(expectedStart),
+            endDate = eq(expectedEnd),
+            resourceId = eq(RESOURCE_ID),
+        )
+    }
+
+    @Test
+    fun `when date in same month selected, then availability is not re-fetched`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+
+        // WHEN — select a different date in April
+        val aprilDateMillis = LocalDate.of(2026, 4, 20)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        viewModel.state.value!!.datePickerState!!.onDateSelected(aprilDateMillis)
+
+        // THEN — availability fetched only once (initial load)
+        verify(bookingsRepository, times(1)).fetchProductAvailability(
+            productId = any(),
+            startDate = any(),
+            endDate = any(),
+            resourceId = any(),
+        )
+    }
+
+    @Test
     fun `given booking not found, when loading, then shows error and exits`() = testBlocking {
         // GIVEN
         whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(null)
