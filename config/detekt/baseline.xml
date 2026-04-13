@@ -117,6 +117,7 @@
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
     <ID>NoUnusedImports:WooPosDialogWrapper.kt$com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper.kt</ID>
     <ID>NoUnusedImports:WooPosSearchInput.kt$com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput.kt</ID>
+    <ID>NoUnusedImports:WooPosVariationsScreen.kt$com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen.kt</ID>
     <ID>NoWildcardImports:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>NoWildcardImports:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
     <ID>NoWildcardImports:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
@@ -2347,30 +2348,10 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(256.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(84.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$width(604.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$defaultMinSize(minWidth = 200.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$height(56.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$height(96.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$heightIn(min = 96.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(36.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(48.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(96.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$width(96.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(40.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(80.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(24.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(32.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(56.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(80.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsInfoBanner.kt$size(32.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsInfoBanner.kt$size(48.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$height(112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$heightIn(min = 112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(112.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(24.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$width(112.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(14.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(16.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(40.dp)</ID>
@@ -2405,6 +2386,5 @@
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(160.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(256.dp)</ID>
     <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$width(332.dp)</ID>
-    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosVariationsScreen.kt$width(640.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>
