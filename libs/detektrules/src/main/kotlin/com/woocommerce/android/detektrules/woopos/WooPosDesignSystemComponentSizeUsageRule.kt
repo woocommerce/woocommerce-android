@@ -11,11 +11,12 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 class WooPosDesignSystemComponentSizeUsageRule(config: Config) : WooPosBaseDetektRule(config) {
     private val dpRegex = Regex("\\b\\d+(?:\\.\\d+)?\\.dp\\b")
+    private val adaptiveHelperRegex = Regex("toAdaptive\\w*Size\\b")
 
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Use .toAdaptiveComponentSize() or a WooPos design system size instead of raw dp values.",
+        "Use .toAdaptive*Size() or a WooPos design system size instead of raw dp values.",
         Debt.FIVE_MINS
     )
 
@@ -27,14 +28,14 @@ class WooPosDesignSystemComponentSizeUsageRule(config: Config) : WooPosBaseDetek
 
         expression.valueArguments.forEach { argument ->
             val argText = argument.getArgumentExpression()?.text ?: return@forEach
-            if (argText.contains("toAdaptiveComponentSize")) return@forEach
+            if (adaptiveHelperRegex.containsMatchIn(argText)) return@forEach
             if (argText.startsWith("WooPos")) return@forEach
             dpRegex.findAll(argText).forEach { match ->
                 report(
                     CodeSmell(
                         issue,
                         Entity.from(expression),
-                        "Use .toAdaptiveComponentSize() or a WooPos design system size " +
+                        "Use .toAdaptive*Size() or a WooPos design system size " +
                             "instead of a raw dp value. Found: ${match.value} in Modifier.$callName(...)"
                     )
                 )

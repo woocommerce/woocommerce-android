@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,30 +42,57 @@ enum class WooPosElevation(val value: Dp) {
     Large(24.dp)
 }
 
+enum class WooPosIconSize(val value: Dp) {
+    Small(24.dp),
+    Medium(32.dp),
+    Large(40.dp),
+    XLarge(48.dp)
+}
+
 @Composable
 fun Dp.toAdaptivePadding(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
-        longestSide < 880.dp -> {
-            val calculatedMargin = this * 0.5f
-            calculatedMargin.makeDividableByFour()
-        }
-
-        longestSide < 1200.dp -> {
-            val calculatedMargin = this * 0.75f
-            calculatedMargin.makeDividableByFour()
-        }
-
+        longestSide < 880.dp -> (this * 0.5f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.75f).makeDividableByFour()
         else -> this
     }
 }
 
 @Composable
+fun Dp.toAdaptiveComponentSize(): Dp {
+    val longestSide = LocalContext.current.getLongestScreenSideDp()
+    return when {
+        longestSide < 880.dp -> (this * 0.75f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.9f).makeDividableByFour()
+        else -> this
+    }
+}
+
+@Composable
+fun Dp.toAdaptiveIconSize(): Dp {
+    val longestSide = LocalContext.current.getLongestScreenSideDp()
+    return when {
+        longestSide < 880.dp -> (this * 0.9f).makeDividableByFour()
+        longestSide < 1200.dp -> (this * 0.95f).makeDividableByFour()
+        else -> this
+    }
+}
+
+@Composable
+fun Modifier.adaptiveContentWidth(): Modifier {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp.dp
+    val longestSide = maxOf(configuration.screenWidthDp, configuration.screenHeightDp).dp
+    return when {
+        longestSide < 880.dp -> this.fillMaxWidth()
+        longestSide < 1200.dp -> this.widthIn(max = screenWidthDp * 2 / 3)
+        else -> this.widthIn(max = screenWidthDp * 3 / 5)
+    }
+}
+
+@Suppress("MagicNumber")
 private fun Dp.makeDividableByFour(): Dp {
     val remainder = this.value % 4
-    return if (remainder == 0f) {
-        this
-    } else {
-        this + (4 - remainder).dp
-    }
+    return if (remainder == 0f) this else this + (4 - remainder).dp
 }

@@ -50,13 +50,15 @@ class WooPosDesignSystemComponentSizeUsageRuleTest {
             import androidx.compose.ui.unit.dp
 
             fun Int.toAdaptiveComponentSize() = this
+            fun Int.toAdaptiveIconSize() = this
 
             fun usage() {
                 Modifier.size(24.dp.toAdaptiveComponentSize())
-                Modifier.size(WooPosAvatarSize.Medium.value)
+                Modifier.size(24.dp.toAdaptiveIconSize())
+                Modifier.size(WooPosIconSize.Medium.value)
             }
 
-            object WooPosAvatarSize { object Medium { val value = 24 } }
+            object WooPosIconSize { object Medium { val value = 24 } }
         """.trimIndent()
 
         // WHEN
