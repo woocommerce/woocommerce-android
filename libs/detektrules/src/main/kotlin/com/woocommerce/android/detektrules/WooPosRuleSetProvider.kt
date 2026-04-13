@@ -4,6 +4,7 @@ import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemButtonUsageR
 import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemColorUsageRule
 import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemComponentSizeUsageRule
 import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemCornerRadiusUsageRule
+import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemElevationUsageRule
 import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemSpacingUsageRule
 import com.woocommerce.android.detektrules.woopos.WooPosDesignSystemTextUsageRule
 import io.gitlab.arturbosch.detekt.api.Config
@@ -19,6 +20,7 @@ class WooPosRuleSetProvider : RuleSetProvider {
             WooPosDesignSystemSpacingUsageRule(config),
             WooPosDesignSystemCornerRadiusUsageRule(config),
             WooPosDesignSystemComponentSizeUsageRule(config),
+            WooPosDesignSystemElevationUsageRule(config),
             WooPosDesignSystemColorUsageRule(config),
             WooPosDesignSystemTextUsageRule(config),
             WooPosDesignSystemButtonUsageRule(config),
