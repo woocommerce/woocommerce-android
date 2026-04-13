@@ -25,7 +25,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Step | Action | Element |
 |---|--------|---------|
-| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 1 | Tap "Log In" | id: `button_login_store` |
 | 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
 | 4 | Enter WPCom email (if Jetpack connected) | email text field |
@@ -46,7 +46,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Step | Action | Element |
 |---|--------|---------|
-| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 1 | Tap "Log In" | id: `button_login_store` |
 | 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
 | 4 | Enter email | email text field |
@@ -58,7 +58,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 
 | Step | Action | Element |
 |---|--------|---------|
-| 1 | Tap "Log In" | id: `buttonLoginStore` |
+| 1 | Tap "Log In" | id: `button_login_store` |
 | 2 | Enter store URL | URL text field |
 | 3 | Tap Continue | continue button |
 | 4 | Tap "Continue with Google" | id: `continue_with_google` |
