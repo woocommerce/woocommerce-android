@@ -98,6 +98,43 @@ class WooPosVariationMapperTest {
     }
 
     @Test
+    fun `given all string fields null, when mapper called, then all string fields default to empty`() {
+        // Given - mirrors the catastrophic case where the API returns null for any
+        // String field that the entity declares as non-null (see WOOMOB-2645)
+        val response = WooPosVariationApiResponse(
+            id = 123L,
+            productId = 456L,
+            description = null,
+            sku = null,
+            globalUniqueId = null,
+            status = null,
+            price = null,
+            regularPrice = null,
+            salePrice = null,
+            dateModified = null,
+            stockStatus = null,
+            name = null,
+            type = null
+        )
+
+        // When
+        val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
+
+        // Then
+        assertThat(model.description).isEmpty()
+        assertThat(model.sku).isEmpty()
+        assertThat(model.globalUniqueId).isEmpty()
+        assertThat(model.status).isEmpty()
+        assertThat(model.price).isEmpty()
+        assertThat(model.regularPrice).isEmpty()
+        assertThat(model.salePrice).isEmpty()
+        assertThat(model.dateModified).isEmpty()
+        assertThat(model.stockStatus).isEmpty()
+        assertThat(model.variationName).isEmpty()
+        assertThat(model.type).isEmpty()
+    }
+
+    @Test
     fun `given null image, when mapper called, then image URL is empty`() {
         // Given
         val response = WooPosVariationApiResponse(
