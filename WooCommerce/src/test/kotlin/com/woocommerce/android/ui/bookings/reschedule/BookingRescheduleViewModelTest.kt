@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.reschedule
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -17,6 +18,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingAvailabilityDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -482,10 +484,15 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
     ): BookingRescheduleViewModel {
         val fixedInstant = now.toInstant(ZoneOffset.UTC)
         val clock = Clock.fixed(fixedInstant, ZoneOffset.UTC)
+        val siteModel = SiteModel().apply { timezone = "0" }
+        val selectedSite: SelectedSite = mock {
+            on { get() } doReturn siteModel
+        }
         return BookingRescheduleViewModel(
             savedState = SavedStateHandle(mapOf("bookingId" to BOOKING_ID)),
             bookingsRepository = repository,
             clock = clock,
+            selectedSite = selectedSite,
         ).also {
             it.state.observeForever { }
         }

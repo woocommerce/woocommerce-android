@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.compose.animations.slideOutNavTransition
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import java.util.Calendar
+import java.util.TimeZone
 
 @Composable
 fun BookingRescheduleScreen(
@@ -146,12 +147,13 @@ private fun RescheduleContent(
     }
 
     state?.datePickerState?.let { pickerState ->
+        val utcTimeZone = TimeZone.getTimeZone("UTC")
         DatePickerDialog(
             currentDate = pickerState.currentDateMillis?.let { millis ->
-                Calendar.getInstance().apply { timeInMillis = millis }
+                Calendar.getInstance(utcTimeZone).apply { timeInMillis = millis }
             },
             minDate = pickerState.minDateMillis?.let { millis ->
-                Calendar.getInstance().apply { timeInMillis = millis }
+                Calendar.getInstance(utcTimeZone).apply { timeInMillis = millis }
             },
             onDateSelected = { calendar ->
                 pickerState.onDateSelected(calendar.timeInMillis)

@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
@@ -44,8 +46,11 @@ import javax.inject.Inject
 class BookingRescheduleViewModel @Inject constructor(
     private val bookingsRepository: BookingsRepository,
     private val clock: Clock,
+    selectedSite: SelectedSite,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
+
+    private val storeZoneId = selectedSite.get().clock.zone
 
     private val navArgs: BookingRescheduleFragmentArgs by savedState.navArgs()
 
@@ -111,7 +116,6 @@ class BookingRescheduleViewModel @Inject constructor(
         )
     }.asLiveData()
 
-
     init {
         launch {
             combine(
@@ -163,8 +167,12 @@ class BookingRescheduleViewModel @Inject constructor(
         datePickerState.value = null
     }
 
+    private fun storeToday(): LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
+
+    private fun storeNow(): LocalDateTime = Instant.now(clock).atZone(storeZoneId).toLocalDateTime()
+
     private fun buildDatePickerState(currentDate: LocalDate?): BookingRescheduleState.DatePickerState {
-        val today = LocalDate.now(clock)
+        val today = storeToday()
         return BookingRescheduleState.DatePickerState(
             currentDateMillis = currentDate?.toStartOfDayUtcMillis(),
             minDateMillis = today.toStartOfDayUtcMillis(),
@@ -204,11 +212,11 @@ class BookingRescheduleViewModel @Inject constructor(
     }
 
     private fun buildDateRange(month: YearMonth): Pair<LocalDateTime, LocalDateTime> {
-        val today = LocalDate.now(clock)
+        val today = storeToday()
         val effectiveMonth = maxOf(month, YearMonth.from(today))
         val rangeStartDate = maxOf(effectiveMonth.atDay(1), today)
         val startDate = if (rangeStartDate == today) {
-            LocalDateTime.now(clock)
+            storeNow()
         } else {
             rangeStartDate.atStartOfDay()
         }
