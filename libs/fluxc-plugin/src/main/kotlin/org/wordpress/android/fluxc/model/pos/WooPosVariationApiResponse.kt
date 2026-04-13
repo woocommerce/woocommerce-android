@@ -14,7 +14,7 @@ data class WooPosVariationApiResponse(
     val productId: Long = 0L,
 
     @SerializedName("description")
-    val description: String = "",
+    val description: String? = null,
 
     @SerializedName("sku")
     val sku: String = "",

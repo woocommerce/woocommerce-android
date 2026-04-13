@@ -53,7 +53,7 @@ fun WooPosVariationApiResponse.mapToPosVariationModel(
         price = this.price,
         regularPrice = this.regularPrice,
         salePrice = this.salePrice,
-        description = this.description,
+        description = this.description ?: "",
         stockQuantity = this.stockQuantity ?: 0.0,
         stockStatus = this.stockStatus,
         manageStock = this.manageStock,

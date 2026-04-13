@@ -82,6 +82,22 @@ class WooPosVariationMapperTest {
     }
 
     @Test
+    fun `given null description, when mapper called, then description defaults to empty string`() {
+        // Given
+        val response = WooPosVariationApiResponse(
+            id = 123L,
+            productId = 456L,
+            description = null
+        )
+
+        // When
+        val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
+
+        // Then
+        assertThat(model.description).isEmpty()
+    }
+
+    @Test
     fun `given null image, when mapper called, then image URL is empty`() {
         // Given
         val response = WooPosVariationApiResponse(
