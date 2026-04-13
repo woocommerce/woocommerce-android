@@ -3,11 +3,10 @@ package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.woopos.util.ext.getLongestScreenSideDp
 
 enum class WooPosCornerRadius(val value: Dp) {
     None(0.dp),
@@ -50,43 +49,46 @@ enum class WooPosIconSize(val value: Dp) {
 }
 
 @Composable
-fun Dp.toAdaptivePadding(): Dp {
-    val longestSide = LocalContext.current.getLongestScreenSideDp()
-    return when {
-        longestSide < 880.dp -> (this * 0.5f).makeDividableByFour()
-        longestSide < 1200.dp -> (this * 0.75f).makeDividableByFour()
-        else -> this
-    }
+fun Dp.toAdaptivePadding(): Dp = when (rememberWooPosBreakpoint()) {
+    WooPosBreakpoint.Phone -> (this * 0.5f).makeDividableByFour()
+    WooPosBreakpoint.SmallTablet -> (this * 0.75f).makeDividableByFour()
+    WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Dp.toAdaptiveComponentSize(): Dp {
-    val longestSide = LocalContext.current.getLongestScreenSideDp()
-    return when {
-        longestSide < 880.dp -> (this * 0.75f).makeDividableByFour()
-        longestSide < 1200.dp -> (this * 0.9f).makeDividableByFour()
-        else -> this
-    }
+fun Dp.toAdaptiveComponentSize(): Dp = when (rememberWooPosBreakpoint()) {
+    WooPosBreakpoint.Phone -> (this * 0.75f).makeDividableByFour()
+    WooPosBreakpoint.SmallTablet -> (this * 0.9f).makeDividableByFour()
+    WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Dp.toAdaptiveIconSize(): Dp {
-    val longestSide = LocalContext.current.getLongestScreenSideDp()
-    return when {
-        longestSide < 880.dp -> (this * 0.9f).makeDividableByFour()
-        longestSide < 1200.dp -> (this * 0.95f).makeDividableByFour()
-        else -> this
-    }
+fun Dp.toAdaptiveIconSize(): Dp = when (rememberWooPosBreakpoint()) {
+    WooPosBreakpoint.Phone -> (this * 0.9f).makeDividableByFour()
+    WooPosBreakpoint.SmallTablet -> (this * 0.95f).makeDividableByFour()
+    WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Modifier.adaptiveContentWidth(): Modifier {
-    val configuration = LocalConfiguration.current
-    val longestSide = maxOf(configuration.screenWidthDp, configuration.screenHeightDp).dp
+fun Modifier.adaptiveContentWidth(): Modifier = when (rememberWooPosBreakpoint()) {
+    WooPosBreakpoint.Phone -> this.fillMaxWidth()
+    WooPosBreakpoint.SmallTablet -> this.fillMaxWidth(fraction = 2f / 3f)
+    WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 3f / 5f)
+}
+
+private enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }
+
+@Composable
+private fun rememberWooPosBreakpoint(): WooPosBreakpoint {
+    val density = LocalDensity.current
+    val containerSize = LocalWindowInfo.current.containerSize
+    val longestSide = with(density) {
+        maxOf(containerSize.width, containerSize.height).toDp()
+    }
     return when {
-        longestSide < 880.dp -> this.fillMaxWidth()
-        longestSide < 1200.dp -> this.fillMaxWidth(fraction = 2f / 3f)
-        else -> this.fillMaxWidth(fraction = 3f / 5f)
+        longestSide < 880.dp -> WooPosBreakpoint.Phone
+        longestSide < 1200.dp -> WooPosBreakpoint.SmallTablet
+        else -> WooPosBreakpoint.Tablet
     }
 }
 
