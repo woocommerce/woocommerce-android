@@ -110,10 +110,10 @@ fun Modifier.adaptiveContentWidth(): Modifier = when (rememberWooPosBreakpoint()
     WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 3f / 5f)
 }
 
-private enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }
+internal enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }
 
 @Composable
-private fun rememberWooPosBreakpoint(): WooPosBreakpoint {
+internal fun rememberWooPosBreakpoint(): WooPosBreakpoint {
     val density = LocalDensity.current
     val containerSize = LocalWindowInfo.current.containerSize
     val longestSide = with(density) {
