@@ -39,9 +39,13 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
         workInfoFlow: Flow<WorkInfo?>,
         workerType: String
     ): Result<Unit> {
+        // WorkManager can stop a RUNNING worker (e.g., when the network constraint is no longer met
+        // during a large catalog sync), transitioning it back to ENQUEUED/BLOCKED without reaching a
+        // finished state. Waiting only for `isFinished` would hang in that case, so we also break out
+        // whenever the worker leaves the RUNNING state.
         val finalWorkInfo = workInfoFlow
             .filter { workInfo ->
-                workInfo?.state?.isFinished == true || workInfo == null
+                workInfo == null || workInfo.state != WorkInfo.State.RUNNING
             }
             .first()
 
@@ -59,6 +63,12 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
             WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
                 wooPosLogWrapper.e("$workerType worker failed or cancelled: ${workInfo.state}")
                 Result.failure(Exception("Background sync worker ${workInfo.state}"))
+            }
+            WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> {
+                wooPosLogWrapper.e(
+                    "$workerType worker was stopped before finishing (state=${workInfo.state})"
+                )
+                Result.failure(Exception("Background sync worker was stopped: ${workInfo.state}"))
             }
             null -> {
                 verifyAndEmitSyncCompletion(
