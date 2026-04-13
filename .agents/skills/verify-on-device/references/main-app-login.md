@@ -64,7 +64,7 @@ Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on log
 | 4 | Tap "Continue with Google" | id: `continue_with_google` |
 | 5 | Complete Google auth | Google account picker |
 
-### Jetpack Activation (when Jetpack not installed)
+### Jetpack Activation (when Jetpack not installed or not activated)
 
 | Step | Action | Element |
 |------|--------|---------|
