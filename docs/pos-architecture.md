@@ -121,7 +121,7 @@ sealed class WooPosMyFeatureUIEvent {
 
 ## State Classes
 
-All POS state classes MUST be `@Parcelize` + `: Parcelable` for process-death recovery:
+Use `@Parcelize` + `: Parcelable` in POS state classes when state goes through saved state / nav args:
 
 ```kotlin
 @Parcelize
