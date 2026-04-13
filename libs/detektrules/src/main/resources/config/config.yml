@@ -3,6 +3,8 @@ WooPosRules:
     active: true
   WooPosDesignSystemCornerRadiusUsageRule:
     active: true
+  WooPosDesignSystemComponentSizeUsageRule:
+    active: true
   WooPosDesignSystemColorUsageRule:
     active: true
   WooPosDesignSystemTextUsageRule:

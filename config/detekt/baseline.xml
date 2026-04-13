@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ClassNaming:ProductDetailViewModel_AddFlowTest.kt$ProductDetailViewModel_AddFlowTest : BaseUnitTest</ID>
     <ID>CommentWrapping:ShippingLabelCreateCustomPackageViewModel.kt$ShippingLabelCreateCustomPackageViewModel$/* Safe to set as empty, as it's not used for package creation */</ID>
@@ -45,7 +45,6 @@
     <ID>ExplicitItLambdaParameter:ZendeskTicketRepository.kt$ZendeskTicketRepository${ it -&gt; // Add wpcom tag if at least one site is WordPress.com site if (it.any { it.isWPCom }) { tags.add(ZendeskTags.wpComTag) } // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected, // it does not necessarily mean that user is connected with the REST API, but we don't care about that here if (it.any { it.isJetpackConnected }) { tags.add(ZendeskTags.jetpackTag) } // Find distinct plans and add them val plans = it.asSequence().mapNotNull { it.planShortName }.distinct().toList() tags.addAll(plans) }</ID>
     <ID>Filename:JSONArray+iterator.kt$com.woocommerce.android.e2e.helpers.util.JSONArray+iterator.kt</ID>
     <ID>ForEachOnRange:AlignedDividerDecoration.kt$AlignedDividerDecoration$(0..adjustedChildCount) .map { parent.getChildAt(it) }</ID>
-    <ID>ForbiddenComment:AddressUtils.kt$AddressUtils$// TODO: soon to be deprecated</ID>
     <ID>ForbiddenComment:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>ForbiddenComment:GroupedProductListRepository.kt$GroupedProductListRepository$// TODO: add tracking event</ID>
     <ID>ForbiddenComment:HelpActivity.kt$HelpActivity$/* TODO: for now we simply link to the online woo mobile support documentation, but we should show the Zendesk FAQ once it's ready zendeskHelper .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras) */</ID>
@@ -131,8 +130,6 @@
     <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
     <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import kotlinx.coroutines.*</ID>
     <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>NoWildcardImports:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>NoWildcardImports:ReviewListRepository.kt$import org.wordpress.android.fluxc.store.NotificationStore.*</ID>
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
@@ -144,27 +141,7 @@
     <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
     <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
     <ID>PrintStackTrace:TestIdler.kt$TestIdler$e</ID>
-    <ID>ReturnCount:AddOrderShipmentTrackingViewModel.kt$AddOrderShipmentTrackingViewModel$fun onAddButtonTapped()</ID>
-    <ID>ReturnCount:ChromeCustomTabUtils.kt$ChromeCustomTabUtils$private fun canUseCustomTabs(context: Context): Boolean</ID>
-    <ID>ReturnCount:DrawableMatcher.kt$DrawableMatcher$override fun matchesSafely(item: View?): Boolean</ID>
-    <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
-    <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided&gt;$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
-    <ID>ReturnCount:Product.kt$Product$fun hasAttributeChanges(updatedProduct: Product?): Boolean</ID>
-    <ID>ReturnCount:Product.kt$Product$private fun isSameCategories(updatedCategories: List&lt;ProductCategory&gt;): Boolean</ID>
-    <ID>ReturnCount:Product.kt$Product$private fun isSameTags(updatedTags: List&lt;ProductTag&gt;): Boolean</ID>
-    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$fun onBackButtonClickedProductDetail(): Boolean</ID>
-    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean</ID>
-    <ID>ReturnCount:ProductHelper.kt$ProductHelper$fun productOrVariationId(productId: Long?, variationId: Long?): Long</ID>
-    <ID>ReturnCount:ProductImageMap.kt$ProductImageMap$fun get(remoteProductId: Long): String?</ID>
-    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$fun getItemTypeAtRecyclerPosition(position: Int): ItemType</ID>
-    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview&gt;): Boolean</ID>
-    <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
-    <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>ReturnCount:StringExt.kt$fun String.fastStripHtml(): String</ID>
-    <ID>ReturnCount:StringExt.kt$fun String.semverCompareTo(otherVersion: String): Int</ID>
-    <ID>ReturnCount:TestBase.kt$LocaleAwareRenderableDate$override fun toString(): String</ID>
-    <ID>ReturnCount:WCProductImageGalleryView.kt$WCProductImageGalleryView.ImageGalleryAdapter$private fun isSameImageList(images: List&lt;Product.Image&gt;): Boolean</ID>
     <ID>SerialVersionUIDInSerializableClass:InfoScreenFragment.kt$InfoScreenFragment$InfoScreenLinkAction : Serializable</ID>
     <ID>SpreadOperator:OrderDetailFragment.kt$OrderDetailFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:RefundSummaryFragment.kt$RefundSummaryFragment$(event.message, *event.args)</ID>
@@ -249,15 +226,8 @@
     <ID>UnitTestNamingRule:AddonRepositoryTest.kt$AddonRepositoryTest$@Test fun `hasAddons should return true if there are add-ons for given product`()</ID>
     <ID>UnitTestNamingRule:AddonsDaoTest.kt$AddonsDaoTest$@Test fun `caching global addon groups doesn't duplicate entities`(): Unit</ID>
     <ID>UnitTestNamingRule:AddonsDaoTest.kt$AddonsDaoTest$@Test fun `save and retrieve global add-on`(): Unit</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `validateFieldRequired should return null when value is not empty or blank`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when all values are empty or blank then validateAtLeastOneOf should return error`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when at least one value is not empty or blank validateAtLeastOneOf should return null`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value contains at least one digit validateCustomsPhone should return null`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value does not contain any digits validateCustomsPhone should return error`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is a valid US phone number validateUSCustomsPhone should return null`()</ID>
     <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is blank validateFieldRequired should return error`()</ID>
     <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is blank validateUSCustomsPhone should return error`()</ID>
-    <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is empty or blank validateCustomsPhone should return error`()</ID>
     <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is empty validateFieldRequired should return error`()</ID>
     <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is empty validateUSCustomsPhone should return error`()</ID>
     <ID>UnitTestNamingRule:AddressValidationHelperTest.kt$AddressValidationHelperTest$@Test fun `when value is not a number validateUSCustomsPhone should return error`()</ID>
@@ -302,8 +272,6 @@
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when fetch products fails then performance transaction products condition is not satisfied`()</ID>
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when fetch revenue fails then performance transaction revenue condition is not satisfied`()</ID>
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when fetch visitors fails then performance transaction visitors condition is not satisfied`()</ID>
-    <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when see report is pressed then interaction tracked`()</ID>
-    <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when see report is pressed then track see report event`()</ID>
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when send feedback is pressed then feedback status is saved as GIVEN`()</ID>
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when send feedback is pressed then send feedback event is tracked`()</ID>
     <ID>UnitTestNamingRule:AnalyticsHubViewModelTest.kt$AnalyticsHubViewModelTest$@Test fun `when the analytics feedback is on state DISMISSED then hide the feedback banner`()</ID>
@@ -332,36 +300,6 @@
     <ID>UnitTestNamingRule:AnalyticsUpdateDataStoreTest.kt$AnalyticsUpdateDataStoreTest$@Test fun `given observe should emit last update, when all data sources are not required, if all data sources are missing then return null`()</ID>
     <ID>UnitTestNamingRule:AnalyticsUpdateDataStoreTest.kt$AnalyticsUpdateDataStoreTest$@Test fun `given store analytics is called with an analytic data different than ALL, then save the value for that key`()</ID>
     <ID>UnitTestNamingRule:AnalyticsUpdateDataStoreTest.kt$AnalyticsUpdateDataStoreTest$@Test fun `given store analytics is called with an analytic data list, then save the value for ALL analytic keys`()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenCardReaderStateDescriptorSetWhenGettingDescriptorThenSameDescriptorReturned()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenCardReaderStatementDescriptorNotEmptyWhenSettingItToNullThenValueOverriddenWithNull()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenCashOnDeliveryDisabledStateNotSkippedThenReturnSkippedAsFalse()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenCashOnDeliveryDisabledStateSkippedThenReturnSkippedAsTrue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenIsPluginExplicitlySelectedIsFalseThenReturnFalse()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenIsPluginExplicitlySelectedIsTrueThenReturnTrue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenPOSTabVisibilityNotSetThenGetterReturnsFalseByDefault()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSetApplicationStoreSnapshotTrackedForSiteCalledThenGetterReturnsTrue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSetApplicationStoreSnapshotTrackedForSiteNotCalledThenGetterReturnsFalse()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionGetReturnsVersion()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionWithOnePluginGetWithAnotherReturnsNull()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSetPOSTabVisibilityForSiteCalledThenGetterReturnsTrue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenSpecificSiteIdWhenProductSortingChoiceIsSetThenGetReturnsStoredValue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenUpsellCardReaderBannerDismissedForeverThenReturnTrue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenUpsellCardReaderBannerNotDismissedForeverThenReturnFalse()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun givenUpsellCardReaderBannerRemindMeLaterSetThenReturnTimeInMillis()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectPreferredPluginIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectPreferredPluginIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectOnboardingStatusIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectPreferredPluginIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectPreferredPluginIsStored()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenEmptyPreferredPluginSetThenNullReturned()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenFCMTokenIsSetThenGetReturnsStoredValue()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenRemoveLastConnectedCardReaderIdThenIdIsNull()</ID>
-    <ID>UnitTestNamingRule:AppPrefsTest.kt$AppPrefsTest$@Test fun whenSetLastConnectedCardReaderIdThenIdStored()</ID>
     <ID>UnitTestNamingRule:AppSettingsPresenterTest.kt$AppSettingsPresenterTest$@Test fun `Verifies that logging out from settings results in signing out and settings closing`()</ID>
     <ID>UnitTestNamingRule:AppSettingsPresenterTest.kt$AppSettingsPresenterTest$@Test fun `cleanPaymentsData with initialized manager should disconnect reader`()</ID>
     <ID>UnitTestNamingRule:AutoSyncOrderStrategyTest.kt$AutoSyncOrderStrategyTest$@Test fun `WHEN the order is NOT changed by the user THEN the change is NOT submitted to the API`()</ID>
@@ -422,10 +360,6 @@
     <ID>UnitTestNamingRule:BlazeRepositoryTest.kt$BlazeRepositoryTest$@Test fun `given a campaign with end date, when creating it, budget should equal totalBudget`()</ID>
     <ID>UnitTestNamingRule:BlazeRepositoryTest.kt$BlazeRepositoryTest$@Test fun `given an endless campaign, when creating a campaign, budget mode should be daily`()</ID>
     <ID>UnitTestNamingRule:BlazeRepositoryTest.kt$BlazeRepositoryTest$@Test fun `given an endless campaign, when creating a campaign, budget should be divided by weekly duration`()</ID>
-    <ID>UnitTestNamingRule:CachedCouponEnabledCheckerTest.kt$CachedCouponEnabledCheckerTest$@Test fun `returns false when coupons are disabled in site settings`()</ID>
-    <ID>UnitTestNamingRule:CachedCouponEnabledCheckerTest.kt$CachedCouponEnabledCheckerTest$@Test fun `returns false when site settings are null`()</ID>
-    <ID>UnitTestNamingRule:CachedCouponEnabledCheckerTest.kt$CachedCouponEnabledCheckerTest$@Test fun `returns true when coupons are enabled in site settings`()</ID>
-    <ID>UnitTestNamingRule:CachedCouponEnabledCheckerTest.kt$CachedCouponEnabledCheckerTest$@Test fun `uses cached value on subsequent calls`()</ID>
     <ID>UnitTestNamingRule:CalculatePlanRemainingPeriodTest.kt$CalculatePlanRemainingPeriodTest$@Test fun `given the scenario where site does not exist, should not crash and report event`()</ID>
     <ID>UnitTestNamingRule:CardReaderConnectViewModelTest.kt$CardReaderConnectViewModelTest$@Test fun `given reader is connected, then track its battery level`()</ID>
     <ID>UnitTestNamingRule:CardReaderDetailViewModelTest.kt$CardReaderDetailViewModelTest$@Test fun `given not connected state, when connect button clicked should track event`()</ID>
@@ -722,8 +656,6 @@
     <ID>UnitTestNamingRule:FetchOriginAddressesTest.kt$FetchOriginAddressesTest$@Test fun `when fetch origin addresses is empty then return failure`()</ID>
     <ID>UnitTestNamingRule:FetchOriginAddressesTest.kt$FetchOriginAddressesTest$@Test fun `when fetch origin addresses succeed then return success`()</ID>
     <ID>UnitTestNamingRule:FetchOriginAddressesTest.kt$FetchOriginAddressesTest$@Test fun `when selected site is null then return failure`()</ID>
-    <ID>UnitTestNamingRule:FetchPackagesFromStoreTest.kt$FetchPackagesFromStoreTest$@Test fun `invoke should return Data with carrier and saved packages`()</ID>
-    <ID>UnitTestNamingRule:FetchPackagesFromStoreTest.kt$FetchPackagesFromStoreTest$@Test fun `invoke should return Error when fetchAllStorePackages returns error`()</ID>
     <ID>UnitTestNamingRule:FetchProductByIdentifierTest.kt$FetchProductByIdentifierTest$@Test fun `given barcode scan result EAN13 type, when product not found, should remove check digit and try again`()</ID>
     <ID>UnitTestNamingRule:FetchProductByIdentifierTest.kt$FetchProductByIdentifierTest$@Test fun `given barcode scan result EAN8 type, when product not found, should remove check digit and try again`()</ID>
     <ID>UnitTestNamingRule:FetchProductByIdentifierTest.kt$FetchProductByIdentifierTest$@Test fun `given barcode scan result UPCA type, when product not found, should remove check digit and try again`()</ID>
@@ -793,9 +725,6 @@
     <ID>UnitTestNamingRule:GetCustomerWithStatsTest.kt$GetCustomerWithStatsTest$@Test fun `when invoke with customer and without analytics then use customer info`()</ID>
     <ID>UnitTestNamingRule:GetCustomerWithStatsTest.kt$GetCustomerWithStatsTest$@Test fun `when invoke without customer and with analytics then use analytics info`()</ID>
     <ID>UnitTestNamingRule:GetCustomerWithStatsTest.kt$GetCustomerWithStatsTest$@Test fun `when invoke without customer and without analytics then fails`()</ID>
-    <ID>UnitTestNamingRule:GetDeviceRegistrationStatusTest.kt$GetDeviceRegistrationStatusTest$@Test fun `when device id is empty, return unregistered status`()</ID>
-    <ID>UnitTestNamingRule:GetDeviceRegistrationStatusTest.kt$GetDeviceRegistrationStatusTest$@Test fun `when device id is not empty, return registered status`()</ID>
-    <ID>UnitTestNamingRule:GetDeviceRegistrationStatusTest.kt$GetDeviceRegistrationStatusTest$@Test fun `when device id is null, return unregistered status`()</ID>
     <ID>UnitTestNamingRule:GetLocationsTest.kt$GetLocationsTest$@Test fun `should provide country and associated state if locations are in database`()</ID>
     <ID>UnitTestNamingRule:GetLocationsTest.kt$GetLocationsTest$@Test fun `should provide country and state with location code only if state is not found in database`()</ID>
     <ID>UnitTestNamingRule:GetLocationsTest.kt$GetLocationsTest$@Test fun `should provide country and state with location codes only if data not found in database`()</ID>
@@ -817,7 +746,6 @@
     <ID>UnitTestNamingRule:GetReportUrlTest.kt$GetReportUrlTest$@Test fun `when today range is selected then return expected URL for orders`()</ID>
     <ID>UnitTestNamingRule:GetReportUrlTest.kt$GetReportUrlTest$@Test fun `when today range is selected then return expected URL for products`()</ID>
     <ID>UnitTestNamingRule:GetReportUrlTest.kt$GetReportUrlTest$@Test fun `when today range is selected then return expected URL for revenue`()</ID>
-    <ID>UnitTestNamingRule:GetShipmentsTests.kt$GetShipmentsTests$@Suppress("LongMethod") @Test fun `when there are stored address in config, result should contain label with address`()</ID>
     <ID>UnitTestNamingRule:GetShipmentsTests.kt$GetShipmentsTests$@Test fun `when label is refunded then purchased should be false`()</ID>
     <ID>UnitTestNamingRule:GetShipmentsTests.kt$GetShipmentsTests$@Test fun `when order don't contain refunded products then should return expected list`()</ID>
     <ID>UnitTestNamingRule:GetShipmentsTests.kt$GetShipmentsTests$@Test fun `when order only contains refunded products then should return empty list`()</ID>
@@ -948,7 +876,6 @@
     <ID>UnitTestNamingRule:ListModelTest.kt$ListModelTest$@Test fun testLoadingMore()</ID>
     <ID>UnitTestNamingRule:ListModelTest.kt$ListModelTest$@Test fun testNonSpecialStates()</ID>
     <ID>UnitTestNamingRule:LoginSiteCredentialsViewModelTest.kt$LoginSiteCredentialsViewModelTest$@Test fun `give user role fetch fails, when submitting login, then show a snackbar`()</ID>
-    <ID>UnitTestNamingRule:MainActivityViewModelTest.kt$MainActivityViewModelTest$@Test fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`()</ID>
     <ID>UnitTestNamingRule:MainActivityViewModelTest.kt$MainActivityViewModelTest$@Test fun `given image uris when app opened, then a product creation is triggered using the images`()</ID>
     <ID>UnitTestNamingRule:MainActivityViewModelTest.kt$MainActivityViewModelTest$@Test fun `when order notifications for a second store is clicked then switch to the this store and restart activity`()</ID>
     <ID>UnitTestNamingRule:MainActivityViewModelTest.kt$MainActivityViewModelTest$@Test fun `when review notifications for second store is clicked then switch to the this store and restart activity`()</ID>
@@ -968,35 +895,6 @@
     <ID>UnitTestNamingRule:MediaErrorTest.kt$MediaErrorTest$@Test fun `user message not extracted on BAD_REQUEST and API user message not available`()</ID>
     <ID>UnitTestNamingRule:MediaErrorTest.kt$MediaErrorTest$@Test fun `user message not extracted on media error type different from BAD_REQUEST`()</ID>
     <ID>UnitTestNamingRule:MediaUploadErrorListViewModelTest.kt$MediaUploadErrorListViewModelTest$@Test fun `given some errors passed as fragment args, when viewmodel is created, clear image errors`()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate10to11()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate11to12()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate12to13()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate15to16()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate20to21()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate21to22()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate22to23()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate23to24()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate24to25()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate25to26()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate26to27()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate27to28()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate3To4()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate4to5()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate5to6()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate6to7()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigrate9to10()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration28to29()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration29to30()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration30to31()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration31to32()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration32to33()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration33to34()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration34to35()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration35to36()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration36to37()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration7to8()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testMigration8to9()</ID>
-    <ID>UnitTestNamingRule:MigrationTests.kt$MigrationTests$@Test fun testRoomDBSchemasUnchanged()</ID>
     <ID>UnitTestNamingRule:MimeTypesTest.kt$MimeTypesTest$@Test fun `returns SELF_HOSTED audio only mime types as strings`()</ID>
     <ID>UnitTestNamingRule:MimeTypesTest.kt$MimeTypesTest$@Test fun `returns WP_COM_FREE audio only mime types as strings`()</ID>
     <ID>UnitTestNamingRule:MimeTypesTest.kt$MimeTypesTest$@Test fun `returns WP_COM_PAID audio only mime types as strings`()</ID>
@@ -1032,25 +930,8 @@
     <ID>UnitTestNamingRule:NonceRestClientTest.kt$NonceRestClientTest$@Test fun `when error message mentions captcha, treat error as invalid response`()</ID>
     <ID>UnitTestNamingRule:NormalizeAddressTest.kt$NormalizeAddressTest$@Test fun `when normalize address fails then return failure`()</ID>
     <ID>UnitTestNamingRule:NormalizeAddressTest.kt$NormalizeAddressTest$@Test fun `when normalize address succeed then return expected data`()</ID>
-    <ID>UnitTestNamingRule:NormalizeAddressTest.kt$NormalizeAddressTest$@Test fun `when selected site is null then return failure`()</ID>
     <ID>UnitTestNamingRule:NotificationMessageHandlerTest.kt$NotificationMessageHandlerTest$@Test fun `remove notifications concurrently without throwing ConcurrentModificationException`()</ID>
-    <ID>UnitTestNamingRule:NotificationMessageHandlerTest.kt$NotificationMessageHandlerTest$@Test fun `when more than 5 notifications are received for same store, display the notification correctly`()</ID>
     <ID>UnitTestNamingRule:NotificationMessageHandlerTest.kt$NotificationMessageHandlerTest$@Test fun `when the notification payload is empty then do not process the notification`()</ID>
-    <ID>UnitTestNamingRule:NotificationMessageHandlerTest.kt$NotificationMessageHandlerTest$@Test fun `when two new order notifications are received for different stores display the notification correctly`()</ID>
-    <ID>UnitTestNamingRule:NotificationMessageHandlerTest.kt$NotificationMessageHandlerTest$@Test fun `when two new review notifications are received for different stores, display the notification correctly`()</ID>
-    <ID>UnitTestNamingRule:NotificationRepositoryTest.kt$NotificationRepositoryTest$@Test fun `should send a WooCommerce tagged token when requested`()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test @Suppress("LongMethod") fun testGetNotificationsForSite_storeOrder()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testDeleteNotificationByRemoteId()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationByIdSet()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationByRemoteId()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationCount()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotifications()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationsForSite()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationsForSite_filterBy()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotificationsForSite_storeReview()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testGetNotifications_filterBy()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testHasUnreadNotifications()</ID>
-    <ID>UnitTestNamingRule:NotificationSqlUtilsTest.kt$NotificationSqlUtilsTest$@Test fun testInsertOrUpdateNotifications()</ID>
     <ID>UnitTestNamingRule:NotificationTest.kt$NotificationTest$@Test fun `new notification for different site returns correct group_id and group_push_id`()</ID>
     <ID>UnitTestNamingRule:NotificationTest.kt$NotificationTest$@Test fun `new order notification return correct group_id and group_push_id`()</ID>
     <ID>UnitTestNamingRule:NotificationTest.kt$NotificationTest$@Test fun `new review notification return correct group_id and group_push_id`()</ID>
@@ -1098,14 +979,11 @@
     <ID>UnitTestNamingRule:OrderCreateEditRepositoryTest.kt$OrderCreateEditRepositoryTest$@Test fun `when AUTO_DRAFT is supported then status is keep as AUTO_DRAFT`()</ID>
     <ID>UnitTestNamingRule:OrderCreateEditRepositoryTest.kt$OrderCreateEditRepositoryTest$@Test fun `when source is point of sale then createdVia value is pos-rest-api`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Display error message on fetch order error`()</ID>
-    <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Display product list when shipping labels are available`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Displays the order detail view correctly`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Do not display product list when all products are refunded`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Do not display shipment tracking when order is eligible for in-person payments`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Do not display shipment tracking when shipping labels are available`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Do not fetch order from api when not connected`()</ID>
-    <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Hide Products area menu when no shipping labels are available`()</ID>
-    <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Show Products area menu when shipping labels are available`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Shows and hides order detail skeleton correctly`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Update order status and handle undo action`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `Update order status when network connected`()</ID>
@@ -1133,7 +1011,6 @@
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `show order completed snackbar on updating status to completed from fulfill screen`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `show order status updated snackbar on updating status from dialog`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `show order status updated snackbar on updating status to completed from dialog`()</ID>
-    <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `show shipping label creation if the order is eligible`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `wait until all ongoing fetch request complete before fetching data again`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `when order is not paid, order complete button should be hidden`()</ID>
     <ID>UnitTestNamingRule:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$@Test fun `when the order DOESN'T contains shipping lines then DON'T track the event`()</ID>
@@ -1258,14 +1135,6 @@
     <ID>UnitTestNamingRule:OrderShippingViewModelTest.kt$OrderShippingViewModelTest$@Test fun `given this is creation flow, when the screen loads, make sure order currency is populated`()</ID>
     <ID>UnitTestNamingRule:OrderShippingViewModelTest.kt$OrderShippingViewModelTest$@Test fun `given this is edit flow, when the screen loads, make sure data matches the current shipping line`()</ID>
     <ID>UnitTestNamingRule:OrderShippingViewModelTest.kt$OrderShippingViewModelTest$@Test fun `given this is edit flow, when the screen loads, make sure order currency is populated`()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testDeleteOrderShipmentTrackingsById()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testDeleteOrderShipmentTrackingsForSite()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testDeleteOrderStatusOption()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderShipmentTrackingsForOrder()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderStatusOption()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderStatusOption_NotExists()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testGetOrderStatusOptions_Empty()</ID>
-    <ID>UnitTestNamingRule:OrderSqlUtilsTest.kt$OrderSqlUtilsTest$@Test fun testInsertOrUpdateOrderStatusOptions()</ID>
     <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added") fun testDeleteSiteDeletesAllOrderSummaries()</ID>
     <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test fun testDeleteOrderSummaryById()</ID>
     <ID>UnitTestNamingRule:OrderSummaryDaoTest.kt$OrderSummaryDaoTest$@Test fun testGetOrderSummariesForRemoteIds()</ID>
@@ -1297,12 +1166,8 @@
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testDeleteOrdersForSite()</ID>
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testGetOrdersForSite()</ID>
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testInsertAndUpdateOrder()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrderDetails()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrdersFilter()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrdersSearch()</ID>
     <ID>UnitTestNamingRule:OrdersRepositoryTest.kt$OrdersRepositoryTest$@Test fun `getStoredOrders returns empty list when no orders are available`()</ID>
     <ID>UnitTestNamingRule:OrdersRepositoryTest.kt$OrdersRepositoryTest$@Test fun `getStoredOrders returns orders sorted by descending dateCreated`()</ID>
-    <ID>UnitTestNamingRule:OrdersUITest.kt$OrdersUITest$@Retry(numberOfTimes = 1) @Test fun e2eCreateOrderTest()</ID>
     <ID>UnitTestNamingRule:PackageDataTest.kt$PackageDataTest$@Test fun `length, width, and height are correctly set when dimensions are properly formatted`()</ID>
     <ID>UnitTestNamingRule:PackageDataTest.kt$PackageDataTest$@Test fun `length, width, and height are empty when dimensions are empty`()</ID>
     <ID>UnitTestNamingRule:PackageDataTest.kt$PackageDataTest$@Test fun `length, width, and height are empty when dimensions are not properly formatted`()</ID>
@@ -1408,7 +1273,6 @@
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Displays the trash confirmation dialog correctly`()</ID>
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Displays the updated product detail view correctly`()</ID>
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Displays update menu action if product is edited`()</ID>
-    <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Do not enable trashing a product when in add product flow`()</ID>
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Do not fetch product from api when not connected`()</ID>
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Do not update product when not connected`()</ID>
     <ID>UnitTestNamingRule:ProductDetailViewModelTest.kt$ProductDetailViewModelTest$@Test fun `Publish option not shown when product is published except addProduct flow`()</ID>
@@ -1566,8 +1430,6 @@
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `Should exclude the current product from product selection list`()</ID>
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `Shows and hides product list load more progress correctly`()</ID>
     <ID>UnitTestNamingRule:ProductSelectionListViewModelTest.kt$ProductSelectionListViewModelTest$@Test fun `Shows and hides product list skeleton correctly`()</ID>
-    <ID>UnitTestNamingRule:ProductSelectorScreenTest.kt$ProductSelectorScreenTest$@Test fun givenNoPopularProducts_DoNotDisplayPopularProductsHeading()</ID>
-    <ID>UnitTestNamingRule:ProductSelectorScreenTest.kt$ProductSelectorScreenTest$@Test fun givenPopularProducts_displayPopularProductsHeading()</ID>
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `given a configurable product is displayed on the UI then send the track event`()</ID>
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `given a configurable product is tapped then send the track event`()</ID>
     <ID>UnitTestNamingRule:ProductSelectorViewModelTest.kt$ProductSelectorViewModelTest$@Test fun `given active search, when back pressed, should clear search field`()</ID>
@@ -1639,16 +1501,11 @@
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProduct()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProductWithDecimalQuantity()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProducts()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsFilter()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSearchBySKU()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSearchUsual()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSort()</ID>
     <ID>UnitTestNamingRule:ProductsRestClientTest.kt$ProductsRestClientTest$@Test fun `returns error on unsuccessful fetch`()</ID>
     <ID>UnitTestNamingRule:ProductsRestClientTest.kt$ProductsRestClientTest$@Test fun `returns products on successful fetch`()</ID>
     <ID>UnitTestNamingRule:ProductsStoreTest.kt$ProductsStoreTest$@Test fun fetchProductsAction()</ID>
     <ID>UnitTestNamingRule:ProductsStoreTest.kt$ProductsStoreTest$@Test fun fetchProductsFail()</ID>
     <ID>UnitTestNamingRule:ProductsStoreTest.kt$ProductsStoreTest$@Test fun fetchProductsSuccess()</ID>
-    <ID>UnitTestNamingRule:ProductsUITest.kt$ProductsUITest$@Retry(numberOfTimes = 1) @Test fun e2eProductListShowsAllProducts()</ID>
     <ID>UnitTestNamingRule:ProvideAddonsIntegrationTests.kt$ProvideAddonsIntegrationTests$@Test @Suppress("LongMethod") fun `should map Checkbox add-on`()</ID>
     <ID>UnitTestNamingRule:ProvideAddonsIntegrationTests.kt$ProvideAddonsIntegrationTests$@Test fun `should map CustomPrice add-on`()</ID>
     <ID>UnitTestNamingRule:ProvideAddonsIntegrationTests.kt$ProvideAddonsIntegrationTests$@Test fun `should map CustomText add-on`()</ID>
@@ -1679,11 +1536,6 @@
     <ID>UnitTestNamingRule:RefundStoreTest.kt$RefundStoreTest$@Test fun `fetch specific refund`()</ID>
     <ID>UnitTestNamingRule:RefundStoreTest.kt$RefundStoreTest$@Test fun `get all refunds of an order`()</ID>
     <ID>UnitTestNamingRule:RefundStoreTest.kt$RefundStoreTest$@Test fun `get specific refund`()</ID>
-    <ID>UnitTestNamingRule:RegisterDeviceTest.kt$RegisterDeviceTest$@Test fun `do not register device for if-needed request and device is already registered`()</ID>
-    <ID>UnitTestNamingRule:RegisterDeviceTest.kt$RegisterDeviceTest$@Test fun `do not register device if there's no messaging token`()</ID>
-    <ID>UnitTestNamingRule:RegisterDeviceTest.kt$RegisterDeviceTest$@Test fun `do not register device if user is not logged in`()</ID>
-    <ID>UnitTestNamingRule:RegisterDeviceTest.kt$RegisterDeviceTest$@Test fun `register device for if-needed request and device is not registered`()</ID>
-    <ID>UnitTestNamingRule:RegisterDeviceTest.kt$RegisterDeviceTest$@Test fun `register device if user is logged in and there's messaging token`()</ID>
     <ID>UnitTestNamingRule:RemoteAddonMapperTest.kt$RemoteAddonMapperTest$@Test fun `should not throw exception for a valid dto`()</ID>
     <ID>UnitTestNamingRule:RemoteAddonMapperTest.kt$RemoteAddonMapperTest$@Test(expected = MappingRemoteException::class) fun `should throw exception when title format of addon dto is null`()</ID>
     <ID>UnitTestNamingRule:RemoteAddonMapperTest.kt$RemoteAddonMapperTest$@Test(expected = MappingRemoteException::class) fun `should throw exception when type of addon dto is null`()</ID>
@@ -1722,13 +1574,8 @@
     <ID>UnitTestNamingRule:ReviewListViewModelTest.kt$ReviewListViewModelTest$@Test fun `Report has unread reviews status correctly`()</ID>
     <ID>UnitTestNamingRule:ReviewListViewModelTest.kt$ReviewListViewModelTest$@Test fun `Show and hide review list skeleton correctly`()</ID>
     <ID>UnitTestNamingRule:ReviewListViewModelTest.kt$ReviewListViewModelTest$@Test fun `Shows and hides review list load more progress correctly`()</ID>
-    <ID>UnitTestNamingRule:ReviewsUITest.kt$ReviewsUITest$@Retry(numberOfTimes = 1) @Test fun e2eReviewListShowsAllReviews()</ID>
-    <ID>UnitTestNamingRule:RollingLogEntriesTest.kt$RollingLogEntriesTest$@Test fun `Given there are fewer entries than the limit, no entries are removed`()</ID>
-    <ID>UnitTestNamingRule:RollingLogEntriesTest.kt$RollingLogEntriesTest$@Test fun `Given there are more entries than the limit, the oldest entries are removed, keeping the size to the max`()</ID>
-    <ID>UnitTestNamingRule:RollingLogEntriesTest.kt$RollingLogEntriesTest$@Test fun `When the RollingLogEntries is initialized with non-positive number as the limit, an exception is thrown`()</ID>
     <ID>UnitTestNamingRule:SaveAnalyticsCardsConfigurationTest.kt$SaveAnalyticsCardsConfigurationTest$@Test fun `when the configuration is saved, not visible cards are sent to the back of the list`()</ID>
     <ID>UnitTestNamingRule:ScanToUpdateInventoryViewModelTest.kt$ScanToUpdateInventoryViewModelTest$@Test fun `when manual quantity update button tapped, than trigger proper tracking event`()</ID>
-    <ID>UnitTestNamingRule:ScreenshotTest.kt$ScreenshotTest$@Test fun screenshots()</ID>
     <ID>UnitTestNamingRule:SearchFilterViewModelTest.kt$SearchFilterViewModelTest$@Test fun `Should emit Empty view state when onSearch is called and there are NO results for the query`()</ID>
     <ID>UnitTestNamingRule:SearchFilterViewModelTest.kt$SearchFilterViewModelTest$@Test fun `Should emit ItemSelected event when onItemSelected is called`()</ID>
     <ID>UnitTestNamingRule:SearchFilterViewModelTest.kt$SearchFilterViewModelTest$@Test fun `Should emit Loaded view state when start is called`()</ID>
@@ -1915,12 +1762,8 @@
     <ID>UnitTestNamingRule:StatsRepositoryTests.kt$StatsRepositoryTests$@Test fun `when revenue requests fails then an error is returned`()</ID>
     <ID>UnitTestNamingRule:StatsRepositoryTests.kt$StatsRepositoryTests$@Test fun `when visitors and revenue requests succeed then a success response is returned containing both value`()</ID>
     <ID>UnitTestNamingRule:StatsRepositoryTests.kt$StatsRepositoryTests$@Test fun `when visitors requests fails then a success response is returned with visitors null`()</ID>
-    <ID>UnitTestNamingRule:StatsUITest.kt$StatsUITest$@Ignore( """ This became flaky after the last dashboard changes. https://github.com/woocommerce/woocommerce-android/issues/12111 """ ) @Test fun e2eStatsSummary()</ID>
-    <ID>UnitTestNamingRule:StatsUITest.kt$StatsUITest$@Ignore( """ This became flaky after the last dashboard changes. https://github.com/woocommerce/woocommerce-android/issues/12111 """ ) @Test fun e2eStatsTopPerformers()</ID>
-    <ID>UnitTestNamingRule:StatsUITest.kt$StatsUITest$@Ignore("This became flaky after combining Compose and View on the dashboard") @Test fun e2eStatsTapChart()</ID>
     <ID>UnitTestNamingRule:StoreConnectionCheckUseCaseTest.kt$StoreConnectionCheckUseCaseTest$@Test fun `when fetchSSR returns an GENERIC_ERROR error then emit GENERIC Failure`()</ID>
     <ID>UnitTestNamingRule:StoreConnectionCheckUseCaseTest.kt$StoreConnectionCheckUseCaseTest$@Test fun `when fetchSSR returns an INVALID_RESPONSE error then emit PARSE Failure`()</ID>
-    <ID>UnitTestNamingRule:StoreConnectionCheckUseCaseTest.kt$StoreConnectionCheckUseCaseTest$@Test fun `when fetchSSR returns an PLUGIN_NOT_ACTIVE error then emit JETPACK Failure`()</ID>
     <ID>UnitTestNamingRule:StoreConnectionCheckUseCaseTest.kt$StoreConnectionCheckUseCaseTest$@Test fun `when fetchSSR returns an TIMEOUT error then emit TIMEOUT Failure`()</ID>
     <ID>UnitTestNamingRule:StoreConnectionCheckUseCaseTest.kt$StoreConnectionCheckUseCaseTest$@Test fun `when fetchSSR returns no error then emit Success`()</ID>
     <ID>UnitTestNamingRule:StoreOnboardingViewModelTest.kt$StoreOnboardingViewModelTest$@Test fun `given a list of incomplete tasks , when view model is created, onboarding is shown`()</ID>
@@ -1932,7 +1775,6 @@
     <ID>UnitTestNamingRule:StoreOnboardingViewModelTest.kt$StoreOnboardingViewModelTest$@Test fun `when any task is clicked, track task clicked event`()</ID>
     <ID>UnitTestNamingRule:StoreOrdersCheckUseCaseTest.kt$StoreOrdersCheckUseCaseTest$@Test fun `when fetchHasOrders returns GENERIC_ERROR failure then emit GENERIC Failure`()</ID>
     <ID>UnitTestNamingRule:StoreOrdersCheckUseCaseTest.kt$StoreOrdersCheckUseCaseTest$@Test fun `when fetchHasOrders returns PARSE_ERROR failure then emit PARSE Failure`()</ID>
-    <ID>UnitTestNamingRule:StoreOrdersCheckUseCaseTest.kt$StoreOrdersCheckUseCaseTest$@Test fun `when fetchHasOrders returns PLUGIN_NOT_ACTIVE failure then emit JETPACK Failure`()</ID>
     <ID>UnitTestNamingRule:StoreOrdersCheckUseCaseTest.kt$StoreOrdersCheckUseCaseTest$@Test fun `when fetchHasOrders returns TIMEOUT_ERROR failure then emit GENERIC Failure`()</ID>
     <ID>UnitTestNamingRule:StoreOrdersCheckUseCaseTest.kt$StoreOrdersCheckUseCaseTest$@Test fun `when fetchHasOrders returns success then emit Success`()</ID>
     <ID>UnitTestNamingRule:StoreStatsDataTest.kt$StoreStatsDataTest$@Test fun `StoreStatsData with error requests should return default values`()</ID>
@@ -2062,8 +1904,6 @@
     <ID>UnitTestNamingRule:UpdateSavedCarrierPackagesTest.kt$UpdateSavedCarrierPackagesTest$@Test fun `When starring a package, then call saveCarrierPackage with correct carrierId`()</ID>
     <ID>UnitTestNamingRule:UpdateSavedCarrierPackagesTest.kt$UpdateSavedCarrierPackagesTest$@Test fun `When un-starring a package, then call deleteSavedCarrierPackage with correct carrierId`()</ID>
     <ID>UnitTestNamingRule:UploadEncryptedLogsTest.kt$UploadEncryptedLogsTest$@Test fun `should start upload when invoked`()</ID>
-    <ID>UnitTestNamingRule:UserAgentTest.kt$UserAgentTest$@Test fun testDefaultUserAgentFailure()</ID>
-    <ID>UnitTestNamingRule:UserAgentTest.kt$UserAgentTest$@Test fun testUserAgent()</ID>
     <ID>UnitTestNamingRule:UserDaoTest.kt$UserDaoTest$@Test fun `getUser returns null when user with different email is stored`()</ID>
     <ID>UnitTestNamingRule:UserDaoTest.kt$UserDaoTest$@Test fun `getUser returns null when user with different site is stored`()</ID>
     <ID>UnitTestNamingRule:UserDaoTest.kt$UserDaoTest$@Test fun `getUser returns user when it is stored`()</ID>
@@ -2143,19 +1983,11 @@
     <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states for a country with states returns the expected list of states`()</ID>
     <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states for a country without states returns empty list`()</ID>
     <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states with empty country code returns empty list`()</ID>
-    <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test gateway insert`()</ID>
-    <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test gateway update`()</ID>
-    <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test select empty result`()</ID>
-    <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test select`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModel should never allow null values`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModel should parse correctly`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModelList should parse list correctly`()</ID>
-    <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `create Attribute should return WooResult with parsed entity`()</ID>
-    <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `delete Attribute should return WooResult with parsed entity`()</ID>
-    <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `fetch attributes should call mapper once`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `fetch attributes should return WooResult correctly`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `fetch attributes with empty result should return WooError`()</ID>
-    <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `update Attribute should return WooResult with parsed entity`()</ID>
     <ID>UnitTestNamingRule:WCGoogleStoreTest.kt$WCGoogleStoreTest$@Test fun `when programs response is paginated, requested everything and return the sum`()</ID>
     <ID>UnitTestNamingRule:WCInboxStoreTest.kt$WCInboxStoreTest$@Test fun `Given notes are fetched successfully, when notes fetched, then return WooResult`()</ID>
     <ID>UnitTestNamingRule:WCInboxStoreTest.kt$WCInboxStoreTest$@Test fun `Given notes are fetched successfully, when notes fetched, then save them into DB`()</ID>
@@ -2191,7 +2023,6 @@
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testFetchingOnlyOutdatedOrMissingOrders()</ID>
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testGetOrderByLocalId()</ID>
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testGetOrderNotesForOrder()</ID>
-    <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testGetOrderStatusOptions()</ID>
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testGetOrders()</ID>
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testHasOrdersWithLocalOrders()</ID>
     <ID>UnitTestNamingRule:WCOrderStoreTest.kt$WCOrderStoreTest$@Test fun testHasOrdersWithoutLocalOrders()</ID>
@@ -2243,11 +2074,6 @@
     <ID>UnitTestNamingRule:WCSSRModelCachingFetcherTest.kt$WCSSRModelCachingFetcherTest$@Test fun `given remote failure when load called then returns error`()</ID>
     <ID>UnitTestNamingRule:WCSettingsMapperTest.kt$WCSettingsMapperTest$@Test fun `mapper maps to correct product settings model`()</ID>
     <ID>UnitTestNamingRule:WCSettingsMapperTest.kt$WCSettingsMapperTest$@Test fun `mapper maps to correct settings model`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testDeleteShippingLabelListForOrder()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testGetShippingLabelsById()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testGetShippingLabelsForOrder()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testInsertOrUpdateShippingLabelForOrder()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testInsertOrUpdateShippingLabelListForOrder()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test @Suppress("LongMethod") fun `get shipping rates`()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test @Suppress("LongMethod") fun `purchase shipping labels with polling`()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `creating packages returns error if the API call fails`()</ID>
@@ -2288,54 +2114,25 @@
     <ID>UnitTestNamingRule:WPComRestClientUtilsTest.kt$WPComRestClientUtilsTest$@Test fun `getLocaleParamName should return _locale for v2 url`()</ID>
     <ID>UnitTestNamingRule:WPComRestClientUtilsTest.kt$WPComRestClientUtilsTest$@Test fun `getLocaleParamName should return _locale for v3 url`()</ID>
     <ID>UnitTestNamingRule:WPComRestClientUtilsTest.kt$WPComRestClientUtilsTest$@Test fun `getLocaleParamName should return locale for other urls`()</ID>
-    <ID>UnitTestNamingRule:WPComV2MediaRestClientTest.kt$WPComV2MediaRestClientTest$@Test fun `emit failure action when upload fails`()</ID>
-    <ID>UnitTestNamingRule:WPComV2MediaRestClientTest.kt$WPComV2MediaRestClientTest$@Test fun `emit failure action when we can't parse the response`()</ID>
-    <ID>UnitTestNamingRule:WPComV2MediaRestClientTest.kt$WPComV2MediaRestClientTest$@Test fun `emit success action when upload finishes`()</ID>
     <ID>UnitTestNamingRule:WPComV3EndpointTest.kt$WPComV3EndpointTest$@Test fun testAllEndpoints()</ID>
     <ID>UnitTestNamingRule:WPComV3EndpointTest.kt$WPComV3EndpointTest$@Test fun testUrls()</ID>
     <ID>UnitTestNamingRule:WhatsNewAppVersionUtilsTest.kt$WhatsNewAppVersionUtilsTest$@Test fun `versionNameToInt converts major dot minor dot patch into major minor int`()</ID>
     <ID>UnitTestNamingRule:WhatsNewAppVersionUtilsTest.kt$WhatsNewAppVersionUtilsTest$@Test fun `versionNameToInt returns -1 from malformed version name`()</ID>
-    <ID>UnitTestNamingRule:WhatsNewSqlUtilsTest.kt$WhatsNewSqlUtilsTest$@Test fun `announcements are stored and retrieved correctly`()</ID>
-    <ID>UnitTestNamingRule:WhatsNewSqlUtilsTest.kt$WhatsNewSqlUtilsTest$@Test fun `hasCachedAnnouncements returns true when there are cached announcements`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testCampaignPrefixIsAddedWhileAddingUtmParams`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testContentPrefixIsAddedWhileAddingUtmParams`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testExistingUrlUtmQueriesArePreservedIfSuppliedUtmQueriesAreInvalid`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testOverrideOnlyTheMissingOrInvalidUtmQueries`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testSuppliedUtmQueriesOverridesExistingUrlUtmQueries`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUrlQueriesArePreservedIfTheyAreValid`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUrlQueriesArePreservedWithCorrectValuesIfTheyAreValid`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmMediumAlwaysSetToWoo_android`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmQueriesAreExcludedInTheUrlIfTheyAreNullOrEmpty`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmQueryParamsAreAddedToTheUrlProperly`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `given 3 woo and 3 updated sites, when fetching a jetpack cp site, emit event with 6 rows affected`()</ID>
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings fails, the error returned`()</ID>
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings succeeds, the setting is saved in db`()</ID>
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings succeeds, the success returned`()</ID>
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun testGetWooCommerceSites()</ID>
-    <ID>UnitTestNamingRule:WooLogFileProviderTest.kt$WooLogFileProviderTest$@Test fun `should provide a valid log file`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given empty feature list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given error result when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature enabled remotely when invoked then returns true`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature not in list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given null result when invoked then returns false`()</ID>
     <ID>UnitTestNamingRule:WooPosCartItemsUpdaterTest.kt$WooPosCartItemsUpdaterTest$@Test fun `given cart with multiple coupons, then relevant coupons are updated`()</ID>
     <ID>UnitTestNamingRule:WooPosCartViewModelTest.kt$WooPosCartViewModelTest$@Test fun `given empty cart, then button should not be visible`()</ID>
     <ID>UnitTestNamingRule:WooPosCashPaymentViewModelTest.kt$WooPosCashPaymentViewModelTest$@Test fun `given valid amount,when onUIEvent AmountChanged , then button is enabled and changeDue is updated`()</ID>
     <ID>UnitTestNamingRule:WooPosCouponsListViewStateManagerTest.kt$WooPosCouponsListViewStateManagerTest$@Test fun `cached data are still shown until remote request finishes`()</ID>
-    <ID>UnitTestNamingRule:WooPosEligibilityViewModelTest.kt$WooPosEligibilityViewModelTest$@Test fun `given POS is eligible on retry, should update state to Eligible`()</ID>
     <ID>UnitTestNamingRule:WooPosEligibilityViewModelTest.kt$WooPosEligibilityViewModelTest$@Test fun `given POS is ineligible on retry, should update state to Ineligible with suggestion text`()</ID>
     <ID>UnitTestNamingRule:WooPosEligibilityViewModelTest.kt$WooPosEligibilityViewModelTest$@Test fun `given retry results in different ineligible reason, then IneligibleUIShown event is tracked for new reason`()</ID>
     <ID>UnitTestNamingRule:WooPosEligibilityViewModelTest.kt$WooPosEligibilityViewModelTest$@Test fun `initialize should set state to Ineligible with suggestion text`()</ID>
-    <ID>UnitTestNamingRule:WooPosEmailReceiptRepositoryTest.kt$WooPosEmailReceiptRepositoryTest$@Test fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher, it calls for POS receipts then return success`()</ID>
-    <ID>UnitTestNamingRule:WooPosErrorScreenTest.kt$WooPosErrorScreenTest$@Test fun testButtonsAreDisplayedAndClickable()</ID>
-    <ID>UnitTestNamingRule:WooPosErrorScreenTest.kt$WooPosErrorScreenTest$@Test fun testErrorStateDisplaysCorrectly()</ID>
     <ID>UnitTestNamingRule:WooPosHomeViewModelTest.kt$WooPosHomeViewModelTest$@Test fun `given OrderSuccessfullyPaid by cash, then play sound`()</ID>
     <ID>UnitTestNamingRule:WooPosHomeViewModelTest.kt$WooPosHomeViewModelTest$@Test fun `given home at Checkout, when back pressed, should return to Cart`()</ID>
-    <ID>UnitTestNamingRule:WooPosHomeViewModelTest.kt$WooPosHomeViewModelTest$@Test fun `given product info dialog is displayed, then ensure dialog heading is correct`()</ID>
-    <ID>UnitTestNamingRule:WooPosHomeViewModelTest.kt$WooPosHomeViewModelTest$@Test fun `given product info dialog is displayed, then ensure dialog primary message is correct`()</ID>
     <ID>UnitTestNamingRule:WooPosItemsSearchViewModelTest.kt$WooPosItemsSearchViewModelTest$@Test fun `given content state when load more fails, then pagination state is error`()</ID>
     <ID>UnitTestNamingRule:WooPosProductSearchPredicateTest.kt$WooPosProductSearchPredicateTest$@Test fun `given WC version, when isWooCoreSupportsNameOrSkuSearch invoked multiple times, it should cache the result`()</ID>
-    <ID>UnitTestNamingRule:WooPosProductsDataSourceTest.kt$WooPosProductsDataSourceTest$@Test fun `when loading products, they should be sorted by name in ascending order`()</ID>
     <ID>UnitTestNamingRule:WooPosProductsInMemoryCacheTest.kt$WooPosProductsInMemoryCacheTest$@Test fun `when adding more products than max cache size, oldest products should be removed`()</ID>
     <ID>UnitTestNamingRule:WooPosProductsInMemoryCacheTest.kt$WooPosProductsInMemoryCacheTest$@Test fun `when adding product with existing id, it should replace old product`()</ID>
     <ID>UnitTestNamingRule:WooPosProductsInMemoryCacheTest.kt$WooPosProductsInMemoryCacheTest$@Test fun `when cache is cleared, getAll returns empty list`()</ID>
@@ -2358,15 +2155,6 @@
     <ID>UnitTestNamingRule:WooPosSearchByIdentifierResultConverterTest.kt$WooPosSearchByIdentifierResultConverterTest$@Test fun `given regular product success result, when converting, should add to cache and return result`()</ID>
     <ID>UnitTestNamingRule:WooPosSearchByIdentifierResultConverterTest.kt$WooPosSearchByIdentifierResultConverterTest$@Test fun `given variation product success result, when converting, should process variation`()</ID>
     <ID>UnitTestNamingRule:WooPosSearchByIdentifierResultConverterTest.kt$WooPosSearchByIdentifierResultConverterTest$@Test fun `given variation success result, when converting, should add parent product to cache and return result`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `given popular products fetch fails, should still update state to Loaded`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `given product population fails, should still update state to Loaded`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `given site eligible, should update state to Loaded`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `given site not eligible, should update state to NotEligible`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `when products are prepopulated, should call both product sources`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `when products are prepopulated, should track event with timing properties`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `when products are prepopulated, should track event`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `when products are prepopulated, should update state to Loaded`()</ID>
-    <ID>UnitTestNamingRule:WooPosSplashViewModelTest.kt$WooPosSplashViewModelTest$@Test fun `when vm created, should be in loading state`()</ID>
     <ID>UnitTestNamingRule:WooPosTotalsViewModelTest.kt$WooPosTotalsViewModelTest$@Test fun `given OnNewTransactionClicked, should send NewTransactionClicked event and reset state to initial`()</ID>
     <ID>UnitTestNamingRule:WooPosTotalsViewModelTest.kt$WooPosTotalsViewModelTest$@Test fun `given OnNewTransactionClicked, should track event`()</ID>
     <ID>UnitTestNamingRule:WooPosTotalsViewModelTest.kt$WooPosTotalsViewModelTest$@Test fun `given invalid coupon error during order creation, then send CouponsValidationFailed event`()</ID>
@@ -2381,31 +2169,6 @@
     <ID>UnitTestNamingRule:WooPosTotalsViewModelTest.kt$WooPosTotalsViewModelTest$@Test fun `initial state is loading`()</ID>
     <ID>UnitTestNamingRule:WooPosTotalsViewModelTest.kt$WooPosTotalsViewModelTest$@Test fun `when RetryClicked event is triggered, should retry creating order and show loading state`()</ID>
     <ID>UnitTestNamingRule:WooPosVariationsViewModelTest.kt$WooPosVariationsViewModelTest$@Test fun `given variable product, getNameForPOS returns correct name when parent product has variation enabled attributes`()</ID>
-    <ID>UnitTestNamingRule:WooRequestFormatterTest.kt$WooRequestFormatterTest$@Test fun shouldDecodeUrl()</ID>
-    <ID>UnitTestNamingRule:WooRequestFormatterTest.kt$WooRequestFormatterTest$@Test fun shouldKeepOnlyPathAndMethodQueryParametersForRestApiCalls()</ID>
-    <ID>UnitTestNamingRule:WooRequestFormatterTest.kt$WooRequestFormatterTest$@Test fun shouldReplaceBlogIdWithPlaceholder()</ID>
-    <ID>UnitTestNamingRule:WooRequestFormatterTest.kt$WooRequestFormatterTest$@Test fun shouldReplaceLabelIdWithPlaceholder()</ID>
-    <ID>UnitTestNamingRule:WooRequestFormatterTest.kt$WooRequestFormatterTest$@Test fun shouldReplaceOrderIdWithPlaceholder()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onContentTypeClick should trigger ShowContentTypeDialog event`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onContentTypeSelected should update contentType in viewState`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onCountrySelectorClick should trigger ShowCountrySelector event with possible locations`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onITNChanged should update itnValue with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onOtherContentInputChanged should update otherContentInput with invalid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onOtherContentInputChanged should update otherContentInput with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onRestrictionDetailsInputChanged should update otherRestrictionInput with invalid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onRestrictionDetailsInputChanged should update otherRestrictionInput with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onRestrictionTypeClick should trigger ShowRestrictionTypeDialog event`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onRestrictionTypeSelected should update restrictionType in viewState`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onReturnToSenderChanged should update returnToSenderChecked in viewState`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductDescriptionChanged should update description with error for blank input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductDescriptionChanged should update description with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductExpanded should update isExpanded state for specific product`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductOriginCountryChanged should update originCountry for selected product`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductTariffNumberChanged should update tariffNumber with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductValuePerUnitChanged should update valuePerUnit with error for blank input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductValuePerUnitChanged should update valuePerUnit with valid input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductWeightPerUnitChanged should update weightPerUnit with error for blank input`()</ID>
-    <ID>UnitTestNamingRule:WooShippingCustomsFormViewModelTest.kt$WooShippingCustomsFormViewModelTest$@Test fun `onShippableProductWeightPerUnitChanged should update weightPerUnit with valid input`()</ID>
     <ID>UnitTestNamingRule:WooShippingEditAddressViewModelTest.kt$WooShippingEditAddressViewModelTest$@Test fun `when address is NOT empty then address error is null`()</ID>
     <ID>UnitTestNamingRule:WooShippingEditAddressViewModelTest.kt$WooShippingEditAddressViewModelTest$@Test fun `when address is empty then address error is not null`()</ID>
     <ID>UnitTestNamingRule:WooShippingEditAddressViewModelTest.kt$WooShippingEditAddressViewModelTest$@Test fun `when city is NOT empty then address error is null`()</ID>
@@ -2473,7 +2236,6 @@
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when initialized, show expected item quantity`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when onPurchaseShippingLabel fails then show a snackbar`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when onPurchaseShippingLabel fails then track purchase_failed`()</ID>
-    <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when onPurchaseShippingLabel succeed then track purchase_success`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when rates sort order is NOT changed then DON'T refresh shipping rates`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when rates sort order is changed then DON'T refresh shipping rates`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelCreationViewModelTest.kt$WooShippingLabelCreationViewModelTest$@Test fun `when refresh rates is triggered then refresh shipping rates`()</ID>
@@ -2506,8 +2268,6 @@
     <ID>UnitTestNamingRule:WooShippingLabelPackageCreationViewModelTest.kt$WooShippingLabelPackageCreationViewModelTest$@Test fun `when saveAsTemplate is true and saving fails, track WCS_PACKAGE_SELECTION_STEP event with saving_failed`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelPackageCreationViewModelTest.kt$WooShippingLabelPackageCreationViewModelTest$@Test fun `when saveAsTemplate is true and saving succeed, track WCS_PACKAGE_SELECTION_STEP event with saving_success`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelPackageCreationViewModelTest.kt$WooShippingLabelPackageCreationViewModelTest$@Test fun `when started, track started event`()</ID>
-    <ID>UnitTestNamingRule:WooShippingLabelPackageRepositoryTest.kt$WooShippingLabelPackageRepositoryTest$@Test fun `fetchAllStorePackages returns WooResult with error`()</ID>
-    <ID>UnitTestNamingRule:WooShippingLabelPackageRepositoryTest.kt$WooShippingLabelPackageRepositoryTest$@Test fun `fetchAllStorePackages returns WooResult with result`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelRefundViewModelTest.kt$WooShippingLabelRefundViewModelTest$@Test fun `when refund fails, show error message`()</ID>
     <ID>UnitTestNamingRule:WooShippingLabelRefundViewModelTest.kt$WooShippingLabelRefundViewModelTest$@Test fun `when refund is successful, show success message and exit`()</ID>
     <ID>UnitTestNamingRule:WooShippingRatesDatasourceMapperTest.kt$WooShippingRatesDatasourceMapperTest$@Test fun `mapper can parse rates with 1 package 2 carriers 5 rates`()</ID>
@@ -2526,8 +2286,6 @@
     <ID>UnitTestNamingRule:WooShippingRatesRepositoryTest.kt$WooShippingRatesRepositoryTest$@Test fun `when the get shipping rates request fails then return an error`()</ID>
     <ID>UnitTestNamingRule:WooShippingSplitShipmentViewModelTest.kt$WooShippingSplitShipmentViewModelTest$@Test fun `when merging unfulfilled shipments, a single unfulfilled shipment contains all items`()</ID>
     <ID>UnitTestNamingRule:WooShippingSplitShipmentViewModelTest.kt$WooShippingSplitShipmentViewModelTest$@Test fun `when merging unfulfilled shipments, do not merge purchased shipments`()</ID>
-    <ID>UnitTestNamingRule:WordPressConnectionCheckUseCaseTest.kt$WordPressConnectionCheckUseCaseTest$@Test fun `when fetchRemoteAnnouncements returns an error then emit Failure`()</ID>
-    <ID>UnitTestNamingRule:WordPressConnectionCheckUseCaseTest.kt$WordPressConnectionCheckUseCaseTest$@Test fun `when fetchRemoteAnnouncements returns no error then emit Success`()</ID>
     <ID>UnitTestNamingRule:ZendeskTicketRepositoryTest.kt$ZendeskTicketRepositoryTest$@Test fun `given the site is not selected, when creating the request, attach empty ssr`()</ID>
     <ID>UnitTestNamingRule:ZendeskTicketRepositoryTest.kt$ZendeskTicketRepositoryTest$@Test fun `given the site is selected but app fails on fetching ssr, when creating the request, attach empty ssr`()</ID>
     <ID>UnitTestNamingRule:ZendeskTicketRepositoryTest.kt$ZendeskTicketRepositoryTest$@Test fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`()</ID>
@@ -2565,8 +2323,6 @@
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>WildcardImport:ReviewListRepository.kt$import org.wordpress.android.fluxc.store.NotificationStore.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
@@ -2577,5 +2333,97 @@
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBackButton.kt$size(28.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBackButton.kt$size(48.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$height(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$size(20.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingDetails.kt$width(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$requiredWidth(360.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(16.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosBookingsDateSelector.kt$size(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$size(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosButtons.kt$width(600.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(140.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(256.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$size(84.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCardPaymentScreen.kt$width(604.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$defaultMinSize(minWidth = 200.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$height(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$height(96.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$heightIn(min = 96.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(36.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(48.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$size(96.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosCartScreen.kt$width(96.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosChip.kt$size(26.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosDialogWrapper.kt$size(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosEmptyScreen.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosErrorAndEmptyStateButtonModifier.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosErrorScreen.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosHomeFloatingToolbar.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIcons.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosIssueRefundDialog.kt$size(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsInfoBanner.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsInfoBanner.kt$size(48.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$height(112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$heightIn(min = 112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$size(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosItemsList.kt$width(112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLazyColumn.kt$height(1.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLazyColumn.kt$height(64.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLoadingIndicators.kt$size(156.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosLoadingIndicators.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(14.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(16.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$height(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$size(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrderDetails.kt$width(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$height(16.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$height(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$height(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$heightIn(min = 64.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$size(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(100.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosOrdersLoadingScreen.kt$width(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$height(112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$size(112.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaginationErrorIndicator.kt$size(54.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosPaymentSuccessScreen.kt$width(604.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosRefundDetailsDialog.kt$size(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(300.dp, 150.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosScanningSetupDialog.kt$size(88.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSearchInput.kt$size(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSearchInput.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsCategoriesPaneScreen.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSettingsHardwareCardReaderScreen.kt$size(32.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosSplashScreen.kt$size(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosToolbar.kt$height(56.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$size(84.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentFailedScreen.kt$width(604.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentInProgressScreen.kt$size(256.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentSuccessScreen.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsPaymentSuccessScreen.kt$width(604.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(24.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(40.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$height(80.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(140.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(160.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$size(256.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosTotalsScreen.kt$width(332.dp)</ID>
+    <ID>WooPosDesignSystemComponentSizeUsageRule:WooPosVariationsScreen.kt$width(640.dp)</ID>
   </CurrentIssues>
 </SmellBaseline>

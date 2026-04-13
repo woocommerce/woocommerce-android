@@ -2,6 +2,7 @@ import com.automattic.android.measure.reporters.InternalA8cCiReporter
 import com.automattic.android.measure.reporters.RemoteBuildCacheMetricsReporter
 import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
 import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -96,6 +97,17 @@ tasks.register("detektAll", Detekt) {
         html.required.set(true)
         txt.required.set(false)
     }
+}
+
+tasks.register("detektBaselineAll", DetektCreateBaselineTask) {
+    description = "Generates the detekt baseline for all modules"
+    parallel = true
+    buildUponDefaultConfig = true
+    setSource(file(projectDir))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    include("**/*.kt")
+    exclude("**/resources/**", "**/build/**", "/vendor/**")
 }
 
 dependencies {
