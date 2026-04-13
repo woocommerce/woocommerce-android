@@ -2,43 +2,36 @@
 
 ## Branch Naming
 
-Feature or fix branch names should use the pattern `issue/ISSUEID-description` where the `ISSUEID` is the Github issue number. For example, if the issue number is 1000 and the issue is related to an error with the order list, an appropriate branch name would be `issue/1000-order-list-error`.
+Feature or fix branch names should use the pattern `issue/ISSUEID-description` where the `ISSUEID` is the Linear issue identifier (e.g., `WOOMOB-1234`). For example, `issue/woomob-1234-order-list-error`.
 
-If there is no Github issue, you can use prefixes like `feature/` or `fix/`.
-
-> NOTE: Features are typically large PRs (pull requests) that contain smaller PRs that build a feature and are labeled as an `epic`.
+If there is no Linear issue, you can use prefixes like `feature/` or `fix/`.
 
 ## Commits
 
-As you commit code to these branches, don’t tag the issue number in the individual commit messages as it pollutes the pull request and makes it messier, just attach the issue number to the final pull request. Before you submit your final pull request, make sure all your branches are up to date with `trunk`.
+Don't tag the issue number in individual commit messages — it pollutes the PR. Attach the issue number to the final pull request. Before submitting, make sure your branch is up to date with `trunk`.
 
-## Anatomy of a Good Pull Request
+## PR Title Format
 
-When you are ready, please, spend time crafting a good Pull Request, since it will have a huge impact on the work of reviewers, release managers and testers.
+Prefix with `[WOOMOB-XYZ]` where XYZ is the Linear issue number (extracted from branch name `issue/woomob-XYZ-...`):
 
-**Title**: A good descriptive title.
+```
+[WOOMOB-1234] Add order refund confirmation dialog
+```
 
-**Issue**: Link to the GitHub issue this PR addresses.
+## PR Description Format
 
-**Description**: Take the time to write a good summary. Why is it needed? What does it do? When fixing bugs try to avoid just writing “See original issue” – clarify what the problem was and how you’ve fixed it.
+Start the Description section with `Fixes WOOMOB-XYZ` on the first line.
 
-**Testing instructions**: Step by step testing instructions. When necessary break out individual scenarios that need testing, consider including a checklist for the reviewer to go through.
+## PR Template
 
-**Images and Gif**: Include before and after images or gifs when appropriate.
+The project uses a PR template (`.github/PULL_REQUEST_TEMPLATE.md`) — follow it for the structure and examples of a good PR. Key sections: Description, Test Steps, Images/gif, and RELEASE-NOTES.txt checkbox.
 
-### Labels
+## Labels
 
-We have labels for different types of PRs as well as different application areas, use them accordingly. A minimum of one label should be assigned to the PR, but strongly encourage finding labels from two or more label categories.
+A minimum of one label should be assigned, but we strongly encourage labels from two or more categories:
 
-Some examples of labels can be found below:
-
-* **Type**: Crash, Bug, Question, Task, Enhancement, Tech Debt, Tooling, etc.
-* **Status**: Do not merge, on-hold, Blocked, feature-flagged etc.
-* **Priority**: Low, High, Critical etc.
-* **Feature**: Login, notifications, stats, order list etc.
-* **Action**: needs design, docs, feedback, api-support, etc.
-* **Category**: accessibility, aanalytics, performance, design, dark mode, etc.
-
-*This list is by no means exhaustive so please choose labels that is relevant to the feature you are working on.*
-
-_Thank you very much for contributing to WooCommerce for Android!_
+- **Type** (pick one): `type: bug`, `type: crash`, `type: enhancement`, `type: task`, `type: technical debt`, `type: documentation`, `type: question`
+- **Feature** (pick one if applicable): match the changed area to a `feature: *` label (e.g., `feature: order list`, `feature: point of sale`, `feature: product details`, `feature: login`)
+- **Category** (pick any): `category: accessibility`, `category: design`, `category: performance`, `category: tracks`, `category: unit tests`, `category: ui tests`, `category: tooling`, `category: parity`
+- **Status**: `status: do not merge`, `status: on-hold`, `status: blocked`, `status: feature-flagged`
+- **Priority**: `priority: low`, `priority: high`, `priority: critical`
