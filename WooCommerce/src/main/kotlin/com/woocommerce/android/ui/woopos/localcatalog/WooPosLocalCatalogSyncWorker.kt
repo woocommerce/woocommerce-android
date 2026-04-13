@@ -111,7 +111,7 @@ constructor(
 
     private suspend fun isPosInactive(): Boolean {
         val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp()
-            ?: return isPosInactiveForNeverOpened()
+            ?: return hasAlreadyCompletedInitialSync()
         val daysSinceLastUse = (timeProvider.now() - lastUsedTimestamp).milliseconds.inWholeDays
         return if (daysSinceLastUse > DAYS_SINCE_LAST_USE_THRESHOLD) {
             logger.d(
@@ -124,18 +124,15 @@ constructor(
         }
     }
 
-    private suspend fun isPosInactiveForNeverOpened(): Boolean {
-        val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp() ?: return false
-        val daysSinceLastFullSync = (timeProvider.now() - lastFullSyncTimestamp).milliseconds.inWholeDays
-        return if (daysSinceLastFullSync > DAYS_SINCE_LAST_USE_THRESHOLD) {
+    private suspend fun hasAlreadyCompletedInitialSync(): Boolean {
+        val alreadySynced = syncTimestampManager.getFullSyncLastCompletedTimestamp() != null
+        if (alreadySynced) {
             logger.d(
-                "POS never opened and last full sync was $daysSinceLastFullSync days ago " +
-                    "(> $DAYS_SINCE_LAST_USE_THRESHOLD days), skipping background full catalog sync."
+                "POS was never opened and the initial catalog sync has already completed, " +
+                    "skipping background full catalog sync."
             )
-            true
-        } else {
-            false
         }
+        return alreadySynced
     }
 
     private suspend fun trackSyncSkipped(skipReason: SyncSkipReason) {
