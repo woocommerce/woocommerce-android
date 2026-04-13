@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -34,7 +35,10 @@ class WooPosSyncAction @Inject constructor(
             updateDatabaseWithFetchedItems(site, fetchResults, isFullSync)
         }.fold(
             onSuccess = { result -> result },
-            onFailure = { error -> handleSyncError(error) }
+            onFailure = { error ->
+                if (error is CancellationException) throw error
+                handleSyncError(error)
+            }
         )
     }
 
