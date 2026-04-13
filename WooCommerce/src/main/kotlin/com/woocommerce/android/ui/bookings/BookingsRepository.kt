@@ -7,6 +7,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingAvailabilityDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
@@ -207,10 +210,11 @@ class BookingsRepository @Inject constructor(
             endDate = endDate,
             resourceId = resourceId,
         )
-        return if (result.isError) {
-            Result.failure(WooException(result.error))
-        } else {
-            Result.success(result.model!!)
+        val model = result.model
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            model != null -> Result.success(model)
+            else -> Result.failure(WooException(WooError(GENERIC_ERROR, UNKNOWN)))
         }
     }
 
