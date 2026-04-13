@@ -42,6 +42,7 @@ enum class WooPosElevation(val value: Dp) {
 }
 
 enum class WooPosIconSize(val value: Dp) {
+    XSmall(16.dp),
     Small(24.dp),
     Medium(32.dp),
     Large(40.dp),
