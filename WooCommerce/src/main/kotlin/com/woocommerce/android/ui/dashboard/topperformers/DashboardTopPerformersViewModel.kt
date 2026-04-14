@@ -185,8 +185,9 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onInfoIconTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_INFO_TAPPED)
+        _dateTypeInfoState.value = DateTypeInfoState.Loading
         launch {
-            analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_INFO_TAPPED)
             val info = getAnalyticsDateTypeInfo()
             _dateTypeInfoState.value = DateTypeInfoState.Visible(
                 dateTypeLabel = info.getOrNull()?.dateTypeLabel ?: "date paid",
@@ -356,6 +357,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     sealed class DateTypeInfoState {
         data object Hidden : DateTypeInfoState()
+        data object Loading : DateTypeInfoState()
         data class Visible(val dateTypeLabel: String, val settingsUrl: String) : DateTypeInfoState()
     }
 

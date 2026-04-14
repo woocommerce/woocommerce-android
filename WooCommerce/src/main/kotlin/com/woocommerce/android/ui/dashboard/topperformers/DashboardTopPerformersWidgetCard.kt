@@ -83,17 +83,23 @@ fun DashboardTopPerformersWidgetCard(
     val dateTypeInfoState by topPerformersViewModel.dateTypeInfoState.collectAsState()
 
     val dateTypeInfo = dateTypeInfoState
-    if (dateTypeInfo is DashboardTopPerformersViewModel.DateTypeInfoState.Visible) {
+    if (dateTypeInfo !is DashboardTopPerformersViewModel.DateTypeInfoState.Hidden) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val visibleState =
+            dateTypeInfo as? DashboardTopPerformersViewModel.DateTypeInfoState.Visible
         WCModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = topPerformersViewModel::onDismissDateTypeInfo
         ) {
             DateTypeInfoBottomSheet(
-                dateTypeLabel = dateTypeInfo.dateTypeLabel,
+                isLoading = dateTypeInfo is
+                DashboardTopPerformersViewModel.DateTypeInfoState.Loading,
+                dateTypeLabel = visibleState?.dateTypeLabel,
                 onDoneTapped = topPerformersViewModel::onDismissDateTypeInfo,
                 onOpenSettingsTapped = {
-                    topPerformersViewModel.onOpenAnalyticsSettings(dateTypeInfo.settingsUrl)
+                    visibleState?.let {
+                        topPerformersViewModel.onOpenAnalyticsSettings(it.settingsUrl)
+                    }
                     topPerformersViewModel.onDismissDateTypeInfo()
                 }
             )

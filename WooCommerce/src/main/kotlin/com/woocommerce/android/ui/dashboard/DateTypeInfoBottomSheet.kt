@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.dashboard
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -24,7 +27,8 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun DateTypeInfoBottomSheet(
-    dateTypeLabel: String,
+    isLoading: Boolean,
+    dateTypeLabel: String?,
     onDoneTapped: () -> Unit,
     onOpenSettingsTapped: () -> Unit,
 ) {
@@ -52,20 +56,37 @@ fun DateTypeInfoBottomSheet(
             }
         }
         Divider()
-        Text(
-            text = stringResource(id = R.string.dashboard_date_type_info_body, dateTypeLabel),
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
-        )
-        Text(
-            text = clickableAnnotatedStringRes(
-                stringResId = R.string.dashboard_date_type_info_link,
-                onUrlClick = { onOpenSettingsTapped() }
-            ),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
-        )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimensionResource(id = R.dimen.major_200)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)),
+                    color = colorResource(id = R.color.color_primary)
+                )
+            }
+        } else {
+            Text(
+                text = stringResource(
+                    id = R.string.dashboard_date_type_info_body,
+                    dateTypeLabel ?: ""
+                ),
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.color_on_surface_medium),
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+            )
+            Text(
+                text = clickableAnnotatedStringRes(
+                    stringResId = R.string.dashboard_date_type_info_link,
+                    onUrlClick = { onOpenSettingsTapped() }
+                ),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+            )
+        }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }

@@ -74,17 +74,21 @@ fun DashboardStatsCard(
     )
 
     val dateTypeInfo = dateTypeInfoState
-    if (dateTypeInfo is DashboardStatsViewModel.DateTypeInfoState.Visible) {
+    if (dateTypeInfo !is DashboardStatsViewModel.DateTypeInfoState.Hidden) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val visibleState = dateTypeInfo as? DashboardStatsViewModel.DateTypeInfoState.Visible
         WCModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = viewModel::onDismissDateTypeInfo
         ) {
             DateTypeInfoBottomSheet(
-                dateTypeLabel = dateTypeInfo.dateTypeLabel,
+                isLoading = dateTypeInfo is DashboardStatsViewModel.DateTypeInfoState.Loading,
+                dateTypeLabel = visibleState?.dateTypeLabel,
                 onDoneTapped = viewModel::onDismissDateTypeInfo,
                 onOpenSettingsTapped = {
-                    viewModel.onOpenAnalyticsSettings(dateTypeInfo.settingsUrl)
+                    visibleState?.let {
+                        viewModel.onOpenAnalyticsSettings(it.settingsUrl)
+                    }
                     viewModel.onDismissDateTypeInfo()
                 }
             )
