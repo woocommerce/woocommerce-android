@@ -103,6 +103,7 @@ class NotificationMessageHandlerTest {
         .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
+    private val wooNotificationPayload = mapOf("type" to "new_order")
 
     private fun createNotificationMessageHandler(
         notificationsParser: NotificationsParser = this.notificationsParser
@@ -189,6 +190,29 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `given wpcom payload is missing note id, when notification received, then keep legacy note id validation`() =
+        runTest {
+            whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+            val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload().minus("note_id")
+            val mockNotificationsParser: NotificationsParser = mock {
+                on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                    remoteNoteId = 0L,
+                    remoteSiteId = orderNotification.remoteSiteId,
+                    type = NotificationModel.Kind.STORE_ORDER
+                )
+            }
+            createNotificationMessageHandler(mockNotificationsParser)
+
+            notificationMessageHandler.onNewMessageReceived(payload)
+
+            verify(wooLog).e(
+                eq(WooLog.T.NOTIFICATIONS),
+                eq("Push notification received without a valid note_id in the payload!")
+            )
+            verifyNoInteractions(dispatcher)
+        }
+
+    @Test
     fun `when the notification payload is empty then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(
             mapOf(
@@ -201,9 +225,9 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given woo push registered, when wpcom notification received, then skip notification`() = runTest {
+    fun `given site registered in both systems, when wpcom notification received, then skip notification`() = runTest {
         whenever(registrationStatus.invoke(any()))
-            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_BOTH)
 
         // WPCOM notifications have remoteNoteId > 0
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
@@ -213,6 +237,32 @@ class NotificationMessageHandlerTest {
             eq("Skipping WPCOM notification, already registered with Woo Core")
         )
         verifyNoInteractions(dispatcher)
+    }
+
+    @Test
+    fun `given site registered in both systems and user mismatch, when wpcom notification received, then keep legacy validation`() =
+        runTest {
+            whenever(registrationStatus.invoke(any()))
+                .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_BOTH)
+            val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
+
+            notificationMessageHandler.onNewMessageReceived(payload)
+
+            verify(wooLog).e(
+                eq(WooLog.T.NOTIFICATIONS),
+                eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+            )
+            verifyNoInteractions(dispatcher)
+        }
+
+    @Test
+    fun `given site registered only in Woo, when wpcom notification received, then process notification`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(dispatcher, atLeastOnce()).dispatch(any())
     }
 
     @Test
@@ -228,7 +278,45 @@ class NotificationMessageHandlerTest {
         }
         createNotificationMessageHandler(mockNotificationsParser)
 
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(dispatcher, atLeastOnce()).dispatch(any())
+    }
+
+    @Test
+    fun `given user has access token and site is not marked as Woo registered, when woo notification received, then process it`() =
+        runTest {
+            whenever(registrationStatus.invoke(any()))
+                .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+            val mockNotificationsParser: NotificationsParser = mock {
+                on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                    remoteNoteId = 0L,
+                    remoteSiteId = orderNotification.remoteSiteId,
+                    type = NotificationModel.Kind.STORE_ORDER
+                )
+            }
+            createNotificationMessageHandler(mockNotificationsParser)
+
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+        }
+
+    @Test
+    fun `given user is not logged in, when woo notification received, then process it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        val mockNotificationsParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_ORDER
+            )
+        }
+        createNotificationMessageHandler(mockNotificationsParser)
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(any())
     }
@@ -247,6 +335,21 @@ class NotificationMessageHandlerTest {
         createNotificationMessageHandler(mockNotificationsParser)
         whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
 
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(wooLog).w(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Skipping notification, site ${orderNotification.remoteSiteId} is not visible")
+        )
+        verifyNoInteractions(dispatcher)
+    }
+
+    @Test
+    fun `given wpcom notification site is hidden, when user has access token, then skip it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(wooLog).w(
@@ -254,6 +357,26 @@ class NotificationMessageHandlerTest {
             eq("Skipping notification, site ${orderNotification.remoteSiteId} is not visible")
         )
         verifyNoInteractions(dispatcher)
+    }
+
+    @Test
+    fun `given site is hidden and user has no access token, when woo notification received, then process it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        val mockNotificationsParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_ORDER
+            )
+        }
+        createNotificationMessageHandler(mockNotificationsParser)
+        whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(dispatcher, atLeastOnce()).dispatch(any())
     }
 
     @Test

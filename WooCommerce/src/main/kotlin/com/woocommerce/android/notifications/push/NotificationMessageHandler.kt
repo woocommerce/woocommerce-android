@@ -48,6 +48,7 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
+        private const val PUSH_ARG_NOTE_ID = "note_id"
 
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
@@ -86,33 +87,38 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
+        val notificationSource = messageData.source(notification.remoteNoteId)
         val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
-        val isRegisteredForWooPush =
-            registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY ||
-                registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
         val pushUserId = messageData[PUSH_ARG_USER]
+        val hasWpComAccessToken = accountStore.hasAccessToken()
 
-        // We need to filter out duplicate notifications from the WPCOM system
-        if (!isWooSiteVisible(notification.remoteSiteId)) {
+        if (hasWpComAccessToken && !isWooSiteVisible(notification.remoteSiteId)) {
             wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
             return
         }
-        if (isRegisteredForWooPush) {
-            if (notification.remoteNoteId > 0L) {
+
+        if (notificationSource == NotificationSource.WPCOM && !hasWpComAccessToken) {
+            wooLog.e(NOTIFICATIONS, "User is not logged in!")
+            return
+        }
+
+        if (notificationSource == NotificationSource.WPCOM) {
+            // At this point 'note_id' is always available in the notification bundle.
+            if (notification.remoteNoteId == 0L) {
+                wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+                return
+            }
+
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            if (accountStore.account.userId.toString() != pushUserId) {
+                wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+                return
+            }
+
+            if (registrationStatusResult.isWooRegistered) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
-        } else if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        } else if (notification.remoteNoteId == 0L) {
-            // At this point 'note_id' is always available in the notification bundle.
-            wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
-            return
-        } else if (accountStore.account.userId.toString() != pushUserId) {
-            // At this point, pushUserId is always set server side, but better to double check it here.
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
         }
 
         dispatchBackgroundEvents(notificationModel)
@@ -270,5 +276,17 @@ class NotificationMessageHandler @Inject constructor(
                 .filter { it.channelType == type.name && it.remoteSiteId == remoteSiteId }
                 .forEach { cancelNotification(it.id) }
         }
+    }
+
+    private fun Map<String, String>.source(remoteNoteId: Long): NotificationSource {
+        val isWooNotification = this[PUSH_ARG_USER] == null &&
+            this[PUSH_ARG_NOTE_ID] == null &&
+            remoteNoteId == 0L
+        return if (isWooNotification) NotificationSource.WOO else NotificationSource.WPCOM
+    }
+
+    private enum class NotificationSource {
+        WOO,
+        WPCOM
     }
 }
