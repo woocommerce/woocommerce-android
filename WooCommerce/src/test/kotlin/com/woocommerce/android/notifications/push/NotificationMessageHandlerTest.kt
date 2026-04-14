@@ -205,7 +205,9 @@ class NotificationMessageHandlerTest {
     @Test
     fun `given wpcom payload is missing note id, when notification received, then keep legacy note id validation`() =
         runTest {
-            whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+            whenever(
+                registrationStatus.invoke(any())
+            ).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
             val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload().minus("note_id")
             createWooNotificationMessageHandler()
 
@@ -221,7 +223,9 @@ class NotificationMessageHandlerTest {
     @Test
     fun `given payload has no wpcom user and parsed note id is zero, when notification received, then treat it as Woo`() =
         runTest {
-            whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+            whenever(
+                registrationStatus.invoke(any())
+            ).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
             val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload().minus("user")
             createWooNotificationMessageHandler()
 

@@ -48,6 +48,7 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
+
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
     }
