@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 
 enum class WooPosCornerRadius(
     private val tabletValue: Dp,
@@ -117,15 +118,16 @@ internal enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }
 internal fun rememberWooPosBreakpoint(): WooPosBreakpoint {
     val density = LocalDensity.current
     val containerSize = LocalWindowInfo.current.containerSize
-    val longestSide = with(density) {
-        maxOf(containerSize.width, containerSize.height).toDp()
-    }
+    val shortSize = with(density) { minOf(containerSize.width, containerSize.height).toDp() }
+    val longSize = with(density) { maxOf(containerSize.width, containerSize.height).toDp() }
     return when {
-        longestSide < 880.dp -> WooPosBreakpoint.Phone
-        longestSide < 1200.dp -> WooPosBreakpoint.SmallTablet
+        !WooPosIsScreenSizeAllowed.isTabletSize(shortSize, longSize) -> WooPosBreakpoint.Phone
+        shortSize < BIG_TABLET_SHORT_SIZE_DP.dp -> WooPosBreakpoint.SmallTablet
         else -> WooPosBreakpoint.Tablet
     }
 }
+
+private const val BIG_TABLET_SHORT_SIZE_DP = 800
 
 @Suppress("MagicNumber")
 private fun Dp.makeDividableByFour(): Dp {
