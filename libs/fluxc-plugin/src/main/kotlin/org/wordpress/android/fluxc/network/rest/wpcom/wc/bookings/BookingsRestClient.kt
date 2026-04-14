@@ -10,6 +10,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,6 +22,7 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
+        private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
     }
 
     suspend fun fetchBooking(
@@ -129,6 +133,30 @@ class BookingsRestClient @Inject constructor(
             path = endpoint,
             clazz = BookingResourceDto::class.java,
             params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    suspend fun fetchProductAvailability(
+        site: SiteModel,
+        productId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        resourceId: Long,
+    ): WooPayload<BookingAvailabilityDto> {
+        val endpoint = WOOCOMMERCE.products.id(productId).availability.pathV2Bookings
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingAvailabilityDto::class.java,
+            params = mapOf(
+                "start_date" to startDate.format(DATE_TIME_FORMATTER),
+                "end_date" to endDate.format(DATE_TIME_FORMATTER),
+                "resource_id" to resourceId.toString(),
+            )
         )
         return when (response) {
             is Success -> WooPayload(response.data)
