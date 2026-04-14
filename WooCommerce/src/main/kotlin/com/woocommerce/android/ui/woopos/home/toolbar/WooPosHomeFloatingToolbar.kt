@@ -64,8 +64,10 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
-fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
-    val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
+fun WooPosFloatingToolbar(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel(),
+) {
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),

@@ -66,8 +66,10 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosTotalsViewModel = hiltViewModel()
+fun WooPosTotalsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosTotalsViewModel = hiltViewModel(),
+) {
     val state = viewModel.state.collectAsState().value
     WooPosTotalsScreen(
         modifier = modifier,

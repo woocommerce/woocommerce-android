@@ -43,17 +43,19 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosItemsScreen(modifier: Modifier = Modifier) {
+fun WooPosItemsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosItemsViewModel = hiltViewModel(),
+) {
     val productsViewState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
-    val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
-        itemsStateFlow = productsViewModel.viewState,
-        bannerStateFlow = productsViewModel.bannerState,
+        itemsStateFlow = viewModel.viewState,
+        bannerStateFlow = viewModel.bannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        onUIEvent = { productsViewModel.onUIEvent(it) },
+        onUIEvent = { viewModel.onUIEvent(it) },
     )
 }
 
