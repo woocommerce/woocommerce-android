@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -85,7 +84,7 @@ private fun Loading() {
 private fun SyncingCatalog(
     onExitPosClicked: () -> Unit
 ) {
-    val loadingIndicatorSize = 160.dp
+    val loadingIndicatorSize = WooPosComponentSize.XLarge.value
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
