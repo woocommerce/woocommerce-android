@@ -72,4 +72,47 @@ class WooPosIsScreenSizeAllowedTest {
         // THEN
         assertThat(result).isFalse()
     }
+
+    @Test
+    fun `given tablet boundary size 674x800 and flag disabled, when invoked, then return true`() {
+        // GIVEN
+        displayMetrics.widthPixels = 674
+        displayMetrics.heightPixels = 800
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_PHONE)).thenReturn(false)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given below tablet boundary 673x800 and flag disabled, when invoked, then return false`() {
+        // GIVEN
+        displayMetrics.widthPixels = 673
+        displayMetrics.heightPixels = 800
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_PHONE)).thenReturn(false)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given high density tablet pixels but phone-sized in dp and flag disabled, when invoked, then return false`() {
+        // GIVEN
+        displayMetrics.density = 2f
+        displayMetrics.widthPixels = 800
+        displayMetrics.heightPixels = 1280
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_PHONE)).thenReturn(false)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result).isFalse()
+    }
 }
