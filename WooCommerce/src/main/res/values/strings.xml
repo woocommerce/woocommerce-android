@@ -2211,6 +2211,8 @@
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
+    <string name="settings_logout_dialog_title">Logging out…</string>
+    <string name="settings_logout_dialog_message">Logging you out.</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
