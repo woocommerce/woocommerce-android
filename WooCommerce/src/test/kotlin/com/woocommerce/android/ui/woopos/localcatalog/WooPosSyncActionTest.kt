@@ -637,6 +637,19 @@ class WooPosSyncActionTest {
         // THEN — expected CancellationException
     }
 
+    @Test(expected = CancellationException::class)
+    fun `when transaction is cancelled, then CancellationException propagates`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+        givenTransactionThrowsCancellation()
+
+        // WHEN
+        sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN — expected CancellationException
+    }
+
     // === EDGE CASE TESTS ===
 
     @Test
@@ -1132,6 +1145,13 @@ class WooPosSyncActionTest {
         whenever(
             posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
         ).thenReturn(KotlinResult.failure(Exception(errorMessage)))
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun givenTransactionThrowsCancellation() = runBlocking {
+        whenever(
+            posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
+        ).thenAnswer { throw CancellationException("Worker cancelled") }
     }
 
     private fun generateProducts(count: Int): List<WooPosProductEntity> {
