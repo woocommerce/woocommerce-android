@@ -13,8 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -39,6 +42,7 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
@@ -47,6 +51,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.DateTypeInfoBottomSheet
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -64,6 +69,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardTopPerformersWidgetCard(
     parentViewModel: DashboardViewModel,
@@ -74,6 +80,26 @@ fun DashboardTopPerformersWidgetCard(
         }
     )
 ) {
+    val dateTypeInfoState by topPerformersViewModel.dateTypeInfoState.collectAsState()
+
+    val dateTypeInfo = dateTypeInfoState
+    if (dateTypeInfo is DashboardTopPerformersViewModel.DateTypeInfoState.Visible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        WCModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = topPerformersViewModel::onDismissDateTypeInfo
+        ) {
+            DateTypeInfoBottomSheet(
+                dateTypeLabel = dateTypeInfo.dateTypeLabel,
+                onDoneTapped = topPerformersViewModel::onDismissDateTypeInfo,
+                onOpenSettingsTapped = {
+                    topPerformersViewModel.onOpenAnalyticsSettings(dateTypeInfo.settingsUrl)
+                    topPerformersViewModel.onDismissDateTypeInfo()
+                }
+            )
+        }
+    }
+
     topPerformersViewModel.topPerformersState.observeAsState().value?.let { topPerformersState ->
         val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
         val selectedDateRange by topPerformersViewModel.selectedDateRange.observeAsState()
@@ -82,7 +108,8 @@ fun DashboardTopPerformersWidgetCard(
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
             modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD),
-            isError = topPerformersState.error != null
+            isError = topPerformersState.error != null,
+            onInfoIconTapped = topPerformersViewModel::onInfoIconTapped
         ) {
             when {
                 topPerformersState.error != null -> TopPerformersErrorView(
@@ -113,7 +140,8 @@ fun DashboardTopPerformersWidgetCard(
             openDatePicker(fromDate, toDate) { from, to ->
                 topPerformersViewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
             }
-        }
+        },
+        onLaunchUrlInAuthenticatedWebView = parentViewModel::onLaunchUrlInAuthenticatedWebView
     )
 }
 
@@ -155,6 +183,7 @@ fun DashboardTopPerformersContent(
 private fun HandleEvents(
     event: LiveData<Event>,
     openDatePicker: (Long, Long) -> Unit,
+    onLaunchUrlInAuthenticatedWebView: (Event.LaunchUrlInAuthenticatedWebView) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -173,6 +202,10 @@ private fun HandleEvents(
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
                     )
+                }
+
+                is Event.LaunchUrlInAuthenticatedWebView -> {
+                    onLaunchUrlInAuthenticatedWebView(event)
                 }
             }
         }

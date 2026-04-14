@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -25,11 +28,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DateTypeInfoBottomSheet
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -40,6 +45,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardStatsCard(
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
@@ -55,6 +61,7 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
+    val dateTypeInfoState by viewModel.dateTypeInfoState.collectAsState()
 
     HandleEvents(
         event = viewModel.event,
@@ -62,8 +69,27 @@ fun DashboardStatsCard(
             openDatePicker(fromDate, toDate) { from, to ->
                 viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
             }
-        }
+        },
+        onLaunchUrlInAuthenticatedWebView = parentViewModel::onLaunchUrlInAuthenticatedWebView
     )
+
+    val dateTypeInfo = dateTypeInfoState
+    if (dateTypeInfo is DashboardStatsViewModel.DateTypeInfoState.Visible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        WCModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = viewModel::onDismissDateTypeInfo
+        ) {
+            DateTypeInfoBottomSheet(
+                dateTypeLabel = dateTypeInfo.dateTypeLabel,
+                onDoneTapped = viewModel::onDismissDateTypeInfo,
+                onOpenSettingsTapped = {
+                    viewModel.onOpenAnalyticsSettings(dateTypeInfo.settingsUrl)
+                    viewModel.onDismissDateTypeInfo()
+                }
+            )
+        }
+    }
 
     WidgetCard(
         titleResource = DashboardWidget.Type.STATS.titleResource,
@@ -80,6 +106,7 @@ fun DashboardStatsCard(
         ),
         isError = revenueStatsState is DashboardStatsViewModel.RevenueStatsViewState.WCAnalyticsInactive ||
             revenueStatsState == DashboardStatsViewModel.RevenueStatsViewState.GenericError,
+        onInfoIconTapped = viewModel::onInfoIconTapped,
         modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_STATS_CARD)
     ) {
         when (revenueStatsState) {
@@ -244,6 +271,7 @@ private fun StatsChart(
 private fun HandleEvents(
     event: LiveData<MultiLiveEvent.Event>,
     openDatePicker: (Long, Long) -> Unit,
+    onLaunchUrlInAuthenticatedWebView: (MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -259,6 +287,10 @@ private fun HandleEvents(
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
                     )
+                }
+
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    onLaunchUrlInAuthenticatedWebView(event)
                 }
             }
         }

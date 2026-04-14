@@ -359,6 +359,11 @@
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
+    <string name="dashboard_date_type_info_content_description">Analytics date type information</string>
+    <string name="dashboard_date_type_info_title">About analytics data</string>
+    <string name="dashboard_date_type_info_done">Done</string>
+    <string name="dashboard_date_type_info_body">Net sales and order counts are calculated based on the order\'s %s. If your store uses Cash on Delivery or other offline payment methods, orders may not appear until they are marked as paid or completed.\n\nYou can change this in your store\'s analytics settings.</string>
+    <string name="dashboard_date_type_info_link">&lt;a href="settings"&gt;Open analytics settings&lt;/a&gt;</string>
 
     <string name="dashboard_action_view_all_orders">View all orders</string>
 

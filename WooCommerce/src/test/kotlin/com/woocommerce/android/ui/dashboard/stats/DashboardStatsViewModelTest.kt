@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
+import com.woocommerce.android.ui.dashboard.domain.GetAnalyticsDateTypeInfo
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
@@ -83,6 +84,15 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val dateRangeFormatter: DashboardDateRangeFormatter = mock {
         on { formatRangeDate(any()) } doReturn "Jan 1"
     }
+    private val getAnalyticsDateTypeInfo: GetAnalyticsDateTypeInfo = mock {
+        onBlocking { invoke() } doReturn Result.success(
+            GetAnalyticsDateTypeInfo.AnalyticsDateTypeInfo(
+                dateTypeLabel = "date paid",
+                analyticsSettingsUrl = "https://example.com/wp-admin/" +
+                    "admin.php?page=wc-admin&path=%2Fanalytics%2Fsettings"
+            )
+        )
+    }
 
     private lateinit var viewModel: DashboardStatsViewModel
 
@@ -109,6 +119,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
             dateRangeFormatter = dateRangeFormatter,
+            getAnalyticsDateTypeInfo = getAnalyticsDateTypeInfo,
             usageTracksEventEmitter = usageTracksEventEmitter,
             dateUtils = dateUtils,
             currencyFormatter = mock()
@@ -435,5 +446,52 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
         Assertions.assertThat(visitorStatsState)
             .isEqualTo(DashboardStatsViewModel.VisitorStatsViewState.Unavailable(showJetpackIcon = false))
+    }
+
+    @Test
+    fun `when info icon tapped, then date type info state becomes visible`() = testBlocking {
+        setup()
+
+        viewModel.onInfoIconTapped()
+
+        Assertions.assertThat(viewModel.dateTypeInfoState.value)
+            .isInstanceOf(DashboardStatsViewModel.DateTypeInfoState.Visible::class.java)
+        val visible = viewModel.dateTypeInfoState.value as DashboardStatsViewModel.DateTypeInfoState.Visible
+        Assertions.assertThat(visible.dateTypeLabel).isEqualTo("date paid")
+    }
+
+    @Test
+    fun `when dismiss date type info, then state becomes hidden`() = testBlocking {
+        setup()
+
+        viewModel.onInfoIconTapped()
+        viewModel.onDismissDateTypeInfo()
+
+        Assertions.assertThat(viewModel.dateTypeInfoState.value)
+            .isEqualTo(DashboardStatsViewModel.DateTypeInfoState.Hidden)
+    }
+
+    @Test
+    fun `when open analytics settings, then launch url event is triggered`() = testBlocking {
+        setup()
+
+        viewModel.onOpenAnalyticsSettings("https://example.com/settings")
+
+        val event = viewModel.event.getOrAwaitValue()
+        Assertions.assertThat(event)
+            .isInstanceOf(
+                com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView::class.java
+            )
+    }
+
+    @Test
+    fun `when info icon tapped, then analytics event is tracked`() = testBlocking {
+        setup()
+
+        viewModel.onInfoIconTapped()
+
+        verify(analyticsTrackerWrapper).track(
+            com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_DATE_TYPE_INFO_TAPPED
+        )
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ fun WidgetCard(
     @DrawableRes iconResource: Int? = null,
     button: DashboardWidgetAction? = null,
     isError: Boolean,
+    onInfoIconTapped: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
@@ -80,6 +82,22 @@ fun WidgetCard(
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold
             )
+
+            if (onInfoIconTapped != null) {
+                IconButton(
+                    onClick = onInfoIconTapped,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_200))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_info_outline_20dp),
+                        contentDescription = stringResource(
+                            id = R.string.dashboard_date_type_info_content_description
+                        ),
+                        tint = colorResource(id = R.color.color_on_surface_medium),
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_125))
+                    )
+                }
+            }
 
             WCOverflowMenu(
                 items = menu.items,

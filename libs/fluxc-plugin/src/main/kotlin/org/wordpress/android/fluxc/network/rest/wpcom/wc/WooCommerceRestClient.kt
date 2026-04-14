@@ -17,6 +17,8 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
         const val ROUND_TAX_AT_SUBTOTAL_SETTING_ID = "woocommerce_tax_round_at_subtotal"
+        const val WC_ADMIN_SETTING_GROUP = "wc_admin"
+        const val DATE_TYPE_SETTING_ID = "woocommerce_date_type"
 
         private const val ROOT_ENDPOINT_TIMEOUT_MS = 15000
     }
@@ -86,6 +88,16 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
 
     suspend fun fetchSiteSettingsTaxBasedOn(site: SiteModel): WooPayload<SiteSettingOptionResponse> {
         val url = WOOCOMMERCE.settings.group(TAX_SETTING_GROUP).id(TAX_SETTING_ID).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java
+        )
+        return response.toWooPayload { it }
+    }
+
+    suspend fun fetchDateTypeSetting(site: SiteModel): WooPayload<SiteSettingOptionResponse> {
+        val url = WOOCOMMERCE.settings.group(WC_ADMIN_SETTING_GROUP).id(DATE_TYPE_SETTING_ID).pathV3
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,

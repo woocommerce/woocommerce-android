@@ -401,6 +401,17 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchDateTypeSetting(site: SiteModel): WooResult<String> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchDateTypeSetting") {
+            val response = wcCoreRestClient.fetchDateTypeSetting(site)
+            return@withDefaultContext when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> WooResult(response.result.value ?: "date_paid")
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun fetchTaxBasedOnSettings(site: SiteModel): WooResult<TaxBasedOnSettingEntity> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchTaxBasedOnSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsTaxBasedOn(site)

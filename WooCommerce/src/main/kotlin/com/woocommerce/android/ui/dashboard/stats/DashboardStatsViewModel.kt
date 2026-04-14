@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
+import com.woocommerce.android.ui.dashboard.domain.GetAnalyticsDateTypeInfo
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.util.CurrencyFormatter
@@ -41,6 +42,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -72,6 +75,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val observeLastUpdate: ObserveLastUpdate,
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val getAnalyticsDateTypeInfo: GetAnalyticsDateTypeInfo,
     private val dateRangeFormatter: DashboardDateRangeFormatter,
     val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     val dateUtils: DateUtils,
@@ -107,6 +111,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private val _dateTypeInfoState = MutableStateFlow<DateTypeInfoState>(DateTypeInfoState.Hidden)
+    val dateTypeInfoState: StateFlow<DateTypeInfoState> = _dateTypeInfoState.asStateFlow()
 
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
@@ -185,6 +192,26 @@ class DashboardStatsViewModel @AssistedInject constructor(
     fun onRefresh() {
         trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    fun onInfoIconTapped() {
+        launch {
+            analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_INFO_TAPPED)
+            val info = getAnalyticsDateTypeInfo()
+            _dateTypeInfoState.value = DateTypeInfoState.Visible(
+                dateTypeLabel = info.getOrNull()?.dateTypeLabel ?: "date paid",
+                settingsUrl = info.getOrNull()?.analyticsSettingsUrl ?: ""
+            )
+        }
+    }
+
+    fun onDismissDateTypeInfo() {
+        _dateTypeInfoState.value = DateTypeInfoState.Hidden
+    }
+
+    fun onOpenAnalyticsSettings(url: String) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_SETTINGS_OPENED)
+        triggerEvent(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(url))
     }
 
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
@@ -409,6 +436,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
         val ordersCount: Long? = null,
         val sales: Double? = null
     )
+
+    sealed class DateTypeInfoState {
+        data object Hidden : DateTypeInfoState()
+        data class Visible(val dateTypeLabel: String, val settingsUrl: String) : DateTypeInfoState()
+    }
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()

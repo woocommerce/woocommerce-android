@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
+import com.woocommerce.android.ui.dashboard.domain.GetAnalyticsDateTypeInfo
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -45,6 +46,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -80,6 +83,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
     private val dateFormatter: DashboardDateRangeFormatter,
+    private val getAnalyticsDateTypeInfo: GetAnalyticsDateTypeInfo,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
     private val _selectedDateRange = getSelectedDateRange()
@@ -96,6 +100,9 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
+
+    private val _dateTypeInfoState = MutableStateFlow<DateTypeInfoState>(DateTypeInfoState.Hidden)
+    val dateTypeInfoState: StateFlow<DateTypeInfoState> = _dateTypeInfoState.asStateFlow()
 
     private var _lastUpdateTopPerformers = MutableStateFlow<Long?>(null)
     val lastUpdateTopPerformers: LiveData<String?> = _lastUpdateTopPerformers
@@ -175,6 +182,26 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     fun onRefresh() {
         trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    fun onInfoIconTapped() {
+        launch {
+            analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_INFO_TAPPED)
+            val info = getAnalyticsDateTypeInfo()
+            _dateTypeInfoState.value = DateTypeInfoState.Visible(
+                dateTypeLabel = info.getOrNull()?.dateTypeLabel ?: "date paid",
+                settingsUrl = info.getOrNull()?.analyticsSettingsUrl ?: ""
+            )
+        }
+    }
+
+    fun onDismissDateTypeInfo() {
+        _dateTypeInfoState.value = DateTypeInfoState.Hidden
+    }
+
+    fun onOpenAnalyticsSettings(url: String) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_DATE_TYPE_SETTINGS_OPENED)
+        triggerEvent(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(url))
     }
 
     private fun onTopPerformerTapped(productId: Long) {
@@ -325,6 +352,11 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     enum class ErrorType {
         Generic, WCAnalyticsInactive
+    }
+
+    sealed class DateTypeInfoState {
+        data object Hidden : DateTypeInfoState()
+        data class Visible(val dateTypeLabel: String, val settingsUrl: String) : DateTypeInfoState()
     }
 
     data class OpenTopPerformer(
