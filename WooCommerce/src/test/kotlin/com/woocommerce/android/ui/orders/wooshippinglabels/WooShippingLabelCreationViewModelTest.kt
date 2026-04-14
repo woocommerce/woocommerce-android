@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.Fe
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
@@ -529,6 +530,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val dataState = currentViewState as DataState
         assertIs<ShippingRatesState.Error>(
             dataState.shipmentUIList[0].shippingRatesState
+        )
+    }
+
+    @Test
+    fun `when shipping rates fail with invalid destination name then display destination name error`() = testBlocking {
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(InvalidDestinationNameRateException())
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        val errorState = assertIs<ShippingRatesState.Error>(
+            dataState.shipmentUIList[0].shippingRatesState
+        )
+
+        assertEquals(
+            R.string.woo_shipping_labels_package_creation_shipping_rates_destination_name_error,
+            errorState.message
         )
     }
 
