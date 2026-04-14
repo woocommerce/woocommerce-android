@@ -43,9 +43,10 @@ fun CarrierTermsBottomSheetScaffold(
     isLoading: Boolean,
     snackbarHostState: SnackbarHostState,
     onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     checkboxes: @Composable () -> Unit,
 ) {
-    Box {
+    Box(modifier = modifier) {
         Surface(
             shape = RoundedCornerShape(
                 topStart = dimensionResource(id = R.dimen.minor_100),
@@ -126,9 +127,12 @@ fun CarrierTermsBottomSheetScaffold(
 }
 
 @Composable
-private fun OriginAddressSection(address: String) {
+private fun OriginAddressSection(
+    address: String,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
     ) {
@@ -151,9 +155,11 @@ private fun OriginAddressSection(address: String) {
 fun CheckboxWithTitle(
     checked: Boolean,
     title: AnnotatedString,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
