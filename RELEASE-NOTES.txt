@@ -18,6 +18,7 @@
 - [Internal] Migrated UpdateProductStockStatusScreen and PlanSubscriptionScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15601]
 - [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
 - [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
+- [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
 
 24.5.1
 -----
