@@ -50,7 +50,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.rememberW
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
-private const val PHONE_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 0.85f
+private const val PHONE_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 1.0f
 private const val TABLET_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 0.5f
 
 @Composable
