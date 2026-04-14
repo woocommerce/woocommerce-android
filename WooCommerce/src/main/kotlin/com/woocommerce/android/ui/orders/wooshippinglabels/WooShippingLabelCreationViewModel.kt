@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippi
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.FetchOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsProvider
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
@@ -1077,17 +1076,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
                 triggerEvent(
-                    NavigateToCarrierTermsOfService(
-                        provider = CarrierTermsProvider.UPSDAP,
-                        originAddress = selectedAddress.shipFrom
-                    )
+                    NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
                 )
             }
 
             is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
-                triggerEvent(
-                    NavigateToCarrierTermsOfService(provider = CarrierTermsProvider.FEDEX)
-                )
+                triggerEvent(NavigateToFedExTermsOfService)
             }
 
             is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
@@ -1469,10 +1463,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class ShowError(val errorResId: Int) : Event()
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
     data object NavigateToPaymentMethodEdit : Event()
-    data class NavigateToCarrierTermsOfService(
-        val provider: CarrierTermsProvider,
-        val originAddress: OriginShippingAddress? = null
-    ) : Event()
+    data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
+    data object NavigateToFedExTermsOfService : Event()
 
     object OpenLearnMoreScreen : Event()
 

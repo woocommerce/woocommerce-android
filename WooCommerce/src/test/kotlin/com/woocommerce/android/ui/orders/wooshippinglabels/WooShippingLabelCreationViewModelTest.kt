@@ -20,10 +20,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCarrierTermsOfService
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
@@ -35,7 +36,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValida
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippingLabelNotice
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsProvider
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CreateDefaultCustomsData
@@ -1746,13 +1746,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             advanceUntilIdle()
 
-            var event: NavigateToCarrierTermsOfService? = null
-            sut.event.observeForever { if (it is NavigateToCarrierTermsOfService) event = it }
+            var event: NavigateToUPSDAPTermsOfService? = null
+            sut.event.observeForever { if (it is NavigateToUPSDAPTermsOfService) event = it }
 
             sut.onPurchaseShippingLabel()
 
             assertThat(event).isNotNull
-            assertThat(event?.provider).isEqualTo(CarrierTermsProvider.UPSDAP)
             assertThat(event?.originAddress).isEqualTo(defaultOriginAddresses.first())
         }
 
@@ -1784,14 +1783,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             advanceUntilIdle()
 
-            var event: NavigateToCarrierTermsOfService? = null
-            sut.event.observeForever { if (it is NavigateToCarrierTermsOfService) event = it }
+            var event: NavigateToFedExTermsOfService? = null
+            sut.event.observeForever { if (it is NavigateToFedExTermsOfService) event = it }
 
             sut.onPurchaseShippingLabel()
 
             assertThat(event).isNotNull
-            assertThat(event?.provider).isEqualTo(CarrierTermsProvider.FEDEX)
-            assertThat(event?.originAddress).isNull()
         }
 
     @Test

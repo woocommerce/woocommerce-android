@@ -4,11 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsOfServiceBottomSheetFragmentArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -20,8 +18,6 @@ class FedExTermsOfServiceViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val acceptFedExTerms: AcceptFedExTerms,
 ) : ScopedViewModel(savedState) {
-    private val args: CarrierTermsOfServiceBottomSheetFragmentArgs by savedState.navArgs()
-
     private val isTermsOfServiceAccepted = savedState.getStateFlow(
         scope = viewModelScope,
         key = "terms_of_service_accepted",
@@ -54,7 +50,7 @@ class FedExTermsOfServiceViewModel @Inject constructor(
             isLoading.value = true
             acceptFedExTerms().fold(
                 onSuccess = {
-                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(args.provider))
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
                 },
                 onFailure = {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))

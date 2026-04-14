@@ -21,13 +21,14 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCustomsFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsOfServiceBottomSheetFragment
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsProvider
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment.Companion.CUSTOMS_DATA_RESULT
+import com.woocommerce.android.ui.orders.wooshippinglabels.fedex.FedExTermsOfServiceBottomSheetFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -141,10 +143,8 @@ class WooShippingLabelCreationFragment : BaseFragment() {
 
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
                 is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
-                is WooShippingLabelCreationViewModel.NavigateToCarrierTermsOfService -> navigateToCarrierTermsOfService(
-                    provider = event.provider,
-                    originAddress = event.originAddress
-                )
+                is NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(event.originAddress)
+                is NavigateToFedExTermsOfService -> navigateToFedExTermsOfService()
 
                 is WooShippingLabelCreationViewModel.PrintCustomsForm -> printFile(event.file)
             }
@@ -183,7 +183,13 @@ class WooShippingLabelCreationFragment : BaseFragment() {
         }
 
         handleDialogNotice(
-            CarrierTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
+            FedExTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
+            entryId = R.id.wooShippingLabelCreationFragment
+        ) {
+            viewModel.onCarrierTermsAccepted()
+        }
+        handleDialogNotice(
+            UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
             viewModel.onCarrierTermsAccepted()
@@ -228,16 +234,17 @@ class WooShippingLabelCreationFragment : BaseFragment() {
         )
     }
 
-    private fun navigateToCarrierTermsOfService(
-        provider: CarrierTermsProvider,
-        originAddress: OriginShippingAddress?
-    ) {
+    private fun navigateToUPSDAPTermsOfService(originAddress: OriginShippingAddress) {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
-                .actionWooShippingLabelCreationFragmentToCarrierTermsOfServiceBottomSheetFragment(
-                    provider = provider,
-                    originAddress = originAddress
-                )
+                .actionWooShippingLabelCreationFragmentToUpsdapTermsOfServiceBottomSheetFragment(originAddress)
+        )
+    }
+
+    private fun navigateToFedExTermsOfService() {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToFedExTermsOfServiceBottomSheetFragment()
         )
     }
 }

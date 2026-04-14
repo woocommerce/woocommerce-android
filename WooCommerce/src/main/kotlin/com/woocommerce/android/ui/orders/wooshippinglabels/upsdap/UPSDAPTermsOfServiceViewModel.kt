@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsOfServiceBottomSheetFragmentArgs
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -29,7 +28,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
         private const val TECHNOLOGY_AGREEMENT_URL = "https://www.ups.com/assets/resources/webcontent/en_US/UTA.pdf"
     }
 
-    private val args: CarrierTermsOfServiceBottomSheetFragmentArgs by savedState.navArgs()
+    private val args: UPSDAPTermsOfServiceBottomSheetFragmentArgs by savedState.navArgs()
 
     private val isTermsOfServiceAccepted = savedState.getStateFlow(
         scope = viewModelScope,
@@ -73,7 +72,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
     val viewState = combine(isLoading, conditionsState) { isLoading, conditionsState ->
         ViewState(
             isLoading = isLoading,
-            originShippingAddress = requireNotNull(args.originAddress),
+            originShippingAddress = args.originAddress,
             conditionsState = conditionsState,
             onUrlClicked = ::onUrlClicked,
             onContinueClicked = ::onContinueClicked
@@ -93,7 +92,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
     private fun onContinueClicked() {
         launch {
             isLoading.value = true
-            acceptUPSDAPTerms(requireNotNull(args.originAddress)).fold(
+            acceptUPSDAPTerms(args.originAddress).fold(
                 onSuccess = {
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
                 },

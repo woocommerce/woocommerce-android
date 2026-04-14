@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.fedex
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsOfServiceBottomSheetFragmentArgs
-import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsProvider
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,10 +20,7 @@ class FedExTermsOfServiceViewModelTest : BaseUnitTest() {
     private lateinit var sut: FedExTermsOfServiceViewModel
 
     private fun createViewModel() {
-        savedState = CarrierTermsOfServiceBottomSheetFragmentArgs(
-            provider = CarrierTermsProvider.FEDEX,
-            originAddress = null
-        ).toSavedStateHandle()
+        savedState = SavedStateHandle()
         sut = FedExTermsOfServiceViewModel(savedState, acceptFedExTerms)
     }
 
@@ -71,7 +66,7 @@ class FedExTermsOfServiceViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when confirmation succeeds, then exit with FedEx provider result`() = testBlocking {
+    fun `when confirmation succeeds, then exit with result`() = testBlocking {
         whenever(acceptFedExTerms.invoke()).thenReturn(Result.success(Unit))
         createViewModel()
         var event: MultiLiveEvent.Event.ExitWithResult<*>? = null
@@ -85,7 +80,7 @@ class FedExTermsOfServiceViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
         }
 
-        assertThat(event?.data).isEqualTo(CarrierTermsProvider.FEDEX)
+        assertThat(event?.data).isEqualTo(Unit)
     }
 
     @Test
