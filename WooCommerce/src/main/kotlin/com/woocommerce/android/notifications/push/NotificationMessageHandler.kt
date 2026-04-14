@@ -48,8 +48,6 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
-        private const val PUSH_ARG_NOTE_ID = "note_id"
-
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
     }
@@ -87,7 +85,7 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
-        val notificationSource = messageData.source(notification.remoteNoteId)
+        val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
         val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
         val pushUserId = messageData[PUSH_ARG_USER]
         val hasWpComAccessToken = accountStore.hasAccessToken()
@@ -278,12 +276,14 @@ class NotificationMessageHandler @Inject constructor(
         }
     }
 
-    private fun Map<String, String>.source(remoteNoteId: Long): NotificationSource {
-        val isWooNotification = this[PUSH_ARG_USER] == null &&
-            this[PUSH_ARG_NOTE_ID] == null &&
-            remoteNoteId == 0L
-        return if (isWooNotification) NotificationSource.WOO else NotificationSource.WPCOM
-    }
+    private fun Map<String, String>.detectNotificationSource(remoteNoteId: Long): NotificationSource =
+        when {
+            this[PUSH_ARG_USER] != null || remoteNoteId != 0L -> {
+                NotificationSource.WPCOM
+            }
+
+            else -> NotificationSource.WOO
+        }
 
     private enum class NotificationSource {
         WOO,
