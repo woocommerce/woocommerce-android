@@ -27,7 +27,7 @@ class WooShippingRatesRestClient @Inject constructor(
             "origin" to origin,
             "destination" to destination,
             "packages" to packages,
-            "features_supported_by_client" to listOf(UPSDAP_FEATURE)
+            "features_supported_by_client" to listOf(UPSDAP_FEATURE, FEDEX_FEATURE)
         )
 
         return wooNetwork.executePostGsonRequest(
@@ -45,5 +45,6 @@ class WooShippingRatesRestClient @Inject constructor(
     companion object {
         private const val URL = "/wcshipping/v1/label/rate"
         private const val UPSDAP_FEATURE = "upsdap"
+        private const val FEDEX_FEATURE = "fedex"
     }
 }
