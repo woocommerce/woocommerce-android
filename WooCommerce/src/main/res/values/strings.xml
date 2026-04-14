@@ -4455,6 +4455,7 @@
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
     <string name="booking_details_reschedule_button">Reschedule</string>
     <string name="booking_reschedule_screen_title">Reschedule booking</string>
+    <string name="booking_reschedule_change_team_member">Change team member</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>

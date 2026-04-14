@@ -97,6 +97,10 @@ class BookingRescheduleViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onTeamMemberChanged(newResourceId: Long) {
+        teamMemberIdOverride.value = newResourceId
+    }
+
     private suspend fun loadAvailability(params: AvailabilityFetchParams) {
         _state.update { it.copy(availabilityState = BookingRescheduleState.AvailabilityState.Loading) }
         bookingsRepository.fetchProductAvailability(

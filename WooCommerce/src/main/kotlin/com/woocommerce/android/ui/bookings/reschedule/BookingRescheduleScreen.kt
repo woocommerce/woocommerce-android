@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.reschedule
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,26 +26,70 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingLabel
+import com.woocommerce.android.ui.bookings.reschedule.teammember.RescheduleTeamMemberRoute
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.animations.slideInNavTransition
+import com.woocommerce.android.ui.compose.animations.slideOutNavTransition
 import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun BookingRescheduleScreen(
     viewModel: BookingRescheduleViewModel,
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.observeAsState()
-    RescheduleContent(
-        state = state,
-        onBackPressed = viewModel::onBackPressed,
-    )
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = ReschedulePage.Reschedule.route,
+        modifier = modifier,
+        enterTransition = { slideInNavTransition(forward = true) },
+        exitTransition = { slideOutNavTransition(forward = true) },
+        popEnterTransition = { slideInNavTransition(forward = false) },
+        popExitTransition = { slideOutNavTransition(forward = false) },
+    ) {
+        composable(ReschedulePage.Reschedule.route) {
+            RescheduleContent(
+                state = state,
+                onBackPressed = viewModel::onBackPressed,
+                onTeamMemberRowClicked = { navController.navigate(ReschedulePage.TeamMemberSelector.route) },
+            )
+        }
+        composable(ReschedulePage.TeamMemberSelector.route) {
+            val currentState = state
+            if (currentState != null) {
+                RescheduleTeamMemberRoute(
+                    initialResourceId = currentState.teamMemberId,
+                    productId = currentState.productId,
+                    onBack = { navController.popBackStack() },
+                    onTeamMemberSelected = { id ->
+                        viewModel.onTeamMemberChanged(id)
+                        navController.popBackStack()
+                    },
+                )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun RescheduleContent(
+private fun RescheduleContent(
     state: BookingRescheduleState?,
     onBackPressed: () -> Unit,
+    onTeamMemberRowClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -65,6 +110,7 @@ fun RescheduleContent(
             if (state != null && state.teamMemberId != 0L) {
                 TeamMemberSelectorRow(
                     teamMemberName = state.teamMemberName,
+                    onClick = onTeamMemberRowClicked,
                 )
             }
             Box(
@@ -90,6 +136,7 @@ fun RescheduleContent(
 @Composable
 private fun TeamMemberSelectorRow(
     teamMemberName: String?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -102,6 +149,7 @@ private fun TeamMemberSelectorRow(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable(onClick = onClick)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 BookingLabel(R.string.booking_appointment_label_team_member)
@@ -137,3 +185,11 @@ private fun TeamMemberSelectorRow(
         }
     }
 }
+
+private enum class ReschedulePage {
+    Reschedule,
+    TeamMemberSelector,
+}
+
+private val ReschedulePage.route: String
+    get() = name

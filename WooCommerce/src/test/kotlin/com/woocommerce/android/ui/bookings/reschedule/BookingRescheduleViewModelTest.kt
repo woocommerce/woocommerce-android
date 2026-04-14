@@ -46,8 +46,22 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
         description = null,
     )
 
+    private val newResource = BookingResourceEntity(
+        id = LocalOrRemoteId.RemoteId(99L),
+        localSiteId = LocalOrRemoteId.LocalId(1),
+        name = "John Smith",
+        qty = 1,
+        role = null,
+        email = null,
+        phoneNumber = null,
+        imageId = 0,
+        imageUrl = null,
+        description = null,
+    )
+
     private val bookingsRepository: BookingsRepository = mock {
         on { observeResource(eq(RESOURCE_ID)) } doReturn flowOf(sampleResource)
+        on { observeResource(eq(99L)) } doReturn flowOf(newResource)
     }
 
     private val sampleAvailability = BookingAvailabilityDto(
@@ -218,6 +232,32 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
         assertThat(state.teamMemberId).isEqualTo(RESOURCE_ID)
         assertThat(state.teamMemberName).isEqualTo("Jane Doe")
     }
+
+    @Test
+    fun `given content state, when team member changed, then availability is re-fetched with new resource id`() =
+        testBlocking {
+            // GIVEN
+            val booking = getSampleBooking(Instant.now())
+            whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+            whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+                .thenReturn(Result.success(sampleAvailability))
+
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onTeamMemberChanged(newResourceId = 99L)
+
+            // THEN
+            verify(bookingsRepository).fetchProductAvailability(
+                productId = eq(PRODUCT_ID),
+                startDate = any(),
+                endDate = any(),
+                resourceId = eq(99L),
+            )
+            val state = viewModel.state.value!!
+            assertThat(state.teamMemberId).isEqualTo(99L)
+            assertThat(state.teamMemberName).isEqualTo("John Smith")
+        }
 
     @Test
     fun `given failed fetch, when loading, then availability is Error`() = testBlocking {
