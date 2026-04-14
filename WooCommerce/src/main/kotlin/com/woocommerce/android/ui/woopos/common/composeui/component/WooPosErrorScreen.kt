@@ -75,7 +75,7 @@ fun WooPosErrorScreen(
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier.wooPosErrorAndEmptyStateButton()
+                    modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
             secondaryButton?.let {
@@ -83,7 +83,7 @@ fun WooPosErrorScreen(
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier.wooPosErrorAndEmptyStateButton()
+                    modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

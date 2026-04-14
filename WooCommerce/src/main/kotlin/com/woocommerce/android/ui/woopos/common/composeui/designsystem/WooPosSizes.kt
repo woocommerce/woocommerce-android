@@ -71,6 +71,7 @@ enum class WooPosIconSize(val value: Dp) {
 }
 
 enum class WooPosComponentSize(private val baseValue: Dp) {
+    XXSmall(40.dp),
     XSmall(56.dp),
     Small(80.dp),
     Medium(96.dp),
