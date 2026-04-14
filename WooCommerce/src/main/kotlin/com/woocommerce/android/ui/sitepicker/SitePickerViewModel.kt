@@ -534,11 +534,11 @@ class SitePickerViewModel @Inject constructor(
                     userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
                         onSuccess = {
                             selectedSite.set(siteVerificationModel.siteModel)
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-
                             trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                             appPrefsWrapper.removeLoginSiteAddress()
                             registerDevice(RegisterDevice.Mode.IF_NEEDED)
+
+                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                         },
                         onFailure = {
