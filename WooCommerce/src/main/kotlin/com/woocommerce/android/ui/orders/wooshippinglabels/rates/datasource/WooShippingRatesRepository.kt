@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.Pack
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO.PackageWithCustomsDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
+import com.woocommerce.android.util.StringUtils.combineStrings
 import javax.inject.Inject
 
 class WooShippingRatesRepository @Inject constructor(
@@ -42,7 +43,8 @@ class WooShippingRatesRepository @Inject constructor(
             state = shipFrom.state,
             postcode = shipFrom.postcode,
             country = shipFrom.country,
-            name = "${shipFrom.firstName} ${shipFrom.lastName}",
+            name = combineStrings(shipFrom.firstName.orEmpty(), shipFrom.lastName.orEmpty())
+                .takeIf { it.isNotEmpty() },
             company = shipFrom.company,
             phone = shipFrom.phone
         )

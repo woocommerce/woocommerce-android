@@ -447,7 +447,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             state = address.state,
             postcode = address.postcode,
             country = address.country,
-            name = "${address.firstName} ${address.lastName}",
+            name = combineStrings(address.firstName.orEmpty(), address.lastName.orEmpty())
+                .takeIf { it.isNotEmpty() },
             company = address.company,
             phone = address.phone,
             email = address.email
