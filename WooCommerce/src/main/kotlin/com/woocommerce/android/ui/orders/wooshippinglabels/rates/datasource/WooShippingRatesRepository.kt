@@ -64,13 +64,10 @@ class WooShippingRatesRepository @Inject constructor(
 
         return if (result.isError) {
             Result.failure(Exception(result.error.message))
+        } else if (hasInvalidDestinationNameRateError(result.model)) {
+            Result.failure(InvalidDestinationNameRateException())
         } else {
-            val rates = shippingRatesMapper(result.model)
-            if (hasInvalidDestinationNameRateError(result.model)) {
-                Result.failure(InvalidDestinationNameRateException())
-            } else {
-                Result.success(rates)
-            }
+            Result.success(shippingRatesMapper(result.model))
         }
     }
 
