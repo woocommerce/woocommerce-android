@@ -86,7 +86,6 @@ class NotificationMessageHandler @Inject constructor(
 
         val notification = notificationModel.toAppModel(resourceProvider)
         val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
-        val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
         val pushUserId = messageData[PUSH_ARG_USER]
         val hasWpComAccessToken = accountStore.hasAccessToken()
 
@@ -95,13 +94,12 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        if (notificationSource == NotificationSource.WPCOM && !hasWpComAccessToken) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        }
-
         if (notificationSource == NotificationSource.WPCOM) {
-            // At this point 'note_id' is always available in the notification bundle.
+            if (!hasWpComAccessToken) {
+                wooLog.e(NOTIFICATIONS, "User is not logged in!")
+                return
+            }
+
             if (notification.remoteNoteId == 0L) {
                 wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
                 return
@@ -113,6 +111,7 @@ class NotificationMessageHandler @Inject constructor(
                 return
             }
 
+            val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
             if (registrationStatusResult.isWooRegistered) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
@@ -278,10 +277,7 @@ class NotificationMessageHandler @Inject constructor(
 
     private fun Map<String, String>.detectNotificationSource(remoteNoteId: Long): NotificationSource =
         when {
-            this[PUSH_ARG_USER] != null || remoteNoteId != 0L -> {
-                NotificationSource.WPCOM
-            }
-
+            this[PUSH_ARG_USER] != null || remoteNoteId != 0L -> NotificationSource.WPCOM
             else -> NotificationSource.WOO
         }
 

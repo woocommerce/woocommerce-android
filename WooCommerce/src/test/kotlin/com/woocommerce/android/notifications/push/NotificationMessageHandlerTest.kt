@@ -207,10 +207,7 @@ class NotificationMessageHandlerTest {
         runTest {
             whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
             val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload().minus("note_id")
-            val mockNotificationsParser: NotificationsParser = mock {
-                on { buildNotificationModelFromPayloadMap(any()) } doReturn wooNotificationModel
-            }
-            createNotificationMessageHandler(mockNotificationsParser)
+            createWooNotificationMessageHandler()
 
             notificationMessageHandler.onNewMessageReceived(payload)
 
@@ -226,10 +223,7 @@ class NotificationMessageHandlerTest {
         runTest {
             whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
             val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload().minus("user")
-            val mockNotificationsParser: NotificationsParser = mock {
-                on { buildNotificationModelFromPayloadMap(any()) } doReturn wooNotificationModel
-            }
-            createNotificationMessageHandler(mockNotificationsParser)
+            createWooNotificationMessageHandler()
 
             notificationMessageHandler.onNewMessageReceived(payload)
 
@@ -293,6 +287,17 @@ class NotificationMessageHandlerTest {
     fun `given woo push registered and site is visible, when woo notification received, then process it`() = runTest {
         whenever(registrationStatus.invoke(any()))
             .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+        createWooNotificationMessageHandler()
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(dispatcher, atLeastOnce()).dispatch(any())
+    }
+
+    @Test
+    fun `given site registered in both systems, when woo notification received, then process it`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_BOTH)
         createWooNotificationMessageHandler()
 
         notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
