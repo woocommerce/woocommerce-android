@@ -14,6 +14,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.async
@@ -22,6 +23,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
@@ -43,7 +45,8 @@ class PushNotificationRepository @Inject constructor(
     private val pushNotificationsDataStore: DataStore<Preferences>,
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
     private val localeProvider: LocaleProvider,
-    private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport
+    private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -223,17 +226,24 @@ class PushNotificationRepository @Inject constructor(
             .toSet()
     }
 
-    suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
-        val unregisterWpComToken = async { wpComPushNotificationStore.unregisterWpComPushToken() }
-        val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
+    suspend fun unregisterDeviceFromPushNotifications() {
+        coroutineScope {
+            val unregisterWpComToken = async {
+                if (isWpComPushRegistered()) {
+                    wpComPushNotificationStore.unregisterWpComPushToken()
+                }
+            }
+            val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
-        unregisterWpComToken.await()
-        unregisterWooCoreTokens.await()
+            awaitAll(unregisterWpComToken, unregisterWooCoreTokens)
+        }
     }
 
-    suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val preferences = pushNotificationsDataStore.data.first()
-        val sites = wooCommerceStore.getWooCommerceSites()
+        val sites = withContext(coroutineDispatchers.io) {
+            wooCommerceStore.getWooCommerceSites()
+        }
 
         val deleteJobs = sites.mapNotNull { site ->
             val registration = preferences.getPushRegistration(site.siteId) ?: return@mapNotNull null
