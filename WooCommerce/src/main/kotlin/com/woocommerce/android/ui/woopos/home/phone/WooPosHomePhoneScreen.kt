@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,7 +22,6 @@ import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
@@ -35,6 +32,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
+import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
 import com.woocommerce.android.util.PackageUtils
 import org.wordpress.android.util.ToastUtils
 
@@ -118,18 +116,7 @@ private fun WooPosHomePhoneContent(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .listenForBarcodes(
-                onBarcodeEvent = { result ->
-                    onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeEvent(result))
-                },
-                enabled = (
-                    state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
-                        state.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
-                    ) && state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
-            )
+        modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         NavHost(
             navController = navController,

@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -29,7 +28,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
@@ -125,18 +123,7 @@ private fun WooPosHomeScreen(
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .listenForBarcodes(
-                onBarcodeEvent = { result ->
-                    onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeEvent(result))
-                },
-                enabled = (
-                    state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
-                        state.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
-                    ) && state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
-            )
+        modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         Row(
             modifier = Modifier
