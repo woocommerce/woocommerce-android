@@ -534,7 +534,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when shipping rates fail with invalid destination name then display destination name error`() = testBlocking {
+    fun `when shipping rates fail with invalid destination name, then display destination name error`() = testBlocking {
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
