@@ -10,10 +10,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO.CommonPackageDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO.PackageWithCustomsDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
 import javax.inject.Inject
 
@@ -64,7 +66,22 @@ class WooShippingRatesRepository @Inject constructor(
             Result.failure(Exception(result.error.message))
         } else {
             val rates = shippingRatesMapper(result.model)
-            Result.success(rates)
+            if (hasInvalidDestinationNameRateError(result.model)) {
+                Result.failure(InvalidDestinationNameRateException())
+            } else {
+                Result.success(rates)
+            }
+        }
+    }
+
+    private fun hasInvalidDestinationNameRateError(
+        ratesResponse: Map<String, Map<String, WooShippingRatesDTO>>?
+    ): Boolean {
+        val defaultRates = ratesResponse?.get(DEFAULT_PACKAGE_ID)?.get(DEFAULT_RATE_OPTION_ID) ?: return false
+
+        return defaultRates.errors.any { error ->
+            error.code == RATE_ERROR_CODE &&
+                error.message?.contains(INVALID_DESTINATION_NAME_ERROR, ignoreCase = true) == true
         }
     }
 
@@ -114,5 +131,12 @@ class WooShippingRatesRepository @Inject constructor(
                 hazmatCategory = hazmatSelection?.toHazmatCategory(),
             )
         }
+    }
+
+    private companion object {
+        const val DEFAULT_PACKAGE_ID = "default_package"
+        const val DEFAULT_RATE_OPTION_ID = "default"
+        const val RATE_ERROR_CODE = "rate_error"
+        const val INVALID_DESTINATION_NAME_ERROR = "shipment.to_address: invalid name"
     }
 }
