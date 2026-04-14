@@ -68,8 +68,8 @@ class WooShippingLabelPackageRestClient @Inject constructor(
 
     companion object {
         private const val URL = "/wcshipping/v1/packages"
-        private const val UPSDAP_FEATURE_QUERY = "features_supported_by_client%5B%5D=upsdap"
-        private const val FEDEX_FEATURE_QUERY = "features_supported_by_client%5B%5D=fedex"
+        private const val UPSDAP_FEATURE = "upsdap"
+        private const val FEDEX_FEATURE = "fedex"
         private const val TYPE_CUSTOM = "custom"
         private const val TYPE_PREDEFINED = "predefined"
     }
