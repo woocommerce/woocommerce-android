@@ -53,7 +53,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         ) : WooPosFileBasedSyncResult()
     }
 
-    @Suppress("LongMethod")
     suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
         _syncState.value = null
         val startTime = System.currentTimeMillis()
@@ -67,11 +66,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
         var totalAttempts = 0
 
         while (pollsSinceLastStateChange < MAX_POLL_ATTEMPTS) {
-            if (totalAttempts > 0) {
-                val delayMs = computeBackoffDelay(pollsSinceLastStateChange)
-                logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt $totalAttempts")
-                delay(delayMs)
-            }
+            delayBeforeNextPoll(totalAttempts, pollsSinceLastStateChange)
             totalAttempts++
 
             val response = posLocalCatalogStore.generateCatalogOrGetStatus(site)
@@ -121,6 +116,13 @@ class WooPosFileBasedSyncAction @Inject constructor(
             totalPollAttempts = accumulatedPollAttempts + totalAttempts,
             lastGenerationState = lastGenerationState
         )
+    }
+
+    private suspend fun delayBeforeNextPoll(totalAttempts: Int, pollsSinceLastStateChange: Int) {
+        if (totalAttempts == 0) return
+        val delayMs = computeBackoffDelay(pollsSinceLastStateChange)
+        logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt ${totalAttempts + 1}")
+        delay(delayMs)
     }
 
     private suspend fun handleConsecutiveFailures(
