@@ -28,14 +28,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import org.wordpress.android.util.ToastUtils
 
 @Composable
@@ -130,16 +124,16 @@ private fun WooPosHomeScreen(
                 .horizontalScroll(scrollState, enabled = false)
                 .fillMaxWidth(),
         ) {
-            WooPosHomeScreenProducts(
+            WooPosHomeProductsPane(
                 modifier = Modifier
                     .width(productsWidthDp)
             )
-            WooPosHomeScreenCart(
+            WooPosHomeCartPane(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceBright)
                     .width(cartWidthDp)
             )
-            WooPosHomeScreenTotals(
+            WooPosHomeTotalsPane(
                 modifier = Modifier
                     .width(totalsWidthDp),
             )
@@ -154,33 +148,6 @@ private fun WooPosHomeScreen(
 
             WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
         }
-    }
-}
-
-@Composable
-private fun WooPosHomeScreenProducts(modifier: Modifier) {
-    if (isPreviewMode()) {
-        WooPosItemsScreenPreview(modifier)
-    } else {
-        WooPosItemsScreen(modifier = modifier)
-    }
-}
-
-@Composable
-private fun WooPosHomeScreenCart(modifier: Modifier) {
-    if (isPreviewMode()) {
-        WooPosCartScreenProductsPreview(modifier)
-    } else {
-        WooPosCartScreen(modifier)
-    }
-}
-
-@Composable
-private fun WooPosHomeScreenTotals(modifier: Modifier) {
-    if (isPreviewMode()) {
-        WooPosTotalsScreenPreview(modifier)
-    } else {
-        WooPosTotalsScreen(modifier = modifier)
     }
 }
 

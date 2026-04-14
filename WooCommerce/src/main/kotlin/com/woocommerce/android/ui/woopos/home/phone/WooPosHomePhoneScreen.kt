@@ -22,15 +22,15 @@ import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.WooPosHomeCartPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
+import com.woocommerce.android.ui.woopos.home.WooPosHomeProductsPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
+import com.woocommerce.android.ui.woopos.home.WooPosHomeTotalsPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
 import com.woocommerce.android.util.PackageUtils
@@ -125,7 +125,7 @@ private fun WooPosHomePhoneContent(
         ) {
             composable(PHONE_PRODUCTS_ROUTE) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    WooPosItemsScreen(viewModel = itemsViewModel)
+                    WooPosHomeProductsPane(viewModel = itemsViewModel)
 
                     if (PackageUtils.isDebugBuild()) {
                         // Temporary trigger so Cart is reachable until the persistent
@@ -146,10 +146,10 @@ private fun WooPosHomePhoneContent(
                 }
             }
             composable(PHONE_CART_ROUTE) {
-                WooPosCartScreen(viewModel = cartViewModel)
+                WooPosHomeCartPane(viewModel = cartViewModel)
             }
             composable(PHONE_TOTALS_ROUTE) {
-                WooPosTotalsScreen(viewModel = totalsViewModel)
+                WooPosHomeTotalsPane(viewModel = totalsViewModel)
             }
         }
 
