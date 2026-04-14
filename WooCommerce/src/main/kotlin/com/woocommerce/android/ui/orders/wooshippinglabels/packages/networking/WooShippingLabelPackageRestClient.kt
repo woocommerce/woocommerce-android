@@ -14,7 +14,11 @@ class WooShippingLabelPackageRestClient @Inject constructor(
     ): WooPayload<PackageResponse> {
         return wooNetwork.executeGetGsonRequest(
             site = site,
-            path = "$URL?$UPSDAP_FEATURE_QUERY&$FEDEX_FEATURE_QUERY",
+            path = URL,
+            params = mapOf(
+                "features_supported_by_client[0]" to UPSDAP_FEATURE,
+                "features_supported_by_client[1]" to FEDEX_FEATURE,
+            ),
             clazz = PackageResponse::class.java,
         ).toWooPayload()
     }
