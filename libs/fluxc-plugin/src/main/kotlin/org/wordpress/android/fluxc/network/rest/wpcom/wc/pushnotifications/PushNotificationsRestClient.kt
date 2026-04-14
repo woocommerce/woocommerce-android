@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
+import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
@@ -35,11 +36,11 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
     suspend fun deletePushToken(
         site: SiteModel,
         pushTokenId: String
-    ): WooPayload<Unit> = wooNetwork.executeDeleteGsonRequest(
+    ): WooPayload<Boolean> = wooNetwork.executeDeleteGsonRequest(
         site = site,
         path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
-        clazz = Unit::class.java,
-    ).toWooPayload()
+        clazz = DeletePushTokenResponse::class.java,
+    ).toWooPayload { it.success }
 
     data class PushTokenRegistrationRequest(
         val token: String,
@@ -47,6 +48,10 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
         val deviceUuid: String,
         val deviceLocale: String,
         val metadata: Map<String, String> = emptyMap()
+    )
+
+    data class DeletePushTokenResponse(
+        @SerializedName("success") val success: Boolean
     )
 
     /**
