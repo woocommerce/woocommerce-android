@@ -17,16 +17,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
+import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
@@ -36,7 +35,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.util.PackageUtils
 import org.wordpress.android.util.ToastUtils
 
@@ -93,12 +91,13 @@ private fun WooPosHomePhoneContent(
         val currentRoute = navController.currentDestination?.route
         when (state.screenPositionState) {
             is WooPosHomeState.ScreenPositionState.Cart -> {
-                when {
-                    currentRoute == PHONE_TOTALS_ROUTE &&
-                        previousState is WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> {
+                val cameFromCartWithTotals =
+                    previousState is WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals
+                when (currentRoute) {
+                    PHONE_TOTALS_ROUTE if cameFromCartWithTotals -> {
                         navController.popBackStack()
                     }
-                    currentRoute == PHONE_TOTALS_ROUTE || currentRoute == PHONE_CART_ROUTE -> {
+                    PHONE_TOTALS_ROUTE, PHONE_CART_ROUTE -> {
                         navController.popBackStack(PHONE_PRODUCTS_ROUTE, inclusive = false)
                     }
                 }
@@ -167,30 +166,6 @@ private fun WooPosHomePhoneContent(
             }
         }
 
-        PhoneDialogs(state.dialogState, onHomeUIEvent)
+        WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
     }
-}
-
-@Composable
-private fun PhoneDialogs(
-    dialogState: WooPosHomeState.DialogState,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
-) {
-    WooPosScanningSetupDialog(
-        isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
-        onDismissRequest = {
-            onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
-        }
-    )
-
-    WooPosExitConfirmationDialog(
-        isVisible = dialogState is WooPosHomeState.DialogState.ExitConfirmationDialog,
-        title = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.title),
-        message = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.message),
-        dismissButtonText = stringResource(
-            id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton
-        ),
-        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-        onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
-    )
 }

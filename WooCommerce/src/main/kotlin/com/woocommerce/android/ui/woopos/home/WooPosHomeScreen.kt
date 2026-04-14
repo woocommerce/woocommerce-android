@@ -23,11 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
@@ -40,7 +38,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolb
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import org.wordpress.android.util.ToastUtils
 
 @Composable
@@ -168,31 +165,9 @@ private fun WooPosHomeScreen(
                     .align(Alignment.BottomStart),
             )
 
-            Dialogs(state.dialogState, onHomeUIEvent)
+            WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
         }
     }
-}
-
-@Composable
-private fun Dialogs(
-    dialogState: WooPosHomeState.DialogState,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
-) {
-    WooPosScanningSetupDialog(
-        isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
-        onDismissRequest = {
-            onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
-        }
-    )
-
-    WooPosExitConfirmationDialog(
-        isVisible = dialogState is WooPosHomeState.DialogState.ExitConfirmationDialog,
-        title = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.title),
-        message = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.message),
-        dismissButtonText = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton),
-        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-        onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
-    )
 }
 
 @Composable
