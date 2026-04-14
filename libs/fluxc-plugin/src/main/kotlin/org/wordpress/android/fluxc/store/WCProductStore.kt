@@ -2282,7 +2282,10 @@ class WCProductStore @Inject internal constructor(
                     payload.productWithMetaData.product.remoteProductId
                 ).also { it.error = payload.error }
             } else {
-                productStorageHelper.upsertProduct(payload.productWithMetaData)
+                if (payload.productWithMetaData.product.status != "auto-draft") {
+                    // Cache product unless it's an auto-draft one
+                    productStorageHelper.upsertProduct(payload.productWithMetaData)
+                }
                 onProductCreated = OnProductCreated(payload.productWithMetaData.product.remoteProductId)
             }
 

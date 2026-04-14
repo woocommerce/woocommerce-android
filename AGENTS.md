@@ -1,6 +1,7 @@
 # AGENTS.md
 
 This file provides guidance to AI agents when working with code in this repository.
+Detailed patterns for specific tasks are in `.agents/skills/`.
 
 ## Cross-Tool Instructions
 
@@ -14,9 +15,9 @@ WooCommerce/                 Main Android app (MVVM, Compose UI)
   src/main/kotlin/com/woocommerce/android/
     analytics/               Event tracking (AnalyticsEvent, AnalyticsTracker)
     di/                      Hilt dependency injection modules
-    extensions/              Feature packages (orders, products, payments, etc.)
+    extensions/              Kotlin extension functions (Context, Date, Flow, etc.)
     model/                   Domain models
-    ui/                      Shared UI (compose/components, compose/theme)
+    ui/                      Feature packages (orders, products, payments, etc.) + shared compose components
     viewmodel/               Base classes (ScopedViewModel, MultiLiveEvent)
   src/test/                  Unit tests (mirrors main source structure)
 
@@ -27,6 +28,7 @@ libs/
   fluxc-annotations/         Annotation processing for FluxC
   fluxc-processor/           FluxC annotation processor
   fluxc-plugin/              FluxC plugin system
+  fluxc-tests/               FluxC integration/unit test utilities
   cardreader/                Card reader for in-person payments
   login/                     Authentication and login flows
   pos/                       Point of sale functionality
@@ -60,6 +62,12 @@ docs/                        Development guidelines
 
 ## Architecture
 
+The app has two distinct parts with **different architectures**. Identify which one you're working in before writing code — using the wrong patterns is a common mistake.
+
+### Store Management (main app)
+
+The store management app lets merchants manage orders, products, analytics, etc. from their phone. It uses MVVM with Fragments hosting Compose UI.
+
 ```
 ┌─────────────────────────────────┐
 │  Fragment (hosts ComposeView)   │   UI layer — Jetpack Compose inside Fragments
@@ -72,155 +80,72 @@ docs/                        Development guidelines
 └─────────────────────────────────┘
 ```
 
-This project uses **MVVM** with Kotlin Coroutines and Hilt DI. Key boundaries:
+- Code: everything under `ui/` **except** `ui/woopos/`
+- Navigation: XML nav graphs with `NavController`
+- ViewModels extend `ScopedViewModel`
+- Events via `triggerEvent()` / `MultiLiveEvent`
+- Skills: `store-compose`, `store-viewmodel`, `store-analytics`, `store-tests`
 
-- Compose screens live inside Fragments (1:1 relationship)
-- ViewModels MUST NOT import Android framework classes directly
-- Navigation uses XML nav graphs with `NavController`
-- Data layer uses FluxC with a plugin-based architecture
+### POS (Point of Sale)
 
-### ScopedViewModel Pattern
+POS is a tablet-only, landscape-only register interface for in-person sales. It runs in its own Activity with a completely separate architecture.
 
-All ViewModels extend `ScopedViewModel` which provides:
-- Coroutine scope via `viewModelScope` (use `launch {}` for async work)
-- One-shot events via `triggerEvent()` + `MultiLiveEvent`
-- State conversion helpers (`toStateFlow()`)
-
-Typical ViewModel structure:
-
-```kotlin
-@HiltViewModel
-class MyFeatureViewModel @Inject constructor(
-    private val repository: MyRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    savedStateHandle: SavedStateHandle
-) : ScopedViewModel(savedStateHandle) {
-
-    private val _viewState = MutableStateFlow(MyViewState())
-    val viewState = _viewState.asLiveData()
-
-    fun onActionClicked() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.MY_FEATURE_ACTION_TAPPED)
-        launch {
-            repository.doSomething()
-                .onSuccess { result ->
-                    _viewState.update { it.copy(data = result) }
-                }
-                .onFailure { error ->
-                    triggerEvent(ShowSnackbar(R.string.error_message))
-                }
-        }
-    }
-}
+```
+┌─────────────────────────────────┐
+│  WooPosActivity (setContent)    │   100% Compose — no Fragments, no XML layouts
+├─────────────────────────────────┤
+│  ViewModel (plain ViewModel)    │   State via StateFlow, parent-child SharedFlow event bus
+├─────────────────────────────────┤
+│  Repository / Use Case          │   Domain — coordinates data sources
+├─────────────────────────────────┤
+│  FluxC Store → REST API / Room  │   Data — networking + local persistence
+└─────────────────────────────────┘
 ```
 
-### Fragment ↔ Compose Pattern
+- Code: `ui/woopos/` — all classes prefixed with `WooPos`
+- Navigation: Compose Navigation (`NavHost`)
+- ViewModels extend plain `ViewModel()` — NOT `ScopedViewModel`
+- Events via parent-child SharedFlow bus
+- Own design system: `WooPosTheme`, `WooPosSpacing`, `WooPosTypography`
+- Skills: `pos`, `pos-analytics`, `pos-tests`
 
-Fragments create a `ComposeView` in `onCreateView` with proper lifecycle disposal:
+### How to tell which one you're in
 
-```kotlin
-@AndroidEntryPoint
-class MyFeatureFragment : BaseFragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-            )
-            setContent {
-                WooThemeWithBackground {
-                    MyFeatureScreen(
-                        onBackClick = { findNavController().navigateUp() }
-                    )
-                }
-            }
-        }
-    }
-}
-```
+- File path contains `woopos/` or class name starts with `WooPos` → **POS**
+- Everything else → **Store Management**
 
-### Hilt Dependency Injection
+If working in POS code: do NOT use `ScopedViewModel`, `triggerEvent()`, `MultiLiveEvent`, Fragments, or XML nav graphs — these are store-only patterns.
 
-- ViewModels: `@HiltViewModel` + `@Inject constructor`
-- `SavedStateHandle` MUST be the last constructor parameter
-- All dependencies injected via constructor, never accessed from service locators
-- DI modules live in `WooCommerce/src/main/kotlin/com/woocommerce/android/di/`
+| Aspect | POS | Main App |
+|--------|-----|----------|
+| Base class | `ViewModel()` | `ScopedViewModel(savedStateHandle)` |
+| Coroutines | `viewModelScope.launch {}` | `launch {}` (from CoroutineScope) |
+| State | `StateFlow<T>` | `StateFlow<T>` or `LiveData<T>` |
+| Events | Parent-child SharedFlow bus | `triggerEvent()` / `MultiLiveEvent` |
+| Analytics | `WooPosAnalyticsTracker` | `AnalyticsTrackerWrapper` |
+| Navigation | Compose Navigation | Fragment nav graphs |
 
-### Entity / Data Flow
+### Shared across both
 
-FluxC network DTOs → Room entities → domain models exposed to ViewModels.
-ViewModels never interact with Room or network directly — always through repositories.
+Both parts use Kotlin Coroutines, Hilt DI, and the same data layer:
+- ViewModels MUST NOT import Android framework classes
+- Data flows: FluxC DTOs → Room entities → domain models → ViewModels → Compose UI
+- ViewModels never access Room or network directly — always through repositories
 
 ## Kotlin & Android Conventions
 
 - MUST use Kotlin for all new code
-- Max line length: 120 characters (exception: test names can be longer)
+- Max line length: 120 characters (exception: test names)
 - No wildcard imports
 - No `FIXME` — use `TODO` instead
-- Comments should be very rare — only when they explain complex business logic or intent. Also keep existing comments when applying any refactor
+- Comments should be very rare — only for complex business logic or intent. Keep existing comments when refactoring
 - Constants: `UPPER_SNAKE_CASE`
-- Companion objects MUST be placed at the bottom of the class
-- Avoid reflection in new code
+- Companion objects at the bottom of the class
 - Prefer `val` over `var`, immutable collections over mutable
 - Use `sealed class` / `sealed interface` for restricted hierarchies
 - Use `data class` for value types
-- Avoid `!!` (force unwrap) — use safe calls, `requireNotNull()`, or `checkNotNull()`
-- Detekt rules enforced: see `config/detekt/detekt.yml` for customizations
-
-## Jetpack Compose
-
-- Use Jetpack Compose for all new UI
-- `@Composable` functions returning Unit: PascalCase noun names (not verbs)
-- MUST accept `Modifier` as the first optional parameter, named `modifier`
-- State hoisting: state up, events down (via lambdas)
-- MUST NOT acquire ViewModels inside composables — inject as parameter with default value
-- Wrap content in a container (`Column`, `Row`, `Box`) — no top-level emission
-- Use `WooTheme` or `WooThemeWithBackground` as the root theme
-- `remember {}` all `mutableStateOf` / `derivedStateOf`
-- Pass only immutable types as parameters (no `MutableList`, `MutableState`, etc.)
-- Use `by` property delegates for state: `var foo by rememberSaveable { mutableStateOf(1) }`
-
-## Testing Patterns
-
-- MUST extend `BaseUnitTest` (from `libs/commons/src/testFixtures/`)
-  - Sets up `InstantTaskExecutorRule` and `CoroutineTestRule` with `UnconfinedTestDispatcher`
-  - Provides `testBlocking {}` helper (wraps `runTest`)
-- Naming: `` `given X, when Y, then Z` `` or `` `when X, then Y` `` (backtick-wrapped, BDD style)
-- Body structure with comment sections:
-
-```kotlin
-@Test
-fun `given user is logged in, when refresh is pulled, then data reloads`() = testBlocking {
-    // GIVEN
-    whenever(repository.isLoggedIn()).thenReturn(true)
-
-    // WHEN
-    viewModel.onPullToRefresh()
-
-    // THEN
-    assertThat(viewModel.viewState.value?.isLoading).isFalse()
-    verify(repository).fetchData()
-}
-```
-
-- Assertions: AssertJ (`assertThat(...).isEqualTo(...)`)
-- Mocking: mockito-kotlin (`mock()`, `whenever(...).thenReturn(...)`, `verify(...)`)
-- Compose UI tests: `ComposeTestRule` with finders/assertions/actions
-  - MUST use `waitUntil` for async — NEVER use `Thread.sleep`
-- What to test: ViewModels (state changes + events), Repositories (data flow), FluxC stores (action handling)
-- Test file locations mirror main source: `WooCommerce/src/test/`, `libs/<module>/src/test/`
-
-## Analytics
-
-- Add events to `AnalyticsEvent` enum in `WooCommerce/.../analytics/AnalyticsEvent.kt`. **Exception:** POS uses its own `WooPosAnalyticsEvent`
-- Track via injected `AnalyticsTrackerWrapper` — MUST NOT use the `AnalyticsTracker` singleton directly. **Exception:** POS uses its own `WooPosAnalyticsTracker`
-- Properties as `Map<String, *>` with key constants from `AnalyticsTracker.KEY_*`
-- Enum constants: `UPPER_SNAKE_CASE` (e.g., `PRODUCT_DETAIL_LOADED`)
-- Naming token suffixes: `_tapped`, `_loaded`, `_failed`, `_success`, `_selected`, `_toggled`, `_open`
-- Use `siteless = true` for events that don't require site context (login, signup)
+- Avoid `!!` — use safe calls, `requireNotNull()`, or `checkNotNull()`
+- Detekt rules enforced: see `config/detekt/detekt.yml`
 
 ## Git & PR Conventions
 
@@ -229,8 +154,7 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 - Commit messages: < 100 characters, focus on what was done
 - MUST NOT include "Co-Authored-By" in commit messages
 - MUST NOT mention that code was generated by AI or any AI tool
-- PR template (`.github/PULL_REQUEST_TEMPLATE.md`): Description, Test Steps, Images/gif, RELEASE-NOTES.txt checkbox
-- Labels: at least one from Type / Status / Priority / Feature categories
+- Use skill for PR creation and editing
 
 ## Operational Rules
 
@@ -239,12 +163,13 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 ## Common Pitfalls
 
 - Don't import Android framework classes (Context, View, etc.) in ViewModels
-- Don't use `Thread.sleep` in Compose tests — use `waitUntil`
-- Don't use `LiveData` for new state in ViewModels — prefer `StateFlow` (existing `LiveData` is fine)
 - Don't force unwrap with `!!` — handle nullability properly
-- Don't create new XML layouts for Compose screens — use `ComposeView` in Fragment
+- Don't use `LiveData` for new state in ViewModels — prefer `StateFlow` (existing `LiveData` is fine)
 - Don't use `remember` outside of `@Composable` functions
 - Don't pass `ViewModel` instances between composables — pass state and callbacks instead
+- Don't apply store patterns to POS or vice versa (see Architecture section above)
+
+For app-specific pitfalls, see the relevant skills (`pos`, `store-compose`, `store-viewmodel`, etc.).
 
 ## Environment Setup
 
@@ -253,20 +178,17 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 - Java 21 (Amazon Corretto) required for remote build cache
 - `local.properties` is auto-generated by Android Studio (contains SDK path)
 
-## Skills Reference
-
-AI agents can use the following skills for common workflows:
-
-| Skill | Triggers |
-|-------|----------|
-| `review` | "review changes", "check my code", "quality check" |
-| `pr` | "create PR", "open PR", "pull request" |
-| `verify-on-device` | "verify on emulator", "test on device", "take screenshot" |
-
 ## Further Reading
 
-@docs/compose.md
-@docs/coding-style.md
-@docs/tracking-events.md
-@docs/pull-request-guidelines.md
+Detailed patterns and conventions are in the `docs/` folder and loaded on-demand via skills. See:
+- `docs/store-compose.md` — Jetpack Compose guidelines (store app)
+- `docs/store-viewmodel-patterns.md` — ViewModel patterns (store app)
+- `docs/store-tracking-events.md` — Analytics tracking (store app)
+- `docs/store-testing.md` — Unit testing (store app)
+- `docs/pos-architecture.md` — POS architecture, ViewModel, design system
+- `docs/pos-tracking-events.md` — Analytics tracking (POS)
+- `docs/pos-testing.md` — Unit testing (POS)
+- `docs/pull-request-guidelines.md` — PR conventions
+- `docs/coding-style.md` — Kotlin coding style and detekt
+
 @CONVENTION.md

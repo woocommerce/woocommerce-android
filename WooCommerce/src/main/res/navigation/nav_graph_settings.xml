@@ -58,8 +58,8 @@
             android:id="@+id/action_mainSettingsFragment_to_wooPushNotificationsIntroductionDialog"
             app:destination="@id/nav_graph_push_notifications" />
         <action
-            android:id="@+id/action_mainSettingsFragment_to_connectivityToolFragment"
-            app:destination="@id/connectivityToolFragment" />
+            android:id="@+id/action_mainSettingsFragment_to_troubleshootConnectionFragment"
+            app:destination="@id/troubleshootConnectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -216,7 +216,7 @@
         android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
         android:label="ApiFakerHostFragment" />
     <fragment
-        android:id="@+id/connectivityToolFragment"
-        android:name="com.woocommerce.android.ui.connectivitytool.ConnectivityToolFragment"
-        android:label="ConnectivityToolFragment" />
+        android:id="@+id/troubleshootConnectionFragment"
+        android:name="com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionFragment"
+        android:label="TroubleshootConnectionFragment" />
 </navigation>

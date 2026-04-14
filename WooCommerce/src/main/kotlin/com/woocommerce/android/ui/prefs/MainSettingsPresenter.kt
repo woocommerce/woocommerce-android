@@ -105,9 +105,6 @@ class MainSettingsPresenter @Inject constructor(
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
 
-    override val isTroubleshootConnectionVisible: Boolean
-        get() = selectedSite.getIfExists()?.isWpComStore?.not() ?: false
-
     override val isPluginsSectionVisible: Boolean
         get() = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins)
 

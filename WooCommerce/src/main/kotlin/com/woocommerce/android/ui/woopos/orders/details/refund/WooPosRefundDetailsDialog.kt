@@ -38,12 +38,13 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 @Composable
 fun WooPosRefundDetailsDialog(
     dialogState: WooPosOrdersState.Content.DialogState.RefundDetails,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WooPosDialogWrapper(
         modifier = modifier,
-        isVisible = true,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_orders_details_refund_details_background
         ),

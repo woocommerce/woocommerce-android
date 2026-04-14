@@ -14,34 +14,34 @@ data class WooPosVariationApiResponse(
     val productId: Long = 0L,
 
     @SerializedName("description")
-    val description: String = "",
+    val description: String? = null,
 
     @SerializedName("sku")
-    val sku: String = "",
+    val sku: String? = null,
 
     @SerializedName("global_unique_id")
-    val globalUniqueId: String = "",
+    val globalUniqueId: String? = null,
 
     @SerializedName("status")
-    val status: String = "",
+    val status: String? = null,
 
     @SerializedName("price")
-    val price: String = "",
+    val price: String? = null,
 
     @SerializedName("regular_price")
-    val regularPrice: String = "",
+    val regularPrice: String? = null,
 
     @SerializedName("sale_price")
-    val salePrice: String = "",
+    val salePrice: String? = null,
 
     @SerializedName("date_modified")
-    val dateModified: String = "",
+    val dateModified: String? = null,
 
     @SerializedName("stock_quantity")
     val stockQuantity: Double? = null,
 
     @SerializedName("stock_status")
-    val stockStatus: String = "",
+    val stockStatus: String? = null,
 
     @SerializedName("manage_stock")
     val manageStock: Boolean = false,
@@ -59,22 +59,22 @@ data class WooPosVariationApiResponse(
     val downloadable: Boolean = false,
 
     @SerializedName("name")
-    val name: String = "",
+    val name: String? = null,
 
     @SerializedName("type")
-    val type: String = ""
+    val type: String? = null
 ) {
     data class VariationImage(
         @SerializedName("id")
         val id: Long = 0L,
 
         @SerializedName("src")
-        val src: String = "",
+        val src: String? = null,
 
         @SerializedName("name")
-        val name: String = "",
+        val name: String? = null,
 
         @SerializedName("alt")
-        val alt: String = ""
+        val alt: String? = null
     )
 }

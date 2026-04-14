@@ -7,17 +7,9 @@ user-invocable: true
 
 # Create Pull Request
 
-Create a pull request following the project's PR conventions and template.
+Create a pull request following the project's PR conventions.
 
-## PR Title Format
-
-- **Always prefix with `[WOOMOB-XYZ]`** where XYZ is the issue number
-- Extract issue number from branch name (format: `issue/woomob-XYZ-...` or `woomob-XYZ-...`)
-- If issue number not available in branch name, ask the user for it
-
-## PR Description Format
-
-- **Always start with `Fixes WOOMOB-XYZ`** on the first line of the Description section
+@docs/pull-request-guidelines.md
 
 ## Steps
 
@@ -41,42 +33,41 @@ Create a pull request following the project's PR conventions and template.
 
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 
-8. **Create the PR.** Use the template format from `.github/PULL_REQUEST_TEMPLATE.md`:
+8. **Create the PR.** Read `.github/PULL_REQUEST_TEMPLATE.md` and use it as the body. Strip the HTML comments and fill in each section, following the conventions from the guidelines doc above:
+   - **Description**: start with `Fixes WOOMOB-XYZ` on its own line, then a 1-3 sentence summary of what and why.
+   - **Test Steps**: numbered steps to verify the changes.
+   - **Images/gif**: include if applicable, otherwise `N/A`.
+   - Keep the release-notes checkbox line as-is.
 
-```bash
-gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
-### Description
-Fixes WOOMOB-XYZ
-<1-3 sentence summary of what and why>
+   Pass the filled template via a HEREDOC:
 
-### Test Steps
-<numbered steps to verify the changes>
+   ```bash
+   gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
+   <filled template content here>
+   EOF
+   )"
+   ```
 
-### Images/gif
-<if applicable, otherwise "N/A">
+9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Infer labels from the diff and branch name using the categories in the guidelines. If unsure about feature label, ask the user.
 
-- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
-EOF
-)"
-```
-
-9. **Add labels.** Add labels using `gh pr edit <number> --add-label "<label>"`. Pick labels from these categories:
-   - **Type** (pick one): `type: bug`, `type: crash`, `type: enhancement`, `type: task`, `type: technical debt`, `type: documentation`, `type: question`
-   - **Feature** (pick one if applicable): match the changed area to a `feature: *` label (e.g., `feature: order list`, `feature: point of sale`, `feature: product details`, `feature: login`, etc.)
-   - **Category** (pick any that apply): `category: accessibility`, `category: design`, `category: performance`, `category: tracks`, `category: unit tests`, `category: ui tests`, `category: tooling`, `category: parity`, etc.
-   - If the feature is behind a flag, also add `status: feature-flagged`
-   - Infer labels from the diff and branch name. If unsure about feature label, ask the user.
-
-10. **Set milestone.** Find the closest open milestone and assign it to the PR:
+10. **Set milestone.** Find the closest open milestone and assign it:
     - List open milestones (single-quote the URL to prevent shell `&` interpretation):
       ```
       gh api 'repos/{owner}/{repo}/milestones?state=open&sort=due_on&direction=asc'
       ```
     - Pick the one with the earliest `due_on` date that is still in the future
     - Assign it: `gh api repos/{owner}/{repo}/issues/{number} -X PATCH -F milestone={milestone_number}`
-    - **If the milestone due date is less than 1 day away**, warn the user after assigning (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
+    - **If the milestone due date is less than 1 day away**, warn the user (e.g., "Heads up: milestone X closes in <N hours> — let me know if you'd prefer a different one.")
 
 11. **Report the PR URL** to the user.
+
+## Image Formatting in PR Body
+
+- **Before/after pair**: Use a comparison table with `| Before | After |` headers
+- **Multiple images**: Use a table with appropriate column headers
+- **Single image or video**: Embed directly (e.g., `![Screenshot](url-or-path)`)
+- Constrain image width to 400px using HTML: `<img src="url" width="400" />`
+- If no images provided, use "N/A"
 
 ## Troubleshooting
 
