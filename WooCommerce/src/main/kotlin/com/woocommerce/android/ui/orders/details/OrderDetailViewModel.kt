@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -129,7 +130,8 @@ class OrderDetailViewModel @Inject constructor(
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -297,6 +299,7 @@ class OrderDetailViewModel @Inject constructor(
                 fetchShipmentsAsync(),
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
+                fetchOrderFulfillmentsAsync(),
                 fetchOrderRefundsAsync(),
                 fetchSLCreationEligibilityAsync(),
             )
@@ -875,6 +878,18 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
+    }
+
+    private fun fetchOrderFulfillmentsAsync() = async {
+        if (!ciabSiteGateKeeper.isCurrentSiteCIAB()) {
+            orderDetailsTransactionLauncher.onOrderFulfillmentsFetched()
+            return@async
+        }
+
+        if (!orderDetailRepository.fetchOrderFulfillments(navArgs.orderId)) {
+            WooLog.e(T.ORDERS, "Fetching order fulfillments failed for ${navArgs.orderId}")
+        }
+        orderDetailsTransactionLauncher.onOrderFulfillmentsFetched()
     }
 
     private fun fetchShipmentsAsync() = async {

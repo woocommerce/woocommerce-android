@@ -1,23 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productDetailInfo_lblTitle"
-        style="@style/Woo.Card.Header"
+    <LinearLayout
+        android:id="@+id/productDetailInfo_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/color_on_surface_medium"
-        android:text="@string/bottom_sheet_add_details_list_header"/>
+        android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productDetailInfo_lblTitle"
+            style="@style/Woo.Card.Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_on_surface_medium"
+            android:text="@string/bottom_sheet_add_details_list_header"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:id="@+id/productDetailInfo_optionsList"
+            tools:listitem="@layout/product_detail_bottom_sheet_list_item" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/productDetailInfo_progress"
+        android:indeterminateTint="@color/color_primary"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_100"
-        android:id="@+id/productDetailInfo_optionsList"
-        tools:listitem="@layout/product_detail_bottom_sheet_list_item" />
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginBottom="@dimen/major_200"
+        android:visibility="gone" />
 
-</LinearLayout>
+</FrameLayout>

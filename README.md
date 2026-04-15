@@ -73,7 +73,8 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Optimising screens for tablets](docs/supporting-tablets.md)
     - [Generating Play Store Screenshots](docs/generating-screenshots.md)
 - Data
-    - [Tracking Events](docs/tracking-events.md)
+    - [Tracking Events Store Management](docs/store-tracking-events.md)
+    - [Tracking Events POS](docs/pos-tracking-events.md)
 - Accessibility
     - [Accessibility Guidelines](docs/accessibility-guidelines.md)
     - [Right to Left Layout Guidelines](docs/right-to-left-layout-guidelines.md)

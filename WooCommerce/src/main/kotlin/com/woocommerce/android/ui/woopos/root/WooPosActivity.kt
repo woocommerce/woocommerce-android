@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.root
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +16,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -44,7 +44,7 @@ class WooPosActivity : AppCompatActivity() {
         // so going through splash again is instant (no loading screen).
         super.onCreate(null)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        lockWooPosOrientation()
 
         lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)

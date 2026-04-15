@@ -32,15 +32,6 @@ class BookingAnalyticsHelper {
     }
 
     companion object {
-        const val KEY_BOOKING_STATUS = "booking_status"
         const val KEY_ACTION = "action"
-        const val KEY_SELECTED_TAB = "selected_tab"
-        const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
-        const val KEY_IS_FILTERING_ACTIVE = "is_filtering_active"
-        const val KEY_SORT_OPTION = "sort_option"
-        const val KEY_IS_DEFAULT_TAB = "is_default_tab"
-        const val KEY_IS_LIST_EMPTY = "is_list_empty"
-        const val KEY_IS_FILTERED = "is_filtered"
-        const val KEY_SELECTED_FILTERS = "selected_filters"
     }
 }

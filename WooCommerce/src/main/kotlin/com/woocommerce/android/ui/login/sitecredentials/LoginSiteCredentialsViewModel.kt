@@ -343,7 +343,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
-                triggerEvent(ShowSnackbar(R.string.error_generic))
+                triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
                 when (exception) {
                     is ApplicationPasswordGenerationException -> {
                         trackLoginFailure(

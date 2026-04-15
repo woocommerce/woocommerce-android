@@ -248,6 +248,7 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_user_roles_null">This app supports only Administrator and Shop Manager user roles. We were unable to fetch user roles for your account. Please contact support.</string>
+    <string name="user_role_access_error_fetch_failed">We couldn\'t verify your role on this store. Please try again. If the problem persists, contact support.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
@@ -2587,6 +2588,8 @@
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_title">External product</string>
     <string name="product_type_external_desc">Link a product to an external website</string>
+    <string name="product_type_bookable_service_title">Service</string>
+    <string name="product_type_bookable_service_desc">A service that customers can book online</string>
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
@@ -3641,6 +3644,8 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_preparing">Preparing catalog…</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d of %2$d items</string>
     <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
@@ -4103,6 +4108,7 @@
     <string name="woopos_settings_store_phone_label">Phone number</string>
     <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
+    <string name="woopos_settings_receipt_edit_button">Edit receipt information</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4356,6 +4362,9 @@
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx Terms of Service</string>
+    <string name="wpp_shipping_fedex_tos_description">To purchase FedEx shipping labels, you need to agree to the following terms:</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">I agree to the &lt;a href=\"fedex-tos\"&gt;FedEx Terms of Service&lt;/a&gt;.</string>
 
     <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
     <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
@@ -4448,6 +4457,8 @@
     <string name="booking_mark_as_unattended">Mark as unattended</string>
     <string name="booking_attendance_status_cancelled">Canceled</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
+    <string name="booking_details_reschedule_button">Reschedule</string>
+    <string name="booking_reschedule_screen_title">Reschedule booking</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>

@@ -209,6 +209,10 @@ class ZendeskTicketRepository @Inject constructor(
             } else if (isAppPasswordsSupportedForJetpackSite(it)) {
                 tags.add(ZendeskTags.jetpackSiteUsingAppPasswords)
             }
+
+            if (it.isCIABSite) {
+                tags.add(ZendeskTags.ciabTag)
+            }
         }
 
         allSites?.let { it ->
@@ -349,6 +353,7 @@ object ZendeskTags {
     const val platformTag = "Android"
     const val wpComTag = "wpcom"
     const val freeTrialTag = "trial"
+    const val ciabTag = "commerce_in_a_box"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {
