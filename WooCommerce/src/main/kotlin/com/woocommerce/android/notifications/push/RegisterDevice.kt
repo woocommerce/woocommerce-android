@@ -41,12 +41,14 @@ class RegisterDevice @Inject constructor(
 
     @Suppress("TooGenericExceptionCaught")
     suspend operator fun invoke(trigger: Trigger) {
-        if (trigger == Trigger.TOKEN_REFRESH) {
+        if (trigger == Trigger.TOKEN_REFRESH && activeJob != null) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cancelling in-progress push registration before $trigger")
             activeJob?.cancel()
         }
 
         coroutineScope {
             orchestrationMutex.withLock {
+                WooLog.d(WooLog.T.NOTIFICATIONS, "Starting push registration for $trigger")
                 val registrationJob = launch {
                     try {
                         register(trigger)
@@ -71,7 +73,10 @@ class RegisterDevice @Inject constructor(
 
     private suspend fun register(trigger: Trigger) {
         val token = appPrefsWrapper.getFCMToken()
-        if (token.isEmpty()) return
+        if (token.isEmpty()) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping push registration for $trigger because FCM token is empty")
+            return
+        }
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
 
@@ -87,9 +92,14 @@ class RegisterDevice @Inject constructor(
             coroutineScope {
                 sites.map { site ->
                     async {
-                        if (shouldForce ||
+                        val shouldRegisterSite = shouldForce ||
                             pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)
-                        ) {
+
+                        if (shouldRegisterSite) {
+                            WooLog.d(
+                                WooLog.T.NOTIFICATIONS,
+                                "Registering Woo push for site ${site.siteId} for $trigger"
+                            )
                             pushNotificationRepository.registerPushTokenInWooCoreSystem(
                                 token = token,
                                 selectedSite = site,
@@ -105,10 +115,11 @@ class RegisterDevice @Inject constructor(
         val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
             (shouldForce || pushNotificationRepository.isWpComPushRegistered())
 
-        if (shouldEvaluateWpCom &&
-            accountStore.hasAccessToken()
-        ) {
+        if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
             pushNotificationRepository.registerPushTokenInWpComSystem(token)
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
     }
 

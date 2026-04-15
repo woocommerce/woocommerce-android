@@ -147,6 +147,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given no access token, when app foreground trigger runs, then does not register in WPCom`() = testBlocking {
         // GIVEN
         whenever(accountStore.hasAccessToken()).thenReturn(false)
+        wheneverBlocking {
+            pushNotificationRepository.isWpComPushRegistered()
+        }.thenReturn(true)
 
         // WHEN
         sut(APP_FOREGROUND)
