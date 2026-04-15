@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -281,7 +282,14 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
-                    siteStore.insertOrUpdateSite(site)
+                    try {
+                        siteStore.insertOrUpdateSite(site)
+                    } catch (e: SiteStorePersistence.DuplicateSiteException) {
+                        AppLog.w(
+                            T.API,
+                            "Duplicate site detected while saving applicationPasswordsAuthorizeUrl: ${e.message}"
+                        )
+                    }
 
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {
