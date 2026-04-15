@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.wooshippinglabels.upsdap
+package com.woocommerce.android.ui.orders.wooshippinglabels.fedex
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,8 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
-    private val viewModel: UPSDAPTermsOfServiceViewModel by viewModels()
+class FedExTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
+    private val viewModel: FedExTermsOfServiceViewModel by viewModels()
     private val snackbarHostState = SnackbarHostState()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -28,7 +28,7 @@ class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
 
             setContent {
                 WooTheme {
-                    UPSDAPTermsOfServiceBottomSheet(viewModel, snackbarHostState)
+                    FedExTermsOfServiceBottomSheet(viewModel, snackbarHostState)
                 }
             }
         }
