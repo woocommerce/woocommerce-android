@@ -25,6 +25,7 @@ Language: id
     <string name="woo_push_notifications_introduction_connected_body">Satu langkah lagi untuk mendapatkan pemberitahuan pesanan baru, ulasan, dan lainnya.</string>
     <string name="woo_push_notifications_introduction_connected_title">Dapatkan pemberitahuan push untuk toko Anda</string>
     <string name="my_store_widget_push_notifications_description">Aktifkan pemberitahuan push agar tetap mengetahui pesanan dan ulasan baru.</string>
+    <string name="dashboard_stats_net_sales">Penjualan Bersih</string>
     <string name="woopos_search_products_and_variations">Cari produk dan variasi</string>
     <string name="woopos_bookings_details_customer_guest_badge">Tamu</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Perbarui plugin</string>

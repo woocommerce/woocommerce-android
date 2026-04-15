@@ -25,6 +25,7 @@ Language: fr
     <string name="woo_push_notifications_introduction_connected_body">Plus qu’une étape pour recevoir des notifications concernant les nouvelles commandes, les avis et plus encore.</string>
     <string name="woo_push_notifications_introduction_connected_title">Recevoir des notifications push au sujet de votre boutique</string>
     <string name="my_store_widget_push_notifications_description">Activez les notifications push pour rester au fait des nouvelles commandes et des avis.</string>
+    <string name="dashboard_stats_net_sales">Ventes nettes</string>
     <string name="woopos_search_products_and_variations">Rechercher des produits et des variantes</string>
     <string name="woopos_bookings_details_customer_guest_badge">Invité</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Mettre à jour l’extension</string>

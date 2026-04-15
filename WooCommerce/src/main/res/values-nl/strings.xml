@@ -25,6 +25,7 @@ Language: nl
     <string name="woo_push_notifications_introduction_connected_body">Je bent slechts één stap verwijderd van meldingen voor nieuwe bestellingen, beoordelingen en meer.</string>
     <string name="woo_push_notifications_introduction_connected_title">Ontvang pushmeldingen voor je winkel</string>
     <string name="my_store_widget_push_notifications_description">Schakel pushmeldingen in om op de hoogte te blijven van nieuwe bestellingen en beoordelingen.</string>
+    <string name="dashboard_stats_net_sales">Netto-omzet</string>
     <string name="woopos_search_products_and_variations">Producten en variaties zoeken</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gast</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Plugin bijwerken</string>

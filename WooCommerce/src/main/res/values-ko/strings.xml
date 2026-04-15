@@ -25,6 +25,7 @@ Language: ko_KR
     <string name="woo_push_notifications_introduction_connected_body">한 단계만 거치면 새 주문, 리뷰 등에 대한 알림을 받을 수 있습니다.</string>
     <string name="woo_push_notifications_introduction_connected_title">스토어에 대한 푸시 알림 받기</string>
     <string name="my_store_widget_push_notifications_description">푸시 알림을 활성화하여 새 주문과 리뷰를 확인하세요.</string>
+    <string name="dashboard_stats_net_sales">순매출액</string>
     <string name="woopos_search_products_and_variations">상품 및 변형 검색</string>
     <string name="woopos_bookings_details_customer_guest_badge">비회원</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">플러그인 업데이트</string>

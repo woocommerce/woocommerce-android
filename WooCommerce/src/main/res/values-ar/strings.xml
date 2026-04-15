@@ -25,6 +25,7 @@ Language: ar
     <string name="woo_push_notifications_introduction_connected_body">إنك على بعد خطوة واحدة من تلقي تنبيهات الطلبات والمراجعات الجديدة والمزيد.</string>
     <string name="woo_push_notifications_introduction_connected_title">تلقي تنبيهات الدفع الخاصة بمتجرك</string>
     <string name="my_store_widget_push_notifications_description">يمكنك تفعيل التنبيهات الدفع للاطلاع على الطلبات والتقييمات الجديدة.</string>
+    <string name="dashboard_stats_net_sales">صافي المبيعات</string>
     <string name="woopos_search_products_and_variations">البحث عن المنتجات والأنواع</string>
     <string name="woopos_bookings_details_customer_guest_badge">ضيف</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">تحديث الإضافة</string>
