@@ -326,7 +326,7 @@ class SiteStoreUnitTest {
         wpComSite2.siteId = 557
         val wpComSite3 = SiteUtils.generateWPComSite()
         wpComSite3.name = "I remember when this was all farmland as far as the eye could see"
-        wpComSite2.siteId = 558
+        wpComSite3.siteId = 558
 
         mSiteStorePersistence.insertOrUpdateSite(wpComSite1)
         mSiteStorePersistence.insertOrUpdateSite(wpComSite2)
