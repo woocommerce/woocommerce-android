@@ -354,15 +354,16 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given site is hidden and user has no access token, when woo notification received, then process it`() = runTest {
-        doReturn(false).whenever(accountStore).hasAccessToken()
-        createWooNotificationMessageHandler()
-        whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+    fun `given site is hidden and user has no access token, when woo notification received, then process it`() =
+        runTest {
+            doReturn(false).whenever(accountStore).hasAccessToken()
+            createWooNotificationMessageHandler()
+            whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
 
-        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
 
-        verify(dispatcher, atLeastOnce()).dispatch(any())
-    }
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+        }
 
     @Test
     fun `when an incoming notification is received, then we should update that notification to local cache`() {
@@ -684,7 +685,10 @@ class NotificationMessageHandlerTest {
         }
     }
 
-    private fun Notification.toActiveNotificationData(id: Int, isGroupSummary: Boolean = false) = ActiveNotificationData(
+    private fun Notification.toActiveNotificationData(
+        id: Int,
+        isGroupSummary: Boolean = false
+    ) = ActiveNotificationData(
         id = id,
         remoteNoteId = remoteNoteId,
         remoteSiteId = remoteSiteId,
