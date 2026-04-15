@@ -188,20 +188,18 @@ class AppSettingsActivity :
     }
 
     override fun showLogoutProgressDialog() {
-        val existingDialog = supportFragmentManager.findFragmentByTag(CustomProgressDialog.TAG) as? CustomProgressDialog
-        if (existingDialog != null) {
-            progressDialog = existingDialog
-            progressDialog?.isCancelable = false
-            return
-        }
+        if (progressDialog != null) return
+
+        (supportFragmentManager.findFragmentByTag(CustomProgressDialog.TAG) as? CustomProgressDialog)
+            ?.dismissAllowingStateLoss()
 
         progressDialog = CustomProgressDialog.show(
             getString(R.string.settings_logout_dialog_title),
             getString(R.string.settings_logout_dialog_message)
         ).also {
+            it.isCancelable = false
             it.show(supportFragmentManager, CustomProgressDialog.TAG)
         }
-        progressDialog?.isCancelable = false
     }
 
     override fun hideLogoutProgressDialog() {
