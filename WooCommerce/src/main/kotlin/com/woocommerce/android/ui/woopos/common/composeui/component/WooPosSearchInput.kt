@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
 
@@ -280,6 +281,16 @@ sealed class WooPosSearchUIEvent {
     object SearchIconClicked : WooPosSearchUIEvent()
     data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
+}
+
+fun WooPosSearchUIEvent.toItemsUIEvent(): WooPosItemsUIEvent = when (this) {
+    WooPosSearchUIEvent.Clear -> WooPosItemsUIEvent.ClearSearchClicked
+    WooPosSearchUIEvent.Close -> WooPosItemsUIEvent.CloseSearchClicked
+    WooPosSearchUIEvent.SearchIconClicked -> WooPosItemsUIEvent.SearchIconClicked
+    is WooPosSearchUIEvent.Search -> WooPosItemsUIEvent.SearchChanged(
+        query = query,
+        cursorPosition = cursorPosition,
+    )
 }
 
 @WooPosPreview
