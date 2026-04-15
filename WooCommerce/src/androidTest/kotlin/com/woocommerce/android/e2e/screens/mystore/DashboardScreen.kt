@@ -32,8 +32,8 @@ class DashboardScreen : Screen(R.id.dashboard_container) {
 
                 ViewMatchers.hasDescendant(
                     Matchers.allOf(
-                        // Which has a descendant with "Net Sales" label
-                        ViewMatchers.withText(R.string.dashboard_stats_net_sales),
+                        // Which has a descendant with "Total sales" label
+                        ViewMatchers.withText(R.string.analytics_total_sales_title),
                         // Which has a sibling (meaning they both belong to the same immediate container)
                         // with expected Revenue value
                         ViewMatchers.hasSibling(
