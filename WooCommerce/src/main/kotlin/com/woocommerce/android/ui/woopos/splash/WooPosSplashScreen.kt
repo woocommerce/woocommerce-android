@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.woopos.splash
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -84,24 +85,23 @@ private fun Loading() {
 private fun SyncingCatalog(
     onExitPosClicked: () -> Unit
 ) {
-    val loadingIndicatorSize = WooPosComponentSize.XLarge.value
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        WooPosCircularLoadingIndicator(
-            modifier = Modifier
-                .size(loadingIndicatorSize)
-                .align(Alignment.Center)
-        )
-
-        Text(
-            text = stringResource(R.string.woopos_home_syncing_catalog_title),
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = (loadingIndicatorSize / 2 + WooPosSpacing.XLarge.value))
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            WooPosCircularLoadingIndicator(
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value)
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+            Text(
+                text = stringResource(R.string.woopos_home_syncing_catalog_title),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+            )
+        }
 
         Column(
             modifier = Modifier
