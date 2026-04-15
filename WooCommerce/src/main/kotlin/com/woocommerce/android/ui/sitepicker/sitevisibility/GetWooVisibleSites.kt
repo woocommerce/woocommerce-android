@@ -17,17 +17,18 @@ class GetWooVisibleSites @Inject constructor(
         sitePickerRepository.getSites()
             .filter { it.hasWooCommerce && isSiteVisible(it.siteId) }
             .plusSelectedAppPasswordWooSiteIfMissing()
-            .distinctBy { it.id }
 
     private suspend fun isSiteVisible(siteId: Long): Boolean {
         return visibleSitesDataStore.isSiteVisible(siteId).first()
     }
 
-    private fun List<SiteModel>.plusSelectedAppPasswordWooSiteIfMissing(): List<SiteModel> {
-        val currentSite = selectedSite.getOrNull()
-        if (currentSite != null && currentSite.hasWooCommerce && currentSite.connectionType == ApplicationPasswords) {
-            return this + currentSite
-        }
-        return this
-    }
+    private fun List<SiteModel>.plusSelectedAppPasswordWooSiteIfMissing(): List<SiteModel> =
+        selectedSite.getOrNull()
+            ?.takeIf { selectedSite ->
+                selectedSite.hasWooCommerce &&
+                    selectedSite.connectionType == ApplicationPasswords &&
+                    none { it.id == selectedSite.id }
+            }
+            ?.let { this + it }
+            ?: this
 }
