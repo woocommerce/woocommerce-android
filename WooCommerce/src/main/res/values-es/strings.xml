@@ -25,7 +25,6 @@ Language: es
     <string name="woo_push_notifications_introduction_connected_body">Estás a solo un paso de recibir notificaciones de nuevos pedidos, reseñas y mucho más.</string>
     <string name="woo_push_notifications_introduction_connected_title">Recibe notificaciones push de tu tienda</string>
     <string name="my_store_widget_push_notifications_description">Activa las notificaciones push para estar al tanto de los nuevos pedidos y reseñas.</string>
-    <string name="dashboard_stats_net_sales">Ventas netas</string>
     <string name="woopos_search_products_and_variations">Buscar productos y variaciones</string>
     <string name="woopos_bookings_details_customer_guest_badge">Invitado</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Actualiza el plugin</string>

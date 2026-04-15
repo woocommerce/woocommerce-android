@@ -25,7 +25,6 @@ Language: ru
     <string name="woo_push_notifications_introduction_connected_body">Вы в одном шаге от получения уведомлений о новых заказах, отзывах и многом другом.</string>
     <string name="woo_push_notifications_introduction_connected_title">Получайте push-уведомления для своего магазина</string>
     <string name="my_store_widget_push_notifications_description">Включите push-уведомления, чтобы следить за новыми заказами и отзывами.</string>
-    <string name="dashboard_stats_net_sales">Чистая выручка</string>
     <string name="woopos_search_products_and_variations">Поиск товаров и вариантов</string>
     <string name="woopos_bookings_details_customer_guest_badge">Гость</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Обновить плагин</string>

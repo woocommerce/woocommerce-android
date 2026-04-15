@@ -80,7 +80,7 @@ class FetchStats @Inject constructor(
                     val totals = revenue?.parseTotal()
 
                     val formattedRevenue = wooCommerceStore.formatCurrencyForDisplay(
-                        amount = totals?.netRevenue ?: 0.0,
+                        amount = totals?.totalSales ?: 0.0,
                         site = selectedSite,
                         currencyCode = null,
                         applyDecimalFormatting = true
