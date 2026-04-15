@@ -27,7 +27,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
-import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.APP_FOREGROUND
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
@@ -282,9 +282,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
 
-            appCoroutineScope.launch {
-                registerDevice(IF_NEEDED)
-            }
+            registerDevice.kickoff(APP_FOREGROUND)
         }
     }
 
@@ -444,16 +442,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
-        val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
-        }
-
-        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
-        if (userAccountFetched) {
-            appCoroutineScope.launch {
-                registerDevice(IF_NEEDED)
-            }
         }
     }
 

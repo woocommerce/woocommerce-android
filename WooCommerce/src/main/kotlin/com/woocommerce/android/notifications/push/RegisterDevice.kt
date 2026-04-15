@@ -1,66 +1,115 @@
 package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
-import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
-import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountStore: AccountStore,
-    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val pushNotificationRepository: PushNotificationRepository,
     private val featureFlagRepository: FeatureFlagRepository,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val getWooVisibleSites: GetWooVisibleSites,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-    suspend operator fun invoke(mode: Mode) {
-        val pushRegistrationStatus = pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)
-        WooLog.d(WooLog.T.NOTIFICATIONS, "Current PN registration status: $pushRegistrationStatus")
-        when (mode) {
-            IF_NEEDED -> {
-                when (pushRegistrationStatus) {
-                    Status.UNREGISTERED -> sendToken()
-                    Status.REGISTERED_WPCOM_ONLY -> {
-                        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-                            sendToken()
+    private val orchestrationMutex = Mutex()
+    @Volatile
+    private var activeJob: Job? = null
+
+    fun kickoff(trigger: Trigger) {
+        appCoroutineScope.launch {
+            invoke(trigger)
+        }
+    }
+
+    suspend operator fun invoke(trigger: Trigger) {
+        if (trigger == Trigger.TOKEN_REFRESH) {
+            activeJob?.cancel()
+        }
+
+        coroutineScope {
+            orchestrationMutex.withLock {
+                val registrationJob = launch {
+                    try {
+                        register(trigger)
+                    } catch (cancellationException: CancellationException) {
+                        throw cancellationException
+                    } catch (throwable: Throwable) {
+                        WooLog.e(WooLog.T.NOTIFICATIONS, "Push registration kickoff failed for $trigger", throwable)
+                    }
+                }
+
+                activeJob = registrationJob
+                try {
+                    registrationJob.join()
+                } finally {
+                    if (activeJob === registrationJob) {
+                        activeJob = null
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun register(trigger: Trigger) {
+        val token = appPrefsWrapper.getFCMToken()
+        if (token.isEmpty()) return
+
+        val shouldForce = trigger == Trigger.TOKEN_REFRESH
+        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH
+        val sites = when (trigger) {
+            Trigger.LOGIN_SUCCESS,
+            Trigger.APP_FOREGROUND,
+            Trigger.TOKEN_REFRESH -> getWooVisibleSites()
+
+            Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
+        }
+
+        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
+            coroutineScope {
+                sites.map { site ->
+                    async {
+                        if (shouldForce || pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                            pushNotificationRepository.registerPushTokenInWooCoreSystem(
+                                token = token,
+                                selectedSite = site,
+                                allowWpComFallback = trigger != Trigger.SITE_SWITCH
+                            )
                         }
                     }
-
-                    Status.REGISTERED_WOO_ONLY,
-                    Status.REGISTERED_BOTH -> {
-                    }
-                }
+                }.awaitAll()
             }
+        }
 
-            FORCEFULLY -> sendToken()
+        if (
+            shouldEvaluateWpCom &&
+            accountStore.hasAccessToken() &&
+            (shouldForce || pushNotificationRepository.isWpComPushRegistered())
+        ) {
+            pushNotificationRepository.registerPushTokenInWpComSystem(token)
         }
     }
 
-    private suspend fun sendToken() {
-        val token = appPrefsWrapper.getFCMToken()
-        if (token.isNotEmpty()) {
-            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-                selectedSite.getIfExists()?.let { site ->
-                    pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site)
-                }
-            } else if (accountStore.hasAccessToken()) {
-                pushNotificationRepository.registerPushTokenInWpComSystem(token)
-            }
-            WooLog.d(
-                WooLog.T.NOTIFICATIONS,
-                "Updated push notification registration status: " +
-                    "${pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)}"
-            )
-        }
-    }
-
-    enum class Mode {
-        IF_NEEDED, FORCEFULLY
+    enum class Trigger {
+        LOGIN_SUCCESS,
+        APP_FOREGROUND,
+        SITE_SWITCH,
+        TOKEN_REFRESH
     }
 }
