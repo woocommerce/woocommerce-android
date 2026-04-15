@@ -29,6 +29,7 @@ class RegisterDevice @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val orchestrationMutex = Mutex()
+
     @Volatile
     private var activeJob: Job? = null
 
@@ -38,6 +39,7 @@ class RegisterDevice @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     suspend operator fun invoke(trigger: Trigger) {
         if (trigger == Trigger.TOKEN_REFRESH) {
             activeJob?.cancel()
@@ -72,7 +74,7 @@ class RegisterDevice @Inject constructor(
         if (token.isEmpty()) return
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
-        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH
+
         val sites = when (trigger) {
             Trigger.LOGIN_SUCCESS,
             Trigger.APP_FOREGROUND,
@@ -85,7 +87,9 @@ class RegisterDevice @Inject constructor(
             coroutineScope {
                 sites.map { site ->
                     async {
-                        if (shouldForce || pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                        if (shouldForce ||
+                            pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)
+                        ) {
                             pushNotificationRepository.registerPushTokenInWooCoreSystem(
                                 token = token,
                                 selectedSite = site,
@@ -97,10 +101,12 @@ class RegisterDevice @Inject constructor(
             }
         }
 
-        if (
-            shouldEvaluateWpCom &&
-            accountStore.hasAccessToken() &&
+        // For WPCom, site switching doesn't affect registration
+        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
             (shouldForce || pushNotificationRepository.isWpComPushRegistered())
+
+        if (shouldEvaluateWpCom &&
+            accountStore.hasAccessToken()
         ) {
             pushNotificationRepository.registerPushTokenInWpComSystem(token)
         }

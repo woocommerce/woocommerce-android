@@ -13,16 +13,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.StandardTestDispatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
@@ -219,7 +219,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // THEN
             verify(pushNotificationRepository, times(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, true)
-            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            verify(
+                pushNotificationRepository,
+                never()
+            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
 
             // WHEN
             advanceTimeBy(1001.milliseconds)
@@ -227,7 +230,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             advanceUntilIdle()
 
             // THEN
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            verify(
+                pushNotificationRepository,
+                times(1)
+            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
         }
 
     @Test

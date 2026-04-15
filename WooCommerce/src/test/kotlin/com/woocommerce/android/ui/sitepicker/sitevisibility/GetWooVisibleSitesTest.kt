@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker.sitevisibility
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -11,7 +12,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWooVisibleSitesTest : BaseUnitTest() {

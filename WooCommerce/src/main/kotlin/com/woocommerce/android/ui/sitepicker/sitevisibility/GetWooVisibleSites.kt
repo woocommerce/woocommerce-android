@@ -25,9 +25,9 @@ class GetWooVisibleSites @Inject constructor(
 
     private fun List<SiteModel>.plusSelectedAppPasswordWooSiteIfMissing(): List<SiteModel> {
         val currentSite = selectedSite.getOrNull()
-            ?.takeIf { it.hasWooCommerce && it.connectionType == ApplicationPasswords }
-            ?: return this
-
-        return this + currentSite
+        if (currentSite != null && currentSite.hasWooCommerce && currentSite.connectionType == ApplicationPasswords) {
+            return this + currentSite
+        }
+        return this
     }
 }

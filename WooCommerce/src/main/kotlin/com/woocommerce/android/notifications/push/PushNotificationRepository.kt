@@ -173,21 +173,17 @@ class PushNotificationRepository @Inject constructor(
         remove(getPushLocaleKeyForSite(siteId))
     }
 
-    private fun getPushTokenIdKeyForSite(siteId: Long): Preferences.Key<String> {
-        return stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
-    }
+    private fun getPushTokenIdKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
 
-    private fun getPushTokenValueKeyForSite(siteId: Long): Preferences.Key<String> {
-        return stringPreferencesKey("$PUSH_TOKEN_VALUE_KEY_PREFIX$siteId")
-    }
+    private fun getPushTokenValueKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_TOKEN_VALUE_KEY_PREFIX$siteId")
 
-    private fun getPushLocaleKeyForSite(siteId: Long): Preferences.Key<String> {
-        return stringPreferencesKey("$PUSH_LOCALE_KEY_PREFIX$siteId")
-    }
+    private fun getPushLocaleKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_LOCALE_KEY_PREFIX$siteId")
 
-    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean {
-        return observeWooPushTokenRegisteredForSite(siteId).first()
-    }
+    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean =
+        observeWooPushTokenRegisteredForSite(siteId).first()
 
     suspend fun shouldRegisterWooPushForSite(currentToken: String, siteId: Long): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
@@ -198,11 +194,10 @@ class PushNotificationRepository @Inject constructor(
             registration.locale != getDeviceLocale()
     }
 
-    fun isWpComPushRegistered(): Boolean {
-        val wpComPushServerId = prefsWrapper.getFluxCPreferences()
+    fun isWpComPushRegistered(): Boolean =
+        prefsWrapper.getFluxCPreferences()
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
-        return wpComPushServerId.isNotNullOrEmpty()
-    }
+            .isNotNullOrEmpty()
 
     fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
         val tokenKey = getPushTokenIdKeyForSite(siteId)

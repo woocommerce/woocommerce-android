@@ -2,7 +2,7 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.appwidget.AppWidgetManager
-import android.content.Context
+import androidx.work.impl.WorkManagerImpl
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.background.BackgroundUpdatesDisabled
@@ -26,7 +26,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
-import androidx.work.impl.WorkManagerImpl
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
