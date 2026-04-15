@@ -102,8 +102,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName: String = clientId
                 override suspend fun isEnabledForJetpackAccess(): Boolean = true
             },
-            resourceProvider = resourceProvider,
-            registerDevice = registerDevice
+            resourceProvider = resourceProvider
         )
     }
 

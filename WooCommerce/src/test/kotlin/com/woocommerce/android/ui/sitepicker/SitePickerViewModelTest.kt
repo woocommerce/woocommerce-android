@@ -53,6 +53,7 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -543,6 +544,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
         verify(selectedSite, times(1)).set(any())
         verify(appPrefsWrapper, times(1)).removeLoginSiteAddress()
+        verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
 
         assertThat(view).isEqualTo(NavigateToMainActivityEvent)
         assertThat(isProgressShown).containsExactly(false, true, false)
@@ -574,6 +576,22 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
             assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
             assertThat(isProgressShown).containsExactly(false, true, false)
+        }
+
+    @Test
+    fun `given that user is switching stores, when site verification succeeds, then site switch registration is triggered`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            givenThatSiteVerificationIsCompleted()
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val selectedSiteModel = defaultExpectedSiteList[1]
+
+            viewModel.onSiteSelected(selectedSiteModel)
+            viewModel.onContinueButtonClick()
+
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.SITE_SWITCH)
         }
 
     @Test
