@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.AccountStore
@@ -80,16 +81,15 @@ class RegisterDevice @Inject constructor(
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
 
-        val sites = when (trigger) {
-            Trigger.LOGIN_SUCCESS,
-            Trigger.APP_FOREGROUND,
-            Trigger.TOKEN_REFRESH -> getWooVisibleSites()
-
-            Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
-        }
-
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-            coroutineScope {
+            val sites = when (trigger) {
+                Trigger.LOGIN_SUCCESS,
+                Trigger.APP_FOREGROUND,
+                Trigger.TOKEN_REFRESH -> getWooVisibleSites()
+
+                Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
+            }
+            supervisorScope {
                 sites.map { site ->
                     async {
                         val shouldRegisterSite = shouldForce ||
