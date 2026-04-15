@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,15 +35,17 @@ fun WooPosErrorScreen(
     primaryButton: WooPosErrorScreenButtonState? = null,
     secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            .padding(WooPosSpacing.XLarge.value)
+            .padding(WooPosSpacing.XLarge.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 modifier = Modifier.size(WooPosComponentSize.Small.value),
@@ -68,14 +70,7 @@ fun WooPosErrorScreen(
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
             )
-        }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = WooPosSpacing.Large.value),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXLarge.value))
             primaryButton?.let {
                 WooPosButton(
                     text = it.text,
@@ -91,6 +86,7 @@ fun WooPosErrorScreen(
                     modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
     }
 }
