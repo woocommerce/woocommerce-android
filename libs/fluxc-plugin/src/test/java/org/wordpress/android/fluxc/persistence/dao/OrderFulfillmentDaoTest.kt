@@ -12,8 +12,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.wc.order.OrderTestUtils
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -34,7 +34,7 @@ class OrderFulfillmentDaoTest {
 
     @Test
     fun `when fulfillment is upserted, then it can be retrieved`() = runTest {
-        val fulfillment = OrderTestUtils.generateOrderFulfillment(
+        val fulfillment = generateOrderFulfillment(
             siteId = defaultSiteId.value,
             orderId = defaultOrderId
         )
@@ -48,7 +48,7 @@ class OrderFulfillmentDaoTest {
 
     @Test
     fun `when fulfillment is updated, then changes are persisted`() = runTest {
-        val fulfillment = OrderTestUtils.generateOrderFulfillment(
+        val fulfillment = generateOrderFulfillment(
             siteId = defaultSiteId.value,
             orderId = defaultOrderId
         )
@@ -67,7 +67,7 @@ class OrderFulfillmentDaoTest {
 
     @Test
     fun `when fulfillment is deleted, then it is removed from database`() = runTest {
-        val fulfillment = OrderTestUtils.generateOrderFulfillment(
+        val fulfillment = generateOrderFulfillment(
             siteId = defaultSiteId.value,
             orderId = defaultOrderId
         )
@@ -79,4 +79,31 @@ class OrderFulfillmentDaoTest {
 
         assertThat(result).isEmpty()
     }
+
+    /* HELPER */
+
+    @Suppress("LongParameterList")
+    private fun generateOrderFulfillment(
+        siteId: Int,
+        orderId: Long,
+        fulfillmentId: Long = 42L,
+        status: String = "fulfilled",
+        isFulfilled: Boolean = true,
+        dateUpdated: String? = "2026-03-18 21:00:00",
+        dateFulfilled: String? = "2026-03-18 14:30:00",
+        trackingNumber: String? = "1Z999AA10123456784",
+        shipmentProvider: String? = "ups",
+        trackingUrl: String? = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+    ) = WCOrderFulfillmentModel(
+        localSiteId = LocalId(siteId),
+        orderId = RemoteId(orderId),
+        fulfillmentId = fulfillmentId,
+        status = status,
+        isFulfilled = isFulfilled,
+        dateUpdated = dateUpdated,
+        dateFulfilled = dateFulfilled,
+        trackingNumber = trackingNumber,
+        shipmentProvider = shipmentProvider,
+        trackingUrl = trackingUrl
+    )
 }

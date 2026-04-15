@@ -15,13 +15,15 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
-import org.wordpress.android.fluxc.wc.order.OrderTestUtils
 import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -122,7 +124,7 @@ class OrderRestClientTest {
         val result = orderRestClient.fetchOrderFulfillments(testSite, orderId)
 
         assertThat(result.fulfillments).containsExactly(
-            OrderTestUtils.generateOrderFulfillment(
+            generateOrderFulfillment(
                 siteId = testSite.id,
                 orderId = orderId,
                 fulfillmentId = 42L,
@@ -134,7 +136,7 @@ class OrderRestClientTest {
                 shipmentProvider = "ups",
                 trackingUrl = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
             ),
-            OrderTestUtils.generateOrderFulfillment(
+            generateOrderFulfillment(
                 siteId = testSite.id,
                 orderId = orderId,
                 fulfillmentId = 43L,
@@ -442,4 +444,31 @@ class OrderRestClientTest {
         assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
         assertThat(bodyCaptor.firstValue).doesNotContainKey("template_id")
     }
+
+    /* HELPER */
+
+    @Suppress("LongParameterList")
+    private fun generateOrderFulfillment(
+        siteId: Int,
+        orderId: Long,
+        fulfillmentId: Long = 42L,
+        status: String = "fulfilled",
+        isFulfilled: Boolean = true,
+        dateUpdated: String? = "2026-03-18 21:00:00",
+        dateFulfilled: String? = "2026-03-18 14:30:00",
+        trackingNumber: String? = "1Z999AA10123456784",
+        shipmentProvider: String? = "ups",
+        trackingUrl: String? = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+    ) = WCOrderFulfillmentModel(
+        localSiteId = LocalId(siteId),
+        orderId = RemoteId(orderId),
+        fulfillmentId = fulfillmentId,
+        status = status,
+        isFulfilled = isFulfilled,
+        dateUpdated = dateUpdated,
+        dateFulfilled = dateFulfilled,
+        trackingNumber = trackingNumber,
+        shipmentProvider = shipmentProvider,
+        trackingUrl = trackingUrl
+    )
 }

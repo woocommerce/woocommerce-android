@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrde
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -195,8 +196,8 @@ internal class WCOrderStoreTest {
             val site = SiteModel().apply { id = 6 }
             val orderId = 123L
             val fulfillments = listOf(
-                OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L),
-                OrderTestUtils.generateOrderFulfillment(
+                generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L),
+                generateOrderFulfillment(
                     site.id,
                     orderId,
                     fulfillmentId = 43L,
@@ -227,14 +228,14 @@ internal class WCOrderStoreTest {
         runBlocking {
             val site = SiteModel().apply { id = 6 }
             val orderId = 123L
-            val removedFulfillment = OrderTestUtils.generateOrderFulfillment(
+            val removedFulfillment = generateOrderFulfillment(
                 site.id,
                 orderId,
                 fulfillmentId = 999L
             )
             databaseRule.db.orderFulfillmentDao.upsertOrderFulfillment(removedFulfillment)
 
-            val freshFulfillment = OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L)
+            val freshFulfillment = generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L)
             whenever(orderRestClient.fetchOrderFulfillments(site, orderId)).thenReturn(
                 FetchOrderFulfillmentsResponsePayload(site, orderId, listOf(freshFulfillment))
             )
@@ -812,6 +813,31 @@ internal class WCOrderStoreTest {
     }
 
     /* HELPER */
+
+    @Suppress("LongParameterList")
+    private fun generateOrderFulfillment(
+        siteId: Int,
+        orderId: Long,
+        fulfillmentId: Long = 42L,
+        status: String = "fulfilled",
+        isFulfilled: Boolean = true,
+        dateUpdated: String? = "2026-03-18 21:00:00",
+        dateFulfilled: String? = "2026-03-18 14:30:00",
+        trackingNumber: String? = "1Z999AA10123456784",
+        shipmentProvider: String? = "ups",
+        trackingUrl: String? = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+    ) = WCOrderFulfillmentModel(
+        localSiteId = LocalId(siteId),
+        orderId = RemoteId(orderId),
+        fulfillmentId = fulfillmentId,
+        status = status,
+        isFulfilled = isFulfilled,
+        dateUpdated = dateUpdated,
+        dateFulfilled = dateFulfilled,
+        trackingNumber = trackingNumber,
+        shipmentProvider = shipmentProvider,
+        trackingUrl = trackingUrl
+    )
 
     @Suppress("LongParameterList")
     private fun generateSampleOrder(
