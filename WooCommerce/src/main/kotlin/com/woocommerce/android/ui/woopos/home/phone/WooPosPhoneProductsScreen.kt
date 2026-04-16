@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,11 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
+import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarViewModel
@@ -98,10 +104,32 @@ private fun WooPosPhoneProductsContent(
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
+            val productsListState = rememberLazyListState()
+            val couponsListState = rememberLazyListState()
             WooPosItemsContent(
                 state = itemsState,
-                onBackFromVariations = {
-                    onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                productsContent = {
+                    WooPosProductsScreen(
+                        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                        listState = productsListState,
+                    )
+                },
+                couponsContent = {
+                    WooPosCouponsScreen(
+                        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                        listState = couponsListState,
+                    )
+                },
+                productsSearchContent = { WooPosItemsSearchScreen() },
+                couponsSearchContent = { WooPosCouponsSearchScreen() },
+                variationsContent = { data ->
+                    WooPosVariationsScreen(
+                        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                        variableProductData = data,
+                        onBackClicked = {
+                            onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                        },
+                    )
                 },
                 modifier = Modifier.weight(1f),
             )

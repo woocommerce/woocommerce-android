@@ -3,49 +3,21 @@ package com.woocommerce.android.ui.woopos.home.items
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
-import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
-import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 
 @Composable
 fun WooPosItemsContent(
     state: WooPosItemsToolbarViewState,
-    onBackFromVariations: () -> Unit,
+    productsContent: @Composable () -> Unit,
+    couponsContent: @Composable () -> Unit,
+    productsSearchContent: @Composable () -> Unit,
+    couponsSearchContent: @Composable () -> Unit,
+    variationsContent: @Composable (WooPosVariationsNavigationData) -> Unit,
     modifier: Modifier = Modifier,
-    productsListState: LazyListState = rememberLazyListState(),
-    couponsListState: LazyListState = rememberLazyListState(),
-    productsContent: @Composable () -> Unit = {
-        WooPosProductsScreen(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
-            listState = productsListState,
-        )
-    },
-    couponsContent: @Composable () -> Unit = {
-        WooPosCouponsScreen(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
-            listState = couponsListState,
-        )
-    },
-    productsSearchContent: @Composable () -> Unit = { WooPosItemsSearchScreen() },
-    couponsSearchContent: @Composable () -> Unit = { WooPosCouponsSearchScreen() },
-    variationsContent: @Composable (WooPosVariationsNavigationData) -> Unit = { data ->
-        WooPosVariationsScreen(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
-            variableProductData = data,
-            onBackClicked = onBackFromVariations,
-        )
-    },
 ) {
     Crossfade(
         targetState = state.toScreenState(),

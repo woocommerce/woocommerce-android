@@ -85,7 +85,8 @@ fun WooPosItemsToolbar(
                     WooPosItemsTabsRow(
                         tabs = state.tabs,
                         onTabClicked = onTabClicked,
-                        modifier = Modifier.weight(1f)
+                        itemSpacing = WooPosSpacing.Large.value,
+                        modifier = Modifier.weight(1f),
                     )
 
                     if (state is WooPosItemsToolbarViewState.CouponList) {
@@ -119,8 +120,8 @@ fun WooPosItemsToolbar(
 fun WooPosItemsTabsRow(
     tabs: List<WooPosItemsToolbarViewState.Tab>,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
+    itemSpacing: Dp,
     modifier: Modifier = Modifier,
-    itemSpacing: Dp = WooPosSpacing.Large.value,
 ) {
     Row(
         modifier = modifier,

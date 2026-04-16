@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPr
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreenPreview
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -171,13 +172,17 @@ private fun MainItemsList(
 
             WooPosItemsContent(
                 state = state.value,
-                onBackFromVariations = onBackClicked,
-                productsListState = productsViewState,
-                couponsListState = couponsListState,
                 productsContent = productsContent,
                 couponsContent = couponsContent,
                 productsSearchContent = productsSearchContent,
                 couponsSearchContent = couponsSearchContent,
+                variationsContent = { data ->
+                    WooPosVariationsScreen(
+                        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                        variableProductData = data,
+                        onBackClicked = onBackClicked,
+                    )
+                },
             )
         }
     }
