@@ -132,7 +132,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given token refresh trigger, then forces Woo and WPCom registration regardless of current state`() =
+    fun `given token refresh trigger, when registration runs, then forces Woo and WPCom registration regardless of current state`() =
         testBlocking {
             // WHEN
             sut(TOKEN_REFRESH)
@@ -202,7 +202,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given app foreground trigger, when Woo registration is unchanged for one site, then registers only stale sites`() =
         testBlocking {
             // GIVEN
-            whenever(pushNotificationRepository.shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)).thenReturn(false)
+            whenever(
+                pushNotificationRepository.shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
+            ).thenReturn(false)
 
             // WHEN
             sut(APP_FOREGROUND)
@@ -260,7 +262,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // THEN
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
+            verify(
+                pushNotificationRepository,
+                times(1)
+            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
             verify(
                 pushNotificationRepository,
                 never()
@@ -304,7 +309,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(pushNotificationRepository, times(1)).shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
             verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
             verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
+            verify(
+                pushNotificationRepository,
+                times(1)
+            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, true)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, true)
             verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
