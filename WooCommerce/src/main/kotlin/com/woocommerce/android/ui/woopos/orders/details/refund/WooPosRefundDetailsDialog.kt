@@ -34,10 +34,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
 
 @Composable
 fun WooPosRefundDetailsDialog(
-    dialogState: WooPosOrdersState.Content.DialogState.RefundDetails,
+    dialogState: WooPosOrderDetailsState.DialogState.RefundDetails,
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
