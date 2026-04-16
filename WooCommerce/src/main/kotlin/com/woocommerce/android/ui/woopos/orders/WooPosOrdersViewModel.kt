@@ -317,43 +317,6 @@ class WooPosOrdersViewModel @Inject constructor(
         )
     }
 
-    private fun cancelJobs() {
-        sideLoadJob?.cancel()
-        refreshOrderJob?.cancel()
-    }
-
-    private suspend fun getOrComputeDetails(orderId: Long): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
-        val current = _state.value as? WooPosOrdersState.Content ?: error("State is not Content")
-        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: error("Items not loaded")
-
-        val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
-            ?: error("Order $orderId not found in state")
-
-        return when (orderDetails) {
-            is WooPosOrdersState.OrderDetailsViewState.Computed -> orderDetails.details
-            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
-                orderDetailsMapper.mapOrderDetails(orderDetails.order, orderDetails.refundResult)
-        }
-    }
-
-    private suspend fun getOrComputeDetailsWithoutActions(
-        orderId: Long
-    ): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
-        val current = _state.value as? WooPosOrdersState.Content ?: error("State is not Content")
-        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: error("Items not loaded")
-
-        val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
-            ?: error("Order $orderId not found in state")
-
-        return when (orderDetails) {
-            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
-                orderDetailsMapper.mapOrderDetailsWithoutActions(orderDetails.order)
-            is WooPosOrdersState.OrderDetailsViewState.Computed -> {
-                orderDetails.details
-            }
-        }
-    }
-
     private fun WooPosOrdersState.Content.withUpdatedDetails(
         orderId: Long,
         transform: (WooPosOrdersState.OrderDetailsViewState.Computed.Details) ->
