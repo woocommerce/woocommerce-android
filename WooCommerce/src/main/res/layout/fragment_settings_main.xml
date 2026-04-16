@@ -142,15 +142,6 @@
                 tools:visibility="visible" />
 
             <!--
-                Domain configuration
-            -->
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/option_domain"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/domain" />
-
-            <!--
                 Themes configuration
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
