@@ -17,6 +17,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -39,7 +42,7 @@ class WooSitesVisibilityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private var availableWooSites: List<SiteModel> = emptyList()
-    private var initiallySelectedSiteIds: List<Long> = emptyList()
+    private var initiallySelectedSiteIds: Set<Long> = emptySet()
     private val _wooStoresState = MutableStateFlow(
         WooStoresUiState(
             wooStores = emptyList(),
@@ -61,6 +64,7 @@ class WooSitesVisibilityViewModel @Inject constructor(
             initiallySelectedSiteIds = _wooStoresState.value.wooStores
                 .filter { it.isSelected }
                 .map { it.siteId }
+                .toSet()
         }
     }
 
@@ -69,39 +73,59 @@ class WooSitesVisibilityViewModel @Inject constructor(
     }
 
     fun onSaveTapped() {
+        trackSaveTapped()
+        setLoading(isLoading = true)
+        launch {
+            try {
+                performSave()
+                    .onSuccess { onSaveSuccess() }
+                    .onFailure(::showSaveFailureDialog)
+            } finally {
+                setLoading(isLoading = false)
+            }
+        }
+    }
+
+    private fun trackSaveTapped() {
         trackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_LIST_SAVE_BUTTON_TAPPED,
             properties = mapOf(
                 "hidden_site_count" to _wooStoresState.value.wooStores.count { !it.isSelected }
             )
         )
-        _wooStoresState.value = _wooStoresState.value.copy(isLoading = true)
-        launch {
-            try {
-                runCatching {
-                    val currentSelectedSiteIds = _wooStoresState.value.wooStores
-                        .filter { it.isSelected }
-                        .map { it.siteId }
-                        .toSet()
-                    val initialSelectedSiteIds = initiallySelectedSiteIds.toSet()
-                    val hiddenSiteIds = initialSelectedSiteIds - currentSelectedSiteIds
-                    val unhiddenSiteIds = currentSelectedSiteIds - initialSelectedSiteIds
-                    val sitesById = availableWooSites.associateBy { it.siteId }
-                    val wooPushRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+    }
 
-                    updateWpComNotificationSettings(wooPushRegisteredSiteIds)
-                    syncWooPushVisibilityChanges(
-                        hiddenSiteIds = hiddenSiteIds,
-                        unhiddenSiteIds = unhiddenSiteIds,
-                        wooPushRegisteredSiteIds = wooPushRegisteredSiteIds,
-                        sitesById = sitesById
-                    )
-                    onSaveSuccess()
-                }.onFailure(::showSaveFailureDialog)
-            } finally {
-                _wooStoresState.value = _wooStoresState.value.copy(isLoading = false)
-            }
+    private fun setLoading(isLoading: Boolean) {
+        _wooStoresState.value = _wooStoresState.value.copy(isLoading = isLoading)
+    }
+
+    private suspend fun performSave(): Result<Unit> = coroutineScope {
+        val currentSelectedSiteIds = _wooStoresState.value.wooStores
+            .filter { it.isSelected }
+            .map { it.siteId }
+            .toSet()
+        val wooPushRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+
+        launch {
+            unregisterNewlyHiddenWooPushSites(
+                newlyHiddenSiteIds = initiallySelectedSiteIds - currentSelectedSiteIds,
+                wooPushRegisteredSiteIds = wooPushRegisteredSiteIds
+            )
         }
+        val wpComDeferred = async {
+            updateWpComNotificationSettings(wooPushRegisteredSiteIds)
+        }
+        val registerDeferred = async {
+            registerNewlyVisibleWooPushSites(
+                newlyVisibleSiteIds = currentSelectedSiteIds - initiallySelectedSiteIds,
+                wooPushRegisteredSiteIds = wooPushRegisteredSiteIds
+            )
+        }
+
+        val wpComResult = wpComDeferred.await()
+        val registerResult = registerDeferred.await()
+
+        if (wpComResult.isFailure) wpComResult else registerResult
     }
 
     private suspend fun onSaveSuccess() {
@@ -112,50 +136,56 @@ class WooSitesVisibilityViewModel @Inject constructor(
         triggerEvent(ExitWithResult(data = true))
     }
 
-    private suspend fun updateWpComNotificationSettings(wooPushRegisteredSiteIds: Set<Long>) {
+    private suspend fun updateWpComNotificationSettings(wooPushRegisteredSiteIds: Set<Long>): Result<Unit> {
         val sitesToUpdate = _wooStoresState.value.wooStores
             .filterNot { it.siteId in wooPushRegisteredSiteIds }
-            .map {
-                SiteNotificationSetting(
-                    siteId = it.siteId,
-                    newCommentEnabled = it.isSelected,
-                    storeOrderEnabled = it.isSelected
-                )
-            }
+            .map { it.toNotificationSetting() }
 
-        if (sitesToUpdate.isNotEmpty()) {
-            notificationsStore.updateNotificationSettingsFor(sitesToUpdate).getOrThrow()
+        return if (sitesToUpdate.isNotEmpty()) {
+            notificationsStore.updateNotificationSettingsFor(sitesToUpdate)
+        } else {
+            Result.success(Unit)
         }
     }
 
-    private suspend fun syncWooPushVisibilityChanges(
-        hiddenSiteIds: Set<Long>,
-        unhiddenSiteIds: Set<Long>,
-        wooPushRegisteredSiteIds: Set<Long>,
-        sitesById: Map<Long, SiteModel>
-    ) {
-        hiddenSiteIds
-            .filter { it in wooPushRegisteredSiteIds }
-            .mapNotNull(sitesById::get)
-            .forEach { pushNotificationRepository.unregisterWooPushTokenForSite(it) }
+    private suspend fun unregisterNewlyHiddenWooPushSites(
+        newlyHiddenSiteIds: Set<Long>,
+        wooPushRegisteredSiteIds: Set<Long>
+    ) = coroutineScope {
+        availableWooSites
+            .filter { it.siteId in newlyHiddenSiteIds && it.siteId in wooPushRegisteredSiteIds }
+            .map { async { pushNotificationRepository.unregisterWooPushTokenForSite(it) } }
+            .awaitAll()
+    }
 
+    private suspend fun registerNewlyVisibleWooPushSites(
+        newlyVisibleSiteIds: Set<Long>,
+        wooPushRegisteredSiteIds: Set<Long>
+    ): Result<Unit> = coroutineScope {
         if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-            return
+            return@coroutineScope Result.success(Unit)
         }
+        val token = appPrefsWrapper.getFCMToken().takeIf { it.isNotEmpty() }
+            ?: return@coroutineScope Result.success(Unit)
 
-        val token = appPrefsWrapper.getFCMToken().takeIf { it.isNotEmpty() } ?: return
-
-        unhiddenSiteIds
-            .filterNot { it in wooPushRegisteredSiteIds }
-            .mapNotNull(sitesById::get)
-            .filter { pushNotificationRepository.shouldRegisterWooPushForSite(token, it.siteId) }
-            .forEach {
-                pushNotificationRepository.registerPushTokenInWooCoreSystem(
-                    token = token,
-                    selectedSite = it,
-                    allowWpComFallback = false
-                )
+        val results = availableWooSites
+            .filter { it.siteId in newlyVisibleSiteIds && it.siteId !in wooPushRegisteredSiteIds }
+            .map { site ->
+                async {
+                    if (pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                        pushNotificationRepository.registerPushTokenInWooCoreSystem(
+                            token = token,
+                            selectedSite = site,
+                            allowWpComFallback = false
+                        )
+                    } else {
+                        Result.success(Unit)
+                    }
+                }
             }
+            .awaitAll()
+
+        results.firstOrNull { it.isFailure } ?: Result.success(Unit)
     }
 
     private fun showSaveFailureDialog(error: Throwable) {
@@ -194,12 +224,19 @@ class WooSitesVisibilityViewModel @Inject constructor(
         _wooStoresState.value = _wooStoresState.value.copy(
             isSaveButtonEnabled = _wooStoresState.value.wooStores
                 .filter { it.isSelected }
-                .map { it.siteId } != initiallySelectedSiteIds
+                .map { it.siteId }
+                .toSet() != initiallySelectedSiteIds
         )
     }
 
     private suspend fun isSiteVisible(siteId: Long): Boolean =
         visibleSitesDataStore.isSiteVisible(siteId).first()
+
+    private fun WooStoreUi.toNotificationSetting() = SiteNotificationSetting(
+        siteId = siteId,
+        newCommentEnabled = isSelected,
+        storeOrderEnabled = isSelected
+    )
 
     private fun SiteModel.toWooStoreUi(isSiteVisible: Boolean) = WooStoreUi(
         siteName = name,

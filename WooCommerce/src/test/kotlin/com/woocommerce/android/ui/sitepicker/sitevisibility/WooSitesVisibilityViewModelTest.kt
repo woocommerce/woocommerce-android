@@ -234,7 +234,8 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     fun `given hidden woo push site, when tapping save, then unregister woo push for that site`() =
         testBlocking {
             whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
-            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
             whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
             val viewModel = createViewModel()
 
@@ -282,9 +283,30 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given woo register fails for unhidden site, when tapping save, then show error dialog and do not persist visibility`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                .thenReturn(Result.failure(IllegalStateException("registration failed")))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onSaveTapped()
+            }.last()
+
+            verify(visibleWooSitesDataStore, never()).updateSiteVisibilityStatus(any())
+            assertThat(event).isInstanceOf(ShowDialog::class.java)
+            assertFalse(viewModel.viewState.getOrAwaitValue().isLoading)
+        }
+
+    @Test
     fun `given woo unregister fails, when tapping save, then persist visibility and still exit with success`() =
         testBlocking {
-            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
             whenever(pushNotificationRepository.unregisterWooPushTokenForSite(any()))
                 .thenReturn(Result.failure(IllegalStateException("delete failed")))
             whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
