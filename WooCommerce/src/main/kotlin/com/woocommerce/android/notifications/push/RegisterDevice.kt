@@ -113,7 +113,7 @@ class RegisterDevice @Inject constructor(
 
         // For WPCom, site switching doesn't affect registration
         val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
-            (shouldForce || pushNotificationRepository.isWpComPushRegistered())
+            (shouldForce || !pushNotificationRepository.isWpComPushRegistered())
 
         if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")

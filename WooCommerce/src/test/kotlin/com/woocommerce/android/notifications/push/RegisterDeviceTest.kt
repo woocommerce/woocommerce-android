@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.APP_FOREGROUND
+import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.LOGIN_SUCCESS
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.SITE_SWITCH
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TOKEN_REFRESH
 import com.woocommerce.android.tools.SelectedSite
@@ -131,7 +132,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given token refresh trigger, when registration is otherwise unchanged, then forces Woo and WPCom registration`() =
+    fun `given token refresh trigger, then forces Woo and WPCom registration regardless of current state`() =
         testBlocking {
             // WHEN
             sut(TOKEN_REFRESH)
@@ -143,6 +144,30 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
             verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
+
+    @Test
+    fun `given login success trigger, when WPCom is not registered, then registers in WPCom`() = testBlocking {
+        // GIVEN
+        wheneverBlocking { pushNotificationRepository.isWpComPushRegistered() }.thenReturn(false)
+
+        // WHEN
+        sut(LOGIN_SUCCESS)
+
+        // THEN
+        verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+    }
+
+    @Test
+    fun `given app foreground trigger, when WPCom is already registered, then skips WPCom registration`() = testBlocking {
+        // GIVEN
+        wheneverBlocking { pushNotificationRepository.isWpComPushRegistered() }.thenReturn(true)
+
+        // WHEN
+        sut(APP_FOREGROUND)
+
+        // THEN
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
+    }
 
     @Test
     fun `given no access token, when app foreground trigger runs, then does not register in WPCom`() = testBlocking {
