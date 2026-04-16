@@ -67,6 +67,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private var sideLoadJob: Job? = null
     private var refreshOrderJob: Job? = null
     private var cachedRefundData: CachedRefundData? = null
+    private var lastRequestedOrderId: Long? = null
 
     init {
         if (singleOrderId != null) {
@@ -74,7 +75,13 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
+    fun retryLoadOrder() {
+        val orderId = lastRequestedOrderId ?: return
+        loadOrder(orderId)
+    }
+
     fun loadOrder(orderId: Long) {
+        lastRequestedOrderId = orderId
         sideLoadJob?.cancel()
         refreshOrderJob?.cancel()
 

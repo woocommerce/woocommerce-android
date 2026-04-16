@@ -109,8 +109,10 @@ fun WooPosOrdersScreen(
         }
     }
 
-    if (navigatedFromEmailReceiptSent) {
-        detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
+    LaunchedEffect(navigatedFromEmailReceiptSent) {
+        if (navigatedFromEmailReceiptSent) {
+            detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
+        }
     }
 
     val context = LocalContext.current
@@ -139,7 +141,8 @@ fun WooPosOrdersScreen(
         onIssueRefundDialogDismissed = detailViewModel::onIssueRefundDialogDismissed,
         onRefundDetailsDialogDismissed = detailViewModel::onRefundDetailsDialogDismissed,
         onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult
+        refundReasonUpdate = refundReasonResult,
+        onRetryDetailLoad = detailViewModel::retryLoadOrder
     )
 }
 
@@ -164,6 +167,7 @@ private fun WooPosOrdersScreen(
     onRefundDetailsDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
+    onRetryDetailLoad: () -> Unit = {},
 ) {
     BackHandler { onBackClicked() }
 
@@ -174,36 +178,40 @@ private fun WooPosOrdersScreen(
         if (isSingleOrderMode) {
             SingleOrderDetails(
                 detailState = detailState,
-                onUIEvent = onUIEvent
+                onUIEvent = onUIEvent,
+                onRetryDetailLoad = onRetryDetailLoad
             )
-        } else when (listState) {
-            is WooPosOrdersListState.Content -> {
-                OrdersListWithDetails(
-                    listContent = listState,
-                    detailState = detailState,
-                    scrollToTopEvent = scrollToTopEvent,
-                    onRefresh = onRefresh,
-                    onOrderSelected = onOrderSelected,
-                    onEndOfOrdersListReached = onEndOfOrdersListReached,
-                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                    onSearchEvent = onSearchEvent,
-                    onSearchErrorRetry = onSearchErrorRetry,
-                    onUIEvent = onUIEvent
+        } else {
+            when (listState) {
+                is WooPosOrdersListState.Content -> {
+                    OrdersListWithDetails(
+                        listContent = listState,
+                        detailState = detailState,
+                        scrollToTopEvent = scrollToTopEvent,
+                        onRefresh = onRefresh,
+                        onOrderSelected = onOrderSelected,
+                        onEndOfOrdersListReached = onEndOfOrdersListReached,
+                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                        onSearchEvent = onSearchEvent,
+                        onSearchErrorRetry = onSearchErrorRetry,
+                        onUIEvent = onUIEvent,
+                        onRetryDetailLoad = onRetryDetailLoad
+                    )
+                }
+
+                is WooPosOrdersListState.Empty -> OrdersEmpty(
+                    onActionClicked = onOrdersEmptyActionClicked,
+                    modifier = Modifier.statusBarsPadding()
                 )
-            }
 
-            is WooPosOrdersListState.Empty -> OrdersEmpty(
-                onActionClicked = onOrdersEmptyActionClicked,
-                modifier = Modifier.statusBarsPadding()
-            )
+                is WooPosOrdersListState.Error -> OrdersError(
+                    onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
+                    modifier = Modifier.statusBarsPadding()
+                )
 
-            is WooPosOrdersListState.Error -> OrdersError(
-                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
-                modifier = Modifier.statusBarsPadding()
-            )
-
-            is WooPosOrdersListState.Loading -> {
-                WooPosOrdersLoadingScreen()
+                is WooPosOrdersListState.Loading -> {
+                    WooPosOrdersLoadingScreen()
+                }
             }
         }
 
@@ -279,6 +287,7 @@ private fun OrdersDialogs(
 private fun OrderDetailsPane(
     detailState: WooPosOrderDetailsState,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetry: () -> Unit = {},
     modifier: Modifier = Modifier,
     showOrderNumber: Boolean = true,
 ) {
@@ -305,8 +314,21 @@ private fun OrderDetailsPane(
                         )
                 )
             }
-            is WooPosOrderDetailsState.Idle,
             is WooPosOrderDetailsState.Error -> {
+                WooPosErrorScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
+                    message = stringResource(R.string.woopos_orders_loading_error_title),
+                    reason = detailState.message,
+                    primaryButton = WooPosErrorScreenButtonState(
+                        text = stringResource(R.string.woopos_orders_loading_error_retry_button),
+                        click = onRetry
+                    )
+                )
+            }
+            is WooPosOrderDetailsState.Idle -> {
                 WooPosEmptyScreen(
                     modifier = Modifier.fillMaxSize(),
                     icon = WooPosIcons.OrdersEmpty,
@@ -330,7 +352,8 @@ private fun OrdersListWithDetails(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
@@ -351,6 +374,7 @@ private fun OrdersListWithDetails(
         OrderDetailsPane(
             detailState = detailState,
             onUIEvent = onUIEvent,
+            onRetry = onRetryDetailLoad,
             showOrderNumber = true,
             modifier = Modifier.weight(0.7f)
         )
@@ -360,11 +384,13 @@ private fun OrdersListWithDetails(
 @Composable
 private fun SingleOrderDetails(
     detailState: WooPosOrderDetailsState,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit
 ) {
     OrderDetailsPane(
         detailState = detailState,
         onUIEvent = onUIEvent,
+        onRetry = onRetryDetailLoad,
         showOrderNumber = false,
         modifier = Modifier.fillMaxSize()
     )
