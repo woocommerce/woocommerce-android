@@ -57,58 +57,53 @@ fun WooPosItemsToolbar(
             .fillMaxWidth()
             .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
     ) {
-        when {
-            isSearchOpen -> {
-                WooPosSearchInput(
-                    state = (state.search as SearchState.Visible).state,
-                    onEvent = onSearchEvent,
+        when (isSearchOpen) {
+            true -> WooPosSearchInput(
+                state = (state.search as SearchState.Visible).state,
+                onEvent = onSearchEvent,
+            )
+            false -> Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                when {
+                    leadingContent != null -> leadingContent()
+                    state.backNavigation -> {
+                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                        WooPosBackButton { onBackClicked() }
+                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                    }
+                    else -> Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                }
+
+                WooPosItemsTabsRow(
+                    tabs = state.tabs,
+                    onTabClicked = onTabClicked,
+                    itemSpacing = WooPosSpacing.Large.value,
+                    modifier = Modifier.weight(1f),
                 )
-            }
 
-            else -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    when {
-                        leadingContent != null -> leadingContent()
-                        state.backNavigation -> {
-                            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-                            WooPosBackButton { onBackClicked() }
-                            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-                        }
-                        else -> Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                    }
-
-                    WooPosItemsTabsRow(
-                        tabs = state.tabs,
-                        onTabClicked = onTabClicked,
-                        itemSpacing = WooPosSpacing.Large.value,
-                        modifier = Modifier.weight(1f),
+                if (state is WooPosItemsToolbarViewState.CouponList) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                    WooPosCircularIconButton(
+                        icon = ImageVector.vectorResource(R.drawable.ic_add),
+                        contentDescription = stringResource(
+                            id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                        ),
+                        onClick = { onAddCouponEvent() }
                     )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                }
 
-                    if (state is WooPosItemsToolbarViewState.CouponList) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                        WooPosCircularIconButton(
-                            icon = ImageVector.vectorResource(R.drawable.ic_add),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_coupons_empty_list_create_coupon_label,
-                            ),
-                            onClick = { onAddCouponEvent() }
+                when (val search = state.search) {
+                    SearchState.Hidden -> Unit
+                    is SearchState.Visible -> {
+                        WooPosSearchInput(
+                            state = search.state,
+                            onEvent = onSearchEvent,
                         )
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                    }
-
-                    when (val search = state.search) {
-                        SearchState.Hidden -> Unit
-                        is SearchState.Visible -> {
-                            WooPosSearchInput(
-                                state = search.state,
-                                onEvent = onSearchEvent,
-                            )
-                        }
                     }
                 }
             }
