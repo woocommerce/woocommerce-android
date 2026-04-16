@@ -41,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/major_100"
+        android:paddingEnd="0dp"
         android:src="@drawable/ic_edit_pencil"
         app:layout_constraintBottom_toBottomOf="@+id/customAmountAmount"
         app:layout_constraintEnd_toEndOf="parent"
