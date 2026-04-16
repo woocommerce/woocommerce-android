@@ -171,13 +171,13 @@ private fun WooPosOrdersScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        when (listState) {
-            is WooPosOrdersListState.Content -> if (isSingleOrderMode) {
-                SingleOrderDetails(
-                    detailState = detailState,
-                    onUIEvent = onUIEvent
-                )
-            } else {
+        if (isSingleOrderMode) {
+            SingleOrderDetails(
+                detailState = detailState,
+                onUIEvent = onUIEvent
+            )
+        } else when (listState) {
+            is WooPosOrdersListState.Content -> {
                 OrdersListWithDetails(
                     listContent = listState,
                     detailState = detailState,
@@ -202,20 +202,7 @@ private fun WooPosOrdersScreen(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersListState.Loading -> if (isSingleOrderMode) {
-                OrderDetailsLoadingPane(
-                    showOrderNumber = false,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(
-                            start = WooPosSpacing.Medium.value,
-                            end = WooPosSpacing.Medium.value,
-                            bottom = WooPosSpacing.XLarge.value
-                        )
-                )
-            } else {
+            is WooPosOrdersListState.Loading -> {
                 WooPosOrdersLoadingScreen()
             }
         }

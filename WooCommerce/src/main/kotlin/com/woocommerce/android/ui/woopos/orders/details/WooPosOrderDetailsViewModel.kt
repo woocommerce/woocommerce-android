@@ -70,7 +70,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
 
     init {
         if (singleOrderId != null) {
-            viewModelScope.launch { loadOrder(singleOrderId) }
+            loadOrder(singleOrderId)
         }
     }
 
