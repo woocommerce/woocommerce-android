@@ -74,11 +74,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
@@ -339,7 +342,7 @@ private fun TestScannerContent(
 
         Box(
             modifier = Modifier
-                .size(300.dp, 150.dp)
+                .size(300.dp.toAdaptiveComponentSize(), 150.dp.toAdaptiveComponentSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value),
@@ -347,8 +350,8 @@ private fun TestScannerContent(
         ) {
             BarcodeEAN13Code(
                 barcodeValue,
-                300.dp,
-                150.dp
+                300.dp.toAdaptiveComponentSize(),
+                150.dp.toAdaptiveComponentSize()
             )
         }
 
@@ -622,14 +625,14 @@ private fun ScannerSetupSuccessIcon(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(88.dp)
+            .size(WooPosComponentSize.Small.value)
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
             imageVector = WooPosIcons.Check,
             tint = WooPosTheme.colors.onSuccess,
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(WooPosIconSize.Large.value)
         )
     }
 }

@@ -51,8 +51,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -212,7 +214,7 @@ private fun MenuButtonWithPopUpMenu(
         TextButton(
             modifier = Modifier
                 .semantics { contentDescription = menuContentDescription }
-                .size(80.dp),
+                .size(WooPosComponentSize.Small.value),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
             colors = ButtonDefaults.textButtonColors(
@@ -270,7 +272,7 @@ private fun PopUpMenuItem(
             imageVector = ImageVector.vectorResource(menuItem.icon),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(WooPosIconSize.Small.value)
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         WooPosText(
@@ -329,7 +331,7 @@ private fun CardReaderStatusButton(
 
     WooPosCard(
         modifier = modifier
-            .height(80.dp),
+            .height(WooPosComponentSize.Small.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -350,7 +352,7 @@ private fun CardReaderStatusButton(
                         color = borderColor,
                         shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
                     )
-                    .height(40.dp),
+                    .height(WooPosIconSize.Large.value),
             ) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 Circle(size = 14.dp, color = illustrationColor)

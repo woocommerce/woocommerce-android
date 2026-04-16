@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -91,11 +92,11 @@ private fun Loading() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     }
 }
 
-@Suppress("WooPosDesignSystemSpacingUsageRule", "WooPosDesignSystemTextUsageRule")
+@Suppress("WooPosDesignSystemTextUsageRule")
 @Composable
 private fun SyncingCatalog(
     progressText: String? = null,
@@ -161,7 +162,7 @@ private fun SyncingCatalog(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
                 )
             }
         }

@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -68,7 +69,7 @@ fun WooPosItemsInfoBanner(
                     tint = MaterialTheme.colorScheme.onSurface,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(WooPosIconSize.XLarge.value)
                         .align(Alignment.CenterVertically)
                 )
                 Column(
@@ -97,7 +98,7 @@ fun WooPosItemsInfoBanner(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = dismissContentDescription,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(WooPosIconSize.Medium.value),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
                 }
