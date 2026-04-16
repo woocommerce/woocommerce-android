@@ -46,7 +46,7 @@ class PushNotificationsStoreTest {
         runBlocking {
             val site = SiteModel().apply { id = 123 }
             val pushTokenId = "100"
-            whenever(restClient.deletePushToken(any(), any())).thenReturn(WooPayload(true))
+            whenever(restClient.deletePushToken(any(), any())).thenReturn(WooPayload(Unit))
 
             val result = sut.deletePushToken(site, pushTokenId)
 

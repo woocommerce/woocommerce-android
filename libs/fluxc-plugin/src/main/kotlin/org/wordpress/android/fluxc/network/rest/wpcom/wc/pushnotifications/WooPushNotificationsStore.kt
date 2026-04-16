@@ -2,9 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
 import org.wordpress.android.fluxc.BuildConfig
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T
@@ -44,15 +41,7 @@ class WooPushNotificationsStore @Inject internal constructor(
 
     suspend fun deletePushToken(site: SiteModel, pushTokenId: String): WooResult<Unit> =
         coroutineEngine.withDefaultContext(T.API, this, "deleteWooPushToken") {
-            val payload = pushNotificationsRestClient.deletePushToken(site, pushTokenId)
-
-            if (payload.isError) {
-                WooResult(payload.error)
-            } else if (payload.result == true) {
-                WooResult(Unit)
-            } else {
-                WooResult(WooError(GENERIC_ERROR, UNKNOWN))
-            }
+            pushNotificationsRestClient.deletePushToken(site, pushTokenId).asWooResult()
         }
 
     companion object {

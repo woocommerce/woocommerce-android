@@ -1,10 +1,11 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
-import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,11 +37,16 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
     suspend fun deletePushToken(
         site: SiteModel,
         pushTokenId: String
-    ): WooPayload<Boolean> = wooNetwork.executeDeleteGsonRequest(
-        site = site,
-        path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
-        clazz = DeletePushTokenResponse::class.java,
-    ).toWooPayload { it.success }
+    ): WooPayload<Unit> = when (
+        val response = wooNetwork.executeDeleteGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
+            clazz = Unit::class.java,
+        )
+    ) {
+        is WPAPIResponse.Success -> WooPayload(Unit)
+        is WPAPIResponse.Error -> WooPayload(response.error.toWooError())
+    }
 
     data class PushTokenRegistrationRequest(
         val token: String,
@@ -48,10 +54,6 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
         val deviceUuid: String,
         val deviceLocale: String,
         val metadata: Map<String, String> = emptyMap()
-    )
-
-    data class DeletePushTokenResponse(
-        @SerializedName("success") val success: Boolean
     )
 
     /**
