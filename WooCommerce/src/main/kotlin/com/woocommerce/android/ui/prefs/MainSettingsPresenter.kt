@@ -13,6 +13,8 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +38,8 @@ class MainSettingsPresenter @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : MainSettingsContract.Presenter {
     override val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var appSettingsFragmentView: MainSettingsContract.View? = null
@@ -85,7 +88,9 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun setupApplicationPasswordsSettings() {
         if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-            appSettingsFragmentView?.handleApplicationPasswordsSettings()
+            val shouldHideNotifications = !featureFlagRepository
+                .isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2)
+            appSettingsFragmentView?.handleApplicationPasswordsSettings(shouldHideNotifications)
         }
     }
 
