@@ -58,7 +58,7 @@ class NotificationMessageHandlerTest {
         on { account } doReturn accountModel
     }
     private val registrationStatus: PushNotificationRegistrationStatus = mock {
-        onBlocking { invoke(any()) } doReturn UNREGISTERED
+        on { invoke(any()) } doReturn UNREGISTERED
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
@@ -154,7 +154,7 @@ class NotificationMessageHandlerTest {
             }
         }
         getWooVisibleSites = mock {
-            onBlocking { invoke() } doReturn visibleSites
+            on { invoke() } doReturn visibleSites
         }
         createNotificationMessageHandler()
 

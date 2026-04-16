@@ -16,7 +16,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.util.Date
 
@@ -37,9 +37,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        wheneverBlocking {
-            repository.hasSubscriptionProducts(any())
-        }.doReturn(false)
+        runBlocking {
+            whenever(repository.hasSubscriptionProducts(any())).doReturn(false)
+        }
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }

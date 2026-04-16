@@ -38,7 +38,7 @@ class CouponStoreTest {
 
     private val transactionExecutor: TransactionExecutor = mock {
         val blockArg1 = argumentCaptor<suspend () -> Unit>()
-        onBlocking { executeInTransaction(blockArg1.capture()) }.then {
+        on { executeInTransaction(blockArg1.capture()) }.then {
             runBlocking {
                 blockArg1.lastValue.invoke()
             }

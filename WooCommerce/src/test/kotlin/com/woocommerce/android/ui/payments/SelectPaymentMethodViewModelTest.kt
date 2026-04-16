@@ -87,9 +87,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { get() }.thenReturn(site)
     }
     private val orderStore: WCOrderStore = mock {
-        onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
-        onBlocking { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
-        onBlocking { updateOrderStatus(any(), any(), any()) }.thenReturn(
+        on { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
+        on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
+        on { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
     }
@@ -105,10 +105,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { getSiteSettings(site) }.thenReturn(mock())
     }
     private val orderMapper: OrderMapper = mock {
-        onBlocking { toAppModel(orderEntity) }.thenReturn(order)
+        on { toAppModel(orderEntity) }.thenReturn(order)
     }
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
-        onBlocking { isCollectable(order) }.thenReturn(false)
+        on { isCollectable(order) }.thenReturn(false)
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()

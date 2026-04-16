@@ -16,7 +16,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -201,9 +201,9 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     private fun givenOrderHasVirtualProductsOnly() {
-        wheneverBlocking {
-            orderDetailRepository.hasVirtualProductsOnly(any())
-        }.thenReturn(true)
+        runBlocking {
+            whenever(orderDetailRepository.hasVirtualProductsOnly(any())).thenReturn(true)
+        }
     }
 
     private fun givenWcShippingBannerIsDismissed(dismissed: Boolean) {

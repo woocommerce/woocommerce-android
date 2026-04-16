@@ -54,7 +54,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         on { data } doReturn flowOf(preferences)
     }
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        on { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     private lateinit var sut: PushNotificationRepository

@@ -75,7 +75,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         on { invoke() } doReturn flowOf(defaultAccountSettings)
     }
     private val fetchAccountSettings: FetchAccountSettings = mock {
-        onBlocking { invoke() } doReturn Result.success(defaultAccountSettings)
+        on { invoke() } doReturn Result.success(defaultAccountSettings)
     }
     private val updatePaymentOptions: UpdatePaymentOptions = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()

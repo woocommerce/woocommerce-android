@@ -4,12 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -24,7 +25,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
     ): BookingTeamMemberFilterViewModel {
         val repository = bookingsRepository ?: mock<BookingsRepository> {
             on { observeResources() } doReturn flowOf(emptyList())
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         return BookingTeamMemberFilterViewModel(
@@ -101,8 +102,8 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
             val resourcesFlow = MutableStateFlow<List<BookingResourceEntity>>(emptyList())
             val bookingsRepository = mock<BookingsRepository> {
                 on { observeResources() } doReturn resourcesFlow
-                onBlocking { fetchResources() } doAnswer {
-                    Thread.sleep(50)
+                on { fetchResources() } doSuspendableAnswer {
+                    delay(Long.MAX_VALUE / 2)
                     Result.success(Unit)
                 }
             }
@@ -122,7 +123,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow<List<BookingResourceEntity>>(emptyList())
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.failure(Exception("boom"))
+            on { fetchResources() } doReturn Result.failure(Exception("boom"))
         }
 
         val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)

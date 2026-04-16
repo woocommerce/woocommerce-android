@@ -31,7 +31,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 import com.woocommerce.android.model.Coupon as CouponDBModel
 
@@ -52,7 +52,7 @@ class WooPosCouponsListViewStateManagerTest {
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val cachedCouponEnabledChecker: CachedCouponEnabledChecker = mock {
-        onBlocking { isEnabled() } doReturn true
+        on { isEnabled() } doReturn true
     }
 
     private val couponsDataSource: WooPosCouponsDataSource = mock {
@@ -69,7 +69,7 @@ class WooPosCouponsListViewStateManagerTest {
 
     @Before
     fun setup() {
-        wheneverBlocking { getCachedStoreCurrency() }.thenReturn("USD")
+        runBlocking { whenever(getCachedStoreCurrency()).thenReturn("USD") }
         whenever(couponFormatter.formatSummary(anyOrNull(), anyOrNull())).thenAnswer { "" }
     }
 
