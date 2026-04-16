@@ -111,7 +111,9 @@ private fun WooPosHomePhoneContent(
     }
 
     BackHandler {
-        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        if (!navController.popBackStack()) {
+            onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        }
     }
 
     Box(
