@@ -44,10 +44,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
-import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
-import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
-import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -71,8 +67,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
+import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
+import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
