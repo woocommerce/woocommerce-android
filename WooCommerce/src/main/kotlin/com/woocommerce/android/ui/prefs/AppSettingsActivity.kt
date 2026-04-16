@@ -194,7 +194,7 @@ class AppSettingsActivity :
             ?.dismissAllowingStateLoss()
 
         progressDialog = CustomProgressDialog.show(
-            getString(R.string.settings_logout_dialog_title),
+            "",
             getString(R.string.settings_logout_dialog_message)
         ).also {
             it.isCancelable = false
