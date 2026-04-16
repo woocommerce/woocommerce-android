@@ -4,7 +4,7 @@
 
 24.6
 -----
-- [*] Show the notification permission card for all supported stores on Android 13+
+- [Internal] Show the notification permission card for all supported stores on Android 13+
 - [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
 - [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
 - [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
