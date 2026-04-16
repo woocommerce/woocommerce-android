@@ -84,9 +84,9 @@ class RegisterDevice @Inject constructor(
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             val sites = when (trigger) {
                 Trigger.LOGIN_SUCCESS,
-                Trigger.APP_FOREGROUND,
                 Trigger.TOKEN_REFRESH -> getWooVisibleSites()
 
+                Trigger.APP_FOREGROUND,
                 Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
             }
             supervisorScope {
