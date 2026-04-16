@@ -302,7 +302,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun `given site metadata stored, when unregistering woo token succeeds, then removes all site metadata keys`() =
         testBlocking {
             val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
-            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
             whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
@@ -316,11 +315,38 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.unregisterDeviceFromPushNotifications()
+            val result = sut.unregisterWooPushTokenForSite(site)
 
+            assertThat(result.isSuccess).isTrue()
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given site without stored metadata, when unregistering single woo site, then succeeds without deleting token`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(null)
+
+            val result = sut.unregisterWooPushTokenForSite(siteModel)
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wooPushNotificationsStore, never()).deletePushToken(eq(siteModel), any())
+        }
+
+    @Test
+    fun `given site metadata stored, when unregistering single woo site fails, then returns failure and keeps metadata`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(siteModel, "token-id-1"))
+                .thenReturn(PN_UNREGISTER_ERROR)
+
+            val result = sut.unregisterWooPushTokenForSite(siteModel)
+
+            assertThat(result.isFailure).isTrue()
+            verify(pushNotificationsDataStore, never()).updateData(any())
         }
 
     @Test
@@ -603,6 +629,14 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         const val SITE_ID = 123L
 
         val PN_REGISTRATION_ERROR = WooResult<String>(
+            WooError(
+                WooErrorType.GENERIC_ERROR,
+                BaseRequest.GenericErrorType.UNKNOWN,
+                "oops"
+            )
+        )
+
+        val PN_UNREGISTER_ERROR = WooResult<Unit>(
             WooError(
                 WooErrorType.GENERIC_ERROR,
                 BaseRequest.GenericErrorType.UNKNOWN,

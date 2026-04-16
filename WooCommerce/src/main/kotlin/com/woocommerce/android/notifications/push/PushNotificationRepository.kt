@@ -239,29 +239,32 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+    suspend fun unregisterWooPushTokenForSite(site: SiteModel): Result<Unit> {
         val preferences = pushNotificationsDataStore.data.first()
+        val registration = preferences.getPushRegistration(site.siteId) ?: return Result.success(Unit)
+
+        val result = wooPushNotificationsStore.deletePushToken(site, registration.tokenId)
+        if (result.isError) {
+            WooLog.w(
+                WooLog.T.NOTIFICATIONS,
+                "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
+            )
+            return Result.failure(WooException(result.error))
+        }
+
+        pushNotificationsDataStore.edit {
+            it.clearPushRegistration(site.siteId)
+        }
+        WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
+        return Result.success(Unit)
+    }
+
+    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val sites = withContext(coroutineDispatchers.io) {
             wooCommerceStore.getWooCommerceSites()
         }
 
-        val deleteJobs = sites.mapNotNull { site ->
-            val registration = preferences.getPushRegistration(site.siteId) ?: return@mapNotNull null
-            async {
-                val result = wooPushNotificationsStore.deletePushToken(site, registration.tokenId)
-                if (result.isError) {
-                    WooLog.w(
-                        WooLog.T.NOTIFICATIONS,
-                        "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
-                    )
-                } else {
-                    pushNotificationsDataStore.edit {
-                        it.clearPushRegistration(site.siteId)
-                    }
-                    WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
-                }
-            }
-        }
+        val deleteJobs = sites.map { async { unregisterWooPushTokenForSite(it) } }
 
         deleteJobs.awaitAll()
     }
