@@ -614,6 +614,15 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when notifications permission bar dismiss tapped, then dismiss state is stored through prefs`() {
+        viewModel.onNotificationsPermissionBarDismissButtonTapped()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
+        verify(prefs).setWasNotificationsPermissionBarDismissed(true)
+        assertThat(viewModel.isNotificationsPermissionCardVisible.value).isFalse()
+    }
+
+    @Test
     fun `given Android 13 app passwords site without notifications permission, when checking notifications permission, then show permission card`() =
         testBlocking {
             // GIVEN
