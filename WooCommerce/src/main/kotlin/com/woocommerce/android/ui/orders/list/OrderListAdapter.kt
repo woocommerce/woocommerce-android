@@ -237,7 +237,7 @@ class OrderListAdapter(
         //  cause the order's onClick listener to gain focus over the selection tracker.
         //  This quick fix will prevent the app from entering an unexpected status when the app is in selection mode.
         private fun shouldPreventDetailNavigation(orderId: Long): Boolean {
-            if (tracker?.selection?.size() != 0) {
+            if (tracker?.hasSelection() == true) {
                 tracker?.let { selectionTracker ->
                     if (selectionTracker.isSelected(orderId)) {
                         selectionTracker.deselect(orderId)

@@ -66,20 +66,27 @@ steps:
 
   ########################################
   - group: "🚀 Prototype Build"
+    # Mobile Prototype Builds are on-demand on `trunk`, but always built on PRs
+    # WearOS Prototype Builds are on-demand both on `trunk` and PRs
     steps:
+      - input: Create a Mobile Prototype Build?
+        prompt: Share a Mobile Prototype Build via Firebase App Distribution?
+        key: mobile_prototype_build_triggered
+        if: build.branch == "trunk"
       - label: ":firebase: Mobile Prototype Build"
+        # Buildkite considers this implicitly satisfied if `depends_on` step is skipped due to `if:` condition, so this will run unconditionally on PRs
+        # https://buildkite.com/docs/pipelines/configure/dependencies#how-skipped-steps-affect-dependencies
+        depends_on: mobile_prototype_build_triggered
         command: .buildkite/commands/prototype-build.sh WooCommerce
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "WooCommerce/build/outputs/apk/**/*"
 
-      - block: Build Watch Prototype?
-        prompt: Trigger an on-demand Wear OS prototype build
-        key: watch_prototype_build_triggered
-        depends_on: ~
-
-      - label: ":amazon-s3: Watch Prototype Build"
-        depends_on: watch_prototype_build_triggered
+      - input: Create a Wear Prototype Build?
+        prompt: Share a Wear Prototype Build? (it will be uploaded to AWS S3)
+        key: wear_prototype_build_triggered
+      - label: ":amazon-s3: Wear Prototype Build"
+        depends_on: wear_prototype_build_triggered
         command: .buildkite/commands/prototype-build.sh WooCommerce-Wear
         plugins: [$CI_TOOLKIT]
         artifact_paths:
@@ -122,8 +129,6 @@ steps:
     continue_on_failure: true
 
   - label: ":claude: 🕵️ Build Analysis"
-    command: |
-      source .buildkite/shared-pipeline-vars
-      buildkite-agent pipeline upload .buildkite/claude-analysis.yml
+    command: .buildkite/commands/upload-claude-analysis.sh
     agents:
       queue: upload

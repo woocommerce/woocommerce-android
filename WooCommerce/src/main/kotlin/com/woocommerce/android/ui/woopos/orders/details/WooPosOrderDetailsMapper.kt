@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
@@ -112,14 +113,36 @@ class WooPosOrderDetailsMapper @Inject constructor(
     suspend fun buildRefundedLineItems(
         order: Order,
         refundResult: RefundsFetchResult
-    ): List<LineItemRow> = coroutineScope {
+    ): List<LineItemRow> {
         val refunds = when (refundResult) {
             is RefundsFetchResult.Success -> refundResult.refunds
-            is RefundsFetchResult.Error -> return@coroutineScope emptyList()
+            is RefundsFetchResult.Error -> return emptyList()
         }
+        return buildLineItemsFromRefunds(order, refunds)
+    }
 
+    suspend fun buildNonRefundedLineItems(
+        order: Order,
+        refundResult: RefundsFetchResult
+    ): List<LineItemRow> {
+        val refunds = when (refundResult) {
+            is RefundsFetchResult.Success -> refundResult.refunds
+            is RefundsFetchResult.Error -> emptyList()
+        }
+        val items = getNonRefundedItems(order, refunds)
+        return buildLineItems(order, items)
+    }
+
+    suspend fun buildLineItemsForSingleRefund(
+        order: Order,
+        refund: Refund
+    ): List<LineItemRow> = buildLineItemsFromRefunds(order, listOf(refund))
+
+    private suspend fun buildLineItemsFromRefunds(
+        order: Order,
+        refunds: List<Refund>
+    ): List<LineItemRow> = coroutineScope {
         val groupedItems = groupRefundedItems(refunds)
-
         groupedItems.map { refundItem ->
             async {
                 val orderItem = order.items.find { it.itemId == refundItem.orderItemId }
@@ -147,18 +170,6 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 )
             }
         }.awaitAll()
-    }
-
-    suspend fun buildNonRefundedLineItems(
-        order: Order,
-        refundResult: RefundsFetchResult
-    ): List<LineItemRow> {
-        val refunds = when (refundResult) {
-            is RefundsFetchResult.Success -> refundResult.refunds
-            is RefundsFetchResult.Error -> emptyList()
-        }
-        val items = getNonRefundedItems(order, refunds)
-        return buildLineItems(order, items)
     }
 
     private suspend fun buildLineItems(

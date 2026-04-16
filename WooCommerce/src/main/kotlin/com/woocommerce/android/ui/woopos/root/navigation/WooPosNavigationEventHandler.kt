@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
 import com.woocommerce.android.ui.woopos.bookings.note.navigateToBookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.navigateToWebViewScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
@@ -90,5 +91,8 @@ fun NavHostController.handleNavigationEvent(
                 event.orderId,
                 event.source,
             )
+
+        is WooPosNavigationEvent.OpenWebView ->
+            navigateToWebViewScreen(event.url, event.title)
     }
 }

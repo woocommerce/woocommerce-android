@@ -25,7 +25,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
     private val testCiabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.WooPayments) } doReturn true
+        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
     }
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         orderDetailRepository = repository,
@@ -354,7 +354,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `given WooPayments is not supported by CIAB, when check order is collectable, then returns false`() =
         testBlocking {
             // GIVEN
-            whenever(testCiabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)) doReturn false
+            whenever(testCiabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)) doReturn false
             val order = getOrder()
 
             // WHEN

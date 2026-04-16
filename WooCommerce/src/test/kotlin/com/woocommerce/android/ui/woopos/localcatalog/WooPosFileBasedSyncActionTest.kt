@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.test.runTest
@@ -34,6 +35,7 @@ class WooPosFileBasedSyncActionTest {
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val logger: WooPosLogWrapper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private lateinit var site: SiteModel
 
     private val defaultUrl = "https://example.com/catalog.json"
@@ -76,7 +78,8 @@ class WooPosFileBasedSyncActionTest {
             syncWithFts = syncWithFts,
             preferencesRepository = preferencesRepository,
             syncTimestampManager = syncTimestampManager,
-            logger = logger
+            logger = logger,
+            analyticsTracker = analyticsTracker,
         )
         site = SiteModel().apply {
             id = 1
@@ -382,11 +385,10 @@ class WooPosFileBasedSyncActionTest {
         whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(10)
         givenCatalogGenerationNeverCompletes()
 
-        // WHEN
+        // THEN - 10 accumulated + 1 initial state-change poll + 20 polls without progress = 31
         sut.syncCatalog(site)
 
-        // THEN - 10 accumulated + 20 max attempts = 30
-        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 30)
+        verify(preferencesRepository).setFileBasedSyncPollAttempts(site.localId(), 31)
     }
 
     @Test
@@ -426,10 +428,24 @@ class WooPosFileBasedSyncActionTest {
         // WHEN
         val result = sut.syncCatalog(site)
 
-        // THEN - 5 accumulated + 20 max = 25
+        // THEN - 5 accumulated + 1 initial state-change poll + 20 polls without progress = 26
         val timeout = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
             as PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout
-        assertThat(timeout.pollAttempts).isEqualTo(25)
+        assertThat(timeout.pollAttempts).isEqualTo(26)
+    }
+
+    @Test
+    fun `given many polls per state, when state advances, then poll budget resets`() = runTest {
+        // GIVEN — 15 polls in SCHEDULED + 15 polls in IN_PROGRESS + COMPLETED. Without the
+        // state-change reset this would exceed MAX_POLL_ATTEMPTS=20 and time out, but each phase
+        // alone is below the budget so the overall sync should succeed.
+        givenCatalogScheduledThenInProgressThenCompleted(scheduledPolls = 15, inProgressPolls = 15)
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success::class.java)
     }
 
     @Test
@@ -651,6 +667,25 @@ class WooPosFileBasedSyncActionTest {
                     )
                 )
             )
+    }
+
+    private suspend fun givenCatalogScheduledThenInProgressThenCompleted(
+        scheduledPolls: Int,
+        inProgressPolls: Int,
+    ) {
+        val scheduled = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.SCHEDULED)
+        )
+        val inProgress = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.IN_PROGRESS, progress = 50f, total = 100)
+        )
+        val completed = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.COMPLETED, url = defaultUrl)
+        )
+        var stub = whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site)).thenReturn(scheduled)
+        repeat(scheduledPolls - 1) { stub = stub.thenReturn(scheduled) }
+        repeat(inProgressPolls) { stub = stub.thenReturn(inProgress) }
+        stub.thenReturn(completed)
     }
 
     private suspend fun givenFileDownloadSuccess() {

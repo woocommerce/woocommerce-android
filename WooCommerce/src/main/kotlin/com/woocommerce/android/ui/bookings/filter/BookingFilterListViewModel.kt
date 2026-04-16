@@ -2,11 +2,10 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.automattic.eventhorizon.BookingListApplyFiltersEvent
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.ui.bookings.BookingAnalyticsHelper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.ui.compose.DialogState
@@ -126,9 +125,8 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onShowBookings() {
         val filters = _uiState.value.updatedBookingFilters
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS,
-            mapOf(
-                BookingAnalyticsHelper.KEY_SELECTED_FILTERS to filters.activeFilterTrackingKeys().sorted().toString()
+            BookingListApplyFiltersEvent(
+                selectedFilters = filters.activeFilterTrackingKeys().sorted().toString()
             )
         )
         launch {
@@ -151,7 +149,7 @@ class BookingFilterListViewModel @Inject constructor(
         if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) add("team_member")
         if (bookingType?.value != null) add("booking_type")
         if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) add("service_events")
-        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) add("attendance_status")
+        if (attendanceStatus != BookingsFilterOption.AttendanceStatus.DEFAULT) add("attendance_status")
         if (paymentStatus != null) add("payment_status")
         if (customer != null) add("customer")
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) add("date_time")

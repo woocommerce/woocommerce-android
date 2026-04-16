@@ -71,12 +71,12 @@ fun WooPosItemList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(vertical = WooPosSpacing.XXSmall.value),
+        contentPadding = PaddingValues(top = WooPosSpacing.Small.value, bottom = WooPosSpacing.XXSmall.value),
         state = listState,
     ) {
         items(
             state.items,
-            key = { product -> product.id }
+            key = { item -> item.id }
         ) { posItem ->
             val itemModifier = Modifier.then(if (animateItems) Modifier.animateItem() else Modifier)
 

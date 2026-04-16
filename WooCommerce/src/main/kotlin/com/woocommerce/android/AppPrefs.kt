@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
@@ -339,12 +340,17 @@ object AppPrefs {
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
-    fun isFeatureFlagOverrideEnabled(flag: FeatureFlag, defaultValue: Boolean): Boolean {
-        return getBoolean(getFeatureFlagKey(flag), defaultValue)
+    fun getFeatureFlagOverride(flag: FeatureFlag): Boolean? {
+        val key = getFeatureFlagKey(flag)
+        return if (exists(key)) getBoolean(key, false) else null
     }
 
     fun setFeatureFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         setBoolean(getFeatureFlagKey(flag), enabled)
+    }
+
+    fun removeFeatureFlagOverride(flag: FeatureFlag) {
+        remove(getFeatureFlagKey(flag))
     }
 
     private fun getFeatureFlagKey(flag: FeatureFlag) =
@@ -1399,7 +1405,7 @@ object AppPrefs {
     }
 
     private fun remove(keyName: String) {
-        getPreferences().edit().remove(keyName).apply()
+        getPreferences().edit { remove(keyName) }
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())

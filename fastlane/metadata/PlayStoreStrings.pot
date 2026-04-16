@@ -12,20 +12,20 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "This update makes the Wear app run more smoothly with faster startup times and improved reliability, giving you a better experience managing your store from your wrist."
+msgid "This release includes internal updates and maintenance improvements for a smoother, more reliable WooCommerce Wear experience."
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_243"
+msgctxt "release_note_245"
 msgid ""
-"24.3:\n"
-"We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.\n"
+"24.5:\n"
+"Creating orders for registered customers is now more reliable. We fixed an issue where billing details could appear in the shipping address, helping you send orders to the right destination.\n"
 msgstr ""
 
-msgctxt "release_note_242"
+msgctxt "release_note_244"
 msgid ""
-"24.2:\n"
-"Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.\n"
+"24.4:\n"
+"Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

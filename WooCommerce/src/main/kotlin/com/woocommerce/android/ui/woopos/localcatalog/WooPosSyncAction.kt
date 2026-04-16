@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -17,6 +20,7 @@ class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     suspend fun syncCatalog(
         site: SiteModel,
@@ -31,7 +35,10 @@ class WooPosSyncAction @Inject constructor(
             updateDatabaseWithFetchedItems(site, fetchResults, isFullSync)
         }.fold(
             onSuccess = { result -> result },
-            onFailure = { error -> handleSyncError(error) }
+            onFailure = { error ->
+                if (error is CancellationException) throw error
+                handleSyncError(error)
+            }
         )
     }
 
@@ -133,7 +140,7 @@ class WooPosSyncAction @Inject constructor(
             posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
             posLocalCatalogStore.upsertVariations(fetchResults.variations).getOrThrow()
 
-            if (isFullSync) {
+            val ftsSyncResult = if (isFullSync) {
                 syncWithFts.syncFtsForFullSync(siteIdString, allProducts, fetchResults.variations)
             } else {
                 val trashProductIds = fetchResults.trashProducts.map { it.remoteId }
@@ -142,6 +149,15 @@ class WooPosSyncAction @Inject constructor(
                     fetchResults.products,
                     fetchResults.variations,
                     fetchResults.productsToRemove + trashProductIds
+                )
+            }
+            ftsSyncResult?.let {
+                analyticsTracker.track(
+                    WooPosAnalyticsEvent.Event.FtsIndexBuilt(
+                        syncType = if (isFullSync) "full" else "incremental",
+                        indexDurationMs = it.durationMs,
+                        productsIndexed = it.productsIndexed,
+                    )
                 )
             }
         }.fold(
@@ -167,16 +183,20 @@ class WooPosSyncAction @Inject constructor(
             )
 
             is WooPosLocalCatalogError.NetworkError -> WooPosSyncResult.Failed.NetworkError(
-                errorMessage = error.errorMessage
+                errorMessage = error.errorMessage.ifBlank {
+                    "Network error${error.code?.let { " (code: $it)" } ?: ""}"
+                }
             )
 
             is WooPosLocalCatalogError.DatabaseError -> WooPosSyncResult.Failed.DatabaseError(
-                errorMessage = error.errorMessage,
+                errorMessage = error.errorMessage.ifBlank {
+                    "Database error (${error.throwable?.let { it::class.simpleName } ?: "unknown"})"
+                },
                 throwable = error.throwable
             )
 
             is WooPosLocalCatalogError.InvalidResponse -> WooPosSyncResult.Failed.InvalidResponse(
-                errorMessage = error.errorMessage
+                errorMessage = error.errorMessage.ifBlank { "Invalid response" }
             )
 
             is WooPosLocalCatalogError.EmptyResponse -> WooPosSyncResult.Failed.InvalidResponse(
@@ -184,7 +204,8 @@ class WooPosSyncAction @Inject constructor(
             )
 
             else -> WooPosSyncResult.Failed.UnexpectedError(
-                error.message ?: "Failed to sync catalog"
+                error.message?.takeIf { it.isNotBlank() }
+                    ?: "Failed to sync catalog (${error::class.simpleName})"
             )
         }
     }
@@ -291,7 +312,9 @@ class WooPosSyncAction @Inject constructor(
             is WooPosLocalCatalogError.DatabaseError -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncResult.Failed.DatabaseError(
-                    errorMessage = error.errorMessage,
+                    errorMessage = error.errorMessage.ifBlank {
+                        "Transaction database error (${error.throwable?.let { it::class.simpleName } ?: "unknown"})"
+                    },
                     throwable = error.throwable
                 )
             }
@@ -299,7 +322,8 @@ class WooPosSyncAction @Inject constructor(
             else -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncResult.Failed.UnexpectedError(
-                    error.message ?: "Local Catalog Transaction failed and was rolled back"
+                    error.message?.takeIf { it.isNotBlank() }
+                        ?: "Transaction failed and was rolled back (${error::class.simpleName})"
                 )
             }
         }

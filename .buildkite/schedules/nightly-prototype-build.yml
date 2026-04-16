@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+agents:
+  queue: "android"
+
+steps:
+  - label: ":firebase: Nightly Mobile Prototype Build"
+    command: .buildkite/commands/prototype-build.sh WooCommerce
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "WooCommerce/build/outputs/apk/**/*"
+
+notify:
+  - slack:
+      channels:
+        - "#android-core-notifs"
+    if: "build.state == 'failed'"

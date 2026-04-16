@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.eventhorizon.BookingListApplyFiltersEvent
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
@@ -17,7 +17,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -221,7 +220,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val onPage = viewModel.uiState.getOrAwaitValue()
 
         // Select one attendance status (Attended)
-        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended)))
+        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended))
 
         // WHEN: leave the page (go back to root list)
         viewModel.uiState.getOrAwaitValue().onClose()
@@ -237,49 +236,20 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when two attendance statuses selected and leaving page, then root shows selected both statuses`() {
-        // GIVEN: navigate to Attendance Status page and select two statuses
-        val initial = viewModel.uiState.getOrAwaitValue()
-        initial.openPage(BookingFilterPage.AttendanceStatus)
-        val onPage = viewModel.uiState.getOrAwaitValue()
-
-        // Select two attendance statuses (Attended and Unattended)
-        onPage.onUpdateFilterOption(
-            BookingsFilterOption.AttendanceStatuses(
-                values = setOf(AttendanceStatus.Attended, AttendanceStatus.Unattended)
-            )
-        )
-
-        // WHEN: leave the page (go back to root list)
-        viewModel.uiState.getOrAwaitValue().onClose()
-
-        // THEN: root list shows both selected statuses in subtitle values (order agnostic)
-        val root = viewModel.uiState.getOrAwaitValue()
-
-        val attendanceItem =
-            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
-        val value = (attendanceItem.value as UiString.UiStringText).text
-
-        assertThat(value).isEqualTo("2")
-    }
-
-    @Test
-    fun `when onShowBookings called with filters, then BOOKING_LIST_APPLY_FILTERS is tracked`() {
+    fun `when onShowBookings called with filters, then BookingListApplyFiltersEvent is tracked`() {
         val state = viewModel.uiState.getOrAwaitValue()
         state.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         state.onUpdateFilterOption(
-            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended))
+            BookingsFilterOption.AttendanceStatus(AttendanceStatus.Attended)
         )
 
         viewModel.uiState.getOrAwaitValue().onShowBookings()
 
         verify(analyticsTrackerWrapper).track(
-            eq(AnalyticsEvent.BOOKING_LIST_APPLY_FILTERS),
-            argThat<Map<String, Any>> {
-                val filters = this["selected_filters"] as? String
-                filters != null &&
-                    filters.contains("attendance_status") &&
-                    filters.contains("booking_type")
+            argThat<Trackable> {
+                this is BookingListApplyFiltersEvent &&
+                    this.selectedFilters.contains("attendance_status") &&
+                    this.selectedFilters.contains("booking_type")
             }
         )
     }

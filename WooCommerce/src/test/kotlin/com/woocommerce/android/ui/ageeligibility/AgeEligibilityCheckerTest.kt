@@ -6,6 +6,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
@@ -22,15 +24,18 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     private val client = FakeAgeSignalsClient()
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val accountRepository: AccountRepository = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(true)
         ageEligibilityChecker = AgeEligibilityChecker(
             client,
             prefsWrapper,
             accountRepository,
+            featureFlagRepository,
             trackerWrapper
         )
     }

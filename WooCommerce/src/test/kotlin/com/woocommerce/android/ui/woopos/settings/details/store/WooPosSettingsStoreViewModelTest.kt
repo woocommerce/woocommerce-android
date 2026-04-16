@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -9,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class WooPosSettingsStoreViewModelTest {
@@ -19,9 +25,12 @@ class WooPosSettingsStoreViewModelTest {
 
     private val storeRepository: WooPosSettingsStoreRepository = mock()
     private val receiptRepository: WooPosSettingsReceiptRepository = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
-    fun `given init, when repositories return data, then state is updated with loaded store and successful receipt`() = runTest {
+    fun `when screen resumed, then state is updated with loaded store and successful receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -38,7 +47,8 @@ class WooPosSettingsStoreViewModelTest {
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.Success(receiptInfo))
 
         // WHEN
-        val viewModel = WooPosSettingsStoreViewModel(storeRepository, receiptRepository)
+        val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -48,7 +58,7 @@ class WooPosSettingsStoreViewModelTest {
     }
 
     @Test
-    fun `given init, when store loads successfully but receipt is not available, then state shows loaded store and not supported receipt`() = runTest {
+    fun `when screen resumed and receipt is not available, then state shows not supported receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -58,7 +68,8 @@ class WooPosSettingsStoreViewModelTest {
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
 
         // WHEN
-        val viewModel = WooPosSettingsStoreViewModel(storeRepository, receiptRepository)
+        val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -68,7 +79,7 @@ class WooPosSettingsStoreViewModelTest {
     }
 
     @Test
-    fun `given init, when store loads successfully but receipt fails, then state shows loaded store and error receipt`() = runTest {
+    fun `when screen resumed and receipt fails, then state shows error receipt`() = runTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
@@ -78,7 +89,8 @@ class WooPosSettingsStoreViewModelTest {
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.Error)
 
         // WHEN
-        val viewModel = WooPosSettingsStoreViewModel(storeRepository, receiptRepository)
+        val viewModel = createViewModel()
+        viewModel.onScreenResumed()
         advanceUntilIdle()
 
         // THEN
@@ -105,14 +117,79 @@ class WooPosSettingsStoreViewModelTest {
             address = ""
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(emptyStoreInfo)
-        whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
 
         // WHEN
-        val viewModel = WooPosSettingsStoreViewModel(storeRepository, receiptRepository)
+        val viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
         val finalState = viewModel.state.value
         assertThat(finalState.storeInfoState).isEqualTo(WooPosSettingsStoreState.StoreState.Loaded(emptyStoreInfo))
     }
+
+    @Test
+    fun `when edit receipt clicked on non-CIAB site, then emits URL with wc-settings path`() = runTest {
+        // GIVEN
+        val site = SiteModel().apply { url = "https://mystore.com" }
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(false)
+        whenever(storeRepository.getStoreInfo()).thenReturn(
+            WooPosSettingsStoreState.StoreInfo(storeName = "", address = "")
+        )
+        whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        val results = mutableListOf<WooPosSettingsStoreViewModel.EditReceiptTarget>()
+        val job = launch(coroutineTestRule.testDispatcher) {
+            viewModel.openEditReceiptEvent.collect { results.add(it) }
+        }
+        viewModel.onEditReceiptClicked()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(results).hasSize(1)
+        assertThat(results.first().url)
+            .isEqualTo("https://mystore.com/wp-admin/admin.php?page=wc-settings&tab=point-of-sale")
+        job.cancel()
+    }
+
+    @Test
+    fun `when edit receipt clicked on CIAB site, then emits URL with next-admin path`() = runTest {
+        // GIVEN
+        val site = SiteModel().apply { url = "https://my.commerce-garden.com" }
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
+        whenever(storeRepository.getStoreInfo()).thenReturn(
+            WooPosSettingsStoreState.StoreInfo(storeName = "", address = "")
+        )
+        whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        val results = mutableListOf<WooPosSettingsStoreViewModel.EditReceiptTarget>()
+        val job = launch(coroutineTestRule.testDispatcher) {
+            viewModel.openEditReceiptEvent.collect { results.add(it) }
+        }
+        viewModel.onEditReceiptClicked()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(results).hasSize(1)
+        assertThat(results.first().url).contains("next-admin")
+        assertThat(results.first().url).contains("woocommerce%2Fsettings%2Fpayments%2Fpos")
+        job.cancel()
+    }
+
+    private fun createViewModel() = WooPosSettingsStoreViewModel(
+        storeRepository = storeRepository,
+        receiptRepository = receiptRepository,
+        selectedSite = selectedSite,
+        ciabSiteGateKeeper = ciabSiteGateKeeper,
+        analyticsTracker = analyticsTracker,
+    )
 }

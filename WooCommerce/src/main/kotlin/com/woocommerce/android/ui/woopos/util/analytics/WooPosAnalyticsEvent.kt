@@ -646,6 +646,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "get_support_tapped"
         }
 
+        data object EditReceiptTapped : Event() {
+            override val name: String = "edit_receipt_tapped"
+        }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
@@ -885,6 +889,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class IneligibleUILearnMoreTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_learn_more_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
         data object LocalCatalogDownloadingScreenShown : Event() {
             override val name: String = "local_catalog_downloading_screen_shown"
         }
@@ -1024,6 +1040,60 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "action" to action
+                    )
+                )
+            }
+        }
+
+        data class SearchResultsFetched(
+            val millisecondsSinceRequestSent: Long,
+            val resultsCount: Int,
+            val source: String,
+            val searchMethod: String,
+        ) : Event() {
+            override val name: String = "search_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
+                        "results_count" to resultsCount.toString(),
+                        "source" to source,
+                        "search_method" to searchMethod,
+                    )
+                )
+            }
+        }
+
+        data class FtsIndexBuilt(
+            val syncType: String,
+            val indexDurationMs: Long,
+            val productsIndexed: Int,
+        ) : Event() {
+            override val name: String = "fts_index_built"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "sync_type" to syncType,
+                        "index_duration_ms" to indexDurationMs.toString(),
+                        "products_indexed" to productsIndexed.toString(),
+                    )
+                )
+            }
+        }
+
+        data class SearchResultTapped(
+            val resultPosition: Int,
+            val resultType: String,
+        ) : Event() {
+            override val name: String = "pos_search_result_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "result_position" to resultPosition.toString(),
+                        "result_type" to resultType,
                     )
                 )
             }
@@ -1285,13 +1355,13 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> "ciab_plan_upgrade_required"
     }
 }
 
 internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
-        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
         SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }

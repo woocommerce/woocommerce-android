@@ -24,7 +24,6 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
-import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isSitePublic

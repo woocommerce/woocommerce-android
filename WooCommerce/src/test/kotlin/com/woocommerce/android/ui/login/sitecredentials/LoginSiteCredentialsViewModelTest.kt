@@ -273,7 +273,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
@@ -317,7 +317,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
+    fun `given user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
         setup {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
@@ -328,7 +328,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {

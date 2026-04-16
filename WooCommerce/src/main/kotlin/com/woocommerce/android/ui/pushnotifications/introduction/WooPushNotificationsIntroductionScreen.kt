@@ -89,6 +89,12 @@ fun WooPushNotificationsIntroductionScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                ViewState.Connected -> ConnectedContent(
+                    onContinueClick = onContinueClick,
+                    onNotNowClick = onNotNowClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 ViewState.ForbiddenError -> ErrorContent(
                     bodyText = stringResource(
                         id = R.string.woo_push_notifications_introduction_error_forbidden_body
@@ -278,6 +284,62 @@ private fun IntroContent(
 }
 
 @Composable
+private fun ConnectedContent(
+    onContinueClick: () -> Unit,
+    onNotNowClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 16.dp)
+        ) {
+            WordPressWooBadge(
+                iconSize = 64.dp
+            )
+
+            Text(
+                text = stringResource(id = R.string.woo_push_notifications_introduction_connected_title),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+
+            Text(
+                text = stringResource(id = R.string.woo_push_notifications_introduction_connected_body),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+        }
+
+        WCColoredButton(
+            onClick = onContinueClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.woo_push_notifications_introduction_continue))
+        }
+
+        WCOutlinedButton(
+            onClick = onNotNowClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.woo_push_notifications_introduction_not_now),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
 private fun ErrorContent(
     bodyText: String,
     onContactSupportClick: () -> Unit,
@@ -373,6 +435,21 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
     WooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.UpdateRequired,
+            onContinueClick = {},
+            onCloseClick = {},
+            onNotNowClick = {},
+            onWhatIsWPComClick = {},
+            onContactSupportClick = {}
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun WooPushNotificationsIntroductionConnectedPreview() {
+    WooThemeWithBackground {
+        WooPushNotificationsIntroductionScreen(
+            viewState = ViewState.Connected,
             onContinueClick = {},
             onCloseClick = {},
             onNotNowClick = {},

@@ -573,6 +573,7 @@ class SiteRestClient @Inject constructor(
                 isJetpackActive,
                 isJetpackConnected,
                 isWordPressDotCom, // CHECKSTYLE IGNORE
+                isCommerceGarden,
                 urlAfterRedirects
             )
         }
@@ -1140,6 +1141,11 @@ class SiteRestClient @Inject constructor(
         site.setIsGardenSite(from.is_garden)
         site.gardenName = from.garden_name
         site.gardenPartner = from.garden_partner
+
+        // CIAB sites always have WooCommerce, even if the API reports otherwise
+        if (from.is_garden && from.garden_name == SiteModel.CIAB_GARDEN_NAME) {
+            site.hasWooCommerce = true
+        }
 
         return site
     }

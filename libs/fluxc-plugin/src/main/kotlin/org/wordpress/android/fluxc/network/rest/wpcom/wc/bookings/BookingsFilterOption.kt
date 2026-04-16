@@ -20,9 +20,9 @@ sealed interface BookingsFilterOption {
         enum class Type { SERVICE, EVENT }
     }
 
-    data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
+    data class AttendanceStatus(val value: BookingEntity.AttendanceStatus?) : BookingsFilterOption {
         companion object {
-            val DEFAULT = AttendanceStatuses(emptySet())
+            val DEFAULT = AttendanceStatus(null)
         }
     }
 
@@ -34,7 +34,7 @@ sealed interface BookingsFilterOption {
 
     object PaymentStatus : BookingsFilterOption
 
-    data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
+    data class Customer(val userId: Long, val customerName: String) : BookingsFilterOption
 
     data class DateRange(
         val before: Instant?,
@@ -63,7 +63,7 @@ data class BookingFilters(
     val teamMembers: BookingsFilterOption.TeamMembers = BookingsFilterOption.TeamMembers.DEFAULT,
     val bookingType: BookingsFilterOption.BookingType? = null,
     val serviceEvents: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
-    val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
+    val attendanceStatus: BookingsFilterOption.AttendanceStatus = BookingsFilterOption.AttendanceStatus.DEFAULT,
     val excludedBookingStatuses: BookingsFilterOption.ExcludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val customer: BookingsFilterOption.Customer? = null,
@@ -76,7 +76,7 @@ data class BookingFilters(
             if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) count++
             if (bookingType?.value != null) count++
             if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) count++
-            if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
+            if (attendanceStatus != BookingsFilterOption.AttendanceStatus.DEFAULT) count++
             if (paymentStatus != null) count++
             if (customer != null) count++
             if (dateRange != BookingsFilterOption.DateRange.DEFAULT) count++

@@ -373,7 +373,6 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any(),
                     any()
                 )
             ).thenReturn(
@@ -393,7 +392,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 dateArgument.capture(),
-                any(),
                 any(),
                 any(),
                 any(),
@@ -415,7 +413,6 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any(),
                     any()
                 )
             ).thenReturn(
@@ -435,7 +432,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 dateArgument.capture(),
-                any(),
                 any(),
                 any(),
                 any(),
@@ -465,7 +461,6 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any(),
                     any()
                 )
             ).thenReturn(
@@ -484,7 +479,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 dateArgument.capture(),
-                any(),
                 any(),
                 any(),
                 any(),
@@ -506,7 +500,6 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any(),
                     any()
                 )
             ).thenReturn(
@@ -525,7 +518,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 dateArgument.capture(),
-                any(),
                 any(),
                 any(),
                 any(),
@@ -556,7 +548,6 @@ class WCStatsStoreTest {
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
-                any(),
                 any(),
                 any(),
                 any(),
@@ -616,7 +607,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any(),
                 any()
             )
         ).thenReturn(currentWeekPayload)
@@ -658,7 +648,6 @@ class WCStatsStoreTest {
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
-                any(),
                 any(),
                 any(),
                 any(),
@@ -712,7 +701,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any(),
                 any()
             )
         ).thenReturn(allSiteCurrentDayPayload)
@@ -753,7 +741,6 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any(),
                 any()
             )
         ).thenReturn(nonExistentPayload)
@@ -787,7 +774,6 @@ class WCStatsStoreTest {
         // missing data
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
-                any(),
                 any(),
                 any(),
                 any(),

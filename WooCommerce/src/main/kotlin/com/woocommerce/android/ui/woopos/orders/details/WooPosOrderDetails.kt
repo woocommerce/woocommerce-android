@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -97,7 +99,7 @@ fun WooPosOrderDetails(
 
         Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
-        OrdersTotals(details = details)
+        OrdersTotals(details = details, onUIEvent = onUIEvent)
     }
 }
 
@@ -391,7 +393,10 @@ private fun BookingInfoContent(
 }
 
 @Composable
-private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Computed.Details) {
+private fun OrdersTotals(
+    details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit = {},
+) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -465,15 +470,26 @@ private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Comput
 
             if (breakdown.refunds.isNotEmpty()) {
                 DividerWithSpacing()
-                breakdown.refunds.forEachIndexed { index, refundAmount ->
-                    TotalRowLine(
-                        label = stringResource(R.string.woopos_orders_details_refunded_label),
-                        value = refundAmount
+                breakdown.refunds.forEachIndexed { index, refundRow ->
+                    RefundRowContent(
+                        refundRow = refundRow,
+                        onViewDetailsClicked = {
+                            onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
+                        }
                     )
                     if (index < breakdown.refunds.size - 1) {
                         DividerWithSpacing()
                     }
                 }
+            }
+
+            breakdown.refundLoadError?.let { error ->
+                DividerWithSpacing()
+                WooPosText(
+                    text = error,
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
 
             breakdown.netPayment?.let { netPayment ->
@@ -484,6 +500,58 @@ private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Comput
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun RefundRowContent(
+    refundRow: WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow,
+    onViewDetailsClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewDetailsClicked() }
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WooPosText(
+                text = refundRow.label,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.weight(1f))
+            WooPosText(
+                text = refundRow.amount,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosText(
+            text = refundRow.date,
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+        )
+
+        refundRow.reason?.let { reason ->
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+            WooPosText(
+                text = reason,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_orders_details_refund_view_details),
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+        )
     }
 }
 
@@ -624,7 +692,20 @@ fun WooPosOrderDetailsPreview() {
             discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
-            refunds = listOf("-$3.00", "-$2.00"),
+            refunds = listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #1",
+                    amount = "-$3.00",
+                    date = "Aug 29, 2025 at 12:26 PM",
+                    reason = "Customer bought an extra item.",
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #2",
+                    amount = "-$2.00",
+                    date = "Aug 30, 2025 at 2:15 PM",
+                    reason = null,
+                ),
+            ),
             netPayment = "$13.00"
         ),
         total = "$18.00",

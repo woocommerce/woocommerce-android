@@ -71,19 +71,7 @@ constructor(
                 Result.success()
             }
 
-            is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
-                logger.e(
-                    "Local catalog FULL sync failed: ${fullSyncResult.error}. Permanently " +
-                        "disabling periodic sync for site ${site.url}."
-                )
-                Result.failure()
-            }
-
-            is PosLocalCatalogSyncResult.Failure.NetworkError,
-            is PosLocalCatalogSyncResult.Failure.DatabaseError,
-            is PosLocalCatalogSyncResult.Failure.InvalidResponse,
-            is PosLocalCatalogSyncResult.Failure.UnexpectedError,
-            is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> {
+            is PosLocalCatalogSyncResult.Failure -> {
                 logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }

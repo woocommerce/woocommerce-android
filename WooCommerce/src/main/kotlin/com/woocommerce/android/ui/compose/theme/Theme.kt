@@ -1,9 +1,13 @@
 package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.material.MaterialTheme as Material2Theme
 import androidx.compose.material.Surface as Material2Surface
 
@@ -48,8 +52,11 @@ fun WooTheme(
             colors = material2Colors,
             shapes = Material2Shapes,
             typography = Material2Typography,
-            content = content
-        )
+        ) {
+            Box(Modifier.semantics { testTagsAsResourceId = true }) {
+                content()
+            }
+        }
     }
 }
 

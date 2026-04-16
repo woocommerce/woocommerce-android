@@ -29,7 +29,12 @@ class BookingFilterRepository @Inject constructor(
     // Keys are built per-site to keep selections isolated across sites
     private fun teamMembersKey(siteId: Int) = stringSetPreferencesKey("bfilters_${siteId}_team_members")
     private fun bookingTypeKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_booking_type")
-    private fun attendanceStatusesKey(siteId: Int) = stringSetPreferencesKey("bfilters_${siteId}_attendance_statuses")
+    private fun attendanceStatusKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_attendance_status")
+
+    @Deprecated("Legacy key for migration")
+    private fun legacyAttendanceStatusesKey(siteId: Int) =
+        stringSetPreferencesKey("bfilters_${siteId}_attendance_statuses")
+
     private fun customerIdKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_customer_id")
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
@@ -43,8 +48,7 @@ class BookingFilterRepository @Inject constructor(
             BookingFilters(
                 teamMembers = prefs.getTeamMembers(siteId) ?: BookingsFilterOption.TeamMembers.DEFAULT,
                 bookingType = prefs.getBookingType(siteId),
-                attendanceStatuses = prefs.getAttendanceStatuses(siteId)
-                    ?: BookingsFilterOption.AttendanceStatuses.DEFAULT,
+                attendanceStatus = prefs.getAttendanceStatus(siteId),
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId),
                 serviceEvents = prefs.getServiceEventsValue(siteId)
@@ -56,7 +60,6 @@ class BookingFilterRepository @Inject constructor(
     suspend fun save(bookingFilters: BookingFilters) {
         val siteId = selectedSite.getSelectedSiteId()
         dataStore.edit { prefs ->
-            // Team member
             val teamMembersKey = teamMembersKey(siteId)
             val teamMembersValues = bookingFilters.teamMembers.values
             if (teamMembersValues.isEmpty()) {
@@ -65,34 +68,29 @@ class BookingFilterRepository @Inject constructor(
                 prefs[teamMembersKey] = teamMembersValues.map { it.value.toString() }.toSet()
             }
 
-            // Booking type
             val bookingTypeKey = bookingTypeKey(siteId)
             val bookingTypeValue = bookingFilters.bookingType?.value?.name
             if (bookingTypeValue != null) {
                 prefs[bookingTypeKey] = bookingTypeValue
             } else {
-                // Clear if not provided
                 prefs.remove(bookingTypeKey)
             }
 
-            // Attendance statuses
-            val attendanceStatusesKey = attendanceStatusesKey(siteId)
-            val attendanceStatusesValues = bookingFilters.attendanceStatuses.values
-            if (attendanceStatusesValues.isEmpty()) {
-                prefs.remove(attendanceStatusesKey)
+            val attendanceStatusValue = bookingFilters.attendanceStatus.value?.key
+            if (attendanceStatusValue != null) {
+                prefs[attendanceStatusKey(siteId)] = attendanceStatusValue
             } else {
-                prefs[attendanceStatusesKey] = attendanceStatusesValues.map { it.key }.toSet()
+                prefs.remove(attendanceStatusKey(siteId))
             }
+            @Suppress("DEPRECATION")
+            prefs.remove(legacyAttendanceStatusesKey(siteId))
 
-            // Customer
             val customerIdKey = customerIdKey(siteId)
             val customerNameKey = customerNameKey(siteId)
             val customer = bookingFilters.customer
             if (customer != null) {
-                val id = customer.customerId
-                val name = customer.customerName
-                prefs[customerIdKey] = id
-                prefs[customerNameKey] = name
+                prefs[customerIdKey] = customer.userId
+                prefs[customerNameKey] = customer.customerName
             } else {
                 // Clear if not provided
                 prefs.remove(customerIdKey)
@@ -124,7 +122,6 @@ class BookingFilterRepository @Inject constructor(
                     .map { "${it.productId}${SERVICE_EVENTS_PRODUCT_DELIMITER}${it.productName}" }
                     .toSet()
             }
-            // Other filters currently have no persisted payload; ignore for now
         }
     }
 
@@ -141,19 +138,30 @@ class BookingFilterRepository @Inject constructor(
         return value?.let { BookingsFilterOption.BookingType(value = it) }
     }
 
-    private fun Preferences.getAttendanceStatuses(siteId: Int): BookingsFilterOption.AttendanceStatuses? {
-        val stored = this[attendanceStatusesKey(siteId)] ?: return null
-        val set = stored.mapNotNull { runCatching { BookingEntity.AttendanceStatus.fromKey(it) }.getOrNull() }
-            .filterNot { it is BookingEntity.AttendanceStatus.Unknown }
-            .toSet()
-        return BookingsFilterOption.AttendanceStatuses(set)
+    private fun Preferences.getAttendanceStatus(siteId: Int): BookingsFilterOption.AttendanceStatus {
+        val stored = this[attendanceStatusKey(siteId)]
+            ?: return migrateLegacyAttendanceStatus(siteId)
+        val status = runCatching { BookingEntity.AttendanceStatus.fromKey(stored) }.getOrNull()
+            ?.takeIf { it !is BookingEntity.AttendanceStatus.Unknown }
+        return BookingsFilterOption.AttendanceStatus(status)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun Preferences.migrateLegacyAttendanceStatus(siteId: Int): BookingsFilterOption.AttendanceStatus {
+        val legacy = this[legacyAttendanceStatusesKey(siteId)]
+            ?: return BookingsFilterOption.AttendanceStatus.DEFAULT
+        val status = legacy.firstNotNullOfOrNull { key ->
+            runCatching { BookingEntity.AttendanceStatus.fromKey(key) }.getOrNull()
+                ?.takeIf { it !is BookingEntity.AttendanceStatus.Unknown }
+        }
+        return BookingsFilterOption.AttendanceStatus(status)
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {
         val customerId = this[customerIdKey(siteId)]
         val customerName = this[customerNameKey(siteId)]
         return if (customerId != null && customerName != null) {
-            BookingsFilterOption.Customer(customerId = customerId, customerName = customerName)
+            BookingsFilterOption.Customer(userId = customerId, customerName = customerName)
         } else {
             null
         }

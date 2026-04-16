@@ -349,7 +349,7 @@
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
-    <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_stats_net_sales">Net Sales</string>
     <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
@@ -378,7 +378,7 @@
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
     <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
-    <string name="my_store_widget_push_notifications_description">Connect your store to WordPress.com to get alerts for new orders and reviews.</string>
+    <string name="my_store_widget_push_notifications_description">Enable push notifications to stay on top of new orders and reviews.</string>
 
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
@@ -894,6 +894,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
     <string name="order_status_updated">Order status updated</string>
+    <string name="ciab_order_status_open">Open</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
@@ -2381,6 +2382,10 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+
+    <string name="support_developer_section_title">DEVELOPER</string>
+    <string name="support_override_feature_flags">Override Feature Flags</string>
+    <string name="support_override_feature_flags_detail">Toggle feature flags before logging in</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
     <string name="support_system_status_report_fetch_error">Error fetching SSR. Please check WooCommerce -&gt; Status in wp-admin.</string>
     <string name="help">Help</string>
@@ -2640,6 +2645,8 @@
     <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
     <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
     <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Get push notifications for your store</string>
+    <string name="woo_push_notifications_introduction_connected_body">You\'re one step away from getting notifications for new orders, reviews and more.</string>
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
@@ -3628,7 +3635,8 @@
     Woo POS
     -->
     <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_hint">Catalog syncing may take a few minutes.</string>
+    <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
@@ -3887,6 +3895,7 @@
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
+    <string name="woopos_orders_details_refunded_products_title">Refunded Products</string>
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
@@ -3899,12 +3908,19 @@
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
-    <string name="woopos_orders_details_net_payment_label">Net Payment</string>
+    <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
     <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Booking info unavailable</string>
     <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · Jan 1, 2025, 12:00 AM - 1:00 AM</string>
+    <string name="woopos_orders_details_refund_label_numbered">Refund #%1$d</string>
+    <string name="woopos_orders_details_refund_view_details">View details</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Items subtotal (%d item)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Items subtotal (%d items)</string>
+    <string name="woopos_orders_details_refund_tax">Tax</string>
+    <string name="woopos_orders_details_refund_total">Refund total</string>
+    <string name="woopos_orders_details_refund_details_background">Refund details dialog background</string>
 
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
@@ -3934,6 +3950,8 @@
     <string name="woopos_bookings_payment_status_failed">Failed</string>
     <string name="woopos_bookings_payment_status_refunded">Refunded</string>
     <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="woopos_bookings_payment_status_authorized">Authorized</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Authorization Voided</string>
     <string name="woopos_bookings_status_cancelled">Canceled</string>
     <string name="woopos_bookings_details_attendance_title">Attendance status</string>
     <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
@@ -4019,6 +4037,10 @@
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
     <string name="woopos_eligibility_screen_US_country_name">the United States</string>
     <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
+    <string name="woopos_eligibility_ciab_title">Pro plan required</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accept payments in person for just 2.70% + $0.10 per transaction. &lt;b&gt;Upgrade to Pro&lt;/b&gt; to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
+    <string name="woopos_eligibility_learn_more_label">Learn More</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
@@ -4244,6 +4266,7 @@
 
     <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
     <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Origin address missing or invalid</string>
     <string name="woo_shipping_address_notification_destination_missing_or_invalid">Destination address missing or invalid</string>
 
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
@@ -4256,6 +4279,7 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Unable to purchase shipping label. Please complete the origin address.</string>
     <string name="woo_shipping_labels_purchase_phone_error">Unable to purchase shipping label. Please add a valid phone number to the shipping address.</string>
     <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
@@ -4410,6 +4434,8 @@
     <string name="booking_payment_status_refunded">Refunded</string>
     <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
     <string name="booking_payment_status_failed">Failed</string>
+    <string name="booking_payment_status_authorized">Authorized</string>
+    <string name="booking_payment_status_authorization_voided">Authorization Voided</string>
     <string name="booking_attendance_status_attended">Attended</string>
     <string name="booking_attendance_status_unattended">Unattended</string>
     <string name="booking_mark_as_attended">Mark as attended</string>

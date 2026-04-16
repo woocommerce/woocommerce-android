@@ -162,8 +162,8 @@ private fun FiltersNavHost(
         }
         composable(BookingFilterPage.AttendanceStatus.route) {
             BookingAttendanceStatusFilterRoute(
-                initialAttendanceStatuses = state.updatedBookingFilters.attendanceStatuses
-            ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
+                initialAttendanceStatus = state.updatedBookingFilters.attendanceStatus
+            ) { attendanceStatus -> state.onUpdateFilterOption(attendanceStatus) }
         }
         composable(BookingFilterPage.PaymentStatus.route) {
         }
@@ -172,7 +172,7 @@ private fun FiltersNavHost(
                 customer.customerId?.let { id ->
                     state.onUpdateFilterOption(
                         BookingsFilterOption.Customer(
-                            customerId = id,
+                            userId = id,
                             customerName = "${customer.firstName} ${customer.lastName}".trim()
                                 .ifBlank { customer.email }.orEmpty()
                         )

@@ -29,7 +29,9 @@ internal class StripOrder @Inject constructor(private val gson: Gson) {
                         .filter {
                             it.key == CHARGE_ID_KEY ||
                                     it.key == SHIPPING_PHONE_KEY ||
-                                    it.key == RECEIPT_URL_KEY
+                                    it.key == RECEIPT_URL_KEY ||
+                                    it.key == WCMetaData.PaymentMetadataKeys.PAYMENT_STATUS ||
+                                    it.key == WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS
                         }
                 )
     }

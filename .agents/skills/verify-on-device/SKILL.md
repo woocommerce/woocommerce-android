@@ -3,6 +3,7 @@ name: verify-on-device
 description: Build, install, and visually verify the app on an Android emulator or device
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
 user-invocable: true
+context: fork
 ---
 
 # Verify on Device
@@ -10,6 +11,25 @@ user-invocable: true
 Build, install, and visually verify the app on an Android emulator or physical device using mobile-mcp.
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
+
+## Critical Rule: Default to Main App (Store Management)
+
+Unless the task explicitly mentions **POS**, **Point of Sale**, or **WooPos**, always operate in the **main app** (store management) context — `MainActivity` with bottom navigation tabs. This applies to all workflows: creating orders, viewing products, collecting payments, etc. The main app is the default; POS is only used when specifically requested.
+
+## Critical Rule: Always Restart the App
+
+Do NOT attempt to recover from the current screen state when you start a task. Always force-stop the app and relaunch it to start from a known state (the dashboard or POS). This avoids wasted time navigating out of unknown screens.
+
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
+```
+
+For POS tasks (only when explicitly requested):
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
 
 ## Critical Rule: Always Use the Accessibility Tree for Tapping
 
@@ -27,7 +47,7 @@ Only use `mobile_take_screenshot` for **visual verification** — never for deri
 
 After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow this stabilization protocol:
 
-1. Call `mobile_list_elements_on_screen` immediately after the action.
+1. Call `mobile_list_elements_on_screen` after the action.
 2. If the expected target element is NOT present, call `mobile_list_elements_on_screen` again. Each tool round-trip takes ~1-2 seconds, which provides sufficient implicit delay.
 3. Repeat up to 5 times.
 4. If after 5 attempts the expected element is still missing, take a screenshot for diagnosis and report the issue.
@@ -77,6 +97,8 @@ After launching the app or navigating to a new screen, call `mobile_list_element
 | **App Rating Dialog** | AlertDialog with text containing "rate" or "enjoy". | Tap "No Thanks" or "Remind Me Later". |
 | **Android Permission Dialog** | Elements from `com.android.permissioncontroller`, or text containing "Allow" / "Don't allow". | Tap "Allow" for testing purposes. |
 | **Snackbar** | Element with identifier containing `snackbar_text` near the bottom of the screen. | Do NOT dismiss — auto-dismisses after a few seconds. May temporarily cover bottom nav tabs; if a bottom tab tap fails, wait 3-4 seconds and retry. |
+| **Store Name Dialog** | Text "Name your store" (id: `nameYourStoreDialogFragment`). | Tap "Save" or dismiss. |
+| **Create Test Order Dialog** | Text related to test order creation. | Tap "Dismiss" or "Create". |
 
 **General dialog dismissal strategy:** Look for a dismiss/close/cancel button and tap it. If none visible, try `mobile_press_button` with `BACK`. If BACK doesn't work (non-cancellable dialogs), look for any actionable button ("OK", "Save", "Got it") and tap it. After dismissing, call `mobile_list_elements_on_screen` to confirm the dialog is gone.
 
@@ -112,11 +134,34 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 ## Steps
 
+**Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
+
 ### 1. Discover Devices
 
 Call `mobile_list_available_devices`. If multiple devices are returned, ask the user which to use. If none are found, instruct the user to boot an emulator or connect a device.
 
-### 2. Build the Debug APK
+### 2. Prepare the Device
+
+Run these ADB commands to configure the device for reliable agent interaction:
+
+```bash
+# Disable animations (prevents flaky element detection during transitions)
+adb -s <device_id> shell settings put global animator_duration_scale 0
+adb -s <device_id> shell settings put global transition_animation_scale 0
+adb -s <device_id> shell settings put global window_animation_scale 0
+```
+
+### 3. Disable LeakCanary
+
+LeakCanary shows leak detection notifications and dialogs that interfere with agent verification. Disable it before building by setting the flag in `developer.properties` (a git-ignored local config file):
+
+```bash
+# Ensure developer.properties exists and has LeakCanary disabled
+touch developer.properties
+grep -q "enable_leak_canary" developer.properties && sed -i '' 's/enable_leak_canary=.*/enable_leak_canary=false/' developer.properties || echo "enable_leak_canary=false" >> developer.properties
+```
+
+### 4. Build the Debug APK
 
 ```
 ./gradlew assembleWasabiDebug
@@ -124,27 +169,39 @@ Call `mobile_list_available_devices`. If multiple devices are returned, ask the 
 
 If the build fails with "SDK location not found", check that `local.properties` exists and contains the `sdk.dir` path. See the Error Recovery section below.
 
-### 3. Install the APK
+### 5. Install the APK
 
 Use `mobile_install_app` with:
 - **path:** `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`
 
 Optionally call `mobile_list_apps` first to check if the app is already installed.
 
-### 4. Set Up API Mocks (Optional)
+### 6. Set Up API Mocks (Optional)
 
 If the user requests verification of a specific scenario (error states, empty data, custom responses), set up ApiFaker mock endpoints **before** launching the app. See the "API Mocking with ApiFaker" section and `docs/api-faker-adb.md` for commands and workflow.
 
-### 5. Launch the App
+### 7. Restart and Launch the App
 
-Use `mobile_launch_app` with:
-- **packageName:** `com.woocommerce.android.dev`
+Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active.
 
-### 6. Handle Post-Launch Dialogs
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
+```
+
+Do NOT use `mobile_launch_app` — it launches the default launcher intent which may not always resolve to `MainActivity`.
+
+**For POS (only when explicitly requested):** Launch directly into POS with:
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
+```
+
+### 8. Handle Post-Launch Dialogs
 
 Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
 
-### 7. Start Screen Recording (Optional)
+### 9. Start Screen Recording (Optional)
 
 If the user requests a recording or demo video, start an ADB screen recording **before** navigating:
 
@@ -155,7 +212,7 @@ adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
 
 Use `--size 720x1280` to keep the file small. The recording runs in the background while you perform navigation steps. See the Screen Recording section below for full details.
 
-### 8. Navigate and Verify
+### 10. Navigate and Verify
 
 Navigate as needed per the user's request. After each navigation action:
 1. Wait for the screen to stabilize (see "Waiting for Screen Transitions").
@@ -167,7 +224,7 @@ If the expected screen identifier is NOT present after retries:
 2. Call `mobile_list_elements_on_screen` and identify which screen you are actually on.
 3. Report to the user: "Navigation to [target] failed. Currently on [detected screen]."
 
-### 9. Stop Recording and Save Evidence
+### 11. Stop Recording and Save Evidence
 
 **If recording:** stop the recording, pull the file, and clean up:
 
@@ -180,7 +237,7 @@ adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
 
 **Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
 
-### 10. Report Results
+### 12. Report Results
 
 Summarize what was verified, include saved screenshot and recording paths, and flag any issues found.
 
@@ -292,20 +349,25 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 
 ## WooCommerce Navigation Reference
 
-### Bottom Navigation Bar
+All resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's theme.
 
-The bottom nav bar has these tabs (identifiers are stable across screen sizes):
+The app has two distinct navigation domains with different architectures. **Only load the reference files you need for the task** — each file adds significant context cost.
 
-| Tab | Element Identifier | Label |
-|-----|-------------------|-------|
-| My Store | `com.woocommerce.android.dev:id/dashboard` | "My store" |
-| Orders | `com.woocommerce.android.dev:id/orders` | "Orders" |
-| Products | `com.woocommerce.android.dev:id/products` | "Products" |
-| Menu | `com.woocommerce.android.dev:id/moreMenu` | "Menu" |
+### Always load first
+- [Overview & Feature Tree](references/main-app-navigation.md) -- lightweight index of all screens, bottom tabs, global elements. Read this first to orient yourself, then load only the detailed references you need.
 
-To navigate between tabs, find the target tab element in `mobile_list_elements_on_screen` by its `identifier` field, compute the center of its bounding rect, and tap.
+### Load on demand — match task keywords to the right reference
 
-**Determining the active tab:** The currently selected tab typically has a `selected: true` property in the accessibility tree. If indeterminate, take a screenshot and visually check which tab is highlighted.
+| If the task involves… | Load this reference |
+|---|---|
+| **Login**, authentication, store selection, credentials | [Login](references/main-app-login.md) |
+| **Dashboard**, stats, analytics, onboarding, date ranges | [Dashboard](references/main-app-dashboard.md) |
+| **Orders**, creating orders, **adding products to orders**, payment collection (cash/card/tap-to-pay), refunds, fulfillment, shipping labels, receipts | [Orders](references/main-app-orders.md) |
+| **Product catalog** management — creating, editing, deleting, searching products in the Products tab | [Products](references/main-app-products.md) |
+| **Settings**, payments hub, reviews, coupons, customers, Blaze, Google Ads | [More Menu](references/main-app-more.md) |
+| **POS**, Point of Sale, WooPos, landscape checkout, cash register | [POS](references/pos-navigation.md) |
+
+**Key distinction:** "Adding products to an order" is an **Orders** workflow (order creation screen), NOT a Products workflow. Only load the Products reference when the task is about the standalone product catalog (Products tab).
 
 ### Common Navigation Patterns
 
@@ -315,16 +377,6 @@ To navigate between tabs, find the target tab element in `mobile_list_elements_o
 - **Scroll down a list:** Use `mobile_swipe_on_screen` with direction `up` (swipe up to scroll down).
 - **Open a list item:** Find the item in `mobile_list_elements_on_screen` by its text or identifier, compute center coordinates, and tap.
 - **Toolbar back arrow:** Look for elements in the toolbar area (`com.woocommerce.android.dev:id/toolbar`). If the back arrow is not exposed as a separate element, use `mobile_press_button` with `BACK` instead.
-
-### Key Screen Identifiers
-
-| Screen | How to identify |
-|--------|----------------|
-| Dashboard | Element with identifier `com.woocommerce.android.dev:id/collapsing_toolbar` and label "My store" |
-| Orders list | Element with identifier `com.woocommerce.android.dev:id/ordersList` |
-| Order detail | Element with identifier `com.woocommerce.android.dev:id/orderDetail_container` |
-| Products list | Element with identifier `com.woocommerce.android.dev:id/productsRecycler` or toolbar text "Products" |
-| Menu | Elements with identifiers like `com.woocommerce.android.dev:id/moreMenu_settings` or toolbar text "Settings" |
 
 ## Error Recovery
 

@@ -20,7 +20,9 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
@@ -71,6 +73,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -286,6 +289,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
         on { isPhoneValidForShippingLabel(any()) } doReturn true
+        on { isMissingOriginAddress(any()) } doReturn false
     }
 
     private val observeOriginAddresses: ObserveOriginAddresses = mock {
@@ -425,6 +429,27 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
         val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
+    }
+
+    @Test
+    fun `when selected origin address is refreshed, then update selected shipFrom`() = testBlocking {
+        val updatedOriginAddress = defaultOriginAddresses.first().copy(email = "updated@example.com")
+        val originAddressesFlow = MutableStateFlow(defaultOriginAddresses)
+        whenever(observeOriginAddresses.invoke()) doReturn originAddressesFlow
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        originAddressesFlow.value = listOf(updatedOriginAddress)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.shippingAddresses.first().shipFrom.email).isEqualTo(updatedOriginAddress.email)
     }
 
     @Test
@@ -1004,6 +1029,61 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when origin address is missing on purchase, then show edit origin snackbar`() = testBlocking {
+        whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(sut.snackbarData).matches {
+            it?.message == R.string.woo_shipping_labels_purchase_origin_address_error
+        }
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
+    fun `when edit origin snackbar action is tapped, then dismiss snackbar and navigate to edit origin`() = testBlocking {
+        whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        val events = sut.event.captureValues()
+
+        sut.snackbarData?.action?.invoke()
+
+        assertThat(sut.snackbarData).isNull()
+        assertThat(events.last()).isEqualTo(NavigateToOriginAddressEdit(defaultOriginAddresses.first()))
+    }
+
+    @Test
     fun `when label is purchased, then track purchase_success`() = testBlocking {
         whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
             ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
@@ -1446,6 +1526,26 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when fedex pickup is requested, then OpenUrl event is triggered`() = testBlocking {
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(carrierId = "fedex")
+            )
+        )
+
+        createViewModel()
+
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onSchedulePickUpClicked()
+
+        assertThat(event).isEqualTo(OpenUrl("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"))
+    }
+
+    @Test
     fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
         val expectedPaperSize = WooShippingLabelPaperSize.A4
         given(observeAccountSettings()).willReturn(
@@ -1619,7 +1719,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when purchase shipping label fails with UPSDAP_MISSING_TOS_ERROR_CODE, then navigate to UPS DAP terms of service`() =
+    fun `when purchase shipping label fails with UPSDAP_MISSING_TOS_ERROR_CODE, then navigate to carrier terms of service`() =
         testBlocking {
             val wooError = WooError(
                 type = WooErrorType.API_ERROR,
@@ -1656,7 +1756,43 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when UPS terms accepted, then fetch new rates and reselect same rate as before`() = testBlocking {
+    fun `when purchase shipping label fails with FEDEX_MISSING_TOS_ERROR_CODE, then navigate to FedEx carrier terms of service`() =
+        testBlocking {
+            val wooError = WooError(
+                type = WooErrorType.API_ERROR,
+                original = GenericErrorType.UNKNOWN,
+                apiErrorCode = WooShippingLabelCreationViewModel.FEDEX_MISSING_TOS_ERROR_CODE,
+                message = "Missing FedEx terms of service acceptance"
+            )
+            val wooException = WooException(wooError)
+            whenever(
+                purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+            ) doReturn Result.failure(wooException)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+
+            val viewState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+
+            advanceUntilIdle()
+
+            var event: NavigateToFedExTermsOfService? = null
+            sut.event.observeForever { if (it is NavigateToFedExTermsOfService) event = it }
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(event).isNotNull
+        }
+
+    @Test
+    fun `when carrier terms accepted, then fetch new rates and reselect same rate as before`() = testBlocking {
         val firstRatesFetchResult = mapOf(
             defaultCarrier to defaultShippingRates[defaultCarrier]!!.map {
                 it.copy(
@@ -1702,8 +1838,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shippingRateState.onSelectedRateOptionChanged(ShippingRateOption.ADDITIONAL_HANDLING, true)
             advanceUntilIdle()
 
-            // Simulate UPS terms acceptance
-            sut.onUPSTermsAccepted()
+            // Simulate terms acceptance
+            sut.onCarrierTermsAccepted()
             advanceUntilIdle()
         }.last() as DataState
 
@@ -1719,7 +1855,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when UPS terms are accepted, then continue purchase`() = testBlocking {
+    fun `when carrier terms are accepted, then continue purchase`() = testBlocking {
         whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(Result.success(defaultShippingRates))
 
@@ -1739,7 +1875,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shippingRateState.onSelectedShippingRateChanged(selectedRate)
             advanceUntilIdle()
 
-            sut.onUPSTermsAccepted()
+            sut.onCarrierTermsAccepted()
             advanceUntilIdle()
         }.last() as DataState
 

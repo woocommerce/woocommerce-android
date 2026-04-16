@@ -41,6 +41,9 @@ class PushNotificationRegistrationStatus @Inject constructor(
         REGISTERED_WOO_ONLY,
         REGISTERED_WPCOM_ONLY,
         REGISTERED_BOTH, // Registered in both WP.com and Woo Core PN systems
-        UNREGISTERED
+        UNREGISTERED;
+
+        val isWooRegistered: Boolean
+            get() = this == REGISTERED_WOO_ONLY || this == REGISTERED_BOTH
     }
 }

@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -14,25 +14,27 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosSearchableFtsEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val ftsDao: WooPosSearchableFtsDao,
     private val productsDao: WooPosProductsDao,
     private val variationsDao: WooPosVariationsDao,
-    private val isFtsEnabled: IsPosProductsFtsEnabled,
+    private val filterConfig: WooPosProductsTypesFilterConfig,
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
+    data class FtsSyncResult(
+        val durationMs: Long,
+        val productsIndexed: Int,
+    )
+
     suspend fun syncFtsForFullSync(
         siteIdString: String,
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
-    ) {
-        if (!isFtsEnabled()) {
-            logger.d("syncFtsForFullSync: FTS is disabled, skipping")
-            return
-        }
+    ): FtsSyncResult? {
         val startTime = System.currentTimeMillis()
         logger.d("syncFtsForFullSync: clearing and rebuilding FTS index")
 
@@ -48,6 +50,11 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
             "syncFtsForFullSync completed: ${products.size} products, " +
                 "${variations.size} variations. Duration: ${duration}ms"
         )
+
+        return FtsSyncResult(
+            durationMs = duration,
+            productsIndexed = ftsEntities.size,
+        )
     }
 
     suspend fun syncFtsForIncrementalSync(
@@ -55,14 +62,10 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>,
         productsToRemove: List<RemoteId>
-    ) {
-        if (!isFtsEnabled()) {
-            logger.d("syncFtsForIncrementalSync: FTS is disabled, skipping")
-            return
-        }
+    ): FtsSyncResult? {
         if (products.isEmpty() && variations.isEmpty() && productsToRemove.isEmpty()) {
             logger.d("syncFtsForIncrementalSync: no items to update, skipping")
-            return
+            return null
         }
         val startTime = System.currentTimeMillis()
         logger.d(
@@ -93,14 +96,15 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
         val duration = System.currentTimeMillis() - startTime
         logger.d("syncFtsForIncrementalSync completed. Duration: ${duration}ms")
+
+        return FtsSyncResult(
+            durationMs = duration,
+            productsIndexed = ftsEntities.size,
+        )
     }
 
     suspend fun ensureFtsPopulated(site: SiteModel) {
         logger.d("ensureFtsPopulated called")
-        if (!isFtsEnabled()) {
-            logger.d("FTS is disabled, skipping")
-            return
-        }
 
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()
@@ -131,22 +135,29 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val productFtsEntities = products.map { it.toFtsEntity(siteIdString) }
+        val eligibleProducts = products
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteId }
+        val eligibleVariations = variations
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteVariationId }
 
-        val productNamesMap = products.associate { it.remoteId.value to it.name }.toMutableMap()
+        val productFtsEntities = eligibleProducts.map { it.toFtsEntity(siteIdString) }
 
-        val missingParentIds = variations
+        val productNamesMap = eligibleProducts.associate { it.remoteId.value to it.name }.toMutableMap()
+
+        val missingParentIds = eligibleVariations
             .map { it.remoteProductId }
             .filter { it.value !in productNamesMap.keys }
             .distinct()
 
-        if (missingParentIds.isNotEmpty() && variations.isNotEmpty()) {
-            val localSiteId = variations.first().localSiteId
+        if (missingParentIds.isNotEmpty() && eligibleVariations.isNotEmpty()) {
+            val localSiteId = eligibleVariations.first().localSiteId
             val parentProducts = productsDao.getProductsByIds(localSiteId, missingParentIds)
             parentProducts.forEach { productNamesMap[it.remoteId.value] = it.name }
         }
 
-        val variationFtsEntities = variations.mapNotNull { variation ->
+        val variationFtsEntities = eligibleVariations.mapNotNull { variation ->
             val parentName = productNamesMap[variation.remoteProductId.value]
             if (parentName == null) {
                 logger.w(
@@ -166,13 +177,20 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
     ): List<WooPosSearchableFtsEntity> {
-        val productFtsEntities = products.map { product ->
+        val eligibleProducts = products
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteId }
+        val eligibleVariations = variations
+            .filter { it.isEligibleForFts() }
+            .distinctBy { it.remoteVariationId }
+
+        val productFtsEntities = eligibleProducts.map { product ->
             product.toFtsEntity(siteIdString)
         }
 
-        val productNamesMap = products.associate { it.remoteId.value to it.name }
+        val productNamesMap = eligibleProducts.associate { it.remoteId.value to it.name }
 
-        val variationFtsEntities = variations.mapNotNull { variation ->
+        val variationFtsEntities = eligibleVariations.mapNotNull { variation ->
             val parentName = productNamesMap[variation.remoteProductId.value]
             if (parentName == null) {
                 logger.w(
@@ -226,6 +244,17 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
             ""
         }
     }
+
+    private val allowedStatus = filterConfig.filters[ProductFilterOption.STATUS]
+    private val allowedTypes = filterConfig.includeTypes.map { it.value }.toSet()
+    private val allowedDownloadable =
+        filterConfig.filters[ProductFilterOption.DOWNLOADABLE]?.toBoolean() ?: false
+
+    private fun WooPosProductEntity.isEligibleForFts(): Boolean =
+        status == allowedStatus && type in allowedTypes && downloadable == allowedDownloadable
+
+    private fun WooPosVariationEntity.isEligibleForFts(): Boolean =
+        status == allowedStatus && downloadable == allowedDownloadable
 
     private data class AttributeJson(
         val id: Long? = null,

@@ -46,6 +46,7 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderFulfillmentsResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -93,6 +94,7 @@ internal class WCOrderStoreTest {
             ordersDaoDecorator = ordersDaoDecorator,
             orderNotesDao = orderNotesDao,
             metaDataDao = metaDataDao,
+            orderFulfillmentDao = databaseRule.db.orderFulfillmentDao,
             orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao,
             orderShipmentTrackingDao = databaseRule.db.orderShipmentTrackingDao,
             orderStatusDao = databaseRule.db.orderStatusDao,
@@ -182,6 +184,63 @@ internal class WCOrderStoreTest {
 
             val fullOrderList = orderStore.getOrdersForSite(site)
             assertEquals(1, fullOrderList.size)
+        }
+    }
+
+    @Test
+    fun `when order fulfillments are fetched successfully, then they are persisted`() {
+        runBlocking {
+            val site = SiteModel().apply { id = 6 }
+            val orderId = 123L
+            val fulfillments = listOf(
+                OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L),
+                OrderTestUtils.generateOrderFulfillment(
+                    site.id,
+                    orderId,
+                    fulfillmentId = 43L,
+                    status = "unfulfilled",
+                    isFulfilled = false,
+                    dateUpdated = null,
+                    dateFulfilled = null,
+                    trackingNumber = null,
+                    shipmentProvider = null,
+                    trackingUrl = null
+                )
+            )
+
+            whenever(orderRestClient.fetchOrderFulfillments(site, orderId)).thenReturn(
+                FetchOrderFulfillmentsResponsePayload(site, orderId, fulfillments)
+            )
+
+            val result = orderStore.fetchOrderFulfillments(orderId, site)
+            val storedFulfillments = orderStore.getOrderFulfillmentsForOrder(site, orderId)
+
+            assertThat(result.isError).isFalse()
+            assertThat(storedFulfillments).containsExactlyInAnyOrderElementsOf(fulfillments)
+        }
+    }
+
+    @Test
+    fun `when a fulfillment is removed from the latest server state, then it is removed locally`() {
+        runBlocking {
+            val site = SiteModel().apply { id = 6 }
+            val orderId = 123L
+            val removedFulfillment = OrderTestUtils.generateOrderFulfillment(
+                site.id,
+                orderId,
+                fulfillmentId = 999L
+            )
+            databaseRule.db.orderFulfillmentDao.upsertOrderFulfillment(removedFulfillment)
+
+            val freshFulfillment = OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L)
+            whenever(orderRestClient.fetchOrderFulfillments(site, orderId)).thenReturn(
+                FetchOrderFulfillmentsResponsePayload(site, orderId, listOf(freshFulfillment))
+            )
+
+            orderStore.fetchOrderFulfillments(orderId, site)
+
+            val storedFulfillments = orderStore.getOrderFulfillmentsForOrder(site, orderId)
+            assertThat(storedFulfillments).containsExactly(freshFulfillment)
         }
     }
 
@@ -640,10 +699,10 @@ internal class WCOrderStoreTest {
             val email = "test@example.com"
 
             // WHEN
-            orderStore.sendOrderPOSSpecificReceipt(site, orderId, email, forceEmailUpdate = true)
+            orderStore.sendOrderPOSSpecificReceipt(site, orderId, email, forceEmailUpdate = true, templateId = null)
 
             // THEN
-            verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId, email, true)
+            verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId, email, true, null)
         }
     }
 

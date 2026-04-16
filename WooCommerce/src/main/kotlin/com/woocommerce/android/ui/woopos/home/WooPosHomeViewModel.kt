@@ -231,7 +231,9 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
 
-                    is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
+                    is ChildToParentEvent.OrderCreated -> {
+                        sendEventToChildren(OrderCreated(event.data))
+                    }
                     is ChildToParentEvent.CouponsValidationFailed -> {
                         sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
                     }
@@ -270,44 +272,6 @@ class WooPosHomeViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun handleOrderCreated(event: ChildToParentEvent.OrderCreated) {
-        sendEventToChildren(
-            OrderCreated(
-                updatedProducts = event.updatedProducts.map {
-                    when (it) {
-                        is ChildToParentEvent.OrderCreated.ProductInfo.Simple -> {
-                            OrderCreated.ProductInfo.Simple(
-                                id = it.id,
-                                name = it.name,
-                                finalPrice = it.finalPrice,
-                                basePrice = it.basePrice,
-                                quantity = it.quantity
-                            )
-                        }
-
-                        is ChildToParentEvent.OrderCreated.ProductInfo.Variation -> {
-                            OrderCreated.ProductInfo.Variation(
-                                id = it.id,
-                                name = it.name,
-                                finalPrice = it.finalPrice,
-                                basePrice = it.basePrice,
-                                quantity = it.quantity,
-                                variationId = it.variationId
-                            )
-                        }
-                    }
-                },
-                updatedCoupons = event.updatedCoupons.map {
-                    OrderCreated.CouponInfo(
-                        id = it.id,
-                        code = it.code,
-                        discountAmount = it.discountAmount
-                    )
-                }
-            )
-        )
     }
 
     private fun sendEventToChildren(event: ParentToChildrenEvent) {

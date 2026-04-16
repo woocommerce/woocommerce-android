@@ -8,11 +8,11 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -129,7 +129,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
@@ -153,7 +153,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
@@ -163,7 +163,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is connected and WC version is compatible, when screen opens, then GenericError state is shown`() =
+    fun `given user is connected and WC version is compatible, when screen opens, then Connected state is shown`() =
         testBlocking {
             val jetpackStatus = JetpackStatus(
                 isJetpackInstalled = true,
@@ -173,13 +173,17 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup()
 
             val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            assertThat(viewState).isEqualTo(ViewState.Connected)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "connected"))
+            )
         }
 
     @Test
@@ -193,7 +197,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup()
@@ -246,7 +250,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
@@ -287,7 +291,38 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
                     isSiteConnectedToJetpack = false,
-                    shouldAutoOpenUpdatePlugin = true
+                    shouldAutoOpenUpdatePlugin = false
+                )
+            )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
+            )
+        }
+
+    @Test
+    fun `given Connected state and compatible plugin, when continue is clicked, then NavigateToConnectionSteps without auto update`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected(
+                    wpComEmail = "test@test.com"
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+            whenever(checkWCPluginSupport(forceRefresh = true))
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
+
+            setup()
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = true,
+                    shouldAutoOpenUpdatePlugin = false
                 )
             )
             verify(analyticsTrackerWrapper).track(
@@ -365,7 +400,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site with incompatible WC version, when screen opens, then UpdateRequired state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup(isJetpackCPSite = true)
@@ -379,25 +414,25 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a Jetpack CP site with compatible WC version, when screen opens, then GenericError state is shown`() =
+    fun `given a Jetpack CP site with compatible WC version, when screen opens, then Connected state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup(isJetpackCPSite = true)
 
             val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            assertThat(viewState).isEqualTo(ViewState.Connected)
             verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
-                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "generic"))
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "connected"))
             )
         }
 
     @Test
     fun `given a Jetpack CP site with WC plugin check error, when screen opens, then GenericError state is shown`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup(isJetpackCPSite = true)
@@ -413,7 +448,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when screen opens, then fetchJetpackStatus is not called`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup(isJetpackCPSite = true)
@@ -424,7 +459,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when continue is clicked, then isSiteConnectedToJetpack is true`() =
         testBlocking {
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup(isJetpackCPSite = true)

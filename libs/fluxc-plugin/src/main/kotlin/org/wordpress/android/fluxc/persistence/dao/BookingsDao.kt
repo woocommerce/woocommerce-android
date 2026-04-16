@@ -21,8 +21,8 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
-            AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND (:userId IS NULL OR userId = :userId)
+            AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
@@ -42,11 +42,10 @@ interface BookingsDao {
         limit: Int?,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
+        attendanceStatus: String?,
         excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
@@ -60,11 +59,10 @@ interface BookingsDao {
         limit: Int?,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
+        attendanceStatus: String?,
         excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
@@ -99,8 +97,8 @@ interface BookingsDao {
             WHERE localSiteId = :localSiteId
             AND (:startDateBefore IS NULL OR start <= :startDateBefore)
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
-            AND (:customerId IS NULL OR customerId = :customerId)
-            AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND (:userId IS NULL OR userId = :userId)
+            AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
@@ -111,11 +109,10 @@ interface BookingsDao {
         localSiteId: LocalId,
         startDateBefore: Long?,
         startDateAfter: Long?,
-        customerId: Long?,
+        userId: Long?,
         resourceIds: List<Long>,
         resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
+        attendanceStatus: String?,
         excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
@@ -129,7 +126,6 @@ interface BookingsDao {
         keepIds: List<Long>
     ) {
         val resourceIdsKeySet = filters.teamMembers.values.map { it.value }
-        val attendanceStatusKeySet = filters.attendanceStatuses.values.map { it.key }
         val excludedBookingStatusKeySet = filters.excludedBookingStatuses.values.map { it.key }
         val productIds = filters.serviceEvents.values.map { it.productId }
 
@@ -137,11 +133,10 @@ interface BookingsDao {
             localSiteId = localSiteId,
             startDateBefore = filters.dateRange.before?.epochSecond,
             startDateAfter = filters.dateRange.after?.epochSecond,
-            customerId = filters.customer?.customerId,
+            userId = filters.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
-            attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            attendanceStatus = filters.attendanceStatus.value?.key,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
@@ -175,7 +170,6 @@ interface BookingsDao {
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
-        val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
         val excludedBookingStatusKeySet = filters?.excludedBookingStatuses?.values?.map { it.key }.orEmpty()
         val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
@@ -183,11 +177,10 @@ interface BookingsDao {
             limit = limit,
             startDateBefore = filters?.dateRange?.before?.epochSecond,
             startDateAfter = filters?.dateRange?.after?.epochSecond,
-            customerId = filters?.customer?.customerId,
+            userId = filters?.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
-            attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            attendanceStatus = filters?.attendanceStatus?.value?.key,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
@@ -202,7 +195,6 @@ interface BookingsDao {
         order: BookingsOrderOption
     ): List<BookingEntity> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
-        val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
         val excludedBookingStatusKeySet = filters?.excludedBookingStatuses?.values?.map { it.key }.orEmpty()
         val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return getBookings(
@@ -210,11 +202,10 @@ interface BookingsDao {
             limit = limit,
             startDateBefore = filters?.dateRange?.before?.epochSecond,
             startDateAfter = filters?.dateRange?.after?.epochSecond,
-            customerId = filters?.customer?.customerId,
+            userId = filters?.customer?.userId,
             resourceIds = resourceIdsKeySet.toList(),
             resourceIdsSize = resourceIdsKeySet.size,
-            attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            attendanceStatus = filters?.attendanceStatus?.value?.key,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,

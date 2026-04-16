@@ -1,30 +1,51 @@
 package com.woocommerce.android.e2e.screens.reviews
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasScrollToNodeAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.util.CustomMatchers
 import com.woocommerce.android.e2e.helpers.util.ReviewData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.moremenu.MoreMenuScreen
-import org.hamcrest.Matchers
 
-class ReviewsListScreen : Screen(R.id.reviewsList) {
+class ReviewsListScreen(private val composeTestRule: ComposeTestRule) : Screen(R.id.toolbar) {
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
-        selectListItem(reviewTitle, R.id.reviewsList)
-        waitForElementToBeDisplayed(R.id.review_product_name)
-        return SingleReviewScreen()
-    }
+        val reviewTitleMatcher = hasText(reviewTitle, substring = true).and(hasClickAction())
 
-    fun selectReviewByIndex(reviewIndex: Int): SingleReviewScreen {
-        selectItemAtIndexInRecyclerView(reviewIndex, R.id.reviewsList, R.id.reviewsList)
-        return SingleReviewScreen()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule
+                .onAllNodes(reviewTitleMatcher)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onAllNodes(reviewTitleMatcher)
+            .onFirst()
+            .assertHasClickAction()
+            .performClick()
+
+        waitForElementToBeDisplayed(R.id.review_product_name)
+        return SingleReviewScreen(composeTestRule)
     }
 
     fun scrollToReview(reviewTitle: String): ReviewsListScreen {
-        scrollToListItem(reviewTitle, R.id.reviewsList)
-        return ReviewsListScreen()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule
+                .onAllNodes(hasScrollToNodeAction())
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule
+            .onAllNodes(hasScrollToNodeAction())
+            .onFirst()
+            .performScrollToNode(hasText(reviewTitle, substring = true).and(hasClickAction()))
+
+        return this
     }
 
     fun goBackToMoreMenuScreen(): MoreMenuScreen {
@@ -33,47 +54,22 @@ class ReviewsListScreen : Screen(R.id.reviewsList) {
     }
 
     fun assertReviewCard(review: ReviewData): ReviewsListScreen {
-        // Wait for the review card to appear first. This is sometimes
-        // flaky on Firebase because of low emulator performance.
-        waitForElementToBeDisplayed(
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.notif_title),
-                    ViewMatchers.withText(review.title)
-                )
-            )
-        )
+        // The clickable Column in ReviewListItem causes Compose to merge all descendant text
+        // into one semantics node. Title and content are not siblings — they share a single
+        // merged node. Match on both to uniquely identify the correct card.
+        val reviewCardMatcher = hasText(review.title, substring = true)
+            .and(hasText(review.content, substring = true))
 
-        // Assert that review has an expected hierarchy and content
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withChild(ViewMatchers.withId(R.id.notif_icon)),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.notif_title),
-                        ViewMatchers.withText(review.title)
-                    )
-                ),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.notif_desc),
-                        ViewMatchers.withText(review.content)
-                    )
-                ),
-                ViewMatchers.withChild(ViewMatchers.withId(R.id.notif_rating))
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule
+                .onAllNodes(reviewCardMatcher)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
 
-        // Assert that review has an expected rating
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.notif_rating),
-                ViewMatchers.hasSibling(ViewMatchers.withText(review.title))
-            )
-        )
-            .check(ViewAssertions.matches(CustomMatchers().withStarsNumber((review.rating))))
+        composeTestRule.onAllNodes(reviewCardMatcher)
+            .onFirst()
+            .assertIsDisplayed()
 
-        return ReviewsListScreen()
+        return this
     }
 }

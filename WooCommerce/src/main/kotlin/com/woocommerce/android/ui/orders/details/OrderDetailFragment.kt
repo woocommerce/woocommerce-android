@@ -37,6 +37,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -95,7 +97,6 @@ import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -138,6 +139,9 @@ class OrderDetailFragment :
 
     @Inject
     lateinit var cardReaderManager: CardReaderManager
+
+    @Inject
+    lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -237,7 +241,12 @@ class OrderDetailFragment :
         setupResultHandlers(viewModel)
         setupOrdersCommunicationObservers(communicationViewModel)
 
-        binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
+        val statusMode = if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
+            Mode.OrderEdit
+        } else {
+            Mode.ReadOnly
+        }
+        binding.orderDetailOrderStatus.initView(mode = statusMode) {
             viewModel.onEditOrderStatusSelected()
         }
         binding.orderRefreshLayout.apply {
@@ -432,7 +441,7 @@ class OrderDetailFragment :
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
-                showInstallWcShippingBanner(it)
+                showInstallWcShippingBanner(it, new.isWcShippingBannerEnabled)
             }
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
@@ -593,9 +602,9 @@ class OrderDetailFragment :
         )
     }
 
-    private fun showInstallWcShippingBanner(isVisible: Boolean) {
+    private fun showInstallWcShippingBanner(isVisible: Boolean, isWcShippingBannerEnabled: Boolean) {
         val banner = binding.orderDetailInstallWcShippingBanner
-        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.isVisible = isVisible && isWcShippingBannerEnabled
         banner.setClickListeners(
             onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
             onDismiss = { viewModel.onWcShippingBannerDismissed() }

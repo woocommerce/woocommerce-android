@@ -222,6 +222,42 @@ internal class StripOrderTest {
             )
     }
 
+    @Test
+    fun `when stripping order, then _payment_status meta data is preserved`() = runTest {
+        // given
+        val metaDataFromRemote = listOf(
+            WCMetaData(1, redundantMemberKey, "sample value"),
+            WCMetaData(2, WCMetaData.PaymentMetadataKeys.PAYMENT_STATUS, "paid")
+        )
+        val fatModel = emptyOrder.copy(metaData = metaDataFromRemote)
+
+        // when
+        val strippedOrder = sut.invoke(fatModel)
+
+        // then
+        assertThat(strippedOrder.metaData.map { it.key })
+            .contains(WCMetaData.PaymentMetadataKeys.PAYMENT_STATUS)
+            .doesNotContain(redundantMemberKey)
+    }
+
+    @Test
+    fun `when stripping order, then _fulfillment_status meta data is preserved`() = runTest {
+        // given
+        val metaDataFromRemote = listOf(
+            WCMetaData(1, redundantMemberKey, "sample value"),
+            WCMetaData(2, WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS, "fulfilled")
+        )
+        val fatModel = emptyOrder.copy(metaData = metaDataFromRemote)
+
+        // when
+        val strippedOrder = sut.invoke(fatModel)
+
+        // then
+        assertThat(strippedOrder.metaData.map { it.key })
+            .contains(WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS)
+            .doesNotContain(redundantMemberKey)
+    }
+
     companion object {
         const val redundantMemberKey = "not_needed_parameter"
 
