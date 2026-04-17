@@ -60,18 +60,18 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     }
 
     private val sitePickerRepository: SitePickerRepository = mock {
-        onBlocking { getSites() } doReturn ALL_WOO_SITES
+        on { getSites() } doReturn ALL_WOO_SITES
     }
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(CURRENT_SELECTED_SITE)
     }
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock {
-        onBlocking { isSiteVisible(any()) } doReturn flowOf(true)
+        on { isSiteVisible(any()) } doReturn flowOf(true)
     }
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
     private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock {
-        onBlocking { getWooPushRegisteredSiteIds() } doReturn emptySet()
+        on { getWooPushRegisteredSiteIds() } doReturn emptySet()
     }
 
     @Test

@@ -45,7 +45,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val refundStore: WCRefundStore = mock {
-        onBlocking { getAllRefunds(any(), any()) } doReturn emptyList()
+        on { getAllRefunds(any(), any()) } doReturn emptyList()
     }
     private val currencyFormatter: CurrencyFormatter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -227,7 +227,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
+            on { toAppModel(orderEntity) }.thenReturn(order)
         }
         whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderEntity)
         whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
@@ -267,7 +267,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
+            on { toAppModel(orderEntity) }.thenReturn(order)
         }
         val refundedItems = listOf(
             mock<WCRefundItem> {
@@ -331,7 +331,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
+                on { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {
@@ -416,7 +416,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
+                on { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {

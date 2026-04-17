@@ -60,7 +60,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     }
 
     private val repository: CustomFieldsRepository = mock {
-        onBlocking { observeDisplayableCustomFields(PARENT_ITEM_ID) }.thenReturn(flowOf(CUSTOM_FIELDS))
+        on { observeDisplayableCustomFields(PARENT_ITEM_ID) }.thenReturn(flowOf(CUSTOM_FIELDS))
     }
     private val appPrefs: AppPrefsWrapper = mock {
         val bannerDismissed = MutableStateFlow(false)
