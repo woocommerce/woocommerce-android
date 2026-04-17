@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -79,7 +78,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     fun onEndOfOrdersListReached() {
         val currentState = _state.value
-        if (currentState !is WooPosOrdersState.Content ||
+        if (currentState !is WooPosOrdersListState.Content ||
             currentState.paginationState != WooPosPaginationState.None ||
             currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
         ) {
@@ -252,7 +251,9 @@ class WooPosOrdersListViewModel @Inject constructor(
 
         val currentState = _state.value
         val newState = when (currentState) {
-            is WooPosOrdersState.Content -> currentState.copy(paginationState = WooPosPaginationState.Loading)
+            is WooPosOrdersListState.Content -> currentState.copy(
+                paginationState = WooPosPaginationState.Loading
+            )
             else -> return
         }
         _state.value = newState
@@ -264,7 +265,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
-                appendOrders(result.getOrThrow())
+                appendOrders(result.getOrThrow().keys.toList())
             } else {
                 _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
             }
