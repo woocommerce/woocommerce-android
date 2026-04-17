@@ -420,7 +420,9 @@ private fun TotalsGridRow(
 @Composable
 private fun TotalsLoading() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = WooPosSpacing.XLarge.value),
         contentAlignment = Alignment.Center,
     ) {
         Column(
