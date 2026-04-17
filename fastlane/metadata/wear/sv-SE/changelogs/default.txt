@@ -1,1 +1,0 @@
-Den här versionen innehåller interna uppdateringar och förbättringar av underhållet för en smidigare och mer tillförlitlig WooCommerce Wear-upplevelse.

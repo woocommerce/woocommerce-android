@@ -1,1 +1,0 @@
-Deze release bevat interne updates en onderhoudsverbeteringen voor een soepelere, betrouwbaardere WooCommerce Wear-ervaring.
