@@ -14,19 +14,21 @@ class WooPosHomePhonePersistentButtonTest {
     fun `given Products screen and empty cart, when resolving state, then Hidden`() {
         // GIVEN
         val cartState = WooPosCartState(body = WooPosCartState.Body.Empty)
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
-        assertThat(result).isEqualTo(PhonePersistentButtonState.Hidden)
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
     }
 
     @Test
@@ -35,19 +37,21 @@ class WooPosHomePhonePersistentButtonTest {
         val cartState = WooPosCartState(
             body = WooPosCartState.Body.WithItems(itemsInCart = emptyList())
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
-        assertThat(result).isEqualTo(PhonePersistentButtonState.Hidden)
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
     }
 
     @Test
@@ -67,23 +71,25 @@ class WooPosHomePhonePersistentButtonTest {
                 }
             )
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
         assertThat(result).isEqualTo(
-            PhonePersistentButtonState.Primary(
+            WooPosPhonePersistentButtonState.Primary(
                 label = "Cart (3)",
                 buttonState = WooPosButtonState.ENABLED,
-                action = PhonePersistentButtonAction.OpenCart,
+                action = WooPosPhonePersistentButtonAction.OpenCart,
             )
         )
     }
@@ -94,23 +100,25 @@ class WooPosHomePhonePersistentButtonTest {
         val cartState = WooPosCartState(
             checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
         assertThat(result).isEqualTo(
-            PhonePersistentButtonState.Primary(
+            WooPosPhonePersistentButtonState.Primary(
                 label = "Check out",
                 buttonState = WooPosButtonState.ENABLED,
-                action = PhonePersistentButtonAction.Checkout,
+                action = WooPosPhonePersistentButtonAction.Checkout,
             )
         )
     }
@@ -121,23 +129,25 @@ class WooPosHomePhonePersistentButtonTest {
         val cartState = WooPosCartState(
             checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
         assertThat(result).isEqualTo(
-            PhonePersistentButtonState.Primary(
+            WooPosPhonePersistentButtonState.Primary(
                 label = "Check out",
                 buttonState = WooPosButtonState.DISABLED,
-                action = PhonePersistentButtonAction.Checkout,
+                action = WooPosPhonePersistentButtonAction.Checkout,
             )
         )
     }
@@ -148,19 +158,21 @@ class WooPosHomePhonePersistentButtonTest {
         val cartState = WooPosCartState(
             checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-            cartState = cartState,
-            totalsState = null,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
+            cartState = cartState,
+            totalsState = null,
+        )
+
         // THEN
-        assertThat(result).isEqualTo(PhonePersistentButtonState.Hidden)
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
     }
 
     @Test
@@ -170,22 +182,24 @@ class WooPosHomePhonePersistentButtonTest {
             totals = WooPosTotalsViewState.Totals.Hidden,
             readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
         )
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
-            cartState = null,
-            totalsState = totalsState,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
+            cartState = null,
+            totalsState = totalsState,
+        )
+
         // THEN
         assertThat(result).isEqualTo(
-            PhonePersistentButtonState.Outlined(
+            WooPosPhonePersistentButtonState.Outlined(
                 label = "Cash payment",
-                action = PhonePersistentButtonAction.CashPayment,
+                action = WooPosPhonePersistentButtonAction.CashPayment,
             )
         )
     }
@@ -194,18 +208,20 @@ class WooPosHomePhonePersistentButtonTest {
     fun `given Checkout screen and totals is PaymentInProgress, when resolving state, then Hidden`() {
         // GIVEN
         val totalsState = WooPosTotalsViewState.PaymentInProgress(title = "t", subtitle = "s")
-
-        // WHEN
-        val result = resolvePhonePersistentButtonState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
-            cartState = null,
-            totalsState = totalsState,
-            cartLabelBuilder = { "Cart ($it)" },
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
             cashPaymentLabel = "Cash payment",
         )
 
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
+            cartState = null,
+            totalsState = totalsState,
+        )
+
         // THEN
-        assertThat(result).isEqualTo(PhonePersistentButtonState.Hidden)
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
     }
 }
