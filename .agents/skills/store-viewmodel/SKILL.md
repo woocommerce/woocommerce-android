@@ -8,3 +8,16 @@ user-invocable: true
 # Store App ViewModel Patterns
 
 @docs/store-viewmodel-patterns.md
+
+## Platform API Reference
+
+For questions about Android platform ViewModel behavior (`SavedStateHandle` restoration across process death, `viewModelScope` cancellation, `LiveData` vs `StateFlow` observer semantics, `AndroidViewModel` vs `ViewModel`), prefer Google's Android Knowledge Base over a web search — the answers are authoritative and do not cost browsing tokens.
+
+```bash
+if command -v android >/dev/null 2>&1; then
+  android docs search "SavedStateHandle restoration"
+  # Then: android docs fetch kb://android/topic/architecture/...
+fi
+```
+
+If the CLI is not installed, skip this block and use the Android developer website as before.

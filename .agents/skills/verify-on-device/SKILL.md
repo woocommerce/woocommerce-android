@@ -526,3 +526,15 @@ When mobile-mcp tools are not giving enough information:
 | `adb -s <device> logcat -d *:E \| tail -30` | Check recent error logs |
 | `adb -s <device> shell am force-stop com.woocommerce.android.dev` | Force kill the app |
 | `adb -s <device> shell pm clear com.woocommerce.android.dev` | Clear app data (full reset — will require re-login) |
+
+### Android Knowledge Base (`USE_ANDROID_CLI=1`)
+
+When a platform-behavior question comes up mid-task (intent flags, `am start` semantics, `Activity` launch modes, permissions, animation scales, `settings put global` keys), prefer the Android Knowledge Base over a web search — the answers are authoritative, local, and don't cost browsing tokens.
+
+```bash
+# Search by free-form query, then fetch the top result.
+android docs search "am start intent flags"
+android docs fetch kb://android/platform/am/start
+```
+
+If the CLI is not installed, fall back to the Android developer website as before.
