@@ -536,7 +536,12 @@ class SitePickerViewModel @Inject constructor(
                             selectedSite.set(siteVerificationModel.siteModel)
                             trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                             appPrefsWrapper.removeLoginSiteAddress()
-                            registerDevice(RegisterDevice.Mode.IF_NEEDED)
+                            val registerDeviceTrigger = if (navArgs.openedFromLogin) {
+                                RegisterDevice.Trigger.LOGIN_SUCCESS
+                            } else {
+                                RegisterDevice.Trigger.SITE_SWITCH
+                            }
+                            registerDevice.kickoff(registerDeviceTrigger)
 
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)

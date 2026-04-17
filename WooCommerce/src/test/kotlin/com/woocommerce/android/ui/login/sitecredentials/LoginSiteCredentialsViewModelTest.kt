@@ -78,7 +78,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
-    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -102,8 +101,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName: String = clientId
                 override suspend fun isEnabledForJetpackAccess(): Boolean = true
             },
-            resourceProvider = resourceProvider,
-            registerDevice = registerDevice
+            resourceProvider = resourceProvider
         )
     }
 
