@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosPaymentSuccessScreen(
@@ -102,6 +105,10 @@ fun WooPosPaymentSuccessScreen(
             )
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
+            val phoneSidePadding = when (LocalContext.current.isWooPosPhoneLayout()) {
+                true -> Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+                false -> Modifier
+            }
             WooPosButton(
                 modifier = Modifier
                     .constrainAs(buttonNewOrder) {
@@ -111,6 +118,7 @@ fun WooPosPaymentSuccessScreen(
                     }
                     .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth()
+                    .then(phoneSidePadding)
                     .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
@@ -124,7 +132,8 @@ fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(WooPosComponentSize.Small.value)
-                    .adaptiveContentWidth(),
+                    .adaptiveContentWidth()
+                    .then(phoneSidePadding),
                 onClick = onReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button)
             )
