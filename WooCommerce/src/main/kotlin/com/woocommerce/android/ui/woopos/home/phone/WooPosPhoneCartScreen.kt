@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 
 @Composable
 fun WooPosPhoneCartScreen(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
 ) {
@@ -22,6 +23,7 @@ fun WooPosPhoneCartScreen(
         WooPosCartScreen(
             modifier = modifier.fillMaxSize(),
             viewModel = viewModel,
+            onPhoneBack = onBack,
         )
     }
 }
@@ -30,6 +32,6 @@ fun WooPosPhoneCartScreen(
 @WooPosPreview
 fun WooPosPhoneCartScreenPreview() {
     WooPosTheme {
-        WooPosPhoneCartScreen()
+        WooPosPhoneCartScreen(onBack = {})
     }
 }

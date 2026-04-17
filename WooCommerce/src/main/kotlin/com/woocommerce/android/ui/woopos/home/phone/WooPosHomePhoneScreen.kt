@@ -145,7 +145,10 @@ private fun WooPosHomePhoneContent(
                 }
             }
             composable(PHONE_CART_ROUTE) {
-                WooPosPhoneCartScreen(viewModel = cartViewModel)
+                WooPosPhoneCartScreen(
+                    onBack = { navController.popBackStack() },
+                    viewModel = cartViewModel,
+                )
             }
             composable(PHONE_TOTALS_ROUTE) {
                 WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
