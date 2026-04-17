@@ -1,0 +1,2 @@
+24.5:
+Creare ordini per i clienti registrati è ora più affidabile. Abbiamo risolto un problema per cui i dettagli di fatturazione potevano apparire nell'indirizzo di spedizione, aiutandoti così a inviare gli ordini alla destinazione corretta.

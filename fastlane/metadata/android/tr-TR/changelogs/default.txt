@@ -1,0 +1,2 @@
+24.5:
+Kayıtlı müşteriler için sipariş oluşturmak artık daha güvenilir. Fatura bilgilerinin gönderim adresinde görünebileceği bir sorunu gidererek siparişleri doğru hedefe göndermenize yardımcı olduk.
