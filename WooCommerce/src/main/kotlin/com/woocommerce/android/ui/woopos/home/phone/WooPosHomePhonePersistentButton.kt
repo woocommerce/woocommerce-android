@@ -1,6 +1,16 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
@@ -83,6 +93,50 @@ fun resolvePhonePersistentButtonState(
             is WooPosTotalsViewState.InvalidCouponError,
             is WooPosTotalsViewState.ProductNotFoundError,
             null -> PhonePersistentButtonState.Hidden
+        }
+    }
+}
+
+@Composable
+fun WooPosHomePhonePersistentButton(
+    state: PhonePersistentButtonState,
+    onAction: (PhonePersistentButtonAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (state) {
+        PhonePersistentButtonState.Hidden -> Unit
+
+        is PhonePersistentButtonState.Primary -> {
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceBright,
+                modifier = modifier.fillMaxWidth(),
+            ) {
+                WooPosButton(
+                    text = state.label,
+                    onClick = { onAction(state.action) },
+                    state = state.buttonState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding(),
+                )
+            }
+        }
+
+        is PhonePersistentButtonState.Outlined -> {
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceBright,
+                modifier = modifier.fillMaxWidth(),
+            ) {
+                WooPosOutlinedButton(
+                    text = state.label,
+                    onClick = { onAction(state.action) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding(),
+                )
+            }
         }
     }
 }
