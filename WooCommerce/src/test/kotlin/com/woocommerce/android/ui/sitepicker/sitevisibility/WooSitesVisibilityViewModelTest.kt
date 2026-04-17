@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker.sitevisibility
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.tools.SelectedSite
@@ -26,6 +27,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingsUpdateError
@@ -337,6 +341,38 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
             verify(visibleWooSitesDataStore, never()).updateSiteVisibilityStatus(any())
             assertThat(event).isInstanceOf(ShowDialog::class.java)
             assertFalse(viewModel.viewState.getOrAwaitValue().isLoading)
+        }
+
+    @Test
+    fun `given site lacks woo push endpoint, when tapping save, then skip registration and persist visibility`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                .thenReturn(
+                    Result.failure(
+                        WooException(
+                            WooError(
+                                type = WooErrorType.API_NOT_FOUND,
+                                original = GenericErrorType.NOT_FOUND,
+                                apiErrorCode = "rest_no_route"
+                            )
+                        )
+                    )
+                )
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onSaveTapped()
+            }.last()
+
+            verify(visibleWooSitesDataStore).updateSiteVisibilityStatus(any())
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { any { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+            assertThat(event).isEqualTo(ExitWithResult(data = true))
         }
 
     @Test

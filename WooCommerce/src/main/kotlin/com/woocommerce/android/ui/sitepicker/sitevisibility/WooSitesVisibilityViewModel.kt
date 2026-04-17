@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingsUpdateError
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
@@ -169,7 +171,15 @@ class WooSitesVisibilityViewModel @Inject constructor(
                             token = token,
                             selectedSite = site,
                             allowWpComFallback = false
-                        )
+                        ).recoverCatching { error ->
+                            // `rest_no_route` means the site doesn't have the wc-push-notifications
+                            // endpoint — it will continue to use WPCom notifications instead.
+                            if ((error as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
+                                Unit
+                            } else {
+                                throw error
+                            }
+                        }
                     } else {
                         Result.success(Unit)
                     }
