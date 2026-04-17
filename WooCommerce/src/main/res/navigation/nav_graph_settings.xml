@@ -6,7 +6,6 @@
     app:startDestination="@id/mainSettingsFragment">
     <include app:graph="@navigation/nav_graph_push_notifications" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_themes" />
 
     <fragment
@@ -38,14 +37,6 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_developerOptionsFragment"
             app:destination="@id/developerOptionsFragment" />
-        <action
-            android:id="@+id/action_mainSettingsFragment_to_nav_graph_domain_change"
-            app:destination="@id/nav_graph_domain_change">
-            <argument
-                android:name="source"
-                android:defaultValue="SETTINGS"
-                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
-        </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_accountSettingsFragment"
             app:destination="@id/accountSettingsFragment" />

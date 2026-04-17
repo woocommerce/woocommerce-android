@@ -22,7 +22,7 @@ enum class WooPosCornerRadius(
     XLarge(24.dp, 20.dp, 16.dp);
 
     val value: Dp
-        @Composable get() = when (rememberWooPosBreakpoint()) {
+        @Composable get() = when (currentWooPosBreakpoint()) {
             WooPosBreakpoint.Phone -> phoneValue
             WooPosBreakpoint.SmallTablet -> smallTabletValue
             WooPosBreakpoint.Tablet -> tabletValue
@@ -56,7 +56,7 @@ enum class WooPosElevation(
     Large(24.dp, 20.dp, 16.dp);
 
     val value: Dp
-        @Composable get() = when (rememberWooPosBreakpoint()) {
+        @Composable get() = when (currentWooPosBreakpoint()) {
             WooPosBreakpoint.Phone -> phoneValue
             WooPosBreakpoint.SmallTablet -> smallTabletValue
             WooPosBreakpoint.Tablet -> tabletValue
@@ -85,28 +85,28 @@ enum class WooPosComponentSize(private val baseValue: Dp) {
 }
 
 @Composable
-fun Dp.toAdaptivePadding(): Dp = when (rememberWooPosBreakpoint()) {
+fun Dp.toAdaptivePadding(): Dp = when (currentWooPosBreakpoint()) {
     WooPosBreakpoint.Phone -> (this * 0.5f).makeDividableByFour()
     WooPosBreakpoint.SmallTablet -> (this * 0.75f).makeDividableByFour()
     WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Dp.toAdaptiveComponentSize(): Dp = when (rememberWooPosBreakpoint()) {
+fun Dp.toAdaptiveComponentSize(): Dp = when (currentWooPosBreakpoint()) {
     WooPosBreakpoint.Phone -> (this * 0.75f).makeDividableByFour()
     WooPosBreakpoint.SmallTablet -> (this * 0.9f).makeDividableByFour()
     WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Dp.toAdaptiveIconSize(): Dp = when (rememberWooPosBreakpoint()) {
+fun Dp.toAdaptiveIconSize(): Dp = when (currentWooPosBreakpoint()) {
     WooPosBreakpoint.Phone -> (this * 0.9f).makeDividableByFour()
     WooPosBreakpoint.SmallTablet -> (this * 0.95f).makeDividableByFour()
     WooPosBreakpoint.Tablet -> this
 }
 
 @Composable
-fun Modifier.adaptiveContentWidth(): Modifier = when (rememberWooPosBreakpoint()) {
+fun Modifier.adaptiveContentWidth(): Modifier = when (currentWooPosBreakpoint()) {
     WooPosBreakpoint.Phone -> this.fillMaxWidth()
     WooPosBreakpoint.SmallTablet -> this.fillMaxWidth(fraction = 2f / 3f)
     WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 3f / 5f)
@@ -115,7 +115,7 @@ fun Modifier.adaptiveContentWidth(): Modifier = when (rememberWooPosBreakpoint()
 internal enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }
 
 @Composable
-internal fun rememberWooPosBreakpoint(): WooPosBreakpoint {
+internal fun currentWooPosBreakpoint(): WooPosBreakpoint {
     val density = LocalDensity.current
     val containerSize = LocalWindowInfo.current.containerSize
     val shortSize = with(density) { minOf(containerSize.width, containerSize.height).toDp() }

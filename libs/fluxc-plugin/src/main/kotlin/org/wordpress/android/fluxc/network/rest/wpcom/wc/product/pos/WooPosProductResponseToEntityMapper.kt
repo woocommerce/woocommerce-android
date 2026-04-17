@@ -38,6 +38,7 @@ fun ProductApiResponse.mapToWooPOSEntity(localSiteId: LocalOrRemoteId.LocalId): 
         attributes = this.attributes?.toString() ?: "",
     )
 
+@Suppress("CyclomaticComplexMethod")
 fun WooPosVariationApiResponse.mapToPosVariationModel(
     localSiteId: LocalOrRemoteId.LocalId
 ): WooPosVariationEntity {
@@ -45,22 +46,22 @@ fun WooPosVariationApiResponse.mapToPosVariationModel(
         localSiteId = localSiteId,
         remoteProductId = LocalOrRemoteId.RemoteId(this.productId),
         remoteVariationId = LocalOrRemoteId.RemoteId(this.id),
-        type = this.type,
-        dateModified = this.dateModified,
-        sku = this.sku,
-        globalUniqueId = this.globalUniqueId,
-        variationName = this.name,
-        price = this.price,
-        regularPrice = this.regularPrice,
-        salePrice = this.salePrice,
-        description = this.description,
+        type = this.type ?: "",
+        dateModified = this.dateModified ?: "",
+        sku = this.sku ?: "",
+        globalUniqueId = this.globalUniqueId ?: "",
+        variationName = this.name ?: "",
+        price = this.price ?: "",
+        regularPrice = this.regularPrice ?: "",
+        salePrice = this.salePrice ?: "",
+        description = this.description ?: "",
         stockQuantity = this.stockQuantity ?: 0.0,
-        stockStatus = this.stockStatus,
+        stockStatus = this.stockStatus ?: "",
         manageStock = this.manageStock,
         backordered = this.backordered,
         attributesJson = this.attributesJson?.toString() ?: "[]",
         imageUrl = this.image?.src ?: "",
-        status = this.status,
+        status = this.status ?: "",
         downloadable = this.downloadable
     )
 }

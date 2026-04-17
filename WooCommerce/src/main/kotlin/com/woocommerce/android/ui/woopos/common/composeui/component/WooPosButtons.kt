@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.rememberWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
@@ -55,7 +55,7 @@ private const val TABLET_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 0.5f
 
 @Composable
 fun Modifier.wooPosFullScreenActionButton(): Modifier {
-    val fraction = if (rememberWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+    val fraction = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
         PHONE_FULL_SCREEN_BUTTON_WIDTH_FRACTION
     } else {
         TABLET_FULL_SCREEN_BUTTON_WIDTH_FRACTION

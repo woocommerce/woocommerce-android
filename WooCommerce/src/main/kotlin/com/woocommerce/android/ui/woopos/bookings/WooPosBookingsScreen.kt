@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
@@ -197,18 +198,25 @@ private fun WooPosBookingsScreen(
         )
 
         if (state is WooPosBookingsState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
-                    WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate,
-                        disablePartialRefund = true
-                    )
+            val dialogState = state.dialogState
+
+            val retainedIssueRefund: WooPosBookingsState.Content.DialogState.IssueRefund? = rememberRetained(
+                when (dialogState) {
+                    is WooPosBookingsState.Content.DialogState.IssueRefund -> dialogState
+                    is WooPosBookingsState.Content.DialogState.CancelBooking -> null
+                    WooPosBookingsState.Content.DialogState.Hidden -> null
                 }
-                WooPosBookingsState.Content.DialogState.Hidden -> Unit
-                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
+            )
+
+            retainedIssueRefund?.let { issueRefund ->
+                WooPosIssueRefundDialog(
+                    orderId = issueRefund.orderId,
+                    isVisible = dialogState is WooPosBookingsState.Content.DialogState.IssueRefund,
+                    onDismissRequest = onIssueRefundDialogDismissed,
+                    onNavigationEvent = onNavigationEvent,
+                    refundReasonUpdate = refundReasonUpdate,
+                    disablePartialRefund = true
+                )
             }
         }
     }

@@ -262,9 +262,8 @@ class BookingDetailsViewModel @Inject constructor(
         BookingAttendanceStatus.Unattended -> BookingEntity.AttendanceStatus.Unattended
     }
 
-    @Suppress("ForbiddenComment")
     private fun onRescheduleBooking() {
-        // TODO: Navigate to reschedule screen
+        bookingId?.let { triggerEvent(NavigateToRescheduleBooking(it)) }
     }
 
     private fun onCancelBooking() {
@@ -400,4 +399,5 @@ class BookingDetailsViewModel @Inject constructor(
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToIssueRefund(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToBookingNote(val bookingId: Long) : MultiLiveEvent.Event()
+    data class NavigateToRescheduleBooking(val bookingId: Long) : MultiLiveEvent.Event()
 }

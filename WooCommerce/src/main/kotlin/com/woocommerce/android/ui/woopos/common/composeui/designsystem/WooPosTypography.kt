@@ -68,7 +68,7 @@ sealed class WooPosTypography(private val baseStyle: TextStyle) {
 
 @Composable
 private fun TextStyle.toAdaptiveTextStyle(): TextStyle {
-    val multiplier = when (rememberWooPosBreakpoint()) {
+    val multiplier = when (currentWooPosBreakpoint()) {
         WooPosBreakpoint.Phone -> 0.85f
         WooPosBreakpoint.SmallTablet -> 0.9f
         WooPosBreakpoint.Tablet -> return this

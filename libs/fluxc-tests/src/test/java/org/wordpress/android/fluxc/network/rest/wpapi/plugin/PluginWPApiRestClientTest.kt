@@ -57,7 +57,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         val responseModel = restClient.installPlugin(site, installedPluginSlug)
         assertMappedPlugin(responseModel.data!!, testPlugin)
         assertThat(urlCaptor.lastValue)
-            .isEqualTo("wp/v2/plugins/")
+            .isEqualTo("/wp/v2/plugins/")
         assertThat(bodyCaptor.lastValue).isEqualTo(mapOf("slug" to installedPluginSlug))
     }
 
@@ -69,7 +69,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         val responseModel = restClient.updatePlugin(site, installedPluginSlug, active)
         assertMappedPlugin(responseModel.data!!, testPlugin)
         assertThat(urlCaptor.lastValue)
-            .isEqualTo("wp/v2/plugins/$installedPluginSlug/")
+            .isEqualTo("/wp/v2/plugins/$installedPluginSlug/")
         assertThat(bodyCaptor.lastValue).isEqualTo(mapOf("status" to "active"))
     }
 
@@ -81,7 +81,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         val responseModel = restClient.updatePlugin(site, installedPluginSlug, active)
         assertMappedPlugin(responseModel.data!!, testPlugin)
         assertThat(urlCaptor.lastValue)
-            .isEqualTo("wp/v2/plugins/$installedPluginSlug/")
+            .isEqualTo("/wp/v2/plugins/$installedPluginSlug/")
         assertThat(bodyCaptor.lastValue).isEqualTo(mapOf("status" to "inactive"))
     }
 

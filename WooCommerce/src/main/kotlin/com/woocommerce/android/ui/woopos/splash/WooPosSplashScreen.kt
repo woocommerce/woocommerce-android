@@ -44,8 +44,23 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         is WooPosSplashState.Loading -> {
             Loading()
         }
-        is WooPosSplashState.Syncing -> {
+        is WooPosSplashState.Syncing,
+        is WooPosSplashState.SyncPreparing,
+        is WooPosSplashState.SyncProgress -> {
+            val progressText = when (currentState) {
+                is WooPosSplashState.SyncPreparing ->
+                    stringResource(R.string.woopos_home_syncing_catalog_preparing)
+                is WooPosSplashState.SyncProgress ->
+                    stringResource(
+                        R.string.woopos_home_syncing_catalog_progress,
+                        currentState.processed,
+                        currentState.total
+                    )
+                else -> null
+            }
+
             SyncingCatalog(
+                progressText = progressText,
                 onExitPosClicked = {
                     viewModel.onExitPosClicked()
                     onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
@@ -83,7 +98,8 @@ private fun Loading() {
 @Suppress("WooPosDesignSystemTextUsageRule")
 @Composable
 private fun SyncingCatalog(
-    onExitPosClicked: () -> Unit
+    progressText: String? = null,
+    onExitPosClicked: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -101,6 +117,15 @@ private fun SyncingCatalog(
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
             )
+            if (progressText != null) {
+                Text(
+                    text = progressText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = WooPosSpacing.Small.value),
+                )
+            }
         }
 
         Column(
@@ -174,6 +199,7 @@ fun WooPosSplashScreenLoadingPreview() {
 fun WooPosSplashScreenSyncingPreview() {
     WooPosTheme {
         SyncingCatalog(
+            progressText = "131 of 4512 items",
             onExitPosClicked = {}
         )
     }

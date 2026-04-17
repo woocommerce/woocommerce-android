@@ -3,7 +3,6 @@ package com.woocommerce.android
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -242,13 +241,6 @@ open class AppPrefsWrapper @Inject constructor() {
     fun setActiveCouponsTab(selectionName: String) {
         AppPrefs.setActiveCouponsTab(selectionName)
     }
-
-    fun setCustomDomainsSource(source: DomainFlowSource) {
-        AppPrefs.setCustomDomainsSource(source.name)
-    }
-
-    fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
-    fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
 
     /**
      * Card Reader Upsell
