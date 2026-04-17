@@ -9,7 +9,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
@@ -34,13 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -51,8 +46,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -62,8 +59,10 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
-fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
-    val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
+fun WooPosFloatingToolbar(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel(),
+) {
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),
@@ -127,7 +126,7 @@ private fun WooPosFloatingToolbar(
                     )
 
                     val marginBetweenCards = WooPosSpacing.Small.value
-                    PopUpMenu(
+                    WooPosToolbarPopUpMenu(
                         modifier = Modifier
                             .constrainAs(popupMenu) {
                                 bottom.linkTo(toolbar.top, margin = marginBetweenCards)
@@ -212,7 +211,7 @@ private fun MenuButtonWithPopUpMenu(
         TextButton(
             modifier = Modifier
                 .semantics { contentDescription = menuContentDescription }
-                .size(80.dp),
+                .size(WooPosComponentSize.Small.value),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
             colors = ButtonDefaults.textButtonColors(
@@ -235,55 +234,6 @@ private fun MenuButtonWithPopUpMenu(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PopUpMenu(
-    modifier: Modifier,
-    menuItems: List<Menu.MenuItem>,
-    onClick: (Menu.MenuItem) -> Unit
-) {
-    WooPosCard(
-        modifier = modifier.width(IntrinsicSize.Max),
-        elevation = TOOLBAR_ELEVATION,
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            menuItems.forEach { menuItem ->
-                PopUpMenuItem(menuItem, onClick)
-            }
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        }
-    }
-}
-
-@Composable
-private fun PopUpMenuItem(
-    menuItem: Menu.MenuItem,
-    onClick: (Menu.MenuItem) -> Unit
-) {
-    TextButton(onClick = { onClick(menuItem) }) {
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-        Icon(
-            imageVector = ImageVector.vectorResource(menuItem.icon),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-        WooPosText(
-            modifier = Modifier
-                .padding(vertical = WooPosSpacing.Small.value)
-                .weight(1f),
-            text = stringResource(id = menuItem.title),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
     }
 }
 
@@ -326,7 +276,7 @@ private fun CardReaderStatusButton(
 
     WooPosCard(
         modifier = modifier
-            .height(80.dp),
+            .height(WooPosComponentSize.Small.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -347,7 +297,7 @@ private fun CardReaderStatusButton(
                         color = borderColor,
                         shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
                     )
-                    .height(40.dp),
+                    .height(WooPosIconSize.Large.value),
             ) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 Circle(size = 14.dp, color = illustrationColor)

@@ -1118,67 +1118,67 @@ private fun WooPosIconsPreview() {
                 maxItemsInEachRow = 4
             ) {
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.NotFound,
                         contentDescription = "NotFound",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.Check,
                         contentDescription = "Check",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.ErrorX,
                         contentDescription = "ErrorX",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.OrdersEmpty,
                         contentDescription = "OrdersEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.BluetoothSettings,
                         contentDescription = "BluetoothSettings",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CouponsEmpty,
                         contentDescription = "CouponsEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -1244,17 +1244,17 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.CardReaderNotConnected,
                         contentDescription = "CardReaderNotConnected",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.BookingsEmpty,
                         contentDescription = "BookingsEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
             }

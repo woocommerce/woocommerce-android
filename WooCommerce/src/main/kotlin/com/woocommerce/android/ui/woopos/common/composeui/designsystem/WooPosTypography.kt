@@ -15,52 +15,77 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 
-sealed class WooPosTypography(val style: TextStyle) {
+sealed class WooPosTypography(private val baseStyle: TextStyle) {
+    val style: TextStyle
+        @Composable get() = baseStyle.toAdaptiveTextStyle()
+
     object Heading : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 36.sp,
             lineHeight = 40.sp
         )
     )
 
     object BodyXLarge : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 30.sp,
             lineHeight = 32.sp
         )
     )
 
     object BodyLarge : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 24.sp,
             lineHeight = 32.sp
         )
     )
 
     object BodyMedium : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 20.sp,
             lineHeight = 32.sp
         )
     )
 
     object BodySmall : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 16.sp,
             lineHeight = 24.sp
         )
     )
 
     object Caption : WooPosTypography(
-        style = TextStyle(
+        baseStyle = TextStyle(
             fontSize = 14.sp,
             lineHeight = 20.sp
         )
     )
 }
+
+@Composable
+private fun TextStyle.toAdaptiveTextStyle(): TextStyle {
+    val multiplier = when (currentWooPosBreakpoint()) {
+        WooPosBreakpoint.Phone -> 0.85f
+        WooPosBreakpoint.SmallTablet -> 0.9f
+        WooPosBreakpoint.Tablet -> return this
+    }
+    return copy(
+        fontSize = fontSize.scale(multiplier),
+        lineHeight = lineHeight.scale(multiplier),
+    )
+}
+
+private fun TextUnit.scale(multiplier: Float): TextUnit {
+    if (this == TextUnit.Unspecified) return this
+    val scaled = value * multiplier
+    return maxOf(scaled, MIN_ADAPTIVE_FONT_SIZE_SP).sp
+}
+
+private const val MIN_ADAPTIVE_FONT_SIZE_SP = 14f
 
 @Composable
 @Preview

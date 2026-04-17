@@ -30,10 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
 private const val DEFAULT_WIDTH_FRACTION = 0.75f
@@ -101,7 +101,7 @@ fun WooPosDialogWrapper(
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                                     contentDescription = closeContentDescription,
-                                    modifier = Modifier.size(40.dp),
+                                    modifier = Modifier.size(WooPosIconSize.Large.value),
                                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
                             }
