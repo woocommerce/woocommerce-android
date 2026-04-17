@@ -197,7 +197,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
+        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
         assertThat(event).isEqualTo(ViewOrderDetail(testOrderNotification.uniqueId))
@@ -214,7 +214,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
-            .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
+            .markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testReviewNotification))
         assertThat(event).isEqualTo(ViewReviewDetail(testReviewNotification.uniqueId))
@@ -555,7 +555,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.onPushNotificationTapped(localPushId, testBlazeNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
-            .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
+            .markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testBlazeNotification))
         assertThat(event).isEqualTo(

@@ -575,7 +575,7 @@ class NotificationMessageHandlerTest {
         val mockNotificationData = orderNotification.toActiveNotificationData(10000)
         doReturn(listOf(mockNotificationData)).whenever(notificationBuilder).getActiveNotifications()
 
-        notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
+        notificationMessageHandler.markNotificationTapped(mockNotificationData.id)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),

@@ -32,11 +32,13 @@ class NotificationAnalyticsTracker @Inject constructor(
         val site = siteStore.getSiteBySiteId(siteId) ?: return
         val isFromSelectedSite = selectedSite.getIfExists()?.siteId == siteId
         val properties = mutableMapOf<String, Any>(
-            "notification_note_id" to remoteNoteId,
             "notification_type" to noteTypeTrackingValue,
             "push_notification_token" to appPrefsWrapper.getFCMToken(),
             "is_from_selected_site" to isFromSelectedSite
         ).addCommonSiteProperties(site)
+        if (remoteNoteId != 0L) {
+            properties["notification_note_id"] = remoteNoteId
+        }
         analyticsTrackerWrapper.track(stat, properties)
     }
 

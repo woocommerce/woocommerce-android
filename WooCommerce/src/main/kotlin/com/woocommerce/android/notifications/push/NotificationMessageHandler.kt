@@ -216,10 +216,10 @@ class NotificationMessageHandler @Inject constructor(
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
      */
-    fun markNotificationTapped(remoteNoteId: Long) {
+    fun markNotificationTapped(localPushId: Int) {
         with(notificationBuilder) {
             getActiveNotifications()
-                .firstOrNull { it.remoteNoteId == remoteNoteId }
+                .firstOrNull { it.id == localPushId }
                 ?.let {
                     analyticsTracker.trackNotificationAnalytics(
                         stat = PUSH_NOTIFICATION_TAPPED,
