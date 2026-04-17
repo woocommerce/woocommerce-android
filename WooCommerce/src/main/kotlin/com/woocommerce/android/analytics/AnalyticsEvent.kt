@@ -530,7 +530,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
     PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,
     PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED,
-    SETTINGS_DOMAINS_TAPPED,
     SETTINGS_TROUBLESHOOT_CONNECTION_TAPPED,
 
     // -- Payments Hub
@@ -938,12 +937,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
 
     // Analytics Hub
     ANALYTICS_HUB_WAITING_TIME_LOADED,
-
-    // Domain change
-    CUSTOM_DOMAINS_STEP,
-    DOMAIN_CONTACT_INFO_VALIDATION_FAILED,
-    CUSTOM_DOMAIN_PURCHASE_SUCCESS,
-    CUSTOM_DOMAIN_PURCHASE_FAILED,
 
     // Application passwords login
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,

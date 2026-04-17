@@ -15,6 +15,9 @@
             android:id="@+id/action_bookingDetailsFragment_to_bookingNoteFragment"
             app:destination="@id/bookingNoteFragment" />
         <action
+            android:id="@+id/action_bookingDetailsFragment_to_bookingRescheduleFragment"
+            app:destination="@id/bookingRescheduleFragment" />
+        <action
             android:id="@+id/action_bookingDetailsFragment_to_issueRefund"
             app:destination="@id/nav_graph_refunds">
             <argument
@@ -25,6 +28,16 @@
     </fragment>
 
     <include app:graph="@navigation/nav_graph_refunds" />
+
+    <fragment
+        android:id="@+id/bookingRescheduleFragment"
+        android:name="com.woocommerce.android.ui.bookings.reschedule.BookingRescheduleFragment"
+        android:label="BookingRescheduleFragment">
+        <argument
+            android:name="bookingId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/bookingNoteFragment"

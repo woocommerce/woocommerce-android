@@ -938,7 +938,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onUPSTermsAccepted() {
+    fun onCarrierTermsAccepted() {
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
@@ -1077,7 +1077,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         )
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
-                triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
+                triggerEvent(
+                    NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
+                )
+            }
+
+            is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
+                triggerEvent(NavigateToFedExTermsOfService)
             }
 
             is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
@@ -1460,6 +1466,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
     data object NavigateToPaymentMethodEdit : Event()
     data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
+    data object NavigateToFedExTermsOfService : Event()
 
     object OpenLearnMoreScreen : Event()
 
@@ -1491,6 +1498,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         @VisibleForTesting
         const val UPSDAP_MISSING_TOS_ERROR_CODE = "missing_upsdap_terms_of_service_acceptance"
+
+        @VisibleForTesting
+        const val FEDEX_MISSING_TOS_ERROR_CODE = "missing_fedex_terms_of_service_acceptance"
     }
 }
 
