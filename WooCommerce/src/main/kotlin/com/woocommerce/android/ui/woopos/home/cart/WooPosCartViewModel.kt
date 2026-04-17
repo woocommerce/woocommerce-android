@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.woocommerce.android.ui.woopos.util.WooPosLayoutInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -72,6 +73,7 @@ class WooPosCartViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
     private val variationMapper: WooPosVariationMapper,
+    private val layoutInfo: WooPosLayoutInfo,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -85,8 +87,7 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
-
-    val phoneState: LiveData<WooPosCartState> = state.map { applyPhoneOverrides(it) }
+        .map { if (layoutInfo.isPhoneLayout()) applyPhoneOverrides(it) else it }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 

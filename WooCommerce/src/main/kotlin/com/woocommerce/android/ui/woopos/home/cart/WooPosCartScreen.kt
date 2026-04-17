@@ -99,11 +99,7 @@ fun WooPosCartScreen(
     viewModel: WooPosCartViewModel = hiltViewModel(),
     onPhoneBack: (() -> Unit)? = null,
 ) {
-    val stateSource = when (onPhoneBack) {
-        null -> viewModel.state
-        else -> viewModel.phoneState
-    }
-    stateSource.observeAsState().value?.let { state ->
+    viewModel.state.observeAsState().value?.let { state ->
         WooPosCartScreen(modifier, state, viewModel::onUIEvent, onPhoneBack)
     }
 }
