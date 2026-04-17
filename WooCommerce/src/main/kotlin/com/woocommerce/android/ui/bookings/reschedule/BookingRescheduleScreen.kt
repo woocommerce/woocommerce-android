@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.reschedule
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +36,10 @@ import com.woocommerce.android.ui.bookings.reschedule.teammember.RescheduleTeamM
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.animations.slideInNavTransition
 import com.woocommerce.android.ui.compose.animations.slideOutNavTransition
+import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
+import java.util.Calendar
+import java.util.TimeZone
 
 @Composable
 fun BookingRescheduleScreen(
@@ -59,6 +63,7 @@ fun BookingRescheduleScreen(
                 state = state,
                 onBackPressed = viewModel::onBackPressed,
                 onTeamMemberRowClicked = { navController.navigate(ReschedulePage.TeamMemberSelector.route) },
+                onDateRowClicked = viewModel::onDateRowClicked,
             )
         }
         composable(ReschedulePage.TeamMemberSelector.route) {
@@ -90,6 +95,7 @@ private fun RescheduleContent(
     state: BookingRescheduleState?,
     onBackPressed: () -> Unit,
     onTeamMemberRowClicked: () -> Unit,
+    onDateRowClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -113,6 +119,14 @@ private fun RescheduleContent(
                     onClick = onTeamMemberRowClicked,
                 )
             }
+            if (state != null && state.formattedDate.isNotEmpty()) {
+                RescheduleRow(
+                    labelRes = R.string.booking_appointment_label_date,
+                    onClick = onDateRowClicked,
+                ) {
+                    RescheduleRowValue(state.formattedDate)
+                }
+            }
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
@@ -131,6 +145,22 @@ private fun RescheduleContent(
             }
         }
     }
+
+    state?.datePickerState?.let { pickerState ->
+        val utcTimeZone = TimeZone.getTimeZone("UTC")
+        DatePickerDialog(
+            currentDate = pickerState.currentDateMillis?.let { millis ->
+                Calendar.getInstance(utcTimeZone).apply { timeInMillis = millis }
+            },
+            minDate = pickerState.minDateMillis?.let { millis ->
+                Calendar.getInstance(utcTimeZone).apply { timeInMillis = millis }
+            },
+            onDateSelected = { calendar ->
+                pickerState.onDateSelected(calendar.timeInMillis)
+            },
+            onDismissRequest = pickerState.onDismiss,
+        )
+    }
 }
 
 @Composable
@@ -138,6 +168,42 @@ private fun TeamMemberSelectorRow(
     teamMemberName: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+) {
+    RescheduleRow(
+        labelRes = R.string.booking_appointment_label_team_member,
+        onClick = onClick,
+        modifier = modifier,
+    ) {
+        if (teamMemberName != null) {
+            RescheduleRowValue(teamMemberName)
+        } else {
+            SkeletonView(
+                width = 80.dp,
+                height = with(LocalDensity.current) {
+                    MaterialTheme.typography.bodyMedium.fontSize.toDp()
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RescheduleRowValue(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun RescheduleRow(
+    @StringRes labelRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    value: @Composable () -> Unit,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -152,24 +218,9 @@ private fun TeamMemberSelectorRow(
                     .clickable(onClick = onClick)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                BookingLabel(R.string.booking_appointment_label_team_member)
+                BookingLabel(labelRes)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (teamMemberName != null) {
-                        Text(
-                            text = teamMemberName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    } else {
-                        SkeletonView(
-                            width = 80.dp,
-                            height = with(LocalDensity.current) {
-                                MaterialTheme.typography.bodyMedium.fontSize.toDp()
-                            },
-                        )
-                    }
+                    value()
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = null,
