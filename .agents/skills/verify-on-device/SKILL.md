@@ -1,6 +1,6 @@
 ---
 name: verify-on-device
-description: Build, install, and visually verify the app on an Android emulator or device
+description: Build, install, and visually verify the app on an Android emulator or device. Uses the Android CLI for agents (android) when available with a full mobile-mcp/adb fallback.
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
 user-invocable: true
 context: fork
@@ -8,9 +8,26 @@ context: fork
 
 # Verify on Device
 
-Build, install, and visually verify the app on an Android emulator or physical device using mobile-mcp.
+Build, install, and visually verify the app on an Android emulator or physical device. The skill prefers the Android CLI for agents (`android`) when installed and falls back to mobile-mcp + adb otherwise.
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
+
+**Optional:** Google's Android CLI for agents (`android`). When present, the skill uses `android run` for combined install+launch, `android layout --diff` for low-token screen-transition polling, `android describe` to discover APK paths, and `android docs` for platform-API lookups. If not installed, every step falls back to the mobile-mcp / adb path with no behavior change.
+
+## Detect the Android CLI Once Per Session
+
+Run this probe once at the start of a verification task and cache the result. Every CLI-based block in this skill is gated on `USE_ANDROID_CLI=1`.
+
+```bash
+if command -v android >/dev/null 2>&1; then
+  USE_ANDROID_CLI=1
+  android --version   # log for reproducibility; pin to a known-good version
+else
+  USE_ANDROID_CLI=0
+fi
+```
+
+If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
 
 ## Critical Rule: Default to Main App (Store Management)
 
