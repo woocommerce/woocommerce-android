@@ -107,7 +107,7 @@ fun Dp.toAdaptiveIconSize(): Dp = when (currentWooPosBreakpoint()) {
 
 @Composable
 fun Modifier.adaptiveContentWidth(): Modifier = when (currentWooPosBreakpoint()) {
-    WooPosBreakpoint.Phone -> this.fillMaxWidth()
+    WooPosBreakpoint.Phone -> this.fillMaxWidth(fraction = 0.9f)
     WooPosBreakpoint.SmallTablet -> this.fillMaxWidth(fraction = 2f / 3f)
     WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 0.55f)
 }
