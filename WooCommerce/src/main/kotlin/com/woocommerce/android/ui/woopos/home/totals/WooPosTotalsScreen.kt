@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,6 +65,7 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosTotalsScreen(
@@ -327,11 +329,12 @@ private fun ReaderDisconnected(
             style = WooPosTypography.BodyLarge,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        val widthFraction = if (LocalContext.current.isWooPosPhoneLayout()) 0.9f else 0.5f
         WooPosButton(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(widthFraction)
                 .height(WooPosComponentSize.Small.value)
         )
     }
@@ -339,10 +342,11 @@ private fun ReaderDisconnected(
 
 @Composable
 private fun TotalsGrid(totals: Totals.Visible) {
+    val widthFraction = if (LocalContext.current.isWooPosPhoneLayout()) 0.9f else 0.5f
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .fillMaxWidth(widthFraction),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
