@@ -1,0 +1,2 @@
+24.5:
+Pembuatan pesanan kini makin andal untuk pelanggan terdaftar. Kami memperbaiki isu yang memungkinkan detail penagihan muncul pada alamat pengiriman, sehingga membantu Anda mengirim pesanan ke tujuan yang tepat.

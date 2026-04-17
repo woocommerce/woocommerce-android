@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-25 09:54:40+0000
+Translation-Revision-Date: 2026-04-07 13:57:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Läs mer</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. &lt;b&gt;Uppgradera till Pro&lt;/b&gt; för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. Uppgradera till Pro för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
+    <string name="woopos_eligibility_ciab_title">Pro-paket krävs</string>
+    <string name="ciab_order_status_open">Öppna</string>
     <string name="booking_payment_status_authorization_voided">Auktorisering ogiltigförklarad</string>
     <string name="booking_payment_status_authorized">Auktoriserad</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Det gick inte att köpa fraktetikett. Fyll i avsändarens adress.</string>
