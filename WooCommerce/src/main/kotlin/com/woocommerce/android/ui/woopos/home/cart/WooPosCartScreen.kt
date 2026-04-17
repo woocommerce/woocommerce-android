@@ -97,16 +97,15 @@ import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
-    onPhoneBack: (() -> Unit)? = null,
 ) {
     viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartScreen(modifier, state, viewModel::onUIEvent, onPhoneBack)
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent)
     }
 }
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun WooPosCartScreen(
+fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,

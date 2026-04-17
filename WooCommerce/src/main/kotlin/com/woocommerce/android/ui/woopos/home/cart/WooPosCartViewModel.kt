@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.WooPosLayoutInfo
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -73,7 +72,6 @@ class WooPosCartViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
     private val variationMapper: WooPosVariationMapper,
-    private val layoutInfo: WooPosLayoutInfo,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -87,7 +85,6 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
-        .map { if (layoutInfo.isPhoneLayout()) applyPhoneOverrides(it) else it }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 
@@ -575,24 +572,6 @@ class WooPosCartViewModel @Inject constructor(
             }
         }
         return newState.copy(toolbar = newToolbar)
-    }
-
-    private fun applyPhoneOverrides(state: WooPosCartState): WooPosCartState {
-        val hasItems = state.body is WooPosCartState.Body.WithItems
-        val effectiveCheckoutButton = when {
-            !hasItems -> WooPosCartState.CheckoutButtonState.Invisible
-            state.checkoutButtonState == WooPosCartState.CheckoutButtonState.Disabled ->
-                WooPosCartState.CheckoutButtonState.Disabled
-            else -> WooPosCartState.CheckoutButtonState.Enabled
-        }
-        return state.copy(
-            toolbar = state.toolbar.copy(
-                backIconVisible = true,
-                isClearAllButtonVisible = hasItems,
-            ),
-            areItemsRemovable = hasItems,
-            checkoutButtonState = effectiveCheckoutButton,
-        )
     }
 
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =

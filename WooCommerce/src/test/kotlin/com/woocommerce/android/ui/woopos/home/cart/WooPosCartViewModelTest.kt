@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupo
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.WooPosLayoutInfo
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -153,7 +152,6 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
-    private val layoutInfo: WooPosLayoutInfo = mock { on { isPhoneLayout() }.thenReturn(false) }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1765,7 +1763,6 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
-            layoutInfo,
             savedState,
         )
     }
