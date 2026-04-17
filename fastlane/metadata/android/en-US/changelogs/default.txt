@@ -1,17 +1,1 @@
-- [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
-- [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
-- [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
-- [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
-- [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
-- [Internal] Hide Inbox for CIAB sites in menu and dashboard [https://github.com/woocommerce/woocommerce-android/pull/15623]
-- [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
-- [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
-- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
-- [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]
-- [Internal] Added bookable service creation via webview for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15622]
-- [Internal] Migrated SimpleTextEditor, CardReaderManuals, and MediaUploadErrorList screens from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15598]
-- [Internal] Migrated UpdateProductStockStatusScreen and PlanSubscriptionScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15601]
-- [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
-- [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
-- [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
-- [*] Shipping Labels: Improved destination name validation when fetching shipping rates [https://github.com/woocommerce/woocommerce-android/pull/15661]
+Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.
