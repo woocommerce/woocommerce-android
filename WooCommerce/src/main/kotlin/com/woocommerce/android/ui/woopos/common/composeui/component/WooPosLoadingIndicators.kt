@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
@@ -217,7 +216,7 @@ fun PreviewWooPosUpdateProgressIndicator() {
             WooPosUpdateProgressIndicator(
                 progress = 0.65f,
                 isComplete = false,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(WooPosComponentSize.Medium.value)
             )
         }
     }
@@ -234,7 +233,7 @@ fun PreviewWooPosUpdateProgressIndicatorComplete() {
             WooPosUpdateProgressIndicator(
                 progress = 1.0f,
                 isComplete = true,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(WooPosComponentSize.Medium.value)
             )
         }
     }

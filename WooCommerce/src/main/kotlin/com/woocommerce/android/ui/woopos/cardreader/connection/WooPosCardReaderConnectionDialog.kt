@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -60,6 +59,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -410,7 +411,7 @@ private fun CardReaderDialogContent(
             Image(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(width = 160.dp, height = 143.dp),
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value),
             )
         },
         content = content,
@@ -513,7 +514,7 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        readers.forEachIndexed { index, reader ->
+        readers.forEach { reader ->
             WooPosOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = reader.name,
@@ -525,12 +526,12 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
 
         Row(
             modifier = Modifier
-                .height(80.dp),
+                .height(WooPosComponentSize.Small.value),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
             WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(WooPosIconSize.Small.value)
             )
         }
     }
@@ -746,7 +747,7 @@ private fun UpdateRequiredContent(
             WooPosUpdateProgressIndicator(
                 progress = progress,
                 isComplete = false,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(WooPosComponentSize.Large.value)
             )
         },
     ) {
@@ -797,7 +798,7 @@ private fun UpdateOptionalContent(
             WooPosUpdateProgressIndicator(
                 progress = progress,
                 isComplete = false,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(WooPosComponentSize.Large.value)
             )
         },
     ) {
@@ -836,7 +837,7 @@ private fun UpdateCompletedContent() {
             WooPosUpdateProgressIndicator(
                 progress = 1f,
                 isComplete = true,
-                modifier = Modifier.size(140.dp)
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value)
             )
         },
     ) {

@@ -351,7 +351,7 @@ private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.Batt
                 imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_low),
                 contentDescription = stringResource(R.string.woopos_battery_low),
                 tint = WooPosTheme.colors.alert,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(WooPosIconSize.Small.value)
             )
         }
         WooPosHomeFloatingToolbarState.BatteryState.CRITICAL -> {
@@ -359,7 +359,7 @@ private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.Batt
                 imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_critical),
                 contentDescription = stringResource(R.string.woopos_battery_critical),
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(WooPosIconSize.Small.value)
             )
         }
     }

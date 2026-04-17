@@ -1184,61 +1184,61 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.CardReaderScanning,
                         contentDescription = "CardReaderScanning",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderFound,
                         contentDescription = "CardReaderFound",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderConnecting,
                         contentDescription = "CardReaderConnecting",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderSuccess,
                         contentDescription = "CardReaderSuccess",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderError,
                         contentDescription = "CardReaderError",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderBatteryLow,
                         contentDescription = "CardReaderBatteryLow",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
