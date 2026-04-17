@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -102,7 +101,6 @@ private fun SyncingCatalog(
     progressText: String? = null,
     onExitPosClicked: () -> Unit,
 ) {
-    val loadingIndicatorSize = 160.dp
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -111,9 +109,9 @@ private fun SyncingCatalog(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(loadingIndicatorSize)
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value)
             )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
             Text(
                 text = stringResource(R.string.woopos_home_syncing_catalog_title),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),

@@ -4,6 +4,7 @@
 
 24.6
 -----
+- [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
 - [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
 - [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
 - [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
@@ -19,6 +20,7 @@
 - [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
 - [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
 - [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
+- [*] Shipping Labels: Improved destination name validation when fetching shipping rates [https://github.com/woocommerce/woocommerce-android/pull/15661]
 
 24.5.1
 -----

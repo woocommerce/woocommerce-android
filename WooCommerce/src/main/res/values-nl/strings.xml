@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 17:55:55+0000
+Translation-Revision-Date: 2026-04-07 15:58:12+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Meer informatie</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. &lt;b&gt;Upgrade naar Pro&lt;/b&gt; om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime voorraadsynchronisatie en synchronisatie van bestellingen.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. Upgrade naar Pro om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime synchronisatie van voorraad en bestellingen.</string>
+    <string name="woopos_eligibility_ciab_title">Pro-abonnement vereist.</string>
+    <string name="ciab_order_status_open">Open</string>
     <string name="booking_payment_status_authorization_voided">Autorisatie nietig verklaard</string>
     <string name="booking_payment_status_authorized">Geautoriseerd</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Kan het verzendlabel niet aanschaffen. Vul het oorspronkelijke adres in.</string>

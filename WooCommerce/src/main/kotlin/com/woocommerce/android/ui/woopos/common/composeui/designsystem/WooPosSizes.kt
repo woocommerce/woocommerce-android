@@ -109,7 +109,7 @@ fun Dp.toAdaptiveIconSize(): Dp = when (currentWooPosBreakpoint()) {
 fun Modifier.adaptiveContentWidth(): Modifier = when (currentWooPosBreakpoint()) {
     WooPosBreakpoint.Phone -> this.fillMaxWidth()
     WooPosBreakpoint.SmallTablet -> this.fillMaxWidth(fraction = 2f / 3f)
-    WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 3f / 5f)
+    WooPosBreakpoint.Tablet -> this.fillMaxWidth(fraction = 0.55f)
 }
 
 internal enum class WooPosBreakpoint { Phone, SmallTablet, Tablet }

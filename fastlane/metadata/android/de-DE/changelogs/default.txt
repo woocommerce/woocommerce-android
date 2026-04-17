@@ -1,0 +1,2 @@
+24.5:
+Das Erstellen von Bestellungen für registrierte Kunden ist jetzt zuverlässiger. Wir haben ein Problem behoben, durch das Rechnungsdetails in der Lieferadresse angezeigt werden konnten, sodass du Bestellungen an das richtige Ziel senden kannst.

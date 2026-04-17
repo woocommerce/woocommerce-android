@@ -1,0 +1,2 @@
+24.5:
+Bestellingen aanmaken voor geregistreerde klanten is nu betrouwbaarder. We hebben een probleem opgelost waarbij factuurgegevens in het verzendadres konden worden weergegeven, waardoor je bestellingen naar de juiste bestemming kon verzenden.

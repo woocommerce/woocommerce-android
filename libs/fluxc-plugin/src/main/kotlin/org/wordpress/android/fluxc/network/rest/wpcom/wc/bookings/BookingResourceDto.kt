@@ -11,5 +11,6 @@ data class BookingResourceDto(
     @SerializedName("phone_number") val phoneNumber: String?,
     @SerializedName("image_id") val imageId: Long,
     @SerializedName("image_url") val imageUrl: String?,
-    @SerializedName("description") val description: String?
+    @SerializedName("description") val description: String?,
+    @SerializedName("product_booking_ids") val productBookingIds: List<Long>?,
 )

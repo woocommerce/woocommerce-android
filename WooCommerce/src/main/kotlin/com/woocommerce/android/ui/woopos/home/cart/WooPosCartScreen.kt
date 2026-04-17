@@ -94,9 +94,10 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemoved
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosCartScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosCartViewModel = hiltViewModel()
-
+fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosCartViewModel = hiltViewModel(),
+) {
     viewModel.state.observeAsState().value?.let {
         WooPosCartScreen(modifier, it, viewModel::onUIEvent)
     }

@@ -1,0 +1,2 @@
+24.5:
+Crear pedidos para clientes registrados es ahora más fiable. Hemos corregido un problema por el que los detalles de facturación podían aparecer en la dirección de envío, lo que te ayudaba a enviar pedidos al destino correcto.
