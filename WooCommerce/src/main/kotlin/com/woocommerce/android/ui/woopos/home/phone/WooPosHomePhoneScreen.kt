@@ -2,29 +2,29 @@ package com.woocommerce.android.ui.woopos.home.phone
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
-import com.woocommerce.android.util.PackageUtils
 import org.wordpress.android.util.ToastUtils
 
 @Composable
@@ -62,6 +62,9 @@ private fun WooPosHomePhoneContent(
     val cartViewModel: WooPosCartViewModel = hiltViewModel()
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
+    val cartState by cartViewModel.state.observeAsState()
+    val totalsState by totalsViewModel.state.collectAsState()
+
     BackHandler {
         when (state.screenPositionState) {
             WooPosHomeState.ScreenPositionState.Products ->
@@ -73,34 +76,55 @@ private fun WooPosHomePhoneContent(
         }
     }
 
+    val cartTitle = stringResource(R.string.woopos_cart_title)
+    val checkoutLabel = stringResource(R.string.woopos_checkout_button)
+    val cashPaymentLabel = stringResource(R.string.woopos_payment_take_cash_payment_label)
+
+    val resolver = remember(cartTitle, checkoutLabel, cashPaymentLabel) {
+        WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { count -> "$cartTitle ($count)" },
+            checkoutLabel = checkoutLabel,
+            cashPaymentLabel = cashPaymentLabel,
+        )
+    }
+    val persistentButtonState = resolver.resolve(
+        screenPositionState = state.screenPositionState,
+        cartState = cartState,
+        totalsState = totalsState,
+    )
+
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            when (state.screenPositionState) {
-                WooPosHomeState.ScreenPositionState.Products -> {
-                    WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.weight(1f)) {
+                when (state.screenPositionState) {
+                    WooPosHomeState.ScreenPositionState.Products ->
+                        WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
 
-                    if (PackageUtils.isDebugBuild()) {
-                        // Temporary trigger so Cart is reachable until the persistent
-                        // bottom button lands in WOOMOB-2657. Remove with that ticket.
-                        ExtendedFloatingActionButton(
-                            text = { WooPosText(text = "Cart (debug)", style = WooPosTypography.BodyLarge) },
-                            icon = {},
-                            onClick = { onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked) },
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(WooPosSpacing.Medium.value)
-                        )
-                    }
+                    WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneCartScreen(
+                        onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
+                        viewModel = cartViewModel,
+                    )
+
+                    is WooPosHomeState.ScreenPositionState.Checkout ->
+                        WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
                 }
-                WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneCartScreen(
-                    onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
-                    viewModel = cartViewModel,
-                )
-                is WooPosHomeState.ScreenPositionState.Checkout ->
-                    WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
             }
+
+            WooPosHomePhonePersistentButton(
+                state = persistentButtonState,
+                onAction = { action ->
+                    when (action) {
+                        WooPosPhonePersistentButtonAction.OpenCart ->
+                            onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked)
+                        WooPosPhonePersistentButtonAction.Checkout ->
+                            cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+                        WooPosPhonePersistentButtonAction.CashPayment ->
+                            totalsViewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+                    }
+                },
+            )
         }
 
         WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
