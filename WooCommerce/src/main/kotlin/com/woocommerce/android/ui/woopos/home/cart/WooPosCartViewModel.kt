@@ -86,6 +86,8 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
 
+    val phoneState: LiveData<WooPosCartState> = state.map { applyPhoneOverrides(it) }
+
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 
     init {
@@ -572,6 +574,24 @@ class WooPosCartViewModel @Inject constructor(
             }
         }
         return newState.copy(toolbar = newToolbar)
+    }
+
+    private fun applyPhoneOverrides(state: WooPosCartState): WooPosCartState {
+        val hasItems = state.body is WooPosCartState.Body.WithItems
+        val effectiveCheckoutButton = when {
+            !hasItems -> WooPosCartState.CheckoutButtonState.Invisible
+            state.checkoutButtonState == WooPosCartState.CheckoutButtonState.Disabled ->
+                WooPosCartState.CheckoutButtonState.Disabled
+            else -> WooPosCartState.CheckoutButtonState.Enabled
+        }
+        return state.copy(
+            toolbar = state.toolbar.copy(
+                backIconVisible = true,
+                isClearAllButtonVisible = hasItems,
+            ),
+            areItemsRemovable = hasItems,
+            checkoutButtonState = effectiveCheckoutButton,
+        )
     }
 
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =

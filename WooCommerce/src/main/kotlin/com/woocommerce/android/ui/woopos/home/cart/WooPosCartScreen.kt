@@ -99,28 +99,12 @@ fun WooPosCartScreen(
     viewModel: WooPosCartViewModel = hiltViewModel(),
     onPhoneBack: (() -> Unit)? = null,
 ) {
-    viewModel.state.observeAsState().value?.let { state ->
-        val effectiveState = when (onPhoneBack) {
-            null -> state
-            else -> {
-                val hasItems = state.body is WooPosCartState.Body.WithItems
-                val effectiveCheckoutButton = when {
-                    !hasItems -> WooPosCartState.CheckoutButtonState.Invisible
-                    state.checkoutButtonState == WooPosCartState.CheckoutButtonState.Disabled ->
-                        WooPosCartState.CheckoutButtonState.Disabled
-                    else -> WooPosCartState.CheckoutButtonState.Enabled
-                }
-                state.copy(
-                    toolbar = state.toolbar.copy(
-                        backIconVisible = true,
-                        isClearAllButtonVisible = hasItems,
-                    ),
-                    areItemsRemovable = hasItems,
-                    checkoutButtonState = effectiveCheckoutButton,
-                )
-            }
-        }
-        WooPosCartScreen(modifier, effectiveState, viewModel::onUIEvent, onPhoneBack)
+    val stateSource = when (onPhoneBack) {
+        null -> viewModel.state
+        else -> viewModel.phoneState
+    }
+    stateSource.observeAsState().value?.let { state ->
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent, onPhoneBack)
     }
 }
 
