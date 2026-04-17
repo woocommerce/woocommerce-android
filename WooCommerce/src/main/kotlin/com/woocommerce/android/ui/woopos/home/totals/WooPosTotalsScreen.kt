@@ -244,10 +244,9 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         when (cashPaymentButton) {
             WooPosTotalsCashPaymentButton.Visible -> {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     text = stringResource(R.string.woopos_payment_take_cash_payment_label),
                     onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
