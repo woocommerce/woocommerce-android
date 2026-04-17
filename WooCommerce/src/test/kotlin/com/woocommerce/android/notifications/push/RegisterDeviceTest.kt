@@ -175,7 +175,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         whenever(accountStore.hasAccessToken()).thenReturn(false)
         wheneverBlocking {
             pushNotificationRepository.isWpComPushRegistered()
-        }.thenReturn(true)
+        }.thenReturn(false)
 
         // WHEN
         sut(APP_FOREGROUND)
