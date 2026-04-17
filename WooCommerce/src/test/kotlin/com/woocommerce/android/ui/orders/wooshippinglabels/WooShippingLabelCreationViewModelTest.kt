@@ -560,6 +560,34 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given rates were loaded, when a refetch fails, then do not display the stale rates`() = testBlocking {
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.success(defaultShippingRates)
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+
+        val stateAfterSuccess = (sut.viewState.value as DataState).shipmentUIList[0].shippingRatesState
+        assertIs<ShippingRatesState.DataState>(stateAfterSuccess)
+
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(InvalidDestinationNameRateException())
+        sut.onRefreshShippingRates()
+        advanceUntilIdle()
+
+        val stateAfterFailure = (sut.viewState.value as DataState).shipmentUIList[0].shippingRatesState
+        val errorState = assertIs<ShippingRatesState.Error>(stateAfterFailure)
+        assertEquals(
+            R.string.woo_shipping_labels_package_creation_shipping_rates_destination_name_error,
+            errorState.message
+        )
+    }
+
+    @Test
     fun `when refresh rates is triggered then refresh shipping rates`() = testBlocking {
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(

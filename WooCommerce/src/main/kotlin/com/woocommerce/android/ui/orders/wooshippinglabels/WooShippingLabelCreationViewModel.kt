@@ -710,6 +710,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                             set(index, result)
                         }
+                        selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply {
+                            set(index, null)
+                        }
                         trackShippingRatesLoading(isSuccess = true)
                     },
                     onFailure = { exception ->
@@ -724,7 +727,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
-                selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }
     }
