@@ -1,11 +1,22 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
@@ -105,39 +116,59 @@ fun WooPosHomePhonePersistentButton(
     onAction: (WooPosPhonePersistentButtonAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (state) {
-        WooPosPhonePersistentButtonState.Hidden -> Unit
+    val lastRenderable = remember { mutableStateOf<WooPosPhonePersistentButtonState?>(null) }
+    if (state !is WooPosPhonePersistentButtonState.Hidden) {
+        lastRenderable.value = state
+    }
 
-        is WooPosPhonePersistentButtonState.Primary -> {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceBright,
-                modifier = modifier.fillMaxWidth(),
-            ) {
-                WooPosButton(
-                    text = state.label,
-                    onClick = { onAction(state.action) },
-                    state = state.buttonState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding(),
-                )
-            }
-        }
+    AnimatedVisibility(
+        visible = state !is WooPosPhonePersistentButtonState.Hidden,
+        enter = slideInVertically(tween(durationMillis = 300)) { it } + fadeIn(tween(300)),
+        exit = slideOutVertically(tween(durationMillis = 300)) { it } + fadeOut(tween(100)),
+        modifier = modifier,
+    ) {
+        val shown: WooPosPhonePersistentButtonState? =
+            if (state !is WooPosPhonePersistentButtonState.Hidden) state else lastRenderable.value
 
-        is WooPosPhonePersistentButtonState.Outlined -> {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceBright,
-                modifier = modifier.fillMaxWidth(),
-            ) {
-                WooPosOutlinedButton(
-                    text = state.label,
-                    onClick = { onAction(state.action) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding(),
-                )
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceBright,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            AnimatedContent(
+                targetState = shown,
+                contentKey = { s ->
+                    when (s) {
+                        is WooPosPhonePersistentButtonState.Primary -> "P:${s.label}"
+                        is WooPosPhonePersistentButtonState.Outlined -> "O:${s.label}"
+                        WooPosPhonePersistentButtonState.Hidden, null -> "H"
+                    }
+                },
+                transitionSpec = {
+                    (fadeIn(tween(200)) togetherWith fadeOut(tween(200)))
+                        .using(SizeTransform(clip = false))
+                },
+                label = "persistent_button_morph",
+            ) { s ->
+                when (s) {
+                    is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
+                        text = s.label,
+                        state = s.buttonState,
+                        onClick = { onAction(s.action) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(WooPosSpacing.Medium.value)
+                            .navigationBarsPadding(),
+                    )
+                    is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
+                        text = s.label,
+                        onClick = { onAction(s.action) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(WooPosSpacing.Medium.value)
+                            .navigationBarsPadding(),
+                    )
+                    WooPosPhonePersistentButtonState.Hidden, null -> Unit
+                }
             }
         }
     }
