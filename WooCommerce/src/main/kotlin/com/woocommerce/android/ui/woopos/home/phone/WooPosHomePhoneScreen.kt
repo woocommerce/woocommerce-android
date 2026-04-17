@@ -22,10 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.WooPosHomeCartPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
-import com.woocommerce.android.ui.woopos.home.WooPosHomeTotalsPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
@@ -147,10 +145,10 @@ private fun WooPosHomePhoneContent(
                 }
             }
             composable(PHONE_CART_ROUTE) {
-                WooPosHomeCartPane(viewModel = cartViewModel)
+                WooPosPhoneCartScreen(viewModel = cartViewModel)
             }
             composable(PHONE_TOTALS_ROUTE) {
-                WooPosHomeTotalsPane(viewModel = totalsViewModel)
+                WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
             }
         }
 
