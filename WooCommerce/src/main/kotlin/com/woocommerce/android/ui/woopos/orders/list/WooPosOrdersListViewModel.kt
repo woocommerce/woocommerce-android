@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -82,7 +81,6 @@ class WooPosOrdersListViewModel @Inject constructor(
                 viewModelScope.launch {
                     ordersAnalyticsTracker.trackOrdersListSearchButtonTapped()
                 }
-
                 updateSearchState(
                     WooPosSearchInputState.Open(
                         input = WooPosSearchInputState.Open.Input.Hint(
@@ -104,7 +102,6 @@ class WooPosOrdersListViewModel @Inject constructor(
                         isLoading = false,
                     )
                 )
-
                 if (event.query.isEmpty()) {
                     loadOrders()
                 } else {
@@ -184,18 +181,14 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
-
-        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
             if (!isRefreshing) {
-                _state.value = WooPosOrdersState.Content(
-                    items = WooPosOrdersState.Content.Items.Searching,
+                _state.value = WooPosOrdersListState.Content(
+                    items = WooPosOrdersListState.Content.Items.Searching,
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
                     searchInputState = _state.value.searchInputState,
-                    selectedDetails = currentSelectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                    paginationState = WooPosPaginationState.None
                 )
             }
 
@@ -205,46 +198,33 @@ class WooPosOrdersListViewModel @Inject constructor(
             ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    _state.value = WooPosOrdersState.Content(
-                        items = WooPosOrdersState.Content.Items.Error(
+                    _state.value = WooPosOrdersListState.Content(
+                        items = WooPosOrdersListState.Content.Items.Error(
                             title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
                             message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
                         ),
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
-                        selectedDetails = null,
-                        paginationState = WooPosPaginationState.None,
-                        dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                        paginationState = WooPosPaginationState.None
                     )
                 }
 
                 is SearchOrdersResult.Success -> {
                     if (result.ordersWithRefunds.isEmpty()) {
-                        _state.value = WooPosOrdersState.Content(
-                            items = WooPosOrdersState.Content.Items.NothingFound(
+                        _state.value = WooPosOrdersListState.Content(
+                            items = WooPosOrdersListState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
                                 message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
-                            selectedDetails = null,
-                            paginationState = WooPosPaginationState.None,
-                            dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                            paginationState = WooPosPaginationState.None
                         )
                     } else {
-                        replaceOrders(result.ordersWithRefunds)
+                        replaceOrders(result.ordersWithRefunds.keys.toList())
                     }
                 }
             }
-        }
-    }
-
-    private fun updateSearchState(searchState: WooPosSearchInputState) {
-        _state.value = when (val currentState = _state.value) {
-            is WooPosOrdersState.Content -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersState.Empty -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersState.Error -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersState.Loading -> currentState.copy(searchInputState = searchState)
         }
     }
 
@@ -305,6 +285,15 @@ class WooPosOrdersListViewModel @Inject constructor(
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
+    }
+
+    private fun updateSearchState(searchState: WooPosSearchInputState) {
+        _state.value = when (val currentState = _state.value) {
+            is WooPosOrdersListState.Content -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersListState.Empty -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersListState.Error -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersListState.Loading -> currentState.copy(searchInputState = searchState)
+        }
     }
 
     private fun cancelJobs() {
