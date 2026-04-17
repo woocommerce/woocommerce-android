@@ -62,19 +62,44 @@ Only use `mobile_take_screenshot` for **visual verification** — never for deri
 
 ## Waiting for Screen Transitions
 
-After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow this stabilization protocol:
+After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow one of the two stabilization protocols below.
+
+### Preferred: Diff-Based Polling (`USE_ANDROID_CLI=1`)
+
+`android layout --diff` returns only the elements that changed since the last snapshot, instead of re-reading the entire accessibility tree (50-200+ elements per call). This is the single biggest token-consumption win — expect a ~70% reduction on polling-heavy phases versus repeated `mobile_list_elements_on_screen` calls.
+
+```bash
+# Baseline snapshot immediately after the action.
+android layout --pretty --output=/tmp/layout_t0.json
+
+# Poll diffs until the expected target appears (1 second between polls).
+for i in 1 2 3 4 5; do
+  android layout --diff --output=/tmp/layout_diff.json
+  grep -q '"resource-id":"com.woocommerce.android.dev:id/ordersList"' /tmp/layout_diff.json && break
+  sleep 1
+done
+
+# Safety net on the 5th failed diff — one full-layout read before giving up.
+android layout --pretty --output=/tmp/layout_final.json
+```
+
+Replace the `grep` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference).
+
+### Fallback: Repeated Layout Reads (no `android` CLI)
 
 1. Call `mobile_list_elements_on_screen` after the action.
 2. If the expected target element is NOT present, call `mobile_list_elements_on_screen` again. Each tool round-trip takes ~1-2 seconds, which provides sufficient implicit delay.
 3. Repeat up to 5 times.
 4. If after 5 attempts the expected element is still missing, take a screenshot for diagnosis and report the issue.
 
+### Guidance That Applies to Both Paths
+
 **Loading indicators to watch for:**
 - Skeleton/shimmer views (animated placeholder content) — the screen is loading data, keep waiting.
 - `CircularProgressIndicator` or `ProgressBar` elements — an operation is in progress, keep waiting.
 - Empty state views with text like "No orders yet" — the screen IS loaded, just empty. Do NOT keep waiting.
 
-**When NOT to retry:** If `mobile_list_elements_on_screen` returns the same result 3 times in a row with no change, the screen is stable. The element you want is genuinely not present — consider scrolling or navigating differently.
+**When NOT to retry:** If the layout (full or diff) returns the same result 3 times in a row with no change, the screen is stable. The element you want is genuinely not present — consider scrolling or navigating differently.
 
 ### Timing Guidelines
 
