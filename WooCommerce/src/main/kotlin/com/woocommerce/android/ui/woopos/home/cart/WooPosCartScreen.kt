@@ -95,11 +95,12 @@ import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosCartScreen(
+    checkoutSlot: WooPosCartCheckoutButtonSlot,
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
 ) {
     viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartScreen(modifier, state, viewModel::onUIEvent)
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent, checkoutSlot = checkoutSlot)
     }
 }
 
@@ -110,6 +111,7 @@ fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
     onPhoneBack: (() -> Unit)? = null,
+    checkoutSlot: WooPosCartCheckoutButtonSlot,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -149,7 +151,12 @@ fun WooPosCartScreen(
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
-                        bottom.linkTo(checkoutButton.top)
+                        bottom.linkTo(
+                            when (checkoutSlot) {
+                                WooPosCartCheckoutButtonSlot.Inline -> checkoutButton.top
+                                WooPosCartCheckoutButtonSlot.External -> parent.bottom
+                            }
+                        )
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
@@ -157,37 +164,43 @@ fun WooPosCartScreen(
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
                     checkoutButtonState = state.checkoutButtonState,
+                    checkoutSlot = checkoutSlot,
                     onUIEvent = onUIEvent
                 )
             }
         }
 
-        AnimatedVisibility(
-            visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value)
-                .padding(bottom = WooPosSpacing.Small.value)
-                .constrainAs(checkoutButton) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        ) {
-            WooPosButton(
-                modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
-                text = stringResource(R.string.woopos_checkout_button),
-                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
-                state = when (state.checkoutButtonState) {
-                    WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
-                    WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+        when (checkoutSlot) {
+            WooPosCartCheckoutButtonSlot.Inline -> {
+                AnimatedVisibility(
+                    visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
+                    enter = fadeIn(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .padding(bottom = WooPosSpacing.Small.value)
+                        .constrainAs(checkoutButton) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    WooPosButton(
+                        modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                        text = stringResource(R.string.woopos_checkout_button),
+                        onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                        state = when (state.checkoutButtonState) {
+                            WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+                            WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
 
-                    // To be displayed during animation
-                    WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                            // To be displayed during animation
+                            WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                        }
+                    )
                 }
-            )
+            }
+            WooPosCartCheckoutButtonSlot.External -> Unit
         }
     }
 }
@@ -254,13 +267,19 @@ private fun CartBodyWithItems(
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
     checkoutButtonState: WooPosCartState.CheckoutButtonState,
+    checkoutSlot: WooPosCartCheckoutButtonSlot,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
 
     val spacerHeight by animateDpAsState(
-        targetValue = if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp,
+        targetValue = when (checkoutSlot) {
+            WooPosCartCheckoutButtonSlot.External -> 0.dp
+            WooPosCartCheckoutButtonSlot.Inline -> {
+                if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp
+            }
+        },
         label = "cart list height animation"
     )
 
@@ -947,6 +966,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
             ),
             onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
         )
     }
 }
@@ -1013,6 +1033,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
             ),
             onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
         )
     }
 }
@@ -1034,6 +1055,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
             ),
             onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
         )
     }
 }
@@ -1071,6 +1093,12 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
             ),
             onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
         )
     }
+}
+
+enum class WooPosCartCheckoutButtonSlot {
+    Inline,
+    External,
 }
