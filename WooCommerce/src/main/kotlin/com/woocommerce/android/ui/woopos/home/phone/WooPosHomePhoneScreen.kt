@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,15 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -33,11 +31,11 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
 import com.woocommerce.android.util.PackageUtils
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ToastUtils
 
-private const val PHONE_PRODUCTS_ROUTE = "phone_products"
-private const val PHONE_CART_ROUTE = "phone_cart"
-private const val PHONE_TOTALS_ROUTE = "phone_totals"
+@Parcelize
+private enum class PhoneScreen : Parcelable { Products, Cart, Totals }
 
 @Composable
 fun WooPosHomePhoneScreen(
@@ -70,64 +68,42 @@ private fun WooPosHomePhoneContent(
     state: WooPosHomeState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
-    val navController = rememberNavController()
-
-    // Acquire the shared ViewModels once at the parent NavBackStackEntry scope so they
-    // stay alive across inner navigation between products / cart / totals. Without this,
-    // hiltViewModel() calls inside each destination would scope to that destination's
-    // inner NavBackStackEntry and be recreated on every navigation.
     val itemsViewModel: WooPosItemsViewModel = hiltViewModel()
     val cartViewModel: WooPosCartViewModel = hiltViewModel()
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
     val cartState by cartViewModel.state.observeAsState()
 
-    var previousState by remember {
-        mutableStateOf<WooPosHomeState.ScreenPositionState?>(null)
-    }
+    var screen by rememberSaveable { mutableStateOf(PhoneScreen.Products) }
 
     LaunchedEffect(state.screenPositionState) {
-        val currentRoute = navController.currentDestination?.route
         when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart -> {
-                val cartHasItems = cartState?.body is WooPosCartState.Body.WithItems
-                when {
-                    currentRoute == PHONE_TOTALS_ROUTE && cartHasItems ->
-                        navController.popBackStack(PHONE_CART_ROUTE, inclusive = false)
-                    currentRoute == PHONE_TOTALS_ROUTE || currentRoute == PHONE_CART_ROUTE ->
-                        navController.popBackStack(PHONE_PRODUCTS_ROUTE, inclusive = false)
-                }
-            }
             is WooPosHomeState.ScreenPositionState.Checkout -> {
-                if (currentRoute != PHONE_TOTALS_ROUTE) {
-                    navController.navigate(PHONE_TOTALS_ROUTE) {
-                        launchSingleTop = true
-                    }
+                screen = PhoneScreen.Totals
+            }
+            is WooPosHomeState.ScreenPositionState.Cart -> {
+                if (screen == PhoneScreen.Totals) {
+                    val cartHasItems = cartState?.body is WooPosCartState.Body.WithItems
+                    screen = if (cartHasItems) PhoneScreen.Cart else PhoneScreen.Products
                 }
             }
         }
-        previousState = state.screenPositionState
     }
 
     BackHandler {
-        when (navController.currentDestination?.route) {
-            PHONE_TOTALS_ROUTE -> onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-            else -> if (!navController.popBackStack()) {
-                onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-            }
+        when (screen) {
+            PhoneScreen.Products -> onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            PhoneScreen.Cart -> screen = PhoneScreen.Products
+            PhoneScreen.Totals -> onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
         }
     }
 
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = PHONE_PRODUCTS_ROUTE,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            composable(PHONE_PRODUCTS_ROUTE) {
-                Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (screen) {
+                PhoneScreen.Products -> {
                     WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
 
                     if (PackageUtils.isDebugBuild()) {
@@ -136,26 +112,18 @@ private fun WooPosHomePhoneContent(
                         ExtendedFloatingActionButton(
                             text = { WooPosText(text = "Cart (debug)", style = WooPosTypography.BodyLarge) },
                             icon = {},
-                            onClick = {
-                                navController.navigate(PHONE_CART_ROUTE) {
-                                    launchSingleTop = true
-                                }
-                            },
+                            onClick = { screen = PhoneScreen.Cart },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(WooPosSpacing.Medium.value)
                         )
                     }
                 }
-            }
-            composable(PHONE_CART_ROUTE) {
-                WooPosPhoneCartScreen(
-                    onBack = { navController.popBackStack() },
+                PhoneScreen.Cart -> WooPosPhoneCartScreen(
+                    onBack = { screen = PhoneScreen.Products },
                     viewModel = cartViewModel,
                 )
-            }
-            composable(PHONE_TOTALS_ROUTE) {
-                WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
+                PhoneScreen.Totals -> WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
             }
         }
 
