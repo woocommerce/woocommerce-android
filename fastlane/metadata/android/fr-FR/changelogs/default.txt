@@ -1,2 +1,0 @@
-24.5 :
-La création de commandes pour les clients enregistrés est désormais plus fiable. Nous avons corrigé un problème d’affichage des informations de facturation dans l’adresse de livraison, ce qui vous permet d’envoyer vos commandes à la bonne adresse.

@@ -1,2 +1,0 @@
-24.5:
-A criação de pedidos para clientes registrados agora é mais confiável. Para ajudar você a enviar pedidos ao destino certo, corrigimos um problema em que os detalhes de faturamento podiam aparecer no endereço de entrega.

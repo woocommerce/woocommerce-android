@@ -1,2 +1,0 @@
-24.5:
-Nu är det mer tillförlitligt att skapa beställningar för registrerade kunder. Vi har åtgärdat ett problem där faktureringsuppgifter kunde dyka upp i leveransadressen, så att du kan skicka beställningarna till rätt mottagare.
