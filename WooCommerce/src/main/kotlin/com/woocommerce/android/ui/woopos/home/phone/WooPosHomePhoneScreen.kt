@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
@@ -78,6 +80,8 @@ private fun WooPosHomePhoneContent(
     val cartViewModel: WooPosCartViewModel = hiltViewModel()
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
+    val cartState by cartViewModel.state.observeAsState()
+
     var previousState by remember {
         mutableStateOf<WooPosHomeState.ScreenPositionState?>(null)
     }
@@ -86,15 +90,12 @@ private fun WooPosHomePhoneContent(
         val currentRoute = navController.currentDestination?.route
         when (state.screenPositionState) {
             is WooPosHomeState.ScreenPositionState.Cart -> {
-                val cameFromCartWithTotals =
-                    previousState is WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals
-                when (currentRoute) {
-                    PHONE_TOTALS_ROUTE if cameFromCartWithTotals -> {
-                        navController.popBackStack()
-                    }
-                    PHONE_TOTALS_ROUTE, PHONE_CART_ROUTE -> {
+                val cartHasItems = cartState?.body is WooPosCartState.Body.WithItems
+                when {
+                    currentRoute == PHONE_TOTALS_ROUTE && cartHasItems ->
+                        navController.popBackStack(PHONE_CART_ROUTE, inclusive = false)
+                    currentRoute == PHONE_TOTALS_ROUTE || currentRoute == PHONE_CART_ROUTE ->
                         navController.popBackStack(PHONE_PRODUCTS_ROUTE, inclusive = false)
-                    }
                 }
             }
             is WooPosHomeState.ScreenPositionState.Checkout -> {
@@ -109,8 +110,11 @@ private fun WooPosHomePhoneContent(
     }
 
     BackHandler {
-        if (!navController.popBackStack()) {
-            onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        when (navController.currentDestination?.route) {
+            PHONE_TOTALS_ROUTE -> onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            else -> if (!navController.popBackStack()) {
+                onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            }
         }
     }
 
