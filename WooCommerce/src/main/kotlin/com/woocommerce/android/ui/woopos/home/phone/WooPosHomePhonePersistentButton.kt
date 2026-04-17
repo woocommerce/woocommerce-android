@@ -1,14 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -149,44 +142,28 @@ fun WooPosHomePhonePersistentButton(
                 translationY = translateFraction * size.height
             },
     ) {
-        AnimatedContent(
-            targetState = shown,
-            contentKey = { s ->
-                when (s) {
-                    is WooPosPhonePersistentButtonState.Primary -> "P:${s.label}"
-                    is WooPosPhonePersistentButtonState.Outlined -> "O:${s.label}"
-                    WooPosPhonePersistentButtonState.Hidden -> "H"
-                }
-            },
-            transitionSpec = {
-                val enter = slideInVertically(tween(durationMillis = 220)) { h -> h / 3 } +
-                    fadeIn(tween(durationMillis = 220))
-                val exit = slideOutVertically(tween(durationMillis = 220)) { h -> -h / 3 } +
-                    fadeOut(tween(durationMillis = 140))
-                (enter togetherWith exit).using(SizeTransform(clip = false))
-            },
-            label = "persistent_button_morph",
-        ) { s ->
-            when (s) {
-                is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
-                    text = s.label,
-                    state = s.buttonState,
-                    onClick = { onAction(s.action) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding(),
-                )
-                is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
-                    text = s.label,
-                    onClick = { onAction(s.action) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding(),
-                )
-                WooPosPhonePersistentButtonState.Hidden -> Unit
-            }
+        // Primary <-> Outlined transitions always go through Hidden (loading totals),
+        // so we never need to crossfade between styles while visible. Label changes
+        // within the same style snap — standard Android button behavior.
+        when (shown) {
+            is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
+                text = shown.label,
+                state = shown.buttonState,
+                onClick = { onAction(shown.action) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.Medium.value)
+                    .navigationBarsPadding(),
+            )
+            is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
+                text = shown.label,
+                onClick = { onAction(shown.action) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.Medium.value)
+                    .navigationBarsPadding(),
+            )
+            WooPosPhonePersistentButtonState.Hidden -> Unit
         }
     }
 }
