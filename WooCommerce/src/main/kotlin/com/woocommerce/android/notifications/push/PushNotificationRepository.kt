@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import android.os.Build
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -50,10 +51,17 @@ class PushNotificationRepository @Inject constructor(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        wpComPushNotificationStore.registerDevice(token, WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE)
+        wpComPushNotificationStore.registerDevice(
+            token,
+            WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
+        )
     }
 
-    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel): Result<Unit> {
+    suspend fun registerPushTokenInWooCoreSystem(
+        token: String,
+        selectedSite: SiteModel,
+        allowWpComFallback: Boolean = true
+    ): Result<Unit> {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"
@@ -70,12 +78,12 @@ class PushNotificationRepository @Inject constructor(
             metadata = metadata
         )
         return if (!result.isError) {
-            result.model?.let { pushToken ->
+            result.model?.let { tokenId ->
                 notificationAnalyticsTracker.track(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
                     siteId = selectedSite.siteId
                 )
-                savePushTokenForSite(selectedSite.siteId, pushToken)
+                savePushTokenForSite(selectedSite.siteId, WooPushRegistrationData(tokenId, token, deviceLocale))
                 disableWpComNotificationsForSite(selectedSite.siteId)
                 Result.success(Unit)
             } ?: run {
@@ -101,7 +109,7 @@ class PushNotificationRepository @Inject constructor(
                 WooLog.T.NOTIFICATIONS,
                 "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
             )
-            if (!isWpComPushRegistered()) {
+            if (allowWpComFallback && !isWpComPushRegistered()) {
                 registerPushTokenInWpComSystem(token)
             }
             Result.failure(WooException(result.error))
@@ -140,24 +148,61 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    private suspend fun savePushTokenForSite(siteId: Long, token: String) {
+    private suspend fun savePushTokenForSite(siteId: Long, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
-            preferences[getPushTokenKeyForSite(siteId)] = token
+            preferences.savePushRegistration(siteId, registration)
         }
     }
 
-    private fun getPushTokenKeyForSite(siteId: Long): Preferences.Key<String> {
-        return stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
+    private fun Preferences.getPushRegistration(siteId: Long): WooPushRegistrationData? {
+        val tokenId = this[getPushTokenIdKeyForSite(siteId)] ?: return null
+        val token = this[getPushTokenValueKeyForSite(siteId)] ?: return null
+        val locale = this[getPushLocaleKeyForSite(siteId)] ?: return null
+        return WooPushRegistrationData(tokenId, token, locale)
     }
 
-    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean {
-        return observeWooPushTokenRegisteredForSite(siteId).first()
+    private fun MutablePreferences.savePushRegistration(siteId: Long, registration: WooPushRegistrationData) {
+        this[getPushTokenIdKeyForSite(siteId)] = registration.tokenId
+        this[getPushTokenValueKeyForSite(siteId)] = registration.token
+        this[getPushLocaleKeyForSite(siteId)] = registration.locale
     }
+
+    private fun MutablePreferences.clearPushRegistration(siteId: Long) {
+        remove(getPushTokenIdKeyForSite(siteId))
+        remove(getPushTokenValueKeyForSite(siteId))
+        remove(getPushLocaleKeyForSite(siteId))
+    }
+
+    private fun getPushTokenIdKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
+
+    private fun getPushTokenValueKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_TOKEN_VALUE_KEY_PREFIX$siteId")
+
+    private fun getPushLocaleKeyForSite(siteId: Long): Preferences.Key<String> =
+        stringPreferencesKey("$PUSH_LOCALE_KEY_PREFIX$siteId")
+
+    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean =
+        observeWooPushTokenRegisteredForSite(siteId).first()
+
+    suspend fun shouldRegisterWooPushForSite(currentToken: String, siteId: Long): Boolean {
+        val preferences = pushNotificationsDataStore.data.first()
+        val registration = preferences.getPushRegistration(siteId)
+
+        return registration == null ||
+            registration.token != currentToken ||
+            registration.locale != getDeviceLocale()
+    }
+
+    fun isWpComPushRegistered(): Boolean =
+        prefsWrapper.getFluxCPreferences()
+            .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+            .isNotNullOrEmpty()
 
     fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
-        val tokenKey = getPushTokenKeyForSite(siteId)
+        val tokenKey = getPushTokenIdKeyForSite(siteId)
         return pushNotificationsDataStore.data.map { preferences ->
-            val isTokenStored = preferences[tokenKey] != null
+            val isTokenStored = preferences[tokenKey].isNotNullOrEmpty()
             val supportResult = checkWooPluginPushNotificationsSupport(forceRefresh = false)
             // Treat errors as "compatible" to avoid hiding entry points during temporary failures
             val isPluginCompatible = when (supportResult) {
@@ -191,17 +236,18 @@ class PushNotificationRepository @Inject constructor(
         val sites = wooCommerceStore.getWooCommerceSites()
 
         val deleteJobs = sites.mapNotNull { site ->
-            val tokenKey = getPushTokenKeyForSite(site.siteId)
-            val pushTokenId = preferences[tokenKey] ?: return@mapNotNull null
+            val registration = preferences.getPushRegistration(site.siteId) ?: return@mapNotNull null
             async {
-                val result = wooPushNotificationsStore.deletePushToken(site, pushTokenId)
+                val result = wooPushNotificationsStore.deletePushToken(site, registration.tokenId)
                 if (result.isError) {
                     WooLog.w(
                         WooLog.T.NOTIFICATIONS,
                         "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
                     )
                 } else {
-                    pushNotificationsDataStore.edit { it.remove(tokenKey) }
+                    pushNotificationsDataStore.edit {
+                        it.clearPushRegistration(site.siteId)
+                    }
                     WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
                 }
             }
@@ -214,12 +260,6 @@ class PushNotificationRepository @Inject constructor(
         return UUID.randomUUID().toString().also {
             appPrefsWrapper.wooCorePushDeviceUUID = it
         }
-    }
-
-    private fun isWpComPushRegistered(): Boolean {
-        val wpComPushServerId = prefsWrapper.getFluxCPreferences()
-            .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
-        return wpComPushServerId.isNotNullOrEmpty()
     }
 
     private fun getDeviceLocale(): String {
@@ -240,8 +280,16 @@ class PushNotificationRepository @Inject constructor(
         "os_version" to Build.VERSION.RELEASE
     )
 
+    private data class WooPushRegistrationData(
+        val tokenId: String,
+        val token: String,
+        val locale: String
+    )
+
     companion object {
         private const val PUSH_TOKEN_KEY_PREFIX = "push_token_"
+        private const val PUSH_TOKEN_VALUE_KEY_PREFIX = "push_token_value_"
+        private const val PUSH_LOCALE_KEY_PREFIX = "push_locale_"
         private const val WPCOM_UNREGISTERED_DEVICE_ERROR_CODE = "unregistered_device"
     }
 }

@@ -30,9 +30,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemIm
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 
 @Composable
@@ -128,10 +130,10 @@ private fun RefundDetailItem(
         WooPosItemImage(
             imageUrl = item.imageUrl,
             modifier = Modifier
-                .size(56.dp)
+                .size(56.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
             placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-            placeholderIconSize = 24.dp,
+            placeholderIconSize = WooPosIconSize.Small.value,
         )
 
         Spacer(Modifier.width(WooPosSpacing.Medium.value))

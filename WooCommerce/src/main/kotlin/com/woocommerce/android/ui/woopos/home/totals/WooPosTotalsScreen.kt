@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,11 +51,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
@@ -64,8 +66,10 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosTotalsViewModel = hiltViewModel()
+fun WooPosTotalsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosTotalsViewModel = hiltViewModel(),
+) {
     val state = viewModel.state.collectAsState().value
     WooPosTotalsScreen(
         modifier = modifier,
@@ -251,7 +255,7 @@ private fun TotalsLoaded(
 
 @Composable
 private fun PreparingReader(title: String, subtitle: String) {
-    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
     WooPosText(
         text = title,
@@ -270,7 +274,7 @@ private fun PreparingReader(title: String, subtitle: String) {
 private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
     val tapCardAnimation by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
     LottieAnimation(
-        modifier = Modifier.size(256.dp),
+        modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
         composition = tapCardAnimation,
         clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
         iterations = LottieConstants.IterateForever,
@@ -303,7 +307,7 @@ private fun ReaderDisconnected(
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         Image(
-            modifier = Modifier.size(140.dp),
+            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
             imageVector = WooPosIcons.CardReaderNotConnected,
             contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
         )
@@ -328,7 +332,7 @@ private fun ReaderDisconnected(
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(80.dp)
+                .height(WooPosComponentSize.Small.value)
         )
     }
 }
@@ -427,8 +431,8 @@ private fun TotalsLoading() {
         ) {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(24.dp)
-                    .width(332.dp)
+                    .height(24.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -436,8 +440,8 @@ private fun TotalsLoading() {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(24.dp)
-                    .width(332.dp)
+                    .height(24.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -445,8 +449,8 @@ private fun TotalsLoading() {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(332.dp)
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }

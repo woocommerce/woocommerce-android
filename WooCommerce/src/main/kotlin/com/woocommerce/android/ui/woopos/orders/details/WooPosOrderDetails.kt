@@ -41,10 +41,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverfl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.WOO_POS_ORDERS_TOOLBAR_HEIGHT
@@ -112,8 +116,8 @@ private fun OrderActions(
         is WooPosOrdersState.OrderActionsState.Loading -> {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(160.dp)
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.XLarge.value)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
@@ -253,7 +257,7 @@ private fun ProductsShimmer(title: String) {
                 ) {
                     WooPosShimmerBox(
                         modifier = Modifier
-                            .size(56.dp)
+                            .size(56.dp.toAdaptiveIconSize())
                             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                     )
                     Spacer(Modifier.width(WooPosSpacing.Medium.value))
@@ -261,14 +265,14 @@ private fun ProductsShimmer(title: String) {
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f)
-                                .height(16.dp)
+                                .height(16.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.3f)
-                                .height(14.dp)
+                                .height(14.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                     }
@@ -632,10 +636,10 @@ private fun OrderLineItemImage(
     WooPosItemImage(
         imageUrl = imageUrl,
         modifier = modifier
-            .size(56.dp)
+            .size(56.dp.toAdaptiveIconSize())
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
         placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-        placeholderIconSize = 24.dp
+        placeholderIconSize = WooPosIconSize.Small.value
     )
 }
 

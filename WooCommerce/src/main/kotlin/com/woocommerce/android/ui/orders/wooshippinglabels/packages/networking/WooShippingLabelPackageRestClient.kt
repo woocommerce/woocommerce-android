@@ -15,7 +15,10 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         return wooNetwork.executeGetGsonRequest(
             site = site,
             path = URL,
-            params = mapOf("features_supported_by_client[]" to UPSDAP_FEATURE),
+            params = mapOf(
+                "features_supported_by_client[0]" to UPSDAP_FEATURE,
+                "features_supported_by_client[1]" to FEDEX_FEATURE,
+            ),
             clazz = PackageResponse::class.java,
         ).toWooPayload()
     }
@@ -66,6 +69,7 @@ class WooShippingLabelPackageRestClient @Inject constructor(
     companion object {
         private const val URL = "/wcshipping/v1/packages"
         private const val UPSDAP_FEATURE = "upsdap"
+        private const val FEDEX_FEATURE = "fedex"
         private const val TYPE_CUSTOM = "custom"
         private const val TYPE_PREDEFINED = "predefined"
     }

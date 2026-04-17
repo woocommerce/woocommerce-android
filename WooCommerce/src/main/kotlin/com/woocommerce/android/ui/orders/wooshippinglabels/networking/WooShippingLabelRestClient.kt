@@ -177,7 +177,7 @@ class WooShippingLabelRestClient @Inject constructor(
                 "hazmat" to mapOf(shipmentKey to hazmat),
                 "customs" to customs?.let { mapOf(shipmentKey to it) }.orEmpty(),
                 "user_meta" to mapOf("last_order_completed" to lastOrderCompleted),
-                "features_supported_by_client" to listOf("upsdap"),
+                "features_supported_by_client" to listOf("upsdap", "fedex"),
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,
         ).toWooPayload()
@@ -319,6 +319,26 @@ class WooShippingLabelRestClient @Inject constructor(
                 ),
                 "confirmed" to agreementAccepted
             ),
+            clazz = JsonObject::class.java,
+        )
+
+        return if (result is WPAPIResponse.Error) {
+            WooPayload(error = result.error.toWooError())
+        } else {
+            WooPayload(Unit)
+        }
+    }
+
+    suspend fun updateFedExAgreement(
+        site: SiteModel,
+        agreementAccepted: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/carrier-strategy/fedex"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf("confirmed" to agreementAccepted),
             clazz = JsonObject::class.java,
         )
 
