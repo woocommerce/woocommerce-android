@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 09:58:56+0000
+Translation-Revision-Date: 2026-04-07 09:54:55+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">さらに詳しく</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 &lt;b&gt;Pro にアップグレード&lt;/b&gt;すると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 Pro にアップグレードすると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_ciab_title">Pro プランが必要です</string>
+    <string name="ciab_order_status_open">開く</string>
     <string name="booking_payment_status_authorization_voided">認証が無効化されました</string>
     <string name="booking_payment_status_authorized">認証済み</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">配送ラベルを購入できません。 配送元住所を入力してください。</string>

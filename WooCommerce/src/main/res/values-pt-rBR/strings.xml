@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-23 19:56:18+0000
+Translation-Revision-Date: 2026-04-06 22:55:26+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Saiba mais</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Aceite pagamentos presenciais por apenas 2,70% + US$ 0,10 por transação. &lt;b&gt;Faça upgrade para o Pro&lt;/b&gt; para acessar o pagamento por aproximação no seu telefone e nosso sistema de ponto de venda completo com sincronização de pedidos e inventário em tempo real.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Aceite pagamentos presenciais por apenas 2,70% + US$ 0,10 por transação. Faça upgrade para o Pro para acessar o pagamento por aproximação no seu telefone e nosso sistema de ponto de venda completo com sincronização de pedidos e inventário em tempo real.</string>
+    <string name="woopos_eligibility_ciab_title">É necessário ter o plano Pro</string>
+    <string name="ciab_order_status_open">Em aberto</string>
     <string name="booking_payment_status_authorization_voided">Autorização anulada</string>
     <string name="booking_payment_status_authorized">Autorizado</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Não foi possível comprar a etiqueta de envio. Preencha o endereço de origem.</string>
