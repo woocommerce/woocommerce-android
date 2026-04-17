@@ -167,7 +167,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow(listOf(m1))
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN
@@ -194,7 +194,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         )
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN
@@ -217,7 +217,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow(listOf(m1, m2))
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN
