@@ -217,6 +217,14 @@ If the build fails with "SDK location not found", check that `local.properties` 
 
 ### 5. Install the APK
 
+**Preferred path (`USE_ANDROID_CLI=1`):** the single `android run` call in step 7 installs and launches in one shot, so you can skip this step entirely. Optionally resolve the APK path from project metadata rather than hardcoding it:
+
+```bash
+APK=$(android describe --project_dir=. | jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]')
+```
+
+**Fallback (no `android` CLI):** install via mobile-mcp.
+
 Use `mobile_install_app` with:
 - **path:** `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`
 
@@ -228,7 +236,29 @@ If the user requests verification of a specific scenario (error states, empty da
 
 ### 7. Restart and Launch the App
 
-Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active.
+Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
+
+**Preferred path (`USE_ANDROID_CLI=1`):** one `android run` call installs (if needed) and launches the exact Activity.
+
+```bash
+# Force-stop first — android run does not guarantee a cold start.
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+
+# Combined install + launch. $APK was resolved in step 5 via android describe.
+android run --apks="$APK" \
+  --activity=com.woocommerce.android.ui.main.MainActivity \
+  --device=<device_id>
+```
+
+For POS tasks (only when explicitly requested):
+```bash
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+android run --apks="$APK" \
+  --activity=com.woocommerce.android.ui.woopos.root.WooPosActivity \
+  --device=<device_id>
+```
+
+**Fallback (no `android` CLI):** force-stop + `am start`.
 
 ```bash
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
