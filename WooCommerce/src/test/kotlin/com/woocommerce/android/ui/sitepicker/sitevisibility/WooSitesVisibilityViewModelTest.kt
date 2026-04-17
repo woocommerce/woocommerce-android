@@ -91,6 +91,8 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     private val pushNotificationRepository: PushNotificationRepository = mock {
         on { getWooPushRegisteredSiteIds() } doReturn emptySet()
         on { shouldRegisterWooPushForSite(any(), any()) } doReturn true
+        on { registerPushTokenInWooCoreSystem(any(), any(), any()) } doReturn Result.success(Unit)
+        on { unregisterWooPushTokenForSite(any()) } doReturn Result.success(Unit)
     }
 
     @Test
