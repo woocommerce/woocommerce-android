@@ -153,6 +153,35 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 **Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
 
+### 0. Provision an Emulator (Optional, macOS/Linux only)
+
+Only run this step when no physical device is attached, no emulator is running, and the task requires a clean-slate device. Skip otherwise.
+
+```bash
+if [ "$USE_ANDROID_CLI" = "1" ] && [ "$(uname)" != "Windows_NT" ]; then
+  # List existing AVDs; reuse one if it already fits the task.
+  android emulator list
+
+  # Create a fresh AVD matching a typical phone profile.
+  android emulator create --profile=medium_phone --name=woo_verify
+
+  # Start it and wait until it is ready.
+  android emulator start woo_verify
+fi
+```
+
+At the end of the task, if this session created the AVD, stop it:
+
+```bash
+if [ "$USE_ANDROID_CLI" = "1" ]; then
+  android emulator stop <serial>
+fi
+```
+
+**Windows note:** Google's Android CLI does not currently support emulator management on Windows. On Windows, skip this step and assume the user has an emulator or device already booted.
+
+**Fallback (no `android` CLI):** continue to step 1 and assume a running device, as before.
+
 ### 1. Discover Devices
 
 Call `mobile_list_available_devices`. If multiple devices are returned, ask the user which to use. If none are found, instruct the user to boot an emulator or connect a device.
