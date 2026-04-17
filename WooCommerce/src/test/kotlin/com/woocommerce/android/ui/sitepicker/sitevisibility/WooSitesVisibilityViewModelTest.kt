@@ -250,6 +250,42 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given newly visible site will be woo registered, when tapping save, then exclude it from wpcom update`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            // Simulate registration side effect: the site becomes woo-registered after registerPushTokenInWooCoreSystem.
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(emptySet())
+                .thenReturn(setOf(HIDDEN_WOO_SITE.siteId))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { none { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+        }
+
+    @Test
+    fun `given feature flag disabled, when tapping save, then newly visible site is included in wpcom update`() =
+        testBlocking {
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { any { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+        }
+
+    @Test
     fun `given previously hidden site, when tapping save, then register woo push immediately without wpcom fallback`() =
         testBlocking {
             whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
@@ -288,7 +324,6 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     fun `given woo register fails for unhidden site, when tapping save, then show error dialog and do not persist visibility`() =
         testBlocking {
             whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
-            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
             whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
                 .thenReturn(Result.failure(IllegalStateException("registration failed")))
             val viewModel = createViewModel()

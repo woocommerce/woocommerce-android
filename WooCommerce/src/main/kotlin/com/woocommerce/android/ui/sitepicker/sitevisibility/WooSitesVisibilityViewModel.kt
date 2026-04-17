@@ -99,33 +99,25 @@ class WooSitesVisibilityViewModel @Inject constructor(
         _wooStoresState.value = _wooStoresState.value.copy(isLoading = isLoading)
     }
 
-    private suspend fun performSave(): Result<Unit> = coroutineScope {
+    private suspend fun performSave(): Result<Unit> {
         val currentSelectedSiteIds = _wooStoresState.value.wooStores
             .filter { it.isSelected }
             .map { it.siteId }
             .toSet()
+        val newlyVisibleSiteIds = currentSelectedSiteIds - initiallySelectedSiteIds
+        val newlyHiddenSiteIds = initiallySelectedSiteIds - currentSelectedSiteIds
         val wooPushRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
 
-        launch {
-            unregisterNewlyHiddenWooPushSites(
-                newlyHiddenSiteIds = initiallySelectedSiteIds - currentSelectedSiteIds,
-                wooPushRegisteredSiteIds = wooPushRegisteredSiteIds
-            )
-        }
-        val wpComDeferred = async {
-            updateWpComNotificationSettings(wooPushRegisteredSiteIds)
-        }
-        val registerDeferred = async {
-            registerNewlyVisibleWooPushSites(
-                newlyVisibleSiteIds = currentSelectedSiteIds - initiallySelectedSiteIds,
-                wooPushRegisteredSiteIds = wooPushRegisteredSiteIds
-            )
-        }
+        unregisterNewlyHiddenWooPushSites(newlyHiddenSiteIds, wooPushRegisteredSiteIds)
 
-        val wpComResult = wpComDeferred.await()
-        val registerResult = registerDeferred.await()
+        val registerResult = registerNewlyVisibleWooPushSites(newlyVisibleSiteIds, wooPushRegisteredSiteIds)
+        if (registerResult.isFailure) return registerResult
 
-        if (wpComResult.isFailure) wpComResult else registerResult
+        // Re-read to exclude sites just registered — WPCom notifications disabling was already handled for them
+        // when registering them with Woo.
+        return updateWpComNotificationSettings(
+            excludedSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+        )
     }
 
     private suspend fun onSaveSuccess() {
@@ -136,9 +128,9 @@ class WooSitesVisibilityViewModel @Inject constructor(
         triggerEvent(ExitWithResult(data = true))
     }
 
-    private suspend fun updateWpComNotificationSettings(wooPushRegisteredSiteIds: Set<Long>): Result<Unit> {
+    private suspend fun updateWpComNotificationSettings(excludedSiteIds: Set<Long>): Result<Unit> {
         val sitesToUpdate = _wooStoresState.value.wooStores
-            .filterNot { it.siteId in wooPushRegisteredSiteIds }
+            .filterNot { it.siteId in excludedSiteIds }
             .map { it.toNotificationSetting() }
 
         return if (sitesToUpdate.isNotEmpty()) {
