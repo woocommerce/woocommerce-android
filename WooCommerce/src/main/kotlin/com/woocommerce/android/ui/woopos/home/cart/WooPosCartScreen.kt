@@ -393,6 +393,7 @@ private fun CartToolbar(
             )
         }
 
+        val titleStartMargin = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(R.string.woopos_cart_title),
             style = WooPosTypography.Heading,
@@ -400,11 +401,17 @@ private fun CartToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    start.linkTo(parent.start, margin = titleOffset)
+                    when (onPhoneBack) {
+                        null -> start.linkTo(parent.start, margin = titleOffset)
+                        else -> start.linkTo(backButton.end, margin = titleStartMargin)
+                    }
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = WooPosSpacing.Medium.value,
+                    start = when (onPhoneBack) {
+                        null -> WooPosSpacing.Medium.value
+                        else -> 0.dp
+                    },
                     end = WooPosSpacing.XSmall.value,
                 )
         )
