@@ -374,8 +374,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             val site = mock<SiteModel> { on { siteId } doReturn 123L }
             whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
-            val tokenKey = stringPreferencesKey("push_token_123")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
             whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
                 WooResult(WooError(WooErrorType.INVALID_ID, BaseRequest.GenericErrorType.NOT_FOUND, "Not found"))
             )
@@ -389,8 +390,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             sut.unregisterDeviceFromPushNotifications()
 
-            val expectedTokenKey = stringPreferencesKey("push_token_123")
-            verify(mutablePreferences).remove(expectedTokenKey)
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_locale_123"))
         }
 
     @Test
@@ -398,8 +400,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             val site = mock<SiteModel> { on { siteId } doReturn 123L }
             whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
-            val tokenKey = stringPreferencesKey("push_token_123")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
             whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
                 WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN, "oops"))
             )
