@@ -28,7 +28,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
     ): BookingTeamMemberFilterViewModel {
         val repository = bookingsRepository ?: mock<BookingsRepository> {
             on { observeResources() } doReturn flowOf(emptyList())
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         return BookingTeamMemberFilterViewModel(
@@ -113,7 +113,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
             val fetchDeferred = CompletableDeferred<Result<Unit>>()
             val bookingsRepository = mock<BookingsRepository> {
                 on { observeResources() } doReturn resourcesFlow
-                onBlocking { fetchResources() } doSuspendableAnswer { fetchDeferred.await() }
+                on { fetchResources() } doSuspendableAnswer { fetchDeferred.await() }
             }
 
             val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
@@ -132,7 +132,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow<List<BookingResourceEntity>>(emptyList())
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.failure(Exception("boom"))
+            on { fetchResources() } doReturn Result.failure(Exception("boom"))
         }
 
         val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
@@ -167,7 +167,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow(listOf(m1))
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN
@@ -194,7 +194,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         )
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN
@@ -217,7 +217,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val resourcesFlow = MutableStateFlow(listOf(m1, m2))
         val bookingsRepository = mock<BookingsRepository> {
             on { observeResources() } doReturn resourcesFlow
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            on { fetchResources() } doReturn Result.success(Unit)
         }
 
         // WHEN

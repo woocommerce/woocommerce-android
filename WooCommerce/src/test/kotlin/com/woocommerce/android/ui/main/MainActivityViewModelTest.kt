@@ -640,7 +640,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
-                    onBlocking { invoke(any()) } doReturn emptyFlow()
+                    on { invoke(any()) } doReturn emptyFlow()
                 },
                 ageEligibilityChecker = ageEligibilityChecker,
             )

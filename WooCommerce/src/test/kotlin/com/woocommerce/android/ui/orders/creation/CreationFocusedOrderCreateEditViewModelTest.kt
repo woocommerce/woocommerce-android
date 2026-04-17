@@ -104,7 +104,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     override fun initMocksForAnalyticsWithOrder(order: Order) {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
         }
     }
 
@@ -354,7 +354,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         var orderDraft: Order? = null
         val variationOrderItem = createOrderItem().copy(productId = 0, variationId = 123)
         createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn variationOrderItem
+            on { invoke(123, null) } doReturn variationOrderItem
         }
 
         createSut()
@@ -715,7 +715,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
         orderCreateEditRepository = mock {
-            onBlocking {
+            on {
                 createOrUpdateOrder(defaultOrderValue, source = OrderCreationSource.STORE_MANAGEMENT)
             } doReturn Result.failure(Throwable())
         }
@@ -827,7 +827,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when editing a fee, then reuse the existent one with different value`() {
         // given
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
@@ -862,7 +862,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when removing a fee, do not remove the rest of fees`() {
         // given
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
@@ -913,7 +913,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
         val itemId = 2L
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
@@ -953,7 +953,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // given
         val itemId = 2L
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
@@ -1015,7 +1015,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // given
         val itemId = 1L
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
@@ -1046,7 +1046,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
+            on { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
         }
         createSut()
 
@@ -1065,7 +1065,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
+            on { invoke(any(), any()) } doReturn flowOf(Ongoing)
         }
         createSut()
 
@@ -1085,7 +1085,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
         val modifiedOrderValue = defaultOrderValue.copy(id = 999)
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
         }
         createSut()
 
@@ -1112,7 +1112,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable = Throwable(message = "fail")))
+            on { invoke(any(), any()) } doReturn flowOf(Failed(throwable = Throwable(message = "fail")))
         }
         createSut()
 
@@ -1133,7 +1133,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val myFlow: MutableStateFlow<OrderUpdateStatus> =
             MutableStateFlow(Failed(throwable = Throwable(message = "fail")))
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn myFlow
+            on { invoke(any(), any()) } doReturn myFlow
         }
 
         createSut()
@@ -1206,7 +1206,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when isEditable is true on the create flow the order is editable`() {
         // When the order is on Creation mode is always editable
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
         var lastReceivedState: ViewState? = null
@@ -1220,7 +1220,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when isEditable is false on the edit flow the order is editable`() {
         // When the order is on Creation mode is always editable
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()
         var lastReceivedState: ViewState? = null
@@ -1282,7 +1282,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given coupon code rejected by backend, then should display message`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn
+            on { invoke(any(), any()) } doReturn
                 flowOf(
                     Failed(
                         WooException(
@@ -2175,7 +2175,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when custom amount is updated, then ADD_CUSTOM_AMOUNT_DONE_TAPPED event is tracked`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
@@ -2205,7 +2205,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when custom amount is updated, then do not track order_fee_add event`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
@@ -2241,7 +2241,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when custom amount is updated, then track order_fee_update event`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(
+            on { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(

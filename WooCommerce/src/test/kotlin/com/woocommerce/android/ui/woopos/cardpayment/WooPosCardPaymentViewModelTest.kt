@@ -72,7 +72,7 @@ class WooPosCardPaymentViewModelTest {
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
     private val cardPaymentRepository: WooPosCardPaymentRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(any<BigDecimal>()) } doReturn "$0.00"
+        on { invoke(any<BigDecimal>()) } doReturn "$0.00"
     }
 
     private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(

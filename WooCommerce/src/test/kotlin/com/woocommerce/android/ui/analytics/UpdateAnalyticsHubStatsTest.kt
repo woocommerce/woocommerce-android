@@ -53,7 +53,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     @Before
     fun setUp() {
         analyticsDataStore = mock {
-            onBlocking {
+            on {
                 shouldUpdateAnalytics(
                     rangeSelection = eq(testRangeSelection),
                     analyticDataList = any(),
@@ -401,7 +401,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when data store does NOT allows net stats fetch, then request data with Saved strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking {
+            on {
                 shouldUpdateAnalytics(
                     rangeSelection = eq(testRangeSelection),
                     analyticDataList = any(),
@@ -431,7 +431,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         testBlocking {
             // Given
             analyticsDataStore = mock {
-                onBlocking {
+                on {
                     shouldUpdateAnalytics(
                         rangeSelection = eq(testCustomRangeSelection),
                         analyticDataList = any(),
@@ -488,7 +488,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when syncing stats data starts with forceUpdate false, then follow data store response`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking {
+            on {
                 shouldUpdateAnalytics(
                     rangeSelection = eq(testRangeSelection),
                     analyticDataList = any(),
@@ -539,7 +539,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
-            onBlocking {
+            on {
                 shouldUpdateAnalytics(
                     rangeSelection = eq(testRangeSelection),
                     analyticDataList = any(),
@@ -569,7 +569,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
-            onBlocking {
+            on {
                 shouldUpdateAnalytics(
                     rangeSelection = eq(testRangeSelection),
                     analyticDataList = any(),
@@ -594,25 +594,25 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
     private fun configureSuccessResponseStub() {
         repository.stub {
-            onBlocking {
+            on {
                 repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn testRevenueResult
 
-            onBlocking {
+            on {
                 repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn testOrdersResult
 
-            onBlocking {
+            on {
                 repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn testProductsResult
 
-            onBlocking {
+            on {
                 repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn testVisitorsResult
-            onBlocking {
+            on {
                 repository.fetchProductBundlesStats(testRangeSelection)
             } doReturn testBundlesResult
-            onBlocking {
+            on {
                 repository.fetchGiftCardsStats(testRangeSelection)
             } doReturn testGiftCardResult
         }
@@ -620,25 +620,25 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
     private fun configureErrorResponseStub() {
         repository.stub {
-            onBlocking {
+            on {
                 repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn RevenueResult.RevenueError
 
-            onBlocking {
+            on {
                 repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn OrdersResult.OrdersError
 
-            onBlocking {
+            on {
                 repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn ProductsResult.ProductsError
 
-            onBlocking {
+            on {
                 repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn VisitorsResult.VisitorsError
-            onBlocking {
+            on {
                 repository.fetchProductBundlesStats(testRangeSelection)
             } doReturn BundlesResult.BundlesError
-            onBlocking {
+            on {
                 repository.fetchGiftCardsStats(testRangeSelection)
             } doReturn GiftCardResult.GiftCardError
         }

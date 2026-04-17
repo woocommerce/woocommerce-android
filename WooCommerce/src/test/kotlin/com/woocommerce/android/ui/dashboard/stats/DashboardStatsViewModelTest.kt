@@ -53,7 +53,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
 
     private val getStats: GetStats = mock {
-        onBlocking { invoke(any(), any()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+        on { invoke(any(), any()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -74,7 +74,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
     private val timezoneProvider: TimezoneProvider = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock {
-        onBlocking { invoke(any(), ArgumentMatchers.anyList(), eq(false)) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+        on { invoke(any(), ArgumentMatchers.anyList(), eq(false)) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
     private val dateUtils: DateUtils = mock()
     private val parentViewModel: DashboardViewModel = mock {

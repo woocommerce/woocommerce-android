@@ -12,6 +12,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +25,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -55,7 +55,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         on { data } doReturn flowOf(preferences)
     }
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        on { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     private lateinit var sut: PushNotificationRepository
@@ -64,9 +64,10 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun setUp() {
         whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
         whenever(siteModel.siteId).thenReturn(SITE_ID)
-        wheneverBlocking {
-            wpComPushNotificationStore.registerDevice(any(), any())
-        }.doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
+        runBlocking {
+            whenever(wpComPushNotificationStore.registerDevice(any(), any()))
+                .doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
+        }
 
         sut = PushNotificationRepository(
             wooPushNotificationsStore,
