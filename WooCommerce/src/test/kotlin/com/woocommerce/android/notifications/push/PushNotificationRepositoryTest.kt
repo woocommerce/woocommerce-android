@@ -14,7 +14,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
@@ -46,7 +45,11 @@ import java.util.Locale
 class PushNotificationRepositoryTest : BaseUnitTest() {
     private val wooPushNotificationsStore: WooPushNotificationsStore = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock {
+        on {
+            registerDevice(any(), any())
+        } doReturn WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123")
+    }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
     private val sharedPreferences: SharedPreferences = mock()
@@ -69,11 +72,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun setUp() {
         whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
         whenever(siteModel.siteId).thenReturn(SITE_ID)
-        runBlocking {
-            whenever(wpComPushNotificationStore.registerDevice(any(), any()))
-                .doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
-        }
-
         sut = PushNotificationRepository(
             wooPushNotificationsStore,
             appPrefsWrapper,
@@ -318,7 +316,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.unregisterWooCoreTokensFromServer()
+            sut.unregisterDeviceFromPushNotifications()
 
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
