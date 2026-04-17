@@ -70,7 +70,6 @@ class WooPosOrdersViewModel @Inject constructor(
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
-    private var loadingMoreOrdersJob: Job? = null
     private var sideLoadJob: Job? = null
     private var refreshOrderJob: Job? = null
 
@@ -371,22 +370,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun onEndOfOrdersListReached() {
-        val currentState = _state.value
-        if (currentState !is WooPosOrdersState.Content ||
-            currentState.paginationState != WooPosPaginationState.None ||
-            currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-        ) {
-            return
-        }
-
-        loadMoreIfPossible()
-    }
-
-    fun onPaginationErrorTryAgain() {
-        loadMoreIfPossible()
-    }
-
     fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
             ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
@@ -472,31 +455,6 @@ class WooPosOrdersViewModel @Inject constructor(
             viewModelScope.launch { loadSingleOrderDetail(singleOrderId) }
         } else {
             loadOrders()
-        }
-    }
-
-    fun loadMoreIfPossible() {
-        if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
-        if (!ordersDataSource.hasMorePages) return
-
-        val currentState = _state.value
-        val newState = when (currentState) {
-            is WooPosOrdersState.Content -> currentState.copy(paginationState = WooPosPaginationState.Loading)
-            else -> return
-        }
-        _state.value = newState
-
-        loadingMoreOrdersJob?.cancel()
-        loadingMoreOrdersJob = viewModelScope.launch {
-            val normalizedQuery = currentSearchQuery.takeUnless { it.isNullOrEmpty() }
-            val result = ordersDataSource.loadMore(normalizedQuery)
-
-            if (result.isSuccess) {
-                ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
-                appendOrders(result.getOrThrow())
-            } else {
-                _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
-            }
         }
     }
 

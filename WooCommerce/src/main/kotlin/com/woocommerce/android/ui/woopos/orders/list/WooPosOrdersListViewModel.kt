@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +58,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
+    private var loadingMoreOrdersJob: Job? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -73,6 +75,22 @@ class WooPosOrdersListViewModel @Inject constructor(
         if (singleOrderId == null) {
             loadOrders()
         }
+    }
+
+    fun onEndOfOrdersListReached() {
+        val currentState = _state.value
+        if (currentState !is WooPosOrdersState.Content ||
+            currentState.paginationState != WooPosPaginationState.None ||
+            currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+        ) {
+            return
+        }
+
+        loadMoreIfPossible()
+    }
+
+    fun onPaginationErrorTryAgain() {
+        loadMoreIfPossible()
     }
 
     fun onSearchEvent(event: WooPosSearchUIEvent) {
@@ -228,6 +246,31 @@ class WooPosOrdersListViewModel @Inject constructor(
         }
     }
 
+    private fun loadMoreIfPossible() {
+        if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
+        if (!ordersDataSource.hasMorePages) return
+
+        val currentState = _state.value
+        val newState = when (currentState) {
+            is WooPosOrdersState.Content -> currentState.copy(paginationState = WooPosPaginationState.Loading)
+            else -> return
+        }
+        _state.value = newState
+
+        loadingMoreOrdersJob?.cancel()
+        loadingMoreOrdersJob = viewModelScope.launch {
+            val normalizedQuery = currentSearchQuery.takeUnless { it.isNullOrEmpty() }
+            val result = ordersDataSource.loadMore(normalizedQuery)
+
+            if (result.isSuccess) {
+                ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
+                appendOrders(result.getOrThrow())
+            } else {
+                _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
+            }
+        }
+    }
+
     private fun replaceOrders(
         orders: List<com.woocommerce.android.model.Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
@@ -299,5 +342,6 @@ class WooPosOrdersListViewModel @Inject constructor(
     private fun cancelJobs() {
         searchJob?.cancel()
         loadingJob?.cancel()
+        loadingMoreOrdersJob?.cancel()
     }
 }
