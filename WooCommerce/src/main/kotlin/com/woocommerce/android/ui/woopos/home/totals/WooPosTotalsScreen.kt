@@ -329,17 +329,12 @@ private fun ReaderDisconnected(
             style = WooPosTypography.BodyLarge,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        val isPhone = LocalContext.current.isWooPosPhoneLayout()
-        val buttonWidthModifier = when (isPhone) {
-            true -> Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-            false -> Modifier.fillMaxWidth(0.5f)
-        }
         WooPosButton(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
-            modifier = buttonWidthModifier.height(WooPosComponentSize.Small.value)
+            modifier = Modifier
+                .adaptiveContentWidth()
+                .height(WooPosComponentSize.Small.value)
         )
     }
 }
