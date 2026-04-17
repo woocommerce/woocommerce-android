@@ -48,17 +48,38 @@ adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
 ```
 
-## Critical Rule: Always Use the Accessibility Tree for Tapping
+## Critical Rule: Never Estimate Tap Coordinates From Raw Screenshots
 
-**NEVER estimate tap coordinates from screenshots.** Screenshots are scaled down from the actual device resolution (e.g., a 1080x2400 device produces a ~480x1065 screenshot). Coordinates derived from screenshots will be systematically wrong.
+**NEVER estimate tap coordinates directly from a raw (un-annotated) screenshot.** Screenshots are scaled down from the actual device resolution (e.g., a 1080x2400 device produces a ~480x1065 screenshot). Coordinates derived from raw screenshots will be systematically wrong.
 
-**ALWAYS follow this workflow:**
+Use one of the two workflows below. Both translate a human-readable target (an accessibility label, a visual element) into exact device-pixel coordinates — neither relies on pixel-measuring a screenshot.
+
+### Option A — Accessibility-tree workflow (default)
+
 1. Call `mobile_list_elements_on_screen` to get elements with their **device-pixel coordinates**
 2. Compute tap target as the **center** of the element's bounding rect: `tap_x = x + width/2`, `tap_y = y + height/2`
 3. Call `mobile_click_on_screen_at_coordinates` with those computed coordinates
 4. Call `mobile_take_screenshot` AFTER tapping to visually confirm the result
 
 Only use `mobile_take_screenshot` for **visual verification** — never for deriving coordinates.
+
+### Option B — Visual-label workflow (`USE_ANDROID_CLI=1`)
+
+Useful when an element lacks an accessibility label or test tag, or when you already have an annotated screenshot in context. `android screen capture --annotate` overlays numeric labels (#1, #2, ...) on every interactive element; `android screen resolve` then converts a natural-language instruction into device-pixel coordinates.
+
+```bash
+# Capture an annotated screenshot — each interactive element gets a number.
+android screen capture --annotate --output=/tmp/ui.png
+
+# Resolve a natural-language instruction into (x, y).
+android screen resolve --screenshot=/tmp/ui.png --string="tap #5"
+
+# Pipe the resolved coordinates into the existing tap tool:
+#   mobile_click_on_screen_at_coordinates  (preferred, mobile-mcp)
+#   adb -s <device> shell input tap <x> <y>  (plain adb alternative)
+```
+
+Option A remains the default — accessibility-tree coordinates are stable and don't require visual inspection. Reach for Option B when Option A does not surface the element you need.
 
 ## Waiting for Screen Transitions
 
