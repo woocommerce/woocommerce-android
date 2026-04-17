@@ -141,6 +141,10 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
 const val WC_DATABASE_VERSION = 82
 
+// Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
+@Suppress("MagicNumber")
+private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
+
 @Database(
     version = WC_DATABASE_VERSION,
     entities = [
@@ -323,7 +327,8 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
-        ).allowMainThreadQueries()
+        ).openHelperFactory(LargeCursorWindowOpenHelperFactory(CURSOR_WINDOW_SIZE_BYTES))
+            .allowMainThreadQueries()
             .addTypeConverter(currencyPositionConverter)
             .addTypeConverter(statsGranularityConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
