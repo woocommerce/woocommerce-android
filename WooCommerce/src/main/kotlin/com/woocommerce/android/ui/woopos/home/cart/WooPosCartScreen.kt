@@ -104,12 +104,19 @@ fun WooPosCartScreen(
             null -> state
             else -> {
                 val hasItems = state.body is WooPosCartState.Body.WithItems
+                val effectiveCheckoutButton = when {
+                    !hasItems -> WooPosCartState.CheckoutButtonState.Invisible
+                    state.checkoutButtonState == WooPosCartState.CheckoutButtonState.Disabled ->
+                        WooPosCartState.CheckoutButtonState.Disabled
+                    else -> WooPosCartState.CheckoutButtonState.Enabled
+                }
                 state.copy(
                     toolbar = state.toolbar.copy(
                         backIconVisible = true,
                         isClearAllButtonVisible = hasItems,
                     ),
                     areItemsRemovable = hasItems,
+                    checkoutButtonState = effectiveCheckoutButton,
                 )
             }
         }
