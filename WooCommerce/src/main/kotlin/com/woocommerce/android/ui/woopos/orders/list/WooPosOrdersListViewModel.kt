@@ -3,17 +3,22 @@ package com.woocommerce.android.ui.woopos.orders.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
+import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -51,11 +56,86 @@ class WooPosOrdersListViewModel @Inject constructor(
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
+    private var searchJob: Job? = null
     private var loadingJob: Job? = null
+
+    private val currentSearchQuery: String?
+        get() = (
+            (
+                _state.value.searchInputState as? WooPosSearchInputState.Open
+                )?.input as? WooPosSearchInputState.Open.Input.Query
+            )?.query
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY_MS = 300L
+    }
 
     init {
         if (singleOrderId == null) {
             loadOrders()
+        }
+    }
+
+    fun onSearchEvent(event: WooPosSearchUIEvent) {
+        when (event) {
+            is WooPosSearchUIEvent.SearchIconClicked -> {
+                viewModelScope.launch {
+                    ordersAnalyticsTracker.trackOrdersListSearchButtonTapped()
+                }
+
+                updateSearchState(
+                    WooPosSearchInputState.Open(
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
+                        isLoading = false,
+                        requestFocus = true
+                    )
+                )
+            }
+
+            is WooPosSearchUIEvent.Search -> {
+                updateSearchState(
+                    WooPosSearchInputState.Open(
+                        input = WooPosSearchInputState.Open.Input.Query(
+                            event.query,
+                            event.cursorPosition
+                        ),
+                        isLoading = false,
+                    )
+                )
+
+                if (event.query.isEmpty()) {
+                    loadOrders()
+                } else {
+                    performSearch(event.query)
+                }
+            }
+
+            is WooPosSearchUIEvent.Clear -> {
+                updateSearchState(
+                    WooPosSearchInputState.Open(
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
+                        isLoading = false,
+                        requestFocus = true
+                    )
+                )
+                loadOrders()
+            }
+
+            is WooPosSearchUIEvent.Close -> {
+                updateSearchState(WooPosSearchInputState.Closed)
+                loadOrders()
+            }
+        }
+    }
+
+    fun onSearchErrorRetry() {
+        val query = currentSearchQuery
+        if (!query.isNullOrEmpty()) {
+            performSearch(query)
         }
     }
 
@@ -99,6 +179,72 @@ class WooPosOrdersListViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun performSearch(query: String, isRefreshing: Boolean = false) {
+        cancelJobs()
+
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY_MS)
+            if (!isRefreshing) {
+                _state.value = WooPosOrdersState.Content(
+                    items = WooPosOrdersState.Content.Items.Searching,
+                    pullToRefreshState = WooPosPullToRefreshState.Disabled,
+                    searchInputState = _state.value.searchInputState,
+                    selectedDetails = currentSelectedDetails,
+                    paginationState = WooPosPaginationState.None,
+                    dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                )
+            }
+
+            val mark = Monotonic.markNow()
+            val result = ordersDataSource.searchOrders(query, forceRefreshRefunds = isRefreshing)
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+            ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
+            when (result) {
+                is SearchOrdersResult.Error -> {
+                    _state.value = WooPosOrdersState.Content(
+                        items = WooPosOrdersState.Content.Items.Error(
+                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
+                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                        ),
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        searchInputState = _state.value.searchInputState,
+                        selectedDetails = null,
+                        paginationState = WooPosPaginationState.None,
+                        dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                    )
+                }
+
+                is SearchOrdersResult.Success -> {
+                    if (result.ordersWithRefunds.isEmpty()) {
+                        _state.value = WooPosOrdersState.Content(
+                            items = WooPosOrdersState.Content.Items.NothingFound(
+                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
+                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                            searchInputState = _state.value.searchInputState,
+                            selectedDetails = null,
+                            paginationState = WooPosPaginationState.None,
+                            dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                        )
+                    } else {
+                        replaceOrders(result.ordersWithRefunds)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateSearchState(searchState: WooPosSearchInputState) {
+        _state.value = when (val currentState = _state.value) {
+            is WooPosOrdersState.Content -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersState.Empty -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersState.Error -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersState.Loading -> currentState.copy(searchInputState = searchState)
         }
     }
 
@@ -162,6 +308,7 @@ class WooPosOrdersListViewModel @Inject constructor(
     }
 
     private fun cancelJobs() {
+        searchJob?.cancel()
         loadingJob?.cancel()
     }
 }
