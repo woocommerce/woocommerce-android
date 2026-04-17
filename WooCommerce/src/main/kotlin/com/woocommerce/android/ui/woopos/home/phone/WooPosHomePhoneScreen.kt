@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.WooPosHomeCartPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
-import com.woocommerce.android.ui.woopos.home.WooPosHomeProductsPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeTotalsPane
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
@@ -127,7 +126,7 @@ private fun WooPosHomePhoneContent(
         ) {
             composable(PHONE_PRODUCTS_ROUTE) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    WooPosHomeProductsPane(viewModel = itemsViewModel)
+                    WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
 
                     if (PackageUtils.isDebugBuild()) {
                         // Temporary trigger so Cart is reachable until the persistent
