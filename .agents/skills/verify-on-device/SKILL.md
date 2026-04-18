@@ -10,7 +10,7 @@ context: fork
 
 Build, install, and visually verify the app on an Android emulator or physical device. The skill prefers the Android CLI for agents (`android`) when installed and falls back to mobile-mcp + adb otherwise.
 
-**Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
+**Prerequisites:** Node.js v22+, Android SDK with platform-tools, and an emulator or device to target (step 0 can provision one when the Android CLI is installed).
 
 **Optional:** Google's Android CLI for agents (`android`). When present, the skill uses `android run` for combined install+launch, `android layout --diff` for low-token screen-transition polling, `android describe` to discover APK paths, and `android docs` for platform-API lookups. If not installed, every step falls back to the mobile-mcp / adb path with no behavior change.
 
@@ -21,7 +21,7 @@ Run this probe once at the start of a verification task and cache the result. Ev
 ```bash
 if command -v android >/dev/null 2>&1; then
   USE_ANDROID_CLI=1
-  android --version   # log for reproducibility; pin to a known-good version
+  android --version   # log the version for reproducibility
 else
   USE_ANDROID_CLI=0
 fi
@@ -89,7 +89,7 @@ After every navigation action (tap, BACK press, app launch, swipe), the screen m
 
 ### Preferred: Diff-Based Polling (`USE_ANDROID_CLI=1`)
 
-`android layout --diff` returns only the elements that changed since the last snapshot, instead of re-reading the entire accessibility tree (50-200+ elements per call). This is the single biggest token-consumption win — expect a ~70% reduction on polling-heavy phases versus repeated `mobile_list_elements_on_screen` calls.
+`android layout --diff` returns only the elements that changed since the last snapshot, instead of re-reading the entire accessibility tree (50-200+ elements per call). This is the single biggest token-consumption win over repeated `mobile_list_elements_on_screen` calls — measure on your own flow to confirm the magnitude.
 
 ```bash
 # Baseline snapshot immediately after the action.
@@ -218,8 +218,13 @@ if [ "$USE_ANDROID_CLI" = "1" ] && [ "$IS_WINDOWS" = "0" ]; then
   # --list-profiles — the profile name doubles as the device name.
   android emulator create --profile=medium_phone
 
-  # Start the device using that profile name and wait until it is ready.
+  # Start the device using that profile name. `android emulator start`
+  # returns once the command is issued — use `adb wait-for-device` plus a
+  # boot-completed check before step 1, or `mobile_list_available_devices`
+  # will race the boot sequence.
   android emulator start medium_phone
+  adb wait-for-device
+  until [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do sleep 2; done
 fi
 ```
 
@@ -294,7 +299,7 @@ If the user requests verification of a specific scenario (error states, empty da
 
 Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
 
-**Preferred path (`USE_ANDROID_CLI=1`):** one `android run` call installs (if needed) and launches the exact Activity.
+**Preferred path (`USE_ANDROID_CLI=1`):** one `android run` call reinstalls the APK and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
 
 ```bash
 # Force-stop first — android run does not guarantee a cold start.
@@ -542,9 +547,9 @@ When mobile-mcp tools are not giving enough information:
 When a platform-behavior question comes up mid-task (intent flags, `am start` semantics, `Activity` launch modes, permissions, animation scales, `settings put global` keys), prefer the Android Knowledge Base over a web search — the answers are authoritative, local, and don't cost browsing tokens.
 
 ```bash
-# Search by free-form query, then fetch the top result.
+# Search by free-form query, then fetch one of the kb:// URLs it returns.
 android docs search "am start intent flags"
-android docs fetch kb://android/platform/am/start
+android docs fetch <kb-url-from-the-search-result>
 ```
 
 If the CLI is not installed, fall back to the Android developer website as before.
