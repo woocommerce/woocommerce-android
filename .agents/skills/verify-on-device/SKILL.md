@@ -65,18 +65,20 @@ Only use `mobile_take_screenshot` for **visual verification** — never for deri
 
 ### Option B — Visual-label workflow (`USE_ANDROID_CLI=1`)
 
-Useful when an element lacks an accessibility label or test tag, or when you already have an annotated screenshot in context. `android screen capture --annotate` overlays numeric labels (#1, #2, ...) on every interactive element; `android screen resolve` then converts a natural-language instruction into device-pixel coordinates.
+Useful when an element lacks an accessibility label or test tag, or when you already have an annotated screenshot in context. `android screen capture --annotate` overlays numeric labels (#1, #2, ...) on every interactive element; `android screen resolve` substitutes `#N` placeholders in a template string with the element's device-pixel `x y` coordinates.
 
 ```bash
 # Capture an annotated screenshot — each interactive element gets a number.
 android screen capture --annotate --output=/tmp/ui.png
 
-# Resolve a natural-language instruction into (x, y).
-android screen resolve --screenshot=/tmp/ui.png --string="tap #5"
+# Idiomatic: let resolve produce a complete `input tap X Y` command and pipe
+# it straight to `adb shell`. The CLI replaces `#5` with the resolved coords.
+android screen resolve --screenshot=/tmp/ui.png --string="input tap #5" \
+  | adb -s <device_id> shell
 
-# Pipe the resolved coordinates into the existing tap tool:
-#   mobile_click_on_screen_at_coordinates  (preferred, mobile-mcp)
-#   adb -s <device> shell input tap <x> <y>  (plain adb alternative)
+# Alternative: capture just the coordinates and feed mobile-mcp's tap tool.
+COORDS=$(android screen resolve --screenshot=/tmp/ui.png --string="#5")
+# $COORDS is now "<x> <y>"; call mobile_click_on_screen_at_coordinates with those.
 ```
 
 Option A remains the default — accessibility-tree coordinates are stable and don't require visual inspection. Reach for Option B when Option A does not surface the element you need.
@@ -204,27 +206,30 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 Only run this step when no physical device is attached, no emulator is running, and the task requires a clean-slate device. Skip otherwise.
 
 ```bash
-if [ "$USE_ANDROID_CLI" = "1" ] && [ "$(uname)" != "Windows_NT" ]; then
+# `android emulator` is disabled on Windows per Google's docs — detect Git
+# Bash / MSYS / Cygwin and skip there. macOS and Linux both reach the `then`.
+case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;; *) IS_WINDOWS=0 ;; esac
+
+if [ "$USE_ANDROID_CLI" = "1" ] && [ "$IS_WINDOWS" = "0" ]; then
   # List existing AVDs; reuse one if it already fits the task.
   android emulator list
 
-  # Create a fresh AVD matching a typical phone profile.
-  android emulator create --profile=medium_phone --name=woo_verify
+  # Create a device from a profile. The CLI only accepts --profile and
+  # --list-profiles — the profile name doubles as the device name.
+  android emulator create --profile=medium_phone
 
-  # Start it and wait until it is ready.
-  android emulator start woo_verify
+  # Start the device using that profile name and wait until it is ready.
+  android emulator start medium_phone
 fi
 ```
 
-At the end of the task, if this session created the AVD, stop it:
+At the end of the task, if this session created the AVD, stop it using the device serial (`adb devices` or `android emulator list` will print it):
 
 ```bash
 if [ "$USE_ANDROID_CLI" = "1" ]; then
-  android emulator stop <serial>
+  android emulator stop <device-serial-number>
 fi
 ```
-
-**Windows note:** Google's Android CLI does not currently support emulator management on Windows. On Windows, skip this step and assume the user has an emulator or device already booted.
 
 **Fallback (no `android` CLI):** continue to step 1 and assume a running device, as before.
 
@@ -263,10 +268,15 @@ If the build fails with "SDK location not found", check that `local.properties` 
 
 ### 5. Install the APK
 
-**Preferred path (`USE_ANDROID_CLI=1`):** the single `android run` call in step 7 installs and launches in one shot, so you can skip this step entirely. Optionally resolve the APK path from project metadata rather than hardcoding it:
+**Preferred path (`USE_ANDROID_CLI=1`):** the single `android run` call in step 7 installs and launches in one shot, so you can skip this step entirely. Optionally resolve the APK path from project metadata rather than hardcoding it. Note: `android describe` prints **paths to JSON files** on stdout, not JSON content, so it cannot be piped directly to `jq` — read the reported file first:
 
 ```bash
-APK=$(android describe --project_dir=. | jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]')
+# 1. Ask describe for the metadata file paths (one per line).
+DESCRIBE_JSON=$(android describe --project_dir=. | head -n1)
+
+# 2. Parse the JSON file that path points to. Adjust the jq query to match
+#    the actual schema on first run if needed.
+APK=$(jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]' "$DESCRIBE_JSON")
 ```
 
 **Fallback (no `android` CLI):** install via mobile-mcp.

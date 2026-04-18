@@ -8,16 +8,3 @@ user-invocable: true
 # POS Architecture & Patterns
 
 @docs/pos-architecture.md
-
-## Platform API Reference
-
-For questions about Android platform behavior that affects POS (Activity lifecycle in a pure `setContent` host, `SharedFlow` replay/buffer semantics, Compose Navigation back-stack rules, orientation lock), prefer Google's Android Knowledge Base over a web search — the answers are authoritative and do not cost browsing tokens.
-
-```bash
-if command -v android >/dev/null 2>&1; then
-  android docs search "SharedFlow replay cache"
-  # Then: android docs fetch kb://android/topic/coroutines/...
-fi
-```
-
-If the CLI is not installed, skip this block and use the Android developer website as before.
