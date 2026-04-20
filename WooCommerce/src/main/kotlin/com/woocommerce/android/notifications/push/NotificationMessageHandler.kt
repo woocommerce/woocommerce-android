@@ -1,7 +1,6 @@
 package com.woocommerce.android.notifications.push
 
 import androidx.annotation.VisibleForTesting
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
@@ -45,8 +44,7 @@ class NotificationMessageHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val getWooVisibleSites: GetWooVisibleSites,
     private val selectedSite: SelectedSite,
-    private val workManagerScheduler: WorkManagerScheduler,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val workManagerScheduler: WorkManagerScheduler
 ) {
     companion object {
         private const val PUSH_NOTIFICATION_ID = 10000
@@ -311,25 +309,18 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     /**
-     * Builds the stable `<siteId-or-storeId>:<type>:<entity-id>` analytics id for a Woo-driven
-     * notification, or `null` when the type has no segment (Blaze, local reminder), the entity id
-     * is zero, or no site/store fallback is available.
+     * Builds the stable `<siteId>:<type>:<entity-id>` analytics id for a Woo-driven notification,
+     * or `null` when the type has no segment (Blaze, local reminder) or the entity id is zero.
      */
     private fun Notification.buildWooDrivenAnalyticsId(): String? {
-        fun WooNotificationType.wooAnalyticsSegment(): String? = when (this) {
+        val wooTypeSegment = when (noteType) {
             is WooNotificationType.NewOrder -> "order"
             is WooNotificationType.ProductReview -> "review"
             else -> null
         }
-
-        val siteSegment = when {
-            remoteSiteId != 0L -> remoteSiteId.toString()
-            else -> selectedSite.getIfExists()?.let { appPrefsWrapper.getWCStoreID(it.siteId) }
-        }
-        val wooTypeSegment = noteType.wooAnalyticsSegment()
         return when {
-            wooTypeSegment == null || siteSegment == null || uniqueId == 0L -> null
-            else -> "$siteSegment:$wooTypeSegment:$uniqueId"
+            wooTypeSegment == null || uniqueId == 0L -> null
+            else -> "$remoteSiteId:$wooTypeSegment:$uniqueId"
         }
     }
 }

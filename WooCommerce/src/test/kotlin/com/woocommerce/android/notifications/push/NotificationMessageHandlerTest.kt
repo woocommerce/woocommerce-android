@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.background.WorkManagerScheduler
@@ -112,7 +111,6 @@ class NotificationMessageHandlerTest {
         .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wooNotificationPayload = mapOf("type" to "new_order")
     private val wooNotificationModel
         get() = NotificationModel(
@@ -136,7 +134,6 @@ class NotificationMessageHandlerTest {
             getWooVisibleSites = getWooVisibleSites,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
-            appPrefsWrapper = appPrefsWrapper,
         )
     }
 
