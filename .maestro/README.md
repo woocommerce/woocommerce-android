@@ -95,6 +95,7 @@ maestro studio
     login_not_wp_site.yaml
     login_wrong_credentials.yaml
     dashboard_stats.yaml
+    dashboard_view_all_analytics.yaml
     orders_list_and_search.yaml
     orders_create.yaml
     orders_details_and_actions.yaml
@@ -153,7 +154,7 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | Login with 2FA | - | No | Requires authenticator app / TOTP secret |
 | **Dashboard/Stats** | | | |
 | Charts respond, date ranges | `dashboard_stats.yaml` | Yes | |
-| View All store analytics | - | Partial | Stats card asserted but "View All" navigation not exercised |
+| View All store analytics | `dashboard_view_all_analytics.yaml` | Yes | Taps the "View all store analytics" action on the Top Performers card and asserts the Analytics Hub loads |
 | Customization — all cards | - | No | Not exercised |
 | **Orders** | | | |
 | List and pagination | `orders_list_and_search.yaml` | Yes | |
