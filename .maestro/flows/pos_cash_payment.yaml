@@ -1,10 +1,16 @@
 # Smoke Test: POS - Cash Payment flow (Tablet)
 # P2 ref: POS > Search products, Add to cart, Pay with Cash
 #
-# NOTE: This flow requires a tablet device/emulator.
-# POS exposes Compose test tags as resource IDs (via Modifier.testTag).
+# POS exposes Compose test tags as resource IDs (WooTheme enables
+# testTagsAsResourceId at the root of the Compose tree).
 #
-# Verifies:
+# NOTE: This flow requires a tablet device/emulator with POS enabled.
+# On phones the POS tab is hidden by the app, so the core POS assertions
+# are wrapped in a visibility guard. The flow will still pass on phones
+# (smoke purpose: "does login → reach main nav" succeeded) but the POS
+# body is skipped. Run on a tablet emulator to exercise the full flow.
+#
+# Verifies (on tablet):
 #   - POS screen loads from bottom navigation
 #   - Products load and can be added to cart
 #   - Checkout flow works
@@ -20,7 +26,8 @@ tags:
 - runFlow:
     file: ../subflows/login.yaml
 
-# Navigate to POS tab (only available on tablets with POS enabled)
+# Navigate to POS tab (only available on tablets with POS enabled).
+# Guarded because the tab is hidden on phones by design.
 - runFlow:
     when:
       visible:

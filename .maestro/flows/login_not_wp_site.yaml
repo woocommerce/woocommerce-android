@@ -1,8 +1,8 @@
 # Smoke Test: Login - Not a WordPress site
 # P2 ref: Login > Not a WP site (use "Google.com" or any non-WordPress site)
 #
-# Note: The onFlowStart hook will log in first, but this flow clears
-# state and manages its own login flow to test the error case.
+# Manages its own login flow (does not call the login subflow) because
+# we're validating the pre-login error path. Starts from a fresh state.
 appId: com.woocommerce.android.dev
 name: "Login - Not a WordPress site error"
 tags:

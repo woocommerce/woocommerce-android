@@ -1,9 +1,0 @@
-# Navigate to the Dashboard (My Store) tab
-appId: com.woocommerce.android.dev
----
-- tapOn:
-    id: "dashboard"
-- extendedWaitUntil:
-    visible:
-      id: "dashboard_container"
-    timeout: 10000
