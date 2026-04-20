@@ -315,7 +315,7 @@ class NotificationMessageHandler @Inject constructor(
      * notification, or `null` when the type has no segment (Blaze, local reminder), the entity id
      * is zero, or no site/store fallback is available.
      */
-    fun Notification.buildWooDrivenAnalyticsId(): String? {
+    private fun Notification.buildWooDrivenAnalyticsId(): String? {
         fun WooNotificationType.wooAnalyticsSegment(): String? = when (this) {
             is WooNotificationType.NewOrder -> "order"
             is WooNotificationType.ProductReview -> "review"
