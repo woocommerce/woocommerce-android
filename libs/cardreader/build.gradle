@@ -36,6 +36,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     runtimeOnly(libs.kotlinx.coroutines.android)
 
+    // Remote reader transport
+    implementation(libs.moshi)
+    implementation(libs.moshi.adapters)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.bouncycastle.bcpkix)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlin.test.junit)
