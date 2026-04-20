@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class RemoteTokenChannelProvider : ConnectionTokenProvider, AutoCloseable {
@@ -19,6 +20,10 @@ class RemoteTokenChannelProvider : ConnectionTokenProvider, AutoCloseable {
     }
 
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
+        if (!scope.isActive) {
+            callback.onFailure(ConnectionTokenException("Remote token provider is closed"))
+            return
+        }
         scope.launch {
             runCatching { tokens.receive() }
                 .onSuccess { callback.onSuccess(it) }
