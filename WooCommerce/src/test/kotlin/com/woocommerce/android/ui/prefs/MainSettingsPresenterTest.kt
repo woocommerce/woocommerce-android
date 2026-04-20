@@ -13,8 +13,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,9 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -48,7 +44,6 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val appPrefs: AppPrefsWrapper = mock()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock()
 
     private val view: MainSettingsContract.View = mock()
@@ -68,8 +63,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             analyticsTracker = analyticsTracker,
             getWooVersion = getWooVersion,
             appPrefs = appPrefs,
-            ciabSiteGateKeeper = ciabSiteGateKeeper,
-            featureFlagRepository = featureFlagRepository,
+            ciabSiteGateKeeper = ciabSiteGateKeeper
         )
         presenter.takeView(view)
     }
@@ -207,44 +201,4 @@ class MainSettingsPresenterTest : BaseUnitTest() {
         advanceUntilIdle()
         assertThat(shouldShowPushNotificationOption.subscriptionCount.value).isEqualTo(0)
     }
-
-    @Test
-    fun `given app passwords and M2 disabled, when setup application password settings, then hide notifications`() =
-        testBlocking {
-            setup {
-                whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
-                whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2))
-                    .thenReturn(false)
-            }
-
-            presenter.setupApplicationPasswordsSettings()
-
-            verify(view).handleApplicationPasswordsSettings(shouldHideNotifications = true)
-        }
-
-    @Test
-    fun `given app passwords and M2 enabled, when setup application password settings, then keep notifications visible`() =
-        testBlocking {
-            setup {
-                whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
-                whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2))
-                    .thenReturn(true)
-            }
-
-            presenter.setupApplicationPasswordsSettings()
-
-            verify(view).handleApplicationPasswordsSettings(shouldHideNotifications = false)
-        }
-
-    @Test
-    fun `given non app passwords site, when setup application password settings, then do not handle notifications visibility`() =
-        testBlocking {
-            setup {
-                whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
-            }
-
-            presenter.setupApplicationPasswordsSettings()
-
-            verify(view, never()).handleApplicationPasswordsSettings(any())
-        }
 }

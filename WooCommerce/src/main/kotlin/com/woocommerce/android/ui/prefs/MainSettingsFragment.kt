@@ -201,7 +201,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
-        presenter.setupApplicationPasswordsSettings()
 
         binding.optionEnablePushNotifications.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
@@ -309,10 +308,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
-    }
-
-    override fun handleApplicationPasswordsSettings(shouldHideNotifications: Boolean) {
-        binding.optionNotifications.isVisible = !shouldHideNotifications
     }
 
     private fun showThemeChooser() {
