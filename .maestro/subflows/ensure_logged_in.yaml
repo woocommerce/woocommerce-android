@@ -1,0 +1,24 @@
+# Ensure the app is launched with a logged-in session.
+#
+# WPCom triggers extra security screens (magic-link, captchas) once the
+# same account logs in too many times in a short window. To stay under
+# that threshold, non-login flows MUST reuse the existing session
+# instead of re-authenticating on every run. Only login-specific flows
+# should clearState + re-login.
+#
+# Behavior:
+#   - Launches the app WITHOUT clearing state so the existing session
+#     persists across flows
+#   - Asserts the dashboard is reachable
+#
+# If this fails, the device needs to be logged in once manually
+# (e.g. run `.maestro/flows/login.yaml` or sign in in-app). After that,
+# subsequent non-login flows can reuse the session indefinitely.
+appId: com.woocommerce.android.dev
+---
+- launchApp:
+    clearState: false
+
+- extendedWaitUntil:
+    visible: "My store"
+    timeout: 30000

@@ -2,20 +2,26 @@
 # P2 ref: Orders > Refund, Add order note, Mark complete, See receipt
 #
 # Verifies:
-#   - Opening an order shows correct details
-#   - Order status, customer name, products, totals are visible
-#   - Can add an order note
-#   - Can mark order complete
-#   - See receipt button works
+#   - Opening an order shows the detail container and status tags
+#   - Can scroll through products and payment sections
+#   - Can add an order note via the "Add a note" row (private by default)
+#   - Returns to orders list cleanly
+#
+# Uses the exact resource IDs from order_detail_note_list.xml
+# (noteList_addNoteContainer, notesList_notes) and menu_add.xml
+# (menu_add) to avoid ambiguous text matches that can collide with the
+# "Add note" button in the order creation flow.
 appId: com.woocommerce.android.dev
 name: "Orders - Detail view and actions"
 tags:
   - smoke
   - orders
 ---
-# Login
+# Start from an already-authenticated session (see comment in
+# ensure_logged_in.yaml — re-logging in on every run triggers WPCom
+# security screens).
 - runFlow:
-    file: ../subflows/login.yaml
+    file: ../subflows/ensure_logged_in.yaml
 
 # Navigate to Orders
 - runFlow:
@@ -40,7 +46,7 @@ tags:
 
 - takeScreenshot: order_detail_top
 
-# Scroll down to see products and payment info
+# Scroll down to see products
 - scroll
 
 - assertVisible:
@@ -61,27 +67,54 @@ tags:
 
 - takeScreenshot: order_detail_payment
 
-# Scroll to see order notes section and add a note
+# ── Add an order note ────────────────────────────────────────────────
+# Use the addNoteContainer ID directly — more robust than matching the
+# "Add a note" text which is not tagged as clickable (the outer
+# LinearLayout handles the click).
 - scrollUntilVisible:
-    element: "Add a note"
+    element:
+      id: "noteList_addNoteContainer"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to order notes section"
-    optional: true
+    label: "Scroll to notes section"
 
-- runFlow:
-    when:
-      visible: "Add a note"
-    commands:
-      - tapOn: ".*Add a note.*|.*Add note.*"
-      - extendedWaitUntil:
-          visible: ".*Add a note.*|.*note.*"
-          timeout: 10000
-      - inputText: "Maestro smoke test note"
-      - tapOn:
-          text: ".*Add.*|.*Submit.*"
-          optional: true
-      - takeScreenshot: order_note_added
+- tapOn:
+    id: "noteList_addNoteContainer"
+    retryTapIfNoChange: true
+    label: "Tap Add a note row"
+
+# Add note screen
+- extendedWaitUntil:
+    visible:
+      id: "addNote_editor"
+    timeout: 15000
+
+- tapOn:
+    id: "addNote_editor"
+- inputText: "Maestro smoke test note"
+- hideKeyboard
+
+- takeScreenshot: order_note_typed
+
+# Save the note via the Add menu item
+- tapOn:
+    id: "menu_add"
+    label: "Save order note"
+
+# Back on order detail — verify note appears in the notes list
+- extendedWaitUntil:
+    visible:
+      id: "notesList_notes"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: ".*Maestro smoke test note.*"
+    direction: DOWN
+    timeout: 15000
+    optional: true
+    label: "Scroll to added note"
+
+- takeScreenshot: order_note_added
 
 # Go back to orders list
 - back

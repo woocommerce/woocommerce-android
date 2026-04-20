@@ -18,9 +18,11 @@ tags:
   - smoke
   - orders
 ---
-# Login
+# Start from an already-authenticated session (see comment in
+# ensure_logged_in.yaml — re-logging in on every run triggers WPCom
+# security screens).
 - runFlow:
-    file: ../subflows/login.yaml
+    file: ../subflows/ensure_logged_in.yaml
 
 # Navigate to Orders
 - runFlow:
