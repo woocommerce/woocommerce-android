@@ -1,0 +1,145 @@
+# Smoke Test: Orders - Mark order complete
+# P2 ref: Orders > Mark complete
+#
+# Verifies:
+#   - Filter the orders list by "Processing" status
+#   - Open a processing order
+#   - Navigate to the Fulfill screen via "Mark order complete"
+#   - Complete the fulfillment
+#   - "🎉 Order completed!" snackbar appears
+#   - Undo the status change so the staging store stays clean
+#
+# Filtering to "Processing" guarantees the target order has the Mark
+# Complete button visible — it's hidden on already-completed orders.
+appId: com.woocommerce.android.dev
+name: "Orders - Mark order complete"
+tags:
+  - smoke
+  - orders
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# ── Filter by Processing status ───────────────────────────────────────
+- tapOn:
+    id: "btn_order_filter"
+    label: "Open filters"
+
+- extendedWaitUntil:
+    visible: "Order Status"
+    timeout: 10000
+
+- tapOn:
+    text: "Order Status"
+    label: "Open status filter"
+
+# Status labels include counts, e.g. "Processing (50)".
+- extendedWaitUntil:
+    visible: ".*Processing.*"
+    timeout: 10000
+
+- tapOn:
+    text: ".*Processing.*"
+    label: "Select Processing status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- takeScreenshot: orders_filtered_processing
+
+# ── Open the first processing order ──────────────────────────────────
+- tapOn:
+    id: "orderNum"
+    index: 0
+    label: "Open first processing order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+- takeScreenshot: order_detail_processing
+
+# ── Mark complete → Fulfill screen ───────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productList_btnMarkOrderComplete"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Mark order complete button"
+
+- tapOn:
+    id: "productList_btnMarkOrderComplete"
+    retryTapIfNoChange: true
+    label: "Tap Mark order complete"
+
+# Fulfill screen has its own Mark Complete CTA that actually commits
+# the status change.
+- extendedWaitUntil:
+    visible:
+      id: "button_mark_order_compete"
+    timeout: 15000
+
+- takeScreenshot: order_fulfill_screen
+
+- tapOn:
+    id: "button_mark_order_compete"
+    retryTapIfNoChange: true
+    label: "Confirm mark complete"
+
+# ── Verify completion + undo ─────────────────────────────────────────
+# The completion snackbar shows "🎉 Order completed!" with an "Undo"
+# action and auto-dismisses after a few seconds, so tap Undo first and
+# take the verification screenshot afterwards (once back on the detail
+# screen) to avoid missing the undo window.
+- tapOn:
+    text: "Undo"
+    retryTapIfNoChange: true
+    label: "Undo status change"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+- takeScreenshot: order_marked_complete_reverted
+
+# Back to orders list
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+
+# ── Clear the filter so future runs start from an unfiltered list ────
+- tapOn:
+    id: "btn_order_filter"
+    label: "Re-open filters to clear"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear filters"
+
+- tapOn:
+    id: "showOrdersButton"
+    optional: true
+    label: "Apply cleared filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
