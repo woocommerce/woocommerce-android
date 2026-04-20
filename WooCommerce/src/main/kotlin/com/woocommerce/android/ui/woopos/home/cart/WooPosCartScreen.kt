@@ -149,8 +149,7 @@ fun WooPosCartScreen(
 
             is WooPosCartState.Body.WithItems -> {
                 val productsTopMargin = WooPosSpacing.Large.value
-                // Body always extends to parent.bottom. The checkout button is an
-                // overlay on top of the list so the slot is never reserved in layout.
+                // Body extends to parent.bottom; the button is overlaid on top.
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -168,11 +167,7 @@ fun WooPosCartScreen(
 
         when (checkoutSlot) {
             WooPosCartCheckoutButtonSlot.Inline -> {
-                // Overlay the button + its surfaceBright panel at the bottom of the cart
-                // pane. Both fade together as a single AnimatedVisibility unit. While
-                // visible, the opaque Surface covers the list items behind it; during
-                // fade-out the items emerge as the panel becomes transparent, so the
-                // "panel under the button" also appears to fade — no snap, no shrink.
+                // Surface covers the items behind the button so both fade together.
                 AnimatedVisibility(
                     visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
                     enter = fadeIn(animationSpec = tween(300)),
@@ -200,8 +195,7 @@ fun WooPosCartScreen(
                             state = when (state.checkoutButtonState) {
                                 WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
                                 WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
-
-                                // Rendered during exit fade only.
+                                // Shown only during exit fade.
                                 WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
                             }
                         )

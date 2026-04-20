@@ -115,16 +115,13 @@ fun WooPosHomePhonePersistentButton(
 ) {
     val visible = state !is WooPosPhonePersistentButtonState.Hidden
 
-    // Keep the last non-Hidden state so the content keeps rendering during the exit
-    // animation, after `state` has already flipped to Hidden.
+    // Keep the last non-Hidden state so content still renders during the exit fade.
     val lastRenderable = remember { mutableStateOf<WooPosPhonePersistentButtonState?>(null) }
     if (visible) {
         lastRenderable.value = state
     }
     val shown = lastRenderable.value
 
-    // Slide + fade the whole Surface. When Hidden, AnimatedVisibility drops it from
-    // layout, so no panel is reserved on the empty-cart Products screen.
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
@@ -136,9 +133,7 @@ fun WooPosHomePhonePersistentButton(
             color = MaterialTheme.colorScheme.surfaceBright,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            // Primary <-> Outlined transitions always go through Hidden (loading totals),
-            // so we never need to crossfade between styles while visible. Label changes
-            // within the same style snap — standard Android button behavior.
+            // Primary <-> Outlined always transits via Hidden, so no inner crossfade.
             when (shown) {
                 is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
                     text = shown.label,
