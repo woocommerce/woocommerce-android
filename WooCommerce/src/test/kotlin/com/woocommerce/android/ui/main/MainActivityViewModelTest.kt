@@ -83,6 +83,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
         siteId = TEST_REMOTE_SITE_ID_1
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
@@ -604,6 +606,21 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 eq(testBlazeNotification.remoteSiteId)
             )
         assertThat(event).isEqualTo(ViewBlazeCampaignList)
+    }
+
+    @Test
+    fun `given an App Passwords site, when notification for a different remote site is tapped, then do not switch sites`() {
+        // GIVEN
+        val appPasswordsSite = applicationPasswordsSite()
+        lenient().doReturn(appPasswordsSite).whenever(selectedSite).get()
+        val orderNotification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
+
+        // WHEN
+        viewModel.onPushNotificationTapped(1000, orderNotification)
+
+        // THEN
+        verify(selectedSite, never()).set(any())
+        assertThat(viewModel.event.value).isNotInstanceOf(RestartActivityForPushNotification::class.java)
     }
 
     @Test
