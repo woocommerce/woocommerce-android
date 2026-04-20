@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
@@ -17,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -25,6 +28,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainSettingsPresenterTest : BaseUnitTest() {
@@ -38,6 +43,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val appPrefs: AppPrefsWrapper = mock()
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock()
 
     private val view: MainSettingsContract.View = mock()
@@ -56,7 +62,8 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             notificationChannelsHandler = notificationChannelsHandler,
             analyticsTracker = analyticsTracker,
             getWooVersion = getWooVersion,
-            appPrefs = appPrefs
+            appPrefs = appPrefs,
+            ciabSiteGateKeeper = ciabSiteGateKeeper
         )
         presenter.takeView(view)
     }
@@ -158,6 +165,28 @@ class MainSettingsPresenterTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given CIAB site, when checking plugins section visibility, then plugins section is hidden`() =
+        testBlocking {
+            setup {
+                whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins))
+                    .thenReturn(false)
+            }
+
+            assertFalse(presenter.isPluginsSectionVisible)
+        }
+
+    @Test
+    fun `given non-CIAB site, when checking plugins section visibility, then plugins section is visible`() =
+        testBlocking {
+            setup {
+                whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins))
+                    .thenReturn(true)
+            }
+
+            assertTrue(presenter.isPluginsSectionVisible)
+        }
+
+    @Test
     fun `given push notifications option setup, when view is dropped, then flow collection is cancelled`() = testBlocking {
         val shouldShowPushNotificationOption = MutableSharedFlow<Boolean>(replay = 1)
         setup {
@@ -170,6 +199,6 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
         presenter.dropView()
         advanceUntilIdle()
-        assertEquals(0, shouldShowPushNotificationOption.subscriptionCount.value)
+        assertThat(shouldShowPushNotificationOption.subscriptionCount.value).isEqualTo(0)
     }
 }

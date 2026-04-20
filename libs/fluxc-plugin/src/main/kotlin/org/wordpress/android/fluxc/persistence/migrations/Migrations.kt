@@ -1093,6 +1093,14 @@ internal val MIGRATION_77_78 = object : Migration(77, 78) {
 }
 
 @Suppress("LongMethod")
+internal val MIGRATION_79_80 = object : Migration(79, 80) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE Bookings ADD COLUMN userId INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("UPDATE Bookings SET userId = customerId")
+    }
+}
+
+@Suppress("LongMethod")
 internal val MIGRATION_71_72 = object : Migration(71, 72) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // 1) Create new table with the new schema (stableId TEXT PRIMARY KEY)

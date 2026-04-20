@@ -38,6 +38,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
@@ -119,6 +121,9 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var customerListRepository: CustomerListRepository
+
+    @Inject
+    internal lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -245,7 +250,12 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        addSelectionTracker()
+
+        if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
+            // The only option we support with multi-select is order status editing, so disable multi-select
+            // if the feature is not supported
+            addSelectionTracker()
+        }
     }
 
     private fun addSelectionTracker() {
@@ -893,7 +903,7 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY, R.id.orders) {
             selectedOrder.selectOrder(-1L)
             viewModel.loadOrders()
         }
@@ -962,9 +972,9 @@ class OrderListFragment :
         )
     }
 
-    private fun openConnectivityTool() {
+    private fun openTroubleshootConnection() {
         findNavController().navigateSafely(
-            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+            OrderListFragmentDirections.actionOrderListFragmentToTroubleshootConnectionFragment()
         )
     }
 
@@ -1186,7 +1196,7 @@ class OrderListFragment :
             troubleshootingClick = {
                 viewModel.changeTroubleshootingBannerVisibility(show = false)
                 viewModel.trackConnectivityTroubleshootClicked()
-                openConnectivityTool()
+                openTroubleshootConnection()
             }
         )
     }

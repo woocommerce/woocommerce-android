@@ -6,7 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -38,16 +38,16 @@ class WooPosCartItemsUpdaterTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val formatPrice: WooPosFormatPrice = mock {
-        onBlocking { invoke(argThat { this == BigDecimal("10.0") }) }.thenReturn("10.0$")
-        onBlocking { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
+        on { invoke(argThat { this == BigDecimal("10.0") }) }.thenReturn("10.0$")
+        on { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
     }
     private val productsCache: WooPosProductsCache = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock {
-        onBlocking { deleteProducts(any(), any()) }.thenReturn(Result.success(Unit))
-        onBlocking { deleteVariations(any(), any()) }.thenReturn(Result.success(Unit))
+        on { deleteProducts(any(), any()) }.thenReturn(Result.success(Unit))
+        on { deleteVariations(any(), any()) }.thenReturn(Result.success(Unit))
     }
     private val selectedSite: SelectedSite = mock {
-        onBlocking { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
+        on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val crashLogger: CrashLogging = mock()
     private val logger: WooPosLogWrapper = mock()
@@ -73,7 +73,7 @@ class WooPosCartItemsUpdaterTest {
             description = null
         )
         val itemsInCart = listOf(simpleProduct)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
             id = 1L,
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
@@ -113,7 +113,7 @@ class WooPosCartItemsUpdaterTest {
             description = null
         )
         val itemsInCart = listOf(variationProduct)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Variation(
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Variation(
             id = 1L,
             variationId = 2L,
             name = "Updated Variation",
@@ -185,7 +185,7 @@ class WooPosCartItemsUpdaterTest {
             description = null
         )
         val itemsInCart = listOf(simpleProduct1, simpleProduct2)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product 1",
             finalPrice = BigDecimal("10.0"),
@@ -230,7 +230,7 @@ class WooPosCartItemsUpdaterTest {
             description = null
         )
         val itemsInCart = listOf(simpleProduct, simpleProduct)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product",
             finalPrice = BigDecimal("10.0"),
@@ -277,7 +277,7 @@ class WooPosCartItemsUpdaterTest {
                 description = null
             )
             val itemsInCart = listOf(simpleProduct)
-            val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+            val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
                 id = 1L,
                 name = "Product",
                 finalPrice = BigDecimal("10.0"),
@@ -382,7 +382,7 @@ class WooPosCartItemsUpdaterTest {
             description = null
         )
         val itemsInCart = listOf(simpleProduct)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
             id = 1L,
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
@@ -543,7 +543,7 @@ class WooPosCartItemsUpdaterTest {
     private fun generateCouponLine(
         code: String,
         discountAmount: String
-    ) = ParentToChildrenEvent.OrderCreated.CouponInfo(
+    ) = WooPosOrderCreatedData.CouponInfo(
         code = code,
         id = 1L,
         discountAmount = BigDecimal(discountAmount)

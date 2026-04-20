@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 import com.google.gson.Gson
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -13,7 +12,6 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Appli
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult.NotSupported
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
-import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 import javax.inject.Named
@@ -21,12 +19,10 @@ import javax.inject.Singleton
 
 @Singleton
 class ApplicationPasswordsMediaRestClient @Inject constructor(
-    dispatcher: Dispatcher,
-    coroutineEngine: CoroutineEngine,
     @Named("no-cookies") okHttpClient: OkHttpClient,
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     gson: Gson
-) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient, gson) {
+) : BaseWPV2MediaRestClient(okHttpClient, gson) {
     @Inject
     internal lateinit var applicationPasswordsManager: ApplicationPasswordsManager
 

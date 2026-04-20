@@ -36,7 +36,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
 
     private val fetchJetpackStatus: FetchJetpackStatus = mock {
-        onBlocking { invoke(any(), any(), anyOrNull()) } doReturn Result.success(
+        on { invoke(any(), any(), anyOrNull()) } doReturn Result.success(
             JetpackStatusFetchResponse.Success(
                 JetpackStatus(
                     isJetpackInstalled = false,
@@ -163,7 +163,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is connected and WC version is compatible, when screen opens, then GenericError state is shown`() =
+    fun `given user is connected and WC version is compatible, when screen opens, then Connected state is shown`() =
         testBlocking {
             val jetpackStatus = JetpackStatus(
                 isJetpackInstalled = true,
@@ -179,7 +179,11 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             setup()
 
             val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            assertThat(viewState).isEqualTo(ViewState.Connected)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "connected"))
+            )
         }
 
     @Test
@@ -287,7 +291,38 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
                     isSiteConnectedToJetpack = false,
-                    shouldAutoOpenUpdatePlugin = true
+                    shouldAutoOpenUpdatePlugin = false
+                )
+            )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+                eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
+            )
+        }
+
+    @Test
+    fun `given Connected state and compatible plugin, when continue is clicked, then NavigateToConnectionSteps without auto update`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected(
+                    wpComEmail = "test@test.com"
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+            whenever(checkWCPluginSupport(forceRefresh = true))
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
+
+            setup()
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = true,
+                    shouldAutoOpenUpdatePlugin = false
                 )
             )
             verify(analyticsTrackerWrapper).track(
@@ -379,7 +414,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a Jetpack CP site with compatible WC version, when screen opens, then GenericError state is shown`() =
+    fun `given a Jetpack CP site with compatible WC version, when screen opens, then Connected state is shown`() =
         testBlocking {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
@@ -387,10 +422,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             setup(isJetpackCPSite = true)
 
             val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            assertThat(viewState).isEqualTo(ViewState.Connected)
             verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
-                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "generic"))
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "connected"))
             )
         }
 

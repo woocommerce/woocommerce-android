@@ -40,6 +40,7 @@ internal class BookingDtoMapper @Inject constructor(
         cost = cost,
         currency = currency,
         customerId = customerId,
+        userId = userId,
         productId = productId,
         resourceId = resourceId,
         dateCreated = Instant.ofEpochSecond(dateCreated),
@@ -72,6 +73,7 @@ internal class BookingDtoMapper @Inject constructor(
         imageId = imageId,
         imageUrl = imageUrl,
         description = description,
+        productBookingIds = productBookingIds,
     )
 
     fun Array<BookingResourceDto>.toEntities(localSiteId: LocalId): List<BookingResourceEntity> =

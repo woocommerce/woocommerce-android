@@ -9,6 +9,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
@@ -21,12 +22,13 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData.CouponInfo
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
@@ -123,6 +125,10 @@ class WooPosTotalsViewModel @Inject constructor(
                         cancelPaymentAction()
                     }
 
+                    Reconnecting -> {
+                        // We start payment right away so this state not worth handling
+                    }
+
                     is Connected -> {
                         val state = uiState.value
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
@@ -169,7 +175,11 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.RetryFailedTransactionClicked -> handleRetryFailedTransactionClicked()
 
-            WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
+            WooPosTotalsUIEvent.ConnectReaderClicked -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+                }
+            }
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
 
@@ -381,13 +391,12 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
-                    is CardReaderPaymentState.CollectingPayment -> handleCollectingPaymentState(paymentState)
+                    is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
 
                     is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
 
-                    is CardReaderPaymentState.PaymentCapturing,
-                    is CardReaderPaymentState.ProcessingPayment -> {
-                        handleProcessingOrCapturingPaymentState()
+                    is CardReaderPaymentState.PaymentCapturing -> {
+                        handleCapturingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
@@ -413,12 +422,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
-    private suspend fun handleProcessingOrCapturingPaymentState() {
+    private suspend fun handleCapturingPaymentState() {
         val state = uiState.value
         if (state is WooPosTotalsViewState.Checkout) {
             uiState.value = state.copy(totals = Totals.Hidden)
-            // allow the UI to show "shrinking" exit animation of totals grid before showing
-            // the "payment in progress" state.
             @Suppress("MagicNumber")
             delay(384)
         }
@@ -429,7 +436,7 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private suspend fun handleCollectingPaymentState(paymentState: CardReaderPaymentState.CollectingPayment) {
+    private suspend fun handleProcessingPaymentState(paymentState: CardReaderPaymentState.ProcessingPayment) {
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
@@ -612,8 +619,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
-                    updatedProducts = mapItemLines(order),
-                    updatedCoupons = mapCouponLines(order)
+                    WooPosOrderCreatedData(
+                        updatedProducts = mapItemLines(order),
+                        updatedCoupons = mapCouponLines(order)
+                    )
                 )
             )
         }
@@ -627,7 +636,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         when {
             it.variationId == 0L -> {
-                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                WooPosOrderCreatedData.ProductInfo.Simple(
                     id = it.productId,
                     name = it.name,
                     finalPrice = it.price,
@@ -637,7 +646,7 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             else -> {
-                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                WooPosOrderCreatedData.ProductInfo.Variation(
                     id = it.productId,
                     name = it.name,
                     finalPrice = it.price,

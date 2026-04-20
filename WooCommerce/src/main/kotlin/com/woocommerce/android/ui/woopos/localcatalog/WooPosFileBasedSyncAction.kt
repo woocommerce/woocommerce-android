@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogResult
@@ -32,6 +34,14 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
     }
+    sealed class SyncState {
+        data object Preparing : SyncState()
+        data class Progress(val processed: Int, val total: Int) : SyncState()
+    }
+
+    private val _syncState = MutableStateFlow<SyncState?>(null)
+    val syncState: StateFlow<SyncState?> = _syncState
+
     sealed class WooPosFileBasedSyncResult {
         data class Success(
             val result: PosLocalCatalogSyncResult.Success,
@@ -44,6 +54,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
+        _syncState.value = null
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
@@ -51,19 +62,18 @@ class WooPosFileBasedSyncAction @Inject constructor(
         val accumulatedPollAttempts = preferencesRepository.getAndClearFileBasedSyncPollAttempts(siteId)
         var lastGenerationState: WooPosGenerateCatalogState? = null
         var failedConsecutiveAttempts = 0
+        var pollsSinceLastStateChange = 0
+        var totalAttempts = 0
 
-        repeat(MAX_POLL_ATTEMPTS) { attemptIndex ->
-            if (attemptIndex > 0) {
-                val delayMs = computeBackoffDelay(attemptIndex)
-                logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt $attemptIndex")
-                delay(delayMs)
-            }
+        while (pollsSinceLastStateChange < MAX_POLL_ATTEMPTS) {
+            delayBeforeNextPoll(totalAttempts, pollsSinceLastStateChange)
+            totalAttempts++
 
             val response = posLocalCatalogStore.generateCatalogOrGetStatus(site)
 
             if (response.isFailure) {
                 if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
-                    val totalPollAttempts = accumulatedPollAttempts + attemptIndex + 1
+                    val totalPollAttempts = accumulatedPollAttempts + totalAttempts
                     return handleConsecutiveFailures(
                         siteId,
                         totalPollAttempts,
@@ -71,17 +81,19 @@ class WooPosFileBasedSyncAction @Inject constructor(
                         response.exceptionOrNull()
                     )
                 } else {
-                    logger.w("Poll attempt $attemptIndex failed: ${response.exceptionOrNull()?.message}")
-                    return@repeat
+                    logger.w("Poll attempt $totalAttempts failed: ${response.exceptionOrNull()?.message}")
+                    pollsSinceLastStateChange++
+                    continue
                 }
             }
             failedConsecutiveAttempts = 0
 
             val result = response.getOrThrow()
+            pollsSinceLastStateChange = if (result.state != lastGenerationState) 0 else pollsSinceLastStateChange + 1
             lastGenerationState = result.state
-            logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptIndex, state: ${result.state}")
+            logger.d("WooPosFileBasedSyncAction: Poll attempt $totalAttempts, state: ${result.state}")
 
-            val totalPollAttempts = accumulatedPollAttempts + attemptIndex + 1
+            val totalPollAttempts = accumulatedPollAttempts + totalAttempts
             val processedResult = processPollingResult(
                 result,
                 site,
@@ -101,9 +113,16 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         return handleTimeout(
             siteId = siteId,
-            totalPollAttempts = accumulatedPollAttempts + MAX_POLL_ATTEMPTS,
+            totalPollAttempts = accumulatedPollAttempts + totalAttempts,
             lastGenerationState = lastGenerationState
         )
+    }
+
+    private suspend fun delayBeforeNextPoll(totalAttempts: Int, pollsSinceLastStateChange: Int) {
+        if (totalAttempts == 0) return
+        val delayMs = computeBackoffDelay(pollsSinceLastStateChange)
+        logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt ${totalAttempts + 1}")
+        delay(delayMs)
     }
 
     private suspend fun handleConsecutiveFailures(
@@ -119,7 +138,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
         )
         return WooPosFileBasedSyncResult.Failure(
             PosLocalCatalogSyncResult.Failure.NetworkError(
-                error = error?.message ?: "API error during catalog sync",
+                error = error?.message?.takeIf { it.isNotBlank() }
+                    ?: "API error during catalog sync (${error?.let { it::class.simpleName } ?: "unknown"})",
                 pollAttempts = totalPollAttempts,
                 lastGenerationState = lastGenerationState?.rawValue
             )
@@ -152,6 +172,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
         startTime: Long,
         pollAttempts: Int
     ): WooPosFileBasedSyncResult? {
+        logger.d(
+            "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
+                "out of ${result.total} items"
+        )
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
                 if (result.url != null) {
@@ -167,12 +191,21 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 }
             }
 
-            else -> null.also {
-                logger.d(
-                    "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
-                        "out of ${result.total} items"
-                )
+            WooPosGenerateCatalogState.IN_PROGRESS -> {
+                val processed = result.processed
+                val total = result.total
+                if (processed != null && total != null) {
+                    _syncState.value = SyncState.Progress(processed = processed, total = total)
+                }
+                null
             }
+
+            WooPosGenerateCatalogState.SCHEDULED -> {
+                _syncState.value = SyncState.Preparing
+                null
+            }
+
+            WooPosGenerateCatalogState.UNKNOWN -> null
         }
     }
 
@@ -187,7 +220,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.NetworkError(
-                        error = it.message ?: "Failed to download catalog file"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to download catalog file (${it::class.simpleName})"
                     )
                 )
             }
@@ -197,7 +231,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                        error = it.message ?: "Failed to parse catalog file"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to parse catalog file (${it::class.simpleName})"
                     )
                 )
             }
@@ -210,7 +245,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
                     PosLocalCatalogSyncResult.Failure.DatabaseError(
-                        error = it.message ?: "Failed to store catalog data"
+                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                            ?: "Failed to store catalog data (${it::class.simpleName})"
                     )
                 )
             }

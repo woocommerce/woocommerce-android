@@ -646,6 +646,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "get_support_tapped"
         }
 
+        data object EditReceiptTapped : Event() {
+            override val name: String = "edit_receipt_tapped"
+        }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
@@ -875,6 +879,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class IneligibleUIRetryTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
             override val name: String = "ineligible_ui_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
+        data class IneligibleUILearnMoreTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_learn_more_tapped"
 
             init {
                 addProperties(
@@ -1339,13 +1355,13 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> "ciab_plan_upgrade_required"
     }
 }
 
 internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
-        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
         SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }

@@ -7,12 +7,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingAvailabilityDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class BookingsRepository @Inject constructor(
@@ -191,6 +196,27 @@ class BookingsRepository @Inject constructor(
             Result.success(Unit)
         }
     }.await()
+
+    suspend fun fetchProductAvailability(
+        productId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        resourceId: Long,
+    ): Result<BookingAvailabilityDto> {
+        val result = bookingsStore.fetchProductAvailability(
+            site = selectedSite.get(),
+            productId = productId,
+            startDate = startDate,
+            endDate = endDate,
+            resourceId = resourceId,
+        )
+        val model = result.model
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            model != null -> Result.success(model)
+            else -> Result.failure(WooException(WooError(GENERIC_ERROR, UNKNOWN)))
+        }
+    }
 
     suspend fun fetchProductBookingLocation(productId: Long, bookingId: Long? = null): Result<String?> {
         val result = bookingsStore.fetchProductBookingLocation(

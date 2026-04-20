@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store.pos.localcatalog
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -246,49 +247,8 @@ class WooPosLocalCatalogStore @Inject constructor(
         block: suspend () -> T
     ): Result<T> =
         coroutineEngine.withDefaultContext(API, this, "executeInTransaction") {
-            runCatching {
+            runCatchingCancellable {
                 database.executeInTransaction(block)
-            }
-        }
-
-    /**
-     * Fetches only the total count of products without fetching the actual product data.
-     * Makes a minimal API call with per_page=1 to get the count from response headers.
-     *
-     * @param [site] The site to get the products count for
-     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
-     * @return Result containing the total count of products or error
-     */
-    suspend fun fetchProductsCount(
-        site: SiteModel,
-        posProductsOnly: Boolean,
-        modifiedAfterGmt: String? = null,
-    ): Result<Int> =
-        coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
-            val response = posProductRestClient.fetchProducts(
-                site = site,
-                modifiedAfter = modifiedAfterGmt,
-                page = 1,
-                pageSize = 1,
-                includeStatus = null,
-                posProductsOnly = posProductsOnly,
-            )
-
-            when {
-                response.isError -> Result.failure(mapResponseError(response.error))
-
-                else -> {
-                    val totalCount = headersParser.getTotalCount(response)
-                    if (totalCount == null) {
-                        Result.failure(
-                            WooPosLocalCatalogError.InvalidResponse(
-                                "Missing required header in response: X-WP-Total."
-                            )
-                        )
-                    } else {
-                        Result.success(totalCount)
-                    }
-                }
             }
         }
 
@@ -371,7 +331,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
-        runCatching { posProductDao.upsertProducts(products) }
+        runCatchingCancellable { posProductDao.upsertProducts(products) }
 
     suspend fun storeCatalogData(
         localSiteId: LocalOrRemoteId.LocalId,
@@ -397,13 +357,13 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun deleteAllProducts(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posProductDao.deleteAllProductsForSite(siteId) }
+        runCatchingCancellable { posProductDao.deleteAllProductsForSite(siteId) }
 
     suspend fun deleteProducts(
         siteId: LocalOrRemoteId.LocalId,
         productIds: List<LocalOrRemoteId.RemoteId>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 posProductDao.deleteProducts(siteId, productIds)
                 posVariationsDao.deleteVariationsForProducts(siteId, productIds)
@@ -414,7 +374,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 val variationIds = variations.map { it.second }
                 posVariationsDao.deleteVariationsByIds(siteId, variationIds)
@@ -422,12 +382,12 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
-        runCatching { posVariationsDao.upsertVariations(variations) }
+        runCatchingCancellable { posVariationsDao.upsertVariations(variations) }
 
     suspend fun deleteAllVariations(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posVariationsDao.deleteAllVariationsForSite(siteId) }
+        runCatchingCancellable { posVariationsDao.deleteAllVariationsForSite(siteId) }
 
     /**
      * Observes all variations for a given product from the local database.
@@ -479,46 +439,6 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedVariationByIdentifier") {
             val variation = posVariationsDao.findVariationByIdentifier(siteId, identifier)
             Result.success(variation)
-        }
-
-    /**
-     * Fetches only the total count of variations without fetching the actual variation data.
-     * Makes a minimal API call with per_page=1 to get the count from response headers.
-     *
-     * @param [site] The site to get the variations count for
-     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
-     * @return Result containing the total count of variations or error
-     */
-    suspend fun fetchVariationsCount(
-        site: SiteModel,
-        posProductsOnly: Boolean,
-        modifiedAfterGmt: String? = null,
-    ): Result<Int> =
-        coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
-            val response = posProductRestClient.fetchVariations(
-                site = site,
-                modifiedAfter = modifiedAfterGmt,
-                page = 1,
-                pageSize = 1,
-                posProductsOnly = posProductsOnly,
-            )
-
-            when {
-                response.isError -> Result.failure(mapResponseError(response.error))
-
-                else -> {
-                    val totalCount = headersParser.getTotalCount(response)
-                    if (totalCount == null) {
-                        Result.failure(
-                            WooPosLocalCatalogError.InvalidResponse(
-                                "Missing required header in response: X-WP-Total."
-                            )
-                        )
-                    } else {
-                        Result.success(totalCount)
-                    }
-                }
-            }
         }
 
     /**
@@ -681,4 +601,10 @@ class WooPosLocalCatalogStore @Inject constructor(
             )
         }
     }
+
+    private inline fun <T> runCatchingCancellable(block: () -> T): Result<T> =
+        runCatching(block).also { result ->
+            val error = result.exceptionOrNull()
+            if (error is CancellationException) throw error
+        }
 }

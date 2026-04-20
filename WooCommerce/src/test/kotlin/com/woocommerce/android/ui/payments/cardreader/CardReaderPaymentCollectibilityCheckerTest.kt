@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -16,7 +17,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import java.math.BigDecimal
 import java.util.Date
 
@@ -25,7 +25,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
     private val testCiabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.WooPayments) } doReturn true
+        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
     }
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         orderDetailRepository = repository,
@@ -37,9 +37,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        wheneverBlocking {
-            repository.hasSubscriptionProducts(any())
-        }.doReturn(false)
+        runBlocking {
+            whenever(repository.hasSubscriptionProducts(any())).doReturn(false)
+        }
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }
@@ -354,7 +354,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `given WooPayments is not supported by CIAB, when check order is collectable, then returns false`() =
         testBlocking {
             // GIVEN
-            whenever(testCiabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)) doReturn false
+            whenever(testCiabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)) doReturn false
             val order = getOrder()
 
             // WHEN

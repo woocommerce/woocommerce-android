@@ -10,7 +10,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsError
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsErrorType
-import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,34 +45,5 @@ class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
 
             val result = sut.fetchAndCacheFeatureFlags()
             assertThat(result.isFailure).isTrue()
-        }
-
-    @Test
-    fun `given existing feature flag, when isRemoteFeatureFlagEnabled is called, then return the feature flag's value`() =
-        testBlocking {
-            val key = "key"
-            val featureFlag = FeatureFlagConfigDao.FeatureFlag(
-                key = key,
-                value = true,
-                createdAt = 0L,
-                modifiedAt = 0L,
-                source = FeatureFlagConfigDao.FeatureFlagValueSource.REMOTE
-            )
-
-            whenever(featureFlagStore.getFeatureFlagsByKey(any())).thenReturn(listOf(featureFlag))
-
-            sut.isRemoteFeatureFlagEnabled(key)
-            val result = sut.isRemoteFeatureFlagEnabled(key)
-            assertThat(result).isEqualTo(true)
-        }
-
-    @Test
-    fun `given non existing feature flag, when isRemoteFeatureFlagEnabled is called, then return false`() =
-        testBlocking {
-            val key = "key"
-            whenever(featureFlagStore.getFeatureFlagsByKey(any())).thenReturn(emptyList())
-
-            val result = sut.isRemoteFeatureFlagEnabled(key)
-            assertThat(result).isEqualTo(false)
         }
 }

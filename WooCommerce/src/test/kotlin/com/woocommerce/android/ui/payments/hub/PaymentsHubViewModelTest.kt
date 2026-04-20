@@ -77,10 +77,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderChecker: CardReaderOnboardingChecker = mock {
-        onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
+        on { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock {
-        onBlocking { isCashOnDeliveryEnabled() } doReturn false
+        on { isCashOnDeliveryEnabled() } doReturn false
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()

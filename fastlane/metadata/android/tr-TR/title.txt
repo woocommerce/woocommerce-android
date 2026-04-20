@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: Mağaza ve POS

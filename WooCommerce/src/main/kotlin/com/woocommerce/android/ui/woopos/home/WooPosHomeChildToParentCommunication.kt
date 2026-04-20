@@ -6,7 +6,6 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -53,6 +52,7 @@ sealed class ChildToParentEvent {
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
+    data object ShowCardReaderConnectionDialog : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()
@@ -71,44 +71,12 @@ sealed class ChildToParentEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(
-        val updatedProducts: List<ProductInfo>,
-        val updatedCoupons: List<CouponInfo>
-    ) : ChildToParentEvent() {
-        sealed class ProductInfo(
-            open val id: Long,
-            open val name: String,
-            open val finalPrice: BigDecimal,
-            open val basePrice: BigDecimal,
-            open val quantity: Float,
-        ) {
-            data class Simple(
-                override val id: Long,
-                override val name: String,
-                override val finalPrice: BigDecimal,
-                override val basePrice: BigDecimal,
-                override val quantity: Float,
-            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
-
-            data class Variation(
-                override val id: Long,
-                override val name: String,
-                override val finalPrice: BigDecimal,
-                override val basePrice: BigDecimal,
-                override val quantity: Float,
-                val variationId: Long,
-            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
-        }
-
-        data class CouponInfo(
-            val id: Long,
-            val code: String,
-            val discountAmount: BigDecimal,
-        )
-    }
+    data class OrderCreated(val data: WooPosOrderCreatedData) : ChildToParentEvent()
 
     sealed class SettingsEvent : ChildToParentEvent() {
         data class ShowSyncErrorDialog(val errorMessage: String) : SettingsEvent()
+        data object ShowCardReaderConnectionDialog : SettingsEvent()
+        data object ShowCardReaderUpdateDialog : SettingsEvent()
     }
 }
 

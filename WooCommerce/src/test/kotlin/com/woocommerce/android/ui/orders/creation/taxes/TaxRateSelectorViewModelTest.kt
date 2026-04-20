@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateListHandler
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentArgs
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -33,6 +34,7 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText = mock()
     private val getTaxRateLabel: GetTaxRateLabel = mock()
     private val prefs: AppPrefs = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     @Before
     fun setup() {
@@ -42,6 +44,7 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
             getTaxRateLabel,
             getTaxRatePercentageValueText,
             prefs,
+            featureFlagRepository,
             savedStateHandle
         )
     }

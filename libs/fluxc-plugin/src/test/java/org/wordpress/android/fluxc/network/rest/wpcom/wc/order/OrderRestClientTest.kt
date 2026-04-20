@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.order
 
+import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -12,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -19,6 +21,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
+import org.wordpress.android.fluxc.wc.order.OrderTestUtils
 import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,6 +36,7 @@ class OrderRestClientTest {
 
     @Before
     fun setUp() {
+        testSite.id = 6
         orderRestClient = OrderRestClient(
             dispatcher = dispatcher,
             orderDtoMapper = orderDtoMapper,
@@ -90,6 +94,59 @@ class OrderRestClientTest {
         )
 
         assertThat(paramsCaptor.firstValue).containsExactlyInAnyOrderEntriesOf(expectedParams)
+    }
+
+    @Test
+    fun `when fetching order fulfillments, then fields are parsed`() = runTest {
+        val orderId = 123L
+        val json = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order-fulfillments.json")
+        val response = WPAPIResponse.Success<Array<OrderFulfillmentApiResponse>>(
+            Gson().fromJson(json, Array<OrderFulfillmentApiResponse>::class.java),
+            emptyList()
+        )
+
+        whenever(
+            wooNetwork.executeGetGsonRequest(
+                site = eq(testSite),
+                path = eq(WOOCOMMERCE.orders.id(orderId).fulfillments.pathV3),
+                clazz = eq(Array<OrderFulfillmentApiResponse>::class.java),
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
+        )
+        ).thenReturn(response)
+
+        val result = orderRestClient.fetchOrderFulfillments(testSite, orderId)
+
+        assertThat(result.fulfillments).containsExactly(
+            OrderTestUtils.generateOrderFulfillment(
+                siteId = testSite.id,
+                orderId = orderId,
+                fulfillmentId = 42L,
+                status = "fulfilled",
+                isFulfilled = true,
+                dateUpdated = "2026-03-18 21:00:00",
+                dateFulfilled = "2026-03-18 14:30:00",
+                trackingNumber = "1Z999AA10123456784",
+                shipmentProvider = "ups",
+                trackingUrl = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+            ),
+            OrderTestUtils.generateOrderFulfillment(
+                siteId = testSite.id,
+                orderId = orderId,
+                fulfillmentId = 43L,
+                status = "unfulfilled",
+                isFulfilled = false,
+                dateUpdated = null,
+                dateFulfilled = null,
+                trackingNumber = null,
+                shipmentProvider = null,
+                trackingUrl = null
+            )
+        )
     }
 
     @Test
@@ -310,13 +367,52 @@ class OrderRestClientTest {
     }
 
     @Test
-    fun `when sendOrderPOSSpecificReceipt is called, then email and force_email_update are sent in request body`() = runTest {
+    fun `when sendOrderPOSSpecificReceipt is called with templateId, then template_id is included in request body`() = runTest {
+        // Given
+        val orderId = 123L
+        val email = "test@example.com"
+        val templateId = "customer_pos_completed_order"
+        val expectedPath = WOOCOMMERCE.orders.id(orderId).actions.send_email.pathV3
+        val expectedBody = mapOf(
+            "email" to email,
+            "force_email_update" to true,
+            "template_id" to templateId
+        )
+        val mockResponse = WPAPIResponse.Success(Unit, emptyList())
+
+        whenever(
+            wooNetwork.executePostGsonRequest(
+                site = any(),
+                path = any(),
+                clazz = eq(Unit::class.java),
+                body = any()
+            )
+        ).thenReturn(mockResponse)
+
+        // When
+        orderRestClient.sendOrderPOSSpecificReceipt(
+            testSite, orderId, email, forceEmailUpdate = true, templateId = templateId
+        )
+
+        // Then
+        val bodyCaptor = argumentCaptor<Map<String, Any>>()
+        verify(wooNetwork).executePostGsonRequest(
+            site = eq(testSite),
+            path = eq(expectedPath),
+            clazz = eq(Unit::class.java),
+            body = bodyCaptor.capture()
+        )
+
+        assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
+    }
+
+    @Test
+    fun `when sendOrderPOSSpecificReceipt is called without templateId, then template_id is not in request body`() = runTest {
         // Given
         val orderId = 123L
         val email = "test@example.com"
         val expectedPath = WOOCOMMERCE.orders.id(orderId).actions.send_email.pathV3
         val expectedBody = mapOf(
-            "template_id" to "customer_pos_completed_order",
             "email" to email,
             "force_email_update" to true
         )
@@ -332,7 +428,7 @@ class OrderRestClientTest {
         ).thenReturn(mockResponse)
 
         // When
-        orderRestClient.sendOrderPOSSpecificReceipt(testSite, orderId, email, forceEmailUpdate = true)
+        orderRestClient.sendOrderPOSSpecificReceipt(testSite, orderId, email, forceEmailUpdate = true, templateId = null)
 
         // Then
         val bodyCaptor = argumentCaptor<Map<String, Any>>()
@@ -344,5 +440,6 @@ class OrderRestClientTest {
         )
 
         assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
+        assertThat(bodyCaptor.firstValue).doesNotContainKey("template_id")
     }
 }

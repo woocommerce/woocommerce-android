@@ -3,14 +3,17 @@ package com.woocommerce.android.ui.jitm.clientside
 import android.content.Context
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,20 +27,20 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
     private val dismissalStorage: ClientSideBannerDismissalStorage = mock()
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var sut: ClientSidePosBanner
 
     @Before
     fun setup() = testBlocking {
-        whenever(isRemoteFeatureFlagEnabled(any())).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(any())).thenReturn(true)
         sut = ClientSidePosBanner(
             context = context,
             selectedSite = selectedSite,
             wooStore = wooStore,
             wooPosIsScreenSizeAllowed = wooPosIsScreenSizeAllowed,
             dismissalStorage = dismissalStorage,
-            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+            featureFlagRepository = featureFlagRepository,
         )
     }
 
@@ -48,6 +51,17 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         val result = sut.shouldShow()
 
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given client banner feature flag is disabled, when shouldShow called, then returns false`() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)).thenReturn(false)
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isFalse()
+        verify(featureFlagRepository).isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)
+        verify(selectedSite, never()).getIfExists()
     }
 
     @Test
@@ -88,6 +102,18 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         sut.onDismiss()
 
         verify(dismissalStorage).hideBanner("woo_pos_client_banner")
+    }
+
+    @Test
+    fun `given all conditions met, when shouldShow called, then checks the client banner feature flag`() = testBlocking {
+        val site = setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+
+        sut.shouldShow()
+
+        verify(featureFlagRepository).isEnabled(eq(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER))
     }
 
     private fun setupValidSite(): SiteModel {

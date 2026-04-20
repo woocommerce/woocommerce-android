@@ -12,7 +12,7 @@ import org.mockito.kotlin.mock
 class WooPosPaymentStatusResolverTest {
 
     private val paymentStatusResolver: PaymentStatusResolver = mock {
-        onBlocking { resolve(any()) } doReturn PaymentStatus.PAID
+        on { resolve(any()) } doReturn PaymentStatus.PAID
     }
     private val sut = WooPosPaymentStatusResolver(paymentStatusResolver)
 

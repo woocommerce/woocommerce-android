@@ -149,6 +149,10 @@
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.prefs.developer.DevFeatureFlagsActivity"
+            android:label="@string/dev_feature_flags"
+            android:theme="@style/Theme.Woo.DayNight" />
+        <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
@@ -159,10 +163,9 @@
             android:theme="@style/Theme.WooPos"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"
+            android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity"
             android:theme="@style/Theme.WooPos.Transparent"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name="com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity"
             android:theme="@style/Theme.WooPos.DayNight.Transparent"

@@ -56,6 +56,10 @@ class ObserveShippingPackages @Inject constructor(
                 .takeIf { it.isNotEmpty() }
                 ?.let { packageGroups -> put(Carrier.USPS, packageGroups) }
 
+            carrierPackageGroups.parseCarrierData(WooShippingPackagesEntity.CarrierType.FEDEX)
+                .takeIf { it.isNotEmpty() }
+                ?.let { packageGroups -> put(Carrier.FEDEX, packageGroups) }
+
             carrierPackageGroups.parseCarrierData(WooShippingPackagesEntity.CarrierType.DHL)
                 .takeIf { it.isNotEmpty() }
                 ?.let { packageGroups -> put(Carrier.DHL, packageGroups) }

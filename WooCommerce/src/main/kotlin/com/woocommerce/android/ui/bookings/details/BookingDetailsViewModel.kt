@@ -4,6 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.automattic.eventhorizon.BookingDetailAddNoteTapEvent
+import com.automattic.eventhorizon.BookingDetailAttendanceStatusUpdateEvent
+import com.automattic.eventhorizon.BookingDetailCancelBookingEvent
+import com.automattic.eventhorizon.BookingDetailRefundTapEvent
+import com.automattic.eventhorizon.BookingDetailViewLinkedOrderTapEvent
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -20,8 +25,11 @@ import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
+import com.woocommerce.android.ui.bookings.toEventHorizonValue
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,6 +53,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
+import org.wordpress.android.fluxc.persistence.entity.isReschedulable
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,6 +67,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val paymentStatusResolver: PaymentStatusResolver,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val orderDetailRepository: OrderDetailRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     @AppCoroutineScope private val appScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
 
@@ -223,8 +233,9 @@ class BookingDetailsViewModel @Inject constructor(
                 return@launch
             }
             analyticsTrackerWrapper.track(
-                AnalyticsEvent.BOOKING_DETAIL_ATTENDANCE_STATUS_UPDATE,
-                mapOf(BookingAnalyticsHelper.KEY_BOOKING_STATUS to status.toAnalyticsValue())
+                BookingDetailAttendanceStatusUpdateEvent(
+                    bookingStatus = status.toEventHorizonValue()
+                )
             )
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel()
@@ -251,6 +262,10 @@ class BookingDetailsViewModel @Inject constructor(
         BookingAttendanceStatus.Unattended -> BookingEntity.AttendanceStatus.Unattended
     }
 
+    private fun onRescheduleBooking() {
+        bookingId?.let { triggerEvent(NavigateToRescheduleBooking(it)) }
+    }
+
     private fun onCancelBooking() {
         showCancelBookingDialog.value = true
     }
@@ -262,7 +277,7 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_CANCEL_BOOKING)
+        analyticsTrackerWrapper.track(BookingDetailCancelBookingEvent)
         bookingsRepository.cancelBooking(bookingId)
             .onFailure {
                 with(analyticsHelper) {
@@ -279,16 +294,17 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun openBookingNote(bookingId: Long) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_ADD_NOTE_TAP)
+        analyticsTrackerWrapper.track(BookingDetailAddNoteTapEvent)
         triggerEvent(NavigateToBookingNote(bookingId))
     }
 
     private fun openOrderDetails(orderId: Long) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.BOOKING_DETAIL_VIEW_LINKED_ORDER_TAP)
+        analyticsTrackerWrapper.track(BookingDetailViewLinkedOrderTapEvent)
         triggerEvent(NavigateToOrder(orderId))
     }
 
     private fun issueRefund(orderId: Long) {
+        analyticsTrackerWrapper.track(BookingDetailRefundTapEvent)
         triggerEvent(NavigateToIssueRefund(orderId))
     }
 
@@ -321,6 +337,8 @@ class BookingDetailsViewModel @Inject constructor(
                     loadingState = loadingState
                 ),
                 cancelStatus = cancelStatus,
+                rescheduleButtonVisible = featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_RESCHEDULE) &&
+                    booking.isReschedulable,
                 attendanceUpdateStatus = attendanceUpdateStatus,
                 locationStatus = buildLocationStatus(booking, loadingState),
             ),
@@ -329,6 +347,7 @@ class BookingDetailsViewModel @Inject constructor(
             note = booking.note,
             isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
             onCancelBooking = ::onCancelBooking,
+            onRescheduleBooking = ::onRescheduleBooking,
             onAttendanceToggle = {
                 val targetStatus = when (booking.attendanceStatus) {
                     BookingEntity.AttendanceStatus.Attended -> BookingAttendanceStatus.Unattended
@@ -377,12 +396,8 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun BookingAttendanceStatus.toAnalyticsValue(): String = when (this) {
-        BookingAttendanceStatus.Attended -> "attended"
-        BookingAttendanceStatus.Unattended -> "unattended"
-    }
-
     data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToIssueRefund(val orderId: Long) : MultiLiveEvent.Event()
     data class NavigateToBookingNote(val bookingId: Long) : MultiLiveEvent.Event()
+    data class NavigateToRescheduleBooking(val bookingId: Long) : MultiLiveEvent.Event()
 }

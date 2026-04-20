@@ -8,6 +8,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -55,6 +57,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -117,10 +120,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+        on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
     }
     private val addonsRepository: AddonRepository = mock {
-        onBlocking { containsAddonsFrom(any()) } doReturn false
+        on { containsAddonsFrom(any()) } doReturn false
     }
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val orderDetailTracker: OrderDetailTracker = mock()
@@ -145,9 +148,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val paymentReceiptHelper: PaymentReceiptHelper = mock {
-        onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
-        onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
+        on { isReceiptAvailable(any()) }.thenReturn(false)
+        on { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
     }
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
@@ -194,6 +198,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
+        on { mapOrderStatus(any()) } doAnswer { it.arguments[0] as OrderStatus }
+    }
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isCurrentSiteCIAB() } doReturn false
+    }
 
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
@@ -222,11 +232,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
+                featureFlagRepository,
                 paymentReceiptHelper,
                 analyticsTracker,
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
+                ciabOrderStatusMapper = ciabOrderStatusMapper,
+                ciabSiteGateKeeper = ciabSiteGateKeeper,
             )
         )
     }
@@ -234,6 +247,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(false).whenever(featureFlagRepository).isEnabled(any())
 
         val site = SiteModel().let {
             it.id = 1
@@ -1663,6 +1677,33 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
+    }
+
+    @Test
+    fun `when current site is CIAB, then fetch order fulfillments`() = testBlocking {
+        doReturn(true).whenever(ciabSiteGateKeeper).isCurrentSiteCIAB()
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderFulfillments(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository).fetchOrderFulfillments(any())
+        verify(orderDetailsTransactionLauncher).onOrderFulfillmentsFetched()
+    }
+
+    @Test
+    fun `when current site is not CIAB, then do not fetch order fulfillments`() = testBlocking {
+        doReturn(false).whenever(ciabSiteGateKeeper).isCurrentSiteCIAB()
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).fetchOrderFulfillments(any())
+        verify(orderDetailsTransactionLauncher).onOrderFulfillmentsFetched()
     }
 
     @Test
