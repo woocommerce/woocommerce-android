@@ -116,6 +116,7 @@ fun WooPosHomePhonePersistentButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(WooPosSpacing.Medium.value)
+                        .padding(bottom = WooPosSpacing.Small.value)
                         .navigationBarsPadding(),
                 )
                 WooPosPhonePersistentButtonState.Hidden -> Unit

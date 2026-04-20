@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -51,12 +52,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
@@ -238,14 +241,15 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
         WooPosOutlinedButton(
             text = stringResource(R.string.woopos_payment_take_cash_payment_label),
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-                .padding(bottom = WooPosSpacing.XLarge.value)
+                .then(if (isPhone) Modifier.padding(WooPosSpacing.Medium.value) else Modifier)
+                .padding(bottom = WooPosSpacing.Small.value)
+                .navigationBarsPadding()
                 .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )
     }
@@ -417,6 +421,7 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -453,12 +458,11 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
+        val aroundPadding = if (isPhone) WooPosSpacing.Medium.value * 2 else 0.dp
         Spacer(
-            modifier = Modifier.height(
-                WooPosSpacing.Medium.value +
-                    WooPosComponentSize.Small.value +
-                    WooPosSpacing.XLarge.value
-            )
+            modifier = Modifier
+                .height(WooPosComponentSize.Small.value + WooPosSpacing.Small.value + aroundPadding)
+                .navigationBarsPadding()
         )
     }
 }
