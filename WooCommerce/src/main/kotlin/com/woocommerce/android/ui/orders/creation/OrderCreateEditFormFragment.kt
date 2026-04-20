@@ -875,7 +875,6 @@ class OrderCreateEditFormFragment :
         customAmountsSection: OrderCreateEditSectionView,
         customAmounts: List<CustomAmountUIModel>?
     ) {
-        customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (customAmounts.isNullOrEmpty()) {
             customAmountsSection.hide()
         } else {

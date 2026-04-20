@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -205,6 +206,25 @@ class BookingsStore @Inject internal constructor(
     fun observeResources(
         site: SiteModel
     ): Flow<List<BookingResourceEntity>> = bookingsDao.observeResources(site.localId())
+
+    suspend fun fetchProductAvailability(
+        site: SiteModel,
+        productId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        resourceId: Long,
+    ): WooResult<BookingAvailabilityDto> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductAvailability") {
+            val response = bookingsRestClient.fetchProductAvailability(
+                site, productId, startDate, endDate, resourceId
+            )
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> WooResult(response.result)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
 
     suspend fun fetchProductBookingLocation(
         site: SiteModel,

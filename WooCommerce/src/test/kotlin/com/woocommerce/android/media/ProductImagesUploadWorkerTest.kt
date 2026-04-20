@@ -57,8 +57,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
-        onBlocking { getLocalMedia(TEST_URI) } doReturn FETCHED_MEDIA
-        onBlocking { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
+        on { getLocalMedia(TEST_URI) } doReturn FETCHED_MEDIA
+        on { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
     }
     private val productDetailRepository: ProductDetailRepository = mock()
 

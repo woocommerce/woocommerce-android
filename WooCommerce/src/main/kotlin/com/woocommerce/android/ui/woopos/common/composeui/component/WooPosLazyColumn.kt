@@ -23,11 +23,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 
 @Composable
 fun WooPosLazyColumn(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    contentPadding: PaddingValues = PaddingValues(WooPosSpacing.None.value),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(WooPosSpacing.Medium.value),
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     state: LazyListState = rememberLazyListState(),
@@ -78,8 +79,10 @@ fun WooPosLazyColumn(
     }
 }
 
+@Suppress("WooPosDesignSystemComponentSizeUsageRule")
 @Composable
 private fun Shadow(modifier: Modifier = Modifier) {
+    // Hairline divider — must remain a fixed 1dp regardless of breakpoint.
     WooPosCard(
         shape = MaterialTheme.shapes.large,
         backgroundColor = Color.Black.copy(alpha = 0.1f),
@@ -103,7 +106,7 @@ fun WooPosLazyColumnPreview() {
                     WooPosText(
                         "Item $i",
                         modifier = Modifier
-                            .height(64.dp)
+                            .height(64.dp.toAdaptiveComponentSize())
                             .fillMaxWidth(),
                         style = WooPosTypography.BodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,

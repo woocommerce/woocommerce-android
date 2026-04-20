@@ -49,7 +49,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
     private val ssrFetcher: WCSSRModelCachingFetcher = mock {
-        onBlocking { load(any(), any()) } doReturn WooResult(model = null)
+        on { load(any(), any()) } doReturn WooResult(model = null)
     }
     private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite = mock()
 
@@ -409,7 +409,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite, false) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(selectedSite, false) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -573,7 +573,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             val siteAddress = "www.test.com"
@@ -607,7 +607,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -666,7 +666,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any(), any()) } doReturn WooResult(
+                on { load(any(), any()) } doReturn WooResult(
                     WooError(
                         WooErrorType.GENERIC_ERROR,
                         BaseRequest.GenericErrorType.NETWORK_ERROR
@@ -739,7 +739,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite) } doReturn WooResult(model = null)
+                on { load(selectedSite) } doReturn WooResult(model = null)
             }
 
             // When
@@ -775,7 +775,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite) } doReturn WooResult(model = null)
+                on { load(selectedSite) } doReturn WooResult(model = null)
             }
 
             // When
@@ -812,7 +812,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite) } doReturn WooResult(model = null)
+                on { load(selectedSite) } doReturn WooResult(model = null)
             }
 
             // When
@@ -853,7 +853,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private fun mockEnvDataSource() = mock<ZendeskEnvironmentDataSource> {
         on { totalAvailableMemorySize } doReturn "100"
         on { deviceLanguage } doReturn "testLanguage"
-        onBlocking { getDeviceLogs() } doReturn "logs"
+        on { getDeviceLogs() } doReturn "logs"
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"

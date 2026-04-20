@@ -21,8 +21,9 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
@@ -103,7 +104,7 @@ fun PreviewWooPosCircularLoadingIndicator() {
             contentAlignment = Alignment.Center
         ) {
             WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(156.dp)
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value)
             )
         }
     }
@@ -120,7 +121,7 @@ fun PreviewWooPosButtonLoadingIndicator() {
             contentAlignment = Alignment.Center
         ) {
             WooPosButtonLoadingIndicator(
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(WooPosIconSize.Medium.value)
             )
         }
     }

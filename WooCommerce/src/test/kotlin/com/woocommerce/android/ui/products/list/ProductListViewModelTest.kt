@@ -481,7 +481,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         val selectedProducts = listOf(1L, 2L)
         productRepository.stub {
-            onBlocking { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.SUCCESS
+            on { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.SUCCESS
         }
 
         // when
@@ -500,7 +500,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         val selectedProducts = listOf(1L, 2L)
         productRepository.stub {
-            onBlocking { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.ERROR
+            on { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.ERROR
         }
 
         // when
@@ -519,7 +519,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         val selectedProducts = listOf(1L, 2L)
         productRepository.stub {
-            onBlocking { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.SUCCESS
+            on { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.SUCCESS
         }
 
         // when
@@ -538,7 +538,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         val selectedProducts = listOf(1L, 2L)
         productRepository.stub {
-            onBlocking { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.ERROR
+            on { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.ERROR
         }
 
         // when

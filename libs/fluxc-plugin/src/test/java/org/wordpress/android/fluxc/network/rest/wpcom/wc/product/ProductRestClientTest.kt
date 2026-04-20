@@ -30,7 +30,7 @@ class ProductRestClientTest {
     private val productId = 5L
     private val site = SiteModel()
     private val wooNetwork: WooNetwork = mock {
-        onBlocking {
+        on {
             executePostGsonRequest(
                 any(), any(), eq(BatchProductApiResponse::class.java), any()
             )

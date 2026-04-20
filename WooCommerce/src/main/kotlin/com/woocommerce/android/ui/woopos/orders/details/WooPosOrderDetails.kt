@@ -41,10 +41,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverfl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.WOO_POS_ORDERS_TOOLBAR_HEIGHT
@@ -112,8 +116,8 @@ private fun OrderActions(
         is WooPosOrdersState.OrderActionsState.Loading -> {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(160.dp)
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.XLarge.value)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
@@ -253,7 +257,7 @@ private fun ProductsShimmer(title: String) {
                 ) {
                     WooPosShimmerBox(
                         modifier = Modifier
-                            .size(56.dp)
+                            .size(56.dp.toAdaptiveIconSize())
                             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                     )
                     Spacer(Modifier.width(WooPosSpacing.Medium.value))
@@ -261,14 +265,14 @@ private fun ProductsShimmer(title: String) {
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f)
-                                .height(16.dp)
+                                .height(16.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.3f)
-                                .height(14.dp)
+                                .height(14.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                     }
@@ -468,28 +472,35 @@ private fun OrdersTotals(
                 )
             }
 
-            if (breakdown.refunds.isNotEmpty()) {
-                DividerWithSpacing()
-                breakdown.refunds.forEachIndexed { index, refundRow ->
-                    RefundRowContent(
-                        refundRow = refundRow,
-                        onViewDetailsClicked = {
-                            onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
-                        }
-                    )
-                    if (index < breakdown.refunds.size - 1) {
+            when (val refundsState = breakdown.refundsState) {
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loading -> {
+                    DividerWithSpacing()
+                    RefundRowShimmer()
+                }
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded -> {
+                    if (refundsState.refunds.isNotEmpty()) {
                         DividerWithSpacing()
+                        refundsState.refunds.forEachIndexed { index, refundRow ->
+                            RefundRowContent(
+                                refundRow = refundRow,
+                                onViewDetailsClicked = {
+                                    onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
+                                }
+                            )
+                            if (index < refundsState.refunds.size - 1) {
+                                DividerWithSpacing()
+                            }
+                        }
                     }
                 }
-            }
-
-            breakdown.refundLoadError?.let { error ->
-                DividerWithSpacing()
-                WooPosText(
-                    text = error,
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Error -> {
+                    DividerWithSpacing()
+                    WooPosText(
+                        text = refundsState.message,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
 
             breakdown.netPayment?.let { netPayment ->
@@ -556,6 +567,43 @@ private fun RefundRowContent(
 }
 
 @Composable
+private fun RefundRowShimmer() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WooPosShimmerText(
+                text = REFUND_SHIMMER_LABEL_PLACEHOLDER,
+                style = WooPosTypography.BodyLarge.style,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.weight(1f))
+            WooPosShimmerText(
+                text = REFUND_SHIMMER_AMOUNT_PLACEHOLDER,
+                style = WooPosTypography.BodyMedium.style,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosShimmerText(
+            text = REFUND_SHIMMER_DATE_PLACEHOLDER,
+            style = WooPosTypography.BodyMedium.style,
+        )
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerText(
+            text = REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER,
+            style = WooPosTypography.BodyMedium.style,
+        )
+    }
+}
+
+private const val REFUND_SHIMMER_LABEL_PLACEHOLDER = "Refund #1"
+private const val REFUND_SHIMMER_AMOUNT_PLACEHOLDER = "-$00.00"
+private const val REFUND_SHIMMER_DATE_PLACEHOLDER = "Jan 01, 2025 at 12:00 PM"
+private const val REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER = "View details"
+
+@Composable
 private fun TotalRowLine(
     label: String,
     value: String,
@@ -588,10 +636,10 @@ private fun OrderLineItemImage(
     WooPosItemImage(
         imageUrl = imageUrl,
         modifier = modifier
-            .size(56.dp)
+            .size(56.dp.toAdaptiveIconSize())
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
         placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-        placeholderIconSize = 24.dp
+        placeholderIconSize = WooPosIconSize.Small.value
     )
 }
 
@@ -692,18 +740,20 @@ fun WooPosOrderDetailsPreview() {
             discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
-            refunds = listOf(
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #1",
-                    amount = "-$3.00",
-                    date = "Aug 29, 2025 at 12:26 PM",
-                    reason = "Customer bought an extra item.",
-                ),
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #2",
-                    amount = "-$2.00",
-                    date = "Aug 30, 2025 at 2:15 PM",
-                    reason = null,
+            refundsState = WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded(
+                refunds = listOf(
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #1",
+                        amount = "-$3.00",
+                        date = "Aug 29, 2025 at 12:26 PM",
+                        reason = "Customer bought an extra item.",
+                    ),
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #2",
+                        amount = "-$2.00",
+                        date = "Aug 30, 2025 at 2:15 PM",
+                        reason = null,
+                    ),
                 ),
             ),
             netPayment = "$13.00"

@@ -23,8 +23,8 @@ class JetpackActivationRepositoryTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val siteStore: SiteStore = mock()
     private val jetpackStore: JetpackStore = mock {
-        onBlocking { registerSite(any(), any()) }.thenReturn(JetpackStore.JetpackResult(123L))
-        onBlocking { connectJetpackAccount(any(), any(), any()) }.thenReturn(JetpackStore.JetpackResult(Unit))
+        on { registerSite(any(), any()) }.thenReturn(JetpackStore.JetpackResult(123L))
+        on { connectJetpackAccount(any(), any(), any()) }.thenReturn(JetpackStore.JetpackResult(Unit))
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
