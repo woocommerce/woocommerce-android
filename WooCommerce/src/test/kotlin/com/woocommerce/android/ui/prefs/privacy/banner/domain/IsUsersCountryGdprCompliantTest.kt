@@ -23,7 +23,7 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
         runBlocking {
             // given
             geoRepository.stub {
-                onBlocking { fetchCountryCode() }.thenReturn(Result.success("DE"))
+                on { fetchCountryCode() }.thenReturn(Result.success("DE"))
             }
 
             // then
@@ -35,7 +35,7 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
         runBlocking {
             // given
             geoRepository.stub {
-                onBlocking { fetchCountryCode() }.thenReturn(Result.success("US"))
+                on { fetchCountryCode() }.thenReturn(Result.success("US"))
             }
 
             // then
@@ -47,7 +47,7 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
         runBlocking {
             // given
             geoRepository.stub {
-                onBlocking { fetchCountryCode() }.thenReturn(Result.failure(Exception()))
+                on { fetchCountryCode() }.thenReturn(Result.failure(Exception()))
             }
 
             // then
@@ -59,7 +59,7 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
         runBlocking {
             // given
             geoRepository.stub {
-                onBlocking { fetchCountryCode() }.thenReturn(Result.success(""))
+                on { fetchCountryCode() }.thenReturn(Result.success(""))
             }
 
             // then

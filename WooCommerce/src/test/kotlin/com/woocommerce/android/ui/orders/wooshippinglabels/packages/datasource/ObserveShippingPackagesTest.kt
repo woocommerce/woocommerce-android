@@ -5,8 +5,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +13,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -28,14 +25,10 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val fetchShippingPackages: FetchShippingPackages = mock()
     private val selectedSite: SelectedSite = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_SHIPPING_FEDEX) } doReturn true
-    }
     private val observeShippingPackages = ObserveShippingPackages(
         selectedSite,
         packageRepository,
-        fetchShippingPackages,
-        featureFlagRepository
+        fetchShippingPackages
     )
 
     @Test

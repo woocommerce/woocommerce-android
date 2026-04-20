@@ -111,10 +111,21 @@ sealed class WooPosOrdersState {
                     val discountCode: String?,
                     val taxes: String,
                     val shipping: String?,
-                    val refunds: List<RefundRow>,
+                    val refundsState: RefundsState,
                     val netPayment: String?,
-                    val refundLoadError: String? = null
                 )
+
+                @Immutable
+                sealed interface RefundsState {
+                    @Immutable
+                    data object Loading : RefundsState
+
+                    @Immutable
+                    data class Loaded(val refunds: List<RefundRow>) : RefundsState
+
+                    @Immutable
+                    data class Error(val message: String) : RefundsState
+                }
             }
         }
     }

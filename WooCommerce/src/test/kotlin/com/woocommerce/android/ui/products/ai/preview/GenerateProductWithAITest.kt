@@ -54,16 +54,16 @@ class GenerateProductWithAITest : BaseUnitTest() {
     }
 
     private val aiRepository: AIRepository = mock {
-        onBlocking { identifyISOLanguageCode(any(), any()) } doReturn Result.success("en")
-        onBlocking { generateProduct(any(), any(), any(), any(), any(), any(), any(), any()) } doReturn
+        on { identifyISOLanguageCode(any(), any()) } doReturn Result.success("en")
+        on { generateProduct(any(), any(), any(), any(), any(), any(), any(), any()) } doReturn
             Result.success(TEST_PRODUCT_JSON)
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val categoriesRepository: ProductCategoriesRepository = mock {
-        onBlocking { fetchProductCategories() }.thenReturn(Result.success(emptyList()))
+        on { fetchProductCategories() }.thenReturn(Result.success(emptyList()))
     }
     private val tagsRepository: ProductTagsRepository = mock {
-        onBlocking { fetchProductTags() }.thenReturn(Result.success(emptyList()))
+        on { fetchProductTags() }.thenReturn(Result.success(emptyList()))
     }
     private val parametersRepository: ParameterRepository = mock {
         on { getParameters() }.thenReturn(TEST_SITE_PARAMETERS)

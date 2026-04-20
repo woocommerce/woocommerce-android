@@ -34,7 +34,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         Location(code = "CA", name = "Canada")
     )
     private val getAllCountries: GetAllCountries = mock {
-        onBlocking { invoke() } doReturn Result.success(locations)
+        on { invoke() } doReturn Result.success(locations)
     }
 
     private val customsValidator: WooShippingCustomsValidator = mock {

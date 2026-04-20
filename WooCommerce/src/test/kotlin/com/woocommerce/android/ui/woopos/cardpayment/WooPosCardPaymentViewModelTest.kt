@@ -72,7 +72,7 @@ class WooPosCardPaymentViewModelTest {
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
     private val cardPaymentRepository: WooPosCardPaymentRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(any<BigDecimal>()) } doReturn "$0.00"
+        on { invoke(any<BigDecimal>()) } doReturn "$0.00"
     }
 
     private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -127,12 +127,12 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits CollectingPayment, then state is Collecting ReadyForPayment`() = runTest {
+    fun `given connected reader, when controller emits ProcessingPayment, then state is Collecting ReadyForPayment`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.CollectingPayment
-            .ExternalReaderCollectPaymentState(
+        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
+            .ExternalReaderProcessingPayment(
                 amountWithCurrencyLabel = "$50.00",
                 onCancel = {}
             )
@@ -143,14 +143,13 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits ProcessingPayment, then state is PaymentInProgress`() = runTest {
+    fun `given connected reader, when controller emits PaymentCapturing, then state is PaymentInProgress`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
-            .ExternalReaderProcessingPayment(
+        controllerPaymentState.value = CardReaderPaymentState.PaymentCapturing
+            .ExternalReaderPaymentCapturing(
                 amountWithCurrencyLabel = "$50.00",
-                onCancel = {}
             )
         advanceUntilIdle()
 
@@ -251,15 +250,16 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given disconnected reader, when onConnectReaderClicked, then connectToReader called`() = runTest {
+    fun `given disconnected reader, when onConnectReaderClicked, then GoBack emitted`() = runTest {
         readerStatusFlow.value = CardReaderStatus.NotConnected()
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onConnectReaderClicked()
-
-        verify(cardReaderFacade).connectToReader()
+        viewModel.navigationEvent.test {
+            viewModel.onConnectReaderClicked()
+            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+        }
     }
 
     @Test
@@ -592,10 +592,9 @@ class WooPosCardPaymentViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
-            .ExternalReaderProcessingPayment(
+        controllerPaymentState.value = CardReaderPaymentState.PaymentCapturing
+            .ExternalReaderPaymentCapturing(
                 amountWithCurrencyLabel = "$50.00",
-                onCancel = {}
             )
         advanceUntilIdle()
 

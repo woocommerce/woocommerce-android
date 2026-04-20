@@ -438,24 +438,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given woo pos connection and onboarding failed with error, when vm init, then navigates to onboarding`() =
-        testBlocking {
-            // GIVEN
-            val param = CardReaderFlowParam.WooPosConnection
-            val onboardingState = CardReaderOnboardingState.StripeAccountRejected(
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-            )
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
-
-            // WHEN
-            val vm = initViewModel(param)
-
-            // THEN
-            assertThat(vm.event.value)
-                .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java)
-        }
-
-    @Test
     fun `given refund flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
         testBlocking {
             // GIVEN
@@ -515,8 +497,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                 cardReaderFlowParam = param,
                 cardReaderType = cardReaderType
             ).toSavedStateHandle(),
-            storeManagementModePaymentsFlowTracker = paymentsFlowTracker,
-            pointOfSaleModePaymentsFlowTracker = paymentsFlowTracker,
+            paymentsFlowTracker = paymentsFlowTracker,
             cardReaderManager = cardReaderManager,
             cardReaderChecker = cardReaderChecker,
             appPrefsWrapper = appPrefsWrapper,

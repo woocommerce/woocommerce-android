@@ -60,7 +60,7 @@ class WooPosBookingsViewModelTest {
     private val bookingListHandler: BookingListHandler = mock()
     private val bookingsRepository: BookingsRepository = mock {
         on { observeResources() } doAnswer { flowOf(emptyList()) }
-        onBlocking { fetchResources() } doAnswer { Result.success(Unit) }
+        on { fetchResources() } doAnswer { Result.success(Unit) }
     }
     private val dateTimeProvider: DateTimeProvider = mock()
     private val formatPrice: WooPosFormatPrice = mock {

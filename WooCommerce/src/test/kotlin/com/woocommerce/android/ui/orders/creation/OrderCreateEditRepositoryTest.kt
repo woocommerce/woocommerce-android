@@ -62,7 +62,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         }
 
         orderUpdateStore = mock {
-            onBlocking {
+            on {
                 createSimplePayment(eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(null))
             } doReturn WooResult(
                 WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)

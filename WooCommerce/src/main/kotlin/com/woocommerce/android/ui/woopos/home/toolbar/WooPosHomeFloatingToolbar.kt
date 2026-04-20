@@ -9,7 +9,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +39,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -51,8 +49,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -62,8 +62,10 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
-fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
-    val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
+fun WooPosFloatingToolbar(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel(),
+) {
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),
@@ -127,7 +129,7 @@ private fun WooPosFloatingToolbar(
                     )
 
                     val marginBetweenCards = WooPosSpacing.Small.value
-                    PopUpMenu(
+                    WooPosToolbarPopUpMenu(
                         modifier = Modifier
                             .constrainAs(popupMenu) {
                                 bottom.linkTo(toolbar.top, margin = marginBetweenCards)
@@ -212,7 +214,7 @@ private fun MenuButtonWithPopUpMenu(
         TextButton(
             modifier = Modifier
                 .semantics { contentDescription = menuContentDescription }
-                .size(80.dp),
+                .size(WooPosComponentSize.Small.value),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
             colors = ButtonDefaults.textButtonColors(
@@ -239,55 +241,6 @@ private fun MenuButtonWithPopUpMenu(
 }
 
 @Composable
-private fun PopUpMenu(
-    modifier: Modifier,
-    menuItems: List<Menu.MenuItem>,
-    onClick: (Menu.MenuItem) -> Unit
-) {
-    WooPosCard(
-        modifier = modifier.width(IntrinsicSize.Max),
-        elevation = TOOLBAR_ELEVATION,
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            menuItems.forEach { menuItem ->
-                PopUpMenuItem(menuItem, onClick)
-            }
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        }
-    }
-}
-
-@Composable
-private fun PopUpMenuItem(
-    menuItem: Menu.MenuItem,
-    onClick: (Menu.MenuItem) -> Unit
-) {
-    TextButton(onClick = { onClick(menuItem) }) {
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-        Icon(
-            imageVector = ImageVector.vectorResource(menuItem.icon),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-        WooPosText(
-            modifier = Modifier
-                .padding(vertical = WooPosSpacing.Small.value)
-                .weight(1f),
-            text = stringResource(id = menuItem.title),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-    }
-}
-
-@Composable
 private fun CardReaderStatusButton(
     modifier: Modifier,
     state: WooPosCardReaderStatus,
@@ -305,31 +258,28 @@ private fun CardReaderStatusButton(
         label = "IllustrationColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
+            is WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
             WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.alert
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
-    val title = stringResource(
-        id = when (state) {
-            WooPosCardReaderStatus.Connected -> WooPosCardReaderStatus.Connected.title
-            WooPosCardReaderStatus.NotConnected -> WooPosCardReaderStatus.NotConnected.title
-        }
-    )
+    val title = stringResource(id = state.title)
 
     val borderColor by transition.animateColor(
         transitionSpec = { tween(durationMillis = animationDuration) },
         label = "BorderColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> Color.Transparent
+            is WooPosCardReaderStatus.Connected -> Color.Transparent
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colorScheme.primary
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
     WooPosCard(
         modifier = modifier
-            .height(80.dp),
+            .height(WooPosComponentSize.Small.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
         elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -350,7 +300,7 @@ private fun CardReaderStatusButton(
                         color = borderColor,
                         shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
                     )
-                    .height(40.dp),
+                    .height(WooPosIconSize.Large.value),
             ) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 Circle(size = 14.dp, color = illustrationColor)
@@ -359,6 +309,11 @@ private fun CardReaderStatusButton(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
+
+                if (state is WooPosCardReaderStatus.Connected) {
+                    BatteryWarningIcon(batteryState = state.batteryState)
+                }
+
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
             }
         }
@@ -391,6 +346,29 @@ private fun Circle(
 }
 
 @Composable
+private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.BatteryState) {
+    when (batteryState) {
+        WooPosHomeFloatingToolbarState.BatteryState.NOMINAL -> { }
+        WooPosHomeFloatingToolbarState.BatteryState.LOW -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_low),
+                contentDescription = stringResource(R.string.woopos_battery_low),
+                tint = WooPosTheme.colors.alert,
+                modifier = Modifier.size(WooPosIconSize.Small.value)
+            )
+        }
+        WooPosHomeFloatingToolbarState.BatteryState.CRITICAL -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_critical),
+                contentDescription = stringResource(R.string.woopos_battery_critical),
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(WooPosIconSize.Small.value)
+            )
+        }
+    }
+}
+
+@Composable
 private fun getToolbarAccessibilityLabels(
     cardReaderStatus: WooPosCardReaderStatus,
     menuCardDisabled: Boolean
@@ -400,12 +378,15 @@ private fun getToolbarAccessibilityLabels(
     )
 
     val cardReaderStatusContentDescription = when (cardReaderStatus) {
-        WooPosCardReaderStatus.Connected -> stringResource(
+        is WooPosCardReaderStatus.Connected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_connected_status_content_description
         )
 
         WooPosCardReaderStatus.NotConnected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_not_connected_status_content_description
+        )
+        WooPosCardReaderStatus.Reconnecting -> stringResource(
+            id = R.string.woopos_reader_reconnecting
         )
     }
     val floatingToolbarMenuOverlayContentDescription = when (menuCardDisabled) {
@@ -475,7 +456,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
             WooPosHomeFloatingToolbarState(
-                cardReaderStatus = WooPosCardReaderStatus.Connected,
+                cardReaderStatus = WooPosCardReaderStatus.Connected(),
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
@@ -492,6 +473,38 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                         ),
                     )
                 ),
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryLow() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.LOW
+                ),
+                menu = Menu.Hidden
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryCritical() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.CRITICAL
+                ),
+                menu = Menu.Hidden
             )
         )
     }

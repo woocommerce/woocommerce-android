@@ -13,10 +13,8 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()
-        fun setupApplicationPasswordsSettings()
         fun onNotificationsClicked()
 
-        val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
         val isPluginsSectionVisible: Boolean
@@ -29,6 +27,5 @@ interface MainSettingsContract {
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun setEnablePushNotificationsOptionVisible(isVisible: Boolean)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
-        fun handleApplicationPasswordsSettings()
     }
 }

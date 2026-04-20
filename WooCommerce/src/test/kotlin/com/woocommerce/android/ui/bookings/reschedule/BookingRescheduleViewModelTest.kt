@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.reschedule
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -17,6 +18,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingAvailabilityDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -46,8 +48,22 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
         description = null,
     )
 
+    private val newResource = BookingResourceEntity(
+        id = LocalOrRemoteId.RemoteId(99L),
+        localSiteId = LocalOrRemoteId.LocalId(1),
+        name = "John Smith",
+        qty = 1,
+        role = null,
+        email = null,
+        phoneNumber = null,
+        imageId = 0,
+        imageUrl = null,
+        description = null,
+    )
+
     private val bookingsRepository: BookingsRepository = mock {
         on { observeResource(eq(RESOURCE_ID)) } doReturn flowOf(sampleResource)
+        on { observeResource(eq(99L)) } doReturn flowOf(newResource)
     }
 
     private val sampleAvailability = BookingAvailabilityDto(
@@ -220,6 +236,32 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given content state, when team member changed, then availability is re-fetched with new resource id`() =
+        testBlocking {
+            // GIVEN
+            val booking = getSampleBooking(Instant.now())
+            whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+            whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+                .thenReturn(Result.success(sampleAvailability))
+
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onTeamMemberChanged(newResourceId = 99L)
+
+            // THEN
+            verify(bookingsRepository).fetchProductAvailability(
+                productId = eq(PRODUCT_ID),
+                startDate = any(),
+                endDate = any(),
+                resourceId = eq(99L),
+            )
+            val state = viewModel.state.value!!
+            assertThat(state.teamMemberId).isEqualTo(99L)
+            assertThat(state.teamMemberName).isEqualTo("John Smith")
+        }
+
+    @Test
     fun `given failed fetch, when loading, then availability is Error`() = testBlocking {
         // GIVEN
         val booking = getSampleBooking(Instant.now())
@@ -233,6 +275,180 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
         // THEN
         val state = viewModel.state.value!!
         assertThat(state.availabilityState).isEqualTo(BookingRescheduleState.AvailabilityState.Error)
+    }
+
+    @Test
+    fun `when booking loaded, then initial date matches booking start`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        // WHEN
+        val viewModel = createViewModel(now)
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.formattedDate).isNotEmpty()
+    }
+
+    @Test
+    fun `when booking loaded, then date picker is initially visible`() = testBlocking {
+        // GIVEN
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.datePickerState).isNotNull()
+    }
+
+    @Test
+    fun `when date selected, then formatted date updates and picker is dismissed`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+        val pickerState = viewModel.state.value!!.datePickerState!!
+
+        // WHEN
+        val newDateMillis = LocalDate.of(2026, 4, 20)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        pickerState.onDateSelected(newDateMillis)
+
+        // THEN
+        val state = viewModel.state.value!!
+        assertThat(state.formattedDate).isNotEmpty()
+        assertThat(state.datePickerState).isNull()
+    }
+
+    @Test
+    fun `when date picker dismissed, then picker state is null`() = testBlocking {
+        // GIVEN
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel()
+        assertThat(viewModel.state.value!!.datePickerState).isNotNull()
+
+        // WHEN
+        viewModel.state.value!!.datePickerState!!.onDismiss()
+
+        // THEN
+        assertThat(viewModel.state.value!!.datePickerState).isNull()
+    }
+
+    @Test
+    fun `when date row clicked, then date picker becomes visible with minDate as today`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val booking = getSampleBooking(Instant.now())
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+        viewModel.state.value!!.datePickerState!!.onDismiss()
+        assertThat(viewModel.state.value!!.datePickerState).isNull()
+
+        // WHEN
+        viewModel.onDateRowClicked()
+
+        // THEN
+        val pickerState = viewModel.state.value!!.datePickerState
+        assertThat(pickerState).isNotNull()
+        val todayMillis = LocalDate.of(2026, 4, 10)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        assertThat(pickerState!!.minDateMillis).isEqualTo(todayMillis)
+    }
+
+    @Test
+    fun `when date in different month selected, then availability is re-fetched`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+
+        // WHEN — select a date in May
+        val mayDateMillis = LocalDate.of(2026, 5, 15)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        viewModel.state.value!!.datePickerState!!.onDateSelected(mayDateMillis)
+
+        // THEN — availability fetched for May
+        val expectedStart = LocalDate.of(2026, 5, 1).atStartOfDay()
+        val expectedEnd = LocalDate.of(2026, 5, 31).atTime(LocalTime.MAX)
+        verify(bookingsRepository).fetchProductAvailability(
+            productId = eq(PRODUCT_ID),
+            startDate = eq(expectedStart),
+            endDate = eq(expectedEnd),
+            resourceId = eq(RESOURCE_ID),
+        )
+    }
+
+    @Test
+    fun `when date in same month selected, then availability is not re-fetched`() = testBlocking {
+        // GIVEN
+        val now = LocalDateTime.of(2026, 4, 10, 10, 0, 0)
+        val bookingStart = LocalDate.of(2026, 4, 16)
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+        val booking = getSampleBooking(bookingStart)
+
+        whenever(bookingsRepository.getBooking(BOOKING_ID)).thenReturn(booking)
+        whenever(bookingsRepository.fetchProductAvailability(any(), any(), any(), any()))
+            .thenReturn(Result.success(sampleAvailability))
+
+        val viewModel = createViewModel(now)
+
+        // WHEN — select a different date in April
+        val aprilDateMillis = LocalDate.of(2026, 4, 20)
+            .atStartOfDay(ZoneOffset.UTC)
+            .toInstant()
+            .toEpochMilli()
+        viewModel.state.value!!.datePickerState!!.onDateSelected(aprilDateMillis)
+
+        // THEN — availability fetched only once (initial load)
+        verify(bookingsRepository, times(1)).fetchProductAvailability(
+            productId = any(),
+            startDate = any(),
+            endDate = any(),
+            resourceId = any(),
+        )
     }
 
     @Test
@@ -268,10 +484,15 @@ class BookingRescheduleViewModelTest : BaseUnitTest() {
     ): BookingRescheduleViewModel {
         val fixedInstant = now.toInstant(ZoneOffset.UTC)
         val clock = Clock.fixed(fixedInstant, ZoneOffset.UTC)
+        val siteModel = SiteModel().apply { timezone = "0" }
+        val selectedSite: SelectedSite = mock {
+            on { get() } doReturn siteModel
+        }
         return BookingRescheduleViewModel(
             savedState = SavedStateHandle(mapOf("bookingId" to BOOKING_ID)),
             bookingsRepository = repository,
             clock = clock,
+            selectedSite = selectedSite,
         ).also {
             it.state.observeForever { }
         }
