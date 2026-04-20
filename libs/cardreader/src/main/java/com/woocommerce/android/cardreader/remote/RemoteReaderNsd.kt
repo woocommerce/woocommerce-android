@@ -150,7 +150,9 @@ class RemoteReaderNsd(
         }
 
     private fun uniqueServiceName(): String {
-        val suffix = Random.nextInt(0, 0x10000).toString(radix = 16).padStart(4, '0')
+        val suffix = Random.nextInt(0, SUFFIX_RANGE_EXCLUSIVE)
+            .toString(radix = HEX_RADIX)
+            .padStart(SUFFIX_LENGTH, '0')
         return "$SERVICE_NAME_PREFIX-$suffix"
     }
 
@@ -161,6 +163,9 @@ class RemoteReaderNsd(
         const val TXT_KEY_VERSION = "ver"
         const val PROTOCOL_VERSION = "1"
         private const val SERVICE_NAME_PREFIX = "woopos-remote"
+        private const val SUFFIX_RANGE_EXCLUSIVE = 0x10000
+        private const val HEX_RADIX = 16
+        private const val SUFFIX_LENGTH = 4
     }
 }
 
