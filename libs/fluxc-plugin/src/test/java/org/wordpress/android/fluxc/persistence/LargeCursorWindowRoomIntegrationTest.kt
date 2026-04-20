@@ -15,6 +15,7 @@ import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 @RunWith(RobolectricTestRunner::class)
@@ -54,7 +55,7 @@ internal class LargeCursorWindowRoomIntegrationTest {
         description = "x".repeat(HUGE_DESCRIPTION_LENGTH)
     )
 
-    private suspend fun org.wordpress.android.fluxc.persistence.dao.ProductsDao.fetchAllProducts() = getProducts(
+    private suspend fun ProductsDao.fetchAllProducts() = getProducts(
         localSiteId = SITE_ID,
         status = null,
         stockStatus = null,
