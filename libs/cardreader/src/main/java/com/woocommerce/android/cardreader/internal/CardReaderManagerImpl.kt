@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -28,7 +29,7 @@ import kotlinx.coroutines.flow.Flow
 internal class CardReaderManagerImpl(
     private var application: Application,
     private val terminal: TerminalWrapper,
-    private val tokenProvider: TokenProvider,
+    private val tokenProvider: CompositeConnectionTokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
     private val interacRefundManager: InteracRefundManager,
@@ -54,6 +55,8 @@ internal class CardReaderManagerImpl(
     override val batteryStatus = connectionManager.batteryStatus
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
+
+    override val connectionTokenProvider: CompositeConnectionTokenProvider = tokenProvider
 
     override fun initialize(
         updateFrequency: CardReaderManager.SimulatorUpdateFrequency,

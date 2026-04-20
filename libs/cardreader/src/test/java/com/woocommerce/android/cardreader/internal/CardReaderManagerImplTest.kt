@@ -4,6 +4,7 @@ import android.app.Application
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
@@ -35,7 +36,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val terminalWrapper: TerminalWrapper = mock {
         on { getLifecycleObserver() }.thenReturn(terminalApplicationDelegateWrapper)
     }
-    private val tokenProvider: TokenProvider = mock()
+    private val tokenProvider: CompositeConnectionTokenProvider = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val paymentManager: PaymentManager = mock()
