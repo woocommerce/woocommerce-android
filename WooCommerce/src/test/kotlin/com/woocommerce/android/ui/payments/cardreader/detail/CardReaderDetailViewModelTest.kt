@@ -46,7 +46,7 @@ private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
     private val tracker: PaymentsFlowTracker = mock()

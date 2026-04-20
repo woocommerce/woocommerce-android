@@ -10,13 +10,13 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -201,9 +201,9 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     private fun givenOrderHasVirtualProductsOnly() {
-        wheneverBlocking {
-            orderDetailRepository.hasVirtualProductsOnly(any())
-        }.thenReturn(true)
+        runBlocking {
+            whenever(orderDetailRepository.hasVirtualProductsOnly(any())).thenReturn(true)
+        }
     }
 
     private fun givenWcShippingBannerIsDismissed(dismissed: Boolean) {

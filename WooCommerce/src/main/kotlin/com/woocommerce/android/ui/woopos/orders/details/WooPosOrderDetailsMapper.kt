@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -85,8 +86,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
             isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
             else -> LineItemsState.Loaded(emptyList())
         }
+        val hasRefunds = isFullyRefunded || hasPartialRefund
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
-        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo).let {
+            if (hasRefunds) it.copy(refundsState = RefundsState.Loading) else it
+        }
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,

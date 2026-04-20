@@ -82,7 +82,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        on { invoke() } doReturn false
     }
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(
@@ -107,7 +107,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getSelectedProductType()).then { "simple" }
     }
     private val addonRepository: AddonRepository = mock {
-        onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
+        on { hasAnyProductSpecificAddons(any()) } doReturn false
     }
 
     private val productUtils = ProductUtils()

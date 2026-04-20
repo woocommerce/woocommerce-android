@@ -49,7 +49,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
     }
 
     private val blazeRepository: BlazeRepository = mock {
-        onBlocking { fetchPaymentMethods() } doReturn Result.success(BlazePaymentSampleData.paymentMethodsData)
+        on { fetchPaymentMethods() } doReturn Result.success(BlazePaymentSampleData.paymentMethodsData)
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }

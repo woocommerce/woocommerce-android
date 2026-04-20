@@ -241,14 +241,14 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
         }
 
         // WHEN
@@ -306,14 +306,14 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+                on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+                on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+                on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
             }
 
             // WHEN
@@ -392,7 +392,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(Exception(errorMessage))
             )
         }
@@ -430,7 +430,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(Exception(errorMessage))
             )
         }
@@ -441,10 +441,10 @@ class WooPosTotalsViewModelTest {
 
         val savedState = createMockSavedStateHandle()
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
         }
 
         val viewModel = createViewModel(
@@ -506,13 +506,13 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
 
         // WHEN
@@ -542,7 +542,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(
                     WooException(
                         WooError(
@@ -630,14 +630,14 @@ class WooPosTotalsViewModelTest {
         }
         val order = createNonEmptyOrder(listOf(1L))
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.success(order)
             )
         }
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
 
         // WHEN
@@ -1178,12 +1178,12 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("0.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("0.00$")
+                on { invoke(BigDecimal("0.00")) }.thenReturn("0.00$")
             }
 
             // WHEN
@@ -1237,14 +1237,14 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+                on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+                on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+                on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
             }
 
             // WHEN
@@ -1454,7 +1454,7 @@ class WooPosTotalsViewModelTest {
         }
         val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+            on { createOrderFromCartItems(any()) }.thenReturn(
                 Result.failure(WooException(wooError))
             )
         }
@@ -1478,7 +1478,7 @@ class WooPosTotalsViewModelTest {
         }
         val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+            on { createOrderFromCartItems(any()) }.thenReturn(
                 Result.failure(WooException(wooError))
             )
         }
@@ -1505,7 +1505,7 @@ class WooPosTotalsViewModelTest {
                 variationId = 101L
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1538,7 +1538,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError(variationId = 101L)
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1569,7 +1569,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1602,7 +1602,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1661,11 +1661,11 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(any()) }.thenReturn("$10.00")
+            on { invoke(any()) }.thenReturn("$10.00")
         }
 
         // WHEN
@@ -1693,7 +1693,7 @@ class WooPosTotalsViewModelTest {
             }
 
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.doSuspendableAnswer {
+                on { createOrderFromCartItems(itemClickedData) }.doSuspendableAnswer {
                     delay(2000)
                     Result.success(createNonEmptyOrder())
                 }
@@ -1728,7 +1728,7 @@ class WooPosTotalsViewModelTest {
 
             val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
             }
 
             // WHEN
@@ -1761,7 +1761,7 @@ class WooPosTotalsViewModelTest {
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
         }
         val viewModel = createViewModel(
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
@@ -1793,7 +1793,7 @@ class WooPosTotalsViewModelTest {
         }
         val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
         }
 
         val viewModel = createViewModel(
@@ -1827,7 +1827,7 @@ class WooPosTotalsViewModelTest {
                 variationId = variationId
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1868,8 +1868,8 @@ class WooPosTotalsViewModelTest {
 
             val order = createNonEmptyOrder(productIds = listOf(1L)) // Missing product 999L
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
-                onBlocking { getOrderById(any()) }.thenReturn(order)
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { getOrderById(any()) }.thenReturn(order)
             }
 
             val viewModel = createViewModel(
@@ -1920,8 +1920,8 @@ class WooPosTotalsViewModelTest {
             )
 
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
-                onBlocking { getOrderById(any()) }.thenReturn(order)
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { getOrderById(any()) }.thenReturn(order)
             }
 
             val viewModel = createViewModel(
@@ -2046,15 +2046,15 @@ class WooPosTotalsViewModelTest {
             couponLines = couponLines,
         )
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking {
+            on {
                 createOrderFromCartItems(itemClickedData)
             }.thenReturn(Result.success(order))
         }
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)

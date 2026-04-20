@@ -50,9 +50,9 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
     private val couponFlow = MutableSharedFlow<Coupon>(extraBufferCapacity = 1)
     private val couponRepository: CouponRepository = mock {
         on { observeCoupon(any()) } doReturn couponFlow
-        onBlocking { fetchCouponPerformance(any()) } doReturn
+        on { fetchCouponPerformance(any()) } doReturn
             Result.success(CouponTestUtils.generateTestCouponPerformance(COUPON_ID))
-        onBlocking { fetchCoupon(any()) } doReturn
+        on { fetchCoupon(any()) } doReturn
             Result.success(Unit)
     }
     private val wooCommerceStore: WooCommerceStore = mock {
