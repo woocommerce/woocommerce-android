@@ -23,7 +23,9 @@ class RemoteReaderTlsClient(
         val sslContext = SSLContext.getInstance("TLSv1.3").apply {
             init(null, arrayOf(trustManager), SecureRandom())
         }
-        val socket = sslContext.socketFactory.createSocket(host, port) as SSLSocket
+        val socket = (sslContext.socketFactory.createSocket(host, port) as SSLSocket).apply {
+            soTimeout = SESSION_READ_TIMEOUT_MILLIS
+        }
         socket.startHandshake()
         RemoteReaderConnection(socket, ioDispatcher = ioDispatcher)
     }
@@ -44,5 +46,9 @@ class RemoteReaderTlsClient(
         }
 
         override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
+    }
+
+    companion object {
+        private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
     }
 }

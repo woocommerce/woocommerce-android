@@ -34,7 +34,9 @@ class RemoteReaderTlsServer(
         )
 
     suspend fun start(): Unit = withContext(ioDispatcher) {
-        val alias = "woopos-remote-${UUID.randomUUID()}"
+        sweepOrphanAliases()
+
+        val alias = "$ALIAS_PREFIX${UUID.randomUUID()}"
         generateSelfSignedKeyPair(alias)
 
         val keyStore = androidKeyStore()
@@ -48,7 +50,9 @@ class RemoteReaderTlsServer(
             init(keyManagerFactory.keyManagers, null, SecureRandom())
         }
 
-        val socket = sslContext.serverSocketFactory.createServerSocket(0) as SSLServerSocket
+        val socket = (sslContext.serverSocketFactory.createServerSocket(0) as SSLServerSocket).apply {
+            soTimeout = ACCEPT_TIMEOUT_MILLIS
+        }
         serverSocket = socket
         certificate = cert
         keyAlias = alias
@@ -56,7 +60,9 @@ class RemoteReaderTlsServer(
 
     suspend fun acceptOne(): RemoteReaderConnection = withContext(ioDispatcher) {
         val socket = requireNotNull(serverSocket) { "Server not started" }
-        val accepted = socket.accept()
+        val accepted = socket.accept().apply {
+            soTimeout = SESSION_READ_TIMEOUT_MILLIS
+        }
         RemoteReaderConnection(accepted, ioDispatcher = ioDispatcher)
     }
 
@@ -92,12 +98,24 @@ class RemoteReaderTlsServer(
     private fun androidKeyStore(): KeyStore =
         KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
 
+    private fun sweepOrphanAliases() {
+        runCatching {
+            val keyStore = androidKeyStore()
+            keyStore.aliases().toList()
+                .filter { it.startsWith(ALIAS_PREFIX) }
+                .forEach { runCatching { keyStore.deleteEntry(it) } }
+        }
+    }
+
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+        private const val ALIAS_PREFIX = "woopos-remote-"
         private const val EC_CURVE = "secp256r1"
         private const val CERT_COMMON_NAME = "woopos-remote-reader"
         private const val CLOCK_SKEW_MILLIS = 5L * 60 * 1000
         private const val VALIDITY_MILLIS = 24L * 60 * 60 * 1000
         private const val SERIAL_BITS = 64
+        private const val ACCEPT_TIMEOUT_MILLIS = 30_000
+        private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
     }
 }
