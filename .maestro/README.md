@@ -99,6 +99,9 @@ maestro studio
     orders_list_and_search.yaml
     orders_create.yaml
     orders_details_and_actions.yaml
+    orders_mark_complete.yaml
+    orders_cash_payment.yaml
+    orders_refund.yaml
     products_list_and_sort.yaml
     products_detail.yaml
     products_create.yaml
@@ -111,6 +114,7 @@ maestro studio
     google_for_woo.yaml
     pos_cash_payment.yaml
   subflows/                # Reusable subflows (NOT auto-executed)
+    ensure_logged_in.yaml
     login.yaml
     navigate_to_orders.yaml
     navigate_to_products.yaml
@@ -159,13 +163,14 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | **Orders** | | | |
 | List and pagination | `orders_list_and_search.yaml` | Yes | |
 | Search | `orders_list_and_search.yaml` | Yes | |
-| Create order (opens FAB, sections visible) | `orders_create.yaml` | Partial | Opens creation screen and discards; does not add products, discounts, custom amounts, shipping, customers, or collect payment |
-| Order detail + add note | `orders_details_and_actions.yaml` | Partial | Details visible, adds note; does not refund, mark complete, tap "See receipt", or create shipping label |
+| Create order (FAB, product, custom amount, customer, note) | `orders_create.yaml` | Yes | Adds a product, a fixed-amount custom amount with name, a customer (via "Add details manually" fallback), edits the customer, and adds a customer-facing note. Order is discarded at the end to keep staging clean |
+| Order detail + add note | `orders_details_and_actions.yaml` | Partial | Details visible, adds an order note via `noteList_addNoteContainer` → `menu_add`. Does not tap "See receipt" or create shipping label |
+| Mark order complete | `orders_mark_complete.yaml` | Yes | Filters to Processing, opens order, taps Mark Complete → Fulfill → Confirm, then taps Undo on the completion snackbar to leave the staging order in its original status |
+| Collect cash-on-delivery payment | `orders_cash_payment.yaml` | Yes | Filters to Pending payment, opens order, taps Collect Payment → Cash → Change Due Calculator → Mark Order as Complete. No undo (cash payment has no revert), so one processing order is consumed per run |
+| Refund order | `orders_refund.yaml` | Yes | Filters to Processing, selects all items, advances to the Refund Summary, fills a reason, taps Refund, and cancels the confirmation dialog so no real refund is issued against the staging store |
 | Push notification for new order | - | No | Requires server trigger |
 | Barcode scanner (add product / start order) | - | No | Requires camera |
 | Shipping label creation | - | No | Complex external flow |
-| Refund order | - | No | Requires refundable order state |
-| Mark order complete | - | No | Requires non-completed order state |
 | **Products** | | | |
 | List and pagination | `products_list_and_sort.yaml` | Yes | |
 | Sort and search | `products_list_and_sort.yaml` | Yes | |
@@ -231,6 +236,6 @@ Use one of these instead:
 
 - Use `maestro studio` to visually inspect the view hierarchy and find element selectors.
 - Use `maestro test -c flow.yaml` for continuous mode during development.
-- Each flow is independent and starts with a fresh login (clearState: true).
+- Non-login flows reuse the existing logged-in session via `subflows/ensure_logged_in.yaml`. Only login-specific flows `clearState` and re-authenticate — repeated re-logins with the same account trigger WPCom security screens (magic-link, CAPTCHA) that block the rest of the suite.
 - Screenshots are automatically saved at key checkpoints for visual verification.
 - Flows use `optional: true` on interactions that may not be present on all store configurations.
