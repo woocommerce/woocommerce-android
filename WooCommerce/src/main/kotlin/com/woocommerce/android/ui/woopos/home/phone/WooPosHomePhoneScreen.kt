@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
 import org.wordpress.android.util.ToastUtils
@@ -78,7 +77,6 @@ private fun WooPosHomePhoneContent(
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
     val cartState by cartViewModel.state.observeAsState()
-    val totalsState by totalsViewModel.state.collectAsState()
 
     BackHandler {
         when (state.screenPositionState) {
@@ -93,19 +91,16 @@ private fun WooPosHomePhoneContent(
 
     val cartTitle = stringResource(R.string.woopos_cart_title)
     val checkoutLabel = stringResource(R.string.woopos_checkout_button)
-    val cashPaymentLabel = stringResource(R.string.woopos_payment_take_cash_payment_label)
 
-    val resolver = remember(cartTitle, checkoutLabel, cashPaymentLabel) {
+    val resolver = remember(cartTitle, checkoutLabel) {
         WooPosPhonePersistentButtonStateResolver(
             buildCartLabel = { count -> "$cartTitle ($count)" },
             checkoutLabel = checkoutLabel,
-            cashPaymentLabel = cashPaymentLabel,
         )
     }
     val persistentButtonState = resolver.resolve(
         screenPositionState = state.screenPositionState,
         cartState = cartState,
-        totalsState = totalsState,
     )
 
     Box(
@@ -143,8 +138,6 @@ private fun WooPosHomePhoneContent(
                             onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked)
                         WooPosPhonePersistentButtonAction.Checkout ->
                             cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-                        WooPosPhonePersistentButtonAction.CashPayment ->
-                            totalsViewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
                     }
                 },
             )
@@ -171,30 +164,24 @@ private fun AnimatedContentTransitionScope<WooPosHomeState.ScreenPositionState>.
     val spec = tween<IntOffset>(durationMillis = 300)
 
     return when {
-        // Products -> Cart (forward): cart slides up, products stays static underneath.
         from == WooPosHomeState.ScreenPositionState.Products &&
             to == WooPosHomeState.ScreenPositionState.Cart ->
             slideInVertically(spec) { it } togetherWith ExitTransition.KeepUntilTransitionsFinished
 
-        // Cart -> Products (back): cart slides down to bottom, products static underneath.
-        // Target (Products) must render BELOW the exiting Cart -> targetContentZIndex on
-        // the ContentTransform (NOT on the scope in Compose 1.9.x).
+        // targetContentZIndex must be on the ContentTransform, not the scope, in Compose 1.9.x.
         from == WooPosHomeState.ScreenPositionState.Cart &&
             to == WooPosHomeState.ScreenPositionState.Products ->
             (EnterTransition.None togetherWith slideOutVertically(spec) { it })
                 .apply { targetContentZIndex = -1f }
 
-        // Cart -> Checkout (forward): horizontal push.
         from == WooPosHomeState.ScreenPositionState.Cart &&
             to is WooPosHomeState.ScreenPositionState.Checkout ->
             slideInHorizontally(spec) { it } togetherWith slideOutHorizontally(spec) { -it }
 
-        // Checkout -> Cart (back): horizontal pull.
         from is WooPosHomeState.ScreenPositionState.Checkout &&
             to == WooPosHomeState.ScreenPositionState.Cart ->
             slideInHorizontally(spec) { -it } togetherWith slideOutHorizontally(spec) { it }
 
-        // Fallback for any unexpected pair.
         else -> fadeIn() togetherWith fadeOut()
     }
 }

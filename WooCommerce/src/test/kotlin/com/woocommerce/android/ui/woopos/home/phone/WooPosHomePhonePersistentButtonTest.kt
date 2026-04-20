@@ -4,7 +4,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -17,37 +16,12 @@ class WooPosHomePhonePersistentButtonTest {
         val resolver = WooPosPhonePersistentButtonStateResolver(
             buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
         )
 
         // WHEN
         val result = resolver.resolve(
             screenPositionState = WooPosHomeState.ScreenPositionState.Products,
             cartState = cartState,
-            totalsState = null,
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
-    }
-
-    @Test
-    fun `given Products screen and WithItems with empty list, when resolving state, then Hidden`() {
-        // GIVEN
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(itemsInCart = emptyList())
-        )
-        val resolver = WooPosPhonePersistentButtonStateResolver(
-            buildCartLabel = { "Cart ($it)" },
-            checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
-        )
-
-        // WHEN
-        val result = resolver.resolve(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
-            cartState = cartState,
-            totalsState = null,
         )
 
         // THEN
@@ -74,14 +48,12 @@ class WooPosHomePhonePersistentButtonTest {
         val resolver = WooPosPhonePersistentButtonStateResolver(
             buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
         )
 
         // WHEN
         val result = resolver.resolve(
             screenPositionState = WooPosHomeState.ScreenPositionState.Products,
             cartState = cartState,
-            totalsState = null,
         )
 
         // THEN
@@ -103,14 +75,12 @@ class WooPosHomePhonePersistentButtonTest {
         val resolver = WooPosPhonePersistentButtonStateResolver(
             buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
         )
 
         // WHEN
         val result = resolver.resolve(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
             cartState = cartState,
-            totalsState = null,
         )
 
         // THEN
@@ -124,101 +94,17 @@ class WooPosHomePhonePersistentButtonTest {
     }
 
     @Test
-    fun `given Cart screen with Disabled checkout, when resolving state, then Primary Checkout DISABLED`() {
+    fun `given Checkout screen, when resolving state, then Hidden`() {
         // GIVEN
-        val cartState = WooPosCartState(
-            checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
-        )
         val resolver = WooPosPhonePersistentButtonStateResolver(
             buildCartLabel = { "Cart ($it)" },
             checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
-        )
-
-        // WHEN
-        val result = resolver.resolve(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-            cartState = cartState,
-            totalsState = null,
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(
-            WooPosPhonePersistentButtonState.Primary(
-                label = "Check out",
-                buttonState = WooPosButtonState.DISABLED,
-                action = WooPosPhonePersistentButtonAction.Checkout,
-            )
-        )
-    }
-
-    @Test
-    fun `given Cart screen with Invisible checkout, when resolving state, then Hidden`() {
-        // GIVEN
-        val cartState = WooPosCartState(
-            checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
-        )
-        val resolver = WooPosPhonePersistentButtonStateResolver(
-            buildCartLabel = { "Cart ($it)" },
-            checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
-        )
-
-        // WHEN
-        val result = resolver.resolve(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-            cartState = cartState,
-            totalsState = null,
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
-    }
-
-    @Test
-    fun `given Checkout screen and totals is Checkout, when resolving state, then Outlined CashPayment`() {
-        // GIVEN
-        val totalsState = WooPosTotalsViewState.Checkout(
-            totals = WooPosTotalsViewState.Totals.Hidden,
-            readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
-        )
-        val resolver = WooPosPhonePersistentButtonStateResolver(
-            buildCartLabel = { "Cart ($it)" },
-            checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
         )
 
         // WHEN
         val result = resolver.resolve(
             screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
             cartState = null,
-            totalsState = totalsState,
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(
-            WooPosPhonePersistentButtonState.Outlined(
-                label = "Cash payment",
-                action = WooPosPhonePersistentButtonAction.CashPayment,
-            )
-        )
-    }
-
-    @Test
-    fun `given Checkout screen and totals is PaymentInProgress, when resolving state, then Hidden`() {
-        // GIVEN
-        val totalsState = WooPosTotalsViewState.PaymentInProgress(title = "t", subtitle = "s")
-        val resolver = WooPosPhonePersistentButtonStateResolver(
-            buildCartLabel = { "Cart ($it)" },
-            checkoutLabel = "Check out",
-            cashPaymentLabel = "Cash payment",
-        )
-
-        // WHEN
-        val result = resolver.resolve(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
-            cartState = null,
-            totalsState = totalsState,
         )
 
         // THEN

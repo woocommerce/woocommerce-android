@@ -67,7 +67,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosTotalsScreen(
-    cashPaymentButton: WooPosTotalsCashPaymentButton,
     modifier: Modifier = Modifier,
     viewModel: WooPosTotalsViewModel = hiltViewModel(),
 ) {
@@ -76,7 +75,6 @@ fun WooPosTotalsScreen(
         modifier = modifier,
         state = state,
         onUIEvent = viewModel::onUIEvent,
-        cashPaymentButton = cashPaymentButton,
     )
 }
 
@@ -85,7 +83,6 @@ private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-    cashPaymentButton: WooPosTotalsCashPaymentButton,
 ) {
     Box(modifier = modifier) {
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Checkout) {
@@ -93,7 +90,6 @@ private fun WooPosTotalsScreen(
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent,
-                    cashPaymentButton = cashPaymentButton,
                 )
             }
         }
@@ -178,7 +174,6 @@ private fun StateChangeAnimated(
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-    cashPaymentButton: WooPosTotalsCashPaymentButton,
 ) {
     Column(
         modifier = Modifier
@@ -244,21 +239,16 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        when (cashPaymentButton) {
-            WooPosTotalsCashPaymentButton.Visible -> {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                WooPosOutlinedButton(
-                    text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-                    onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = WooPosSpacing.XLarge.value)
-                        .padding(bottom = WooPosSpacing.XLarge.value)
-                        .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
-                )
-            }
-            WooPosTotalsCashPaymentButton.Hidden -> Unit
-        }
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        WooPosOutlinedButton(
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = WooPosSpacing.XLarge.value)
+                .padding(bottom = WooPosSpacing.XLarge.value)
+                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+        )
     }
 }
 
@@ -435,8 +425,7 @@ private fun TotalsLoading() {
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -547,7 +536,6 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 ),
             ),
             onUIEvent = {},
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }
@@ -572,7 +560,6 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                 ),
             ),
             onUIEvent = {},
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }
@@ -597,7 +584,6 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
                 ),
             ),
             onUIEvent = {},
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }
@@ -618,7 +604,6 @@ fun WooPosTotalsScreenPreviewForFreeOrders() {
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
             ),
             onUIEvent = {},
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }
@@ -655,7 +640,6 @@ fun WooPosTotalsScreenLoadingPreview() {
         WooPosTotalsScreen(
             state = WooPosTotalsViewState.Loading,
             onUIEvent = {},
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }
@@ -689,7 +673,3 @@ fun PreparingReaderPReview() {
     }
 }
 
-enum class WooPosTotalsCashPaymentButton {
-    Visible,
-    Hidden,
-}

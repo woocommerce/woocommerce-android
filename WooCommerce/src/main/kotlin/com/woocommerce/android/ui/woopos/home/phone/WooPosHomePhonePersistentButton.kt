@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
@@ -26,7 +25,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 enum class WooPosPhonePersistentButtonAction {
     OpenCart,
     Checkout,
-    CashPayment,
 }
 
 sealed class WooPosPhonePersistentButtonState {
@@ -37,22 +35,15 @@ sealed class WooPosPhonePersistentButtonState {
         val buttonState: WooPosButtonState,
         val action: WooPosPhonePersistentButtonAction,
     ) : WooPosPhonePersistentButtonState()
-
-    data class Outlined(
-        val label: String,
-        val action: WooPosPhonePersistentButtonAction,
-    ) : WooPosPhonePersistentButtonState()
 }
 
 class WooPosPhonePersistentButtonStateResolver(
     private val buildCartLabel: (itemCount: Int) -> String,
     private val checkoutLabel: String,
-    private val cashPaymentLabel: String,
 ) {
     fun resolve(
         screenPositionState: WooPosHomeState.ScreenPositionState,
         cartState: WooPosCartState?,
-        totalsState: WooPosTotalsViewState?,
     ): WooPosPhonePersistentButtonState = when (screenPositionState) {
         WooPosHomeState.ScreenPositionState.Products -> {
             val body = cartState?.body
@@ -88,22 +79,7 @@ class WooPosPhonePersistentButtonStateResolver(
                 null -> WooPosPhonePersistentButtonState.Hidden
             }
         }
-        is WooPosHomeState.ScreenPositionState.Checkout -> {
-            when (totalsState) {
-                is WooPosTotalsViewState.Checkout -> WooPosPhonePersistentButtonState.Outlined(
-                    label = cashPaymentLabel,
-                    action = WooPosPhonePersistentButtonAction.CashPayment,
-                )
-                WooPosTotalsViewState.Loading,
-                is WooPosTotalsViewState.PaymentInProgress,
-                is WooPosTotalsViewState.PaymentSuccess,
-                is WooPosTotalsViewState.PaymentFailed,
-                is WooPosTotalsViewState.Error,
-                is WooPosTotalsViewState.InvalidCouponError,
-                is WooPosTotalsViewState.ProductNotFoundError,
-                null -> WooPosPhonePersistentButtonState.Hidden
-            }
-        }
+        is WooPosHomeState.ScreenPositionState.Checkout -> WooPosPhonePersistentButtonState.Hidden
     }
 }
 
@@ -115,7 +91,6 @@ fun WooPosHomePhonePersistentButton(
 ) {
     val visible = state !is WooPosPhonePersistentButtonState.Hidden
 
-    // Keep the last non-Hidden state so content still renders during the exit fade.
     val lastRenderable = remember { mutableStateOf<WooPosPhonePersistentButtonState?>(null) }
     if (visible) {
         lastRenderable.value = state
@@ -133,19 +108,10 @@ fun WooPosHomePhonePersistentButton(
             color = MaterialTheme.colorScheme.surfaceBright,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            // Primary <-> Outlined always transits via Hidden, so no inner crossfade.
             when (shown) {
                 is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
                     text = shown.label,
                     state = shown.buttonState,
-                    onClick = { onAction(shown.action) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .navigationBarsPadding(),
-                )
-                is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
-                    text = shown.label,
                     onClick = { onAction(shown.action) },
                     modifier = Modifier
                         .fillMaxWidth()

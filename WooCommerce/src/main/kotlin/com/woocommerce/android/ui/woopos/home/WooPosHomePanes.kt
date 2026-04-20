@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsCashPaymentButton
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
@@ -55,7 +54,6 @@ fun WooPosHomeTotalsPane(
         WooPosTotalsScreen(
             modifier = modifier,
             viewModel = viewModel,
-            cashPaymentButton = WooPosTotalsCashPaymentButton.Visible,
         )
     }
 }

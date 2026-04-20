@@ -149,7 +149,6 @@ fun WooPosCartScreen(
 
             is WooPosCartState.Body.WithItems -> {
                 val productsTopMargin = WooPosSpacing.Large.value
-                // Body extends to parent.bottom; the button is overlaid on top.
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -167,7 +166,6 @@ fun WooPosCartScreen(
 
         when (checkoutSlot) {
             WooPosCartCheckoutButtonSlot.Inline -> {
-                // Surface covers the items behind the button so both fade together.
                 AnimatedVisibility(
                     visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
                     enter = fadeIn(animationSpec = tween(300)),
@@ -195,7 +193,6 @@ fun WooPosCartScreen(
                             state = when (state.checkoutButtonState) {
                                 WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
                                 WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
-                                // Shown only during exit fade.
                                 WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
                             }
                         )
