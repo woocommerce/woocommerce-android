@@ -17,7 +17,6 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
-import com.woocommerce.android.notifications.buildWooDrivenAnalyticsId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.NotificationsParser
@@ -308,24 +307,29 @@ class NotificationMessageHandler @Inject constructor(
 
     private fun Notification.buildAnalyticsId(source: NotificationSource): String? = when (source) {
         NotificationSource.WPCOM -> remoteNoteId.takeIf { it != 0L }?.toString()
-        NotificationSource.WOO_DRIVEN -> buildWooDrivenAnalyticsId(
-            remoteSiteId = remoteSiteId,
-            uniqueId = uniqueId,
-            wooTypeSegment = noteType.wooAnalyticsSegment(),
-            storeIdFallback = storeIdFallbackFor(remoteSiteId)
-        )
+        NotificationSource.WOO_DRIVEN -> buildWooDrivenAnalyticsId()
     }
 
-    private fun storeIdFallbackFor(remoteSiteId: Long): String? =
-        if (remoteSiteId != 0L) {
-            null
-        } else {
-            selectedSite.getIfExists()?.let { appPrefsWrapper.getWCStoreID(it.siteId) }
+    /**
+     * Builds the stable `<siteId-or-storeId>:<type>:<entity-id>` analytics id for a Woo-driven
+     * notification, or `null` when the type has no segment (Blaze, local reminder), the entity id
+     * is zero, or no site/store fallback is available.
+     */
+    fun Notification.buildWooDrivenAnalyticsId(): String? {
+        fun WooNotificationType.wooAnalyticsSegment(): String? = when (this) {
+            is WooNotificationType.NewOrder -> "order"
+            is WooNotificationType.ProductReview -> "review"
+            else -> null
         }
-}
 
-private fun WooNotificationType.wooAnalyticsSegment(): String? = when (this) {
-    is WooNotificationType.NewOrder -> "order"
-    is WooNotificationType.ProductReview -> "review"
-    else -> null
+        val siteSegment = when {
+            remoteSiteId != 0L -> remoteSiteId.toString()
+            else -> selectedSite.getIfExists()?.let { appPrefsWrapper.getWCStoreID(it.siteId) }
+        }
+        val wooTypeSegment = noteType.wooAnalyticsSegment()
+        return when {
+            wooTypeSegment == null || siteSegment == null || uniqueId == 0L -> null
+            else -> "$siteSegment:$wooTypeSegment:$uniqueId"
+        }
+    }
 }
