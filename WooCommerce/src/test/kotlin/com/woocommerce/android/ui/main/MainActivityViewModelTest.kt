@@ -209,24 +209,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a new order notification for non existent site is clicked, then the my store tab is opened`() {
-        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
-
-        val localPushId = 1000
-        var event: ViewOrderList? = null
-        viewModel.event.observeForever {
-            if (it is ViewOrderList) event = it
-        }
-
-        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
-
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce())
-            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
-        assertThat(event).isEqualTo(ViewOrderList)
-    }
-
-    @Test
     fun `when a new review notification is clicked, then the review detail screen for that review is opened`() {
         val localPushId = 1001
         var event: ViewReviewDetail? = null
@@ -609,7 +591,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given an App Passwords site, when notification for a different remote site is tapped, then do not switch sites`() {
+    fun `given an App Passwords site, when order notification for a different remote site is tapped, then open order detail without switching sites`() {
         // GIVEN
         val appPasswordsSite = applicationPasswordsSite()
         lenient().doReturn(appPasswordsSite).whenever(selectedSite).get()
@@ -620,7 +602,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(selectedSite, never()).set(any())
-        assertThat(viewModel.event.value).isNotInstanceOf(RestartActivityForPushNotification::class.java)
+        assertThat(viewModel.event.value).isEqualTo(
+            ViewOrderDetail(orderNotification.uniqueId, orderNotification.remoteNoteId)
+        )
     }
 
     @Test

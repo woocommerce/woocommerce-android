@@ -199,16 +199,7 @@ class MainActivityViewModel @Inject constructor(
         notificationHandler.removeTappedNotificationAndSummaryIfNeeded(localPushId, notification)
         when (notification.noteType) {
             is WooNotificationType.NewOrder -> {
-                when {
-                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
-                        ViewOrderDetail(
-                            notification.uniqueId,
-                            notification.remoteNoteId
-                        )
-                    )
-
-                    else -> triggerEvent(ViewOrderList)
-                }
+                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
             }
 
             is WooNotificationType.ProductReview -> {
