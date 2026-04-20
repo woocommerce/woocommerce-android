@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
@@ -51,6 +52,7 @@ class WooPosOrderDetailsViewModelTest {
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
     private val getProductById: WooPosGetProductById = mock()
+    private val coordinator = WooPosOrdersCoordinator()
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
     private lateinit var orderActionsProvider: WooPosOrderActionsProvider
@@ -65,16 +67,16 @@ class WooPosOrderDetailsViewModelTest {
         setupDataSourceMocks()
     }
 
-    // region Loading
+    // region Loading via Coordinator
 
     @Test
-    fun `when loadOrder called, then state transitions to Loaded with details`() = runTest {
+    fun `when coordinator emits selectedOrderId, then state transitions to Loaded`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -86,13 +88,13 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
-    fun `when loadOrder called, then analytics tracked`() = runTest {
+    fun `when coordinator emits selectedOrderId, then analytics tracked`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -104,7 +106,7 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
-    fun `given order not found, when loadOrder called, then state is Error`() = runTest {
+    fun `given order not found, when coordinator emits selectedOrderId, then state is Error`() = runTest {
         // GIVEN
         doReturn(Result.failure<Order>(RuntimeException("not found")))
             .whenever(dataSource).getOrderById(99L)
@@ -112,7 +114,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(99L)
+        coordinator.selectOrder(99L)
         advanceUntilIdle()
 
         // THEN
@@ -128,7 +130,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -192,7 +194,7 @@ class WooPosOrderDetailsViewModelTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // WHEN
@@ -209,7 +211,7 @@ class WooPosOrderDetailsViewModelTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // WHEN
@@ -233,7 +235,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -251,7 +253,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -269,7 +271,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // THEN
@@ -287,7 +289,7 @@ class WooPosOrderDetailsViewModelTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
         viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L)))
 
@@ -305,7 +307,7 @@ class WooPosOrderDetailsViewModelTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
 
         // WHEN
@@ -319,53 +321,16 @@ class WooPosOrderDetailsViewModelTest {
 
     // endregion
 
-    // region Refresh
-
-    @Test
-    fun `when onBackFromSuccessfullySendingEmailReceipt, then order is refreshed`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.loadOrder(1L)
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onBackFromSuccessfullySendingEmailReceipt()
-        advanceUntilIdle()
-
-        // THEN
-        verify(dataSource).refreshOrderById(1L)
-    }
-
-    @Test
-    fun `given issue refund dialog dismissed, then order is refreshed`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.loadOrder(1L)
-        advanceUntilIdle()
-        viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L)))
-
-        // WHEN
-        viewModel.onIssueRefundDialogDismissed()
-        advanceUntilIdle()
-
-        // THEN
-        verify(dataSource).refreshOrderById(1L)
-    }
-
-    // endregion
-
     // region Retry
 
     @Test
-    fun `given error state, when retryLoadOrder called, then order reloaded`() = runTest {
+    fun `given error state, when retry called, then order reloaded`() = runTest {
         // GIVEN
         doReturn(Result.failure<Order>(RuntimeException("fail")))
             .whenever(dataSource).getOrderById(1L)
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.loadOrder(1L)
+        coordinator.selectOrder(1L)
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Error::class.java)
 
@@ -376,20 +341,6 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Loaded::class.java)
-    }
-
-    @Test
-    fun `given no lastRequestedOrderId, when retryLoadOrder called, then nothing happens`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.retryLoadOrder()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosOrderDetailsState.Idle)
     }
 
     // endregion
@@ -413,6 +364,7 @@ class WooPosOrderDetailsViewModelTest {
             orderActionsProvider = orderActionsProvider,
             bookingInfoMapper = bookingInfoMapper,
             formatPrice = formatPrice,
+            coordinator = coordinator,
         )
     }
 

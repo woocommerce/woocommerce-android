@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
@@ -27,12 +28,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -50,6 +50,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val orderActionsProvider: WooPosOrderActionsProvider,
     private val bookingInfoMapper: WooPosBookingInfoMapper,
     private val formatPrice: WooPosFormatPrice,
+    private val coordinator: WooPosOrdersCoordinator,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -61,9 +62,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
 
-    private val _orderRefreshed = MutableSharedFlow<Long>()
-    val orderRefreshed: SharedFlow<Long> = _orderRefreshed.asSharedFlow()
-
     private var sideLoadJob: Job? = null
     private var refreshOrderJob: Job? = null
     private var cachedRefundData: CachedRefundData? = null
@@ -72,6 +70,16 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     init {
         if (singleOrderId != null) {
             loadOrder(singleOrderId)
+        } else {
+            observeSelectedOrder()
+        }
+    }
+
+    private fun observeSelectedOrder() {
+        viewModelScope.launch {
+            coordinator.selectedOrderId.filterNotNull().collectLatest { orderId ->
+                loadOrder(orderId)
+            }
         }
     }
 
@@ -299,7 +307,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
         if (current.details.id == updated.id) {
             _state.value = current.copy(details = newDetailsViewState)
-            _orderRefreshed.emit(updated.id)
+            coordinator.notifyOrderRefreshed(updated.id)
         }
     }
 

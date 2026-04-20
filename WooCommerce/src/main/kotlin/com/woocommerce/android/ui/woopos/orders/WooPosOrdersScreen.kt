@@ -81,7 +81,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 
 val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
@@ -96,20 +95,6 @@ fun WooPosOrdersScreen(
 
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
-
-    // Bridge: selectedOrderId -> loadOrder
-    LaunchedEffect(Unit) {
-        listViewModel.selectedOrderId.filterNotNull().collectLatest { orderId ->
-            detailViewModel.loadOrder(orderId)
-        }
-    }
-
-    // Bridge: orderRefreshed -> refreshOrderItem
-    LaunchedEffect(Unit) {
-        detailViewModel.orderRefreshed.collect { orderId ->
-            listViewModel.refreshOrderItem(orderId)
-        }
-    }
 
     LaunchedEffect(navigatedFromEmailReceiptSent) {
         if (navigatedFromEmailReceiptSent) {

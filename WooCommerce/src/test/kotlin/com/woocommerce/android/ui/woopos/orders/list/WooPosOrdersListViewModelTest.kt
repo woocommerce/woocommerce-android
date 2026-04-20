@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
@@ -47,6 +48,7 @@ class WooPosOrdersListViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val formatPrice: WooPosFormatPrice = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
+    private val coordinator = WooPosOrdersCoordinator()
     private lateinit var orderItemMapper: WooPosOrderItemMapper
     private lateinit var orderStatusMapper: WooPosOrderStatusMapper
     private lateinit var viewModel: WooPosOrdersListViewModel
@@ -68,6 +70,7 @@ class WooPosOrdersListViewModelTest {
             resourceProvider = resourceProvider,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             orderItemMapper = orderItemMapper,
+            coordinator = coordinator,
         )
     }
 
@@ -149,7 +152,7 @@ class WooPosOrdersListViewModelTest {
         assertThat(loadedItems.items.map { it.id }).containsExactly(2L, 3L)
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
-        assertThat(viewModel.selectedOrderId.value).isEqualTo(2L)
+        assertThat(coordinator.selectedOrderId.value).isEqualTo(2L)
     }
 
     @Test
@@ -169,7 +172,7 @@ class WooPosOrdersListViewModelTest {
         val content = state as WooPosOrdersListState.Content
         val loadedItems = content.items as WooPosOrdersListState.Content.Items.Loaded
         assertThat(loadedItems.items.map { it.id }).containsExactly(10L)
-        assertThat(viewModel.selectedOrderId.value).isEqualTo(10L)
+        assertThat(coordinator.selectedOrderId.value).isEqualTo(10L)
     }
 
     @Test
@@ -264,7 +267,7 @@ class WooPosOrdersListViewModelTest {
         val content = viewModel.state.value as WooPosOrdersListState.Content
         val loadedItems = content.items as WooPosOrdersListState.Content.Items.Loaded
         assertThat(loadedItems.items.map { it.id }).containsExactly(300L, 400L)
-        assertThat(viewModel.selectedOrderId.value).isEqualTo(300L)
+        assertThat(coordinator.selectedOrderId.value).isEqualTo(300L)
     }
 
     // endregion
@@ -288,7 +291,7 @@ class WooPosOrdersListViewModelTest {
         assertThat(selectedFlags[1L]).isFalse()
         assertThat(selectedFlags[2L]).isFalse()
         assertThat(selectedFlags[3L]).isTrue()
-        assertThat(viewModel.selectedOrderId.value).isEqualTo(3L)
+        assertThat(coordinator.selectedOrderId.value).isEqualTo(3L)
     }
 
     @Test
@@ -522,7 +525,7 @@ class WooPosOrdersListViewModelTest {
     // region refreshOrderItem
 
     @Test
-    fun `given orders loaded, when refreshOrderItem, then specific item updated`() = runTest {
+    fun `given orders loaded, when order refreshed via coordinator, then specific item updated`() = runTest {
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
@@ -532,7 +535,7 @@ class WooPosOrdersListViewModelTest {
         val updatedOrder = order(1).copy(total = BigDecimal("999.00"))
         whenever(dataSource.getOrderById(1L)).thenReturn(Result.success(updatedOrder))
 
-        viewModel.refreshOrderItem(1L)
+        coordinator.notifyOrderRefreshed(1L)
         advanceUntilIdle()
 
         val content = viewModel.state.value as WooPosOrdersListState.Content
