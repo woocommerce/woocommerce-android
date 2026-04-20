@@ -1,11 +1,17 @@
 # Smoke Test: Orders - Create Order
-# P2 ref: Orders > Create an order (add products, shipping, customer note, collect payment)
+# P2 ref: Orders > Create an order (add products, custom amount, customer, customer note)
 #
 # Verifies:
 #   - Order creation FAB works
-#   - Order creation screen loads with key sections
-#   - Products section is visible
-#   - Can discard order creation
+#   - Add a product from the product selector
+#   - Add a fixed-amount custom amount with a name
+#   - Add an existing customer by searching their email
+#   - Edit the added customer's last name
+#   - Add a customer-facing note
+#   - All sections display the added data
+#
+# Does NOT tap "Create" — the order is discarded at the end to avoid
+# polluting the staging store on every run.
 appId: com.woocommerce.android.dev
 name: "Orders - Create a new order"
 tags:
@@ -26,25 +32,257 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Create Order FAB"
 
-# Wait for order creation screen (look for status or product sections)
+# Wait for order creation screen (title and Add products are always visible on empty creation)
 - extendedWaitUntil:
-    visible: "Order status"
+    visible: "Add products"
     timeout: 15000
 
 - takeScreenshot: order_create_empty
 
-# Verify key sections are visible
-- assertVisible: "Products"
+# ── Add a product ─────────────────────────────────────────────────────
+- tapOn:
+    text: "Add products"
+    label: "Tap Add products"
 
-# Scroll down to see more sections
-- scroll
+# Product selector loaded
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
 
-- takeScreenshot: order_create_sections
+- takeScreenshot: order_create_product_selector
 
-# Discard the order (go back)
+# Tap the first product row - product items sit below the search field
+- tapOn:
+    point: "50%,30%"
+    label: "Tap first product row"
+
+# Confirm selection (regex matches "Select 1 Product" or "Select N Products")
+- extendedWaitUntil:
+    visible: ".*Select \\d+ Product.*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Select \\d+ Product.*"
+    label: "Confirm product selection"
+
+# Back on order creation
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_with_product
+
+# ── Add a custom amount (fixed, with a name) ──────────────────────────
+- scrollUntilVisible:
+    element: "Add custom amount"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to custom amounts section"
+
+- tapOn:
+    text: "Add custom amount"
+    label: "Tap Add custom amount"
+
+- extendedWaitUntil:
+    visible: "A fixed amount"
+    timeout: 10000
+
+- tapOn:
+    text: "A fixed amount"
+    label: "Choose fixed amount"
+
+# Fill amount and name in the custom amount dialog
+- extendedWaitUntil:
+    visible:
+      id: "editPrice"
+    timeout: 10000
+
+- tapOn:
+    id: "editPrice"
+- eraseText
+# Emulator locale uses comma as decimal separator — entering "1000" yields 10,00
+- inputText: "1000"
+- hideKeyboard
+
+- tapOn:
+    id: "customAmountNameText"
+- inputText: "Gift wrap"
+- hideKeyboard
+
+- takeScreenshot: order_create_custom_amount_dialog
+
+- tapOn:
+    id: "buttonDone"
+    label: "Tap Done on custom amount"
+
+# Back on order creation — verify custom amount was added
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: "Gift wrap"
+    label: "Custom amount name is visible in creation screen"
+
+- takeScreenshot: order_create_with_custom_amount
+
+# ── Add a customer-facing note ────────────────────────────────────────
+# Added BEFORE the customer on purpose: when both customer and note are
+# empty, the "Add note" button lives in customer_section (via
+# initCustomerAndNotesEmptySection). Once a customer is added, that
+# button migrates to notes_section whose bounds overlap with the Compose
+# totals_section, and the totals overlay intercepts taps on it.
+- scrollUntilVisible:
+    element: "Add note"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to notes button in customer section"
+
+- tapOn:
+    text: "Add note"
+    childOf:
+      id: "customer_section"
+    retryTapIfNoChange: true
+    label: "Tap Add note in empty customer section"
+
+- extendedWaitUntil:
+    visible:
+      id: "customerOrderNote_editor"
+    timeout: 15000
+
+- tapOn:
+    id: "customerOrderNote_editor"
+- inputText: "Maestro smoke test note - please gift wrap."
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_note_typed
+
+# Save via toolbar DONE
+- tapOn:
+    id: "menu_done"
+    label: "Save customer note"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: ".*Maestro smoke test note.*"
+    label: "Customer note visible in creation screen"
+
+# ── Add a customer ────────────────────────────────────────────────────
+# Uses the search flow to verify it works, then falls back to "Add
+# details manually" so the flow doesn't depend on the staging store
+# containing a matching customer.
+- scrollUntilVisible:
+    element: "Add customer details"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to customer section"
+
+- tapOn:
+    text: "Add customer details"
+    label: "Tap Add customer details"
+
+- extendedWaitUntil:
+    visible: "Search for customers"
+    timeout: 15000
+
+- tapOn:
+    text: "Search for customers"
+- inputText: "zzzzznomatch"
+- hideKeyboard
+
+# When no match, tap the "Add details manually" CTA to enter the editor
+- extendedWaitUntil:
+    visible: "Add details manually"
+    timeout: 15000
+
+- tapOn:
+    text: "Add details manually"
+    label: "Add customer details manually"
+
+# Customer edit form is now visible — fill first & last name
+- extendedWaitUntil:
+    visible: ".*First name.*|.*Last name.*|.*Email.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_customer_edit_form
+
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "first_name"
+    optional: true
+- eraseText
+- inputText: "Maestro"
+- hideKeyboard
+
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "last_name"
+    optional: true
+- eraseText
+- inputText: "SmokeTest"
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_edited
+
+# Save via toolbar DONE
+- tapOn:
+    id: "menu_done"
+    label: "Save customer details"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_with_customer
+
+# ── Edit the added customer ───────────────────────────────────────────
+- scrollUntilVisible:
+    element: ".*SmokeTest.*|.*Maestro.*"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+    label: "Scroll to customer section"
+
+- tapOn:
+    id: "edit_button"
+    childOf:
+      id: "customer_section"
+    label: "Tap customer edit button"
+
+- extendedWaitUntil:
+    visible: ".*Last name.*"
+    timeout: 15000
+
+# Append to last name to verify editing works
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "last_name"
+    optional: true
+- eraseText
+- inputText: "SmokeTestEdited"
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_re_edited
+
+- tapOn:
+    id: "menu_done"
+    label: "Save customer edit"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_fully_customized
+
+# ── Discard the order ────────────────────────────────────────────────
 - back
 
-# Handle discard dialog
 - runFlow:
     when:
       visible: "Discard"
