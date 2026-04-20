@@ -75,6 +75,7 @@ fun WooPosItemList(
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         contentPadding = PaddingValues(top = WooPosSpacing.Small.value, bottom = WooPosSpacing.XXSmall.value),
         state = listState,
+        withBottomShadow = true,
     ) {
         items(
             state.items,
