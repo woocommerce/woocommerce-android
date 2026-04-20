@@ -1,0 +1,198 @@
+# Smoke Test: Orders - Issue refund
+# P2 ref: Orders > Refund
+#
+# Verifies:
+#   - Filter the orders list by "Processing" status (only paid orders
+#     show the Refund button in the payment section)
+#   - Open a processing order
+#   - Tap "Refund" in the payment info section
+#   - Select all items on the Issue Refund screen
+#   - Advance to the Refund Summary screen
+#   - Enter a refund reason
+#   - Tap the Refund CTA to reach the confirmation dialog
+#   - Cancel the confirmation so no real refund is issued against the
+#     staging store
+#
+# The confirmation dialog is the safety stop: tapping the positive
+# "Refund" button here would actually hit the WPCom refund endpoint.
+# The smoke test verifies every UI screen up to that dialog.
+appId: com.woocommerce.android.dev
+name: "Orders - Issue refund"
+tags:
+  - smoke
+  - orders
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# ── Filter by Processing status ───────────────────────────────────────
+# Processing orders on this store are paid, which is the precondition
+# for the Refund button being visible in the payment info section.
+- tapOn:
+    id: "btn_order_filter"
+    label: "Open filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing filters"
+
+- extendedWaitUntil:
+    visible: "Order Status"
+    timeout: 10000
+
+- tapOn:
+    text: "Order Status"
+    label: "Open status filter"
+
+- extendedWaitUntil:
+    visible: ".*Processing.*"
+    timeout: 10000
+
+- tapOn:
+    text: ".*Processing.*"
+    label: "Select Processing status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+# ── Open the first processing order ──────────────────────────────────
+- tapOn:
+    id: "orderNum"
+    index: 0
+    label: "Open first processing order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+# ── Refund → Issue Refund screen ─────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "paymentInfo_issueRefundButton"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Refund button"
+
+- tapOn:
+    id: "paymentInfo_issueRefundButton"
+    retryTapIfNoChange: true
+    label: "Tap Refund"
+
+- extendedWaitUntil:
+    visible:
+      id: "issueRefund_btnNextFromItems"
+    timeout: 15000
+
+- takeScreenshot: issue_refund_items
+
+# Select all items
+- tapOn:
+    id: "issueRefund_selectButton"
+    retryTapIfNoChange: true
+    label: "Select all items"
+
+- tapOn:
+    id: "issueRefund_btnNextFromItems"
+    retryTapIfNoChange: true
+    label: "Next to refund summary"
+
+# ── Refund Summary ───────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "refundSummary_btnRefund"
+    timeout: 15000
+
+- takeScreenshot: refund_summary
+
+# Enter a reason so the "Refund" CTA is verifiably exercised with a
+# filled-in reason field.
+- tapOn:
+    id: "refundSummary_reason"
+    optional: true
+- inputText: "Maestro smoke test refund (not submitted)"
+- hideKeyboard
+
+- takeScreenshot: refund_summary_with_reason
+
+- tapOn:
+    id: "refundSummary_btnRefund"
+    retryTapIfNoChange: true
+    label: "Tap Refund (opens confirmation dialog)"
+
+# ── Confirmation dialog — Cancel to avoid actually refunding ─────────
+- extendedWaitUntil:
+    visible: ".*Are you sure you want to issue a refund.*"
+    timeout: 15000
+
+- takeScreenshot: refund_confirmation_dialog
+
+# Dialog has a "Cancel" negative action. Tapping Cancel dismisses the
+# dialog without calling the refund API.
+- tapOn:
+    text: ".*Cancel.*"
+    retryTapIfNoChange: true
+    label: "Cancel refund confirmation"
+
+# ── Back out to orders list ──────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "refundSummary_btnRefund"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "issueRefund_btnNextFromItems"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+
+# ── Clear the filter so future runs start from an unfiltered list ────
+- tapOn:
+    id: "btn_order_filter"
+    label: "Re-open filters to clear"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear filters"
+
+- tapOn:
+    id: "showOrdersButton"
+    optional: true
+    label: "Apply cleared filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
