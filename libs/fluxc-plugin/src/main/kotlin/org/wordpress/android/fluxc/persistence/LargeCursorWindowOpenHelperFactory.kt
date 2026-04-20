@@ -49,7 +49,7 @@ internal class LargeCursorWindowOpenHelperFactory(
 
         private fun Cursor.withLargerWindow(): Cursor = apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && this is SQLiteCursor) {
-                setWindow(CursorWindow(null, windowSizeBytes))
+                window = CursorWindow(null, windowSizeBytes)
             }
         }
     }
