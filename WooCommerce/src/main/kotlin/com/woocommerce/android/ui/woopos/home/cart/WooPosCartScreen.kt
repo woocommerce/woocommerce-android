@@ -4,9 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -163,8 +165,6 @@ fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
-                    checkoutButtonState = state.checkoutButtonState,
-                    checkoutSlot = checkoutSlot,
                     onUIEvent = onUIEvent
                 )
             }
@@ -172,14 +172,17 @@ fun WooPosCartScreen(
 
         when (checkoutSlot) {
             WooPosCartCheckoutButtonSlot.Inline -> {
+                // Animate both alpha AND height together so the slot shrinks smoothly
+                // alongside the fade. That stops the body above from snapping when the
+                // button hides, and leaves no empty strip once it is gone.
                 AnimatedVisibility(
                     visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
-                    enter = fadeIn(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(300)),
+                    enter = fadeIn(animationSpec = tween(300)) +
+                        expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)) +
+                        shrinkVertically(animationSpec = tween(300)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(WooPosSpacing.Medium.value)
-                        .padding(bottom = WooPosSpacing.Small.value)
                         .constrainAs(checkoutButton) {
                             bottom.linkTo(parent.bottom)
                             start.linkTo(parent.start)
@@ -187,14 +190,17 @@ fun WooPosCartScreen(
                         }
                 ) {
                     WooPosButton(
-                        modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                        modifier = Modifier
+                            .padding(WooPosSpacing.Medium.value)
+                            .padding(bottom = WooPosSpacing.Small.value)
+                            .testTag(WooPosTestTags.CHECKOUT_BUTTON),
                         text = stringResource(R.string.woopos_checkout_button),
                         onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
                         state = when (state.checkoutButtonState) {
                             WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
                             WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
 
-                            // To be displayed during animation
+                            // Rendered during shrink-out animation only.
                             WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
                         }
                     )
@@ -266,22 +272,10 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
-    checkoutButtonState: WooPosCartState.CheckoutButtonState,
-    checkoutSlot: WooPosCartCheckoutButtonSlot,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
-
-    val spacerHeight by animateDpAsState(
-        targetValue = when (checkoutSlot) {
-            WooPosCartCheckoutButtonSlot.External -> 0.dp
-            WooPosCartCheckoutButtonSlot.Inline -> {
-                if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp
-            }
-        },
-        label = "cart list height animation"
-    )
 
     WooPosLazyColumn(
         modifier = modifier
@@ -329,9 +323,6 @@ private fun CartBodyWithItems(
                     onUIEvent = onUIEvent,
                 )
             }
-        }
-        item {
-            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
