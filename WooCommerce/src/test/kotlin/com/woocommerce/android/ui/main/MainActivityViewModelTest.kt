@@ -200,12 +200,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
-        assertThat(event).isEqualTo(
-            ViewOrderDetail(
-                testOrderNotification.uniqueId,
-                testOrderNotification.remoteNoteId
-            )
-        )
+        assertThat(event).isEqualTo(ViewOrderDetail(testOrderNotification.uniqueId))
     }
 
     @Test
@@ -602,9 +597,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(selectedSite, never()).set(any())
-        assertThat(viewModel.event.value).isEqualTo(
-            ViewOrderDetail(orderNotification.uniqueId, orderNotification.remoteNoteId)
-        )
+        assertThat(viewModel.event.value).isEqualTo(ViewOrderDetail(orderNotification.uniqueId))
     }
 
     @Test
