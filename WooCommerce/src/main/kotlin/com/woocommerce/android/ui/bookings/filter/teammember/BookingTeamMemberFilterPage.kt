@@ -37,7 +37,11 @@ fun BookingTeamMemberFilterRoute(
 ) {
     val viewModel =
         hiltViewModel<BookingTeamMemberFilterViewModel, BookingTeamMemberFilterViewModel.Factory> { factory ->
-            factory.create(initialTeamMembers, onTeamMembersFilterChanged)
+            factory.create(
+                initialTeamMembers,
+                onTeamMembersFilterChanged,
+                BookingTeamMemberFilterViewModel.SelectionMode.MULTI,
+            )
         }
     val uiState by viewModel.uiState.observeAsState()
     uiState?.let { BookingTeamMemberFilterPage(it, viewModel.event) }
@@ -63,7 +67,7 @@ fun BookingTeamMemberFilterPage(state: BookingTeamMemberFilterUiState, event: Li
 }
 
 @Composable
-fun BookingTeamMemberFilterPageLoading(modifier: Modifier) {
+fun BookingTeamMemberFilterPageLoading(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
         SkeletonView(
             modifier = Modifier

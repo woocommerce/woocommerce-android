@@ -19,13 +19,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -91,17 +91,16 @@ private fun Loading() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     }
 }
 
-@Suppress("WooPosDesignSystemSpacingUsageRule", "WooPosDesignSystemTextUsageRule")
+@Suppress("WooPosDesignSystemTextUsageRule")
 @Composable
 private fun SyncingCatalog(
     progressText: String? = null,
     onExitPosClicked: () -> Unit,
 ) {
-    val loadingIndicatorSize = 160.dp
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -110,9 +109,9 @@ private fun SyncingCatalog(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(loadingIndicatorSize)
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value)
             )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
             Text(
                 text = stringResource(R.string.woopos_home_syncing_catalog_title),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -161,7 +160,7 @@ private fun SyncingCatalog(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
                 )
             }
         }

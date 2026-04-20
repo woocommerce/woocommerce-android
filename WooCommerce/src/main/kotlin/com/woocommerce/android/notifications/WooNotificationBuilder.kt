@@ -80,9 +80,7 @@ class WooNotificationBuilder @Inject constructor(
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
         putExtra(MainActivity.FIELD_PUSH_ID, pushId)
-        if (notification.remoteNoteId != 0L) {
-            putExtra(MainActivity.FIELD_REMOTE_NOTIFICATION, notification)
-        }
+        putExtra(MainActivity.FIELD_REMOTE_NOTIFICATION, notification)
     }
 
     /**

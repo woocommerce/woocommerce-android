@@ -21,7 +21,7 @@ import org.mockito.kotlin.mock
 class GenerateVariationCandidatesTest : BaseUnitTest() {
 
     private var mockedVariationRepository: VariationRepository = mock {
-        onBlocking { getAllVariations(any()) } doReturn emptyList()
+        on { getAllVariations(any()) } doReturn emptyList()
     }
 
     private lateinit var sut: GenerateVariationCandidates
@@ -153,7 +153,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            onBlocking { getAllVariations(product.remoteId) } doReturn existingVariations
+            on { getAllVariations(product.remoteId) } doReturn existingVariations
         }
         initializeSut()
 
@@ -190,7 +190,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            onBlocking { getAllVariations(product.remoteId) } doReturn existingVariations
+            on { getAllVariations(product.remoteId) } doReturn existingVariations
         }
         initializeSut()
 

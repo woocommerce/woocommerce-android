@@ -268,6 +268,24 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
+    fun removeTappedNotificationAndSummaryIfNeeded(localPushId: Int, notification: Notification) {
+        with(notificationBuilder) {
+            cancelNotification(localPushId)
+
+            val hasRemainingChildrenInGroup = getActiveNotifications().any {
+                !it.isGroupSummary &&
+                    it.id != localPushId &&
+                    it.channelType == notification.channelType.name &&
+                    it.remoteSiteId == notification.remoteSiteId
+            }
+
+            if (!hasRemainingChildrenInGroup) {
+                cancelNotification(notification.getGroupPushId())
+            }
+        }
+    }
+
+    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         with(notificationBuilder) {
             getActiveNotifications()

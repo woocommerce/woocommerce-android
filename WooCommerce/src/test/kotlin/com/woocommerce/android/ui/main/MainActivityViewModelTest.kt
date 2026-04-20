@@ -197,7 +197,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
         assertThat(event).isEqualTo(
             ViewOrderDetail(
                 testOrderNotification.uniqueId,
@@ -220,7 +220,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
         assertThat(event).isEqualTo(ViewOrderList)
     }
 
@@ -237,7 +237,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testReviewNotification))
         assertThat(event).isEqualTo(ViewReviewDetail(testReviewNotification.uniqueId))
     }
 
@@ -578,7 +578,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testBlazeNotification))
         assertThat(event).isEqualTo(
             ViewBlazeCampaignDetail(
                 testBlazeNotification.uniqueId.toString()
@@ -689,7 +689,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
-                    onBlocking { invoke(any()) } doReturn emptyFlow()
+                    on { invoke(any()) } doReturn emptyFlow()
                 },
                 ageEligibilityChecker = ageEligibilityChecker,
             )

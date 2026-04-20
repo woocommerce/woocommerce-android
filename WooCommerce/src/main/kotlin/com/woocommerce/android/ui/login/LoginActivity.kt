@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
@@ -155,6 +156,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
+    @Inject
+    internal lateinit var registerDevice: RegisterDevice
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -384,6 +388,7 @@ class LoginActivity :
 
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
+        registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

@@ -33,10 +33,10 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     private lateinit var sut: ProductDetailCardBuilder
     private lateinit var productStub: Product
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        on { invoke() } doReturn false
     }
     private val customFieldsRepository: CustomFieldsRepository = mock {
-        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+        on { hasDisplayableCustomFields(any()) } doReturn false
     }
 
     private val resourceProvider: ResourceProvider = mock {
@@ -46,7 +46,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     @Before
     fun setUp() {
         val viewModel: ProductDetailViewModel = mock {
-            onBlocking { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
+            on { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
         }
 
         val resources: ResourceProvider = mock {
@@ -55,7 +55,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
         val addonRepo: AddonRepository = mock {
-            onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
+            on { hasAnyProductSpecificAddons(any()) } doReturn false
         }
 
         val selectedSite: SelectedSite = mock {
@@ -63,7 +63,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
         val variationRepository: VariationRepository = mock {
-            onBlocking { getProductVariationList(any()) } doReturn emptyList()
+            on { getProductVariationList(any()) } doReturn emptyList()
         }
 
         sut = ProductDetailCardBuilder(

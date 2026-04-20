@@ -60,10 +60,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
 
@@ -260,13 +263,13 @@ private fun ShimmerItemRow() {
     ) {
         WooPosShimmerBox(
             modifier = Modifier
-                .size(24.dp)
+                .size(24.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
         WooPosShimmerBox(
             modifier = Modifier
-                .size(56.dp)
+                .size(56.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
@@ -310,7 +313,7 @@ private fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(WooPosComponentSize.Small.value),
             imageVector = com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons.ErrorX,
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,
@@ -594,7 +597,7 @@ private fun ItemsHeaderRow(
             onCheckedChange = null,
             enabled = enabled,
             modifier = Modifier
-                .size(32.dp)
+                .size(WooPosIconSize.Medium.value)
                 .semantics {
                     contentDescription = selectAllContentDescription
                 },
@@ -651,7 +654,7 @@ private fun RefundableItemRow(
             onCheckedChange = { onItemClick() },
             enabled = enabled,
             modifier = Modifier
-                .size(32.dp)
+                .size(WooPosIconSize.Medium.value)
                 .semantics {
                     contentDescription = item.name
                 },
@@ -664,11 +667,11 @@ private fun RefundableItemRow(
 
         WooPosItemImage(
             modifier = Modifier
-                .size(56.dp)
+                .size(WooPosComponentSize.XSmall.value)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
             imageUrl = null,
             placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-            placeholderIconSize = 24.dp
+            placeholderIconSize = WooPosIconSize.Small.value
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 

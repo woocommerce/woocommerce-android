@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -34,12 +35,14 @@ class WPComLogin2FAViewModel @Inject constructor(
     jetpackAccountRepository: JetpackActivationRepository,
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val registerDevice: RegisterDevice
 ) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackAccountRepository,
-    analyticsTrackerWrapper
+    analyticsTrackerWrapper,
+    registerDevice
 ) {
 
     private val navArgs: WPComLogin2FAFragmentArgs by savedStateHandle.navArgs()

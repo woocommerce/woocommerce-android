@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 internal class OrderDtoMapperTest {
     private val stripOrder: StripOrder = mock {
-        onBlocking { invoke(any()) }.then(AdditionalAnswers.returnsFirstArg<OrderEntity>())
+        on { invoke(any()) }.then(AdditionalAnswers.returnsFirstArg<OrderEntity>())
     }
     private val stripOrderMetaData: StripOrderMetaData = mock()
 

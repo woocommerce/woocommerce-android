@@ -63,9 +63,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
-        onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
-        onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
+        on { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        on { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
+        on { getSiteByLocalId(testSite.id) } doReturn testSite
     }
     private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock()
@@ -78,7 +78,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
-    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -102,8 +101,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName: String = clientId
                 override suspend fun isEnabledForJetpackAccess(): Boolean = true
             },
-            resourceProvider = resourceProvider,
-            registerDevice = registerDevice
+            resourceProvider = resourceProvider
         )
     }
 

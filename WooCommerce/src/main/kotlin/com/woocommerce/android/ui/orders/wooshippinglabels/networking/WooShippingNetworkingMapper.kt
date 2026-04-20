@@ -447,7 +447,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             state = address.state,
             postcode = address.postcode,
             country = address.country,
-            name = "${address.firstName} ${address.lastName}",
+            name = combineStrings(address.firstName.orEmpty(), address.lastName.orEmpty())
+                .takeIf { it.isNotEmpty() },
             company = address.company,
             phone = address.phone,
             email = address.email
@@ -457,7 +458,7 @@ class WooShippingNetworkingMapper @Inject constructor(
     fun toDestinationAddressDTO(address: Address): DestinationAddressDTO {
         return DestinationAddressDTO(
             company = address.company,
-            name = "${address.firstName} ${address.lastName}",
+            name = combineStrings(address.firstName, address.lastName).takeIf { it.isNotEmpty() },
             phone = address.phone,
             address = address.address1,
             address2 = address.address2,
