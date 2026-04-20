@@ -25,7 +25,7 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository
 ) {
     operator fun invoke(): Flow<Boolean> {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2)) return flowOf(false)
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) return flowOf(false)
         return selectedSite.observe()
             .flatMapLatest { site ->
                 if (site == null || site.connectionType == SiteConnectionType.Jetpack) {
