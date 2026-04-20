@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
 enum class WooPosPhonePersistentButtonAction {
     OpenCart,
