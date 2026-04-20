@@ -145,7 +145,7 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | Help section | `login_help.yaml` | Yes | |
 | Not a Woo store | `login_not_woo_store.yaml` | Yes | Reuses primary creds + `WOO_NOT_A_WOO_STORE_URL` |
 | Wrong account for the store | `login_wrong_account.yaml` | Yes | Reuses primary creds + `WOO_WRONG_ACCOUNT_STORE_URL` |
-| No Jetpack | `login_no_jetpack.yaml` | Yes | Needs a Jurassic Ninja site + `WOO_JN_*` vars |
+| No Jetpack | `login_no_jetpack.yaml` | Yes | Needs a non-Jetpack WP+WC site + `WOO_JN_*` site credentials; asserts the "Explore Jetpack" dashboard banner |
 | Social login (Google) | `login_google.yaml` | Yes | Assumes Google account pre-signed-in on device |
 | Jetpack not connected | - | No | Needs JN site + manual Jetpack disconnect |
 | Passwordless login | - | No | Requires Mailosaur inbox access |
