@@ -36,7 +36,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-        onBlocking { batteryStatus }.thenReturn(flowOf(CardReaderBatteryStatus.Unknown))
+        on { batteryStatus }.thenReturn(flowOf(CardReaderBatteryStatus.Unknown))
     }
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val networkStatus: WooPosNetworkStatus = mock()
