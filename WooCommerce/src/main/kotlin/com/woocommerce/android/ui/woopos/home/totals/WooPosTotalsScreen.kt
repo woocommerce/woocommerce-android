@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -418,14 +417,14 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = WooPosSpacing.XLarge.value),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
-            modifier = Modifier.wrapContentSize(),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -454,6 +453,13 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
+        Spacer(
+            modifier = Modifier.height(
+                WooPosSpacing.Medium.value +
+                    WooPosComponentSize.Small.value +
+                    WooPosSpacing.XLarge.value
+            )
+        )
     }
 }
 
