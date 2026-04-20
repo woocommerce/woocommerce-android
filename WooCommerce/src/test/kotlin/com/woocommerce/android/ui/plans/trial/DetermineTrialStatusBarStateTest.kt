@@ -111,7 +111,7 @@ class DetermineTrialStatusBarStateTest : BaseUnitTest() {
                 on { observe() } doReturn flowOf(site)
             }
             sitePlanRepository.stub {
-                onBlocking { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.ExpiryAt(
+                on { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.ExpiryAt(
                     ANY_DATE
                 )
             }
@@ -141,7 +141,7 @@ class DetermineTrialStatusBarStateTest : BaseUnitTest() {
             }
             val errorMessage = ""
             sitePlanRepository.stub {
-                onBlocking { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.Error(
+                on { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.Error(
                     errorMessage
                 )
             }
@@ -166,7 +166,7 @@ class DetermineTrialStatusBarStateTest : BaseUnitTest() {
                 on { observe() } doReturn flowOf(site)
             }
             sitePlanRepository.stub {
-                onBlocking { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.NotTrial
+                on { fetchFreeTrialExpiryDate(any()) } doReturn FreeTrialExpiryDateResult.NotTrial
             }
 
             // when

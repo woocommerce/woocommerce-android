@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -19,6 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -45,6 +46,7 @@ fun WooPosItemsToolbar(
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onBackClicked: () -> Unit,
     onAddCouponEvent: () -> Unit,
+    leadingContent: (@Composable () -> Unit)? = null,
 ) {
     val isSearchOpen = (state.search as? SearchState.Visible)?.let {
         it.state is WooPosSearchInputState.Open
@@ -55,70 +57,53 @@ fun WooPosItemsToolbar(
             .fillMaxWidth()
             .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
     ) {
-        when {
-            isSearchOpen -> {
-                WooPosSearchInput(
-                    state = (state.search as SearchState.Visible).state,
-                    onEvent = { event ->
-                        onSearchEvent(event)
-                    },
-                )
-            }
-
-            state.backNavigation -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-                    WooPosBackButton { onBackClicked() }
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-
-                    TabsRow(
-                        tabs = state.tabs,
-                        onTabClicked = onTabClicked,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            else -> {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-
-                    TabsRow(
-                        tabs = state.tabs,
-                        onTabClicked = onTabClicked,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    if (state is WooPosItemsToolbarViewState.CouponList) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                        WooPosCircularIconButton(
-                            icon = ImageVector.vectorResource(R.drawable.ic_add),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_coupons_empty_list_create_coupon_label,
-                            ),
-                            onClick = { onAddCouponEvent() }
-                        )
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+        when (isSearchOpen) {
+            true -> WooPosSearchInput(
+                state = (state.search as SearchState.Visible).state,
+                onEvent = onSearchEvent,
+            )
+            false -> Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                when {
+                    leadingContent != null -> leadingContent()
+                    state.backNavigation -> {
+                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                        WooPosBackButton { onBackClicked() }
+                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
                     }
+                    else -> Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                }
 
-                    when (val search = state.search) {
-                        SearchState.Hidden -> Unit
-                        is SearchState.Visible -> {
-                            WooPosSearchInput(
-                                state = search.state,
-                                onEvent = { event ->
-                                    onSearchEvent(event)
-                                },
-                            )
-                        }
+                WooPosItemsTabsRow(
+                    tabs = state.tabs,
+                    onTabClicked = onTabClicked,
+                    itemSpacing = WooPosSpacing.Large.value,
+                    modifier = Modifier.weight(1f),
+                )
+
+                if (state is WooPosItemsToolbarViewState.CouponList) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                    WooPosCircularIconButton(
+                        icon = ImageVector.vectorResource(R.drawable.ic_add),
+                        contentDescription = stringResource(
+                            id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                        ),
+                        onClick = { onAddCouponEvent() }
+                    )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                }
+
+                when (val search = state.search) {
+                    SearchState.Hidden -> Unit
+                    is SearchState.Visible -> {
+                        WooPosSearchInput(
+                            state = search.state,
+                            onEvent = onSearchEvent,
+                        )
                     }
                 }
             }
@@ -127,28 +112,35 @@ fun WooPosItemsToolbar(
 }
 
 @Composable
-private fun TabsRow(
+fun WooPosItemsTabsRow(
     tabs: List<WooPosItemsToolbarViewState.Tab>,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
+    itemSpacing: Dp,
     modifier: Modifier = Modifier,
 ) {
-    LazyRow(
+    Row(
         modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        items(tabs.size) { index ->
-            val tab = tabs[index]
+        tabs.forEachIndexed { index, tab ->
             WooPosText(
                 text = tab.name,
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 color = tab.highlightLevel.titleColor(),
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { onTabClicked(tab) }
-                )
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { onTabClicked(tab) }
+                    )
             )
-            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+            if (index < tabs.lastIndex) {
+                Spacer(modifier = Modifier.width(itemSpacing))
+            }
         }
     }
 }

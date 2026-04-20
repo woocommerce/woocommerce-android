@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,9 +27,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -149,8 +149,8 @@ private fun PaymentSuccessContent(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
-                    .width(604.dp),
+                    .height(WooPosComponentSize.Small.value)
+                    .adaptiveContentWidth(),
                 onClick = onDoneClicked,
                 text = stringResource(R.string.woopos_card_payment_done_button)
             )
@@ -162,8 +162,8 @@ private fun PaymentSuccessContent(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(80.dp)
-                    .width(604.dp),
+                    .height(WooPosComponentSize.Small.value)
+                    .adaptiveContentWidth(),
                 onClick = onEmailReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button)
             )

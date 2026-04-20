@@ -104,7 +104,7 @@ class FetchStatsTest : BaseUnitTest() {
     private suspend fun generateStatsDataWithExpectedMocks(): StoreStatsData {
         val expectedData = StoreStatsData(StoreStatsData.RevenueData("100.0", 5), 1)
         val revenueTotalsResponse = mock<WCRevenueStatsModel.Total> {
-            on { netRevenue } doReturn 100.0
+            on { totalSales } doReturn 100.0
             on { ordersCount } doReturn 5
         }
         val revenueResponse = mock<WCRevenueStatsModel> {

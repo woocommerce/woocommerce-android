@@ -47,8 +47,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemIm
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -258,7 +260,7 @@ fun WooPosProductCard(
                     onClickLabel = clickLabelForAccessibility,
                 ) { onItemClicked(item) }
                 .height(IntrinsicSize.Min)
-                .heightIn(min = 112.dp)
+                .heightIn(min = WooPosComponentSize.Large.value)
                 .clearAndSetSemantics { contentDescription = itemContentDescription }
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -273,7 +275,7 @@ fun WooPosProductCard(
                 Image(
                     modifier = Modifier
                         .padding(end = WooPosSpacing.XLarge.value)
-                        .size(24.dp),
+                        .size(WooPosIconSize.Small.value),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
@@ -321,9 +323,9 @@ private fun ProductImage(item: Product) {
     WooPosItemImage(
         imageUrl = item.imageUrl,
         modifier = Modifier
-            .width(112.dp)
+            .width(WooPosComponentSize.Large.value)
             .fillMaxHeight()
-            .heightIn(min = 112.dp),
+            .heightIn(min = WooPosComponentSize.Large.value),
         placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 44.dp
     )
@@ -423,9 +425,9 @@ private fun CouponImage() {
     WooPosItemImage(
         imageUrl = null,
         modifier = Modifier
-            .width(112.dp)
+            .width(WooPosComponentSize.Large.value)
             .fillMaxHeight()
-            .heightIn(min = 112.dp),
+            .heightIn(min = WooPosComponentSize.Large.value),
         placeholderIcon = ImageVector.vectorResource(R.drawable.ic_sell_24dp),
         placeholderIconSize = 36.dp
     )
@@ -506,13 +508,13 @@ private fun ItemsLoadingItem() {
     ) {
         Row(
             modifier = Modifier
-                .height(112.dp)
+                .height(WooPosComponentSize.Large.value)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(112.dp)
+                    .size(WooPosComponentSize.Large.value)
                     .background(WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.35f))
             )
 

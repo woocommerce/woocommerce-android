@@ -3,7 +3,7 @@ package com.woocommerce.android.notifications.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
+import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TOKEN_REFRESH
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,7 +31,7 @@ class FCMMessageService : FirebaseMessagingService() {
         appPrefsWrapper.setFCMToken(newToken)
         serviceScope.launch {
             invalidateDeviceRegistration()
-            registerDevice(FORCEFULLY)
+            registerDevice(TOKEN_REFRESH)
         }
     }
 

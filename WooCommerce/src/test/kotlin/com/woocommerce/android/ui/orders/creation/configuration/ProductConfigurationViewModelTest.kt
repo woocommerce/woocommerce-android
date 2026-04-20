@@ -23,11 +23,11 @@ class ProductConfigurationViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val getProductRules: GetProductRules = mock {
-        onBlocking { getRules(defaultProductId) } doReturn defaultProductRules
+        on { getRules(defaultProductId) } doReturn defaultProductRules
     }
     private val getProductConfiguration: GetProductConfiguration = GetProductConfiguration(mock(), Gson())
     private val getChildrenProductInfo: GetChildrenProductInfo = mock {
-        onBlocking { invoke(defaultProductId) } doReturn mock()
+        on { invoke(defaultProductId) } doReturn mock()
     }
     private val navArgs = ProductConfigurationFragmentArgs(flow = Flow.Selection(defaultProductId))
 

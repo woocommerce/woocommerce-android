@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.parcelable
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
@@ -61,6 +62,7 @@ class AppSettingsActivity :
     @Inject lateinit var statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private var isBetaOptionChanged = false
+    private var progressDialog: CustomProgressDialog? = null
 
     private lateinit var binding: ActivityAppSettingsBinding
     private var toolbar: Toolbar? = null
@@ -138,7 +140,8 @@ class AppSettingsActivity :
     }
 
     override fun onDestroy() {
-        presenter.dropView()
+        hideLogoutProgressDialog()
+        presenter.dropView(this)
         super.onDestroy()
     }
 
@@ -171,6 +174,7 @@ class AppSettingsActivity :
     }
 
     override fun finishLogout() {
+        hideLogoutProgressDialog()
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
         statsWidgetUpdaters.updateTodayWidget()
 
@@ -181,6 +185,28 @@ class AppSettingsActivity :
 
         startActivity(intent)
         finish()
+    }
+
+    override fun showLogoutProgressDialog() {
+        if (progressDialog != null) return
+
+        (supportFragmentManager.findFragmentByTag(CustomProgressDialog.TAG) as? CustomProgressDialog)
+            ?.dismissAllowingStateLoss()
+
+        progressDialog = CustomProgressDialog.show(
+            "",
+            getString(R.string.settings_logout_dialog_message)
+        ).also {
+            it.isCancelable = false
+            it.show(supportFragmentManager, CustomProgressDialog.TAG)
+        }
+    }
+
+    override fun hideLogoutProgressDialog() {
+        val dialog = progressDialog
+            ?: supportFragmentManager.findFragmentByTag(CustomProgressDialog.TAG) as? CustomProgressDialog
+        dialog?.dismissAllowingStateLoss()
+        progressDialog = null
     }
 
     override fun confirmLogout() {

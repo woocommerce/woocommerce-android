@@ -26,7 +26,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -229,13 +228,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
         }
 
@@ -246,13 +245,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_CARD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -263,13 +262,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_OR_SWIPE_CARD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -280,13 +279,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(SWIPE_CARD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -297,13 +296,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
         }
 
@@ -314,14 +313,14 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD)
             advanceUntilIdle()
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
         }
 
@@ -332,13 +331,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(CARD_REMOVED_TOO_EARLY)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_card_removed_too_early)
         }
 
@@ -349,13 +348,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value = BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
         }
 
@@ -366,14 +365,14 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             val readerMessages = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
             whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenReturn(readerMessages)
-            paymentStatus.value = CollectingPayment
+            paymentStatus.value = ProcessingPayment
 
             controller.start()
 
             readerMessages.value =
                 BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED)
 
-            assertThat((controller.paymentState.value as CardReaderPaymentState.CollectingPayment).cardReaderHint)
+            assertThat((controller.paymentState.value as CardReaderPaymentState.ProcessingPayment).cardReaderHint)
                 .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
         }
 
@@ -577,30 +576,30 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when collecting payment, then CollectingPayment state emitted`() =
+    fun `when collecting payment, then ProcessingPayment state emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             controller.start()
 
             assertThat(controller.paymentState.value)
-                .isInstanceOf(CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState::class.java)
+                .isInstanceOf(CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment::class.java)
         }
 
     @Test
-    fun `given built in reader,when collecting payment, then CollectingPayment state emitted`() =
+    fun `given built in reader, when collecting payment, then ProcessingPayment state emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
             createController(BUILT_IN)
 
             controller.start()
 
             assertThat(controller.paymentState.value)
-                .isInstanceOf(CardReaderPaymentState.CollectingPayment.BuiltInReaderCollectPaymentState::class.java)
+                .isInstanceOf(CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment::class.java)
         }
 
     @Test
@@ -1336,13 +1335,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     fun `when collecting payment, then cancellation is possible`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             controller.start()
             val paymentState =
                 controller.paymentState.value as
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment
 
             assertNotNull(paymentState.onCancel)
         }
@@ -2090,19 +2089,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow is collecting state, when user presses back button, then cancel event is tracked`() =
-        testBlocking {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
-            }
-            controller.start()
-
-            controller.onBackPressed()
-
-            verify(tracker).trackPaymentCancelled("Collecting")
-        }
-
-    @Test
     fun `given payment flow is processing state, when user presses back button, then cancel event is tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2188,27 +2174,27 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     fun `given payment flow is collection payment state, when user presses cancel, then cancel event is tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
             controller.start()
 
             val state = controller.paymentState.value as
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment
             state.onCancel()
 
-            verify(tracker).trackPaymentCancelled("Collecting")
+            verify(tracker).trackPaymentCancelled("Processing")
         }
 
     @Test
     fun `given payment flow is collection payment state, when user presses cancel, then exit event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
             val events = controller.event.runAndCaptureValues {
                 controller.start()
                 val state = controller.paymentState.value as
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment
                 state.onCancel()
             }
             assertThat(events.last()).isInstanceOf(CardReaderPaymentEvent.Exit::class.java)

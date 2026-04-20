@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
 @Composable
 fun WooPosChip(
@@ -63,7 +64,7 @@ fun WooPosChip(
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier.size(26.dp.toAdaptiveIconSize())
                 )
 
                 Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))

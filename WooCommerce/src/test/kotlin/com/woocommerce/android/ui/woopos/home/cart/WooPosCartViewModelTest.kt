@@ -83,7 +83,7 @@ class WooPosCartViewModelTest {
         )
     private val getProductById: WooPosGetProductById = mock()
     private val getCouponById: WooPosGetCouponById = mock {
-        onBlocking { invoke(any()) }.thenReturn(
+        on { invoke(any()) }.thenReturn(
             Coupon(
                 1L,
                 "coupon_code",
@@ -103,7 +103,7 @@ class WooPosCartViewModelTest {
     }
 
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock {
-        onBlocking { invoke() }.thenReturn("USD")
+        on { invoke() }.thenReturn("USD")
     }
 
     private val getVariationsById: WooPosGetVariationById = mock()
@@ -118,7 +118,7 @@ class WooPosCartViewModelTest {
         }.thenReturn("Item in cart: 1")
     }
     private val formatPrice: WooPosFormatPrice = mock {
-        onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
+        on { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
     }
 
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
