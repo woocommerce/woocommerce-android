@@ -1,18 +1,20 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -112,58 +114,51 @@ fun WooPosHomePhonePersistentButton(
     modifier: Modifier = Modifier,
 ) {
     val visible = state !is WooPosPhonePersistentButtonState.Hidden
+
+    // Keep the last non-Hidden state so the content keeps rendering during the exit
+    // animation, after `state` has already flipped to Hidden.
     val lastRenderable = remember { mutableStateOf<WooPosPhonePersistentButtonState?>(null) }
     if (visible) {
         lastRenderable.value = state
     }
+    val shown = lastRenderable.value
 
-    // Don't reserve space before the button has ever appeared in the session.
-    // After the first non-Hidden state, the Surface stays laid out so the screen
-    // area above it never reflows when the button hides.
-    val shown = lastRenderable.value ?: return
-
-    val alpha by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = if (visible) 300 else 100),
-        label = "persistent_button_alpha",
-    )
-    val translateFraction by animateFloatAsState(
-        targetValue = if (visible) 0f else 1f,
-        animationSpec = tween(durationMillis = if (visible) 300 else 100),
-        label = "persistent_button_translate",
-    )
-
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceBright,
-        modifier = modifier
-            .fillMaxWidth()
-            .graphicsLayer {
-                this.alpha = alpha
-                translationY = translateFraction * size.height
-            },
+    // Slide + fade the whole Surface. When Hidden, AnimatedVisibility drops it from
+    // layout, so no panel is reserved on the empty-cart Products screen.
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
+        exit = slideOutVertically(tween(200)) { it } + fadeOut(tween(200)),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        // Primary <-> Outlined transitions always go through Hidden (loading totals),
-        // so we never need to crossfade between styles while visible. Label changes
-        // within the same style snap — standard Android button behavior.
-        when (shown) {
-            is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
-                text = shown.label,
-                state = shown.buttonState,
-                onClick = { onAction(shown.action) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(WooPosSpacing.Medium.value)
-                    .navigationBarsPadding(),
-            )
-            is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
-                text = shown.label,
-                onClick = { onAction(shown.action) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(WooPosSpacing.Medium.value)
-                    .navigationBarsPadding(),
-            )
-            WooPosPhonePersistentButtonState.Hidden -> Unit
+        if (shown == null) return@AnimatedVisibility
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceBright,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            // Primary <-> Outlined transitions always go through Hidden (loading totals),
+            // so we never need to crossfade between styles while visible. Label changes
+            // within the same style snap — standard Android button behavior.
+            when (shown) {
+                is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
+                    text = shown.label,
+                    state = shown.buttonState,
+                    onClick = { onAction(shown.action) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding(),
+                )
+                is WooPosPhonePersistentButtonState.Outlined -> WooPosOutlinedButton(
+                    text = shown.label,
+                    onClick = { onAction(shown.action) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value)
+                        .navigationBarsPadding(),
+                )
+                WooPosPhonePersistentButtonState.Hidden -> Unit
+            }
         }
     }
 }
