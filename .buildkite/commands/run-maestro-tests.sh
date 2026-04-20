@@ -21,12 +21,23 @@ echo "--- :hammer: Building and installing wasabi debug APK"
 ./gradlew :WooCommerce:installWasabiDebug
 
 echo "--- :maestro: Running Maestro smoke tests"
+
+# Pass every MAESTRO_* env var to maestro as -e NAME=VALUE with the
+# prefix stripped. Maestro CLI 2.x does not auto-import MAESTRO_-prefixed
+# env vars (the mobile.dev docs predate the rebrand), so we do it here.
+MAESTRO_ARGS=(
+  test
+  --format junit
+  --output .maestro/report.xml
+  --include-tags=smoke
+)
+while IFS= read -r name; do
+  MAESTRO_ARGS+=(-e "${name#MAESTRO_}=${!name}")
+done < <(compgen -e | grep '^MAESTRO_' || true)
+MAESTRO_ARGS+=(.maestro/)
+
 set +e
-maestro test \
-  --format junit \
-  --output .maestro/report.xml \
-  --include-tags=smoke \
-  .maestro/
+maestro "${MAESTRO_ARGS[@]}"
 MAESTRO_EXIT_STATUS=$?
 set -e
 
