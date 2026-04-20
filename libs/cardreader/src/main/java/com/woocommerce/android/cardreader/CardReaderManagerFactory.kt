@@ -18,11 +18,9 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.RefundErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessRefundAction
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentMethodTypeMapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -42,7 +40,7 @@ object CardReaderManagerFactory {
             UpdateErrorMapper(batteryLevelProvider),
             terminalListener
         )
-        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper)
+        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper, terminalListener)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
 
@@ -61,16 +59,14 @@ object CardReaderManagerFactory {
                     cardReaderConfigFactory,
                     paymentUtils,
                 ),
-                CollectPaymentAction(terminal, logWrapper),
-                ProcessPaymentAction(terminal, logWrapper),
+                ProcessPaymentIntentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
                 paymentUtils,
                 PaymentErrorMapper(),
                 cardReaderConfigFactory
             ),
             InteracRefundManager(
-                CollectInteracRefundAction(terminal),
-                ProcessInteracRefundAction(terminal),
+                ProcessRefundAction(terminal),
                 RefundErrorMapper(),
                 paymentUtils,
             ),
@@ -81,6 +77,7 @@ object CardReaderManagerFactory {
                 DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
                 application,
+                logWrapper,
             ),
             SoftwareUpdateManager(
                 terminal,

@@ -92,7 +92,7 @@ internal class CardReaderManagerImpl(
         connectionManager.setupTapToPayUx(config)
     }
 
-    override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
+    override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
     }
@@ -101,6 +101,11 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) error("Terminal not initialized")
         if (terminal.getConnectedReader() == null) return false
         return connectionManager.disconnectReader()
+    }
+
+    override fun cancelReconnection() {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        connectionManager.cancelReconnection()
     }
 
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {

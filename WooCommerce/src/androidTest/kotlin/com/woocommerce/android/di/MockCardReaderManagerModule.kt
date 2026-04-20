@@ -80,12 +80,12 @@ class MockCardReaderManagerModule {
 
         override fun setupTapToPayUx(config: TapToPayUxConfig) {}
 
-        override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
+        override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 
         override suspend fun disconnectReader(): Boolean = true
 
         override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
-            flowOf(CardPaymentStatus.CollectingPayment)
+            flowOf(CardPaymentStatus.ProcessingPayment)
 
         override suspend fun refundInteracPayment(
             refundParams: RefundParams,
@@ -99,6 +99,8 @@ class MockCardReaderManagerModule {
         }
 
         override fun cancelPayment(paymentData: PaymentData) {}
+
+        override fun cancelReconnection() {}
 
         override suspend fun startAsyncSoftwareUpdate() {}
 
