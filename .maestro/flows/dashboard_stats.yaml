@@ -13,9 +13,10 @@ tags:
   - smoke
   - dashboard
 ---
-# Login
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
-    file: ../subflows/login.yaml
+    file: ../subflows/ensure_logged_in.yaml
 
 # Verify dashboard container loads
 - assertVisible:

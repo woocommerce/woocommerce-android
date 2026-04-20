@@ -22,9 +22,10 @@ tags:
   - smoke
   - pos
 ---
-# Login
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
-    file: ../subflows/login.yaml
+    file: ../subflows/ensure_logged_in.yaml
 
 # Navigate to POS tab (only available on tablets with POS enabled).
 # Guarded because the tab is hidden on phones by design.

@@ -11,6 +11,16 @@
 #   export MAESTRO_WOO_EMAIL="user@example.com"
 #   export MAESTRO_WOO_PASSWORD="password"
 #   export MAESTRO_WOO_STORE_URL="https://store.example.com"
+#
+# Execution order:
+#   1. Error-path login flows (each clearState: true and verifies an
+#      expected failure state).
+#   2. login_successful — last of the login flows so the app is left
+#      authenticated with the primary Woo account.
+#   3. Every non-login flow reuses that session via
+#      subflows/ensure_logged_in.yaml, so WPCom security screens never
+#      trigger mid-run. Smoke flows are grouped by tab (dashboard →
+#      orders → products → more menu → blaze → google → POS).
 
 appId: com.woocommerce.android.dev
 
@@ -20,11 +30,27 @@ flows:
 executionOrder:
   continueOnFailure: true
   flowsOrder:
+    # ── Login flows (each clearState + re-authenticates) ────────────
+    - flows/login_help.yaml
+    - flows/login_not_wp_site.yaml
+    - flows/login_not_woo_store.yaml
+    - flows/login_wrong_account.yaml
+    - flows/login_wrong_credentials.yaml
+    - flows/login_no_jetpack.yaml
+    - flows/login_google.yaml
+    # login_successful MUST be the last login flow so the app is left
+    # in a logged-in state for every subsequent flow.
     - flows/login_successful.yaml
+
+    # ── Non-login flows (reuse the session from login_successful) ───
     - flows/dashboard_stats.yaml
+    - flows/dashboard_view_all_analytics.yaml
     - flows/orders_list_and_search.yaml
     - flows/orders_create.yaml
     - flows/orders_details_and_actions.yaml
+    - flows/orders_mark_complete.yaml
+    - flows/orders_cash_payment.yaml
+    - flows/orders_refund.yaml
     - flows/products_list_and_sort.yaml
     - flows/products_detail.yaml
     - flows/products_create.yaml
@@ -35,5 +61,4 @@ executionOrder:
     - flows/hub_menu_admin_and_store.yaml
     - flows/blaze_campaign.yaml
     - flows/google_for_woo.yaml
-    - flows/login_not_wp_site.yaml
-    - flows/login_wrong_credentials.yaml
+    - flows/pos_cash_payment.yaml
