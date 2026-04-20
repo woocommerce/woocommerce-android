@@ -459,7 +459,7 @@ private fun TotalsLoading() {
         }
         Spacer(
             modifier = Modifier
-                .height(if (isPhone) WooPosSpacing.Large.value else 0.dp)
+                .height(if (isPhone) WooPosSpacing.Large.value else WooPosSpacing.None.value)
                 .navigationBarsPadding()
         )
     }
