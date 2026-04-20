@@ -18,7 +18,7 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 Run this probe once at the start of a verification task and cache the result. Every CLI-based block in this skill is gated on `USE_ANDROID_CLI=1`.
 
-The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/` — which shadows it whenever the legacy SDK tools directory is on PATH and fails later commands silently. If the canonical install at `~/.android/bin/android-cli` is present, the probe prepends that directory to PATH and symlinks it as `android` so subsequent commands resolve to the agent CLI.
+The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/`, which shadows it whenever the legacy SDK tools dir is on PATH. The probe only detects — it does not mutate PATH or create symlinks, since an in-script `export PATH` would not survive subsequent shell invocations in this skill. If `android` is missing, shadowed, or broken, it sets `USE_ANDROID_CLI=0` and prints a one-line PATH-fix hint when the canonical install exists at `~/.android/bin/android-cli`. The user applies the fix once in their shell rc so it persists.
 
 ```bash
 _android_is_agent_cli() {
@@ -27,16 +27,14 @@ _android_is_agent_cli() {
 
 if command -v android >/dev/null 2>&1 && _android_is_agent_cli; then
   USE_ANDROID_CLI=1
-elif [ -x "$HOME/.android/bin/android-cli" ]; then
-  # `android` on PATH is the legacy SDK tool — route around it.
-  ln -sf "$HOME/.android/bin/android-cli" "$HOME/.android/bin/android"
-  export PATH="$HOME/.android/bin:$PATH"
-  _android_is_agent_cli && USE_ANDROID_CLI=1 || USE_ANDROID_CLI=0
+  android --version   # log for reproducibility
 else
   USE_ANDROID_CLI=0
+  if [ -x "$HOME/.android/bin/android-cli" ]; then
+    echo 'NOTE: Agent CLI is at ~/.android/bin/android-cli but `android` is not resolving to it (likely shadowed by the legacy Android SDK tool).'
+    echo 'Fix: add `export PATH="$HOME/.android/bin:$PATH"` to your shell rc and restart the session.'
+  fi
 fi
-
-[ "$USE_ANDROID_CLI" = "1" ] && android --version   # log for reproducibility
 ```
 
 If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
