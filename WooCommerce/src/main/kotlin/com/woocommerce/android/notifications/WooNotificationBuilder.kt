@@ -52,8 +52,7 @@ class WooNotificationBuilder @Inject constructor(
                 noteMessage = sbn.notification.extras.getString(EXTRA_NOTE_MESSAGE),
                 noteTypeTrackingValue = sbn.notification.extras.getString(EXTRA_NOTE_TYPE),
                 source = sbn.notification.extras.getString(EXTRA_SOURCE)
-                    ?.let { runCatching { NotificationSource.valueOf(it) }.getOrNull() }
-                    ?: NotificationSource.WPCOM,
+                    ?.let { runCatching { NotificationSource.valueOf(it) }.getOrNull() },
                 analyticsId = sbn.notification.extras.getString(EXTRA_ANALYTICS_ID),
                 isGroupSummary = (sbn.notification.flags and FLAG_GROUP_SUMMARY) != 0
             )
@@ -301,7 +300,7 @@ data class ActiveNotificationData(
     val channelType: String?,
     val noteMessage: String?,
     val noteTypeTrackingValue: String?,
-    val source: NotificationSource,
+    val source: NotificationSource?,
     val analyticsId: String?,
     val isGroupSummary: Boolean = false
 )

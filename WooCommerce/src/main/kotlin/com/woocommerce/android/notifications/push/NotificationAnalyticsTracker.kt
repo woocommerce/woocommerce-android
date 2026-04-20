@@ -10,6 +10,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,18 +32,18 @@ class NotificationAnalyticsTracker @Inject constructor(
         siteId: Long,
         notificationId: String?,
         noteTypeTrackingValue: String,
-        source: NotificationSource
+        source: NotificationSource?
     ) {
         val site = resolveNotificationSite(siteId) ?: return
         val properties = mutableMapOf<String, Any>(
             "notification_type" to noteTypeTrackingValue,
             "push_notification_token" to appPrefsWrapper.getFCMToken(),
-            "push_notification_source" to source.trackingValue,
             "is_from_selected_site" to site.isSelectedSite()
         ).addCommonSiteProperties(site)
-        if (notificationId != null) {
-            properties["notification_note_id"] = notificationId
-        }
+        properties.putIfNotNull(
+            "push_notification_source" to source?.trackingValue,
+            "notification_note_id" to notificationId
+        )
         analyticsTrackerWrapper.track(stat, properties)
     }
 
