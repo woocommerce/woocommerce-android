@@ -60,6 +60,19 @@ maestro test --format junit --output report.xml .maestro/flows/
 maestro test --format html --output report.html .maestro/flows/
 ```
 
+### Local HTML report (recommended)
+Use the wrapper script — it runs preflight checks, emits an HTML report plus
+a screenshots/logs artifact directory under `.maestro/output/<timestamp>/`,
+and auto-opens the report on macOS.
+```bash
+.maestro/scripts/run-smoke-tests.sh                 # all flows
+.maestro/scripts/run-smoke-tests.sh -t login        # filter by tag
+.maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml  # single
+```
+CI continues to use `.buildkite/commands/run-maestro-tests.sh` (JUnit for
+Buildkite Test Analytics) — `maestro test --format` only accepts one output
+format per run, so the two scripts coexist rather than share a single invocation.
+
 ### Interactive development (auto-rerun on changes)
 ```bash
 maestro test -c .maestro/flows/login_successful.yaml
@@ -98,81 +111,120 @@ maestro studio
     pos_cash_payment.yaml
   subflows/                # Reusable subflows (NOT auto-executed)
     login.yaml
-    navigate_to_dashboard.yaml
     navigate_to_orders.yaml
     navigate_to_products.yaml
     navigate_to_more_menu.yaml
 ```
 
+## Selectors and `testTag`
+
+`WooTheme` / `WooThemeWithBackground` apply
+`Modifier.semantics { testTagsAsResourceId = true }` at the root of the
+Compose tree (`ui/compose/theme/Theme.kt`), so Compose `testTag` values are
+exposed to Maestro as resource IDs and can be used directly with `id:`
+selectors. Flows use resource IDs where available (bottom nav, dashboard
+cards, POS) and fall back to text selectors for labels and strings.
+
+Maestro treats text selectors as regular expressions — use `".*foo.*"` for
+partial matches and escape regex metacharacters in exact matches.
+
 ## Test Coverage vs P2 Smoke Testing Flows
+
+Status legend: **Yes** = fully covered, **Partial** = flow exists but doesn't
+exercise every P2 sub-item, **No** = not automated (reason in Notes).
 
 | P2 Category | Flow File | Automated? | Notes |
 |---|---|---|---|
+| **Installation** | | | |
+| Upgrade from previous version | - | No | Requires APK version swap outside Maestro |
+| Fresh install smoke | Implicit via `clearState: true` in every flow | Partial | Each flow starts from fresh state |
 | **Login** | | | |
 | Successful store login | `login_successful.yaml` | Yes | |
-| Not a WP site | `login_not_wp_site.yaml` | Yes | Uses google.com |
+| Not a WP site (google.com) | `login_not_wp_site.yaml` | Yes | |
 | Wrong credentials | `login_wrong_credentials.yaml` | Yes | |
-| Not a Woo store | - | No | Requires separate test account |
-| Passwordless login | - | No | Requires email inbox access |
-| Social login (Apple/Google) | - | No | Requires external auth |
-| Login with 2FA | - | No | Requires authenticator app |
-| No Jetpack / Jetpack not connected | - | No | Requires Jurassic Ninja setup |
+| Help section | `login_help.yaml` | Yes | |
+| Not a Woo store | `login_not_woo_store.yaml` | Yes | Reuses primary creds + `WOO_NOT_A_WOO_STORE_URL` |
+| Wrong account for the store | `login_wrong_account.yaml` | Yes | Reuses primary creds + `WOO_WRONG_ACCOUNT_STORE_URL` |
+| No Jetpack | `login_no_jetpack.yaml` | Yes | Needs a Jurassic Ninja site + `WOO_JN_*` vars |
+| Social login (Google) | `login_google.yaml` | Yes | Assumes Google account pre-signed-in on device |
+| Jetpack not connected | - | No | Needs JN site + manual Jetpack disconnect |
+| Passwordless login | - | No | Requires Mailosaur inbox access |
+| Social login (Apple) | - | No | iOS-only per P2 |
+| Login with 2FA | - | No | Requires authenticator app / TOTP secret |
 | **Dashboard/Stats** | | | |
-| Charts, analytics, date ranges | `dashboard_stats.yaml` | Yes | |
+| Charts respond, date ranges | `dashboard_stats.yaml` | Yes | |
+| View All store analytics | - | Partial | Stats card asserted but "View All" navigation not exercised |
+| Customization — all cards | - | No | Not exercised |
 | **Orders** | | | |
 | List and pagination | `orders_list_and_search.yaml` | Yes | |
 | Search | `orders_list_and_search.yaml` | Yes | |
-| Filters | `orders_list_and_search.yaml` | Yes | |
-| Create order (products, shipping, notes) | `orders_create.yaml` | Yes | |
-| Order detail, notes, payment options | `orders_details_and_actions.yaml` | Yes | |
+| Create order (opens FAB, sections visible) | `orders_create.yaml` | Partial | Opens creation screen and discards; does not add products, discounts, custom amounts, shipping, customers, or collect payment |
+| Order detail + add note | `orders_details_and_actions.yaml` | Partial | Details visible, adds note; does not refund, mark complete, tap "See receipt", or create shipping label |
 | Push notification for new order | - | No | Requires server trigger |
-| Barcode scanner | - | No | Requires camera |
+| Barcode scanner (add product / start order) | - | No | Requires camera |
 | Shipping label creation | - | No | Complex external flow |
+| Refund order | - | No | Requires refundable order state |
+| Mark order complete | - | No | Requires non-completed order state |
 | **Products** | | | |
 | List and pagination | `products_list_and_sort.yaml` | Yes | |
 | Sort and search | `products_list_and_sort.yaml` | Yes | |
-| Filters | `products_list_and_sort.yaml` | Yes | |
-| Product detail (all properties) | `products_detail.yaml` | Yes | |
+| Product detail (price, inventory, type, categories/shipping/description via fuzzy match) | `products_detail.yaml` | Partial | Variations, linked products, downloadable files, tags not explicitly asserted |
 | Create product | `products_create.yaml` | Yes | |
-| Media upload | - | No | Requires device gallery |
+| Media upload | - | No | Requires device gallery + Maestro `addMedia` setup |
 | **Hub Menu** | | | |
-| Settings (theme, beta features) | `hub_menu_settings.yaml` | Yes | |
-| Payments (card reader, TTP) | `hub_menu_payments.yaml` | Yes | UI only, no hardware |
+| Settings | `hub_menu_settings.yaml` | Yes | |
+| Payments — Pay in Person toggle, TTP, Order/Manage reader, Manuals | `hub_menu_payments.yaml` | Yes | UI only, no hardware |
 | Coupons (list + create) | `hub_menu_coupons.yaml` | Yes | |
 | Customers + Inbox | `hub_menu_customers_inbox.yaml` | Yes | |
 | WC Admin + View Store + Change store | `hub_menu_admin_and_store.yaml` | Yes | |
 | **Blaze** | | | |
-| Campaign creation flow | `blaze_campaign.yaml` | Yes | Triggers flow only |
+| Campaign creation flow | `blaze_campaign.yaml` | Yes | Triggers flow only (payment not attempted) |
 | **Google for Woo** | | | |
-| Campaign webview | `google_for_woo.yaml` | Yes | Verifies webview loads |
-| **POS** | | | |
-| Cash payment (tablet) | `pos_cash_payment.yaml` | Yes | Requires tablet |
-| Card reader payment | - | No | Requires hardware |
+| Campaign webview loads | `google_for_woo.yaml` | Yes | |
+| **POS (tablet only)** | | | |
+| Add product(s) to cart | `pos_cash_payment.yaml` | Yes | Taps first/third product in grid |
+| Pay with cash | `pos_cash_payment.yaml` | Yes | |
+| Search products | - | No | Requires new `testTag` on POS search field |
+| Use coupons | - | No | Coupon selection UI not exercised |
+| Email receipt | - | No | Not exercised after payment success |
+| Pay with card | - | No | Requires hardware (TTP not supported in POS per P2) |
 | **Payments (hardware)** | | | |
-| Card reader / TTP | - | No | Requires physical hardware |
+| Card reader payment + print receipt | - | No | Requires physical card reader |
+| Tap to Pay | - | No | Requires physical NFC + Apple/Google Pay setup |
+| Refund IPP order | - | No | Requires prior IPP-paid order |
 | **Other** | | | |
 | Language switching | - | No | Requires device settings |
-| Widget | - | No | Requires home screen |
-| Quick Actions | - | No | Requires app icon long press |
-| Watch app | - | No | Requires Wear OS device |
+| Home-screen widget | - | No | Requires launcher interaction |
+| Quick Actions (long-press app icon) | - | No | Requires launcher interaction |
+| Watch app | - | No | iOS-only per P2 |
+| Long-press push notification | - | No | iOS-only per P2 |
 
 ## Credentials Handling
 
-Credentials are **never hardcoded** in the YAML files. They are passed via:
+Credentials are **never hardcoded** in the YAML files. Inside a flow
+they are referenced as `${WOO_EMAIL}`, `${WOO_PASSWORD}`, etc.
 
-1. **Environment variables** with `MAESTRO_` prefix (auto-available):
-   ```bash
-   export MAESTRO_WOO_EMAIL="email"
-   export MAESTRO_WOO_PASSWORD="pass"
-   export MAESTRO_WOO_STORE_URL="url"
-   ```
+Maestro CLI 2.x does NOT auto-import `MAESTRO_`-prefixed env vars (the
+mobile.dev docs describing that behavior predate the rebrand). If you
+run `maestro test …` directly with just the env exported, flows resolve
+`${WOO_STORE_URL}` to the literal string `"undefined"`.
 
-2. **CLI `-e` flags** (per-run):
+Use one of these instead:
+
+1. **Wrapper scripts (recommended).** Both
+   `.maestro/scripts/run-smoke-tests.sh` and
+   `.buildkite/commands/run-maestro-tests.sh` collect every
+   `MAESTRO_*` env var and pass it to maestro as `-e NAME=VALUE` with
+   the prefix stripped. Export the vars (or `source .maestro/.env.local`)
+   and run the script.
+
+2. **CLI `-e` flags (per-run).**
    ```bash
    maestro test -e WOO_EMAIL="..." -e WOO_PASSWORD="..." flow.yaml
    ```
 
-3. **CI secrets** (injected as env vars in the pipeline).
+3. **CI secrets** (injected as `MAESTRO_*` env vars by the pipeline,
+   then forwarded to maestro by the CI wrapper script above).
 
 ## Tips
 

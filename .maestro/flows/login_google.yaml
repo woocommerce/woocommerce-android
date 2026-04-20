@@ -1,0 +1,108 @@
+# Smoke Test: Login - Social login (Google)
+# P2 ref: Login > Social login - Apple/Google
+#
+# Verifies the "Continue with Google" path on the email screen launches
+# the native Google account picker and that selecting an account reaches
+# the dashboard.
+#
+# Preconditions (device/emulator):
+#   - A Google account is already signed in on the device.
+#   - That Google account is linked to a WP.com account with access to
+#     ${WOO_STORE_URL}.
+#
+# Required env vars:
+#   WOO_STORE_URL                    (any store the linked account accesses)
+appId: com.woocommerce.android.dev
+name: "Login - Social login (Google)"
+tags:
+  - smoke
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Enter store URL to reach the email screen (Google button lives there)
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Tap "Continue with Google" on the email screen
+# (id: continue_with_google, text: "Continue with Google")
+- extendedWaitUntil:
+    visible:
+      id: "continue_with_google"
+    timeout: 15000
+- tapOn:
+    id: "continue_with_google"
+    retryTapIfNoChange: true
+
+# Native Google account picker (Google Play Services UI). Content varies
+# by device/Android version, so we match loosely and pick the first
+# account. Assumes exactly one account is pre-configured on the device.
+- extendedWaitUntil:
+    visible: ".*Choose an account.*|.*Sign in with Google.*|.*@.*\\..*"
+    timeout: 20000
+
+- takeScreenshot: login_google_account_picker
+
+# Tap the first email-looking entry in the picker
+- tapOn:
+    text: ".*@.*\\..*"
+    index: 0
+    retryTapIfNoChange: true
+
+# Some pickers show a confirmation step ("Continue as X" / "OK")
+- runFlow:
+    when:
+      visible: ".*Continue as.*"
+    commands:
+      - tapOn: ".*Continue as.*"
+
+- runFlow:
+    when:
+      visible: "OK"
+    commands:
+      - tapOn: "OK"
+
+# Verify dashboard loaded (give the round-trip to WP.com some headroom)
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*"
+    timeout: 45000
+
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+
+- extendedWaitUntil:
+    visible: "My store"
+    timeout: 15000
+
+- takeScreenshot: login_google_success

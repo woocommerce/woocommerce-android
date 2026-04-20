@@ -1,0 +1,43 @@
+# Smoke Test: Login - Help section
+# P2 ref: Login > Help section
+#
+# Verifies the Help action in the login menu opens the help screen.
+# No credentials required.
+appId: com.woocommerce.android.dev
+name: "Login - Help section"
+tags:
+  - smoke
+  - login
+---
+- launchApp:
+    clearState: true
+
+# Wait for the prologue / URL-entry screen
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+# Skip carousel if shown
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Tap Help (menu item id: help in libs/login/res/menu/menu_login.xml,
+# text: "Help")
+- extendedWaitUntil:
+    visible: "Help"
+    timeout: 10000
+- tapOn: "Help"
+
+# Verify the help screen opened (matches Help Center / Contact support /
+# FAQ text depending on the help module variant)
+- extendedWaitUntil:
+    visible: ".*Help Center.*|.*Contact support.*|.*FAQ.*|.*frequently asked.*"
+    timeout: 15000
+
+- takeScreenshot: login_help_section
+
+# Back to the login prologue
+- back

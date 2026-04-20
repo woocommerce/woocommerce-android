@@ -1,0 +1,95 @@
+# Smoke Test: Login - No Jetpack
+# P2 ref: Login > No Jetpack
+#
+# Logs into a WooCommerce site that does NOT have Jetpack connected,
+# using site credentials (not WP.com), and verifies the app prompts to
+# install the Jetpack plugin.
+#
+# Required env vars:
+#   WOO_JN_SITE_URL                  (Jurassic Ninja site with WC, no Jetpack)
+#   WOO_JN_USERNAME                  (site credentials — not WP.com)
+#   WOO_JN_PASSWORD
+appId: com.woocommerce.android.dev
+name: "Login - No Jetpack (install prompt)"
+tags:
+  - smoke
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Enter JN store URL
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_JN_SITE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# On the email screen, choose "Continue with store credentials" instead
+# of the WP.com email path
+# (id: login_site_creds, text: "Continue with store credentials")
+- extendedWaitUntil:
+    visible:
+      id: "login_site_creds"
+    timeout: 15000
+- tapOn:
+    id: "login_site_creds"
+    retryTapIfNoChange: true
+
+# Enter site username
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_JN_USERNAME}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Enter site password
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_JN_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Verify the "Please install the free Jetpack plugin" screen appears
+# String: login_jetpack_installation_explanation
+- extendedWaitUntil:
+    visible: ".*install the free Jetpack plugin.*|.*Jetpack plugin.*to access.*"
+    timeout: 45000
+
+- takeScreenshot: login_no_jetpack
