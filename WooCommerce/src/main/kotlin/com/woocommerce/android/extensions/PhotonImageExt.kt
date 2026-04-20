@@ -15,6 +15,7 @@ import org.wordpress.android.util.PhotonUtils
 /**
  * Coil/Compose extension for loading a Photon image with a fallback to the original URL.
  * Generates an ImageRequest that tries the Photon URL first, and if it fails, falls back to the original URL.
+ * If the URL is already a Photon URL, no fallback is applied since the "original" would be the same URL.
  */
 @Composable
 fun rememberPhotonImageRequest(
@@ -24,11 +25,7 @@ fun rememberPhotonImageRequest(
 ): ImageRequest {
     val context = LocalContext.current
     val photonUrl = remember(originalUrl, imageSizePx) {
-        if (originalUrl.isNotEmpty()) {
-            PhotonUtils.getPhotonImageUrl(originalUrl, imageSizePx, imageSizePx)
-        } else {
-            originalUrl
-        }
+        PhotonUtils.getPhotonImageUrl(originalUrl, imageSizePx, imageSizePx)
     }
 
     var currentUrl by remember(originalUrl, photonUrl) { mutableStateOf(photonUrl) }
@@ -39,7 +36,7 @@ fun rememberPhotonImageRequest(
             .apply(configure)
             .listener(
                 onError = { _, _ ->
-                    if (currentUrl != originalUrl && originalUrl.isNotEmpty()) {
+                    if (!originalUrl.isPhotonUrl() && currentUrl != originalUrl) {
                         currentUrl = originalUrl
                     }
                 }
@@ -58,6 +55,9 @@ fun RequestManager.loadPhotonUrlWithFallback(
         return this.load(originalUrl)
     }
     val photonUrl = PhotonUtils.getPhotonImageUrl(originalUrl, width, height, quality)
+    if (originalUrl.isPhotonUrl()) {
+        return this.load(photonUrl)
+    }
     return this.load(photonUrl).error(this.load(originalUrl))
 }
 
@@ -71,5 +71,12 @@ fun <T> RequestBuilder<T>.loadPhotonUrlWithFallback(
         return this.load(originalUrl)
     }
     val photonUrl = PhotonUtils.getPhotonImageUrl(originalUrl, width, height, quality)
+    if (originalUrl.isPhotonUrl()) {
+        return this.load(photonUrl)
+    }
     return this.load(photonUrl).error(this.clone().load(originalUrl))
+}
+
+private fun String.isPhotonUrl(): Boolean {
+    return contains("i0.wp.com") || contains("i1.wp.com") || contains("i2.wp.com")
 }
