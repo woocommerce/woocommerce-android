@@ -8,7 +8,9 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -27,6 +29,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -35,19 +38,36 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
-    private val savedState: SavedStateHandle = SavedStateHandle()
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
     private val reviewModerationHandler: ReviewModerationHandler = mock {
         on { pendingModerationStatus } doReturn emptyFlow()
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val siteModel: SiteModel = mock {
+        on { siteId } doReturn SITE_ID
+    }
+    private val selectedSite: SelectedSite = mock {
+        on { getIfExists() } doReturn siteModel
+    }
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
+    private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: ReviewListViewModel
 
     @Before
     fun setup() {
+        doReturn(true).whenever(networkStatus).isConnected()
+        testBlocking {
+            whenever(pushNotificationRegistrationStatus.invoke(SITE_ID))
+                .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        }
+        createViewModel()
+    }
+
+    private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()) {
+        this.savedState = savedState
         viewModel = spy(
             ReviewListViewModel(
                 networkStatus,
@@ -57,11 +77,11 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 unseenReviewsCountHandler,
                 reviewModerationHandler,
                 analyticsTrackerWrapper,
+                selectedSite,
+                pushNotificationRegistrationStatus,
                 savedState
             )
         )
-
-        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     /**
@@ -430,5 +450,49 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(1)).fetchOnlyUnreadProductReviews(loadMore = false)
         verify(reviewListRepository, times(1)).getCachedUnreadProductReviews()
+    }
+
+    @Test
+    fun `given site is Woo registered only, when view model started, then unread filter is hidden`() = testBlocking {
+        whenever(pushNotificationRegistrationStatus.invoke(SITE_ID))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+        doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        createViewModel()
+        viewModel.start()
+
+        assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isFalse()
+    }
+
+    @Test
+    fun `given site is WPCom registered only, when view model started, then unread filter is visible`() = testBlocking {
+        whenever(pushNotificationRegistrationStatus.invoke(SITE_ID))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WPCOM_ONLY)
+        doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        createViewModel()
+        viewModel.start()
+
+        assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isTrue()
+    }
+
+    @Test
+    fun `given site is registered in both systems, when view model started, then unread filter is hidden`() =
+        testBlocking {
+            whenever(pushNotificationRegistrationStatus.invoke(SITE_ID))
+                .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_BOTH)
+            doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(false).whenever(networkStatus).isConnected()
+
+            createViewModel()
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isFalse()
+        }
+
+    private companion object {
+        const val SITE_ID = 123L
     }
 }
