@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -26,18 +27,20 @@ class NotificationAnalyticsTracker @Inject constructor(
     fun trackNotificationAnalytics(
         stat: AnalyticsEvent,
         siteId: Long,
-        remoteNoteId: Long,
-        noteTypeTrackingValue: String
+        notificationId: String?,
+        noteTypeTrackingValue: String,
+        source: NotificationSource
     ) {
         val site = siteStore.getSiteBySiteId(siteId) ?: return
         val isFromSelectedSite = selectedSite.getIfExists()?.siteId == siteId
         val properties = mutableMapOf<String, Any>(
             "notification_type" to noteTypeTrackingValue,
             "push_notification_token" to appPrefsWrapper.getFCMToken(),
+            "push_notification_source" to source.trackingValue,
             "is_from_selected_site" to isFromSelectedSite
         ).addCommonSiteProperties(site)
-        if (remoteNoteId != 0L) {
-            properties["notification_note_id"] = remoteNoteId
+        if (notificationId != null) {
+            properties["notification_note_id"] = notificationId
         }
         analyticsTrackerWrapper.track(stat, properties)
     }

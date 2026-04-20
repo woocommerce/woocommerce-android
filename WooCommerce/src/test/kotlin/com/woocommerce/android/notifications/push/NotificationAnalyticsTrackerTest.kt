@@ -3,6 +3,7 @@ package com.woocommerce.android.notifications.push
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.SelectedSite
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -36,32 +37,52 @@ class NotificationAnalyticsTrackerTest {
     )
 
     @Test
-    fun `given remote note id is non zero, when tracking notification, then include note id property`() {
+    fun `given wpcom notification id, when tracking, then include it verbatim`() {
         tracker.trackNotificationAnalytics(
             stat = AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
             siteId = siteId,
-            remoteNoteId = 987L,
-            noteTypeTrackingValue = "store_order"
+            notificationId = "987",
+            noteTypeTrackingValue = "store_order",
+            source = NotificationSource.WPCOM
         )
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
-        assertThat(captor.firstValue).containsEntry("notification_note_id", 987L)
+        assertThat(captor.firstValue).containsEntry("notification_note_id", "987")
+        assertThat(captor.firstValue).containsEntry("push_notification_source", "wpcom")
     }
 
     @Test
-    fun `given remote note id is zero, when tracking notification, then omit note id property`() {
+    fun `given woo-driven composite notification id, when tracking, then include composite string`() {
         tracker.trackNotificationAnalytics(
             stat = AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
             siteId = siteId,
-            remoteNoteId = 0L,
-            noteTypeTrackingValue = "store_order"
+            notificationId = "12345:order:4321",
+            noteTypeTrackingValue = "new_order",
+            source = NotificationSource.WOO_DRIVEN
+        )
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
+        assertThat(captor.firstValue).containsEntry("notification_note_id", "12345:order:4321")
+        assertThat(captor.firstValue).containsEntry("push_notification_source", "woo_driven")
+    }
+
+    @Test
+    fun `given notification id is null, when tracking, then omit note id property`() {
+        tracker.trackNotificationAnalytics(
+            stat = AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
+            siteId = siteId,
+            notificationId = null,
+            noteTypeTrackingValue = "new_order",
+            source = NotificationSource.WOO_DRIVEN
         )
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
         assertThat(captor.firstValue).doesNotContainKey("notification_note_id")
-        assertThat(captor.firstValue).containsEntry("notification_type", "store_order")
+        assertThat(captor.firstValue).containsEntry("notification_type", "new_order")
+        assertThat(captor.firstValue).containsEntry("push_notification_source", "woo_driven")
     }
 
     @Test
@@ -69,8 +90,9 @@ class NotificationAnalyticsTrackerTest {
         tracker.trackNotificationAnalytics(
             stat = AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
             siteId = 99999L,
-            remoteNoteId = 987L,
-            noteTypeTrackingValue = "store_order"
+            notificationId = "987",
+            noteTypeTrackingValue = "store_order",
+            source = NotificationSource.WPCOM
         )
 
         verify(analyticsTrackerWrapper, never()).track(any(), any<Map<String, Any>>())
