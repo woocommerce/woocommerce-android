@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -14,6 +15,8 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 
@@ -96,5 +99,28 @@ class NotificationAnalyticsTrackerTest {
         )
 
         verify(analyticsTrackerWrapper, never()).track(any(), any<Map<String, Any>>())
+    }
+
+    @Test
+    fun `given app-password site, when tracking, then resolve via selected site and flag as selected`() {
+        val appPasswordSite: SiteModel = mock()
+        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+        whenever(selectedSite.getOrNull()).thenReturn(appPasswordSite)
+
+        // App-password notifications carry a non-zero payload siteId that doesn't match any
+        // wpcom site in the store — resolution must fall back to the selected site.
+        tracker.trackNotificationAnalytics(
+            stat = AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
+            siteId = 7777L,
+            notificationId = "7777:order:42",
+            noteTypeTrackingValue = "new_order",
+            source = NotificationSource.WOO_DRIVEN
+        )
+
+        verifyNoInteractions(siteStore)
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
+        assertThat(captor.firstValue).containsEntry("is_from_selected_site", true)
+        assertThat(captor.firstValue).containsEntry("notification_note_id", "7777:order:42")
     }
 }

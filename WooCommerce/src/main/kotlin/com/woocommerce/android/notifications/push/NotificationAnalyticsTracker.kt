@@ -72,11 +72,14 @@ class NotificationAnalyticsTracker @Inject constructor(
         }
     }
 
-    private fun SiteModel.isSelectedSite() = if (connectionType == SiteConnectionType.ApplicationPasswords) {
-        true
-    } else {
-        siteId == selectedSite.getOrNull()?.siteId
-    }
+    // App-password sites don't have a reliable wpcom siteId to compare against, but multi-site
+    // is unsupported there so any app-password notification targets the one selected site.
+    private fun SiteModel.isSelectedSite() =
+        if (connectionType == SiteConnectionType.ApplicationPasswords) {
+            true
+        } else {
+            siteId == selectedSite.getOrNull()?.siteId
+        }
 
     private fun MutableMap<String, Any>.addCommonSiteProperties(site: SiteModel) = apply {
         this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled
