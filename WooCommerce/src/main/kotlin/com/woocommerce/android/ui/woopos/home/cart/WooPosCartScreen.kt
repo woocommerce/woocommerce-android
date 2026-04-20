@@ -4,11 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +38,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -150,15 +149,12 @@ fun WooPosCartScreen(
 
             is WooPosCartState.Body.WithItems -> {
                 val productsTopMargin = WooPosSpacing.Large.value
+                // Body always extends to parent.bottom. The checkout button is an
+                // overlay on top of the list so the slot is never reserved in layout.
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
-                        bottom.linkTo(
-                            when (checkoutSlot) {
-                                WooPosCartCheckoutButtonSlot.Inline -> checkoutButton.top
-                                WooPosCartCheckoutButtonSlot.External -> parent.bottom
-                            }
-                        )
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
@@ -172,15 +168,15 @@ fun WooPosCartScreen(
 
         when (checkoutSlot) {
             WooPosCartCheckoutButtonSlot.Inline -> {
-                // Animate both alpha AND height together so the slot shrinks smoothly
-                // alongside the fade. That stops the body above from snapping when the
-                // button hides, and leaves no empty strip once it is gone.
+                // Overlay the button + its surfaceBright panel at the bottom of the cart
+                // pane. Both fade together as a single AnimatedVisibility unit. While
+                // visible, the opaque Surface covers the list items behind it; during
+                // fade-out the items emerge as the panel becomes transparent, so the
+                // "panel under the button" also appears to fade — no snap, no shrink.
                 AnimatedVisibility(
                     visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
-                    enter = fadeIn(animationSpec = tween(300)) +
-                        expandVertically(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(300)) +
-                        shrinkVertically(animationSpec = tween(300)),
+                    enter = fadeIn(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .constrainAs(checkoutButton) {
@@ -189,21 +185,27 @@ fun WooPosCartScreen(
                             end.linkTo(parent.end)
                         }
                 ) {
-                    WooPosButton(
-                        modifier = Modifier
-                            .padding(WooPosSpacing.Medium.value)
-                            .padding(bottom = WooPosSpacing.Small.value)
-                            .testTag(WooPosTestTags.CHECKOUT_BUTTON),
-                        text = stringResource(R.string.woopos_checkout_button),
-                        onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
-                        state = when (state.checkoutButtonState) {
-                            WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
-                            WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        WooPosButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(WooPosSpacing.Medium.value)
+                                .padding(bottom = WooPosSpacing.Small.value)
+                                .testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                            text = stringResource(R.string.woopos_checkout_button),
+                            onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                            state = when (state.checkoutButtonState) {
+                                WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+                                WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
 
-                            // Rendered during shrink-out animation only.
-                            WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
-                        }
-                    )
+                                // Rendered during exit fade only.
+                                WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                            }
+                        )
+                    }
                 }
             }
             WooPosCartCheckoutButtonSlot.External -> Unit
