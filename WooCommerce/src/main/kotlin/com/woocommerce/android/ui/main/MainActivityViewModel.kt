@@ -21,6 +21,8 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS
 import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
@@ -116,7 +118,8 @@ class MainActivityViewModel @Inject constructor(
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
-            val isSiteSpecificNotification = it.remoteSiteId != 0L
+            val isSiteSpecificNotification = it.remoteSiteId != 0L &&
+                currentSite.connectionType != SiteConnectionType.ApplicationPasswords
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
