@@ -83,12 +83,6 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }
 
-    override fun setupApplicationPasswordsSettings() {
-        if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-            appSettingsFragmentView?.handleApplicationPasswordsSettings()
-        }
-    }
-
     override fun onNotificationsClicked() {
         if (isChaChingSoundEnabled) {
             analyticsTracker.track(AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)

@@ -27,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_PRIVACY_SETTING
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -191,7 +190,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
-        presenter.setupApplicationPasswordsSettings()
 
         binding.optionEnablePushNotifications.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
@@ -294,10 +292,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
-    }
-
-    override fun handleApplicationPasswordsSettings() {
-        binding.optionNotifications.hide()
     }
 
     private fun showThemeChooser() {
