@@ -15,8 +15,8 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -106,42 +106,39 @@ private fun WooPosHomePhoneContent(
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            AnimatedContent(
-                targetState = state.screenPositionState,
-                contentKey = { phoneScreenKey(it) },
-                transitionSpec = { screenTransitionFor(initialState, targetState) },
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                label = "phone_screen_transition",
-            ) { screen ->
-                when (screen) {
-                    WooPosHomeState.ScreenPositionState.Products ->
-                        WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
+        AnimatedContent(
+            targetState = state.screenPositionState,
+            contentKey = { phoneScreenKey(it) },
+            transitionSpec = { screenTransitionFor(initialState, targetState) },
+            modifier = Modifier.fillMaxSize(),
+            label = "phone_screen_transition",
+        ) { screen ->
+            when (screen) {
+                WooPosHomeState.ScreenPositionState.Products ->
+                    WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
 
-                    WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneCartScreen(
-                        onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
-                        viewModel = cartViewModel,
-                    )
+                WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneCartScreen(
+                    onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
+                    viewModel = cartViewModel,
+                )
 
-                    is WooPosHomeState.ScreenPositionState.Checkout ->
-                        WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
-                }
+                is WooPosHomeState.ScreenPositionState.Checkout ->
+                    WooPosPhoneTotalsScreen(viewModel = totalsViewModel)
             }
-
-            WooPosHomePhonePersistentButton(
-                state = persistentButtonState,
-                onAction = { action ->
-                    when (action) {
-                        WooPosPhonePersistentButtonAction.OpenCart ->
-                            onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked)
-                        WooPosPhonePersistentButtonAction.Checkout ->
-                            cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-                    }
-                },
-            )
         }
+
+        WooPosHomePhonePersistentButton(
+            state = persistentButtonState,
+            onAction = { action ->
+                when (action) {
+                    WooPosPhonePersistentButtonAction.OpenCart ->
+                        onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked)
+                    WooPosPhonePersistentButtonAction.Checkout ->
+                        cartViewModel.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+                }
+            },
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
 
         WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
     }
