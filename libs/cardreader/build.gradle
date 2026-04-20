@@ -37,10 +37,7 @@ dependencies {
     runtimeOnly(libs.kotlinx.coroutines.android)
 
     // Remote reader transport
-    implementation(libs.moshi)
-    implementation(libs.moshi.adapters)
-    implementation(libs.moshi.kotlin)
-    implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.google.gson)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)

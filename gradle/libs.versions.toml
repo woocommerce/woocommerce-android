@@ -46,7 +46,6 @@ automattic-encryptedlogging = '1.1.2'
 automattic-measure-builds = '3.2.2'
 automattic-tracks = '6.0.8'
 assertj = '3.27.3'
-bouncycastle = '1.78.1'
 bumptech-glide = '5.0.5'
 cashapp-turbine = '1.2.1'
 coil = '2.7.0'
@@ -91,7 +90,6 @@ kotlin = '2.3.20'
 kotlinx-coroutines = '1.10.2'
 ksp = '2.3.6'
 mockito-kotlin = '6.2.3'
-moshi = '1.15.2'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16.1"
@@ -194,7 +192,6 @@ automattic-encryptedlogging = { group = "com.automattic", name = "encryptedloggi
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }
-bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", version.ref = "bumptech-glide" }
 bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "bumptech-glide" }
@@ -256,9 +253,6 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
-moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
