@@ -18,13 +18,25 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 Run this probe once at the start of a verification task and cache the result. Every CLI-based block in this skill is gated on `USE_ANDROID_CLI=1`.
 
+The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/` — which shadows it whenever the legacy SDK tools directory is on PATH and fails later commands silently. If the canonical install at `~/.android/bin/android-cli` is present, the probe prepends that directory to PATH and symlinks it as `android` so subsequent commands resolve to the agent CLI.
+
 ```bash
-if command -v android >/dev/null 2>&1; then
+_android_is_agent_cli() {
+  android --version 2>&1 | grep -qE '^[0-9]+\.[0-9]+\.'
+}
+
+if command -v android >/dev/null 2>&1 && _android_is_agent_cli; then
   USE_ANDROID_CLI=1
-  android --version   # log the version for reproducibility
+elif [ -x "$HOME/.android/bin/android-cli" ]; then
+  # `android` on PATH is the legacy SDK tool — route around it.
+  ln -sf "$HOME/.android/bin/android-cli" "$HOME/.android/bin/android"
+  export PATH="$HOME/.android/bin:$PATH"
+  _android_is_agent_cli && USE_ANDROID_CLI=1 || USE_ANDROID_CLI=0
 else
   USE_ANDROID_CLI=0
 fi
+
+[ "$USE_ANDROID_CLI" = "1" ] && android --version   # log for reproducibility
 ```
 
 If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
