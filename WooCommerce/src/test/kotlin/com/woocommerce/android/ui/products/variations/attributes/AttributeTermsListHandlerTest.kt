@@ -84,11 +84,11 @@ class AttributeTermsListHandlerTest : BaseUnitTest() {
         attributesSecondPage: List<ProductAttributeTerm>
     ) {
         repository = mock {
-            onBlocking {
+            on {
                 fetchGlobalAttributeTerms(defaultAttributeId, 1, defaultPageSize)
             } doReturn attributesFirstPage
 
-            onBlocking {
+            on {
                 fetchGlobalAttributeTerms(defaultAttributeId, 2, defaultPageSize)
             } doReturn attributesSecondPage
         }

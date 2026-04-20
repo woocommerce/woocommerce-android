@@ -4,8 +4,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCar
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateOptionsModel
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertEquals
@@ -14,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
@@ -30,13 +27,9 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
         on(it.getQuantityString(any(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer { i -> "formatted ${i.arguments[0]}" }
     }
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_SHIPPING_FEDEX) } doReturn true
-    }
     private val sut = WooShippingRatesDomainMapper(
         resourceProvider = resourceProvider,
-        currencyFormatter = currencyFormatter,
-        featureFlagRepository = featureFlagRepository
+        currencyFormatter = currencyFormatter
     )
 
     @Test

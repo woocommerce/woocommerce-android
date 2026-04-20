@@ -73,6 +73,7 @@ internal class BookingDtoMapper @Inject constructor(
         imageId = imageId,
         imageUrl = imageUrl,
         description = description,
+        productBookingIds = productBookingIds,
     )
 
     fun Array<BookingResourceDto>.toEntities(localSiteId: LocalId): List<BookingResourceEntity> =

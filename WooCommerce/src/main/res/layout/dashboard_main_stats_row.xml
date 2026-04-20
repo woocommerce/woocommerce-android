@@ -42,7 +42,7 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dashboard_stats_net_sales"
+        android:text="@string/analytics_total_sales_title"
         android:textAppearance="?attr/textAppearanceCaption"
         android:textColor="@color/color_on_surface_high" />
 

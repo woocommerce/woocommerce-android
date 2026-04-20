@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos
 
 import android.content.Context
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.ext.getScreenHeightDp
 import com.woocommerce.android.ui.woopos.util.ext.getScreenWidthDp
@@ -22,8 +24,7 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
         val shortSize = min(screenWidthDp, screenHeightDp)
         val longSize = max(screenWidthDp, screenHeightDp)
 
-        val isTabletSize = shortSize >= MIN_TABLET_SHORT_SIZE_DP && longSize >= MIN_TABLET_LONG_SIZE_DP
-        if (isTabletSize) return true
+        if (isTabletSize(shortSize.dp, longSize.dp)) return true
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_PHONE)) return true
 
@@ -38,5 +39,8 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
     companion object {
         internal const val MIN_TABLET_SHORT_SIZE_DP = 674
         internal const val MIN_TABLET_LONG_SIZE_DP = 800
+
+        fun isTabletSize(shortSize: Dp, longSize: Dp): Boolean =
+            shortSize >= MIN_TABLET_SHORT_SIZE_DP.dp && longSize >= MIN_TABLET_LONG_SIZE_DP.dp
     }
 }

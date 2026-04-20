@@ -79,7 +79,13 @@ data class ShippingRateDTO(
 )
 
 data class WooShippingRatesDTO(
-    val rates: List<ShippingRateDTO>
+    val rates: List<ShippingRateDTO>,
+    val errors: List<ShippingRateErrorDTO> = emptyList()
+)
+
+data class ShippingRateErrorDTO(
+    val code: String? = null,
+    val message: String? = null
 )
 
 data class ShippingRateSurchargeDTO(

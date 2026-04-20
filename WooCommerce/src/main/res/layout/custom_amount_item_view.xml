@@ -5,17 +5,18 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/custom_amount_card_border">
+    android:background="@drawable/custom_amount_card_border"
+    android:padding="@dimen/major_100">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/customAmountName"
-        style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:ellipsize="end"
         android:includeFontPadding="false"
         android:maxLines="1"
+        android:textColor="@color/color_on_surface"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/customAmountAmount"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -25,9 +26,10 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/customAmountAmount"
-        style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/color_on_surface"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/customAmountName"
         app:layout_constraintEnd_toStartOf="@+id/customAmountEdit"
         app:layout_constraintStart_toEndOf="@+id/customAmountName"
@@ -36,10 +38,10 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/customAmountEdit"
-        android:layout_width="@dimen/major_150"
-        android:layout_height="@dimen/major_150"
-        android:layout_marginEnd="@dimen/minor_100"
-        android:padding="@dimen/minor_25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="0dp"
         android:src="@drawable/ic_edit_pencil"
         app:layout_constraintBottom_toBottomOf="@+id/customAmountAmount"
         app:layout_constraintEnd_toEndOf="parent"

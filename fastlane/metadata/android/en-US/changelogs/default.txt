@@ -1,1 +1,1 @@
-Creating orders for registered customers is now more reliable. We fixed an issue where billing details could appear in the shipping address, helping you send orders to the right destination.
+Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.

@@ -36,7 +36,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
 
     private val fetchJetpackStatus: FetchJetpackStatus = mock {
-        onBlocking { invoke(any(), any(), anyOrNull()) } doReturn Result.success(
+        on { invoke(any(), any(), anyOrNull()) } doReturn Result.success(
             JetpackStatusFetchResponse.Success(
                 JetpackStatus(
                     isJetpackInstalled = false,

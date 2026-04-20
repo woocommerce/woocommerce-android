@@ -52,8 +52,8 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: JetpackActivationMainViewModel
 
     private val jetpackActivationRepository: JetpackActivationRepository = mock {
-        onBlocking { fetchJetpackSite(siteUrl) } doReturn Result.success(site)
-        onBlocking { getSiteByUrl(siteUrl) } doReturn site
+        on { fetchJetpackSite(siteUrl) } doReturn Result.success(site)
+        on { getSiteByUrl(siteUrl) } doReturn site
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val pluginRepository: PluginRepository = mock()
