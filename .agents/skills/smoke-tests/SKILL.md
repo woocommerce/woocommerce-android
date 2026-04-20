@@ -1,13 +1,13 @@
 ---
 name: smoke-tests
-description: Run the full Maestro smoke-test suite on an Android emulator with per-flow video recording and an HTML failure report
+description: Run the full Maestro smoke-test suite on an Android emulator against a user-supplied APK, with per-flow video recording and an HTML failure report. Always prompts for the APK up front — path, drag-and-drop, or `build`.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion
 user-invocable: true
 ---
 
 # Run Maestro Smoke Tests
 
-Orchestrate a full run of the Maestro smoke-test suite (everything under `.maestro/flows/`) on an Android emulator, record each flow as it runs, discard recordings for passing flows, and hand the user an HTML report that links the failure videos with short troubleshooting hints.
+Orchestrate a full run of the Maestro smoke-test suite (everything under `.maestro/flows/`) on an Android emulator against **an APK the user supplies**, record each flow as it runs, discard recordings for passing flows, and hand the user an HTML report that links the failure videos with short troubleshooting hints.
 
 **Prerequisites**
 - Maestro CLI on PATH (`curl -fsSL "https://get.maestro.mobile.dev" | bash`)
@@ -16,15 +16,30 @@ Orchestrate a full run of the Maestro smoke-test suite (everything under `.maest
 
 ## Steps
 
-### 1. Ask the user for the APK
+### 1. Ask the user for the APK (required — do this first, always)
 
-Ask for the APK that should be under test. Accept either:
-- **A file path** — an already-built APK somewhere on disk (absolute or relative to the repo root).
-- **An attached APK** — if the user dragged/attached an `.apk` file to the chat, Claude Code exposes it under a temp path in the conversation. Read that path and treat it as the APK.
+The smoke suite runs against the APK the user provides. Do NOT assume an install already exists on the emulator, do NOT default to the last-built debug APK, and do NOT skip this step even if the user's invocation message already references a file. Confirm explicitly.
 
-If the user doesn't provide either, ask them to build one first with `./gradlew :WooCommerce:assembleWasabiDebug` and pass back the path from `WooCommerce/build/outputs/apk/wasabi/debug/`.
+Use `AskUserQuestion` as the very first action of the skill, before any other tool call. Example question:
 
-Validate the APK exists and its filename ends in `.apk` before moving on.
+> Which APK should I run the smoke tests against?
+>
+> - Paste an absolute or repo-relative path to an `.apk` on disk, OR
+> - Drag-and-drop the `.apk` into this chat (Claude Code exposes it under a temp path), OR
+> - Reply "build" and I'll build the wasabi debug APK with `./gradlew :WooCommerce:assembleWasabiDebug` and use the output.
+
+Handle the three branches:
+
+- **Path supplied:** expand `~`, resolve relative paths against the repo root, and check the file exists.
+- **Attached APK:** the conversation provides a temp path like `/tmp/.../file.apk`. Read that path directly.
+- **"build":** run `./gradlew :WooCommerce:assembleWasabiDebug` (foreground so the user sees progress), then use `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`.
+
+Before moving on, validate:
+- The file exists on disk.
+- The filename ends in `.apk`.
+- `aapt dump badging <path> | head -1` reports `package: name='com.woocommerce.android.dev'` (wasabi build). If it reports a different package, stop and confirm with the user before continuing — installing a non-wasabi APK will make the flows fail at the very first `appId` check.
+
+Keep the resolved absolute APK path in a variable for the rest of the run.
 
 ### 2. Validate the Maestro env file
 
