@@ -37,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,11 +73,9 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetai
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -99,13 +96,6 @@ fun WooPosOrdersScreen(
     LaunchedEffect(navigatedFromEmailReceiptSent) {
         if (navigatedFromEmailReceiptSent) {
             detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
-        }
-    }
-
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        listViewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
         }
     }
 

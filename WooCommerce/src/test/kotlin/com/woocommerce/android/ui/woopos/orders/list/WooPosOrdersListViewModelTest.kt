@@ -218,6 +218,31 @@ class WooPosOrdersListViewModelTest {
     // region Refresh
 
     @Test
+    fun `given empty state, when empty action clicked, then refresh orders`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow {
+                emit(LoadOrdersResult.SuccessCache(emptyList()))
+                emit(LoadOrdersResult.SuccessRemote(emptyList()))
+            }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosOrdersListState.Empty::class.java)
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1)))) }
+        )
+
+        viewModel.onOrdersEmptyActionClicked()
+        advanceUntilIdle()
+
+        verify(dataSource).clearCache()
+        val content = viewModel.state.value as WooPosOrdersListState.Content
+        val loadedItems = content.items as WooPosOrdersListState.Content.Items.Loaded
+        assertThat(loadedItems.items.map { it.id }).containsExactly(1L)
+    }
+
+    @Test
     fun `given initial content, when refresh, then clear cache and update with network result`() = runTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1)))) }
