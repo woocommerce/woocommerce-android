@@ -33,7 +33,7 @@ fun rememberPhotonImageRequest(
 
     var currentUrl by remember(originalUrl, photonUrl) { mutableStateOf(photonUrl) }
 
-    return remember(currentUrl, context, configure) {
+    return remember(currentUrl, context) {
         ImageRequest.Builder(context)
             .data(currentUrl)
             .apply(configure)
