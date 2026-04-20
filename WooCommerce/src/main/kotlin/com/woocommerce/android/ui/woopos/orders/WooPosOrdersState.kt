@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Status
 
 /**
@@ -107,13 +106,6 @@ object WooPosOrdersState {
                 )
             }
         }
-
-        @Immutable
-        data class Lazy(
-            override val orderId: Long,
-            val order: Order,
-            val refundResult: RefundsFetchResult
-        ) : OrderDetailsViewState()
     }
 
     @Immutable

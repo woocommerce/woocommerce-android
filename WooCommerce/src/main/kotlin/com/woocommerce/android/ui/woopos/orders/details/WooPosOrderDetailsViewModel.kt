@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
@@ -126,23 +127,21 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun handleActionClicked(action: com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction) {
+    private fun handleActionClicked(action: OrderAction) {
         when (action) {
-            is com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction.EmailReceipt ->
-                onEmailReceiptButtonClicked(action.orderId)
-            is com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction.IssueRefund ->
-                onIssueRefundButtonClicked(action.orderId)
+            is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
+            is OrderAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
         }
     }
 
-    fun onEmailReceiptButtonClicked(orderId: Long) {
+    private fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
             ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(ToEmailReceipt(orderId))
         }
     }
 
-    fun onIssueRefundButtonClicked(orderId: Long) {
+    private fun onIssueRefundButtonClicked(orderId: Long) {
         val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
         _state.value = current.copy(
             dialogState = WooPosOrderDetailsState.DialogState.IssueRefund(orderId = orderId)
