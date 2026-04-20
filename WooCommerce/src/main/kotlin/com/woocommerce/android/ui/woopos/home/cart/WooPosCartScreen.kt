@@ -186,7 +186,6 @@ fun WooPosCartScreen(
                         WooPosButton(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = WooPosSpacing.Small.value)
                                 .navigationBarsPadding()
                                 .testTag(WooPosTestTags.CHECKOUT_BUTTON),
                             text = stringResource(R.string.woopos_checkout_button),

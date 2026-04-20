@@ -51,8 +51,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -247,8 +247,7 @@ private fun TotalsLoaded(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .then(if (isPhone) Modifier.padding(WooPosSpacing.Medium.value) else Modifier)
-                .padding(bottom = WooPosSpacing.Small.value)
+                .then(if (isPhone) Modifier.padding(WooPosSpacing.Large.value) else Modifier)
                 .navigationBarsPadding()
                 .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )
@@ -458,10 +457,9 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
-        val aroundPadding = if (isPhone) WooPosSpacing.Medium.value * 2 else 0.dp
         Spacer(
             modifier = Modifier
-                .height(WooPosComponentSize.Small.value + WooPosSpacing.Small.value + aroundPadding)
+                .height(if (isPhone) WooPosSpacing.Large.value else 0.dp)
                 .navigationBarsPadding()
         )
     }
