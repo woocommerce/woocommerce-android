@@ -5,7 +5,6 @@ import androidx.lifecycle.testing.TestLifecycleOwner
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -43,7 +42,6 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     @After
     fun tearDown() {
-        testScope.cancel()
         logsDirectory.deleteRecursively()
     }
 
