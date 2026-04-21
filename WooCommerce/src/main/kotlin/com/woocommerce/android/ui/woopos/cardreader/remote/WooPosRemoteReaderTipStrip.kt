@@ -12,11 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -45,9 +43,7 @@ fun WooPosRemoteReaderTipStrip(
                     textDecoration = TextDecoration.Underline,
                 )
             ) {
-                withLink(LinkAnnotation.Clickable(tag = "learn_how") { onExplainerClick() }) {
-                    append(learnHowText)
-                }
+                append(learnHowText)
             }
             append(tipText.substring(learnHowStart + learnHowText.length))
         } else {
