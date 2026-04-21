@@ -314,8 +314,8 @@ class NotificationMessageHandler @Inject constructor(
      */
     private fun Notification.buildWooDrivenAnalyticsId(): String? {
         val wooTypeSegment = when (noteType) {
-            is WooNotificationType.NewOrder -> "order"
-            is WooNotificationType.ProductReview -> "review"
+            is WooNotificationType.NewOrder -> NotificationModel.Kind.STORE_ORDER.name
+            is WooNotificationType.ProductReview -> NotificationModel.Kind.COMMENT.name
             else -> null
         }
         return when {

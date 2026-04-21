@@ -247,7 +247,9 @@ class NotificationMessageHandlerTest {
             verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
                 stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED),
                 siteId = eq(orderNotification.remoteSiteId),
-                notificationId = eq("${orderNotification.remoteSiteId}:order:$wooDrivenOrderId"),
+                notificationId = eq(
+                    "${orderNotification.remoteSiteId}:${NotificationModel.Kind.STORE_ORDER.name}:$wooDrivenOrderId"
+                ),
                 noteTypeTrackingValue = eq(WooNotificationType.NewOrder.trackingValue),
                 source = eq(NotificationSource.WOO_DRIVEN)
             )
