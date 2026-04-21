@@ -7,7 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import com.woocommerce.android.R
@@ -26,7 +25,6 @@ fun WooPosRemoteReaderTipStrip(
         text = stringResource(R.string.woopos_remote_ttp_tip_strip_text),
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Normal,
         textAlign = TextAlign.Center,
         textDecoration = TextDecoration.Underline,
         modifier = modifier
@@ -34,7 +32,7 @@ fun WooPosRemoteReaderTipStrip(
             .clickable(onClick = onClick)
             .padding(
                 horizontal = WooPosSpacing.Large.value,
-                vertical = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Small.value,
             ),
     )
 }

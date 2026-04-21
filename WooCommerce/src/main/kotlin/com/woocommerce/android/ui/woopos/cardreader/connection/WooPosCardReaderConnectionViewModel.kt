@@ -6,10 +6,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,20 +16,11 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory,
     private val permissionUtils: WooPosPermissionUtils,
 ) : ViewModel() {
-    private val _isRemoteTapToPayExplainerVisible = MutableStateFlow(false)
-    val isRemoteTapToPayExplainerVisible: StateFlow<Boolean> = _isRemoteTapToPayExplainerVisible.asStateFlow()
-
-    fun onRemoteTapToPayTipClicked() {
-        _isRemoteTapToPayExplainerVisible.value = true
-    }
-
-    fun onRemoteTapToPayExplainerDismissed() {
-        _isRemoteTapToPayExplainerVisible.value = false
-    }
-
     private val controller: WooPosCardReaderConnectionController by lazy {
         controllerFactory.create(viewModelScope)
     }
+
+    fun onRemoteTapToPayTipClicked() = controller.showRemoteTapToPayExplainer()
 
     val state: StateFlow<WooPosCardReaderConnectionState> = controller.state
 
@@ -82,6 +71,9 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
 
     fun onBackPressed() {
         when (val currentState = state.value) {
+            is WooPosCardReaderConnectionState.RemoteTapToPayExplainer -> {
+                controller.hideRemoteTapToPayExplainer()
+            }
             is WooPosCardReaderConnectionState.UpdateRequired -> {
                 if (currentState.showCancelWarning) {
                     dismissDialog()

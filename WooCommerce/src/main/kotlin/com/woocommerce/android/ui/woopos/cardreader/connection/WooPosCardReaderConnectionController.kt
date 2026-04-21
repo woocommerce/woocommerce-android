@@ -77,6 +77,20 @@ class WooPosCardReaderConnectionController(
     private var isBluetoothPermissionPermanentlyDenied = false
     private var isLocationPermissionPermanentlyDenied = false
 
+    fun showRemoteTapToPayExplainer() {
+        if (_state.value !is WooPosCardReaderConnectionState.Scanning) return
+        _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
+            onDismissClicked = ::hideRemoteTapToPayExplainer,
+        )
+    }
+
+    fun hideRemoteTapToPayExplainer() {
+        if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        _state.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+        )
+    }
+
     fun startConnectionFlow() {
         isRequiredUpdate = true
         if (connectionFlowJob?.isActive == true) {

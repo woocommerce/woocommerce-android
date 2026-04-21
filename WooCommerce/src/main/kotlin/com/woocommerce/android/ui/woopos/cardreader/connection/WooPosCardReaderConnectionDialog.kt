@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
-import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerDialog
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderTipStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -232,8 +232,6 @@ private fun WooPosCardReaderDialogInternal(
         viewModel.onBackPressed()
     }
 
-    val isExplainerVisible by viewModel.isRemoteTapToPayExplainerVisible.collectAsState()
-
     WooPosCardReaderConnectionDialogContent(
         isVisible = true,
         state = connectionState,
@@ -243,11 +241,6 @@ private fun WooPosCardReaderDialogInternal(
             onDismiss()
         },
         onTipClick = viewModel::onRemoteTapToPayTipClicked,
-    )
-
-    WooPosRemoteReaderExplainerDialog(
-        isVisible = isExplainerVisible,
-        onDismiss = viewModel::onRemoteTapToPayExplainerDismissed,
     )
 }
 
@@ -281,6 +274,9 @@ fun WooPosCardReaderConnectionDialogContent(
             modifier = Modifier.fillMaxWidth()
         ) { currentState ->
             when (currentState) {
+                is WooPosCardReaderConnectionState.RemoteTapToPayExplainer -> {
+                    WooPosRemoteReaderExplainerContent(onDismiss = currentState.onDismissClicked)
+                }
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
                         isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
@@ -476,7 +472,6 @@ private fun ScanningContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             ScanningDialogBody()
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             WooPosRemoteReaderTipStrip(onClick = onTipClick)
         }
         false -> ScanningDialogBody()
