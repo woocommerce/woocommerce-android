@@ -41,7 +41,7 @@ fun WooPosRemoteReaderExplainerContent(onDismiss: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         ExplainerSection(
             heading = stringResource(R.string.woopos_remote_ttp_explainer_setup_heading),
@@ -59,7 +59,7 @@ fun WooPosRemoteReaderExplainerContent(onDismiss: () -> Unit) {
 
         WooPosButton(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
             onClick = onDismiss,
@@ -71,7 +71,7 @@ fun WooPosRemoteReaderExplainerContent(onDismiss: () -> Unit) {
 private fun ExplainerSection(heading: String, body: String) {
     WooPosText(
         text = heading,
-        style = WooPosTypography.BodyMedium,
+        style = WooPosTypography.BodyLarge,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
     )
