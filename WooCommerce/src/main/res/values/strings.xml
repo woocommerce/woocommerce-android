@@ -4108,6 +4108,18 @@
 
     <string name="woopos_remote_ttp_tip_strip_text">📱 Tip: you can also use an Android phone as a card reader. Learn how</string>
     <string name="woopos_remote_ttp_tip_strip_learn_how">Learn how</string>
+    <string name="woopos_remote_ttp_explainer_background_content_description">Remote Tap-to-Pay explainer dialog</string>
+    <string name="woopos_remote_ttp_explainer_title">Use your phone as a card reader</string>
+    <string name="woopos_remote_ttp_explainer_subtitle">No extra hardware. Customers tap the phone, payment lands on this tablet.</string>
+    <string name="woopos_remote_ttp_explainer_phone_setup_heading">On the phone, one time:</string>
+    <string name="woopos_remote_ttp_explainer_step_install">Install the Woo app.</string>
+    <string name="woopos_remote_ttp_explainer_step_open_settings">Open Settings → Payments.</string>
+    <string name="woopos_remote_ttp_explainer_step_card_reader_mode">Tap Card Reader Mode.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Requirements</string>
+    <string name="woopos_remote_ttp_explainer_req_wifi">Same Wi-Fi as this tablet</string>
+    <string name="woopos_remote_ttp_explainer_req_android">Android 11 or newer with NFC</string>
+    <string name="woopos_remote_ttp_explainer_req_ttp">A Tap-to-Pay eligible device</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
