@@ -41,16 +41,16 @@ If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") through
 
 ## Verification Status of Agent-CLI Blocks
 
-The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have been exercised end-to-end against this repo. The `USE_ANDROID_CLI=1` blocks have **not** all been executed against Google's agent CLI — the skill was authored without the agent CLI installed locally, and not every CLI invocation has since been run in this repo. Treat the CLI blocks as best-effort until proven otherwise:
+The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have been exercised end-to-end against this repo. The `USE_ANDROID_CLI=1` blocks were all re-run against agent CLI 0.7.15232955 on 2026-04-21 against this repo. Results:
 
 | CLI block | Status |
 |---|---|
-| `android describe` (APK resolution in step 7) | Verified by @irfano on 2026-04-20 — requires `GRADLE_OPTS='-Dorg.gradle.configuration-cache=false'` in this repo |
-| `android run` (step 7 install + launch) | **Unverified** — written from Google's docs, not executed against this repo |
-| `android emulator create/start/stop` (step 0) | **Unverified** |
-| `android layout --diff` (screen-transition polling) | **Unverified** |
-| `android screen capture --annotate` / `screen resolve` (Option B tap) | **Unverified** |
-| `android docs search/fetch` | **Unverified** |
+| `android run` (step 7 install + launch) | Verified — installs and launches in one call. |
+| `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. |
+| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
+| `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
+| `android emulator list` (step 0 lifecycle) | Verified — `list` runs. `create`/`start`/`stop` shape confirmed via `--help` but no AVD was created during verification. |
+| `android describe` (previously used for APK resolution) | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
 
 If a CLI block fails in practice, **do not assume the docs are right**. Fall back to the `USE_ANDROID_CLI=0` path for that step, file the discrepancy as a skill issue, and fix it in the skill before the next run.
 
@@ -315,16 +315,14 @@ If the user requests verification of a specific scenario (error states, empty da
 
 Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
 
-**Preferred path (`USE_ANDROID_CLI=1`):** resolve the APK path from project metadata, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
+**Preferred path (`USE_ANDROID_CLI=1`):** locate the APK produced by step 4, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
 
 ```bash
-# 1. Resolve the APK path from project metadata. `android describe` prints paths
-#    to JSON files (not JSON content), and the underlying Gradle task fails with
-#    the configuration cache enabled in this repo — disable it via GRADLE_OPTS.
-#    (GRADLE_OPTS workaround verified by @irfano in PR #15685.)
-DESCRIBE_JSON=$(GRADLE_OPTS='-Dorg.gradle.configuration-cache=false' \
-  android describe --project_dir=. | head -n1)
-APK=$(jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]' "$DESCRIBE_JSON")
+# 1. Resolve the APK path. `android describe` was evaluated for this purpose but
+#    its output is multi-line plain text (not JSON/paths-to-JSON) and the
+#    underlying Gradle task requires ANDROID_HOME; a plain `find` is simpler and
+#    works whether the CLI is installed or not.
+APK=$(find WooCommerce/build -type f -name 'WooCommerce-wasabi-debug.apk' | head -n1)
 
 # 2. Force-stop — android run does not guarantee a cold start.
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
