@@ -83,6 +83,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
         siteId = TEST_REMOTE_SITE_ID_1
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
@@ -198,30 +200,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
-        assertThat(event).isEqualTo(
-            ViewOrderDetail(
-                testOrderNotification.uniqueId,
-                testOrderNotification.remoteNoteId
-            )
-        )
-    }
-
-    @Test
-    fun `when a new order notification for non existent site is clicked, then the my store tab is opened`() {
-        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
-
-        val localPushId = 1000
-        var event: ViewOrderList? = null
-        viewModel.event.observeForever {
-            if (it is ViewOrderList) event = it
-        }
-
-        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
-
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce())
-            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
-        assertThat(event).isEqualTo(ViewOrderList)
+        assertThat(event).isEqualTo(ViewOrderDetail(testOrderNotification.uniqueId))
     }
 
     @Test
@@ -604,6 +583,21 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 eq(testBlazeNotification.remoteSiteId)
             )
         assertThat(event).isEqualTo(ViewBlazeCampaignList)
+    }
+
+    @Test
+    fun `given an App Passwords site, when order notification for a different remote site is tapped, then open order detail without switching sites`() {
+        // GIVEN
+        val appPasswordsSite = applicationPasswordsSite()
+        lenient().doReturn(appPasswordsSite).whenever(selectedSite).get()
+        val orderNotification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
+
+        // WHEN
+        viewModel.onPushNotificationTapped(1000, orderNotification)
+
+        // THEN
+        verify(selectedSite, never()).set(any())
+        assertThat(viewModel.event.value).isEqualTo(ViewOrderDetail(orderNotification.uniqueId))
     }
 
     @Test
