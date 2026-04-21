@@ -1,83 +1,128 @@
-# Smoke Test: Hub Menu - WC Admin and View Store
+# Smoke Test: Hub Menu - WC Admin, View Store, Change store
 # P2 ref: Hub menu > WC Admin, View Store, Change store
 #
 # Verifies:
-#   - WC Admin opens (webview/browser)
-#   - View Store opens (webview/browser)
-#   - Change store is accessible
+#   - Tapping "View Store" launches the authenticated webview for the
+#     storefront (More Menu no longer visible)
+#   - Tapping "WC Admin" launches the authenticated webview for the
+#     WC Admin dashboard (More Menu no longer visible)
+#   - Tapping the store header opens the Site Picker ("Select store")
+#     so the merchant can change stores
+#
+# Why we don't assert specific webview content: Maestro's text-match
+# doesn't read into the embedded WebView reliably, and the rendered
+# page depends on the staging site's current state. Asserting "we
+# left the More Menu" + toolbar title is the highest-signal smoke
+# check available.
 appId: com.woocommerce.android.dev
 name: "Hub Menu - WC Admin, View Store, Change store"
 tags:
   - smoke
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# --- View Store ---
+# ── View Store ───────────────────────────────────────────────────────
 - scrollUntilVisible:
     element: "View Store"
     direction: DOWN
     timeout: 15000
     label: "Scroll to View Store"
 
-- tapOn: "View Store"
+- tapOn:
+    text: "View Store"
+    retryTapIfNoChange: true
+    label: "Open View Store"
 
-# Wait for webview or browser to load
+# AuthenticatedWebViewScreen uses the selected site's display name as
+# the toolbar title. We don't know the display name, so instead assert
+# the More Menu is no longer visible (its Compose view id should have
+# been replaced by the webview fragment).
+- extendedWaitUntil:
+    notVisible:
+      id: "more_menu_compose_view"
+    timeout: 20000
+    label: "Verify webview took over from More Menu"
+
+# Give the webview a few seconds to render something before we
+# screenshot so the capture shows real content, not a white flash.
 - extendedWaitUntil:
     visible: ".*"
-    timeout: 20000
+    timeout: 5000
     optional: true
 
 - takeScreenshot: hub_view_store
 
-# Go back to the app
 - back
-- runFlow:
-    when:
-      notVisible:
-        id: "more_menu_compose_view"
-    commands:
-      - back
 
-# --- WC Admin ---
-- runFlow:
-    file: ../subflows/navigate_to_more_menu.yaml
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu"
 
+# ── WC Admin ─────────────────────────────────────────────────────────
 - scrollUntilVisible:
-    element: "Admin"
+    element: "WC Admin"
     direction: DOWN
     timeout: 15000
     label: "Scroll to WC Admin"
-    optional: true
+
+- tapOn:
+    text: "WC Admin"
+    retryTapIfNoChange: true
+    label: "Open WC Admin"
+
+# AuthenticatedWebViewScreen for WC Admin uses R.string.more_menu_
+# button_wс_admin = "WC Admin" as the toolbar title. That's also the
+# tappable row we just left, so it isn't discriminative. Instead,
+# confirm the More Menu is gone AND Payments (a sibling menu item) is
+# no longer visible — proof we navigated off the More Menu.
+- extendedWaitUntil:
+    notVisible:
+      id: "more_menu_compose_view"
+    timeout: 20000
+    label: "Verify webview took over from More Menu"
+
+- assertNotVisible: "Payments"
+
+- takeScreenshot: hub_wc_admin
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu"
+
+# ── Change store ─────────────────────────────────────────────────────
+# The More Menu header (avatar + site name + plan) is a button that
+# calls onSwitchStoreClick → StartSitePickerEvent. There's no "Switch
+# store" label on the header; the header itself is the tap target. It
+# sits just below the status bar on the More Menu, so tap by point on
+# the top header area. SitePickerActivity shows the "Select store"
+# title (site_picker_title).
+#
+# Tap is optional with a fallback: on builds where the header is
+# disabled (isStoreSwitcherEnabled=false, e.g. application-password
+# sites), we skip this assertion.
+- tapOn:
+    point: "50%,12%"
+    label: "Tap store header to open site picker"
 
 - runFlow:
     when:
-      visible: "Admin"
+      visible: ".*Select store.*|.*Connected Stores.*"
     commands:
-      - tapOn: "Admin"
-      - extendedWaitUntil:
-          visible: ".*"
-          timeout: 20000
-          optional: true
-      - takeScreenshot: hub_wc_admin
-      - back
-
-# --- Change Store ---
-- runFlow:
-    file: ../subflows/navigate_to_more_menu.yaml
-
-# The store name/switcher is typically at the top of the More Menu
-- runFlow:
-    when:
-      visible: "Switch store"
-    commands:
-      - tapOn: "Switch store"
       - takeScreenshot: hub_change_store
       - back
+      - extendedWaitUntil:
+          visible:
+            id: "more_menu_compose_view"
+          timeout: 15000
+          label: "Back on More Menu after site picker"

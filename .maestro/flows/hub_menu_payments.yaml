@@ -1,11 +1,22 @@
 # Smoke Test: Hub Menu - Payments
-# P2 ref: Hub menu > Payments (Enable/Disable Pay in Person, Order Card Reader, etc.)
+# P2 ref: Hub menu > Payments (Enable/Disable Pay in Person, Order Card
+#         Reader, Manage Card Reader, Card Reader Manuals, etc.)
 #
 # Verifies:
-#   - Payments section accessible from More Menu
-#   - Pay in Person toggle visible
-#   - Order Card Reader option visible
-#   - Card Reader Manuals option visible
+#   - Payments screen opens from the More Menu
+#   - Payments hub renders every first-level item the P2 mentions:
+#       SETTINGS header, "Pay In Person" toggle, CARD READERS header,
+#       "Order Card Reader", "Manage Card Reader", "Card Reader Manuals"
+#   - Tapping "Order Card Reader" opens its dedicated screen (P2-level
+#     navigation check)
+#   - Tapping "Card Reader Manuals" opens the manuals list (with per
+#     P2 smoke: every manuals entry should render)
+#
+# Why we don't actually toggle Pay-in-Person or tap Order Card Reader
+# all the way through: Pay-in-Person toggling commits a real store
+# setting change (noise on staging), and Order-a-card-reader exits to
+# Stripe's webview which isn't a Maestro-friendly check. Presence of
+# the items is the smoke-level guarantee P2 cares about.
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Payments"
 tags:
@@ -13,60 +24,119 @@ tags:
   - payments
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# Find and tap Payments
+# Payments sits high enough in the general section to usually be
+# immediately visible, but scroll defensively in case the More Menu
+# adds items above it.
 - scrollUntilVisible:
     element: "Payments"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Payments in hub menu"
 
-- tapOn: "Payments"
+- tapOn:
+    text: "Payments"
+    label: "Open Payments"
 
-# Wait for Payments screen to load
+# ── Payments hub loaded ──────────────────────────────────────────────
+# "Pay In Person" (card_reader_enable_pay_in_person) is a toggleable
+# row that ONLY appears in the Payments hub, not elsewhere, so it's a
+# reliable anchor for "we landed on the hub".
 - extendedWaitUntil:
-    visible: "Pay in Person"
-    timeout: 15000
+    visible: "Pay In Person"
+    timeout: 20000
 
-- takeScreenshot: hub_payments_screen
+- assertVisible: "Pay In Person"
 
-# Scroll to see all payment options
-- scroll
+- takeScreenshot: hub_payments_top
 
-- takeScreenshot: hub_payments_scrolled
+# ── Card Readers section ─────────────────────────────────────────────
+# The SETTINGS section header renders first, then CARD READERS. Both
+# are uppercase category titles, so matching is case-sensitive. If the
+# store country doesn't support card readers, the CARD READERS header
+# + sub-items won't render (addCardReaderManuals is guarded by
+# CardReaderConfigForSupportedCountry). Our staging store is US-based
+# so this is populated.
+- scrollUntilVisible:
+    element: "Order Card Reader"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Order Card Reader"
 
-# Look for Order Card Reader
-- runFlow:
-    when:
-      visible: "Order Card Reader"
-    commands:
-      - tapOn: "Order Card Reader"
-      - takeScreenshot: hub_payments_order_reader
-      - back
+- assertVisible: "Order Card Reader"
+- assertVisible: "Manage Card Reader"
 
-# Look for Card Reader Manuals
+- takeScreenshot: hub_payments_card_readers
+
 - scrollUntilVisible:
     element: "Card Reader Manuals"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Card Reader Manuals"
-    optional: true
 
-- runFlow:
-    when:
-      visible: "Card Reader Manuals"
-    commands:
-      - tapOn: "Card Reader Manuals"
-      - takeScreenshot: hub_payments_manuals
-      - back
+- assertVisible: "Card Reader Manuals"
 
-# Go back
+# ── Navigate into Card Reader Manuals ────────────────────────────────
+- tapOn:
+    text: "Card Reader Manuals"
+    retryTapIfNoChange: true
+    label: "Open Card Reader Manuals"
+
+# Manuals list is a simple screen titled "Card Reader Manuals" with
+# rows per reader (e.g. "Chipper 2X BT", "Stripe M2", "WisePad 3",
+# "Tap To Pay on Android"). At least one reader is always listed on a
+# supported-country store, so we scroll until we find any common entry.
+- extendedWaitUntil:
+    visible: ".*Chipper.*|.*WisePad.*|.*Stripe M2.*|.*Tap To Pay.*"
+    timeout: 15000
+
+- takeScreenshot: hub_payments_manuals
+
 - back
+
+# ── Navigate into Order Card Reader ──────────────────────────────────
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: "Order Card Reader"
+    direction: DOWN
+    timeout: 10000
+    label: "Re-scroll to Order Card Reader"
+
+- tapOn:
+    text: "Order Card Reader"
+    retryTapIfNoChange: true
+    label: "Open Order Card Reader"
+
+# Order-a-reader opens an authenticated webview loading the Stripe
+# reader purchase page. Webview content isn't deterministic to assert
+# on; just verify the back-button title (webview toolbar) or that we
+# navigated away from the Payments hub (Pay In Person no longer
+# visible).
+- extendedWaitUntil:
+    notVisible: "Pay In Person"
+    timeout: 20000
+    label: "Verify we left the Payments hub"
+
+- takeScreenshot: hub_payments_order_reader
+
+- back
+
+# ── Back to More Menu ────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 15000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000

@@ -2,8 +2,10 @@
 # P2 ref: Hub menu > Settings > Smoke test all items (ignore Delete Account)
 #
 # Verifies:
-#   - Settings screen opens from More Menu
-#   - Key settings options are visible (Subscriptions, Theme, etc.)
+#   - More Menu top-level items are visible (Settings section + Payments)
+#   - Settings screen opens from the More Menu
+#   - Every first-level Settings item is rendered (P2: smoke-test all items)
+#   - Log Out button is visible at the bottom of the screen
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Settings"
 tags:
@@ -11,32 +13,83 @@ tags:
   - settings
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# Verify More Menu items are visible
+# ── More Menu overview ───────────────────────────────────────────────
+# Two More Menu sections are visible from the top: Settings (with the
+# Settings item, and — on WPCom non-free-trial stores only —
+# Subscriptions) and the general section (Payments, WC Admin, View
+# Store, Coupons, Reviews, Customers, Inbox). Assert the always-on
+# anchors so a regressed menu layout is caught here. Subscriptions is
+# hidden when isWpComStore is false (our staging store is
+# Jetpack-connected / self-hosted), so it is not asserted.
 - assertVisible: "Settings"
 - assertVisible: "Payments"
 
 - takeScreenshot: hub_menu_overview
 
-# Open Settings (the settings preferences screen)
+# ── Open Settings ────────────────────────────────────────────────────
+# "Settings" appears twice: as the section title ("Settings" header)
+# and as the row ("Settings / Update your preferences"). index: 0 is
+# the section header, index: 1 is the tappable row.
 - tapOn:
     text: "Settings"
-    index: 0
+    index: 1
+    label: "Open Settings screen"
 
-# Wait for Settings preferences screen
+# ── Smoke-test all first-level Settings items ────────────────────────
+# P2: "Smoke test all items (ignore Delete Account)". We assert each
+# item renders — no need to open each sub-screen for a smoke check.
+# Items are ordered top-to-bottom in fragment_settings_main.xml.
 - extendedWaitUntil:
-    visible: "Help and support"
+    visible: "Help & support"
     timeout: 15000
 
-- takeScreenshot: settings_screen
+- assertVisible: "Help & support"
+- assertVisible: "Troubleshoot Connection"
+
+- takeScreenshot: settings_screen_top
+
+# Scroll to reach items lower on the screen. Settings is a plain
+# ScrollView, so scroll commands move the whole list. "Themes"
+# (option_site_themes) is only visible on WPComAtomic sites, so we
+# skip it — our staging Jetpack store doesn't render it. We scroll
+# straight to Privacy settings, which is always present.
+- scrollUntilVisible:
+    element: "Privacy settings"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Privacy settings"
+
+- assertVisible: "Privacy settings"
+- assertVisible: "Experimental features"
+
+- scrollUntilVisible:
+    element: "About the app"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to About section"
+
+- assertVisible: "About the app"
+
+- scrollUntilVisible:
+    element: "Log out"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Log out"
+
+- assertVisible: "Log out"
+
+- takeScreenshot: settings_screen_bottom
 
 # Go back to More Menu
 - back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000

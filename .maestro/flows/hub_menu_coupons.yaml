@@ -2,9 +2,15 @@
 # P2 ref: Hub menu > Coupons > Create a coupon
 #
 # Verifies:
-#   - Coupons section accessible from More Menu
-#   - Coupon list loads
-#   - Create coupon flow accessible
+#   - Coupons section reachable from the More Menu
+#   - Coupon list screen opens (either the populated list or the empty
+#     state — both include the add-coupon FAB)
+#   - Tap the add-coupon FAB to reach the "Create Coupon" type picker
+#     bottom sheet (Percentage, Fixed Cart, Fixed Product)
+#   - Pick Percentage Discount and confirm the edit-coupon screen
+#     opens
+#   - Back out WITHOUT saving (discard dialog handled below) so the
+#     staging store isn't polluted with test coupons
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Coupons"
 tags:
@@ -12,52 +18,93 @@ tags:
   - coupons
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# Find and tap Coupons
+# Coupons lives in the General section of the More Menu — scroll to it.
 - scrollUntilVisible:
     element: "Coupons"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Coupons in hub menu"
 
-- tapOn: "Coupons"
+- tapOn:
+    text: "Coupons"
+    label: "Open Coupons"
 
-# Wait for Coupons screen
+# ── Coupon list screen ───────────────────────────────────────────────
+# The add-coupon FAB (id: add_coupon_button, contentDescription "Add
+# coupon") is always present on the coupon list screen — both for
+# populated lists AND for the empty state. Asserting it is visible
+# proves we actually navigated off the More Menu.
 - extendedWaitUntil:
-    visible: "Coupons"
+    visible:
+      id: "add_coupon_button"
     timeout: 15000
 
 - takeScreenshot: hub_coupons_list
 
-# Try to create a coupon if the FAB or add button is available
+# ── Open the coupon type picker ──────────────────────────────────────
+- tapOn:
+    id: "add_coupon_button"
+    retryTapIfNoChange: true
+    label: "Tap add-coupon FAB"
+
+# CouponTypePickerScreen is a bottom sheet titled "Create Coupon" with
+# three choices: Percentage Discount, Fixed Cart Discount, Fixed
+# Product Discount. Asserting all three proves the whole sheet
+# rendered, not just the title row.
+- extendedWaitUntil:
+    visible: "Create Coupon"
+    timeout: 15000
+
+- assertVisible: "Percentage Discount"
+- assertVisible: "Fixed Cart Discount"
+- assertVisible: "Fixed Product Discount"
+
+- takeScreenshot: hub_coupons_type_picker
+
+# ── Pick Percentage Discount → edit-coupon screen ────────────────────
+- tapOn:
+    text: "Percentage Discount"
+    label: "Choose Percentage Discount"
+
+# EditCouponFragment. Uniquely titled — the toolbar shows "Create
+# coupon" (lowercase c) and the body has an amount field and a
+# "Generate coupon code" / "Coupon code" CTA. "Amount" is present on
+# every coupon type editor.
+- extendedWaitUntil:
+    visible: ".*Amount.*"
+    timeout: 15000
+
+- takeScreenshot: hub_coupons_edit_form
+
+# Back out. If there's any unsaved input (there isn't — we didn't type
+# anything), the app shows a discard-changes dialog. Handle it
+# defensively in case future changes add default values.
+- back
+
 - runFlow:
     when:
-      visible:
-        id: ".*addCoupon.*"
+      visible: "Discard"
     commands:
       - tapOn:
-          id: ".*addCoupon.*"
-          optional: true
-      - extendedWaitUntil:
-          visible: "Coupon code"
-          timeout: 15000
-          label: "Wait for coupon creation screen"
-      - takeScreenshot: hub_coupon_create
-      - back
-      # Handle discard dialog if present
-      - runFlow:
-          when:
-            visible: "Discard"
-          commands:
-            - tapOn: "Discard"
+          text: "Discard"
+          label: "Discard unsaved coupon"
 
-# Go back
+# ── Back on coupon list ──────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "add_coupon_button"
+    timeout: 15000
+
+# Back to the More Menu
 - back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000

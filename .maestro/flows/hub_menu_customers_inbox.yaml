@@ -2,60 +2,82 @@
 # P2 ref: Hub menu > Customers, Inbox
 #
 # Verifies:
-#   - Customers section accessible and loads
-#   - Inbox section accessible and loads
+#   - Customers section opens from the More Menu, the Customers
+#     screen renders with the "Search for customers" search hint
+#   - Inbox section opens from the More Menu, the Inbox screen
+#     renders (empty-state message OR an inbox note timestamp)
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Customers and Inbox"
 tags:
   - smoke
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# --- Customers ---
+# ── Customers ────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element: "Customers"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Customers in hub menu"
 
-- tapOn: "Customers"
+- tapOn:
+    text: "Customers"
+    label: "Open Customers"
 
-# Wait for Customers screen to load
+# The More Menu button AND the Customers screen top-bar both show
+# "Customers", so the title alone doesn't prove navigation happened.
+# Wait on the search hint ("Search for customers" — from
+# order_creation_customer_search_hint), which only exists on the
+# customer list screen.
 - extendedWaitUntil:
-    visible: "Customers"
+    visible: "Search for customers"
     timeout: 15000
+
+- assertVisible: "Customers"
+- assertVisible: "Search for customers"
 
 - takeScreenshot: hub_customers
 
 # Go back to More Menu
 - back
 
-# --- Inbox ---
-- runFlow:
-    file: ../subflows/navigate_to_more_menu.yaml
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000
 
+# ── Inbox ────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element: "Inbox"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Inbox in hub menu"
 
-- tapOn: "Inbox"
+- tapOn:
+    text: "Inbox"
+    label: "Open Inbox"
 
-# Wait for Inbox screen to load
+# Same problem as Customers: "Inbox" is also the More Menu button
+# text. The Inbox screen renders either an empty state ("Congrats,
+# you've read everything!" from empty_inbox_title) or a list of notes
+# with "Moments ago" / "X hours ago" / "Created on ..." timestamps.
+# Match on the empty state OR any of the recency labels.
 - extendedWaitUntil:
-    visible: "Inbox"
-    timeout: 15000
+    visible: ".*Congrats.*|.*Moments ago.*|.*hours ago.*|.*days ago.*|.*minutes ago.*|.*Created on.*"
+    timeout: 20000
+    label: "Wait for inbox content or empty state"
 
 - takeScreenshot: hub_inbox
 
-# Go back
+# Back to More Menu
 - back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000
