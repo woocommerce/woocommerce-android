@@ -237,13 +237,12 @@ private fun WooPosCardReaderDialogInternal(
     WooPosCardReaderConnectionDialogContent(
         isVisible = true,
         state = connectionState,
-        isRemoteTapToPayEnabled = viewModel.isRemoteTapToPayEnabled,
-        onTipClick = viewModel::onRemoteTapToPayTipClicked,
         onBackPressed = { viewModel.onBackPressed() },
         onDismiss = {
             viewModel.dismissDialog()
             onDismiss()
         },
+        onTipClick = viewModel::onRemoteTapToPayTipClicked,
     )
 
     WooPosRemoteReaderExplainerDialog(
@@ -259,7 +258,6 @@ fun WooPosCardReaderConnectionDialogContent(
     state: WooPosCardReaderConnectionState,
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
-    isRemoteTapToPayEnabled: Boolean = false,
     onTipClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
@@ -285,7 +283,7 @@ fun WooPosCardReaderConnectionDialogContent(
             when (currentState) {
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
-                        isRemoteTapToPayEnabled = isRemoteTapToPayEnabled,
+                        isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
                         onTipClick = onTipClick,
                     )
                 }
@@ -478,7 +476,7 @@ private fun ScanningContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             ScanningDialogBody()
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             WooPosRemoteReaderTipStrip(onClick = onTipClick)
         }
         false -> ScanningDialogBody()
@@ -952,7 +950,7 @@ fun WooPosCardReaderConnectionDialogScanningPreview() {
     WooPosTheme {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning,
+            state = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = true),
             onBackPressed = {},
             onDismiss = {},
         )

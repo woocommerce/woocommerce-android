@@ -4109,7 +4109,7 @@
     <string name="woopos_remote_ttp_tip_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_explainer_background_content_description">Remote Tap-to-Pay explainer dialog</string>
     <string name="woopos_remote_ttp_explainer_title">Use a phone reader</string>
-    <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments for this register.</string>
+    <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
     <string name="woopos_remote_ttp_explainer_setup_heading">On your phone</string>
     <string name="woopos_remote_ttp_explainer_setup_steps">Open Settings → Payments → Card Reader Mode.</string>
     <string name="woopos_remote_ttp_explainer_requirements_heading">Before you start</string>

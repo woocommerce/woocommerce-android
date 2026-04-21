@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +17,7 @@ import javax.inject.Inject
 class WooPosCardReaderConnectionViewModel @Inject constructor(
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory,
     private val permissionUtils: WooPosPermissionUtils,
-    featureFlagRepository: FeatureFlagRepository,
 ) : ViewModel() {
-
-    val isRemoteTapToPayEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
-
     private val _isRemoteTapToPayExplainerVisible = MutableStateFlow(false)
     val isRemoteTapToPayExplainerVisible: StateFlow<Boolean> = _isRemoteTapToPayExplainerVisible.asStateFlow()
 
@@ -115,7 +109,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
             is WooPosCardReaderConnectionState.MissingLocationPermission,
             is WooPosCardReaderConnectionState.MultipleReadersFound,
             is WooPosCardReaderConnectionState.ReaderFound,
-            WooPosCardReaderConnectionState.Scanning,
+            is WooPosCardReaderConnectionState.Scanning,
             is WooPosCardReaderConnectionState.ScanningFailed,
             WooPosCardReaderConnectionState.UpdateCompleted,
             is WooPosCardReaderConnectionState.UpdateFailed,

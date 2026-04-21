@@ -26,7 +26,7 @@ fun WooPosRemoteReaderTipStrip(
         text = stringResource(R.string.woopos_remote_ttp_tip_strip_text),
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         textAlign = TextAlign.Center,
         textDecoration = TextDecoration.Underline,
         modifier = modifier

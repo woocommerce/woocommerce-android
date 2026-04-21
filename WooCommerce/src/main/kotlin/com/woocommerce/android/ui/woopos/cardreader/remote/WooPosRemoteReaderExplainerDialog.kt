@@ -49,7 +49,7 @@ fun WooPosRemoteReaderExplainerDialog(
 
             WooPosText(
                 text = stringResource(R.string.woopos_remote_ttp_explainer_intro),
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
             )
@@ -61,14 +61,14 @@ fun WooPosRemoteReaderExplainerDialog(
                 body = stringResource(R.string.woopos_remote_ttp_explainer_setup_steps),
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             LabeledSection(
                 heading = stringResource(R.string.woopos_remote_ttp_explainer_requirements_heading),
                 body = stringResource(R.string.woopos_remote_ttp_explainer_requirements_body),
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             WooPosButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,7 +91,7 @@ private fun LabeledSection(heading: String, body: String) {
     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
     WooPosText(
         text = body,
-        style = WooPosTypography.BodyLarge,
+        style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
         textAlign = TextAlign.Center,
     )

@@ -4,8 +4,6 @@ import app.cash.turbine.test
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,12 +29,9 @@ class WooPosCardReaderConnectionViewModelTest {
         on { create(any()) }.thenReturn(controller)
     }
     private val permissionUtils: WooPosPermissionUtils = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY) }.thenReturn(false)
-    }
 
     private val controllerStateFlow = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning
+        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
     )
     private val controllerEventFlow = MutableSharedFlow<WooPosCardReaderConnectionController.ControllerEvent>()
 
@@ -177,7 +172,7 @@ class WooPosCardReaderConnectionViewModelTest {
     fun `given Scanning state, when onBackPressed, then calls controller cancel`() = runTest {
         // GIVEN
         setupControllerMocks()
-        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning
+        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
         val viewModel = createViewModel()
 
         // WHEN
@@ -293,6 +288,5 @@ class WooPosCardReaderConnectionViewModelTest {
     private fun createViewModel() = WooPosCardReaderConnectionViewModel(
         controllerFactory = controllerFactory,
         permissionUtils = permissionUtils,
-        featureFlagRepository = featureFlagRepository,
     )
 }
