@@ -29,7 +29,7 @@ android {
 
 dependencies {
     runtimeOnly(libs.stripe.terminal.taptopay)
-    implementation(libs.stripe.terminal.core)
+    api(libs.stripe.terminal.core)
     implementation(libs.stripe.terminal.ktx)
 
     // Coroutines
