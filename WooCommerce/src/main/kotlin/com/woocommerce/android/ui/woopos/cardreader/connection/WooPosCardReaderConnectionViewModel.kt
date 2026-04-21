@@ -8,8 +8,10 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,6 +23,17 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
 ) : ViewModel() {
 
     val isRemoteTapToPayEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
+
+    private val _isRemoteTapToPayExplainerVisible = MutableStateFlow(false)
+    val isRemoteTapToPayExplainerVisible: StateFlow<Boolean> = _isRemoteTapToPayExplainerVisible.asStateFlow()
+
+    fun onRemoteTapToPayTipClicked() {
+        _isRemoteTapToPayExplainerVisible.value = true
+    }
+
+    fun onRemoteTapToPayExplainerDismissed() {
+        _isRemoteTapToPayExplainerVisible.value = false
+    }
 
     private val controller: WooPosCardReaderConnectionController by lazy {
         controllerFactory.create(viewModelScope)

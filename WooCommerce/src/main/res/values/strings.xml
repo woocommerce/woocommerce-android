@@ -4106,7 +4106,15 @@
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
-    <string name="woopos_remote_ttp_tip_strip_text">An Android phone with the Woo app can act as a card reader. Enable Card Reader Mode on the phone to pair.</string>
+    <string name="woopos_remote_ttp_tip_strip_text">Use an Android phone as a card reader</string>
+    <string name="woopos_remote_ttp_explainer_background_content_description">Remote Tap-to-Pay explainer dialog</string>
+    <string name="woopos_remote_ttp_explainer_title">Use a phone reader</string>
+    <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments for this register.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">On your phone</string>
+    <string name="woopos_remote_ttp_explainer_setup_steps">Open Settings → Payments → Card Reader Mode.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Before you start</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi as this tablet. Your phone needs Android 11 or newer, NFC, and Tap-to-Pay support.</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

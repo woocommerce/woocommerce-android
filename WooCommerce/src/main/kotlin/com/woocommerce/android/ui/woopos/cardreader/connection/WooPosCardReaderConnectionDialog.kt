@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerDialog
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderTipStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -231,15 +232,23 @@ private fun WooPosCardReaderDialogInternal(
         viewModel.onBackPressed()
     }
 
+    val isExplainerVisible by viewModel.isRemoteTapToPayExplainerVisible.collectAsState()
+
     WooPosCardReaderConnectionDialogContent(
         isVisible = true,
         state = connectionState,
         isRemoteTapToPayEnabled = viewModel.isRemoteTapToPayEnabled,
+        onTipClick = viewModel::onRemoteTapToPayTipClicked,
         onBackPressed = { viewModel.onBackPressed() },
         onDismiss = {
             viewModel.dismissDialog()
             onDismiss()
         },
+    )
+
+    WooPosRemoteReaderExplainerDialog(
+        isVisible = isExplainerVisible,
+        onDismiss = viewModel::onRemoteTapToPayExplainerDismissed,
     )
 }
 
@@ -251,6 +260,7 @@ fun WooPosCardReaderConnectionDialogContent(
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
     isRemoteTapToPayEnabled: Boolean = false,
+    onTipClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -274,7 +284,10 @@ fun WooPosCardReaderConnectionDialogContent(
         ) { currentState ->
             when (currentState) {
                 is WooPosCardReaderConnectionState.Scanning -> {
-                    ScanningContent(isRemoteTapToPayEnabled = isRemoteTapToPayEnabled)
+                    ScanningContent(
+                        isRemoteTapToPayEnabled = isRemoteTapToPayEnabled,
+                        onTipClick = onTipClick,
+                    )
                 }
                 is WooPosCardReaderConnectionState.ReaderFound -> {
                     ReaderFoundContent(
@@ -454,16 +467,19 @@ private fun CardReaderDialogContent(
 }
 
 @Composable
-private fun ScanningContent(isRemoteTapToPayEnabled: Boolean) {
+private fun ScanningContent(
+    isRemoteTapToPayEnabled: Boolean,
+    onTipClick: () -> Unit,
+) {
     val showTip = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
     when (showTip) {
         true -> Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            WooPosRemoteReaderTipStrip()
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             ScanningDialogBody()
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            WooPosRemoteReaderTipStrip(onClick = onTipClick)
         }
         false -> ScanningDialogBody()
     }
