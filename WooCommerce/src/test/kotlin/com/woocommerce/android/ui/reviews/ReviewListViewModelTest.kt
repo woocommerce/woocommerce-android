@@ -55,7 +55,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
-    private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: ReviewListViewModel
 
     @Before
@@ -65,7 +64,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()) {
-        this.savedState = savedState
         viewModel = spy(
             ReviewListViewModel(
                 networkStatus,
