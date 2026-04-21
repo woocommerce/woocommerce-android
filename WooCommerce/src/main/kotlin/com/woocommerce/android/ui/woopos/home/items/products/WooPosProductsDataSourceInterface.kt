@@ -10,10 +10,14 @@ import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 sealed class SearchProductsResult {
-    data class Local(val products: List<WooPosProductModel>) : SearchProductsResult()
+    data class Local(
+        val products: List<WooPosProductModel>,
+        val searchTimeMillis: Long,
+        val searchMethod: String,
+    ) : SearchProductsResult()
     data class Remote(
         val productsResult: Result<List<WooPosProductModel>>,
-        val searchTimeMillis: Long = 0L
+        val searchTimeMillis: Long,
     ) : SearchProductsResult()
 }
 

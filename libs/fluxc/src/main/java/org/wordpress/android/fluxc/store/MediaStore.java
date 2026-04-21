@@ -12,13 +12,10 @@ import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.action.MediaAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
-import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration;
-import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
-import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
+import org.wordpress.android.fluxc.network.rest.wpapi.media.WooMediaNetwork;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType.Type;
@@ -31,7 +28,6 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -163,6 +159,7 @@ public class MediaStore extends Store {
         @NonNull public MediaErrorType type;
         @Nullable public MediaErrorSubType mErrorSubType;
         @Nullable public String message;
+        @Nullable public String apiErrorCode;
         public int statusCode;
         @Nullable public String logMessage;
 
@@ -404,30 +401,19 @@ public class MediaStore extends Store {
         }
     }
 
-    private final WPComV2MediaRestClient mWPComV2MediaRestClient;
-    private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
+    private final WooMediaNetwork mWooMediaNetwork;
     @NonNull private final RemoteMediaCache mRemoteMediaCache;
     @NonNull private final MediaCacheOperations mMediaCacheOperations;
     @NonNull private final MediaIdGenerator mMediaIdGenerator;
 
-    private final ApplicationPasswordsConfiguration mApplicationPasswordsConfiguration;
-
-    @NonNull private final FluxCCrashLogger mCrashLogger;
-
     @Inject public MediaStore(
             Dispatcher dispatcher,
-            WPComV2MediaRestClient wpv2MediaRestClient,
-            ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
-            ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
-            @NonNull FluxCCrashLogger crashLogger,
+            WooMediaNetwork wooMediaNetwork,
             @NonNull RemoteMediaCache remoteMediaCache,
             @NonNull MediaCacheOperations mediaCacheOperations,
             @NonNull MediaIdGenerator mediaIdGenerator) {
         super(dispatcher);
-        mWPComV2MediaRestClient = wpv2MediaRestClient;
-        mApplicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient;
-        mApplicationPasswordsConfiguration = applicationPasswordsConfiguration;
-        mCrashLogger = crashLogger;
+        mWooMediaNetwork = wooMediaNetwork;
         mRemoteMediaCache = remoteMediaCache;
         mMediaCacheOperations = mediaCacheOperations;
         mMediaIdGenerator = mediaIdGenerator;
@@ -597,14 +583,7 @@ public class MediaStore extends Store {
             MediaUtils.stripLocation(payload.media.getFilePath());
         }
 
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.uploadMedia(payload.site, payload.media);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, payload.media);
-        } else {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.uploadMedia(payload.site, payload.media);
     }
 
     private void performFetchMediaList(@NonNull FetchMediaListPayload payload) {
@@ -613,14 +592,7 @@ public class MediaStore extends Store {
             String mimeTypeValue = payload.mimeType != null ? payload.mimeType.getValue() : null;
             offset = mMediaCacheOperations.getUploadedMediaCount(payload.site.getId(), mimeTypeValue);
         }
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
-        } else {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
     }
 
     private void performCancelUpload(@NonNull CancelMediaPayload payload) {
@@ -629,14 +601,7 @@ public class MediaStore extends Store {
             mRemoteMediaCache.remove(payload.site.getId(), media.getMediaId());
         }
 
-        if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.cancelUpload(media);
-        } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.cancelUpload(media);
-        } else {
-            reportXmlrpcTry();
-        }
+        mWooMediaNetwork.cancelUpload(payload.site, media);
     }
 
     private void handleMediaUploaded(@NonNull ProgressPayload payload) {
@@ -716,7 +681,4 @@ public class MediaStore extends Store {
         emitChange(mediaChange);
     }
 
-    private void reportXmlrpcTry() {
-        mCrashLogger.sendReport(null, Collections.emptyMap(), "Requested MediaStore XMLRPC connection. This should not happen.");
-    }
 }

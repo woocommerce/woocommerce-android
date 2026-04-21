@@ -174,10 +174,6 @@
             app:argType="long[]"
             app:nullable="true" />
         <argument
-            android:name="remoteNoteId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
             android:name="startPaymentFlow"
             android:defaultValue="false"
             app:argType="boolean" />
@@ -197,10 +193,6 @@
             <argument
                 android:name="allOrderIds"
                 app:argType="long[]" />
-            <argument
-                android:name="remoteNoteId"
-                android:defaultValue="0L"
-                app:argType="long" />
         </action>
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
@@ -735,8 +727,11 @@
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditPaymentDialogFragment"
             app:destination="@id/wooShippingEditPaymentDialogFragment" />
         <action
-            android:id="@+id/action_wooShippingLabelCreationFragment_to_upsDapTermsOfServiceBottomSheetFragment"
-            app:destination="@id/upsDapTermsOfServiceBottomSheetFragment" />
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_upsdapTermsOfServiceBottomSheetFragment"
+            app:destination="@id/upsdapTermsOfServiceBottomSheetFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_fedExTermsOfServiceBottomSheetFragment"
+            app:destination="@id/fedExTermsOfServiceBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -823,11 +818,15 @@
         android:label="WooShippingEditPaymentDialogFragment" />
 
     <dialog
-        android:id="@+id/upsDapTermsOfServiceBottomSheetFragment"
+        android:id="@+id/upsdapTermsOfServiceBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment"
         android:label="UPSDAPTermsOfServiceBottomSheetFragment">
         <argument
             android:name="originAddress"
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress" />
     </dialog>
+    <dialog
+        android:id="@+id/fedExTermsOfServiceBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.fedex.FedExTermsOfServiceBottomSheetFragment"
+        android:label="FedExTermsOfServiceBottomSheetFragment" />
 </navigation>

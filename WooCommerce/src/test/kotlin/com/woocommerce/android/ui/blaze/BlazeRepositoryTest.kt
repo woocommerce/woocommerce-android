@@ -56,7 +56,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
         isEndlessCampaign = false
     )
     private val blazeCampaignsStore: BlazeCampaignsStore = mock {
-        onBlocking { createCampaign(any(), any()) } doReturn
+        on { createCampaign(any(), any()) } doReturn
             BlazeResult(blazeModel)
     }
     private val productDetailRepository: ProductDetailRepository = mock()

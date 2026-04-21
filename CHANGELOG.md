@@ -1,6 +1,21 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.6
+Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.
+
+## 24.5
+Creating orders for registered customers is now more reliable. We fixed an issue where billing details could appear in the shipping address, helping you send orders to the right destination.
+
+## 24.4
+Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.
+
+## 24.3
+We’ve improved stability in Site Picker by fixing a crash that could happen when re-adding a previously hidden site. This update makes switching back to hidden stores smoother and more reliable.
+
+## 24.2
+Signing in just got easier and more secure! This update adds passkey support for WordPress.com accounts during Jetpack setup, so you can skip the password and log in with a tap. We also introduced booking management for eligible stores, helping you handle appointments right from the app.
+
 ## 24.1
 We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.
 Thanks for selling with WooCommerce! 🚀

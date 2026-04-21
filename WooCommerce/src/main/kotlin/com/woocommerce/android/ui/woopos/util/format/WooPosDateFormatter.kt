@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -35,7 +36,7 @@ class WooPosDateFormatter @Inject constructor(
 
     fun formatShortDate(instant: Instant): String =
         DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-            .withZone(clock.zone)
+            .withZone(ZoneOffset.UTC)
             .format(instant)
 
     /**

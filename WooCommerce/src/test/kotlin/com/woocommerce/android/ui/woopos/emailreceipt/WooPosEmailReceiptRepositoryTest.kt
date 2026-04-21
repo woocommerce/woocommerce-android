@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.regex.Pattern
 
@@ -89,20 +90,22 @@ class WooPosEmailReceiptRepositoryTest {
     }
 
     @Test
-    fun `given WC version 10 or higher, when sendReceiptByEmail, then sends POS receipt with email directly`() = runTest {
+    fun `given WC version 10 or higher, when sendReceiptByEmail, then sends POS receipt with explicit templateId`() = runTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(WooPayload(Unit))
+        whenever(
+            orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, "customer_pos_completed_order")
+        ).thenReturn(WooPayload(Unit))
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, "customer_pos_completed_order")
         verify(orderStore, never()).updateOrderBillingEmail(siteModel, orderId, email)
     }
 
@@ -131,7 +134,9 @@ class WooPosEmailReceiptRepositoryTest {
         val email = "test@example.com"
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(
+        whenever(
+            orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, "customer_pos_completed_order")
+        ).thenReturn(
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.TIMEOUT))
         )
 
@@ -159,5 +164,88 @@ class WooPosEmailReceiptRepositoryTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given WC 10_7 or higher, when sendReceiptByEmail, then sends POS receipt without templateId`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val email = "test@example.com"
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.7.0")
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, null)).thenReturn(
+            WooPayload(Unit)
+        )
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, null)
+    }
+
+    @Test
+    fun `given WC 11_0, when sendReceiptByEmail, then sends POS receipt without templateId`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val email = "test@example.com"
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("11.0.0")
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, null)).thenReturn(
+            WooPayload(Unit)
+        )
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true, null)
+    }
+
+    @Test
+    fun `given order with billing email, when getBillingEmail, then return email`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val orderEntity: OrderEntity = mock {
+            on { billingEmail }.thenReturn("customer@example.com")
+        }
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(orderEntity)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isEqualTo("customer@example.com")
+    }
+
+    @Test
+    fun `given order with blank billing email, when getBillingEmail, then return null`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val orderEntity: OrderEntity = mock {
+            on { billingEmail }.thenReturn("")
+        }
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(orderEntity)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `given no order found, when getBillingEmail, then return null`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isNull()
     }
 }

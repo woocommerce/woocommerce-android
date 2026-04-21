@@ -17,6 +17,7 @@ class DashboardRepositoryTest {
     private val observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus = mock()
     private val observeStockWidgetStatus: ObserveStockWidgetStatus = mock()
     private val observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus = mock()
+    private val observeInboxWidgetStatus: ObserveInboxWidgetStatus = mock()
 
     @Test
     fun `given site component is null, when repository is initialized, then it completes without crash`() = runTest {
@@ -34,7 +35,8 @@ class DashboardRepositoryTest {
             observePushNotificationsWidgetStatus,
             observeOnboardingWidgetStatus,
             observeStockWidgetStatus,
-            observeGoogleAdsWidgetStatus
+            observeGoogleAdsWidgetStatus,
+            observeInboxWidgetStatus
         )
 
         // Then

@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.IdleCircle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
@@ -61,7 +62,8 @@ fun WooPushNotificationsConnectionStepsScreen(
             onCloseClick = viewModel::onCloseClick,
             onGoToStoreClick = viewModel::onGoToStoreClick,
             onRetryClick = viewModel::onRetryClick,
-            onContactSupportClick = viewModel::onContactSupportClick
+            onContactSupportClick = viewModel::onContactSupportClick,
+            onUpdatePluginClick = viewModel::onUpdatePluginClick
         )
     }
 }
@@ -73,6 +75,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
     onGoToStoreClick: () -> Unit,
     onRetryClick: () -> Unit,
     onContactSupportClick: () -> Unit,
+    onUpdatePluginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -110,7 +113,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 WordPressWooBadge()
 
                 Text(
-                    text = stringResource(id = R.string.woo_push_notifications_connection_steps_title),
+                    text = stringResource(id = viewState.titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 32.dp)
@@ -118,7 +121,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
 
                 Text(
                     text = annotatedStringRes(
-                        R.string.woo_push_notifications_connection_steps_body,
+                        viewState.bodyRes,
                         viewState.siteAddress
                     ),
                     modifier = Modifier.padding(top = 8.dp)
@@ -143,15 +146,42 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 enter = fadeIn(animationSpec = tween(DefaultDurationMillis)),
                 exit = fadeOut(animationSpec = tween(DefaultDurationMillis))
             ) {
-                WCColoredButton(
-                    onClick = onRetryClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.woo_push_notifications_connection_steps_retry
+                if (viewState.isPluginUpdateRequired) {
+                    Column {
+                        WCColoredButton(
+                            onClick = onUpdatePluginClick,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.woo_push_notifications_connection_steps_update_plugin
+                                )
+                            )
+                        }
+                        WCOutlinedButton(
+                            onClick = onRetryClick,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.woo_push_notifications_connection_steps_retry
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    WCColoredButton(
+                        onClick = onRetryClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.woo_push_notifications_connection_steps_retry
+                            )
                         )
-                    )
+                    }
                 }
             }
 
@@ -276,14 +306,16 @@ private fun WooPushNotificationsConnectionStepsPreview() {
     WooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
+                titleRes = R.string.woo_push_notifications_connection_steps_title_connect,
+                bodyRes = R.string.woo_push_notifications_connection_steps_body_connect,
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.ConnectStore,
+                        type = StepType.CheckPluginCompatibility,
                         state = StepState.Ongoing
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.CheckPluginCompatibility,
+                        type = StepType.ConnectStore,
                         state = StepState.Idle
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
@@ -295,7 +327,8 @@ private fun WooPushNotificationsConnectionStepsPreview() {
             onCloseClick = {},
             onGoToStoreClick = {},
             onRetryClick = {},
-            onContactSupportClick = {}
+            onContactSupportClick = {},
+            onUpdatePluginClick = {}
         )
     }
 }
@@ -306,14 +339,16 @@ private fun WooPushNotificationsConnectionStepsPreviewError() {
     WooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
+                titleRes = R.string.woo_push_notifications_connection_steps_title_connect,
+                bodyRes = R.string.woo_push_notifications_connection_steps_body_connect,
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.ConnectStore,
+                        type = StepType.CheckPluginCompatibility,
                         state = StepState.Success
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.CheckPluginCompatibility,
+                        type = StepType.ConnectStore,
                         state = StepState.Error(UiString.UiStringText("Error connecting to store"))
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
@@ -325,7 +360,8 @@ private fun WooPushNotificationsConnectionStepsPreviewError() {
             onCloseClick = {},
             onGoToStoreClick = {},
             onRetryClick = {},
-            onContactSupportClick = {}
+            onContactSupportClick = {},
+            onUpdatePluginClick = {}
         )
     }
 }

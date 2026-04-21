@@ -55,12 +55,10 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                 mode = BookingDetailsFragment.Mode.Empty
             ).toBundle()
         )
+
     override val activityAppBarStatus: AppBarStatus
-        get() = if (navArgs.showBottomNavigation) {
-            AppBarStatus.Hidden
-        } else {
-            AppBarStatus.Visible(hasShadow = false, hasDivider = true)
-        }
+        get() = AppBarStatus.Hidden
+
     override val shouldShowBottomNavigation: Boolean
         get() = navArgs.showBottomNavigation
 
@@ -103,6 +101,11 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
         handleTwoPaneToOnePaneConversionIfNeeded()
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.trackBookingListView()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -132,6 +135,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                     )
                 }
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
 

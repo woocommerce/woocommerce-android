@@ -4,8 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -15,7 +18,7 @@ import javax.inject.Inject
 
 class WooPosPreferencesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val dataStore: DataStore<Preferences>
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val dataStore: DataStore<Preferences>
 ) {
     private val recentProductSearchesSiteSpecificKey: Preferences.Key<String>
         get() = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
@@ -103,19 +106,6 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun isPeriodicSyncEnabledForSite(siteId: LocalOrRemoteId.LocalId): Boolean {
-        val key = buildPeriodicSyncEnabledKey(siteId)
-        val preferences = dataStore.data.map { it[key] ?: true }.first()
-        return preferences
-    }
-
-    suspend fun disablePeriodicSyncForSite(siteId: LocalOrRemoteId.LocalId) {
-        val key = buildPeriodicSyncEnabledKey(siteId)
-        dataStore.edit { preferences ->
-            preferences[key] = false
-        }
-    }
-
     suspend fun getWooVersionSunsetBannerDismissalTimestamp(): Long? {
         return dataStore.data.map { preferences ->
             preferences[wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey]
@@ -128,8 +118,31 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
-        booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
+    suspend fun getFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        return dataStore.data.map { it[key] ?: 0 }.first()
+    }
+
+    suspend fun setFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId, attempts: Int) {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        dataStore.edit { preferences ->
+            preferences[key] = attempts
+        }
+    }
+
+    suspend fun getAndClearFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        var attempts = 0
+        dataStore.edit { preferences ->
+            attempts = preferences[key] ?: 0
+            preferences.remove(key)
+        }
+        return attempts
+    }
+
+    private fun buildFileBasedSyncPollAttemptsKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Int> =
+        intPreferencesKey("pos_file_based_sync_poll_attempts_${siteId.value}")
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 

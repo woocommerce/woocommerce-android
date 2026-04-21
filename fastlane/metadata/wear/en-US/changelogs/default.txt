@@ -1,1 +1,1 @@
-This update makes the Wear app run more smoothly with faster startup times and improved reliability, giving you a better experience managing your store from your wrist.
+This release includes internal updates and maintenance improvements for a smoother, more reliable WooCommerce Wear experience.

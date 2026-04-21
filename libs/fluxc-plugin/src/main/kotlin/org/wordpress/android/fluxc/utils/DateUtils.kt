@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.utils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -11,6 +12,9 @@ object DateUtils {
     private const val DATE_FORMAT_DEFAULT = "yyyy-MM-dd"
     private const val DATE_TIME_FORMAT_START = "yyyy-MM-dd'T'00:00:00"
     private const val DATE_TIME_FORMAT_END = "yyyy-MM-dd'T'23:59:59"
+
+    val DATE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT)
+    val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ROOT)
 
     private const val ONE_WEEK_IN_DAYS = 7
     private const val ONE_DAY_IN_HOURS = 24

@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_4_5
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_5_6
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_71_72
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_79_80
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
@@ -449,6 +450,114 @@ class MigrationTests {
 
             // Verify the invalid row was filtered out
             assertThat(cursor.moveToNext()).isFalse
+        }
+    }
+
+    @Test
+    fun testMigration79to80_addsUserIdColumn_and_backfillsFromCustomerId() {
+        helper.createDatabase(TEST_DB, 79).apply {
+            execSQL(
+                """
+                INSERT INTO Bookings (
+                    id, localSiteId, start, end, allDay, status, cost, currency,
+                    customerId, productId, resourceId, dateCreated, dateModified,
+                    googleCalendarEventId, orderId, orderItemId, parentId,
+                    personCounts, localTimezone, customerNote, attendanceStatus,
+                    note, location,
+                    order_status, order_product_name,
+                    order_customer_billingFirstName, order_customer_billingLastName,
+                    order_customer_billingCompany, order_customer_billingAddress1,
+                    order_customer_billingAddress2, order_customer_billingCity,
+                    order_customer_billingState, order_customer_billingPostcode,
+                    order_customer_billingCountry, order_customer_billingEmail,
+                    order_customer_billingPhone,
+                    order_payment_paymentMethodId, order_payment_paymentMethodTitle,
+                    order_payment_subtotal, order_payment_subtotalTax,
+                    order_payment_total, order_payment_totalTax
+                ) VALUES (
+                    1, 10, 1000, 2000, 0, 'confirmed', '50.0', 'USD',
+                    42, 100, 200, 1000, 2000,
+                    '', 300, 400, 0,
+                    '', '', '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '',
+                    '', '',
+                    '', '',
+                    '', ''
+                )
+                """.trimIndent()
+            )
+        }.close()
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 80, true, MIGRATION_79_80)
+
+        migratedDb.query("SELECT userId, customerId FROM Bookings WHERE id = 1").use { cursor ->
+            assertThat(cursor.count).isEqualTo(1)
+            cursor.moveToFirst()
+            val userId = cursor.getLong(0)
+            val customerId = cursor.getLong(1)
+            assertThat(userId).isEqualTo(42)
+            assertThat(customerId).isEqualTo(42)
+        }
+    }
+
+    @Test
+    fun testMigration79to80_guestBooking_userIdDefaultsToZero() {
+        helper.createDatabase(TEST_DB, 79).apply {
+            execSQL(
+                """
+                INSERT INTO Bookings (
+                    id, localSiteId, start, end, allDay, status, cost, currency,
+                    customerId, productId, resourceId, dateCreated, dateModified,
+                    googleCalendarEventId, orderId, orderItemId, parentId,
+                    personCounts, localTimezone, customerNote, attendanceStatus,
+                    note, location,
+                    order_status, order_product_name,
+                    order_customer_billingFirstName, order_customer_billingLastName,
+                    order_customer_billingCompany, order_customer_billingAddress1,
+                    order_customer_billingAddress2, order_customer_billingCity,
+                    order_customer_billingState, order_customer_billingPostcode,
+                    order_customer_billingCountry, order_customer_billingEmail,
+                    order_customer_billingPhone,
+                    order_payment_paymentMethodId, order_payment_paymentMethodTitle,
+                    order_payment_subtotal, order_payment_subtotalTax,
+                    order_payment_total, order_payment_totalTax
+                ) VALUES (
+                    2, 10, 1000, 2000, 0, 'confirmed', '50.0', 'USD',
+                    0, 100, 200, 1000, 2000,
+                    '', 300, 400, 0,
+                    '', '', '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '', '',
+                    '',
+                    '', '',
+                    '', '',
+                    '', ''
+                )
+                """.trimIndent()
+            )
+        }.close()
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 80, true, MIGRATION_79_80)
+
+        migratedDb.query("SELECT userId, customerId FROM Bookings WHERE id = 2").use { cursor ->
+            assertThat(cursor.count).isEqualTo(1)
+            cursor.moveToFirst()
+            val userId = cursor.getLong(0)
+            val customerId = cursor.getLong(1)
+            assertThat(userId).isEqualTo(0)
+            assertThat(customerId).isEqualTo(0)
         }
     }
 

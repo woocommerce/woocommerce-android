@@ -101,6 +101,7 @@ class WooShippingLabelPackageMapper @Inject constructor() {
         }
 
         val usps = carrierPackagesResponse?.usps
+        val fedex = carrierPackagesResponse?.fedex
         val dhl = carrierPackagesResponse?.dhlExpress
         val ups = carrierPackagesResponse?.ups
 
@@ -109,6 +110,12 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 groupsFor(
                     CarrierType.USPS,
                     listOf(it.flatBoxes, it.boxes, it.expressBoxes, it.envelopes)
+                )
+            },
+            fedex?.let {
+                groupsFor(
+                    CarrierType.FEDEX,
+                    listOf(it.express, it.international)
                 )
             },
             dhl?.let {

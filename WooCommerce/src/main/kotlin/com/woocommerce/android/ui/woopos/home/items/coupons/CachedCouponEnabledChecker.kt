@@ -8,13 +8,19 @@ class CachedCouponEnabledChecker @Inject constructor(
     val wooCommerceStore: WooCommerceStore,
     val selectedSite: SelectedSite
 ) {
+    private var cachedSiteId: Int? = null
     private var cachedValue: Boolean? = null
 
     suspend fun isEnabled(): Boolean {
-        cachedValue?.let { return it }
+        val site = selectedSite.get()
+        if (cachedSiteId == site.id) {
+            cachedValue?.let { return it }
+        }
 
-        val result = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.couponsEnabled ?: false
-        cachedValue = result
-        return result
+        return (wooCommerceStore.getSiteSettingsAsync(site)?.couponsEnabled ?: false)
+            .also {
+                cachedSiteId = site.id
+                cachedValue = it
+            }
     }
 }

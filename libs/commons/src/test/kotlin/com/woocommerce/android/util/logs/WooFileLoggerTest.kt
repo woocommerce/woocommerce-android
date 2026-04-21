@@ -29,10 +29,15 @@ class WooFileLoggerTest : BaseUnitTest() {
         testLifecycleOwner = TestLifecycleOwner(initialState = initialLifecycleState)
 
         wooFileLogger = WooFileLogger(
-            logsDirectory = logsDirectory,
             appCoroutineScope = testScope,
             processLifecycleOwner = testLifecycleOwner,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            logFileWriter = LogFileWriter(
+                logsDirectory = logsDirectory,
+                maxLogFiles = 7,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                availableDiskBytes = { Long.MAX_VALUE }
+            ),
         )
     }
 
@@ -252,4 +257,27 @@ class WooFileLoggerTest : BaseUnitTest() {
         assertThat(logFileContent).isNotNull()
         assertThat(logFileContent).isEmpty()
     }
+
+    @Test
+    fun `given file has corrupted entries, when reading content, then only valid entries are returned`() =
+        testBlocking {
+            // GIVEN
+            setup()
+            val validEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Valid message")
+            wooFileLogger.addEntry(validEntry)
+            wooFileLogger.forceFlush()
+            advanceTimeBy(100)
+
+            val logFile = wooFileLogger.getCurrentLogFile()
+            logFile.appendText("\n--garbled content that is not a valid log entry")
+            logFile.appendText("\n--[Mar-02 14:00:00:000 UNKNOWN_TAG d] unknown tag entry")
+
+            // WHEN
+            val logFileContent = wooFileLogger.getLogFileContent(logFile.name)
+
+            // THEN
+            val entries = requireNotNull(logFileContent)
+            assertThat(entries).hasSize(1)
+            assertThat(entries.first()).isEqualTo(validEntry)
+        }
 }

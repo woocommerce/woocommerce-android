@@ -117,6 +117,30 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when user roles cannot be fetched on retry, then show the role verification error`() = testBlocking {
+        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.failure(Exception()))
+
+        val isProgressDialogShown = ArrayList<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                isProgressDialogShown.add(it)
+            }
+        }
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onRetryButtonClicked()
+
+        verify(userEligibilityFetcher, times(1)).fetchUserInfo()
+
+        assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_fetch_failed))
+        assertThat(isProgressDialogShown).containsExactly(true, false)
+    }
+
+    @Test
     fun `Handles logout button click correctly`() = testBlocking {
         doReturn(true).whenever(accountRepository).logout()
 

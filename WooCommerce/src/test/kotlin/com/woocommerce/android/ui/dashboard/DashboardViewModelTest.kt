@@ -46,7 +46,7 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: DashboardTransactionLauncher = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
     private val dashboardRepository: DashboardRepository = mock {
         on { widgets } doReturn flowOf(
@@ -65,7 +65,7 @@ class DashboardViewModelTest : BaseUnitTest() {
         on { observe(any()) } doReturn flowOf(Status.REGISTERED_WPCOM_ONLY)
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
-        onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
+        on { userFeedbackIsDueObservable } doReturn flowOf(false)
     }
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
         on { invoke() } doReturn flowOf(false)
@@ -111,25 +111,52 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a Jetpack CP site, when screen starts, then show the Jetpack Benefits banner`() = testBlocking {
-        setup {
-            whenever(selectedSite.observe()).thenReturn(
-                flowOf(
-                    SiteModel().apply {
-                        origin = SiteModel.ORIGIN_WPCOM_REST
-                        setIsJetpackCPConnected(true)
-                        setIsJetpackConnected(false)
-                    }
+    fun `given a Jetpack CP site with PN setup available, when screen starts, then hide the Jetpack Benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPCOM_REST
+                            setIsJetpackCPConnected(true)
+                            setIsJetpackConnected(false)
+                        }
+                    )
                 )
-            )
-            whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(true))
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isFalse()
         }
 
-        val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+    @Test
+    fun `given a Jetpack CP site with PN setup not available, when screen starts, then show the Jetpack Benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPCOM_REST
+                            setIsJetpackCPConnected(true)
+                            setIsJetpackConnected(false)
+                        }
+                    )
+                )
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(false))
+            }
 
-        assertThat(jetpackBenefitsBanner).isNotNull()
-        assertThat(jetpackBenefitsBanner!!.show).isTrue()
-    }
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isTrue()
+        }
 
     @Test
     fun `given an Application Passwords site, when screen starts, then show the Jetpack Benefits banner`() =
@@ -152,17 +179,16 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a Jetpack CP site, when jetpack benefits dismissed, then update prefs`() = testBlocking {
+    fun `given an Application Passwords site, when jetpack benefits dismissed, then update prefs`() = testBlocking {
         setup {
             whenever(selectedSite.observe()).thenReturn(
                 flowOf(
                     SiteModel().apply {
-                        origin = SiteModel.ORIGIN_WPCOM_REST
-                        setIsJetpackCPConnected(true)
-                        setIsJetpackConnected(false)
+                        origin = SiteModel.ORIGIN_WPAPI
                     }
                 )
             )
+            whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -172,25 +198,25 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a Jetpack CP site, when jetpack benefits dismissed recently, then hide banner`() = testBlocking {
-        setup {
-            whenever(selectedSite.observe()).thenReturn(
-                flowOf(
-                    SiteModel().apply {
-                        origin = SiteModel.ORIGIN_WPCOM_REST
-                        setIsJetpackCPConnected(true)
-                        setIsJetpackConnected(false)
-                    }
+    fun `given an Application Passwords site, when jetpack benefits dismissed recently, then hide banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
                 )
-            )
-            whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate())
-                .thenReturn(System.currentTimeMillis() - 1000)
+                whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate())
+                    .thenReturn(System.currentTimeMillis() - 1000)
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner!!.show).isFalse()
         }
-
-        val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
-
-        assertThat(jetpackBenefitsBanner!!.show).isFalse()
-    }
 
     @Test
     fun `when the stats card is unavailable, then show the share store card`() = testBlocking {

@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDisp
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherViewModel.StartWPComAuthenticationForEmail
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherViewModel.StartWPComLoginForJetpackActivation
 import com.woocommerce.android.ui.login.wpcom.WPComLoginEmailFragmentArgs
-import com.woocommerce.android.ui.login.wpcom.WPComLoginMode
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordFragmentArgs
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,13 +36,13 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
                 is StartWPComLoginForJetpackActivation -> navigateToWPComLoginGraph(
                     startDestination = R.id.wPComLoginEmailFragment,
                     args = WPComLoginEmailFragmentArgs(
-                        wpComLoginMode = WPComLoginMode.JetpackSetup(event.jetpackStatus)
+                        jetpackStatus = event.jetpackStatus
                     ).toBundle()
                 )
                 is StartWPComAuthenticationForEmail -> navigateToWPComLoginGraph(
                     startDestination = R.id.wPComLoginPasswordFragment,
                     args = WPComLoginPasswordFragmentArgs(
-                        wpComLoginMode = WPComLoginMode.JetpackSetup(event.jetpackStatus),
+                        jetpackStatus = event.jetpackStatus,
                         emailOrUsername = event.wpComEmail
                     ).toBundle()
                 )

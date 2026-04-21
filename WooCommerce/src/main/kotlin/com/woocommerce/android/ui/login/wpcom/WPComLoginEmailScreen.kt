@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,9 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -37,7 +33,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
-import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLoginEmailScreen(viewModel: WPComLoginEmailViewModel) {
@@ -59,7 +54,11 @@ fun WPComLoginEmailScreen(
     onContinueClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val branding = viewState.resolveBranding()
+    val titleRes = if (viewState.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -81,19 +80,23 @@ fun WPComLoginEmailScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
             ) {
-                if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                    WordPressWooBadge()
-                } else {
-                    JetpackToWooHeader()
-                }
+                JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = branding.title),
+                    text = stringResource(id = titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(id = branding.subtitle))
+                Text(
+                    text = stringResource(
+                        id = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connection_enter_wpcom_email
+                        } else {
+                            R.string.login_jetpack_installation_enter_wpcom_email
+                        }
+                    )
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 WCOutlinedTextField(
@@ -120,7 +123,7 @@ fun WPComLoginEmailScreen(
                 if (!viewState.usernameOnly) {
                     Text(
                         style = MaterialTheme.typography.bodyMedium,
-                        text = stringResource(id = branding.helperText)
+                        text = stringResource(id = R.string.login_jetpack_connection_create_account)
                     )
                 }
             }
@@ -137,10 +140,10 @@ fun WPComLoginEmailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = stringResource(id = branding.buttonText))
+                Text(text = stringResource(id = titleRes))
             }
             WPComConsent(
-                forJetpackSetup = viewState.wpComLoginMode is WPComLoginMode.JetpackSetup,
+                forJetpackSetup = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -154,58 +157,13 @@ fun WPComLoginEmailScreen(
     }
 }
 
-private data class EmailScreenBranding(
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int,
-    @StringRes val helperText: Int,
-    @StringRes val buttonText: Int,
-)
-
-private fun WPComLoginEmailViewModel.ViewState.resolveBranding(): EmailScreenBranding {
-    return when (wpComLoginMode) {
-        WPComLoginMode.PushNotificationsSetup -> EmailScreenBranding(
-            title = R.string.login_wpcom_connect_title,
-            subtitle = R.string.login_wpcom_connect_subtitle,
-            helperText = R.string.login_wpcom_connect_create_account_hint,
-            buttonText = R.string.continue_button,
-        )
-
-        is WPComLoginMode.JetpackSetup -> EmailScreenBranding(
-            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-            subtitle = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connection_enter_wpcom_email
-            } else {
-                R.string.login_jetpack_installation_enter_wpcom_email
-            },
-            helperText = R.string.login_jetpack_connection_create_account,
-            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-        )
-    }
-}
-
-@Preview()
+@Preview
 @Composable
 private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLoginEmailScreen(
             viewState = WPComLoginEmailViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 usernameOnly = false,
                 emailOrUsername = "",
             )
@@ -213,16 +171,3 @@ private fun JetpackModePreview() {
     }
 }
 
-@Preview()
-@Composable
-private fun NotificationSetupModePreview() {
-    WooThemeWithBackground {
-        WPComLoginEmailScreen(
-            viewState = WPComLoginEmailViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
-                usernameOnly = false,
-                emailOrUsername = "",
-            )
-        )
-    }
-}

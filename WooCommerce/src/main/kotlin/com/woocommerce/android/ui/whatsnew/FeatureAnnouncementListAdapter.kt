@@ -86,7 +86,7 @@ class FeatureAnnouncementListAdapter :
                 .load(imgUrl)
                 .placeholder(placeholder)
                 .error(placeholder)
-                .circleCrop()
+                .fitCenter()
                 .into(imageView)
                 .clearOnDetach()
         }
@@ -103,7 +103,7 @@ class FeatureAnnouncementListAdapter :
         ) {
             val imageData: ByteArray
             try {
-                val sanitizedBase64String = base64ImageData.replace("data:image/png;base64,", "")
+                val sanitizedBase64String = base64ImageData.replace(Regex("^data:image/[^;]+;base64,"), "")
                 imageData = Base64.decode(sanitizedBase64String, Base64.DEFAULT)
             } catch (ex: IllegalArgumentException) {
                 WooLog.e(WooLog.T.MEDIA, "Cant parse base64 image data: ${ex.message}")
@@ -114,7 +114,7 @@ class FeatureAnnouncementListAdapter :
                 .load(imageData)
                 .placeholder(placeholder)
                 .error(placeholder)
-                .circleCrop()
+                .fitCenter()
                 .into(imageView)
                 .clearOnDetach()
         }

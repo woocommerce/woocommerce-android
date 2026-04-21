@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
@@ -35,6 +36,7 @@ fun WooPosSettingsDetailPaneScreen(
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -95,7 +97,7 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
-                    WooPosSettingsStoreScreen()
+                    WooPosSettingsStoreScreen(onNavigationEvent = onNavigationEvent)
                 }
 
                 is WooPosSettingsDetailDestination.LocalCatalog.Overview -> {

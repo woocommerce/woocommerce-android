@@ -1,2 +1,1 @@
-We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.
-Thanks for selling with WooCommerce! 🚀
+Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.

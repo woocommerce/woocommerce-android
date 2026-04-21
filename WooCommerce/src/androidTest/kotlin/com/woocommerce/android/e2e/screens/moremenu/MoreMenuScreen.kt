@@ -19,7 +19,7 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
         )
             .performScrollTo()
             .performClick()
-        return ReviewsListScreen()
+        return ReviewsListScreen(composeTestRule)
     }
 
     fun openSettings(composeTestRule: ComposeTestRule): SettingsScreen {

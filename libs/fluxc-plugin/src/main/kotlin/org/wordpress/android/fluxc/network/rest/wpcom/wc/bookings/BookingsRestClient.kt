@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
+import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
@@ -9,7 +10,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
-import java.time.ZoneOffset
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +22,7 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
-        private const val FILTER_QUERY_PARAMETER_SEPERATOR = ","
+        private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
     }
 
     suspend fun fetchBooking(
@@ -102,6 +105,23 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchProductBookingLocation(
+        site: SiteModel,
+        productId: Long
+    ): WooPayload<ProductBookingLocationDto> {
+        val url = WOOCOMMERCE.products.id(productId).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = ProductBookingLocationDto::class.java,
+            params = mapOf("_fields" to "id,booking_location")
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long
@@ -120,43 +140,67 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchProductAvailability(
+        site: SiteModel,
+        productId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        resourceId: Long,
+    ): WooPayload<BookingAvailabilityDto> {
+        val endpoint = WOOCOMMERCE.products.id(productId).availability.pathV2Bookings
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingAvailabilityDto::class.java,
+            params = mapOf(
+                "start_date" to startDate.format(DATE_TIME_FORMATTER),
+                "end_date" to endDate.format(DATE_TIME_FORMATTER),
+                "resource_id" to resourceId.toString(),
+            )
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     private fun BookingFilters.toQueryParams(): Map<String, String> = buildMap {
         if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) {
-            set(
-                "resource",
-                teamMembers.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() }
-            )
+            teamMembers.values.forEachIndexed { index, resource ->
+                set("resource[$index]", resource.value.toString())
+            }
         }
         if (bookingType != null) TODO()
         if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) {
-            set("product", serviceEvents.values.joinToString(",") { it.productId.toString() })
+            serviceEvents.values.forEachIndexed { index, event ->
+                set("product[$index]", event.productId.toString())
+            }
         }
-        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
-            set(
-                "attendance_status",
-                attendanceStatuses.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
-        }
+        attendanceStatus.value?.let { set("attendance_status", it.key) }
         if (excludedBookingStatuses != BookingsFilterOption.ExcludedBookingStatuses.DEFAULT) {
             excludedBookingStatuses.values.forEachIndexed { index, status ->
                 set("booking_status_exclude[$index]", status.key)
             }
         }
         if (paymentStatus != null) TODO()
-        if (customer != null) set("customer", customer.customerId.toString())
+        if (customer != null) set("user", customer.userId.toString())
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
-            // Plus/minus one minute to make the range inclusive
             dateRange.before?.let {
-                val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusMinutes(1).toInstant()
-                set("start_date_before", inclusiveBefore.toString())
+                set("start_date_before", it.toString())
             }
             dateRange.after?.let {
-                val inclusiveAfter = it.atZone(ZoneOffset.UTC).minusMinutes(1).toInstant()
-                set("start_date_after", inclusiveAfter.toString())
+                set("start_date_after", it.toString())
             }
         }
         if (location != null) TODO()
     }
 }
+
+data class ProductBookingLocationDto(
+    val id: Long? = null,
+    @SerializedName("booking_location")
+    val bookingLocation: String? = null,
+)
 
 private val BookingUpdatePayload.asMap: Map<String, Any>
     get() = mutableMapOf<String, Any>().putIfNotNull(

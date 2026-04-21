@@ -125,7 +125,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         wasLastStateClosed = false
 
         val searchHintStringRes = when (viewStateFlow.value) {
-            is WooPosItemsToolbarViewState.ProductList -> R.string.woopos_search_products
+            is WooPosItemsToolbarViewState.ProductList -> R.string.woopos_search_products_and_variations
             is WooPosItemsToolbarViewState.CouponList -> R.string.woopos_search_coupons
             is WooPosItemsToolbarViewState.VariationList -> error("Search is not applicable for variations list")
         }

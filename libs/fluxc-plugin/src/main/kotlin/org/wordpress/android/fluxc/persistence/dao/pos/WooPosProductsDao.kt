@@ -23,9 +23,24 @@ abstract class WooPosProductsDao {
             "AND status = '$PRODUCT_STATUS_PUBLISH' " +
             "AND (type = '$PRODUCT_TYPE_SIMPLE' OR type = '$PRODUCT_TYPE_VARIABLE') " +
             "AND downloadable = '$DOWNLOADABLE_FALSE' " +
-            "ORDER BY LOWER(name)"
+            "ORDER BY LOWER(name), remoteId"
     )
     abstract fun observeAllProducts(localSiteId: LocalId): Flow<List<WooPosProductEntity>>
+
+    @Query(
+        "SELECT * FROM PosProductEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND status = '$PRODUCT_STATUS_PUBLISH' " +
+            "AND (type = '$PRODUCT_TYPE_SIMPLE' OR type = '$PRODUCT_TYPE_VARIABLE') " +
+            "AND downloadable = '$DOWNLOADABLE_FALSE' " +
+            "ORDER BY LOWER(name), remoteId " +
+            "LIMIT :limit OFFSET :offset"
+    )
+    abstract suspend fun getProducts(
+        localSiteId: LocalId,
+        limit: Int,
+        offset: Int
+    ): List<WooPosProductEntity>
 
     @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId AND remoteId = :remoteId")
     abstract suspend fun getProduct(localSiteId: LocalId, remoteId: RemoteId): WooPosProductEntity?
@@ -65,7 +80,7 @@ abstract class WooPosProductsDao {
             "AND (name LIKE '%' || :searchQuery || '%' " +
             "OR sku LIKE '%' || :searchQuery || '%' " +
             "OR globalUniqueId LIKE '%' || :searchQuery || '%') " +
-            "ORDER BY LOWER(name) " +
+            "ORDER BY LOWER(name), remoteId " +
             "LIMIT :limit OFFSET :offset"
     )
     abstract suspend fun searchProducts(

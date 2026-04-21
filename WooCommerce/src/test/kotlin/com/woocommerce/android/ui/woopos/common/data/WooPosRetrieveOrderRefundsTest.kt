@@ -164,9 +164,13 @@ class WooPosRetrieveOrderRefundsTest {
     }
 
     @Test
-    fun `given order refundTotal is zero, when invoke called, then returns empty list and does not hit store`() = runTest {
+    fun `given order refundTotal is zero, when invoke called, then still fetches refunds from store`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 999L, refundTotal = BigDecimal.ZERO)
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(emptyList())
+        )
 
         // WHEN
         val result = sut.invoke(order)
@@ -174,6 +178,8 @@ class WooPosRetrieveOrderRefundsTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrThrow()).isEmpty()
+        verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
     @Test

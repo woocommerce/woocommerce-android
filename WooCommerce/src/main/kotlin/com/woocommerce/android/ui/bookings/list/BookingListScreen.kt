@@ -55,8 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -86,7 +86,13 @@ fun BookingListScreen(state: BookingListViewState) {
         topBar = {
             Toolbar(
                 title = state.toolbarTitle.getText(),
-                navigationIcon = null,
+                // When search is active, the SearchSection already shows a back button
+                navigationIcon = if (state.showBackButton && !state.searchState.isSearchActive) {
+                    ImageVector.vectorResource(R.drawable.ic_back_24dp)
+                } else {
+                    null
+                },
+                onNavigationButtonClick = state.onBackClick,
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
@@ -130,12 +136,19 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    EmptyView(
-                        state = state,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
-                            .fillMaxSize()
-                    )
+                    WCPullToRefreshBox(
+                        isRefreshing = state.contentState.loadingState ==
+                            BookingListLoadingState.Refreshing,
+                        onRefresh = state.contentState.onRefresh,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        EmptyView(
+                            state = state,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
@@ -504,7 +517,8 @@ private fun BookingListPreview() {
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
                                 attendanceStatus = BookingAttendanceStatus.Attended,
-                                status = BookingStatus.Paid,
+                                paymentStatus = PaymentStatus.PAID,
+                                isCancelled = false,
                                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                             )
                         )
@@ -529,7 +543,9 @@ private fun BookingListPreview() {
                 searchState = BookingListSearchState(
                     query = null,
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }
@@ -563,7 +579,9 @@ private fun EmptyViewPreview() {
                 searchState = BookingListSearchState(
                     query = null,
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }
@@ -597,7 +615,9 @@ private fun EmptySearchResultsViewPreview() {
                 searchState = BookingListSearchState(
                     query = "Haircut",
                     onQueryChanged = {}
-                )
+                ),
+                showBackButton = false,
+                onBackClick = {}
             )
         )
     }

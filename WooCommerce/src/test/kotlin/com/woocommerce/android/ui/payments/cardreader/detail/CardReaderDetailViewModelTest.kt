@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailVie
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ReconnectingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -45,7 +46,7 @@ private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
     private val tracker: PaymentsFlowTracker = mock()
@@ -619,6 +620,33 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             assertThat((viewModel.event.value as NavigateToUrlInGenericWebView).url)
                 .isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
         }
+
+    @Test
+    fun `given reconnecting state, when view model init, then should emit reconnecting view state`() {
+        // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.Reconnecting)
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.viewStateData.value).isInstanceOf(ReconnectingState::class.java)
+    }
+
+    @Test
+    fun `given reconnecting state, when cancel clicked, then should call cancelReconnection`() {
+        // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.Reconnecting)
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+        val viewModel = createViewModel()
+
+        // WHEN
+        (viewModel.viewStateData.value as ReconnectingState).onCancelClicked.invoke()
+
+        // THEN
+        verify(cardReaderManager).cancelReconnection()
+    }
 
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState

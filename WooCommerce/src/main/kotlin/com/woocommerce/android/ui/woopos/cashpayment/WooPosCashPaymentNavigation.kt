@@ -17,8 +17,6 @@ const val CASH_ROUTE_SOURCE_KEY = "source"
 const val CASH_ROUTE =
     "$HOME_ROUTE/cash_payment/{$CASH_ROUTE_ORDER_ID_KEY}?$CASH_ROUTE_SOURCE_KEY={$CASH_ROUTE_SOURCE_KEY}"
 
-const val BOOKING_CASH_PAYMENT_SUCCESS_KEY = "booking_cash_payment_success"
-
 enum class CashPaymentSource {
     CHECKOUT,
     BOOKINGS,

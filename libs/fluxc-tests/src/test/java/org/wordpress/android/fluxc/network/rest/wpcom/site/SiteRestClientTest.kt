@@ -701,6 +701,43 @@ class SiteRestClientTest {
         )
     }
 
+    @Test
+    fun `given CIAB site with woocommerce inactive, when fetching site, then hasWooCommerce is true`() = test {
+        val response = SiteWPComRestResponse().apply {
+            ID = siteId
+            URL = "site.com"
+            options = SiteWPComRestResponse.Options().apply {
+                woocommerce_is_active = false
+            }
+            is_garden = true
+            garden_name = SiteModel.CIAB_GARDEN_NAME
+        }
+
+        initSiteResponse(response)
+
+        val responseModel = restClient.fetchSite(site)
+        assertThat(responseModel.hasWooCommerce).isTrue()
+    }
+
+    @Test
+    fun `given non-CIAB garden site with woocommerce inactive, when fetching site, then hasWooCommerce is false`() =
+        test {
+            val response = SiteWPComRestResponse().apply {
+                ID = siteId
+                URL = "site.com"
+                options = SiteWPComRestResponse.Options().apply {
+                    woocommerce_is_active = false
+                }
+                is_garden = true
+                garden_name = "other"
+            }
+
+            initSiteResponse(response)
+
+            val responseModel = restClient.fetchSite(site)
+            assertThat(responseModel.hasWooCommerce).isFalse()
+        }
+
     private suspend fun initSiteResponse(
         data: SiteWPComRestResponse? = null,
         error: WPComGsonNetworkError? = null

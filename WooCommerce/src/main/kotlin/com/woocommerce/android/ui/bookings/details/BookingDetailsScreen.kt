@@ -36,16 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -120,7 +121,7 @@ fun BookingDetailsScreen(
                                     BookingDetailsContent(
                                         booking = viewState.bookingUiState,
                                         onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                        onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
+                                        onRescheduleBooking = viewState.bookingUiState.onRescheduleBooking,
                                     )
                                 }
                             }
@@ -137,7 +138,7 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onMarkAsPaid: () -> Unit,
+    onRescheduleBooking: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -149,6 +150,7 @@ private fun BookingDetailsContent(
         model = booking.bookingsAppointmentDetails,
         onCancelBooking = onCancelBooking,
         onAttendanceToggle = booking.onAttendanceToggle,
+        onRescheduleBooking = onRescheduleBooking,
         modifier = Modifier.fillMaxWidth()
     )
     BookingCustomerDetails(
@@ -158,11 +160,9 @@ private fun BookingDetailsContent(
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
-            status = booking.bookingSummary.status,
-            onMarkAsPaid = onMarkAsPaid,
             onViewOrder = booking.onViewOrderClicked,
+            onIssueRefund = booking.onIssueRefundClicked,
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(
@@ -253,14 +253,15 @@ private fun BookingDetailsPreview() {
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
                         attendanceStatus = BookingAttendanceStatus.Attended,
-                        status = BookingStatus.Paid,
+                        paymentStatus = PaymentStatus.PAID,
+                        isCancelled = false,
                         attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),
                     bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                         date = "Monday, 05 July 2025",
                         time = "11:00 am - 12:00 pm",
                         staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
-                        location = "238 Willow Creek Drive, Montgomery AL 36109",
+                        location = BookingLocationStatus.Loaded("238 Willow Creek Drive, Montgomery AL 36109"),
                         duration = "60 min",
                         cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,

@@ -2,9 +2,64 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.7
+-----
+- [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
+- [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
+- [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
+- [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
+- [*] Fixed product images failing to load when the Photon service is unavailable [https://github.com/woocommerce/woocommerce-android/pull/15646]
+
+24.6
+-----
+- [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
+- [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
+- [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
+- [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
+- [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
+- [Internal] Hide Inbox for CIAB sites in menu and dashboard [https://github.com/woocommerce/woocommerce-android/pull/15623]
+- [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
+- [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]
+- [Internal] Added bookable service creation via webview for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15622]
+- [Internal] Migrated SimpleTextEditor, CardReaderManuals, and MediaUploadErrorList screens from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15598]
+- [Internal] Migrated UpdateProductStockStatusScreen and PlanSubscriptionScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15601]
+- [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
+- [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
+- [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
+- [*] Shipping Labels: Improved destination name validation when fetching shipping rates [https://github.com/woocommerce/woocommerce-android/pull/15661]
+
+24.5.1
+-----
+- [Internal] POS: Improved error descriptions in catalog sync failure analytics [https://github.com/woocommerce/woocommerce-android/pull/15643]
+
+24.5
+-----
+- [Internal] Hide settings plugins section for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15594]
+- [*] Fixed shipping address showing billing address data when selecting a registered customer during order creation [https://github.com/woocommerce/woocommerce-android/pull/15575]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Treat CIAB sites like atomic sites during site connection [https://github.com/woocommerce/woocommerce-android/pull/15608]
+- [Internal] Unified local and remote feature flag handling [https://github.com/woocommerce/woocommerce-android/pull/15299]
+- [Internal][WEAR] Update watchface complications dependency to 1.3.0 [https://github.com/woocommerce/woocommerce-android/pull/15577]
+
+24.4
+-----
+- [*] Shipping Labels: Add FedEx carrier support to package selection [https://github.com/woocommerce/woocommerce-android/pull/15533]
+- [Woo POS] We added Refunds feature to Point of Sale [https://github.com/woocommerce/woocommerce-android/pull/15510]
+- [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
+- [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
+- [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]
+- [*] Fixed Woo Shipping label purchase flow when the origin address is missing required details [https://github.com/woocommerce/woocommerce-android/pull/15542]
+
+24.3
+-----
+- [*] Fixed a crash when re-adding a previously hidden site in Site Picker [https://github.com/woocommerce/woocommerce-android/pull/15439]
+
 24.2
 -----
-
+- Add support for signing in using passkeys for WordPress.com accounts during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/15379]
+- [Internal] Enable Bookings MVP for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15445]
 
 24.1
 -----

@@ -21,11 +21,14 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCustomsFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment.Companion.CUSTOMS_DATA_RESULT
+import com.woocommerce.android.ui.orders.wooshippinglabels.fedex.FedExTermsOfServiceBottomSheetFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -140,9 +143,8 @@ class WooShippingLabelCreationFragment : BaseFragment() {
 
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
                 is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
-                is WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(
-                    event.originAddress
-                )
+                is NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(event.originAddress)
+                is NavigateToFedExTermsOfService -> navigateToFedExTermsOfService()
 
                 is WooShippingLabelCreationViewModel.PrintCustomsForm -> printFile(event.file)
             }
@@ -181,10 +183,16 @@ class WooShippingLabelCreationFragment : BaseFragment() {
         }
 
         handleDialogNotice(
+            FedExTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
+            entryId = R.id.wooShippingLabelCreationFragment
+        ) {
+            viewModel.onCarrierTermsAccepted()
+        }
+        handleDialogNotice(
             UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
-            viewModel.onUPSTermsAccepted()
+            viewModel.onCarrierTermsAccepted()
         }
     }
 
@@ -229,7 +237,14 @@ class WooShippingLabelCreationFragment : BaseFragment() {
     private fun navigateToUPSDAPTermsOfService(originAddress: OriginShippingAddress) {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
-                .actionWooShippingLabelCreationFragmentToUpsDapTermsOfServiceBottomSheetFragment(originAddress)
+                .actionWooShippingLabelCreationFragmentToUpsdapTermsOfServiceBottomSheetFragment(originAddress)
+        )
+    }
+
+    private fun navigateToFedExTermsOfService() {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToFedExTermsOfServiceBottomSheetFragment()
         )
     }
 }

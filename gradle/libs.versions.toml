@@ -33,29 +33,29 @@ androidx-test-rules = '1.7.0'
 androidx-test-runner = '1.7.0'
 androidx-test-orchestrator = '1.6.1'
 androidx-test-uiautomator = '2.3.0'
-androidx-transition = '1.6.0'
+androidx-transition = '1.7.0'
 androidx-wear-compose = '1.4.0'
 androidx-wear-protolayout = '1.2.1'
 androidx-wear-tooling = '1.0.0'
-androidx-wear-watchface = '1.2.1'
-androidx-work = '2.11.1'
+androidx-wear-watchface = '1.3.0'
+androidx-work = '2.11.2'
 apache-commons-text = '1.15.0'
 apache-http-client-android = '4.3.5.1'
 automattic-about = '1.7.1'
 automattic-encryptedlogging = '1.1.2'
 automattic-measure-builds = '3.2.2'
-automattic-tracks = '6.0.7'
+automattic-tracks = '6.0.8'
 assertj = '3.27.3'
-bumptech-glide = '5.0.5'
+bumptech-glide = '5.0.7'
 cashapp-turbine = '1.2.1'
 coil = '2.7.0'
 commons-fileupload = '1.6.0'
-dependency-analysis = '3.5.1'
+dependency-analysis = '3.6.1'
 detekt = '1.23.8'
 eventbus = "3.3.1"
 facebook-shimmer = '0.5.0'
 fastlane-screengrab = '2.1.1'
-fladle = '0.19.0'
+fladle = '0.21.0'
 glassfish-javax-annotation = "10.0-b28"
 google-autoService = "1.1.1"
 google-dagger = "2.58"
@@ -71,11 +71,11 @@ google-mlkit-text-recognition = '16.0.1'
 google-play-app-update = '2.1.0'
 google-play-review = '2.0.2'
 google-play-ageSignals = "0.0.3"
-google-play-services-auth = '21.4.0'
+google-play-services-auth = '21.5.1'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '19.0.0'
 google-protobuf-plugin = '0.9.6'
-google-protobuf-library = '4.33.5'
+google-protobuf-library = '4.34.1'
 google-services = '4.4.4'
 google-zxing = '3.5.4'
 gravatar = '2.5.1'
@@ -86,24 +86,24 @@ json-path = '2.9.0'
 json-smart = '2.6.0'
 junit = '4.13.2'
 lottie = '6.7.1'
-kotlin = '2.3.10'
+kotlin = '2.3.20'
 kotlinx-coroutines = '1.10.2'
 ksp = '2.3.6'
-mockito-kotlin = '6.1.0'
+mockito-kotlin = '6.2.3'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16.1"
-sentry = '5.12.2'
+sentry = '6.1.0'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.3.2"
-stripe-terminal = '4.7.5'
+stripe-terminal = '5.1.1'
 swiperefreshlayout = "1.2.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
 wellsql = "2.0.0"
 wiremock = '2.26.3'
-wordpress-aztec = 'v2.1.6'
+wordpress-aztec = 'v2.1.7'
 wordpress-libaddressinput = '0.0.2'
 wordpress-lint = "2.2.0"
 wordpress-mediapicker = '0.3.5'
@@ -187,6 +187,7 @@ apache-commons-text = { group = "org.apache.commons", name = "commons-text", ver
 apache-http-client-android = { group = "org.apache.httpcomponents", name = "httpclient-android", version.ref = "apache-http-client-android" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
+automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-04-09_13-30-41"
 automattic-encryptedlogging = { group = "com.automattic", name = "encryptedlogging", version.ref = "automattic-encryptedlogging" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
@@ -262,6 +263,7 @@ squareup-okhttp3-tls = { module = "com.squareup.okhttp3:okhttp-tls", version.ref
 squareup-okhttp3-urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "squareup-okhttp3" }
 stripe-terminal-taptopay = { group = "com.stripe", name = "stripeterminal-taptopay", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }
+stripe-terminal-ktx = { group = "com.stripe", name = "stripeterminal-ktx", version.ref = "stripe-terminal" }
 tinder-statemachine = { group = "com.tinder.statemachine", name = "statemachine", version.ref = "tinder-statemachine" }
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
 wellsql = { module = "org.wordpress:wellsql", version.ref = "wellsql" }

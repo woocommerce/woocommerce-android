@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -36,12 +36,11 @@ class CouponStoreTest {
     @Mock private lateinit var restClient: CouponRestClient
     @Mock private lateinit var couponsDao: CouponsDao
 
+    @Suppress("UNCHECKED_CAST")
     private val transactionExecutor: TransactionExecutor = mock {
-        val blockArg1 = argumentCaptor<suspend () -> Unit>()
-        onBlocking { executeInTransaction(blockArg1.capture()) }.then {
-            runBlocking {
-                blockArg1.lastValue.invoke()
-            }
+        on { executeInTransaction<Unit>(any()) } doAnswer { invocation ->
+            val block = invocation.arguments[0] as suspend () -> Unit
+            runBlocking { block() }
         }
     }
 

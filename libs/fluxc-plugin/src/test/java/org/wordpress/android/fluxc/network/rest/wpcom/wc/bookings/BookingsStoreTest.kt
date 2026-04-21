@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -42,7 +43,8 @@ class BookingsStoreTest {
     private val clock: Clock = Clock.systemUTC()
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
+        whenever(bookingsDao.getBookingsByIds(any(), any())).thenReturn(emptyList())
         sut = BookingsStore(
             bookingsRestClient = bookingsRestClient,
             orderStore = orderStore,
@@ -86,11 +88,14 @@ class BookingsStoreTest {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
             val dto = sampleBookingDto()
+            val existingBooking = sampleBookingEntity(order = BookingOrderInfo(productInfo = null))
+                .copy(location = "Cached Location")
 
             val fetchedOrder = OrderEntity(orderId = dto.orderId, localSiteId = TEST_LOCAL_SITE_ID)
             whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
                 .thenReturn(WooPayload(dto))
+            whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(existingBooking)
             whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
@@ -103,10 +108,12 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
+            val expected = with(bookingDtoMapper) {
+                dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder, existingLocation = existingBooking.location)
+            }
             assertThat(result.model).isEqualTo(expected)
+            assertThat(result.model?.location).isEqualTo("Cached Location")
             verify(bookingsDao).upsert(expected)
-            verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
         }
 
     @Test
@@ -184,12 +191,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -223,16 +230,16 @@ class BookingsStoreTest {
             val dto = sampleBookingDto().copy(orderId = 0L) // avoid order fetch
             val filters = BookingFilters(
                 dateRange = BookingsDateRangePresets.today(clock),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name"),
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -270,12 +277,12 @@ class BookingsStoreTest {
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -309,16 +316,16 @@ class BookingsStoreTest {
             val dto = sampleBookingDto().copy(orderId = 0L)
             val filters = BookingFilters(
                 dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name")
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name")
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 2,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(2),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             )
                 .thenReturn(WooPayload(arrayOf(dto)))
@@ -387,18 +394,18 @@ class BookingsStoreTest {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
             val dto = sampleBookingDto().copy(orderId = 0L)
-            val filters = BookingFilters(
+            val requestedFilters = BookingFilters(
                 dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name"),
             )
             whenever(
                 bookingsRestClient.fetchBookings(
-                    site,
-                    perPage = 25,
-                    page = 1,
-                    query = null,
-                    filters = filters,
-                    order = BookingsOrderOption.DESC
+                    site = eq(site),
+                    perPage = eq(25),
+                    page = eq(1),
+                    query = eq(null),
+                    filters = any(),
+                    order = eq(BookingsOrderOption.DESC)
                 )
             ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
@@ -409,15 +416,27 @@ class BookingsStoreTest {
                 perPage = 25,
                 page = 1,
                 query = null,
-                filters = filters,
+                filters = requestedFilters,
                 order = BookingsOrderOption.DESC
             )
 
             // then
             assertThat(result.isError).isFalse()
+            verify(bookingsRestClient).fetchBookings(
+                site = eq(site),
+                perPage = eq(25),
+                page = eq(1),
+                query = eq(null),
+                filters = argThat {
+                    dateRange.before == requestedFilters.dateRange.before?.plusSeconds(1) &&
+                        dateRange.after == requestedFilters.dateRange.after?.minusSeconds(1) &&
+                        customer == requestedFilters.customer
+                },
+                order = eq(BookingsOrderOption.DESC)
+            )
             verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingFilters>(),
+                eq(requestedFilters),
                 any<List<BookingEntity>>()
             )
         }

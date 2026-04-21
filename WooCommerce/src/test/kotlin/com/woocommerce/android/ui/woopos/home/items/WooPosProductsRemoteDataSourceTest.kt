@@ -65,14 +65,14 @@ class WooPosProductsRemoteDataSourceTest {
             productId = 1,
             productName = "Product 1",
             amount = "10.0",
-            productType = WooPosProductType.SIMPLE,
+            productType = WooPosProductType.Simple,
             isDownloadable = false,
         ),
         generateProduct(
             productId = 2,
             productName = "Product 2",
             amount = "20.0",
-            productType = WooPosProductType.SIMPLE,
+            productType = WooPosProductType.Simple,
             isDownloadable = false,
             images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
         ),
@@ -80,7 +80,7 @@ class WooPosProductsRemoteDataSourceTest {
             productId = 3,
             productName = "Product 3",
             amount = "20.0",
-            productType = WooPosProductType.SIMPLE,
+            productType = WooPosProductType.Simple,
             isDownloadable = false,
             images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
         )
@@ -91,14 +91,14 @@ class WooPosProductsRemoteDataSourceTest {
             productId = 4,
             productName = "Product 4",
             amount = "10.0",
-            productType = WooPosProductType.SIMPLE,
+            productType = WooPosProductType.Simple,
             isDownloadable = false,
         ),
         generateProduct(
             productId = 5,
             productName = "Product 5",
             amount = "20.0",
-            productType = WooPosProductType.SIMPLE,
+            productType = WooPosProductType.Simple,
             isDownloadable = false,
             images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
         )
@@ -112,7 +112,7 @@ class WooPosProductsRemoteDataSourceTest {
         on { get() }.thenReturn(siteModel)
     }
     private val productsCache: WooPosProductsCache = mock {
-        onBlocking { getAll() }.thenReturn(sampleProducts)
+        on { getAll() }.thenReturn(sampleProducts)
     }
     private val productsIndex: WooPosProductsIndex = mock()
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
@@ -407,7 +407,7 @@ class WooPosProductsRemoteDataSourceTest {
                             productId = it.toLong(),
                             productName = "Product $it",
                             amount = "0",
-                            productType = WooPosProductType.SIMPLE,
+                            productType = WooPosProductType.Simple,
                             isDownloadable = false,
                         )
                     }
@@ -1127,7 +1127,7 @@ class WooPosProductsRemoteDataSourceTest {
         productId: Long = 1,
         productName: String = "Product 1",
         amount: String = "10.0",
-        productType: WooPosProductType = WooPosProductType.SIMPLE,
+        productType: WooPosProductType = WooPosProductType.Simple,
         isDownloadable: Boolean = false,
         images: List<WooPosProductImage> = emptyList()
     ) = WooPosProductModel(

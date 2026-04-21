@@ -63,7 +63,10 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
 
     @Test
     fun `when missing origin address was displayed but it is now verified, then display verified notice`() = runTest {
-        val missingOriginAddress = defaultAddresses.copy(shipFrom = OriginShippingAddress.EMPTY)
+        val missingOriginAddress = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(email = ""))
+        whenever(addressValidationHelper.isMissingOriginAddress(missingOriginAddress.shipFrom)) doReturn true
+        whenever(addressValidationHelper.isMissingOriginAddress(defaultAddresses.shipFrom)) doReturn false
+
         val result = sut.invoke(
             flowOf(listOf(missingOriginAddress), listOf(defaultAddresses)),
             customsFlow,
@@ -73,6 +76,43 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
             .take(2)
             .last()
         assertThat(result?.type).isEqualTo(NoticeType.VERIFIED_ORIGIN_ADDRESS)
+    }
+
+    @Test
+    fun `when missing origin address was dismissed and then fixed, then do not display verified notice`() = runTest {
+        val missingOriginAddress = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(email = ""))
+        val addressesFlow = MutableStateFlow(listOf(missingOriginAddress))
+        whenever(addressValidationHelper.isMissingOriginAddress(missingOriginAddress.shipFrom)) doReturn true
+        whenever(addressValidationHelper.isMissingOriginAddress(defaultAddresses.shipFrom)) doReturn false
+
+        val result = sut.invoke(addressesFlow, customsFlow, selectedIndexFlow, coroutineScope)
+
+        result.first()?.onDismissed?.invoke()
+        assertThat(result.first()).isNull()
+
+        addressesFlow.value = listOf(defaultAddresses)
+
+        assertThat(result.first()).isNull()
+    }
+
+    @Test
+    fun `when missing origin address was displayed but it is now unverified, then display unverified notice`() = runTest {
+        val missingOriginAddress = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(email = ""))
+        val unverifiedOriginAddress = defaultAddresses.copy(
+            shipFrom = defaultAddresses.shipFrom.copy(isVerified = false)
+        )
+        whenever(addressValidationHelper.isMissingOriginAddress(missingOriginAddress.shipFrom)) doReturn true
+
+        val result = sut.invoke(
+            flowOf(listOf(missingOriginAddress), listOf(unverifiedOriginAddress)),
+            customsFlow,
+            selectedIndexFlow,
+            coroutineScope
+        )
+            .take(2)
+            .last()
+
+        assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
     }
 
     @Test
@@ -93,6 +133,25 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     @Test
     fun `when shipFrom is not verified, then display origin not verified`() = runTest {
         val addresses = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = false))
+
+        val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
+
+        assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
+    }
+
+    @Test
+    fun `when shipFrom email is missing, then display missing origin address`() = runTest {
+        val addresses = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(email = ""))
+        whenever(addressValidationHelper.isMissingOriginAddress(addresses.shipFrom)) doReturn true
+
+        val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
+
+        assertThat(result?.type).isEqualTo(NoticeType.MISSING_ORIGIN_ADDRESS)
+    }
+
+    @Test
+    fun `when shipFrom is unverified and missing info, then display origin not verified`() = runTest {
+        val addresses = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = false, email = ""))
 
         val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
 

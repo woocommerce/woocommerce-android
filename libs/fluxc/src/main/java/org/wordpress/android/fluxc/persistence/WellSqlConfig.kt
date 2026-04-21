@@ -40,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 241
+        return 243
     }
 
     override fun getDbName(): String {
@@ -51,7 +51,7 @@ open class WellSqlConfig : DefaultWellConfig {
         mTables.forEach { table -> helper.createTable(table) }
     }
 
-    @Suppress("CheckStyle", "LongMethod", "ComplexMethod", "MagicNumber")
+    @Suppress("CheckStyle", "LongMethod", "ComplexMethod", "MagicNumber", "ForbiddenComment")
     override fun onUpgrade(db: SQLiteDatabase, helper: WellTableManager, oldVersion: Int, newVersion: Int) {
         AppLog.d(T.DB, "Upgrading database from version $oldVersion to $newVersion")
 
@@ -2261,6 +2261,13 @@ open class WellSqlConfig : DefaultWellConfig {
                     db.execSQL("DROP TABLE IF EXISTS WCShippingLabelModel")
                 }
 
+                // TODO: Since version 233 (PR #14997, commit e1d09e7), getDbVersion() was
+                //  not bumped to match, causing each migration N to also re-execute
+                //  migration N-1 (the loop is inclusive on both ends). This has been
+                //  harmless so far because all migrations from 233 onwards only DROP
+                //  tables (idempotent). However, if a non-idempotent migration (e.g.
+                //  ALTER TABLE) is ever added here, getDbVersion() must be corrected
+                //  first to avoid re-execution. See: #15470 discussion for details.
                 233 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCOrderShipmentTrackingModel")
                 }
@@ -2297,6 +2304,14 @@ open class WellSqlConfig : DefaultWellConfig {
                 241 -> migrate(version) {
                     db.execSQL("DROP TABLE IF EXISTS ListItemModel")
                     db.execSQL("DROP TABLE IF EXISTS ListModel")
+                }
+
+                242 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS HTTPAuthModel")
+                }
+
+                243 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS AccountModel")
                 }
             }
         }

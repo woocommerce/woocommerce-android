@@ -1,30 +1,10 @@
 package org.wordpress.android.fluxc.network;
 
-import com.yarolegovich.wellsql.core.Identifiable;
-import com.yarolegovich.wellsql.core.annotation.Column;
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.RawConstraints;
-import com.yarolegovich.wellsql.core.annotation.Table;
-
-@Table
-@RawConstraints({"UNIQUE (ROOT_URL)"})
-public class HTTPAuthModel implements Identifiable {
-    @PrimaryKey
-    @Column private int mId;
-    @Column private String mRootUrl;
-    @Column private String mRealm;
-    @Column private String mUsername;
-    @Column private String mPassword;
-
-    @Override
-    public int getId() {
-        return mId;
-    }
-
-    @Override
-    public void setId(int id) {
-        mId = id;
-    }
+public class HTTPAuthModel {
+    private String mRootUrl;
+    private String mRealm;
+    private String mUsername;
+    private String mPassword;
 
     public HTTPAuthModel() {
     }

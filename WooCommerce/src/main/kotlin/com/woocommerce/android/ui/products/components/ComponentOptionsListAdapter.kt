@@ -11,8 +11,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ComponentOptionItemViewBinding
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.ui.products.ComponentOption
-import org.wordpress.android.util.PhotonUtils
 
 class ComponentOptionsListAdapter :
     ListAdapter<ComponentOption, ComponentOptionViewHolder>(ComponentOptionItemDiffCallback) {
@@ -60,8 +60,7 @@ class ComponentOptionViewHolder(val viewBinding: ComponentOptionItemViewBinding)
             }
             else -> {
                 size = imageSize
-                val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                Glide.with(viewBinding.componentOptionImage).load(photonUrl)
+                Glide.with(viewBinding.componentOptionImage).loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius)).placeholder(R.drawable.ic_product)
                     .into(viewBinding.componentOptionImage)
             }

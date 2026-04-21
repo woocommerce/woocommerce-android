@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +19,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -49,37 +52,43 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
         }.thenReturn(bookingsCountFlow)
     }
 
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private lateinit var sut: ObserveBookingsVisibility
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.BOOKINGS_MVP)).thenReturn(true)
         sut = ObserveBookingsVisibility(
             productListRepository = productListRepository,
             bookingsRepository = bookingsRepository,
+            featureFlagRepository = featureFlagRepository,
             selectedSite = selectedSite,
             appCoroutineScope = testScope,
         )
     }
 
     @Test
-    fun `given site is CIAB, when invoke is called, then bookable products and bookings are fetched`() = testBlocking {
-        bookableProdsCountFlow.value = 2
-        selectedSiteFlow.value = ciabSite()
-        setup()
+    fun `given CIAB site with zero cached counts, when invoke, then both products and bookings are fetched`() =
+        testBlocking {
+            bookableProdsCountFlow.value = 0
+            bookingsCountFlow.value = 0
+            selectedSiteFlow.value = ciabSite()
+            setup()
 
-        sut().test {
-            verify(productListRepository).fetchProductList(
-                loadMore = any(),
-                productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)),
-                excludedProductIds = any(),
-                sortType = anyOrNull(),
-                pageSize = any()
-            )
-            verify(bookingsRepository).fetchBookings(any(), any(), anyOrNull(), anyOrNull(), any())
-            cancelAndIgnoreRemainingEvents()
+            sut().test {
+                awaitItem()
+                verify(productListRepository).fetchProductList(
+                    loadMore = any(),
+                    productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)),
+                    excludedProductIds = any(),
+                    sortType = anyOrNull(),
+                    pageSize = any()
+                )
+                verify(bookingsRepository).fetchBookings(any(), any(), anyOrNull(), anyOrNull(), any())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `given CIAB site and bookings products published, when invoke, then emits true`() = testBlocking {
@@ -171,26 +180,53 @@ class ObserveBookingsVisibilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given bookable products fetch fails onStart, when invoke, then emits based on persisted values`() =
+    fun `given CIAB site with non-zero cached product count, when invoke, then products are not fetched`() =
         testBlocking {
-            bookableProdsCountFlow.value = 1
+            bookableProdsCountFlow.value = 5
             selectedSiteFlow.value = ciabSite()
             setup()
 
             sut().test {
-                assert(awaitItem())
+                awaitItem()
+                verify(productListRepository, never()).fetchProductList(
+                    loadMore = any(),
+                    productFilterOptions = any(),
+                    excludedProductIds = any(),
+                    sortType = anyOrNull(),
+                    pageSize = any()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given CIAB site with non-zero cached bookings count, when invoke, then bookings are not fetched`() =
+        testBlocking {
+            bookingsCountFlow.value = 3
+            selectedSiteFlow.value = ciabSite()
+            setup()
+
+            sut().test {
+                awaitItem()
+                verify(bookingsRepository, never()).fetchBookings(
+                    any(),
+                    any(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    any()
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     private fun ciabSite(): SiteModel = SiteModel().apply {
         setIsGardenSite(true)
-        gardenName = "commerce"
+        gardenName = SiteModel.CIAB_GARDEN_NAME
     }
 
     private fun nonCiabSite(): SiteModel = SiteModel().apply {
         setIsGardenSite(false)
-        gardenName = "commerce"
+        gardenName = SiteModel.CIAB_GARDEN_NAME
     }
 
     private fun nonCommerceGardenSite(): SiteModel = SiteModel().apply {

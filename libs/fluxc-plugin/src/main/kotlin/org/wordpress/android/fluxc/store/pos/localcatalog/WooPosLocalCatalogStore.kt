@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store.pos.localcatalog
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -12,6 +13,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOSEntity
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
@@ -27,12 +29,25 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val coroutineEngine: CoroutineEngine,
     private val posProductDao: WooPosProductsDao,
     private val posVariationsDao: WooPosVariationsDao,
+    private val posFtsDao: WooPosSearchableFtsDao,
     private val headersParser: HeadersParser,
     private val database: WCAndroidDatabase,
 ) {
-    private companion object {
+    companion object {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val MAX_PAGE_SIZE = 100
+
+        private val UNICODE61_SEPARATORS = Regex("[^\\p{L}\\p{N}]+")
+
+        // Split on the same boundaries as the unicode61 tokenizer (non-letter, non-digit)
+        // so that queries like "t-shirt" or "SKU-1234" match the indexed tokens.
+        fun formatFtsQuery(rawQuery: String): String {
+            return rawQuery
+                .trim()
+                .split(UNICODE61_SEPARATORS)
+                .filter { it.isNotBlank() }
+                .joinToString(" ") { "$it*" }
+        }
     }
 
     /**
@@ -98,6 +113,28 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets a paginated list of products from the local database.
+     *
+     * @param [siteId] The local site ID
+     * @param [pageSize] The number of results to return
+     * @param [offset] The offset for pagination
+     * @return Result containing the list of products or error
+     */
+    suspend fun getProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosProductEntity>> =
+        coroutineEngine.withDefaultContext(API, this, "getProducts") {
+            val products = posProductDao.getProducts(
+                localSiteId = siteId,
+                limit = pageSize.coerceIn(1, MAX_PAGE_SIZE),
+                offset = offset.coerceAtLeast(0)
+            )
+            Result.success(products)
+        }
+
+    /**
      * Searches products in the local database by name, SKU, or global unique ID.
      *
      * @param [siteId] The local site ID
@@ -120,6 +157,69 @@ class WooPosLocalCatalogStore @Inject constructor(
                 offset = offset
             )
             Result.success(products)
+        }
+
+    suspend fun searchProductsFts(
+        siteId: LocalOrRemoteId.LocalId,
+        searchQuery: String,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosFtsSearchResult>> =
+        coroutineEngine.withDefaultContext(API, this, "searchProductsFts") {
+            val ftsQuery = formatFtsQuery(searchQuery)
+            if (ftsQuery.isBlank()) {
+                return@withDefaultContext Result.success(emptyList())
+            }
+
+            val ftsResults = posFtsDao.search(
+                localSiteId = siteId.value.toString(),
+                query = ftsQuery,
+                limit = pageSize.coerceAtMost(MAX_PAGE_SIZE),
+                offset = offset
+            )
+
+            if (ftsResults.isEmpty()) {
+                return@withDefaultContext Result.success(emptyList())
+            }
+
+            val productIds = ftsResults
+                .filter { it.parentProductId.isBlank() }
+                .map { LocalOrRemoteId.RemoteId(it.itemId.toLong()) }
+            val variationIds = ftsResults
+                .filter { it.parentProductId.isNotBlank() }
+                .map { LocalOrRemoteId.RemoteId(it.itemId.toLong()) }
+
+            // Batch-fetch full entities in 2 queries (products + variations) instead of
+            // fetching one-by-one per FTS result, to avoid N separate DB hits.
+            val productsMap = if (productIds.isNotEmpty()) {
+                posProductDao.getProductsByIds(siteId, productIds)
+                    .associateBy { it.remoteId.value }
+            } else {
+                emptyMap()
+            }
+
+            val variationsMap = if (variationIds.isNotEmpty()) {
+                posVariationsDao.getVariationsByIds(siteId, variationIds)
+                    .associateBy { it.remoteVariationId.value }
+            } else {
+                emptyMap()
+            }
+
+            val results = ftsResults.mapNotNull { ftsEntity ->
+                val itemId = ftsEntity.itemId.toLong()
+                if (ftsEntity.parentProductId.isBlank()) {
+                    productsMap[itemId]?.let { WooPosFtsSearchResult.Product(it) }
+                } else {
+                    variationsMap[itemId]?.let {
+                        WooPosFtsSearchResult.Variation(
+                            entity = it,
+                            parentProductName = ftsEntity.name,
+                        )
+                    }
+                }
+            }
+
+            Result.success(results)
         }
 
     /**
@@ -147,49 +247,8 @@ class WooPosLocalCatalogStore @Inject constructor(
         block: suspend () -> T
     ): Result<T> =
         coroutineEngine.withDefaultContext(API, this, "executeInTransaction") {
-            runCatching {
+            runCatchingCancellable {
                 database.executeInTransaction(block)
-            }
-        }
-
-    /**
-     * Fetches only the total count of products without fetching the actual product data.
-     * Makes a minimal API call with per_page=1 to get the count from response headers.
-     *
-     * @param [site] The site to get the products count for
-     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
-     * @return Result containing the total count of products or error
-     */
-    suspend fun fetchProductsCount(
-        site: SiteModel,
-        posProductsOnly: Boolean,
-        modifiedAfterGmt: String? = null,
-    ): Result<Int> =
-        coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
-            val response = posProductRestClient.fetchProducts(
-                site = site,
-                modifiedAfter = modifiedAfterGmt,
-                page = 1,
-                pageSize = 1,
-                includeStatus = null,
-                posProductsOnly = posProductsOnly,
-            )
-
-            when {
-                response.isError -> Result.failure(mapResponseError(response.error))
-
-                else -> {
-                    val totalCount = headersParser.getTotalCount(response)
-                    if (totalCount == null) {
-                        Result.failure(
-                            WooPosLocalCatalogError.InvalidResponse(
-                                "Missing required header in response: X-WP-Total."
-                            )
-                        )
-                    } else {
-                        Result.success(totalCount)
-                    }
-                }
             }
         }
 
@@ -272,7 +331,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
-        runCatching { posProductDao.upsertProducts(products) }
+        runCatchingCancellable { posProductDao.upsertProducts(products) }
 
     suspend fun storeCatalogData(
         localSiteId: LocalOrRemoteId.LocalId,
@@ -298,13 +357,13 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun deleteAllProducts(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posProductDao.deleteAllProductsForSite(siteId) }
+        runCatchingCancellable { posProductDao.deleteAllProductsForSite(siteId) }
 
     suspend fun deleteProducts(
         siteId: LocalOrRemoteId.LocalId,
         productIds: List<LocalOrRemoteId.RemoteId>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 posProductDao.deleteProducts(siteId, productIds)
                 posVariationsDao.deleteVariationsForProducts(siteId, productIds)
@@ -315,7 +374,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 val variationIds = variations.map { it.second }
                 posVariationsDao.deleteVariationsByIds(siteId, variationIds)
@@ -323,12 +382,12 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
-        runCatching { posVariationsDao.upsertVariations(variations) }
+        runCatchingCancellable { posVariationsDao.upsertVariations(variations) }
 
     suspend fun deleteAllVariations(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posVariationsDao.deleteAllVariationsForSite(siteId) }
+        runCatchingCancellable { posVariationsDao.deleteAllVariationsForSite(siteId) }
 
     /**
      * Observes all variations for a given product from the local database.
@@ -380,46 +439,6 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedVariationByIdentifier") {
             val variation = posVariationsDao.findVariationByIdentifier(siteId, identifier)
             Result.success(variation)
-        }
-
-    /**
-     * Fetches only the total count of variations without fetching the actual variation data.
-     * Makes a minimal API call with per_page=1 to get the count from response headers.
-     *
-     * @param [site] The site to get the variations count for
-     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
-     * @return Result containing the total count of variations or error
-     */
-    suspend fun fetchVariationsCount(
-        site: SiteModel,
-        posProductsOnly: Boolean,
-        modifiedAfterGmt: String? = null,
-    ): Result<Int> =
-        coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
-            val response = posProductRestClient.fetchVariations(
-                site = site,
-                modifiedAfter = modifiedAfterGmt,
-                page = 1,
-                pageSize = 1,
-                posProductsOnly = posProductsOnly,
-            )
-
-            when {
-                response.isError -> Result.failure(mapResponseError(response.error))
-
-                else -> {
-                    val totalCount = headersParser.getTotalCount(response)
-                    if (totalCount == null) {
-                        Result.failure(
-                            WooPosLocalCatalogError.InvalidResponse(
-                                "Missing required header in response: X-WP-Total."
-                            )
-                        )
-                    } else {
-                        Result.success(totalCount)
-                    }
-                }
-            }
         }
 
     /**
@@ -582,4 +601,10 @@ class WooPosLocalCatalogStore @Inject constructor(
             )
         }
     }
+
+    private inline fun <T> runCatchingCancellable(block: () -> T): Result<T> =
+        runCatching(block).also { result ->
+            val error = result.exceptionOrNull()
+            if (error is CancellationException) throw error
+        }
 }

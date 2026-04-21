@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
@@ -59,6 +60,12 @@ class AddressValidationHelper @Inject constructor(
 
     fun isPhoneValidForShippingLabel(phone: String): Boolean {
         return phone.isNotBlank() && phone.contains(Regex("\\d"))
+    }
+
+    fun isMissingOriginAddress(address: OriginShippingAddress) = with(address) {
+        (address1.isNullOrBlank() && address2.isNullOrBlank()) || city.isNullOrBlank() || postcode.isBlank() ||
+            (firstName.isNullOrBlank() && lastName.isNullOrBlank() && company.isNullOrBlank()) ||
+            email.isNullOrBlank() || phone.isNullOrBlank() || country.isBlank()
     }
 
     fun isMissingDestinationAddress(address: Address) = with(address) {

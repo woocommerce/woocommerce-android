@@ -6,7 +6,6 @@
     app:startDestination="@id/mainSettingsFragment">
     <include app:graph="@navigation/nav_graph_push_notifications" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_themes" />
 
     <fragment
@@ -39,14 +38,6 @@
             android:id="@+id/action_mainSettingsFragment_to_developerOptionsFragment"
             app:destination="@id/developerOptionsFragment" />
         <action
-            android:id="@+id/action_mainSettingsFragment_to_nav_graph_domain_change"
-            app:destination="@id/nav_graph_domain_change">
-            <argument
-                android:name="source"
-                android:defaultValue="SETTINGS"
-                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
-        </action>
-        <action
             android:id="@+id/action_mainSettingsFragment_to_accountSettingsFragment"
             app:destination="@id/accountSettingsFragment" />
 
@@ -66,6 +57,9 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_wooPushNotificationsIntroductionDialog"
             app:destination="@id/nav_graph_push_notifications" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_troubleshootConnectionFragment"
+            app:destination="@id/troubleshootConnectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -180,6 +174,9 @@
         <action
             android:id="@+id/action_developerOptionsFragment_to_devFeatureFlagsFragment"
             app:destination="@id/devFeatureFlagsFragment" />
+        <action
+            android:id="@+id/action_developerOptionsFragment_to_featureAnnouncementDialogFragment"
+            app:destination="@id/featureAnnouncementDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/devFeatureFlagsFragment"
@@ -218,4 +215,8 @@
         android:id="@+id/apiFakerHostFragment"
         android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
         android:label="ApiFakerHostFragment" />
+    <fragment
+        android:id="@+id/troubleshootConnectionFragment"
+        android:name="com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionFragment"
+        android:label="TroubleshootConnectionFragment" />
 </navigation>

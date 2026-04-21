@@ -27,11 +27,11 @@ import javax.inject.Singleton
 
 @Singleton
 class WooFileLogger(
-    private val logsDirectory: File,
     private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
     private val processLifecycleOwner: LifecycleOwner,
-    private val crashLogging: Provider<CrashLogging>? = null
+    private val crashLogging: Provider<CrashLogging>? = null,
+    private val logFileWriter: LogFileWriter,
 ) {
     @Inject
     constructor(
@@ -40,17 +40,15 @@ class WooFileLogger(
         dispatchers: CoroutineDispatchers,
         crashLogging: Provider<CrashLogging>
     ) : this(
-        logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
         appCoroutineScope = appCoroutineScope,
         dispatchers = dispatchers,
         processLifecycleOwner = ProcessLifecycleOwner.get(),
-        crashLogging = crashLogging
-    )
-
-    private val logFileWriter: LogFileWriter = LogFileWriter(
-        logsDirectory = logsDirectory,
-        maxLogFiles = MAX_LOG_FILES,
-        dispatchers = dispatchers
+        crashLogging = crashLogging,
+        logFileWriter = LogFileWriter(
+            logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
+            maxLogFiles = MAX_LOG_FILES,
+            dispatchers = dispatchers,
+        ),
     )
 
     private val internalLogsBuffer = Channel<LogEntry>(Channel.UNLIMITED)
@@ -108,15 +106,18 @@ class WooFileLogger(
     suspend fun getLogFileContent(fileName: String): List<LogEntry>? {
         return withContext(dispatchers.io) {
             runCatching {
-                logFileWriter.getLogFiles().find { it.name == fileName }?.readText()?.let { text ->
+                logFileWriter.readFileContent(fileName)?.let { text ->
                     if (text.isBlank()) return@let emptyList<LogEntry>()
-                    text.split("\n${LOG_ENTRY_PREFIX}").map {
+                    text.split("\n${LOG_ENTRY_PREFIX}").mapNotNull {
                         LogEntry.fromString(it.removePrefix(LOG_ENTRY_PREFIX))
                     }
                 }
             }.onFailure {
                 it.printStackTrace()
-                crashLogging?.get()?.sendReport(it, message = "Error reading log file: $fileName")
+                if (!it.isDiskSpaceError()) {
+                    // Report any error that is not due to disk space issues
+                    crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+                }
             }.getOrNull()
         }
     }
@@ -128,8 +129,15 @@ class WooFileLogger(
             )
         }.onFailure {
             it.printStackTrace()
-            crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            if (!it.isDiskSpaceError()) {
+                // Report any error that is not due to disk space issues
+                crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+            }
         }
+    }
+
+    private fun Throwable.isDiskSpaceError() = message.orEmpty().let { msg ->
+        msg.contains("ENOSPC") || msg.contains("No space left on device", ignoreCase = true)
     }
 
     companion object {

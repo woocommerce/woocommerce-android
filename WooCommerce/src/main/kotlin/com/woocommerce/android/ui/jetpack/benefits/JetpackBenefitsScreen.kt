@@ -83,15 +83,17 @@ fun JetpackBenefitsScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
-            // Push notifications
-            BenefitEntry(
-                icon = R.drawable.ic_alarm_bell_ring,
-                title = R.string.jetpack_benefits_modal_push_notifications_title,
-                subtitle = R.string.jetpack_benefits_modal_push_notifications_subtitle,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
+            if (viewState.isPushNotificationsBenefitVisible) {
+                // Push notifications
+                BenefitEntry(
+                    icon = R.drawable.ic_alarm_bell_ring,
+                    title = R.string.jetpack_benefits_modal_push_notifications_title,
+                    subtitle = R.string.jetpack_benefits_modal_push_notifications_subtitle,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                )
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            }
 
             // Analytics
             BenefitEntry(
@@ -182,6 +184,7 @@ private fun JetpackBenefitsScreenPreview() {
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
+                isPushNotificationsBenefitVisible = true,
             )
         )
     }
@@ -195,6 +198,7 @@ private fun JetpackBenefitsScreenWithoutNativeInstallPreview() {
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
+                isPushNotificationsBenefitVisible = true,
             )
         )
     }

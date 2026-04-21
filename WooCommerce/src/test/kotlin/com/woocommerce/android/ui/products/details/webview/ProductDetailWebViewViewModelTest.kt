@@ -78,7 +78,8 @@ class ProductDetailWebViewViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewState.title).isEqualTo(testProduct.name)
         assertThat(viewState.urlToLoad).isEqualTo(
-            "https://example.com/wp-admin/?page=next-admin&p=/woocommerce/products/edit/${testProduct.remoteId}"
+            "https://example.com/wp-admin/${ProductDetailWebViewViewModel.BOOKABLE_SERVICE_PATH}" +
+                "/${testProduct.remoteId}"
         )
     }
 

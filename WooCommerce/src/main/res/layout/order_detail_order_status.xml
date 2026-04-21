@@ -50,13 +50,14 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal" >
 
             <com.woocommerce.android.widgets.tags.TagView
                 android:id="@+id/orderStatus_orderTags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginVertical="@dimen/major_75"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -71,7 +72,8 @@
                 android:src="@drawable/ic_edit_pencil"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="g"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </merge>

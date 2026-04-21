@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 @Suppress("LongParameterList")
 inline fun <T1, T2, T3, T4, T5, T6, R> combine(
@@ -120,5 +121,15 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
             args[7] as T8,
             args[8] as T9,
         )
+    }
+}
+
+inline fun <T> Flow<T>.onFirst(crossinline action: suspend (T) -> Unit): Flow<T> {
+    var isFirst = true
+    return onEach {
+        if (isFirst) {
+            action(it)
+            isFirst = false
+        }
     }
 }

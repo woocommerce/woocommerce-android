@@ -49,7 +49,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
     private val ssrFetcher: WCSSRModelCachingFetcher = mock {
-        onBlocking { load(any()) } doReturn WooResult(model = null)
+        on { load(any(), any()) } doReturn WooResult(model = null)
     }
     private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite = mock()
 
@@ -409,7 +409,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val captor = argumentCaptor<CreateRequest>()
 
             ssrFetcher.stub {
-                onBlocking { load(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(selectedSite, false) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -573,7 +573,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             val siteAddress = "www.test.com"
@@ -607,7 +607,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
+                on { load(any(), any()) } doReturn WooResult(model = WCSSRModel(123))
             }
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -666,7 +666,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // given
             ssrFetcher.stub {
-                onBlocking { load(any()) } doReturn WooResult(
+                on { load(any(), any()) } doReturn WooResult(
                     WooError(
                         WooErrorType.GENERIC_ERROR,
                         BaseRequest.GenericErrorType.NETWORK_ERROR
@@ -728,6 +728,116 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(tags).contains(ZendeskTags.jetpackSiteUsingAppPasswords)
         }
 
+    @Test
+    fun `when createRequest is called with a CIAB site, then the request includes commerce_in_a_box tag`() =
+        testBlocking {
+            // Given
+            val selectedSite = SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = SiteModel.CIAB_GARDEN_NAME
+            }
+            val captor = argumentCaptor<CreateRequest>()
+
+            ssrFetcher.stub {
+                on { load(selectedSite) } doReturn WooResult(model = null)
+            }
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = selectedSite,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(ZendeskTags.ciabTag)
+        }
+
+    @Test
+    fun `when createRequest is called with a non-CIAB site, then the request does not include commerce_in_a_box tag`() =
+        testBlocking {
+            // Given
+            val selectedSite = SiteModel().apply {
+                setIsGardenSite(false)
+            }
+            val captor = argumentCaptor<CreateRequest>()
+
+            ssrFetcher.stub {
+                on { load(selectedSite) } doReturn WooResult(model = null)
+            }
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = selectedSite,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).doesNotContain(ZendeskTags.ciabTag)
+        }
+
+    @Test
+    fun `when createRequest is called with a garden site that is not commerce, then the request does not include commerce_in_a_box tag`() =
+        testBlocking {
+            // Given
+            val selectedSite = SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = "not-commerce"
+            }
+            val captor = argumentCaptor<CreateRequest>()
+
+            ssrFetcher.stub {
+                on { load(selectedSite) } doReturn WooResult(model = null)
+            }
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = selectedSite,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).doesNotContain(ZendeskTags.ciabTag)
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
@@ -743,7 +853,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private fun mockEnvDataSource() = mock<ZendeskEnvironmentDataSource> {
         on { totalAvailableMemorySize } doReturn "100"
         on { deviceLanguage } doReturn "testLanguage"
-        onBlocking { getDeviceLogs() } doReturn "logs"
+        on { getDeviceLogs() } doReturn "logs"
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"

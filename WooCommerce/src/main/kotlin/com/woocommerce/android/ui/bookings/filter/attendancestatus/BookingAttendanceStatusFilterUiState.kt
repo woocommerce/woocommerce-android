@@ -4,11 +4,10 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 data class BookingAttendanceStatusFilterUiState(
-    val selectedStatuses: AttendanceStatuses = AttendanceStatuses.DEFAULT,
+    val selectedStatus: AttendanceStatus? = null,
     val onStatusSelected: (AttendanceStatus?) -> Unit = {},
 ) {
     val items: List<BookingFilterListItem> = availableAttendanceStatuses().map { status ->
@@ -26,9 +25,9 @@ data class BookingAttendanceStatusFilterUiState(
     )
 
     private fun isSelected(status: AttendanceStatus?): Boolean = if (status == AttendanceStatus.any) {
-        selectedStatuses.values.isEmpty()
+        selectedStatus == null
     } else {
-        selectedStatuses.values.contains(status)
+        selectedStatus == status
     }
 }
 

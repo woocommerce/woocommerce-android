@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShip
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.NoAvailableRatesException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
@@ -244,6 +245,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         noticeBannerUiState = noticeBanner?.copy(
                             onTapped = {
                                 when (noticeBanner.type) {
+                                    NoticeType.MISSING_ORIGIN_ADDRESS,
                                     NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
                                         shippingAddresses.value.getOrNull(selectedShipmentIndex)
                                             ?.shipFrom?.let { shipFrom ->
@@ -708,20 +710,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                             set(index, result)
                         }
+                        selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply {
+                            set(index, null)
+                        }
                         trackShippingRatesLoading(isSuccess = true)
                     },
                     onFailure = { exception ->
-                        val errorMessage = if (exception is NoAvailableRatesException) {
-                            exception.messageResId
-                        } else {
-                            R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
+                        val errorMessage = when (exception) {
+                            is NoAvailableRatesException -> exception.messageResId
+                            is InvalidDestinationNameRateException ->
+                                R.string.woo_shipping_labels_package_creation_shipping_rates_destination_name_error
+                            else -> R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
                         }
 
                         updateState(ShippingRatesState.Error(errorMessage))
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
-                selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }
     }
@@ -877,9 +882,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun getSelectedOriginAddress(
         originAddresses: List<OriginShippingAddress>,
         selectedIndex: Int
-    ): OriginShippingAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom?.takeIf {
-        it != OriginShippingAddress.EMPTY
-    } ?: originAddresses.first()
+    ): OriginShippingAddress {
+        val selectedAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom
+            ?.takeIf { it != OriginShippingAddress.EMPTY }
+
+        return selectedAddress?.let { currentAddress ->
+            originAddresses.firstOrNull { it.id == currentAddress.id } ?: currentAddress
+        } ?: originAddresses.first()
+    }
 
     fun onSelectedShipmentChanged(index: Int) {
         if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
@@ -930,7 +940,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onUPSTermsAccepted() {
+    fun onCarrierTermsAccepted() {
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
@@ -986,11 +996,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
+        if (addressValidationHelper.isMissingOriginAddress(selectedAddress.shipFrom)) {
+            showPurchaseOriginAddressErrorSnackbar(selectedAddress.shipFrom)
+            return
+        }
+
         if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
-            snackbarData = ShippingLabelsSnackbarData(
-                message = R.string.woo_shipping_labels_purchase_phone_error,
-                actionLabel = R.string.edit,
-            ) { onEditDestinationAddress(selectedAddress.shipTo) }
+            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             return
         }
 
@@ -1036,6 +1048,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    private fun showPurchaseOriginAddressErrorSnackbar(originAddress: OriginShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_origin_address_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditOriginAddress(originAddress)
+        }
+    }
+
+    private fun showPurchasePhoneErrorSnackbar(destinationAddress: DestinationShippingAddress) {
+        snackbarData = ShippingLabelsSnackbarData(
+            message = R.string.woo_shipping_labels_purchase_phone_error,
+            actionLabel = R.string.edit,
+        ) {
+            snackbarData = null
+            onEditDestinationAddress(destinationAddress)
+        }
+    }
+
     private fun handlePurchaseFailure(
         exception: Throwable,
         selectedShipmentIndex: Int,
@@ -1045,22 +1077,25 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedShipmentIndex,
             shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
         )
-        when {
-            exception is WooException &&
-                exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
-                triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
+        when (exception) {
+            is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+                triggerEvent(
+                    NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
+                )
             }
-            exception is WooException &&
-                exception.error.message?.contains("phone", ignoreCase = true) == true -> {
+
+            is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
+                triggerEvent(NavigateToFedExTermsOfService)
+            }
+
+            is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
                     mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to "invalid_phone")
                 )
-                snackbarData = ShippingLabelsSnackbarData(
-                    message = R.string.woo_shipping_labels_purchase_phone_error,
-                    actionLabel = R.string.edit,
-                ) { onEditDestinationAddress(selectedAddress.shipTo) }
+                showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             }
+
             else -> {
                 analyticsTracker.track(
                     AnalyticsEvent.WCS_PURCHASE_STEP,
@@ -1069,7 +1104,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 snackbarData = ShippingLabelsSnackbarData(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
-                ) { onPurchaseShippingLabel() }
+                ) {
+                    snackbarData = null
+                    onPurchaseShippingLabel()
+                }
             }
         }
     }
@@ -1430,6 +1468,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
     data object NavigateToPaymentMethodEdit : Event()
     data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
+    data object NavigateToFedExTermsOfService : Event()
 
     object OpenLearnMoreScreen : Event()
 
@@ -1437,6 +1476,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     enum class Carrier(val pickupUrl: String) {
         USPS("https://tools.usps.com/schedule-pickup-steps.htm"),
+        FEDEX("https://www.fedex.com/en-us/shipping/schedule-manage-pickups.html"),
         UPS("https://wwwapps.ups.com/pickup/request"),
         DHL("https://mydhl.express.dhl/us/en/schedule-pickup.html#/schedule-pickup#label-reference");
 
@@ -1444,6 +1484,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             fun fromCarrierId(carrierId: String): Carrier? {
                 return when (carrierId) {
                     "usps" -> USPS
+                    "fedex" -> FEDEX
                     "ups" -> UPS
                     "dhlexpress" -> DHL
                     else -> null
@@ -1459,6 +1500,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         @VisibleForTesting
         const val UPSDAP_MISSING_TOS_ERROR_CODE = "missing_upsdap_terms_of_service_acceptance"
+
+        @VisibleForTesting
+        const val FEDEX_MISSING_TOS_ERROR_CODE = "missing_fedex_terms_of_service_acceptance"
     }
 }
 

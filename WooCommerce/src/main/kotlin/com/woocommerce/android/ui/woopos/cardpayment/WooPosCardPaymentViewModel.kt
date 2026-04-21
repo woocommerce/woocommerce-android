@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -12,11 +13,12 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,9 +44,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
-    private val priceFormat: WooPosFormatPrice,
-    private val totalsRepository: WooPosTotalsRepository,
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
+    private val cardPaymentRepository: WooPosCardPaymentRepository,
+    private val priceFormat: WooPosFormatPrice,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -59,6 +62,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
+    private lateinit var orderTotals: WooPosOrderTotalsViewState
+
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
@@ -66,7 +71,36 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var analyticsTrackerJob: Job? = null
 
     init {
-        observeCardReaderStatus()
+        viewModelScope.launch {
+            val totals = loadOrderTotals()
+            if (totals != null) {
+                orderTotals = totals
+                observeCardReaderStatus()
+            }
+        }
+    }
+
+    private suspend fun loadOrderTotals(): WooPosOrderTotalsViewState? {
+        val order = cardPaymentRepository.fetchOrGetOrder(orderId)
+        if (order == null) {
+            _state.value = WooPosCardPaymentState.PaymentFailed(
+                title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
+                subtitle = resourceProvider.getString(R.string.woopos_products_loading_error_message),
+                isDismissButtonVisible = true,
+            )
+            return null
+        }
+
+        return WooPosOrderTotalsViewState(
+            subtotal = priceFormat(order.productsTotal),
+            discount = if (order.discountTotal > BigDecimal.ZERO) {
+                "-${priceFormat(order.discountTotal)}"
+            } else {
+                null
+            },
+            taxes = priceFormat(order.totalTax),
+            total = priceFormat(order.total),
+        )
     }
 
     private fun observeCardReaderStatus() {
@@ -75,9 +109,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 when (status) {
                     is NotConnected, is Connecting -> {
                         val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentSuccess ||
-                            currentState is WooPosCardPaymentState.PaymentInProgress
-                        ) {
+                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
                             return@collect
                         }
                         _state.value = buildReaderDisconnectedState()
@@ -86,14 +118,14 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
                     is Connected -> {
                         val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentSuccess ||
-                            currentState is WooPosCardPaymentState.PaymentInProgress
-                        ) {
+                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
                             return@collect
                         }
                         _state.value = buildPreparingState()
                         collectPayment()
                     }
+
+                    is CardReaderStatus.Reconnecting -> Unit
                 }
             }
         }
@@ -132,19 +164,18 @@ class WooPosCardPaymentViewModel @Inject constructor(
                         _state.value = buildPreparingState()
                     }
 
-                    is CardReaderPaymentState.CollectingPayment -> {
+                    is CardReaderPaymentState.ProcessingPayment -> {
                         _state.value = WooPosCardPaymentState.Collecting.ReadyForPayment(
                             title = resourceProvider.getString(
                                 R.string.woopos_totals_reader_ready_for_payment_title
                             ),
                             subtitle = resourceProvider.getString(
-                                paymentState.cardReaderHint
-                                    ?: R.string.woopos_totals_reader_ready_for_payment_subtitle
-                            )
+                                R.string.woopos_totals_reader_ready_for_payment_subtitle
+                            ),
+                            orderTotals = orderTotals,
                         )
                     }
 
-                    is CardReaderPaymentState.ProcessingPayment,
                     is CardReaderPaymentState.PaymentCapturing -> {
                         _state.value = WooPosCardPaymentState.PaymentInProgress(
                             title = resourceProvider.getString(
@@ -219,16 +250,16 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private suspend fun handlePaymentSuccessful() {
-        val order = totalsRepository.getOrderById(orderId)
-        val orderTotalText = if (order != null) {
-            resourceProvider.getString(
-                R.string.woopos_totals_success_payment_card,
-                priceFormat(order.total)
-            )
-        } else {
-            resourceProvider.getString(R.string.woopos_payment_successful_label)
+        val successSource = when (source) {
+            CardPaymentSource.CHECKOUT -> PaymentSuccessSource.CARD_CHECKOUT
+            CardPaymentSource.BOOKINGS -> PaymentSuccessSource.CARD_BOOKINGS
         }
-        _state.value = WooPosCardPaymentState.PaymentSuccess(orderTotalText = orderTotalText)
+        _navigationEvent.emit(
+            WooPosNavigationEvent.OpenPaymentSuccess(
+                orderId = orderId,
+                source = successSource,
+            )
+        )
     }
 
     private fun buildPaymentFailedState(
@@ -250,7 +281,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun buildPreparingState() = WooPosCardPaymentState.Collecting.Preparing(
         title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
-        subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
+        subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment),
+        orderTotals = orderTotals,
     )
 
     private fun buildReaderDisconnectedState() = WooPosCardPaymentState.Collecting.ReaderDisconnected(
@@ -259,7 +291,20 @@ class WooPosCardPaymentViewModel @Inject constructor(
         actionButtonLabel = resourceProvider.getString(
             R.string.woopos_success_totals_error_reader_not_connected_cta_button_label
         ),
+        orderTotals = orderTotals,
     )
+
+    fun onScreenResumed() {
+        if (_state.value is WooPosCardPaymentState.Collecting) {
+            collectPayment()
+        }
+    }
+
+    fun onScreenPaused() {
+        if (_state.value is WooPosCardPaymentState.Collecting) {
+            cancelPayment()
+        }
+    }
 
     fun onRetryClicked() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
@@ -285,41 +330,31 @@ class WooPosCardPaymentViewModel @Inject constructor(
             return
         }
         cancelPayment()
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
+        navigateBack()
     }
 
     fun onDismissClicked() {
         cancelPayment()
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
+        navigateBack()
     }
 
-    fun onConnectReaderClicked() {
-        cardReaderFacade.connectToReader()
-    }
-
-    fun onDoneClicked() {
+    private fun navigateBack() {
         viewModelScope.launch {
-            if (source == CardPaymentSource.BOOKINGS) {
-                _navigationEvent.emit(
-                    WooPosNavigationEvent.GoBackWithResult(
-                        BOOKING_CARD_PAYMENT_SUCCESS_KEY,
+            when (source) {
+                CardPaymentSource.BOOKINGS -> _navigationEvent.emit(
+                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
+                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
                         true
                     )
                 )
-            } else {
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+                CardPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
             }
         }
     }
 
-    fun onEmailReceiptClicked() {
+    fun onConnectReaderClicked() {
         viewModelScope.launch {
-            analyticsTracker.trackEmailReceiptTapped()
-            _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
+            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         }
     }
 

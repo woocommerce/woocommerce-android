@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.persistence.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -15,6 +16,8 @@ data class WhatsNewAnnouncementEntity(
     val minimumAppVersion: String,
     val maximumAppVersion: String,
     val appVersionTargets: AppVersionTargets,
+    @ColumnInfo(defaultValue = "")
+    val detailsUrl: String = "",
     val localized: Boolean
 )
 

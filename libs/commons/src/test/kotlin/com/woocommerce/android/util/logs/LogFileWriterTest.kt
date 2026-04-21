@@ -18,15 +18,18 @@ class LogFileWriterTest : BaseUnitTest() {
     private val logsDirectory = File(System.getProperty("java.io.tmpdir", "."), "logs_test")
     private val maxLogFiles = 3
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private var fakeDiskSpace = Long.MAX_VALUE
 
     private lateinit var logFileWriter: LogFileWriter
 
     @Before
     fun setup() {
+        fakeDiskSpace = Long.MAX_VALUE
         logFileWriter = LogFileWriter(
             logsDirectory = logsDirectory,
             maxLogFiles = maxLogFiles,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            availableDiskBytes = { fakeDiskSpace }
         )
     }
 
@@ -223,5 +226,59 @@ class LogFileWriterTest : BaseUnitTest() {
         val fileContent = currentLogFile.readText()
         assertThat(fileContent).contains(logText1)
         assertThat(fileContent).contains(logText2)
+    }
+
+    @Test
+    fun `when log file exceeds max size, then file is reset and new logs are written`() = testBlocking {
+        val currentLogFile = logFileWriter.getCurrentLogFile()
+
+        val largeContent = "x".repeat(2 * 1024 * 1024)
+        currentLogFile.writeText(largeContent)
+
+        logFileWriter.writeLogs("New log entry after reset")
+
+        val fileContent = currentLogFile.readText()
+        assertThat(fileContent).doesNotContain(largeContent)
+        assertThat(fileContent).contains("New log entry after reset")
+    }
+
+    @Test
+    fun `when log file is below max size, then writes should succeed`() = testBlocking {
+        val currentLogFile = logFileWriter.getCurrentLogFile()
+
+        val smallContent = "x".repeat(1024)
+        currentLogFile.writeText(smallContent)
+
+        logFileWriter.writeLogs("New log entry")
+
+        val fileContent = currentLogFile.readText()
+        assertThat(fileContent).contains("New log entry")
+    }
+
+    @Test
+    fun `when disk space is low, then writes should be skipped and oldest logs deleted`() = testBlocking {
+        val today = dateFormatter.format(Date())
+        val file1 = File(logsDirectory, "log_2025-01-01.txt")
+        val file2 = File(logsDirectory, "log_2025-01-02.txt")
+        val file3 = File(logsDirectory, "log_2025-01-03.txt")
+        val todayFile = File(logsDirectory, "log_$today.txt")
+
+        logsDirectory.mkdirs()
+        file1.writeText("oldest log")
+        file2.writeText("older log")
+        file3.writeText("recent log")
+        file1.setLastModified(System.currentTimeMillis() - 4000)
+        file2.setLastModified(System.currentTimeMillis() - 3000)
+        file3.setLastModified(System.currentTimeMillis() - 2000)
+
+        fakeDiskSpace = 0L
+
+        logFileWriter.writeLogs("This should not be written")
+
+        assertThat(file1.exists()).isFalse()
+        assertThat(file2.exists()).isFalse()
+        assertThat(file3.exists()).isTrue()
+        assertThat(todayFile.exists()).isTrue()
+        assertThat(todayFile.readText()).doesNotContain("This should not be written")
     }
 }

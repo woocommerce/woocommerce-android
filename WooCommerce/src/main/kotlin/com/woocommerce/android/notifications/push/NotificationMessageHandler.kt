@@ -15,6 +15,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -25,7 +26,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,7 +40,7 @@ class NotificationMessageHandler @Inject constructor(
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
-    private val siteStore: SiteStore,
+    private val getWooVisibleSites: GetWooVisibleSites,
     private val selectedSite: SelectedSite,
     private val workManagerScheduler: WorkManagerScheduler
 ) {
@@ -86,37 +86,45 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
-        val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
-        val isRegisteredForWooPush =
-            registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY ||
-                registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
+        val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
         val pushUserId = messageData[PUSH_ARG_USER]
+        val hasWpComAccessToken = accountStore.hasAccessToken()
 
-        // We need to filter out duplicate notifications from the WPCOM system
-        if (isRegisteredForWooPush) {
-            if (notification.remoteNoteId > 0L) {
+        if (hasWpComAccessToken && !isWooSiteVisible(notification.remoteSiteId)) {
+            wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
+            return
+        }
+
+        if (notificationSource == NotificationSource.WPCOM) {
+            if (!hasWpComAccessToken) {
+                wooLog.e(NOTIFICATIONS, "User is not logged in!")
+                return
+            }
+
+            if (notification.remoteNoteId == 0L) {
+                wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+                return
+            }
+
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            if (accountStore.account.userId.toString() != pushUserId) {
+                wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+                return
+            }
+
+            val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
+            if (registrationStatusResult.isWooRegistered) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
-            if (siteStore.visibleSites.none { it.siteId == notification.remoteSiteId }) {
-                wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
-                return
-            }
-        } else if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        } else if (notification.remoteNoteId == 0L) {
-            // At this point 'note_id' is always available in the notification bundle.
-            wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
-            return
-        } else if (accountStore.account.userId.toString() != pushUserId) {
-            // At this point, pushUserId is always set server side, but better to double check it here.
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
         }
 
         dispatchBackgroundEvents(notificationModel)
         handleWooNotification(notification)
+    }
+
+    private fun isWooSiteVisible(siteId: Long): Boolean = runBlocking {
+        getWooVisibleSites().any { it.siteId == siteId }
     }
 
     private fun dispatchBackgroundEvents(notificationModel: NotificationModel) {
@@ -260,11 +268,40 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
+    fun removeTappedNotificationAndSummaryIfNeeded(localPushId: Int, notification: Notification) {
+        with(notificationBuilder) {
+            cancelNotification(localPushId)
+
+            val hasRemainingChildrenInGroup = getActiveNotifications().any {
+                !it.isGroupSummary &&
+                    it.id != localPushId &&
+                    it.channelType == notification.channelType.name &&
+                    it.remoteSiteId == notification.remoteSiteId
+            }
+
+            if (!hasRemainingChildrenInGroup) {
+                cancelNotification(notification.getGroupPushId())
+            }
+        }
+    }
+
+    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         with(notificationBuilder) {
             getActiveNotifications()
                 .filter { it.channelType == type.name && it.remoteSiteId == remoteSiteId }
                 .forEach { cancelNotification(it.id) }
         }
+    }
+
+    private fun Map<String, String>.detectNotificationSource(remoteNoteId: Long): NotificationSource =
+        when {
+            this[PUSH_ARG_USER] != null || remoteNoteId != 0L -> NotificationSource.WPCOM
+            else -> NotificationSource.WOO
+        }
+
+    private enum class NotificationSource {
+        WOO,
+        WPCOM
     }
 }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.e2e.screens.reviews
 
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -9,13 +10,10 @@ import com.woocommerce.android.e2e.helpers.util.ReviewData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
-class SingleReviewScreen : Screen {
-    constructor() : super(R.id.review_product_name)
-
+class SingleReviewScreen(private val composeTestRule: ComposeTestRule) : Screen(R.id.review_product_name) {
     fun goBackToReviewsScreen(): ReviewsListScreen {
         pressBack()
-        waitForElementToBeDisplayed(R.id.reviewsList)
-        return ReviewsListScreen()
+        return ReviewsListScreen(composeTestRule)
     }
 
     fun assertSingleReviewScreen(review: ReviewData): SingleReviewScreen {
@@ -53,6 +51,6 @@ class SingleReviewScreen : Screen {
         Espresso.onView(ViewMatchers.withId(R.id.review_approve))
             .check(ViewAssertions.matches(ViewMatchers.withText(review.approveButtonTitle)))
 
-        return SingleReviewScreen()
+        return SingleReviewScreen(composeTestRule)
     }
 }

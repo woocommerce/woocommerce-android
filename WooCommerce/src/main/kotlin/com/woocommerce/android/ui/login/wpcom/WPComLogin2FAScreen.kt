@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +27,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -38,7 +34,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
-import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
@@ -48,7 +43,8 @@ fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
             onCloseClick = viewModel::onCloseClick,
             onSMSLinkClick = viewModel::onSMSLinkClick,
             onContinueClick = viewModel::onContinueClick,
-            onOTPChanged = viewModel::onOTPChanged
+            onOTPChanged = viewModel::onOTPChanged,
+            onSecurityKeyClick = viewModel::onSecurityKeyClick
         )
     }
 }
@@ -59,10 +55,15 @@ fun WPComLogin2FAScreen(
     onCloseClick: () -> Unit = {},
     onSMSLinkClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
-    onOTPChanged: (String) -> Unit = {}
+    onOTPChanged: (String) -> Unit = {},
+    onSecurityKeyClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val branding = viewState.resolveBranding()
+    val titleRes = if (viewState.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -84,14 +85,10 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
             ) {
-                if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                    WordPressWooBadge()
-                } else {
-                    JetpackToWooHeader()
-                }
+                JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = branding.title),
+                    text = stringResource(id = titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -121,6 +118,11 @@ fun WPComLogin2FAScreen(
                 WCTextButton(onClick = onSMSLinkClick) {
                     Text(text = stringResource(id = R.string.login_text_otp))
                 }
+                if (viewState.isSecurityKeySupported) {
+                    WCTextButton(onClick = onSecurityKeyClick) {
+                        Text(text = stringResource(id = R.string.login_text_security_key))
+                    }
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -136,7 +138,7 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = stringResource(id = branding.buttonText))
+                Text(text = stringResource(id = titleRes))
             }
         }
     }
@@ -146,48 +148,13 @@ fun WPComLogin2FAScreen(
     }
 }
 
-private data class TwoFAScreenBranding(
-    @StringRes val title: Int,
-    @StringRes val buttonText: Int,
-)
-
-private fun WPComLogin2FAViewModel.ViewState.resolveBranding(): TwoFAScreenBranding {
-    return when (wpComLoginMode) {
-        WPComLoginMode.PushNotificationsSetup -> TwoFAScreenBranding(
-            title = R.string.login_wpcom_connect_title,
-            buttonText = R.string.login_wpcom_connect_title,
-        )
-
-        is WPComLoginMode.JetpackSetup -> TwoFAScreenBranding(
-            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLogin2FAScreen(
             viewState = WPComLogin2FAViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 password = "",
                 otp = "123456"
@@ -196,17 +163,3 @@ private fun JetpackModePreview() {
     }
 }
 
-@Preview
-@Composable
-private fun NotificationSetupModePreview() {
-    WooThemeWithBackground {
-        WPComLogin2FAScreen(
-            viewState = WPComLogin2FAViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
-                emailOrUsername = "test@email.com",
-                password = "",
-                otp = "123456"
-            )
-        )
-    }
-}

@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -21,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_DOMAINS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_LOGOUT_BUTTON_TAPPED
@@ -29,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_PRIVACY_SETTING
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -44,7 +41,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -184,14 +180,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             showThemeChooser()
         }
 
-        lifecycleScope.launch {
-            binding.optionDomain.isVisible = presenter.isDomainOptionVisible
-            binding.optionDomain.setOnClickListener {
-                AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
-                showDomainDashboard()
-            }
-        }
-
         binding.optionAccountSettings.isVisible = presenter.isCloseAccountOptionVisible
         binding.optionAccountSettings.setOnClickListener {
             findNavController().navigateSafely(
@@ -202,9 +190,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
-        presenter.setupApplicationPasswordsSettings()
 
         binding.optionEnablePushNotifications.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
             findNavController().navigateSafely(
                 MainSettingsFragmentDirections.actionMainSettingsFragmentToWooPushNotificationsIntroductionDialog()
             )
@@ -227,6 +215,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
         }
 
+        binding.optionTroubleshootConnection.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SETTINGS_TROUBLESHOOT_CONNECTION_TAPPED)
+            findNavController()
+                .navigateSafely(R.id.action_mainSettingsFragment_to_troubleshootConnectionFragment)
+        }
+
+        binding.pluginsContainer.isVisible = presenter.isPluginsSectionVisible
+
         binding.optionSitePlugins.setOnClickListener {
             findNavController()
                 .navigateSafely(
@@ -235,11 +231,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         binding.wooPluginVersion.text = presenter.wooPluginVersion
-    }
-
-    private fun showDomainDashboard() {
-        findNavController()
-            .navigateSafely(MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphDomainChange())
     }
 
     override fun onResume() {
@@ -303,10 +294,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun handleApplicationPasswordsSettings() {
-        binding.optionNotifications.hide()
-    }
-
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
@@ -328,7 +315,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     private fun updateStoreSettingsContainerVisibility() {
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
-            binding.optionDomain.isVisible ||
             binding.optionStoreName.isVisible ||
             binding.optionEnablePushNotifications.isVisible
     }

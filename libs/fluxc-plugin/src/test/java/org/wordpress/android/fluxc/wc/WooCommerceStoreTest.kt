@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.wc
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
@@ -41,7 +40,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -58,7 +57,11 @@ class WooCommerceStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private companion object {
         const val TEST_SITE_REMOTE_ID = 1337L
@@ -74,7 +77,6 @@ class WooCommerceStoreTest {
     private val dispatcher: Dispatcher = mock()
 
     private lateinit var taxBasedOnDao: TaxBasedOnDao
-    private lateinit var wpDatabase: WPAndroidDatabase
 
     private val wooCommerceStore by lazy {
         WooCommerceStore(
@@ -88,9 +90,9 @@ class WooCommerceStoreTest {
             settingsMapper = settingsMapper,
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
-            sitePluginDao = wpDatabase.sitePluginDao(),
-            productSettingsDao = databaseRule.db.productSettingsDao,
-            settingsDao = databaseRule.db.settingsDao
+            sitePluginDao = wpDatabaseRule.db.sitePluginDao(),
+            productSettingsDao = wcDatabaseRule.db.productSettingsDao,
+            settingsDao = wcDatabaseRule.db.settingsDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -134,11 +136,7 @@ class WooCommerceStoreTest {
         WellSql.init(config)
         config.reset()
 
-        wpDatabase = Room.inMemoryDatabaseBuilder(
-            appContext,
-            WPAndroidDatabase::class.java
-        ).build()
-        taxBasedOnDao = databaseRule.db.taxBasedOnSettingDao
+        taxBasedOnDao = wcDatabaseRule.db.taxBasedOnSettingDao
     }
 
     @Test

@@ -6,8 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -29,14 +34,29 @@ class WooPushNotificationsConnectionStepsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupObservers()
+        setupResultHandlers()
     }
 
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is WooPushNotificationsConnectionStepsViewModel.NavigateToPluginUpdatePage -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                            urlToLoad = event.url,
+                            displayMode = AuthenticatedWebViewViewModel.DisplayMode.TASK
+                        )
+                    )
+                }
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
+            viewModel.onPluginUpdateWebViewDismissed()
         }
     }
 }

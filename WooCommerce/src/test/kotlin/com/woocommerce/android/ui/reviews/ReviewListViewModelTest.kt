@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
@@ -40,6 +41,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val reviewModerationHandler: ReviewModerationHandler = mock {
         on { pendingModerationStatus } doReturn emptyFlow()
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
@@ -48,13 +50,14 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = spy(
             ReviewListViewModel(
-                savedState,
                 networkStatus,
                 dispatcher,
                 reviewListRepository,
                 markAllReviewsAsSeen,
                 unseenReviewsCountHandler,
-                reviewModerationHandler
+                reviewModerationHandler,
+                analyticsTrackerWrapper,
+                savedState
             )
         )
 

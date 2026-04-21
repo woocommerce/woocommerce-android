@@ -261,6 +261,7 @@ dependencies {
     }
 
     implementation(libs.automattic.encryptedlogging)
+    implementation(libs.automattic.eventhorizon)
     implementation(libs.automattic.tracks.experimentation)
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)

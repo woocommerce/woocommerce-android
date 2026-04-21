@@ -1,54 +1,45 @@
 package org.wordpress.android.fluxc.model;
 
-import com.yarolegovich.wellsql.core.Identifiable;
-import com.yarolegovich.wellsql.core.annotation.Column;
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.Table;
-
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.util.StringUtils;
 
-@Table
-public class AccountModel extends Payload<BaseNetworkError> implements Identifiable {
-    @PrimaryKey(autoincrement = false)
-    @Column private int mId;
+public class AccountModel extends Payload<BaseNetworkError> {
+    private int mId;
 
     // Account attributes
-    @Column private String mUserName;
-    @Column private long mUserId;
-    @Column private String mDisplayName;
-    @Column private String mProfileUrl; // profile_URL
-    @Column private String mAvatarUrl; // avatar_URL
-    @Column private long mPrimarySiteId;
-    @Column private boolean mEmailVerified;
-    @Column private int mSiteCount;
-    @Column private int mVisibleSiteCount;
-    @Column private String mEmail;
-    @Column private boolean mHasUnseenNotes;
+    private String mUserName;
+    private long mUserId;
+    private String mDisplayName;
+    private String mProfileUrl; // profile_URL
+    private String mAvatarUrl; // avatar_URL
+    private long mPrimarySiteId;
+    private boolean mEmailVerified;
+    private int mSiteCount;
+    private int mVisibleSiteCount;
+    private String mEmail;
+    private boolean mHasUnseenNotes;
 
     // Account Settings attributes
-    @Column private String mFirstName;
-    @Column private String mLastName;
-    @Column private String mAboutMe;
-    @Column private String mDate;
-    @Column private String mNewEmail;
-    @Column private boolean mPendingEmailChange;
-    @Column private boolean mTwoStepEnabled;
-    @Column private String mWebAddress; // WPCom rest API: user_URL
-    @Column private boolean mTracksOptOut;
-    @Column private boolean mUsernameCanBeChanged;
+    private String mFirstName;
+    private String mLastName;
+    private String mAboutMe;
+    private String mDate;
+    private String mNewEmail;
+    private boolean mPendingEmailChange;
+    private boolean mTwoStepEnabled;
+    private String mWebAddress; // WPCom rest API: user_URL
+    private boolean mTracksOptOut;
+    private boolean mUsernameCanBeChanged;
 
     public AccountModel() {
         init();
     }
 
-    @Override
     public int getId() {
         return mId;
     }
 
-    @Override
     public void setId(int id) {
         mId = id;
     }

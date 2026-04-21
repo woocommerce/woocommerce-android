@@ -14,10 +14,13 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
+import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
 
@@ -49,6 +53,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
     private val bookingInfoMapper: WooPosBookingInfoMapper,
+    private val formatPrice: WooPosFormatPrice,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -71,7 +76,10 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
-    private var sideLoadActionsJob: Job? = null
+    private var sideLoadJob: Job? = null
+    private var refreshOrderJob: Job? = null
+
+    private var cachedRefundData: CachedRefundData? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -114,12 +122,13 @@ class WooPosOrdersViewModel @Inject constructor(
             orderStatus = order.status.value,
             createdAtMillis = order.dateCreated.time
         )
-        sideLoadActions(orderId, order)
+        sideLoadActionsAndRefundData(orderId, order)
     }
 
     fun onUIEvent(event: WooPosOrdersUIEvent) {
         when (event) {
             is WooPosOrdersUIEvent.OrderActionClicked -> handleActionClicked(event.action)
+            is WooPosOrdersUIEvent.ViewRefundDetailsClicked -> onViewRefundDetailsClicked(event.refundIndex)
         }
     }
 
@@ -134,7 +143,12 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        if (isAlreadySelectedWithActions(current, orderId)) return
+        refreshOrderJob?.cancel()
+
+        if (isOrderFullyLoaded(current, orderId)) {
+            cacheRefundDataFromLazyState(orderId, loadedItems)
+            return
+        }
 
         trackOrderSelectionAnalytics(loadedItems, orderId)
 
@@ -148,11 +162,23 @@ class WooPosOrdersViewModel @Inject constructor(
                 selectedDetails = details
             )
 
-            startSideLoadActionsIfNeeded(orderId, details, orderDetailsViewState, loadedItems)
+            sideLoadOrderExtras(orderId, details, orderDetailsViewState, loadedItems)
         }
     }
 
-    private fun isAlreadySelectedWithActions(current: WooPosOrdersState.Content, orderId: Long): Boolean {
+    private fun cacheRefundDataFromLazyState(
+        orderId: Long,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
+        val orderDetailsViewState = loadedItems.items.values.firstOrNull { it.orderId == orderId }
+        if (orderDetailsViewState is WooPosOrdersState.OrderDetailsViewState.Lazy) {
+            val order = orderDetailsViewState.order
+            val refundInfo = refundInfoBuilder.buildRefundInfo(order, orderDetailsViewState.refundResult)
+            cacheRefundData(orderId, refundInfo.refundRows, order)
+        }
+    }
+
+    private fun isOrderFullyLoaded(current: WooPosOrdersState.Content, orderId: Long): Boolean {
         return current.selectedDetails?.id == orderId &&
             current.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded
     }
@@ -207,7 +233,7 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private suspend fun startSideLoadActionsIfNeeded(
+    private suspend fun sideLoadOrderExtras(
         orderId: Long,
         details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
         orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
@@ -215,13 +241,32 @@ class WooPosOrdersViewModel @Inject constructor(
     ) {
         sideLoadBookings(orderId, details)
 
-        if (details.actionsState !is WooPosOrdersState.OrderActionsState.Loading) return
+        if (details.actionsState !is WooPosOrdersState.OrderActionsState.Loading) {
+            ensureRefundDataCached(orderId, orderDetailsViewState, loadedItems)
+            return
+        }
 
-        val order = getOrderForSideLoading(orderId, orderDetailsViewState, loadedItems) ?: return
-        sideLoadActions(orderId, order)
+        val order = resolveOrder(orderId, orderDetailsViewState, loadedItems) ?: return
+        sideLoadActionsAndRefundData(orderId, order)
     }
 
-    private suspend fun getOrderForSideLoading(
+    private suspend fun ensureRefundDataCached(
+        orderId: Long,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
+        if (cachedRefundData?.orderId == orderId) return
+
+        val order = resolveOrder(orderId, orderDetailsViewState, loadedItems) ?: return
+        val refundsResult = retrieveOrderRefunds(order, forceRefresh = false).fold(
+            onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
+            onFailure = { RefundsFetchResult.Error }
+        )
+        val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
+        cacheRefundData(orderId, refundInfo.refundRows, order)
+    }
+
+    private suspend fun resolveOrder(
         orderId: Long,
         orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
         loadedItems: WooPosOrdersState.Content.Items.Loaded
@@ -237,9 +282,9 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun sideLoadActions(orderId: Long, order: Order) {
-        sideLoadActionsJob?.cancel()
-        sideLoadActionsJob = viewModelScope.launch {
+    private fun sideLoadActionsAndRefundData(orderId: Long, order: Order) {
+        sideLoadJob?.cancel()
+        sideLoadJob = viewModelScope.launch {
             val refundsResult = retrieveOrderRefunds(order = order, forceRefresh = true).fold(
                 onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
                 onFailure = { RefundsFetchResult.Error }
@@ -253,6 +298,10 @@ class WooPosOrdersViewModel @Inject constructor(
             val actions = orderActionsProvider.getAvailableActions(order)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+            val refundedLineItems = orderDetailsMapper.buildRefundedLineItems(order, refundsResult)
+            val nonRefundedLineItems = orderDetailsMapper.buildNonRefundedLineItems(order, refundsResult)
+
+            cacheRefundData(orderId, refundInfo.refundRows, order)
 
             val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
             if (updatedState.selectedDetails?.id == orderId &&
@@ -261,8 +310,16 @@ class WooPosOrdersViewModel @Inject constructor(
                 _state.value = updatedState.withUpdatedDetails(orderId) { details ->
                     details.copy(
                         actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
-                        breakdown = updatedBreakdown
+                        breakdown = updatedBreakdown,
+                        lineItems = LineItemsState.Loaded(nonRefundedLineItems),
+                        refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
+                }
+
+                val stateAfterUpdate = _state.value as? WooPosOrdersState.Content
+                val updatedDetails = stateAfterUpdate?.selectedDetails
+                if (updatedDetails != null) {
+                    sideLoadBookings(orderId, updatedDetails)
                 }
             }
         }
@@ -272,7 +329,8 @@ class WooPosOrdersViewModel @Inject constructor(
         orderId: Long,
         details: WooPosOrdersState.OrderDetailsViewState.Computed.Details
     ) {
-        val loadingItems = details.lineItems.filter { it.bookingInfo is BookingInfo.Loading }
+        val loadedItems = (details.lineItems as? LineItemsState.Loaded)?.items ?: return
+        val loadingItems = loadedItems.filter { it.bookingInfo is BookingInfo.Loading }
         if (loadingItems.isEmpty()) return
 
         viewModelScope.launch {
@@ -289,10 +347,14 @@ class WooPosOrdersViewModel @Inject constructor(
             if (currentState.selectedDetails?.id != orderId) return@launch
 
             _state.value = currentState.withUpdatedDetails(orderId) { details ->
+                val currentItems = (details.lineItems as? LineItemsState.Loaded)?.items
+                    ?: return@withUpdatedDetails details
                 details.copy(
-                    lineItems = details.lineItems.map { lineItem ->
-                        results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
-                    }
+                    lineItems = LineItemsState.Loaded(
+                        currentItems.map { lineItem ->
+                            results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
+                        }
+                    )
                 )
             }
         }
@@ -367,6 +429,51 @@ class WooPosOrdersViewModel @Inject constructor(
             dialogState = WooPosOrdersState.Content.DialogState.Hidden
         )
         refreshSelectedOrder()
+    }
+
+    private fun onViewRefundDetailsClicked(refundIndex: Int) {
+        val cached = cachedRefundData ?: return
+        val rowData = cached.rows.getOrNull(refundIndex) ?: return
+        val order = cached.order
+        if (_state.value !is WooPosOrdersState.Content) return
+
+        viewModelScope.launch {
+            val items = orderDetailsMapper.buildLineItemsForSingleRefund(order, rowData.refund)
+            val itemsSubtotal = formatPrice(
+                rowData.refund.items.fold(BigDecimal.ZERO) { acc, item -> acc + item.total },
+                order.currency
+            )
+            val tax = formatPrice(
+                rowData.refund.items.fold(BigDecimal.ZERO) { acc, item -> acc + item.totalTax },
+                order.currency
+            )
+            val refundTotal = formatPrice(rowData.refund.amount, order.currency)
+
+            val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
+            if (updatedState.selectedDetails?.id != cached.orderId) return@launch
+            _state.value = updatedState.copy(
+                dialogState = WooPosOrdersState.Content.DialogState.RefundDetails(
+                    label = rowData.label,
+                    items = items,
+                    itemsSubtotalLabel = resourceProvider.getQuantityString(
+                        quantity = items.size,
+                        default = R.string.woopos_orders_details_refund_items_subtotal_other,
+                        one = R.string.woopos_orders_details_refund_items_subtotal_one,
+                    ),
+                    itemsSubtotalAmount = itemsSubtotal,
+                    tax = tax,
+                    refundTotal = refundTotal,
+                    paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
+                )
+            )
+        }
+    }
+
+    fun onRefundDetailsDialogDismissed() {
+        val currentState = _state.value as? WooPosOrdersState.Content ?: return
+        _state.value = currentState.copy(
+            dialogState = WooPosOrdersState.Content.DialogState.Hidden
+        )
     }
 
     fun onOrdersEmptyActionClicked() {
@@ -482,8 +589,9 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val selectedOrderId = current.selectedDetails?.id ?: return
 
-        sideLoadActionsJob?.cancel()
-        viewModelScope.launch {
+        sideLoadJob?.cancel()
+        refreshOrderJob?.cancel()
+        refreshOrderJob = viewModelScope.launch {
             ordersDataSource.refreshOrderById(selectedOrderId)
                 .onSuccess { applyOrderUpdate(it) }
         }
@@ -491,14 +599,20 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private suspend fun applyOrderUpdate(updated: Order) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
-        val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+        if (current.items !is WooPosOrdersState.Content.Items.Loaded) return
 
         val historicalRefundsResult = retrieveOrderRefunds(updated, forceRefresh = true).fold(
             onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
             onFailure = { RefundsFetchResult.Error }
         )
 
-        val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
+        val freshState = _state.value as? WooPosOrdersState.Content ?: return
+        val freshLoaded = freshState.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+
+        val refundInfo = refundInfoBuilder.buildRefundInfo(updated, historicalRefundsResult)
+        cacheRefundData(updated.id, refundInfo.refundRows, updated)
+
+        val selectedId = freshLoaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
         val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
         val newDetails = WooPosOrdersState.OrderDetailsViewState.Computed(
@@ -506,13 +620,14 @@ class WooPosOrdersViewModel @Inject constructor(
             details = newDetailsViewState
         )
 
-        val newMap = loaded.items.entries.associate { (item, details) ->
+        val newMap = freshLoaded.items.entries.associate { (item, details) ->
             if (item.id == updated.id) newItem to newDetails else item to details
         }
 
-        _state.value = current.copy(
+        val shouldUpdateDetails = freshState.selectedDetails?.id == updated.id
+        _state.value = freshState.copy(
             items = WooPosOrdersState.Content.Items.Loaded(newMap),
-            selectedDetails = if (selectedId == updated.id) newDetailsViewState else current.selectedDetails
+            selectedDetails = if (shouldUpdateDetails) newDetailsViewState else freshState.selectedDetails
         )
     }
 
@@ -629,7 +744,8 @@ class WooPosOrdersViewModel @Inject constructor(
         searchJob?.cancel()
         loadingJob?.cancel()
         loadingMoreOrdersJob?.cancel()
-        sideLoadActionsJob?.cancel()
+        sideLoadJob?.cancel()
+        refreshOrderJob?.cancel()
     }
 
     private suspend fun getOrComputeDetails(orderId: Long): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
@@ -639,20 +755,11 @@ class WooPosOrdersViewModel @Inject constructor(
         val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
             ?: error("Order $orderId not found in state")
 
-        return orderDetailsMapper.mapOrderDetails(
-            when (orderDetails) {
-                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.order
-                is WooPosOrdersState.OrderDetailsViewState.Computed -> {
-                    loadedItems.items.keys.firstOrNull { it.id == orderId }?.let {
-                        ordersDataSource.getOrderById(it.id).getOrNull()
-                    } ?: error("Order $orderId not found")
-                }
-            },
-            when (orderDetails) {
-                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.refundResult
-                is WooPosOrdersState.OrderDetailsViewState.Computed -> RefundsFetchResult.Error
-            }
-        )
+        return when (orderDetails) {
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> orderDetails.details
+            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
+                orderDetailsMapper.mapOrderDetails(orderDetails.order, orderDetails.refundResult)
+        }
     }
 
     private suspend fun getOrComputeDetailsWithoutActions(
@@ -698,6 +805,13 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedDetails = when (val details = selectedEntry.value) {
             is WooPosOrdersState.OrderDetailsViewState.Computed -> details.details
             is WooPosOrdersState.OrderDetailsViewState.Lazy -> error("Selected order should have computed details")
+        }
+
+        val selectedOrder = ordersWithRefunds.keys.firstOrNull { it.id == newSelectedId }
+        val selectedRefundResult = selectedOrder?.let { ordersWithRefunds[it] }
+        if (selectedOrder != null && selectedRefundResult != null) {
+            val refundInfo = refundInfoBuilder.buildRefundInfo(selectedOrder, selectedRefundResult)
+            cacheRefundData(newSelectedId, refundInfo.refundRows, selectedOrder)
         }
 
         _state.value = WooPosOrdersState.Content(
@@ -797,4 +911,14 @@ class WooPosOrdersViewModel @Inject constructor(
             selectedDetails = updatedSelectedDetails
         )
     }
+
+    private fun cacheRefundData(orderId: Long, refundRows: List<RefundRowData>, order: Order) {
+        cachedRefundData = CachedRefundData(orderId = orderId, rows = refundRows, order = order)
+    }
+
+    private data class CachedRefundData(
+        val orderId: Long,
+        val rows: List<RefundRowData>,
+        val order: Order,
+    )
 }

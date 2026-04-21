@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -116,13 +115,11 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Handles database downgrade correctly`() = testBlocking {
-        if (FeatureFlag.DB_DOWNGRADE.isEnabled()) {
-            whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
-            mainPresenter.takeView(mainContractView)
-            mainPresenter.fetchSitesAfterDowngrade()
-            verify(mainContractView).showProgressDialog(any())
-            verify(mainContractView).updateSelectedSite()
-        }
+        whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
+        mainPresenter.takeView(mainContractView)
+        mainPresenter.fetchSitesAfterDowngrade()
+        verify(mainContractView).showProgressDialog(any())
+        verify(mainContractView).updateSelectedSite()
     }
 
     @Test

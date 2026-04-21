@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.VariationListItemBinding
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
@@ -25,7 +26,6 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
-import org.wordpress.android.util.PhotonUtils
 
 class VariationListAdapter(
     private val context: Context,
@@ -118,8 +118,7 @@ class VariationListAdapter(
             viewBinding.variationOptionImage.clipToOutline = true
 
             variation.image?.let {
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
-                glideRequest.load(imageUrl)
+                glideRequest.loadPhotonUrlWithFallback(it.source, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(viewBinding.variationOptionImage)

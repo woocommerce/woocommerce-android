@@ -38,7 +38,7 @@ class WooPosHomeViewModel @Inject constructor(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = ScreenPositionState.Cart,
+            screenPositionState = ScreenPositionState.Products,
             dialogState = DialogState.Hidden,
         )
     )
@@ -66,6 +66,18 @@ class WooPosHomeViewModel @Inject constructor(
         when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> handleSystemBackClicked()
 
+            WooPosHomeUIEvent.PhoneOpenCartClicked -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+            }
+
+            WooPosHomeUIEvent.PhoneBackFromCartClicked -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Products
+                )
+            }
+
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
@@ -73,6 +85,12 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             WooPosHomeUIEvent.DismissScanningSetupDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+
+            WooPosHomeUIEvent.DismissCardReaderConnectionDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
@@ -111,8 +129,10 @@ class WooPosHomeViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     screenPositionState = ScreenPositionState.Cart
                 )
+                sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             }
 
+            ScreenPositionState.Products,
             is ScreenPositionState.Cart -> {
                 when (_state.value.dialogState) {
                     DialogState.Hidden -> {
@@ -159,9 +179,9 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OnNewTransactionStarted -> {
-                        if (_state.value.screenPositionState !is ScreenPositionState.Cart) {
+                        if (_state.value.screenPositionState !is ScreenPositionState.Products) {
                             _state.value = _state.value.copy(
-                                screenPositionState = ScreenPositionState.Cart
+                                screenPositionState = ScreenPositionState.Products
                             )
                         }
                     }
@@ -225,7 +245,9 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
 
-                    is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
+                    is ChildToParentEvent.OrderCreated -> {
+                        sendEventToChildren(OrderCreated(event.data))
+                    }
                     is ChildToParentEvent.CouponsValidationFailed -> {
                         sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
                     }
@@ -254,48 +276,16 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
 
+                    ChildToParentEvent.ShowCardReaderConnectionDialog -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.CardReaderConnectionDialog
+                        )
+                    }
+
                     is ChildToParentEvent.SettingsEvent -> Unit
                 }
             }
         }
-    }
-
-    private fun handleOrderCreated(event: ChildToParentEvent.OrderCreated) {
-        sendEventToChildren(
-            OrderCreated(
-                updatedProducts = event.updatedProducts.map {
-                    when (it) {
-                        is ChildToParentEvent.OrderCreated.ProductInfo.Simple -> {
-                            OrderCreated.ProductInfo.Simple(
-                                id = it.id,
-                                name = it.name,
-                                finalPrice = it.finalPrice,
-                                basePrice = it.basePrice,
-                                quantity = it.quantity
-                            )
-                        }
-
-                        is ChildToParentEvent.OrderCreated.ProductInfo.Variation -> {
-                            OrderCreated.ProductInfo.Variation(
-                                id = it.id,
-                                name = it.name,
-                                finalPrice = it.finalPrice,
-                                basePrice = it.basePrice,
-                                quantity = it.quantity,
-                                variationId = it.variationId
-                            )
-                        }
-                    }
-                },
-                updatedCoupons = event.updatedCoupons.map {
-                    OrderCreated.CouponInfo(
-                        id = it.id,
-                        code = it.code,
-                        discountAmount = it.discountAmount
-                    )
-                }
-            )
-        )
     }
 
     private fun sendEventToChildren(event: ParentToChildrenEvent) {

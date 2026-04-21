@@ -7,7 +7,6 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCRefundStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class WooPosRetrieveOrderRefunds @Inject constructor(
@@ -16,10 +15,6 @@ class WooPosRetrieveOrderRefunds @Inject constructor(
 ) {
     suspend operator fun invoke(order: Order, forceRefresh: Boolean = false): Result<List<Refund>> =
         withContext(Dispatchers.IO) {
-            if (order.refundTotal.compareTo(BigDecimal.ZERO) == 0) {
-                return@withContext Result.success(emptyList())
-            }
-
             val site = selectedSite.get()
 
             val refundModels = if (forceRefresh) {

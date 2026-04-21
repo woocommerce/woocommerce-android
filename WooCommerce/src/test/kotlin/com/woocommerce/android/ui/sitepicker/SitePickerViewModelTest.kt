@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -77,14 +78,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val repository: SitePickerRepository = mock {
-        onBlocking { getSites() } doReturn defaultExpectedSiteList.toMutableList()
+        on { getSites() } doReturn defaultExpectedSiteList.toMutableList()
     }
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val experimentTracker: ExperimentTracker = mock()
     private val getWooVisibleSites: GetWooVisibleSites = mock {
-        onBlocking { invoke() } doReturn defaultExpectedSiteList
+        on { invoke() } doReturn defaultExpectedSiteList
     }
+    private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: SitePickerViewModel
@@ -103,6 +105,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             userEligibilityFetcher = userEligibilityFetcher,
             experimentTracker = experimentTracker,
             getWooVisibleSites = getWooVisibleSites,
+            visibleWooSitesDataStore = visibleWooSitesDataStore,
             registerDevice = registerDevice
         )
     }
@@ -120,7 +123,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
-        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(SitePickerTestUtils.userModel))
+        whenever(userEligibilityFetcher.fetchUserInfo(any())).thenReturn(Result.success(SitePickerTestUtils.userModel))
     }
 
     private suspend fun whenSitesAreFetched(
@@ -380,10 +383,26 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
+        verify(visibleWooSitesDataStore, times(0)).updateSiteVisibilityStatus(any())
         val sites = items?.filterIsInstance<WooSiteUiModel>()
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
+
+    @Test
+    fun `given user is logging in from hidden site address, when auto login starts, then site visibility is restored`() =
+        testBlocking {
+            val hiddenSite = defaultExpectedSiteList[1]
+            givenThatUserLoggedInFromEnteringSiteAddress(hiddenSite)
+            givenThatSiteVerificationIsCompleted()
+            whenever(getWooVisibleSites()).thenReturn(
+                defaultExpectedSiteList.filter { it.siteId != hiddenSite.siteId }
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            verify(visibleWooSitesDataStore, atLeastOnce()).updateSiteVisibilityStatus(mapOf(hiddenSite.siteId to true))
+        }
 
     @Test
     fun `given login with wp email, when only a single woo store is available, then site should be auto selected`() =
@@ -521,13 +540,58 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onContinueButtonClick()
 
         verify(repository, times(1)).verifySiteWooAPIVersion(any())
+        verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
         verify(selectedSite, times(1)).set(any())
-        verify(userEligibilityFetcher, times(1)).fetchUserInfo()
         verify(appPrefsWrapper, times(1)).removeLoginSiteAddress()
+        verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
 
         assertThat(view).isEqualTo(NavigateToMainActivityEvent)
         assertThat(isProgressShown).containsExactly(false, true, false)
     }
+
+    @Test
+    fun `given eligibility fetch fails after site verification, when continue is tapped, then do not persist selected site`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(SitePickerTestUtils.apiVerificationResponse)
+            )
+            whenever(userEligibilityFetcher.fetchUserInfo(any())).thenReturn(Result.failure(Exception()))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val isProgressShown = ArrayList<Boolean>()
+            viewModel.sitePickerViewStateData.observeForever { old, new ->
+                new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) { isProgressShown.add(it) }
+            }
+
+            val selectedSiteModel = defaultExpectedSiteList[1]
+
+            viewModel.onSiteSelected(selectedSiteModel)
+            viewModel.onContinueButtonClick()
+
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
+            verify(selectedSite, times(0)).set(any())
+            verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+            assertThat(isProgressShown).containsExactly(false, true, false)
+        }
+
+    @Test
+    fun `given that user is switching stores, when site verification succeeds, then site switch registration is triggered`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            givenThatSiteVerificationIsCompleted()
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val selectedSiteModel = defaultExpectedSiteList[1]
+
+            viewModel.onSiteSelected(selectedSiteModel)
+            viewModel.onContinueButtonClick()
+
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.SITE_SWITCH)
+        }
 
     @Test
     fun `given that a site is selected, when verification is initiated, but then returns upgrade error`() =
@@ -550,7 +614,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             verify(repository, times(1)).verifySiteWooAPIVersion(any())
             verify(selectedSite, times(0)).set(any())
-            verify(userEligibilityFetcher, times(0)).fetchUserInfo()
+            verify(userEligibilityFetcher, times(0)).fetchUserInfo(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
 
             assertThat(viewModel.isWooUpgradeDialogVisible.value).isEqualTo(true)

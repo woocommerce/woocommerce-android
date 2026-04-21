@@ -1,9 +1,14 @@
 package com.woocommerce.android.ui.login
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -40,7 +45,8 @@ class AccountRepository @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val siteVisibilityDataStore: VisibleWooSitesDataStore,
     private val dispatchers: CoroutineDispatchers,
-    private val pushNotificationRepository: PushNotificationRepository
+    private val pushNotificationRepository: PushNotificationRepository,
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -60,32 +66,10 @@ class AccountRepository @Inject constructor(
 
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
-        return if (accountStore.hasAccessToken()) {
-            pushNotificationRepository.unregisterDeviceFromAllPushes()
 
-            // WordPress.com account logout
-            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
-            if (event.isError) {
-                WooLog.e(
-                    LOGIN,
-                    "Account error [type = ${event.causeOfChange}] : " +
-                        "${event.error.type} > ${event.error.message}"
-                )
-                false
-            } else {
-                AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
-                deleteApplicationPasswordsOfUserSites()
-                cleanup()
-                true
-            }
-        } else {
-            // Application passwords logout
-            pushNotificationRepository.unregisterWooCoreTokensFromServer()
-            deleteApplicationPassword(selectedSite.get())
-            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
-            cleanup()
-            true
-        }
+        pushNotificationRepository.unregisterDeviceFromPushNotifications()
+
+        return if (accountStore.hasAccessToken()) logoutWpComAccount() else logoutApplicationPasswordAccount()
     }
 
     suspend fun closeAccount(): CloseAccountResult {
@@ -113,16 +97,44 @@ class AccountRepository @Inject constructor(
         AnalyticsTracker.clearAllData()
         zendeskSettings.clearIdentity()
 
-        // Wipe user-specific preferences and prefs data store
+        // Wipe user-specific preferences and data stores
         appCoroutineScope.launch {
             prefs.resetUserPreferences()
             siteVisibilityDataStore.clearAll()
+            posDataStore.edit { it.clear() }
         }
 
         selectedSite.reset()
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    private suspend fun logoutWpComAccount(): Boolean {
+        val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+        if (event.isError) {
+            WooLog.e(
+                LOGIN,
+                "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}"
+            )
+            return false
+        }
+
+        deleteApplicationPasswordsOfUserSites()
+        completeLogout()
+        return true
+    }
+
+    private fun logoutApplicationPasswordAccount(): Boolean {
+        deleteApplicationPassword(selectedSite.get())
+        completeLogout()
+        return true
+    }
+
+    private fun completeLogout() {
+        AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+        cleanup()
     }
 
     private suspend fun deleteApplicationPasswordsOfUserSites() {

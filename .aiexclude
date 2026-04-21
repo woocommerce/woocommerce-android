@@ -1,0 +1,13 @@
+.configure-files/
+.gradle/
+build/
+!build/reports/
+*/build/
+!*/build/outputs/
+!*/build/reports/
+!*/build/test-results/
+google-services.json
+*.jks
+local.properties
+secrets.properties
+sentry.properties

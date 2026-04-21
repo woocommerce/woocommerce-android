@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,10 +28,10 @@ fun AccountSettingsScreen(
 ) {
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.surface)
             .fillMaxSize()
     ) {
-        Divider()
+        HorizontalDivider()
         AccountSettingsItem(
             title = stringResource(id = R.string.settings_close_account).uppercase(),
             onClick = onCloseAccountClick,
@@ -40,7 +39,7 @@ fun AccountSettingsScreen(
             boldText = true,
             modifier = Modifier.fillMaxWidth()
         )
-        Divider()
+        HorizontalDivider()
     }
 }
 
@@ -66,19 +65,19 @@ private fun AccountSettingsItem(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = if (boldText) FontWeight.Medium else null,
             color = textColor.let {
-                if (!enabled) it.copy(alpha = ContentAlpha.disabled) else it
+                if (!enabled) it.copy(alpha = 0.38f) else it
             }
         )
         subtitle?.let {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (boldText) FontWeight.Medium else null,
                 color = textColor.let {
-                    if (!enabled) it.copy(alpha = ContentAlpha.disabled) else it
+                    if (!enabled) it.copy(alpha = 0.38f) else it
                 }
             )
         }

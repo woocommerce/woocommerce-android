@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.MagicLinkFlow
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -42,7 +43,7 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(
         scope = viewModelScope,
         initialValue = ViewState.MagicLinkRequestState(
-            wpComLoginMode = navArgs.wpComLoginMode,
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             magicLinkFallbackButton = navArgs.fallbackButton,
@@ -68,11 +69,11 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
             MagicLinkFallbackButton.Password -> triggerEvent(
                 ShowPasswordScreen(
                     emailOrUsername = navArgs.emailOrUsername,
-                    wpComLoginMode = navArgs.wpComLoginMode
+                    jetpackStatus = navArgs.jetpackStatus
                 )
             )
 
-            MagicLinkFallbackButton.UsernameAndPassword -> triggerEvent(ShowUsernameScreen(navArgs.wpComLoginMode))
+            MagicLinkFallbackButton.UsernameAndPassword -> triggerEvent(ShowUsernameScreen(navArgs.jetpackStatus))
             MagicLinkFallbackButton.None -> error("No fallback button should be shown")
         }
     }
@@ -101,7 +102,7 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         )
 
         _viewState.value = ViewState.MagicLinkRequestState(
-            wpComLoginMode = navArgs.wpComLoginMode,
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             magicLinkFallbackButton = navArgs.fallbackButton,
@@ -109,12 +110,12 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         )
         wpComLoginRepository.requestMagicLink(
             emailOrUsername = navArgs.emailOrUsername,
-            flow = navArgs.wpComLoginMode.toMagicLinkFlow(),
+            flow = MagicLinkFlow.JetpackConnection,
             isSignup = navArgs.isNewWpComAccount
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
-                    wpComLoginMode = navArgs.wpComLoginMode,
+                    isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
                     magicLinkFallbackButton = navArgs.fallbackButton,
                 )
@@ -148,18 +149,13 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
 
-    private fun WPComLoginMode.toMagicLinkFlow(): MagicLinkFlow = when (this) {
-        is WPComLoginMode.JetpackSetup -> MagicLinkFlow.JetpackConnection
-        WPComLoginMode.PushNotificationsSetup -> MagicLinkFlow.PushNotificationsSetup
-    }
-
     sealed interface ViewState : Parcelable {
-        val wpComLoginMode: WPComLoginMode
+        val isJetpackInstalled: Boolean
         val magicLinkFallbackButton: MagicLinkFallbackButton
 
         @Parcelize
         data class MagicLinkRequestState(
-            override val wpComLoginMode: WPComLoginMode,
+            override val isJetpackInstalled: Boolean,
             val emailOrUsername: String,
             val avatarUrl: String,
             override val magicLinkFallbackButton: MagicLinkFallbackButton,
@@ -168,7 +164,7 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
         @Parcelize
         data class MagicLinkSentState(
-            override val wpComLoginMode: WPComLoginMode,
+            override val isJetpackInstalled: Boolean,
             val email: String?,
             override val magicLinkFallbackButton: MagicLinkFallbackButton
         ) : ViewState
@@ -178,8 +174,8 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
     data class ShowPasswordScreen(
         val emailOrUsername: String,
-        val wpComLoginMode: WPComLoginMode
+        val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 
-    data class ShowUsernameScreen(val wpComLoginMode: WPComLoginMode) : MultiLiveEvent.Event()
+    data class ShowUsernameScreen(val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
 }

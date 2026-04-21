@@ -16,7 +16,7 @@ class WooPosSearchByIdentifierResultConverter @Inject constructor(
         return when (result) {
             is WooPosSearchByIdentifierResult.Success -> {
                 val product = result.product
-                if (product.type == WooPosProductModel.WooPosProductType.VARIATION) {
+                if (product.type is WooPosProductModel.WooPosProductType.Variation) {
                     variationProcess(product)
                 } else {
                     productsCache.addAll(listOf(product))

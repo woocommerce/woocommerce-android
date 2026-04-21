@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.di
 
 import android.content.Context
+import android.database.sqlite.SQLiteDiskIOException
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,8 @@ import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.util.AppLog
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,11 +35,38 @@ interface WCDatabaseModule {
             currencyPositionConverter: CurrencyPositionConverter,
             statsGranularityConverter: StatsGranularityConverter,
         ): WCAndroidDatabase {
-            return WCAndroidDatabase.buildDb(
-                context,
-                currencyPositionConverter,
-                statsGranularityConverter,
-            )
+            return try {
+                WCAndroidDatabase.buildDb(
+                    context,
+                    currencyPositionConverter,
+                    statsGranularityConverter,
+                )
+            } catch (e: SQLiteDiskIOException) {
+                AppLog.e(
+                    AppLog.T.DB,
+                    "Database open failed due to disk I/O error, freeing space and retrying: $e"
+                )
+                clearLogFiles(context)
+                try {
+                    WCAndroidDatabase.buildDb(
+                        context,
+                        currencyPositionConverter,
+                        statsGranularityConverter,
+                    )
+                } catch (retryException: SQLiteDiskIOException) {
+                    AppLog.e(
+                        AppLog.T.DB,
+                        "Database retry failed after clearing logs: $retryException"
+                    )
+                    throw retryException
+                }
+            }
+        }
+
+        private fun clearLogFiles(context: Context) {
+            val logsDir = File(context.filesDir, "logs")
+            logsDir.listFiles { file -> file.isFile && file.name.startsWith("log_") }
+                ?.forEach { it.delete() }
         }
 
         @Provides internal fun provideAddonsDao(database: WCAndroidDatabase): AddonsDao {
@@ -103,6 +133,8 @@ interface WCDatabaseModule {
         @Provides internal fun provideLocationsDao(database: WCAndroidDatabase) = database.locationsDao
 
         @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
+
+        @Provides internal fun provideOrderFulfillmentDao(database: WCAndroidDatabase) = database.orderFulfillmentDao
 
         @Provides internal fun provideOrderShipmentTrackingDao(database: WCAndroidDatabase) = database.orderShipmentTrackingDao
 

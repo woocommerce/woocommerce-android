@@ -8,7 +8,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
-import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -247,6 +246,7 @@ class AnalyticsTracker private constructor(
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
         const val KEY_TAP = "tap"
+        const val KEY_BUTTON_LABEL = "button_label"
         const val KEY_FAILURE = "failure"
         const val KEY_SCANNING_SOURCE = "source"
         const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
@@ -408,9 +408,12 @@ class AnalyticsTracker private constructor(
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
         // -- Connectivity Tool
-        const val VALUE_INTERNET = "internet"
-        const val VALUE_SITE = "site"
-        const val VALUE_JETPACK_TUNNEL = "jetpack_tunnel"
+        const val KEY_CONNECTIVITY_TEST = "test"
+        const val VALUE_CONNECTIVITY_INTERNET = "internet"
+        const val VALUE_CONNECTIVITY_WP_COM = "wpCom"
+        const val VALUE_CONNECTIVITY_SITE = "site"
+        const val VALUE_CONNECTIVITY_ORDERS = "orders"
+        const val VALUE_CONNECTIVITY_PRODUCTS = "products"
 
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),

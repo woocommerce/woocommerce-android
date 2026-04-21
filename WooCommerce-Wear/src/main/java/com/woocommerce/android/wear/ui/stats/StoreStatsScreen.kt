@@ -148,7 +148,7 @@ private fun StatsContentScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             Text(
-                text = stringResource(id = R.string.stats_screen_revenue_title),
+                text = stringResource(id = R.string.stats_screen_total_sales_title),
                 textAlign = TextAlign.Center,
                 color = WooColors.woo_purple_5,
                 style = WooTypography.body2,

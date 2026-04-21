@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
-import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
@@ -13,6 +12,7 @@ import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -32,11 +32,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 private const val ARTIFICIAL_STATUS_UPDATE_DELAY_IN_MILLIS = 500L
+private const val LOG_TAG = "ConnectionManager"
 
+@Suppress("LongParameterList")
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
@@ -44,6 +44,7 @@ internal class ConnectionManager(
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
     private val application: Application,
+    private val logWrapper: LogWrapper,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
@@ -124,43 +125,50 @@ internal class ConnectionManager(
         }
     }
 
-    fun startConnectionToReader(cardReader: CardReader, locationId: String) {
+    suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {
             updateReaderStatus(CardReaderStatus.Connecting)
-            val readerCallback = object : ReaderCallback {
-                override fun onSuccess(reader: Reader) {
-                    updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+            try {
+                val reader = when (it.cardReader.deviceType) {
+                    DeviceType.TAP_TO_PAY_DEVICE -> connectToBuiltInReader(cardReader, locationId)
+                    else -> connectToExternalReader(cardReader, locationId)
                 }
-
-                override fun onFailure(e: TerminalException) {
-                    updateReaderStatus(
-                        CardReaderStatus.NotConnected(
-                            errorCode = e.errorCode.toErrorCode(),
-                            errorMessage = e.errorMessage,
-                        )
+                updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+            } catch (e: TerminalException) {
+                updateReaderStatus(
+                    CardReaderStatus.NotConnected(
+                        errorCode = e.errorCode.toErrorCode(),
+                        errorMessage = e.errorMessage,
                     )
-                }
-            }
-
-            when (it.cardReader.deviceType) {
-                DeviceType.TAP_TO_PAY_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
-                else -> connectToExternalReader(cardReader, locationId, readerCallback)
+                )
             }
         }
     }
 
-    suspend fun disconnectReader() = suspendCoroutine { continuation ->
-        terminal.disconnectReader(object : Callback {
+    suspend fun disconnectReader(): Boolean {
+        return try {
+            terminal.disconnectReader()
+            updateReaderStatus(CardReaderStatus.NotConnected())
+            true
+        } catch (e: TerminalException) {
+            logWrapper.e(LOG_TAG, "Failed to disconnect reader: ${e.errorMessage}")
+            updateReaderStatus(CardReaderStatus.NotConnected())
+            false
+        }
+    }
+
+    fun cancelReconnection() {
+        val callback = object : Callback {
             override fun onFailure(e: TerminalException) {
                 updateReaderStatus(CardReaderStatus.NotConnected())
-                continuation.resume(false)
             }
 
             override fun onSuccess() {
                 updateReaderStatus(CardReaderStatus.NotConnected())
-                continuation.resume(true)
             }
-        })
+        }
+        bluetoothReaderListener.cancelReconnection(callback)
+        tapToPayReaderListener.cancelReconnection(callback)
     }
 
     private fun startStateResettingJobIfNeeded(currentStatus: CardReaderStatus) {
@@ -199,31 +207,27 @@ internal class ConnectionManager(
         terminal.setupTapToPayUx(config)
     }
 
-    private fun connectToExternalReader(
+    private suspend fun connectToExternalReader(
         cardReader: CardReaderImpl,
-        locationId: String,
-        readerCallback: ReaderCallback
-    ) {
-        terminal.connectToReader(
+        locationId: String
+    ): Reader {
+        return terminal.connectToReader(
             cardReader.cardReader,
-            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener),
-            readerCallback
+            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener)
         )
     }
 
-    private fun connectToBuiltInReader(
+    private suspend fun connectToBuiltInReader(
         cardReader: CardReaderImpl,
-        locationId: String,
-        readerCallback: ReaderCallback
-    ) {
-        terminal.connectToMobile(
+        locationId: String
+    ): Reader {
+        return terminal.connectToMobile(
             cardReader.cardReader,
             TapToPayConnectionConfiguration(
                 locationId,
                 autoReconnectOnUnexpectedDisconnect = true,
                 tapToPayReaderListener
-            ),
-            readerCallback
+            )
         )
     }
 

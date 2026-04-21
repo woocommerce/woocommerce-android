@@ -109,7 +109,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun loadRefundableItems() {
-        if (_state.value is WooPosRefundState.Content) return
+        if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
@@ -433,11 +433,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 )
             } else {
                 analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+                val receiptSentMessage = currentOrder?.billingAddress?.email
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { email ->
+                        resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+                    }
                 _state.value = WooPosRefundState.RefundSuccess(
                     orderId = contentState.orderId,
                     orderNumber = contentState.orderNumber,
                     refundedAmount = contentState.formattedTotal,
-                    paymentMethod = contentState.paymentMethod
+                    paymentMethod = contentState.paymentMethod,
+                    receiptSentMessage = receiptSentMessage
                 )
             }
         }

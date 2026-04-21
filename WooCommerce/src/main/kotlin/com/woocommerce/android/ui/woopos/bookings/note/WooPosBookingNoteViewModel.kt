@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsAnalyticsTracker
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class WooPosBookingNoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingsRepository: BookingsRepository,
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker,
 ) : ViewModel() {
 
     private val bookingId: Long = requireNotNull(savedStateHandle[BOOKING_NOTE_ROUTE_BOOKING_ID_KEY])
@@ -67,13 +69,15 @@ class WooPosBookingNoteViewModel @Inject constructor(
                 bookingId = bookingId,
                 note = currentState.noteText.trim()
             )
-            result.onFailure {
+            result.onFailure { error ->
+                analyticsTracker.trackNoteAddFailed(this@WooPosBookingNoteViewModel::class, error)
                 _state.update {
                     it.copy(buttonState = WooPosButtonState.ENABLED)
                 }
                 _errorEvent.emit(Unit)
             }
             result.onSuccess {
+                analyticsTracker.trackNoteAdded()
                 _navigationEvent.emit(
                     WooPosNavigationEvent.GoBackWithResult(
                         key = BOOKING_NOTE_RESULT_KEY,

@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <application>
+        <receiver
+            android:name=".adb.ApiFakerBroadcastReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="com.woocommerce.android.apifaker.SET_STATUS" />
+                <action android:name="com.woocommerce.android.apifaker.ADD_ENDPOINT" />
+                <action android:name="com.woocommerce.android.apifaker.EDIT_ENDPOINT" />
+                <action android:name="com.woocommerce.android.apifaker.REMOVE_ENDPOINT" />
+                <action android:name="com.woocommerce.android.apifaker.CLEAR_ENDPOINTS" />
+                <action android:name="com.woocommerce.android.apifaker.LIST_ENDPOINTS" />
+                <action android:name="com.woocommerce.android.apifaker.IMPORT_ENDPOINTS" />
+            </intent-filter>
+        </receiver>
+    </application>
+
 </manifest>

@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -37,7 +37,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
     }
 
     private val savedStateHandle = WPComLoginPasswordFragmentArgs(
-        wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
+        jetpackStatus = JETPACK_STATUS,
         emailOrUsername = EMAIL
     ).toSavedStateHandle()
     private val wpComLoginRepository: WPComLoginRepository = mock()
@@ -46,6 +46,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: WPComLoginPasswordViewModel
 
@@ -58,7 +59,8 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
             wpComLoginRepository = wpComLoginRepository,
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            registerDevice = registerDevice
         )
     }
 
@@ -67,10 +69,8 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
         testBlocking {
             setup()
             whenever(wpComLoginRepository.login(EMAIL, PASSWORD)).thenReturn(
-                Result.failure(
-                    OnChangedException(
-                        AuthenticationError(AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED, "")
-                    )
+                WPComLoginRepository.LoginResult.Error(
+                    AuthenticationError(AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED, "")
                 )
             )
 
@@ -81,7 +81,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
                     emailOrUsername = EMAIL,
-                    wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
+                    jetpackStatus = JETPACK_STATUS,
                     magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
                     requestAtStart = false
                 )

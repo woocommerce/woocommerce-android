@@ -21,7 +21,7 @@ class ProductCategoryListHandlerTests : BaseUnitTest() {
 
     private val repository: ProductCategorySelectorRepository = mock {
         on { observeCategories() } doReturn flowOf(emptyList())
-        onBlocking { fetchCategories(any(), any()) } doReturn Result.success(false)
+        on { fetchCategories(any(), any()) } doReturn Result.success(false)
     }
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {

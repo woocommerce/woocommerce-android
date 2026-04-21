@@ -19,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -70,7 +70,7 @@ private fun WooPosPaginationErrorIndicatorContent(
     ) {
         Row(
             modifier = Modifier
-                .height(112.dp)
+                .height(WooPosComponentSize.Large.value)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
@@ -82,11 +82,11 @@ private fun WooPosPaginationErrorIndicatorContent(
             ) {
                 if (icon != null) {
                     Box(
-                        modifier = Modifier.size(112.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Large.value)
                     ) {
                         Icon(
                             modifier = Modifier
-                                .size(54.dp)
+                                .size(WooPosComponentSize.XSmall.value)
                                 .align(Alignment.Center),
                             imageVector = icon,
                             contentDescription = stringResource(R.string.woopos_error_icon_content_description),

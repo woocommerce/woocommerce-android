@@ -28,7 +28,8 @@ internal class BookingDtoMapper @Inject constructor(
 
     suspend fun BookingDto.toEntity(
         localSiteId: LocalId,
-        orderEntity: OrderEntity?
+        orderEntity: OrderEntity?,
+        existingLocation: String? = null,
     ): BookingEntity = BookingEntity(
         id = RemoteId(id),
         localSiteId = localSiteId,
@@ -39,6 +40,7 @@ internal class BookingDtoMapper @Inject constructor(
         cost = cost,
         currency = currency,
         customerId = customerId,
+        userId = userId,
         productId = productId,
         resourceId = resourceId,
         dateCreated = Instant.ofEpochSecond(dateCreated),
@@ -51,6 +53,7 @@ internal class BookingDtoMapper @Inject constructor(
         localTimezone = localTimezone,
         attendanceStatus = BookingEntity.AttendanceStatus.fromKey(attendanceStatus.orEmpty()),
         note = note.orEmpty(),
+        location = existingLocation,
         order = orderEntity?.toBookingOrderInfo(orderItemId) ?: BookingOrderInfo(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
@@ -70,6 +73,7 @@ internal class BookingDtoMapper @Inject constructor(
         imageId = imageId,
         imageUrl = imageUrl,
         description = description,
+        productBookingIds = productBookingIds,
     )
 
     fun Array<BookingResourceDto>.toEntities(localSiteId: LocalId): List<BookingResourceEntity> =

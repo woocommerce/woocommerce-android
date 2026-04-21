@@ -1,1 +1,1 @@
-WooCommerce：商店管理与 POS
+WooCommerce：商店与 POS

@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiRespo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
@@ -41,6 +42,8 @@ class WooPosLocalCatalogStoreTest {
     private val posProductsDao: WooPosProductsDao = mock()
 
     private val posVariationsDao: WooPosVariationsDao = mock()
+
+    private val posFtsDao: WooPosSearchableFtsDao = mock()
 
     private val headersParser: HeadersParser = mock()
 
@@ -71,6 +74,7 @@ class WooPosLocalCatalogStoreTest {
             coroutineEngine = initCoroutineEngine(),
             posProductDao = posProductsDao,
             posVariationsDao = posVariationsDao,
+            posFtsDao = posFtsDao,
             headersParser = headersParser,
             database = database,
         )

@@ -1,43 +1,35 @@
 package org.wordpress.android.fluxc.store
 
-import androidx.room.Room
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.utils.createTestTheme
-import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
 class ThemeStoreUnitTest {
-    private lateinit var database: WPAndroidDatabase
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(
+        ApplicationProvider.getApplicationContext()
+    )
+
     private lateinit var themeStore: ThemeStore
 
     @Before
     fun setUp() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        database = Room.inMemoryDatabaseBuilder(
-            context, WPAndroidDatabase::class.java
-        ).allowMainThreadQueries().build()
-
         themeStore = ThemeStore(
             Dispatcher(),
             mock(),
-            database
+            wpDatabaseRule.db
         )
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        database.close()
     }
 
     @Test

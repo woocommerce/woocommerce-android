@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -28,9 +29,14 @@ import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 @Composable
 fun DashboardPushNotificationsCard(
     onHideClicked: () -> Unit,
+    onShown: () -> Unit,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
+    LaunchedEffect(Unit) {
+        onShown()
+    }
+
     val menu = DashboardWidgetMenu(
         items = listOf(
             DashboardWidget.Type.PUSH_NOTIFICATIONS.defaultHideMenuEntry(onHideClicked)
@@ -81,6 +87,9 @@ fun DashboardPushNotificationsCard(
 @Composable
 fun DashboardPushNotificationsCardPreview() {
     WooThemeWithBackground {
-        DashboardPushNotificationsCard(onHideClicked = {})
+        DashboardPushNotificationsCard(
+            onHideClicked = {},
+            onShown = {}
+        )
     }
 }

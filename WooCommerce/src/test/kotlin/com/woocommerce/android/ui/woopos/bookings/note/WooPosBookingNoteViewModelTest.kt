@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.bookings.note
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsAnalyticsTracker
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -62,9 +63,10 @@ class WooPosBookingNoteViewModelTest {
         customerNote = ""
     )
 
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker = mock()
     private val bookingsRepository = mock<BookingsRepository> {
-        onBlocking { getBooking(any()) } doReturn booking
-        onBlocking { updateNote(any(), any()) } doReturn Result.success(Unit)
+        on { getBooking(any()) } doReturn booking
+        on { updateNote(any(), any()) } doReturn Result.success(Unit)
     }
 
     private fun createSavedStateHandle() = SavedStateHandle(
@@ -76,6 +78,7 @@ class WooPosBookingNoteViewModelTest {
     ) = WooPosBookingNoteViewModel(
         savedStateHandle = savedStateHandle,
         bookingsRepository = bookingsRepository,
+        analyticsTracker = analyticsTracker,
     )
 
     @Test

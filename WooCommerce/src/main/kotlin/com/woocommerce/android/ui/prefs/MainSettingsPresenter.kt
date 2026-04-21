@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
@@ -33,7 +35,8 @@ class MainSettingsPresenter @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) : MainSettingsContract.Presenter {
     override val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var appSettingsFragmentView: MainSettingsContract.View? = null
@@ -80,12 +83,6 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }
 
-    override fun setupApplicationPasswordsSettings() {
-        if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-            appSettingsFragmentView?.handleApplicationPasswordsSettings()
-        }
-    }
-
     override fun onNotificationsClicked() {
         if (isChaChingSoundEnabled) {
             analyticsTracker.track(AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
@@ -95,15 +92,15 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override val isDomainOptionVisible: Boolean
-        get() = false // Domain option disabled for accessibility reasons more on Linear WOOMOB-504
-
     override val isCloseAccountOptionVisible: Boolean
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
             accountRepository.getUserAccount()?.userName != null
 
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val isPluginsSectionVisible: Boolean
+        get() = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins)
 
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {

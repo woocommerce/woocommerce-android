@@ -421,12 +421,20 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
-        triggerEvent(
-            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                url = selectedSite.get().adminUrlOrDefault,
-                screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
+        val site = selectedSite.get()
+        val adminUrl = site.adminUrlOrDefault
+        if (site.isCIABSite) {
+            // CIAB hides the navigation sidebar when detecting a mobile user agent,
+            // which breaks the WC Admin experience. Open in Chrome Custom Tab instead.
+            triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(url = adminUrl))
+        } else {
+            triggerEvent(
+                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                    url = adminUrl,
+                    screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
+                )
             )
-        )
+        }
     }
 
     private fun onViewStoreButtonClick() {
@@ -508,7 +516,7 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Payments) {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
             }
         ).merge()
             .map { update ->

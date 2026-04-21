@@ -8,9 +8,9 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
+import com.woocommerce.android.ui.bookings.compose.BookingLocationStatus
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
@@ -43,29 +43,35 @@ class BookingMapper @Inject constructor(
     private val detailsDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
         .withZone(ZoneOffset.UTC)
 
-    fun Booking.toBookingSummaryModel(attendanceUpdateStatus: AttendanceUpdateStatus): BookingSummaryModel {
+    fun Booking.toBookingSummaryModel(
+        paymentStatus: PaymentStatus,
+        attendanceUpdateStatus: AttendanceUpdateStatus,
+    ): BookingSummaryModel {
         val isCancelled = status == BookingEntity.Status.Cancelled
         return BookingSummaryModel(
             date = dateFormatter.formatDateTime(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
-            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
+            paymentStatus = paymentStatus,
+            isCancelled = isCancelled,
             attendanceStatus = if (isCancelled) null else attendanceStatus.toUiModel(),
             attendanceUpdateStatus = attendanceUpdateStatus,
         )
     }
 
-    fun Booking.toListItem(): BookingListItem {
+    fun Booking.toListItem(paymentStatus: PaymentStatus): BookingListItem {
         return BookingListItem(
             id = id.value,
-            summary = toBookingSummaryModel(AttendanceUpdateStatus.Idle)
+            summary = toBookingSummaryModel(paymentStatus, AttendanceUpdateStatus.Idle)
         )
     }
 
     fun Booking.toAppointmentDetailsModel(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
+        rescheduleButtonVisible: Boolean = false,
         attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
+        locationStatus: BookingLocationStatus = BookingLocationStatus.Loading,
     ): BookingAppointmentDetailsModel {
         val duration = Duration.between(start, end)
             .normalizeDuration()
@@ -74,10 +80,10 @@ class BookingMapper @Inject constructor(
             date = detailsDateFormatter.format(start),
             time = "${dateFormatter.formatTime(start)} - ${dateFormatter.formatTime(end)}",
             staff = staffMemberStatus,
-            // TODO replace mocked values when available from API
-            location = "238 Willow Creek Drive, Montgomery AL 36109",
+            location = locationStatus,
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
+            rescheduleButtonVisible = rescheduleButtonVisible,
             duration = duration,
             attendanceStatus = attendanceStatus.toUiModel(),
             isAttendanceStatusEditable = isAttendanceStatusEditable,
@@ -109,26 +115,6 @@ class BookingMapper @Inject constructor(
             },
             total = currencyFormatter.formatCurrency(total + totalTax, currency) // Total including tax
         )
-    }
-
-    private fun BookingEntity.Status.toUiModel(
-        orderStatus: String?,
-        paymentMethod: String?,
-    ): BookingStatus {
-        return if (orderStatus == "on-hold" && paymentMethod == "cod") {
-            BookingStatus.PayOnSite
-        } else {
-            when (this) {
-                BookingEntity.Status.Paid -> BookingStatus.Paid
-                BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
-                BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-                BookingEntity.Status.Complete -> BookingStatus.Complete
-                BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
-                BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
-                BookingEntity.Status.InCart -> BookingStatus.InCart
-                is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
-            }
-        }
     }
 
     private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus? = when (this) {

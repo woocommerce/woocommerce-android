@@ -228,6 +228,10 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    fun trackPushNotificationsCardView() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_CARD_VIEW)
+    }
+
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         hasNewWidgets: Boolean,

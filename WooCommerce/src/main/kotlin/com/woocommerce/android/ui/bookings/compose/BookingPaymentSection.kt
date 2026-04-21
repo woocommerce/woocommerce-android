@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -29,11 +27,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
-    status: BookingStatus,
-    onMarkAsPaid: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
-    markAsPaidInProgress: Boolean = false,
+    onIssueRefund: (() -> Unit)? = null,
 ) {
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_payment_header)
@@ -60,15 +56,16 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            AnimatedVisibility(status == BookingStatus.Unpaid) {
-                WCColoredButton(
-                    onClick = onMarkAsPaid,
-                    text = stringResource(id = R.string.booking_payment_mark_as_paid),
+            if (onIssueRefund != null) {
+                WCOutlinedButton(
+                    onClick = onIssueRefund,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    text = stringResource(id = R.string.booking_overflow_refund),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    loading = markAsPaidInProgress,
-                    enabled = !markAsPaidInProgress,
+                        .padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -136,27 +133,6 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Unpaid,
-            onMarkAsPaid = {},
-            onViewOrder = {},
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@LightDarkThemePreviews
-@Composable
-private fun BookingPaymentSectionWithPaidBookingPreview() {
-    WooThemeWithBackground {
-        BookingPaymentSection(
-            model = BookingPaymentDetailsModel(
-                service = "$55.00",
-                tax = "$4.50",
-                discount = "-",
-                total = "$59.50"
-            ),
-            status = BookingStatus.Paid,
-            onMarkAsPaid = {},
             onViewOrder = {},
             modifier = Modifier.fillMaxWidth()
         )

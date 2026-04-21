@@ -492,7 +492,10 @@ class WpComPushNotificationStore @Inject internal constructor(
                 )
                 Result.failure(
                     NotificationSettingsUpdateError(
-                        type = NotificationSettingErrorType.ApiError(result.error.message)
+                        type = NotificationSettingErrorType.ApiError(
+                            apiErrorMessage = result.error.message,
+                            apiErrorCode = result.error.apiError
+                        )
                     )
                 )
             }
@@ -511,6 +514,9 @@ class WpComPushNotificationStore @Inject internal constructor(
 
     sealed class NotificationSettingErrorType(val message: String) {
         object UnregisteredDevice : NotificationSettingErrorType("Device not registered.")
-        data class ApiError(val apiErrorMessage: String) : NotificationSettingErrorType(apiErrorMessage)
+        data class ApiError(
+            val apiErrorMessage: String,
+            val apiErrorCode: String? = null
+        ) : NotificationSettingErrorType(apiErrorMessage)
     }
 }

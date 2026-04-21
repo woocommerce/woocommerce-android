@@ -40,7 +40,11 @@ class BookingListHandlerTest : BaseUnitTest() {
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
-        onBlocking {
+        on { getBookingsList(any(), anyOrNull(), any()) } doAnswer { invocation ->
+            val limit = invocation.getArgument<Int>(0)
+            results.value.take(limit)
+        }
+        on {
             fetchBookings(
                 any(),
                 any(),
@@ -68,6 +72,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     @Test
     fun `given repository returns bookings, when observing bookings flow, then returns bookings`() = testBlocking {
         val sampleBookings = List(10) { getSampleBooking(it) }
+        given(bookingsRepository.getBookingsList(any(), anyOrNull(), any())).willReturn(sampleBookings)
         given(bookingsRepository.observeBookings(any(), anyOrNull(), any())).willReturn(flowOf(sampleBookings))
 
         val bookings = bookingListHandler.bookingsFlow.first()
@@ -142,7 +147,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     fun `when last page is reached, then can load more becomes false`() = testBlocking {
         bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
 
-        var result: Result<Unit>? = null
+        var result: Result<Int>? = null
         repeat(availablePages - 1) {
             result = bookingListHandler.loadMore()
         }

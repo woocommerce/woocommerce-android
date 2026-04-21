@@ -27,7 +27,7 @@ internal interface EndpointDao {
         """Select * FROM Request WHERE
         type = :type AND
         (httpMethod is NULL OR httpMethod = :httpMethod) AND
-        :path LIKE path AND
+        :path LIKE RTRIM(path, '/') AND
         :body LIKE COALESCE(body, '%')
         """
     )
@@ -42,6 +42,13 @@ internal interface EndpointDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResponse(response: Response)
+
+    @Transaction
+    @Query("SELECT * FROM Request")
+    suspend fun getAllEndpoints(): List<MockedEndpoint>
+
+    @Query("DELETE FROM Request")
+    suspend fun deleteAllRequests()
 
     @Delete
     suspend fun deleteRequest(request: Request)

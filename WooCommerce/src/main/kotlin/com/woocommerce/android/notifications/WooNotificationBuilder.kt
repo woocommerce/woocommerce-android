@@ -16,12 +16,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.util.ImageUtils
-import org.wordpress.android.util.PhotonUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import java.util.concurrent.ExecutionException
@@ -80,9 +80,7 @@ class WooNotificationBuilder @Inject constructor(
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
         putExtra(MainActivity.FIELD_PUSH_ID, pushId)
-        if (notification.remoteNoteId != 0L) {
-            putExtra(MainActivity.FIELD_REMOTE_NOTIFICATION, notification)
-        }
+        putExtra(MainActivity.FIELD_REMOTE_NOTIFICATION, notification)
     }
 
     /**
@@ -247,10 +245,9 @@ class WooNotificationBuilder @Inject constructor(
                 val largeIconSize = context.resources.getDimensionPixelSize(
                     android.R.dimen.notification_large_icon_height
                 )
-                val resizedUrl = PhotonUtils.getPhotonImageUrl(decodedIconUrl, largeIconSize, largeIconSize)
                 val largeIconBitmap = Glide.with(context)
                     .asBitmap()
-                    .load(resizedUrl)
+                    .loadPhotonUrlWithFallback(decodedIconUrl, largeIconSize, largeIconSize)
                     .submit()
                     .get()
 

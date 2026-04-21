@@ -20,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -122,7 +123,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -139,7 +143,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            never()
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -215,13 +222,16 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         // When
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), email, name)
+        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), null, email, name)
 
         // Then
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
@@ -232,7 +242,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             on { getIfExists() }.then { testSite }
         }
         zendeskTicketRepository = mock {
-            onBlocking {
+            on {
                 createRequest(
                     any(),
                     any(),
@@ -241,7 +251,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             } doReturn flowOf(requestResult)
         }

@@ -47,7 +47,7 @@ class WCProductToWooPosProductModelMapperTest {
         assertThat(result.isDownloadable).isTrue()
         assertThat(result.lastModified).isEqualTo("2024-01-15T10:00:00Z")
 
-        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.Simple)
         assertThat(result.status).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
 
         assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)

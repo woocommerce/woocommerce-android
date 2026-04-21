@@ -42,24 +42,26 @@ class LogEntry(
             get() = SimpleDateFormat("MMM-dd kk:mm:ss:SSS", Locale.US)
 
         @Suppress("MagicNumber")
-        fun fromString(log: String): LogEntry {
-            val firstParts = log.removePrefix("[").substringBefore("]")
-            val parts = firstParts.split(" ")
+        fun fromString(log: String): LogEntry? {
+            return runCatching {
+                val firstParts = log.removePrefix("[").substringBefore("]")
+                val parts = firstParts.split(" ")
 
-            val logDate = formatter.parse(parts[0] + " " + parts[1])
-                ?: Date()
-            val tagName = migrateDeprecatedTagNames(parts[2])
-            val tag = WooLog.T.valueOf(tagName)
-            val level = WooLog.LogLevel.valueOf(parts[3])
+                val logDate = formatter.parse(parts[0] + " " + parts[1])
+                    ?: Date()
+                val tagName = migrateDeprecatedTagNames(parts[2])
+                val tag = WooLog.T.valueOf(tagName)
+                val level = WooLog.LogLevel.valueOf(parts[3])
 
-            val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
+                val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
 
-            return LogEntry(
-                tag = tag,
-                level = level,
-                text = text,
-                logDate = logDate
-            )
+                LogEntry(
+                    tag = tag,
+                    level = level,
+                    text = text,
+                    logDate = logDate
+                )
+            }.getOrNull()
         }
 
         // TODO WOOMOB-2212 remove this migration code after a couple of releases,

@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSync
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -31,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -38,6 +40,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -56,32 +59,33 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val syncRepository: WooPosLocalCatalogSyncRepository,
 ) {
     enum class SyncStrategy {
         REMOTE,
-        LOCAL_CATALOG,
+        LOCAL_CATALOG_FILE,
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
     }
 
-    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
                 remoteDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
@@ -89,24 +93,46 @@ class WooPosProductsDataSource @Inject constructor(
             is WooPosFullSyncRequirement.NotRequired,
             is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 activeSource = localDbDataSource
-                emit(WooPosPrepopulatingDataStatus.Completed)
+                send(WooPosPrepopulatingDataStatus.Completed)
             }
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
-                emit(WooPosPrepopulatingDataStatus.Syncing)
+                send(WooPosPrepopulatingDataStatus.Syncing)
                 activeSource = localDbDataSource
+
+                val progressJob = launch {
+                    syncRepository.syncState.collect { state ->
+                        when (state) {
+                            is WooPosFileBasedSyncAction.SyncState.Preparing ->
+                                send(WooPosPrepopulatingDataStatus.SyncPreparing)
+
+                            is WooPosFileBasedSyncAction.SyncState.Progress ->
+                                send(
+                                    WooPosPrepopulatingDataStatus.SyncProgress(
+                                        processed = state.processed,
+                                        total = state.total
+                                    )
+                                )
+
+                            null -> Unit
+                        }
+                    }
+                }
+
                 localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
 
             is WooPosFullSyncRequirement.Error -> {
-                emit(WooPosPrepopulatingDataStatus.Failed(requirement.message))
+                send(WooPosPrepopulatingDataStatus.Failed(requirement.message))
             }
         }
     }
@@ -177,6 +203,8 @@ class WooPosProductsDataSource @Inject constructor(
 
     sealed class WooPosPrepopulatingDataStatus {
         data object Syncing : WooPosPrepopulatingDataStatus()
+        data object SyncPreparing : WooPosPrepopulatingDataStatus()
+        data class SyncProgress(val processed: Int, val total: Int) : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
         data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
     }
@@ -193,31 +221,56 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) : WooPosProductsDataSourceInterface {
 
-    private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
-        val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
-        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
-
-        return posLocalCatalogStore.observeProducts(siteId)
-            .map { result ->
-                result.getOrNull()?.map { entity ->
-                    productMapper.fromEntity(entity)
-                } ?: emptyList()
-            }
-    }
+    private val offset = AtomicInteger(0)
+    private val canLoadMore = AtomicBoolean(false)
+    private val accumulatedProducts = mutableListOf<WooPosProductModel>()
 
     override fun fetchFirstProductsPage(
         forceRefresh: Boolean
-    ): Flow<ProductsResult> = getProductsFromDatabaseFlow()
-        .map { products ->
-            ProductsResult.Remote(Result.success(products))
-        }
-        .flowOn(Dispatchers.IO)
+    ): Flow<ProductsResult> = flow {
+        offset.set(0)
+        canLoadMore.set(false)
+        accumulatedProducts.clear()
+
+        val products = loadNextProductPage()
+        accumulatedProducts.addAll(products)
+
+        emit(ProductsResult.Remote(Result.success(accumulatedProducts.toList())))
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun loadMoreProducts(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
-        Result.success(emptyList())
+        if (!canLoadMore.get()) {
+            return@withContext Result.success(accumulatedProducts.toList())
+        }
+
+        val products = loadNextProductPage()
+        accumulatedProducts.addAll(products)
+
+        Result.success(accumulatedProducts.toList())
     }
 
-    override val hasMoreProductsPages: Boolean = false
+    override val hasMoreProductsPages: Boolean
+        get() = canLoadMore.get()
+
+    private suspend fun loadNextProductPage(): List<WooPosProductModel> {
+        val siteModel = selectedSite.getOrNull() ?: return emptyList()
+        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
+
+        val result = posLocalCatalogStore.getProducts(
+            siteId = siteId,
+            pageSize = PAGE_SIZE,
+            offset = offset.get()
+        )
+
+        val products: List<WooPosProductModel> = result.getOrNull()?.map { entity ->
+            productMapper.fromEntity(entity)
+        } ?: emptyList()
+
+        canLoadMore.set(products.size == PAGE_SIZE)
+        offset.addAndGet(PAGE_SIZE)
+
+        return products
+    }
 
     override suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
         val result = posLocalCatalogStore.getProduct(
@@ -294,8 +347,14 @@ class WooPosProductsInDbDataSource @Inject constructor(
         val result = localCatalogSearchDataSource.searchProducts(query)
 
         result.fold(
-            onSuccess = { products ->
-                emit(SearchProductsResult.Local(products))
+            onSuccess = { dbSearchResult ->
+                emit(
+                    SearchProductsResult.Local(
+                        products = dbSearchResult.products,
+                        searchTimeMillis = dbSearchResult.searchTimeMillis,
+                        searchMethod = dbSearchResult.searchMethod,
+                    )
+                )
             },
             onFailure = { error ->
                 emit(SearchProductsResult.Remote(Result.failure(error), 0L))
@@ -308,6 +367,10 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     override val hasMoreSearchPages: Boolean
         get() = localCatalogSearchDataSource.hasMorePages
+
+    companion object {
+        private const val PAGE_SIZE = 25
+    }
 }
 
 class WooPosProductsRemoteDataSource @Inject constructor(
@@ -607,7 +670,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
         val localProducts = searchProductsDataSource.searchLocalProducts(query)
         if (localProducts.isNotEmpty()) {
-            emit(SearchProductsResult.Local(localProducts))
+            emit(
+                SearchProductsResult.Local(
+                    products = localProducts,
+                    searchTimeMillis = 0L,
+                    searchMethod = "in_memory_cache",
+                )
+            )
         }
 
         var remoteResult: Result<List<WooPosProductModel>>

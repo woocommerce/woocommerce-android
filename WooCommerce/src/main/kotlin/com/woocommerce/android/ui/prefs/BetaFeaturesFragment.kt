@@ -18,8 +18,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     lateinit var selectedSite: SelectedSite
 
     @Inject
-    lateinit var isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
+    lateinit var featureFlagRepository: FeatureFlagRepository
 
     private val settingsListener by lazy {
         activity as? AppSettingsListener
@@ -70,7 +70,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         viewLifecycleOwner.lifecycleScope.launch {
             val isJetpackSite = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             jetpackAppPasswordsToggle.isVisible = isJetpackSite &&
-                isRemoteFeatureFlagEnabled(RemoteFeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
+                featureFlagRepository.isEnabled(FeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
         }
 
         jetpackAppPasswordsToggle.isChecked = AppPrefs.jetpackAppPasswordsEnabled
@@ -82,7 +82,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     private fun FragmentSettingsBetaBinding.bindWooPosLocalCatalogToggle() {
         viewLifecycleOwner.lifecycleScope.launch {
             wooPosLocalCatalogToggle.isVisible =
-                isRemoteFeatureFlagEnabled(RemoteFeatureFlag.REMOTE_WOO_POS_LOCAL_CATALOG_M1)
+                featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1)
         }
 
         wooPosLocalCatalogToggle.isChecked = AppPrefs.wooPosLocalCatalogEnabled

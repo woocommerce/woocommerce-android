@@ -545,9 +545,9 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
+        val totalSales = revenueStatsModel?.totalSales ?: 0.0
         val revenue = currencyFormatter.getFormattedAmountZeroRounded(
-            grossRevenue,
+            totalSales,
             revenueStatsModel?.currencyCode.orEmpty()
         )
 

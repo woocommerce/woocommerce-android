@@ -1,13 +1,6 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +28,8 @@ import com.woocommerce.android.ui.bookings.filter.productname.BookingServiceEven
 import com.woocommerce.android.ui.bookings.filter.teammember.BookingTeamMemberFilterRoute
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
+import com.woocommerce.android.ui.compose.animations.slideInNavTransition
+import com.woocommerce.android.ui.compose.animations.slideOutNavTransition
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.getText
@@ -126,10 +121,10 @@ private fun FiltersNavHost(
     NavHost(
         navController = navController,
         startDestination = BookingFilterPage.List.route,
-        enterTransition = { slideIn(popNavigation = true) },
-        exitTransition = { slideOut(popNavigation = true) },
-        popEnterTransition = { slideIn(popNavigation = false) },
-        popExitTransition = { slideOut(popNavigation = false) },
+        enterTransition = { slideInNavTransition(forward = true) },
+        exitTransition = { slideOutNavTransition(forward = true) },
+        popEnterTransition = { slideInNavTransition(forward = false) },
+        popExitTransition = { slideOutNavTransition(forward = false) },
         modifier = modifier
     ) {
         composable(BookingFilterPage.List.route) {
@@ -162,8 +157,8 @@ private fun FiltersNavHost(
         }
         composable(BookingFilterPage.AttendanceStatus.route) {
             BookingAttendanceStatusFilterRoute(
-                initialAttendanceStatuses = state.updatedBookingFilters.attendanceStatuses
-            ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
+                initialAttendanceStatus = state.updatedBookingFilters.attendanceStatus
+            ) { attendanceStatus -> state.onUpdateFilterOption(attendanceStatus) }
         }
         composable(BookingFilterPage.PaymentStatus.route) {
         }
@@ -172,7 +167,7 @@ private fun FiltersNavHost(
                 customer.customerId?.let { id ->
                     state.onUpdateFilterOption(
                         BookingsFilterOption.Customer(
-                            customerId = id,
+                            userId = id,
                             customerName = "${customer.firstName} ${customer.lastName}".trim()
                                 .ifBlank { customer.email }.orEmpty()
                         )
@@ -188,20 +183,6 @@ private fun FiltersNavHost(
 
 private val BookingFilterPage.route: String
     get() = name
-
-private fun slideIn(popNavigation: Boolean): EnterTransition {
-    return slideInHorizontally(animationSpec = tween(durationMillis = TRANSITION_DURATION)) { fullWidth ->
-        if (popNavigation) fullWidth else -fullWidth
-    } + fadeIn(animationSpec = tween(durationMillis = TRANSITION_DURATION))
-}
-
-private fun slideOut(popNavigation: Boolean): ExitTransition {
-    return slideOutHorizontally(animationSpec = tween(durationMillis = TRANSITION_DURATION)) { fullWidth ->
-        if (popNavigation) -fullWidth else fullWidth
-    } + fadeOut(animationSpec = tween(durationMillis = TRANSITION_DURATION))
-}
-
-private const val TRANSITION_DURATION = 250
 
 @LightDarkThemePreviews
 @Composable

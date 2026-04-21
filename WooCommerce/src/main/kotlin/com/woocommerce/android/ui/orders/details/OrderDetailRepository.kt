@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderFulfillment
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
@@ -89,6 +90,13 @@ class OrderDetailRepository @Inject constructor(
                 RequestResult.ERROR
             }
         }
+    }
+
+    suspend fun fetchOrderFulfillments(orderId: Long): Boolean = withContext(dispatchers.io) {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderFulfillments(orderId, selectedSite.get())
+        }
+        result?.isError == false
     }
 
     suspend fun fetchOrderRefunds(orderId: Long): List<Refund> {
@@ -270,6 +278,9 @@ class OrderDetailRepository @Inject constructor(
     fun getOrderShipmentTrackings(orderId: Long) = runBlocking {
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
     }
+
+    suspend fun getOrderFulfillments(orderId: Long): List<OrderFulfillment> =
+        orderStore.getOrderFulfillmentsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)

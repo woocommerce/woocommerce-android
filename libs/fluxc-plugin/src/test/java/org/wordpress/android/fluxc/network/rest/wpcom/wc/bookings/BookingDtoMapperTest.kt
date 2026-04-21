@@ -38,6 +38,7 @@ class BookingDtoMapperTest {
         assertThat(result.cost).isEqualTo("50.00")
         assertThat(result.currency).isEqualTo("USD")
         assertThat(result.customerId).isEqualTo(456L)
+        assertThat(result.userId).isEqualTo(123L)
         assertThat(result.productId).isEqualTo(789L)
         assertThat(result.resourceId).isEqualTo(101L)
         assertThat(result.dateCreated).isEqualTo(Instant.ofEpochSecond(1609455600L))
@@ -242,6 +243,7 @@ class BookingDtoMapperTest {
         cost: String = "50.00",
         currency: String = "USD",
         customerId: Long = 456L,
+        userId: Long = 123L,
         productId: Long = 789L,
         resourceId: Long = 101L,
         dateCreated: Long = 1609455600L,
@@ -261,6 +263,7 @@ class BookingDtoMapperTest {
         cost = cost,
         currency = currency,
         customerId = customerId,
+        userId = userId,
         productId = productId,
         resourceId = resourceId,
         dateCreated = dateCreated,

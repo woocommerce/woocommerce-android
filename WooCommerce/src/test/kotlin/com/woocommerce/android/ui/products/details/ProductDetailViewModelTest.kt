@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -87,7 +86,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock {
-        onBlocking { getCachedVariationCount(any()) } doReturn 0
+        on { getCachedVariationCount(any()) } doReturn 0
     }
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
@@ -108,11 +107,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
     private val addonRepository: AddonRepository = mock {
-        onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
+        on { hasAnyProductSpecificAddons(any()) } doReturn false
     }
 
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        on { invoke() } doReturn false
     }
 
     private var savedState: SavedStateHandle =
@@ -142,7 +141,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
     private val customFieldsRepository: CustomFieldsRepository = mock {
-        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+        on { hasDisplayableCustomFields(any()) } doReturn false
     }
     private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
@@ -1515,7 +1514,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(
             SiteModel().apply {
                 setIsGardenSite(true)
-                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+                gardenName = SiteModel.CIAB_GARDEN_NAME
             }
         )
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
@@ -1545,7 +1544,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel().apply {
                     setIsGardenSite(true)
-                    gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+                    gardenName = SiteModel.CIAB_GARDEN_NAME
                 }
             )
             savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))

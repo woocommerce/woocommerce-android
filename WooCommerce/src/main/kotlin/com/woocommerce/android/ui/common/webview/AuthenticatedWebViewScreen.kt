@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.MODAL
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.REGULAR
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -43,10 +43,18 @@ private fun AuthenticatedWebViewScreen(
                 onNavigationButtonClick = onClose,
                 navigationIcon = ImageVector.vectorResource(
                     when (viewState.displayMode) {
-                        REGULAR -> R.drawable.ic_back_24dp
-                        MODAL -> R.drawable.ic_close_24dp
+                        DisplayMode.REGULAR -> R.drawable.ic_back_24dp
+                        DisplayMode.MODAL, DisplayMode.TASK -> R.drawable.ic_close_24dp
                     }
-                )
+                ),
+                actions = {
+                    if (viewState.displayMode == DisplayMode.TASK) {
+                        WCTextButton(
+                            onClick = onClose,
+                            text = stringResource(id = R.string.done)
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->

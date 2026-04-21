@@ -55,8 +55,8 @@ class WooPosProductsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+        on { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
+        on { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
@@ -72,7 +72,7 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.Simple,
                 isDownloadable = false,
             ),
         )
@@ -97,14 +97,14 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.Simple,
                 isDownloadable = false,
             ),
             generateWooPosProduct(
                 productId = 2,
                 productName = "Product 2",
                 amount = "20.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.Simple,
                 isDownloadable = false,
                 images = listOf(WooPosProductModel.WooPosProductImage(0, "https://test.com", "", ""))
             )
@@ -195,7 +195,7 @@ class WooPosProductsViewModelTest {
                                     productId = 1,
                                     productName = "Product 1",
                                     amount = "10.0",
-                                    productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                                    productType = WooPosProductModel.WooPosProductType.Simple,
                                     isDownloadable = false,
                                 )
                             )
@@ -371,14 +371,14 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.Simple,
                 isDownloadable = false,
             ),
             generateWooPosProduct(
                 productId = 2,
                 productName = "Product 2",
                 amount = "20.0",
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 isDownloadable = false,
                 images = listOf(WooPosProductModel.WooPosProductImage(0, "https://test.com", "", ""))
             )
@@ -415,7 +415,7 @@ class WooPosProductsViewModelTest {
                             productId = 2,
                             productName = "Product 2",
                             amount = "20.0",
-                            productType = WooPosProductModel.WooPosProductType.SIMPLE
+                            productType = WooPosProductModel.WooPosProductType.Simple
                         )
                     )
                 )
@@ -430,7 +430,7 @@ class WooPosProductsViewModelTest {
                                     productId = 1,
                                     productName = "Product 1",
                                     amount = "10.0",
-                                    productType = WooPosProductModel.WooPosProductType.SIMPLE
+                                    productType = WooPosProductModel.WooPosProductType.Simple
                                 )
                             )
                         )
@@ -545,7 +545,7 @@ class WooPosProductsViewModelTest {
                         productId = 2,
                         productName = "Product 2",
                         amount = "20.0",
-                        productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                        productType = WooPosProductModel.WooPosProductType.Simple,
                     )
                 )
             )

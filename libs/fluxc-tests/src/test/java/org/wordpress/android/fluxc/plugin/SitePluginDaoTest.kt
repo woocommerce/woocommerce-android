@@ -1,31 +1,31 @@
 package org.wordpress.android.fluxc.plugin
 
-import android.content.Context
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
-import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @RunWith(RobolectricTestRunner::class)
 class SitePluginDaoTest {
-    private lateinit var database: WPAndroidDatabase
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(
+        ApplicationProvider.getApplicationContext()
+    )
+
     private lateinit var sitePluginDao: SitePluginDao
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, WPAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        sitePluginDao = database.sitePluginDao()
+        sitePluginDao = wpDatabaseRule.db.sitePluginDao()
     }
 
     @Test

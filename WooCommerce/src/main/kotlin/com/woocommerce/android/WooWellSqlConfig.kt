@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.view.Gravity
 import android.widget.Toast
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.PackageUtils
 import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
@@ -18,7 +18,7 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context) {
      * build with a DB downgrade was released, resulting in a lot of crashes.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        if (FeatureFlag.DB_DOWNGRADE.isEnabled(context)) {
+        if (PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
 

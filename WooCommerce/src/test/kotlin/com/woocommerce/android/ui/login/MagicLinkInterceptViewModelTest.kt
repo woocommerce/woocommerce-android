@@ -140,20 +140,6 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
             )
         }
 
-    @Test
-    fun `given push notifications setup flow, when auth token update succeeds, then continue push notifications setup`() =
-        testBlocking {
-            setup {
-                givenAuthTokenUpdateResult(RequestResult.SUCCESS)
-            }
-
-            val event = viewModel.event.runAndCaptureValues {
-                viewModel.handleMagicLink("authToken", MagicLinkFlow.PushNotificationsSetup)
-            }.last()
-
-            assertThat(event).isEqualTo(MagicLinkInterceptViewModel.ContinuePushNotificationsSetup)
-        }
-
     private suspend fun givenAuthTokenUpdateResult(result: RequestResult) {
         given(magicLinkInterceptRepository.updateMagicLinkAuthToken("authToken")).willReturn(result)
     }

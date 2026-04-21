@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
@@ -78,6 +79,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
@@ -94,8 +96,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderListRepository: OrderListRepository = mock {
-        onBlocking { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
-        onBlocking { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
+        on { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
+        on { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
     }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
@@ -121,6 +123,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val shouldUpdateOrdersList = mock<ShouldUpdateOrdersList>()
     private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
     private val orderListItemDataSource = mock<OrderListItemDataSource>()
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
+        on { mapOrderStatusOptionsList(any()) } doAnswer {
+            it.getArgument<Map<String, WCOrderStatusModel>>(0)
+        }
+    }
 
     @Before
     fun setup() = testBlocking {
@@ -173,7 +180,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         dateUtils = mock(),
         shouldUpdateOrdersList = shouldUpdateOrdersList,
         observeOrdersListLastUpdate = observeOrdersListLastUpdate,
-        dataSourceLazyProvider = { orderListItemDataSource }
+        dataSourceLazyProvider = { orderListItemDataSource },
+        ciabOrderStatusMapper = ciabOrderStatusMapper,
     )
 
     @Test

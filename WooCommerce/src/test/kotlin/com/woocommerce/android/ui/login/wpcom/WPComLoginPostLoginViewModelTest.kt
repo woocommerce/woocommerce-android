@@ -5,12 +5,12 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
-import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowPushNotificationsConnectionSteps
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -33,24 +34,15 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
     }
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     private fun createViewModel() = WPComLoginPostLoginViewModel(
         savedStateHandle = SavedStateHandle(),
         selectedSite = selectedSite,
         jetpackActivationRepository = jetpackActivationRepository,
-        analyticsTrackerWrapper = analyticsTrackerWrapper
+        analyticsTrackerWrapper = analyticsTrackerWrapper,
+        registerDevice = registerDevice
     )
-
-    @Test
-    fun `given push notifications setup, when login succeeds, then navigate to connection steps`() = testBlocking {
-        val viewModel = createViewModel()
-        val events = viewModel.event.captureValues()
-
-        val result = viewModel.onLoginSuccess(WPComLoginMode.PushNotificationsSetup)
-
-        assertThat(result.isSuccess).isTrue()
-        assertThat(events.last()).isEqualTo(ShowPushNotificationsConnectionSteps)
-    }
 
     @Test
     fun `given jetpack setup with user not connected, when login succeeds, then show activation screen`() =
@@ -65,7 +57,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(
@@ -88,9 +80,10 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
             assertThat(events.last()).isEqualTo(GoToStore)
         }
 
@@ -106,9 +99,10 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
             assertThat(events.last()).isEqualTo(ShowJetpackCPInstallationScreen)
         }
 }

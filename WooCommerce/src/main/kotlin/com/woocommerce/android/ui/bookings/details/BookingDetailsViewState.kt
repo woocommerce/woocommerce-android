@@ -33,11 +33,11 @@ data class BookingUiState(
     val note: String,
     val isAttendanceStatusEditable: Boolean,
     val onCancelBooking: () -> Unit = {},
+    val onRescheduleBooking: () -> Unit = {},
     val onAttendanceToggle: () -> Unit = {},
-    val onMarkAsPaid: () -> Unit = {},
-    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
     val onNoteClicked: () -> Unit = {},
     val onViewOrderClicked: () -> Unit = {},
+    val onIssueRefundClicked: (() -> Unit)? = null,
 )
 
 sealed interface BookingDetailsLoadingState {
@@ -54,9 +54,4 @@ sealed interface CancelStatus {
 sealed interface AttendanceUpdateStatus {
     data object Idle : AttendanceUpdateStatus
     data object InProgress : AttendanceUpdateStatus
-}
-
-sealed interface PaymentUpdateStatus {
-    data object Idle : PaymentUpdateStatus
-    data object InProgress : PaymentUpdateStatus
 }

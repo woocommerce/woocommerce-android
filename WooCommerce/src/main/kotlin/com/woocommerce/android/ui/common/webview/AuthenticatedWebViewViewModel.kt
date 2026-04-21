@@ -61,6 +61,6 @@ class AuthenticatedWebViewViewModel @Inject constructor(
     }
 
     enum class DisplayMode {
-        REGULAR, MODAL
+        REGULAR, MODAL, TASK
     }
 }

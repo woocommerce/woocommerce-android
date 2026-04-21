@@ -7,33 +7,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.rememberPhotonImageRequest
 
 @Composable
 fun ProductThumbnail(
     imageUrl: String,
     modifier: Modifier = Modifier,
+    imageSize: Dp = 42.dp,
     @DrawableRes placeHolderDrawableId: Int = R.drawable.ic_product,
     @DrawableRes fallbackDrawableId: Int = R.drawable.ic_product,
     @DrawableRes errorDrawableId: Int = R.drawable.ic_product,
     contentDescription: String = ""
 ) {
+    val imageSizePx = with(LocalDensity.current) { imageSize.roundToPx() }
+    val imageRequest = rememberPhotonImageRequest(
+        originalUrl = imageUrl,
+        imageSizePx = imageSizePx
+    ) {
+        crossfade(true)
+        placeholder(placeHolderDrawableId)
+        fallback(fallbackDrawableId)
+        error(errorDrawableId)
+    }
+
     AsyncImage(
-        model = Builder(LocalContext.current)
-            .data(imageUrl)
-            .crossfade(true)
-            .placeholder(placeHolderDrawableId)
-            .fallback(fallbackDrawableId)
-            .error(errorDrawableId)
-            .build(),
+        model = imageRequest,
         contentDescription = contentDescription,
         contentScale = ContentScale.Crop,
         modifier = modifier
-            .size(42.dp)
+            .size(imageSize)
             .clip(shape = RoundedCornerShape(4.dp))
     )
 }

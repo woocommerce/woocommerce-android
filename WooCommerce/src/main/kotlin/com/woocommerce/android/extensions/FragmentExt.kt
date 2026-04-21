@@ -31,27 +31,36 @@ import kotlin.math.abs
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
  * @param [destinationId] an optional destinationId, that can be used to navigate up to a specified destination
+ * @param [popDestination] whether to pop the destinationId from the back stack when navigating back, used only
+ *        when [destinationId] is specified
+ * @param [navHostId] an optional navHostId, that can be used to navigate up to a specified navHostId
  *
  */
 fun <T> Fragment.navigateBackWithResult(
     key: String,
     result: T,
     @IdRes destinationId: Int? = null,
+    popDestination: Boolean = false,
     @IdRes navHostId: Int? = null,
 ) {
     val navController = if (navHostId != null) findNavController(navHostId) else findNavController()
 
-    val entry = if (destinationId != null) {
-        navController.getBackStackEntry(destinationId)
+    if (popDestination && destinationId != null) {
+        navController.popBackStack(destinationId, true)
+        navController.currentBackStackEntry?.savedStateHandle?.set(key, result)
     } else {
-        navController.previousBackStackEntry
-    }
-    entry?.savedStateHandle?.set(key, result)
+        val entry = if (destinationId != null) {
+            navController.getBackStackEntry(destinationId)
+        } else {
+            navController.previousBackStackEntry
+        }
+        entry?.savedStateHandle?.set(key, result)
 
-    if (destinationId != null) {
-        findNavController().popBackStack(destinationId, false)
-    } else {
-        findNavController().navigateUp()
+        if (destinationId != null) {
+            navController.popBackStack(destinationId, false)
+        } else {
+            navController.navigateUp()
+        }
     }
 }
 
@@ -63,7 +72,6 @@ fun <T> Fragment.navigateBackWithResult(
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
  * @param [childId] an destinationId, that used to navigate up from the specified destination
- * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  */
 fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes childId: Int) {
     if (findNavController().currentDestination?.id != childId) {
@@ -79,14 +87,17 @@ fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes child
  *
  * @param [key] A unique string that is the same as the one used in [handleNotice]
  * @param [destinationId] an optional destinationId, that can be used to navigating up to a specified destination
+ * @param [popDestination] whether to pop the destinationId from the back stack when navigating back, used only
+ *        when [destinationId] is specified
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  */
 fun Fragment.navigateBackWithNotice(
     key: String,
     @IdRes destinationId: Int? = null,
+    popDestination: Boolean = false,
     @IdRes navHostId: Int? = null,
 ) {
-    navigateBackWithResult(key, key, destinationId, navHostId)
+    navigateBackWithResult(key, key, destinationId, popDestination, navHostId)
 }
 
 /**
@@ -95,7 +106,7 @@ fun Fragment.navigateBackWithNotice(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] An optional ID to identify the correct back stack entry. It's required when calling [handleResult]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -134,7 +145,7 @@ fun <T> Fragment.handleResult(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleResult]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -158,7 +169,7 @@ fun <T> Fragment.handleDialogResult(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -181,7 +192,7 @@ fun Fragment.handleDialogNotice(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *

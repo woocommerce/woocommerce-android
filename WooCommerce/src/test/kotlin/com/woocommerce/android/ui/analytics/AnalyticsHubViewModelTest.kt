@@ -253,7 +253,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         testBlocking {
             configureVisibleCards()
             updateStats.stub {
-                onBlocking { revenueState } doReturn flow {
+                on { revenueState } doReturn flow {
                     emit(RevenueState.Available(getRevenueStats(netDelta = NotExist, totalDelta = NotExist)))
                 }
             }
@@ -297,7 +297,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
+            on { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
         }
 
         configureVisibleCards()
@@ -390,7 +390,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(weekOrdersData)) }
+            on { ordersState } doReturn flow { emit(OrdersState.Available(weekOrdersData)) }
         }
 
         sut = givenAViewModel()
@@ -427,7 +427,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
+            on { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
         }
 
         sut = givenAViewModel()
@@ -457,7 +457,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { productsState } doReturn flow { emit(ProductsState.Available(weekOrdersData)) }
+            on { productsState } doReturn flow { emit(ProductsState.Available(weekOrdersData)) }
         }
 
         sut = givenAViewModel()
@@ -489,7 +489,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { invoke(any(), any(), any(), any()) } doReturn flow {
+            on { invoke(any(), any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
                 emit(AnalyticsHubUpdateState.Loading)
             }
@@ -534,7 +534,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { RevenueState.Error }
+            on { revenueState } doReturn flow { RevenueState.Error }
         }
 
         sut = givenAViewModel()
@@ -550,7 +550,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { ordersState } doReturn flow { OrdersState.Error }
+            on { ordersState } doReturn flow { OrdersState.Error }
         }
 
         sut = givenAViewModel()
@@ -566,7 +566,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { productsState } doReturn flow { ProductsState.Error }
+            on { productsState } doReturn flow { ProductsState.Error }
         }
 
         sut = givenAViewModel()
@@ -582,7 +582,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { sessionState } doReturn flow { SessionState.Error }
+            on { sessionState } doReturn flow { SessionState.Error }
         }
 
         sut = givenAViewModel()
@@ -598,7 +598,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
+            on { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
         }
 
         sut = givenAViewModel()
@@ -1088,27 +1088,27 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private fun configureSuccessfulStatsResponse() {
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow {
+            on { revenueState } doReturn flow {
                 emit(RevenueState.Available(RevenueStat.EMPTY))
                 emit(RevenueState.Loading)
                 emit(RevenueState.Available(getRevenueStats()))
             }
-            onBlocking { ordersState } doReturn flow {
+            on { ordersState } doReturn flow {
                 emit(OrdersState.Available(OrdersStat.EMPTY))
                 emit(OrdersState.Loading)
                 emit(OrdersState.Available(getOrdersStats()))
             }
-            onBlocking { productsState } doReturn flow {
+            on { productsState } doReturn flow {
                 emit(ProductsState.Available(ProductsStat.EMPTY))
                 emit(ProductsState.Loading)
                 emit(ProductsState.Available(getProductsStats()))
             }
-            onBlocking { sessionState } doReturn flow {
+            on { sessionState } doReturn flow {
                 emit(SessionState.Available(SessionStat.EMPTY))
                 emit(SessionState.Loading)
                 emit(SessionState.Available(testSessionStat))
             }
-            onBlocking { invoke(any(), any(), any(), any()) } doReturn flow {
+            on { invoke(any(), any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
             }
         }
@@ -1116,7 +1116,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private fun configureVisibleCards(configuration: List<AnalyticCardConfiguration> = defaultCardsConfiguration) {
         observeAnalyticsCardsConfiguration.stub {
-            onBlocking { observeAnalyticsCardsConfiguration.invoke() } doReturn flowOf(configuration)
+            on { observeAnalyticsCardsConfiguration.invoke() } doReturn flowOf(configuration)
         }
     }
 

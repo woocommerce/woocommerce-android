@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,11 +34,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
 @Composable
 fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
@@ -59,6 +61,8 @@ fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
+                .statusBarsPadding()
+                .padding(horizontal = WooPosSpacing.Medium.value)
         )
     }
 }
@@ -75,7 +79,7 @@ fun WooPosOrdersOrderLoadingRow() {
                     horizontal = WooPosSpacing.Medium.value,
                     vertical = WooPosSpacing.Medium.value
                 )
-                .heightIn(min = 64.dp),
+                .heightIn(min = 64.dp.toAdaptiveComponentSize()),
             verticalAlignment = Alignment.Top
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
@@ -96,7 +100,7 @@ fun WooPosOrdersOrderLoadingRow() {
                 WooPosShimmerBox(
                     modifier = Modifier
                         .fillMaxWidth(0.2f)
-                        .height(16.dp)
+                        .height(16.dp.toAdaptiveIconSize())
                         .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 )
             }
@@ -127,50 +131,57 @@ fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 fun OrderDetailsLoadingPane(
     modifier: Modifier = Modifier,
+    showOrderNumber: Boolean = true,
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Box(Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
-                    WooPosShimmerText(
-                        text = "Order #123",
-                        style = WooPosTypography.Heading.style,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
+            if (showOrderNumber) {
                 WooPosShimmerText(
-                    text = "Jul 28, 2025 at 10:31 PM",
-                    style = WooPosTypography.BodyMedium.style
-                )
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-                WooPosShimmerText(
-                    text = "Completed",
-                    style = WooPosTypography.BodyLarge.style
+                    text = "Order #123",
+                    style = WooPosTypography.Heading.style,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
+            Spacer(Modifier.weight(1f))
+
             WooPosShimmerBox(
                 modifier = Modifier
-                    .padding(vertical = WooPosSpacing.Small.value)
-                    .width(140.dp)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.XLarge.value)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerText(
+            text = "Jul 28, 2025 at 10:31 PM",
+            style = WooPosTypography.BodyMedium.style
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosShimmerText(
+            text = "customer@example.com",
+            style = WooPosTypography.BodyMedium.style
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(WooPosComponentSize.Medium.value)
+                .height(24.dp.toAdaptiveComponentSize())
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
@@ -219,11 +230,11 @@ fun OrderDetailsLoadingPane(
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
                     repeat(3) {
                         TotalLoadingItem()
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
                     }
                     repeat(2) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -252,7 +263,7 @@ private fun ProductLoadingItem() {
 
         WooPosShimmerBox(
             modifier = Modifier
-                .size(56.dp)
+                .size(56.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 .constrainAs(image) {
                     top.linkTo(parent.top)

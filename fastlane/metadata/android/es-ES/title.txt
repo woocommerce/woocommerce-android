@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: tienda y TPV

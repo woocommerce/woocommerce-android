@@ -105,10 +105,10 @@ sealed class ViewState(
     data class ExternalReaderProcessingPaymentState(
         override val amountWithCurrencyLabel: String,
         override val onSecondaryActionClicked: (() -> Unit),
+        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
     ) : ViewState(
-        hintLabel = R.string.card_reader_payment_processing_payment_hint,
-        headerLabel = R.string.card_reader_payment_processing_payment_header,
-        paymentStateLabel = UiStringRes(R.string.card_reader_payment_processing_payment_state),
+        headerLabel = R.string.card_reader_payment_collect_payment_header,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_state),
         illustration = R.drawable.img_card_reader_available,
         secondaryActionLabel = R.string.cancel,
     ),

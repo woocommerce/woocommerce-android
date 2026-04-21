@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_COMP
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,17 +18,12 @@ open class WPComLoginPostLoginViewModel(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val jetpackActivationRepository: JetpackActivationRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val registerDevice: RegisterDevice
 ) : ScopedViewModel(savedStateHandle) {
     @VisibleForTesting
-    internal suspend fun onLoginSuccess(wpComLoginMode: WPComLoginMode): Result<Unit> {
-        return when (wpComLoginMode) {
-            is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
-            WPComLoginMode.PushNotificationsSetup -> {
-                triggerEvent(ShowPushNotificationsConnectionSteps)
-                Result.success(Unit)
-            }
-        }
+    internal suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+        return handleJetpackSetupPostLogin(jetpackStatus)
     }
 
     private suspend fun handleJetpackSetupPostLogin(jetpackStatus: JetpackStatus): Result<Unit> {
@@ -42,9 +38,10 @@ open class WPComLoginPostLoginViewModel(
                     .getOrElse {
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                         return Result.failure(it)
-                    }
+            }
 
             jetpackActivationRepository.setSelectedSiteAndCleanOldSites(jetpackSite)
+            registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
             if (jetpackStatus.isJetpackInstalled) {
                 triggerEvent(GoToStore)
             } else {
@@ -68,6 +65,4 @@ open class WPComLoginPostLoginViewModel(
     ) : MultiLiveEvent.Event()
 
     object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
-
-    object ShowPushNotificationsConnectionSteps : MultiLiveEvent.Event()
 }

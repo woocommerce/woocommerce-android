@@ -18,10 +18,12 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -31,7 +33,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.WooPosConnection
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -44,6 +45,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,7 +82,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -91,6 +94,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val order = _order.filterNotNull()
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
+
+    private var hasOpenedCiabLearnMore = false
 
     init {
         checkStatus()
@@ -130,8 +135,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
-
-            is WooPosConnection -> error("Unsupported card reader flow param: $param")
+            CardReaderFlowParam.WooPosConnection -> {
+                error("WooPosConnection should not be used with SelectPaymentMethodViewModel")
+            }
         }
     }
 
@@ -171,14 +177,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return Success(
             orderTotal = formatOrderTotal(order.total),
             rows = rows,
-            learnMoreIpp = Success.LearnMoreIpp(
-                label = UiStringRes(
-                    R.string.card_reader_connect_learn_more,
-                    containsHtml = true
-                ),
-                onClick = ::onLearnMoreIppClicked,
-                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
-            )
+            learnMoreIpp = buildLearnMoreIppState()
         )
     }
 
@@ -478,6 +477,38 @@ class SelectPaymentMethodViewModel @Inject constructor(
             WOO_POS -> AnalyticsTracker.VALUE_WOO_POS_PAYMENTS_FLOW
         }
 
+    private fun buildLearnMoreIppState(): Success.LearnMoreIpp {
+        val ippSupported = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
+        val isCiab = ciabSiteGateKeeper.isCurrentSiteCIAB()
+
+        return when {
+            ippSupported -> Success.LearnMoreIpp.Standard(
+                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+                isVisible = true,
+                onClick = ::onLearnMoreIppClicked,
+            )
+            isCiab -> {
+                val body = resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade_html)
+                val learnMore = resourceProvider.getString(R.string.woopos_eligibility_learn_more_label)
+                Success.LearnMoreIpp.CiabUpgrade(
+                    text = UiStringText("$body <a href=''>$learnMore</a>", containsHtml = true),
+                    onLearnMoreClick = ::onCiabLearnMoreClicked,
+                )
+            }
+            else -> Success.LearnMoreIpp.Hidden
+        }
+    }
+
+    private fun onCiabLearnMoreClicked() {
+        hasOpenedCiabLearnMore = true
+        paymentsFlowTracker.trackIPPLearnMoreClicked(CIAB_UPGRADE_SOURCE)
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = ciabSiteGateKeeper.buildPlanUpgradeUrl()
+            )
+        )
+    }
+
     private fun onLearnMoreIppClicked() {
         paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
@@ -499,11 +530,23 @@ class SelectPaymentMethodViewModel @Inject constructor(
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
         }
 
+    fun onResumed() {
+        if (!hasOpenedCiabLearnMore) return
+        hasOpenedCiabLearnMore = false
+        launch {
+            wooCommerceStore.fetchWooCommerceSite(selectedSite.get()).model?.let {
+                selectedSite.set(it)
+            }
+            showPaymentState()
+        }
+    }
+
     companion object {
         private const val DELAY_MS = 1L
         const val UTM_CAMPAIGN = "feature_announcement_card"
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
         private const val SOURCE = "payment_methods"
+        private const val CIAB_UPGRADE_SOURCE = "ciab_upgrade"
     }
 }

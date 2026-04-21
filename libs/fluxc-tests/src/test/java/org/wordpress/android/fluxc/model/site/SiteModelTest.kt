@@ -172,4 +172,34 @@ class SiteModelTest {
             if (enableShareButtonsSupport) activeModules = SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS
         }
     }
+
+    /* isCIABSite */
+    @Test
+    fun `given commerce garden site, when checking isCIABSite, then returns true`() {
+        val site = SiteModel().apply {
+            setIsGardenSite(true)
+            gardenName = SiteModel.CIAB_GARDEN_NAME
+        }
+
+        assertTrue(site.isCIABSite)
+    }
+
+    @Test
+    fun `given non-commerce garden site, when checking isCIABSite, then returns false`() {
+        val site = SiteModel().apply {
+            setIsGardenSite(true)
+            gardenName = "other"
+        }
+
+        assertFalse(site.isCIABSite)
+    }
+
+    @Test
+    fun `given non-garden site, when checking isCIABSite, then returns false`() {
+        val site = SiteModel().apply {
+            setIsGardenSite(false)
+        }
+
+        assertFalse(site.isCIABSite)
+    }
 }

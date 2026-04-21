@@ -12,12 +12,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.bookings.BookingsCommunicationViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
@@ -63,6 +66,12 @@ class BookingDetailsFragment : BaseFragment() {
                             .actionBookingDetailsFragmentToBookingNoteFragment(event.bookingId)
                     )
                 }
+                is BookingDetailsViewModel.NavigateToRescheduleBooking -> {
+                    findNavController().navigateSafely(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToBookingRescheduleFragment(event.bookingId)
+                    )
+                }
                 is BookingDetailsViewModel.NavigateToOrder -> {
                     requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
                         NavGraphMainDirections.actionGlobalOrderDetailFragment(
@@ -71,7 +80,19 @@ class BookingDetailsFragment : BaseFragment() {
                         )
                     )
                 }
+                is BookingDetailsViewModel.NavigateToIssueRefund -> {
+                    findNavController().navigateSafely(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToIssueRefund(
+                                orderId = event.orderId
+                            )
+                    )
+                }
             }
+        }
+
+        handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
+            viewModel.onRefundCompleted()
         }
     }
 

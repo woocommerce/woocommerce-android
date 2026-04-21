@@ -79,12 +79,12 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         on { getString(any(), anyVararg()) } doAnswer { it.arguments.joinToString { it.toString() } }
     }
     private val blazeRepository: BlazeRepository = mock {
-        onBlocking { generateDefaultCampaignDetails(PRODUCT_ID) } doReturn defaultCampaignDetails
+        on { generateDefaultCampaignDetails(PRODUCT_ID) } doReturn defaultCampaignDetails
         on { observeDevices() } doReturn flowOf(devices)
         on { observeInterests() } doReturn flowOf(interests)
         on { observeLanguages() } doReturn flowOf(languages)
         on { observeObjectives() } doReturn flowOf(objectives)
-        onBlocking { fetchAdSuggestions(any()) } doReturn Result.success(emptyList())
+        on { fetchAdSuggestions(any()) } doReturn Result.success(emptyList())
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: BlazeCampaignCreationPreviewViewModel

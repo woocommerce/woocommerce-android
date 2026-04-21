@@ -8,12 +8,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.TypeConverter
+import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlagValueSource.REMOTE
 
 @Dao
 abstract class FeatureFlagConfigDao {
     @Query("SELECT * from FeatureFlagConfigurations")
     abstract fun getFeatureFlagList(): List<FeatureFlag>
+
+    @Query("SELECT * from FeatureFlagConfigurations")
+    abstract fun observeFeatureFlagList(): Flow<List<FeatureFlag>>
 
     @Query("SELECT * from FeatureFlagConfigurations WHERE `key` = :key")
     abstract fun getFeatureFlag(key: String): List<FeatureFlag>

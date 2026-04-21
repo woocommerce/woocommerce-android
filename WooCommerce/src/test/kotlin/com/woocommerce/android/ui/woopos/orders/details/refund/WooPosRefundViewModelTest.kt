@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
@@ -1896,5 +1897,100 @@ class WooPosRefundViewModelTest {
                     this is WooPosAnalyticsEvent.Event.RefundFlowAborted && refundStep == "confirm_refund"
                 }
             )
+        }
+
+    @Test
+    fun `given order with billing email, when refund succeeds, then receiptSentMessage is set`() =
+        runTest {
+            // GIVEN
+            val orderWithEmail = testOrder.copy(
+                customer = Order.Customer(
+                    billingAddress = Address.EMPTY.copy(email = "customer@example.com"),
+                    shippingAddress = Address.EMPTY
+                )
+            )
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithEmail))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithEmail), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(orderWithEmail), any())).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+            whenever(
+                resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, "customer@example.com")
+            ).thenReturn("A receipt has been sent to customer@example.com.")
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val state = viewModel.state.value as WooPosRefundState.RefundSuccess
+            assertThat(state.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
+        }
+
+    @Test
+    fun `given order without billing email, when refund succeeds, then receiptSentMessage is null`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val state = viewModel.state.value as WooPosRefundState.RefundSuccess
+            assertThat(state.receiptSentMessage).isNull()
         }
 }

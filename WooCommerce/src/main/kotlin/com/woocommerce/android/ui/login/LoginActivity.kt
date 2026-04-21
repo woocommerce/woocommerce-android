@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
@@ -154,6 +156,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
+    @Inject
+    internal lateinit var registerDevice: RegisterDevice
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -383,6 +388,7 @@ class LoginActivity :
 
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
+        registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -623,7 +629,7 @@ class LoginActivity :
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
-        if (result.hasJetpack || connectSiteInfo?.isWPCom == true) {
+        if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
@@ -882,7 +888,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.isWPCom == false)
+            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.shouldUseWPComAuth == false)
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -997,6 +1003,7 @@ class LoginActivity :
             event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
+                    isCommerceGarden = it.isCommerceGarden,
                     isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
@@ -1081,10 +1088,15 @@ class LoginActivity :
         show(currentFragment.childFragmentManager, tag)
     }
 
+    @VisibleForTesting
     @Parcelize
-    private data class ConnectSiteInfo(
+    internal data class ConnectSiteInfo(
         val isWPCom: Boolean,
+        val isCommerceGarden: Boolean,
         val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
-    ) : Parcelable
+    ) : Parcelable {
+        val shouldUseWPComAuth: Boolean
+            get() = isWPCom || isCommerceGarden
+    }
 }

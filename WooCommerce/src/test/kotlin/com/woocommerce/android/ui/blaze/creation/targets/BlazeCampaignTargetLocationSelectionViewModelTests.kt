@@ -30,7 +30,7 @@ class BlazeCampaignTargetLocationSelectionViewModelTests : BaseUnitTest() {
 
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val blazeRepository: BlazeRepository = mock {
-        onBlocking { fetchLocations(any()) } doReturn Result.success(sampleLocations)
+        on { fetchLocations(any()) } doReturn Result.success(sampleLocations)
     }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.getArgument<Any>(0).toString() }

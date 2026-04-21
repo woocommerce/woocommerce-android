@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
@@ -111,6 +112,16 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val fetchTestAnnouncementFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_info_outline_20dp,
+            iconTint = R.color.color_primary,
+            label = UiString.UiStringText("Fetch Test Announcement (v999)"),
+            isEnabled = true,
+            onClick = ::onFetchTestAnnouncementClicked
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
@@ -118,7 +129,8 @@ class DeveloperOptionsViewModel @Inject constructor(
         savedPrivacySettingsOnDialogFlow,
         apiFakerFlow,
         sendSentryReportFlow,
-        featureFlagsFlow
+        featureFlagsFlow,
+        fetchTestAnnouncementFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -161,6 +173,17 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     }
 
+    private fun onFetchTestAnnouncementClicked() {
+        launch {
+            val announcement = developerOptionsRepository.fetchTestAnnouncement()
+            if (announcement != null) {
+                triggerEvent(DeveloperOptionsEvents.ShowFeatureAnnouncement(announcement))
+            } else {
+                triggerEvent(DeveloperOptionsEvents.ShowToastText("No test announcement found"))
+            }
+        }
+    }
+
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
         data class ShowToastText(val message: String) : DeveloperOptionsEvents()
@@ -171,6 +194,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
         data object OpenApiFaker : DeveloperOptionsEvents()
         data object OpenFeatureFlags : DeveloperOptionsEvents()
+        data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(

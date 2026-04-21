@@ -121,8 +121,10 @@ google-upload-credentials.json
 # Junie AI Assistant
 .junie/
 
-# Claude Code
-/CLAUDE.local.md
-.claude/
+# Agent config local files (Claude, Codex, etc.)
+# Keep main config files under version control, ignore user-local overrides
+**/CLAUDE.local.md
+**/.claude/**/*.local.*
+**/.codex/**/*.local.*
 
 .grepai/

@@ -44,7 +44,7 @@ class ProductDetailWebViewViewModel @Inject constructor(
 
     private fun buildProductUrl(product: Product): String {
         val site = selectedSite.get()
-        return site.adminUrlOrDefault.slashJoin("?page=next-admin&p=/woocommerce/products/edit/${product.remoteId}")
+        return site.adminUrlOrDefault.slashJoin(BOOKABLE_SERVICE_PATH).slashJoin("${product.remoteId}")
     }
 
     private fun navigateBack() {
@@ -56,4 +56,8 @@ class ProductDetailWebViewViewModel @Inject constructor(
         val title: String,
         val onBackClick: () -> Unit
     )
+
+    companion object {
+        const val BOOKABLE_SERVICE_PATH = "admin.php?page=next-admin&p=/woocommerce/services/edit"
+    }
 }

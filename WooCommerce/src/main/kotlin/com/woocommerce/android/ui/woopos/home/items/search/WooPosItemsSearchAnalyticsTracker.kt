@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchResultTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
@@ -35,6 +37,28 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
             totalItemsCount = totalProductsCount,
             millisecondsSinceRequestSent = searchTimeMillis,
             source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+        )
+        analyticsTracker.track(event)
+    }
+
+    suspend fun trackLocalSearchResults(
+        resultsCount: Int,
+        searchTimeMillis: Long,
+        searchMethod: String
+    ) {
+        val event = SearchResultsFetched(
+            millisecondsSinceRequestSent = searchTimeMillis,
+            resultsCount = resultsCount,
+            source = "purchasable_items",
+            searchMethod = searchMethod,
+        )
+        analyticsTracker.track(event)
+    }
+
+    suspend fun trackSearchResultTapped(resultPosition: Int, resultType: String) {
+        val event = SearchResultTapped(
+            resultPosition = resultPosition,
+            resultType = resultType,
         )
         analyticsTracker.track(event)
     }

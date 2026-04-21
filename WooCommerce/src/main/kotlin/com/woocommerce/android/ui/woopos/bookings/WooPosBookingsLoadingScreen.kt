@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -36,17 +37,37 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosBookingsLoadingScreen(modifier: Modifier = Modifier) {
+fun WooPosBookingsLoadingScreen(
+    dateSelectorState: DateSelectorState,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxSize()
     ) {
-        WooPosBookingsListLoadingPane(
+        Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(top = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
                 .weight(0.3f)
                 .fillMaxHeight()
-        )
+                .statusBarsPadding()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
+            )
+
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+
+            WooPosBookingsListLoadingPane(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -117,7 +138,7 @@ private fun ShimmerBadge(text: String) {
 @Composable
 fun WooPosBookingsListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier.statusBarsPadding(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
@@ -136,6 +157,12 @@ fun BookingDetailsLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 fun WooPosBookingsLoadingStatePreview() {
     WooPosTheme {
-        WooPosBookingsLoadingScreen()
+        WooPosBookingsLoadingScreen(
+            dateSelectorState = DateSelectorState(
+                formattedDate = "23 Feb, Mon",
+                selectedDateMillis = System.currentTimeMillis(),
+            ),
+            onUIEvent = {},
+        )
     }
 }

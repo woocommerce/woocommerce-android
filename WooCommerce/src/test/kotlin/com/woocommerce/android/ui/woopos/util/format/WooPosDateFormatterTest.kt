@@ -22,7 +22,9 @@ class WooPosDateFormatterTest {
     private val fixedInstant = Instant.parse("2024-01-15T15:30:00Z")
     private val fixedClock = Clock.fixed(fixedInstant, ZoneId.of("UTC"))
     private val is24HourFormat: Is24HourFormat = mock()
-    private var formatter: WooPosDateFormatter = WooPosDateFormatter(context, fixedClock, is24HourFormat)
+
+    private var formatter: WooPosDateFormatter =
+        WooPosDateFormatter(context, fixedClock, is24HourFormat)
     private lateinit var originalLocale: Locale
 
     @Before
@@ -228,6 +230,18 @@ class WooPosDateFormatterTest {
         val result = formatter.formatShortDate(instant)
 
         assertThat(result).isEqualTo("3/15/25")
+    }
+
+    @Test
+    fun `when formatShortDate called near midnight UTC, then date uses UTC`() {
+        // GIVEN
+        val instant = Instant.parse("2025-03-16T03:00:00Z")
+
+        // WHEN
+        val result = formatter.formatShortDate(instant)
+
+        // THEN
+        assertThat(result).isEqualTo("3/16/25")
     }
 
     @Test

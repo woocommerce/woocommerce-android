@@ -182,7 +182,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     }
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.isWPCom -> {
+                    !it.isWPCom && !it.isCommerceGarden -> {
                         triggerEvent(
                             StartJetpackActivation(
                                 siteAddress = siteAddress,

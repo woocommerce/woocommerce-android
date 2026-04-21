@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
+import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -132,11 +134,16 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_62_63
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_71_72
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_77_78
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_79_80
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 78
+const val WC_DATABASE_VERSION = 82
+
+// Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
+@Suppress("MagicNumber")
+private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -174,6 +181,7 @@ const val WC_DATABASE_VERSION = 78
         WCProductSettingsModel::class,
         WCCustomerModel::class,
         WCLocationModel::class,
+        WCOrderFulfillmentModel::class,
         WCOrderShipmentProviderModel::class,
         WCOrderShipmentTrackingModel::class,
         WCUserModel::class,
@@ -250,6 +258,9 @@ const val WC_DATABASE_VERSION = 78
         AutoMigration(from = 74, to = 75),
         AutoMigration(from = 75, to = 76),
         AutoMigration(from = 76, to = 77),
+        AutoMigration(from = 78, to = 79),
+        AutoMigration(from = 80, to = 81),
+        AutoMigration(from = 81, to = 82),
     ]
 )
 @TypeConverters(
@@ -279,6 +290,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     abstract val bookingsDao: BookingsDao
     internal abstract val locationsDao: LocationsDao
+    internal abstract val orderFulfillmentDao: OrderFulfillmentDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val orderShipmentTrackingDao: OrderShipmentTrackingDao
     internal abstract val customerDao: CustomerDao
@@ -315,7 +327,8 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
-        ).allowMainThreadQueries()
+        ).openHelperFactory(LargeCursorWindowOpenHelperFactory(CURSOR_WINDOW_SIZE_BYTES))
+            .allowMainThreadQueries()
             .addTypeConverter(currencyPositionConverter)
             .addTypeConverter(statsGranularityConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
@@ -340,6 +353,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             .addMigrations(MIGRATION_62_63)
             .addMigrations(MIGRATION_71_72)
             .addMigrations(MIGRATION_77_78)
+            .addMigrations(MIGRATION_79_80)
             .build()
     }
 

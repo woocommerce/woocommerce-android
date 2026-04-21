@@ -126,7 +126,7 @@ class WooPosSearchByIdentifierTest {
         // GIVEN
         val identifier = "123456"
         val product = generateWooPosProduct(
-            productType = WooPosProductModel.WooPosProductType.SIMPLE,
+            productType = WooPosProductModel.WooPosProductType.Simple,
             status = WooPosProductModel.WooPosProductStatus.PUBLISH
         )
 
@@ -185,7 +185,7 @@ class WooPosSearchByIdentifierTest {
     fun `given variable product, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
-        val product = generateWooPosProduct(productType = WooPosProductModel.WooPosProductType.VARIABLE)
+        val product = generateWooPosProduct(productType = WooPosProductModel.WooPosProductType.Variable)
 
         whenever(localSearcher(identifier, SyncStrategy.REMOTE))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
@@ -206,12 +206,12 @@ class WooPosSearchByIdentifierTest {
         runTest {
             // GIVEN
             whenever(productDataSource.getCurrentSyncStrategy())
-                .thenReturn(SyncStrategy.LOCAL_CATALOG)
+                .thenReturn(SyncStrategy.LOCAL_CATALOG_FILE)
             val identifier = "123456"
             whenever(
                 localSearcher(
                     identifier,
-                    syncStrategy = SyncStrategy.LOCAL_CATALOG
+                    syncStrategy = SyncStrategy.LOCAL_CATALOG_FILE
                 )
             ).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)

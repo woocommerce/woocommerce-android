@@ -50,10 +50,7 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
     val viewModel = hiltViewModel<WooPosCashPaymentViewModel>()
     val state = viewModel.state.collectAsState().value
 
-    val onBackClicked = {
-        viewModel.onBackClicked()
-        onNavigationEvent(WooPosNavigationEvent.GoBack)
-    }
+    val onBackClicked = { viewModel.onBackClicked() }
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }

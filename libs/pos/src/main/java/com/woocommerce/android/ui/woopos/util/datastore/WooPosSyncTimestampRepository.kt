@@ -4,6 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.flow.first
@@ -11,7 +13,7 @@ import javax.inject.Inject
 
 class WooPosSyncTimestampRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val dataStore: DataStore<Preferences>,
     private val logger: WooPosLogWrapper
 ) {
 
@@ -104,7 +106,7 @@ class WooPosSyncTimestampRepository @Inject constructor(
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String>? {
         val site = selectedSite.getOrNull()
         return if (site != null) {
-            stringPreferencesKey("${site.siteId}-$key")
+            stringPreferencesKey("${site.remoteId().value}-$key")
         } else {
             logger.e("Cannot build site-specific key '$key': no site selected")
             null

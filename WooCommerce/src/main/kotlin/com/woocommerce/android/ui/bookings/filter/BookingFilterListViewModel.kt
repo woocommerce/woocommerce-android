@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.automattic.eventhorizon.BookingListApplyFiltersEvent
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -25,6 +27,7 @@ class BookingFilterListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingFilterRepository: BookingFilterRepository,
     private val bookingsRepository: BookingsRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
@@ -120,10 +123,16 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onShowBookings() {
+        val filters = _uiState.value.updatedBookingFilters
+        analyticsTrackerWrapper.track(
+            BookingListApplyFiltersEvent(
+                selectedFilters = filters.activeFilterTrackingKeys().sorted().toString()
+            )
+        )
         launch {
-            bookingFilterRepository.save(_uiState.value.updatedBookingFilters)
+            bookingFilterRepository.save(filters)
+            triggerEvent(MultiLiveEvent.Event.Exit)
         }
-        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun onDismissUnsavedChangesDialog() {
@@ -134,6 +143,17 @@ class BookingFilterListViewModel @Inject constructor(
         // Hide dialog and exit without saving
         _uiState.update { current -> current.copy(dialogState = null) }
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun BookingFilters.activeFilterTrackingKeys(): List<String> = buildList {
+        if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) add("team_member")
+        if (bookingType?.value != null) add("booking_type")
+        if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) add("service_events")
+        if (attendanceStatus != BookingsFilterOption.AttendanceStatus.DEFAULT) add("attendance_status")
+        if (paymentStatus != null) add("payment_status")
+        if (customer != null) add("customer")
+        if (dateRange != BookingsFilterOption.DateRange.DEFAULT) add("date_time")
+        if (location != null) add("location")
     }
 
     private fun hasUnsavedChanges() = _uiState.value.initialBookingFilters != _uiState.value.updatedBookingFilters

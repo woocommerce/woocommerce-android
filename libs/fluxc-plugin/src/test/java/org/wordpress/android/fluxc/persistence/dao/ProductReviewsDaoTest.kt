@@ -15,8 +15,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
+import org.wordpress.android.fluxc.persistence.AccountMapper
+import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -26,9 +29,14 @@ class ProductReviewsDaoTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductReviewsDao
+    private lateinit var siteSqlUtils: SiteSqlUtils
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -38,7 +46,8 @@ class ProductReviewsDaoTest {
 
     @Before
     fun setUp() {
-        sut = databaseRule.db.productReviewsDao
+        sut = wcDatabaseRule.db.productReviewsDao
+        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
     }
 
     @Test
@@ -137,7 +146,7 @@ class ProductReviewsDaoTest {
         assertEquals(reviews.size, savedReviews.size)
 
         // Delete site and verify reviews deleted via foreign key constraint
-        SiteSqlUtils().deleteSite(site)
+        siteSqlUtils.deleteSite(site)
         savedReviews = sut.getProductReviews(siteId = site.localId())
         assertEquals(0, savedReviews.size)
     }

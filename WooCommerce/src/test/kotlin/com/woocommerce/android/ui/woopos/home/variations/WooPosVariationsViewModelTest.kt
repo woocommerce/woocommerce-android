@@ -55,10 +55,10 @@ class WooPosVariationsViewModelTest {
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
-        onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("$0.00")
-        onBlocking { invoke(null) }.thenReturn("$0.00")
+        on { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
+        on { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+        on { invoke(BigDecimal("0.00")) }.thenReturn("$0.00")
+        on { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val mapper: WooPosVariationMapper = mock {
@@ -441,7 +441,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         1,
@@ -510,7 +510,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         3,
@@ -558,7 +558,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         1,
@@ -610,7 +610,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         1,
@@ -668,7 +668,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         1,
@@ -705,7 +705,7 @@ class WooPosVariationsViewModelTest {
             // GIVEN
             val parentProduct = generateWooPosProduct(
                 productId = 1L,
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 attributes = listOf(
                     WooPosProductModel.WooPosProductAttribute(
                         1,

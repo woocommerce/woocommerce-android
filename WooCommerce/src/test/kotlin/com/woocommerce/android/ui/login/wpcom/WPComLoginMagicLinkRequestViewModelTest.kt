@@ -39,11 +39,11 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
     fun setup(
         fallbackButton: MagicLinkFallbackButton,
         requestEmailAtStart: Boolean = true,
-        wpComLoginMode: WPComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
+        jetpackStatus: JetpackStatus = JetpackStatus
     ) {
         viewModel = WPComLoginMagicLinkRequestViewModel(
             WPComLoginMagicLinkRequestFragmentArgs(
-                wpComLoginMode = wpComLoginMode,
+                jetpackStatus = jetpackStatus,
                 emailOrUsername = EMAIL,
                 fallbackButton = fallbackButton,
                 requestAtStart = requestEmailAtStart,
@@ -115,7 +115,7 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             WPComLoginMagicLinkRequestViewModel.ShowPasswordScreen(
                 emailOrUsername = EMAIL,
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
+                jetpackStatus = JetpackStatus
             )
         )
     }
@@ -130,26 +130,9 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
 
         assertThat(event).isEqualTo(
             WPComLoginMagicLinkRequestViewModel.ShowUsernameScreen(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
+                jetpackStatus = JetpackStatus
             )
         )
     }
 
-    @Test
-    fun `given push notifications mode, when request magic link, then use push notifications flow`() =
-        testBlocking {
-            setup(
-                MagicLinkFallbackButton.None,
-                requestEmailAtStart = false,
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup
-            )
-
-            viewModel.onRequestMagicLinkClick()
-
-            verify(wpComLoginRepository).requestMagicLink(
-                emailOrUsername = EMAIL,
-                flow = MagicLinkFlow.PushNotificationsSetup,
-                isSignup = false
-            )
-        }
 }

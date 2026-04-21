@@ -1,13 +1,64 @@
 package com.woocommerce.android.model
 
+import com.google.gson.Gson
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
+import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
 import java.math.BigDecimal
+import java.util.Calendar
 
 class RefundMapperTest {
+    private val refundMapper = RefundMapper(Gson())
+
+    @Test
+    fun `when mapping refund response with datetime, then dateCreated preserves the time`() {
+        val response = RefundResponse(
+            refundId = 1L,
+            dateCreated = "2024-01-15T14:30:00",
+            amount = "10.00",
+            reason = "test",
+            refundedPayment = false,
+            items = null,
+            shippingLineItems = null,
+            feeLineItems = null
+        )
+
+        val model = refundMapper.toModel(response)
+
+        val calendar = Calendar.getInstance().apply {
+            time = model.dateCreated
+        }
+        assertEquals(14, calendar.get(Calendar.HOUR_OF_DAY))
+        assertEquals(30, calendar.get(Calendar.MINUTE))
+    }
+
+    @Test
+    fun `when mapping refund response with date only, then dateCreated is parsed correctly`() {
+        val response = RefundResponse(
+            refundId = 1L,
+            dateCreated = "2024-01-15",
+            amount = "10.00",
+            reason = "test",
+            refundedPayment = false,
+            items = null,
+            shippingLineItems = null,
+            feeLineItems = null
+        )
+
+        val model = refundMapper.toModel(response)
+
+        val calendar = Calendar.getInstance().apply {
+            time = model.dateCreated
+        }
+        assertEquals(2024, calendar.get(Calendar.YEAR))
+        assertEquals(Calendar.JANUARY, calendar.get(Calendar.MONTH))
+        assertEquals(15, calendar.get(Calendar.DAY_OF_MONTH))
+    }
+
     @Test
     fun `when mapping refund item from domain model, then extract its properties correctly`() {
         val domainModel = WCRefundModel.WCRefundItem(

@@ -68,8 +68,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getParameters(any(), any<SavedStateHandle>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
-        onBlocking { getVariation(any(), any()) } doReturn TEST_VARIATION
-        onBlocking { fetchVariation(any(), any()) } doAnswer {
+        on { getVariation(any(), any()) } doReturn TEST_VARIATION
+        on { fetchVariation(any(), any()) } doAnswer {
             OnVariationChanged(it.arguments[0] as Long, it.arguments[1] as Long)
         }
     }
