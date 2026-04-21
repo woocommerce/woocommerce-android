@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -103,6 +104,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         appPrefsWrapper,
         cardReaderOnboardingChecker
     )
+
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     @Before
     fun setUp() {
@@ -1771,6 +1774,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
+            featureFlagRepository,
         )
         viewModel.onViewVisible()
     }
