@@ -555,8 +555,16 @@ echo "--- :page_facing_up: Generating reports"
   details.failure summary::marker { color: #a11212; }
   details.failure .error { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: #fde8e8; color: #6a0e0e; padding: 8px 10px; border-radius: 4px; margin: 10px 0; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
   details.failure video { width: 100%; max-width: 480px; display: block; margin: 12px 0; border-radius: 4px; background: #000; }
-  details.failure .tips { background: #fff8e1; border-left: 4px solid #f9a825; padding: 8px 12px; margin: 10px 0; font-size: 13px; }
-  details.failure .tips ul { margin: 4px 0 0 18px; padding: 0; }
+  /* Tips block needs hard-coded dark text so the content stays readable when
+     the OS/browser is in dark mode — without this, `color-scheme: light dark`
+     flips the inherited text colour to white, which is invisible on the pale
+     yellow background. */
+  details.failure .tips { background: #fff8e1; border-left: 4px solid #f9a825; padding: 10px 14px; margin: 10px 0; font-size: 13px; color: #1a1a1a; }
+  details.failure .tips strong { color: #000; font-weight: 700; }
+  details.failure .tips a { color: #0b5394; }
+  details.failure .tips code { background: rgba(0,0,0,0.06); color: #1a1a1a; padding: 1px 4px; border-radius: 3px; }
+  details.failure .tips ul { margin: 6px 0 0 18px; padding: 0; }
+  details.failure .tips li { margin: 2px 0; }
   details.failure a.log-link { font-size: 12px; color: #0366d6; }
   .no-failures { padding: 16px; background: #e6f6ec; border-radius: 6px; color: #1f7a3a; font-weight: 600; }
   .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e1e4e8; font-size: 12px; color: #888; }

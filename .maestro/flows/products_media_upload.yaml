@@ -6,21 +6,32 @@
 # command from the caller side — both of which are out of scope for a
 # local smoke run against a clean emulator.
 #
-# Instead this flow asserts the ENTRY POINT for media upload: that
-# tapping the gallery's "Add image" action from the product detail
-# screen opens the image-source bottom sheet with all three standard
-# sources wired up (Device chooser, Camera, WordPress media library).
+# Instead this flow asserts the ENTRY POINT for media upload:
+#
+#   Product detail  ──[tap Add image]──▶  ProductImagesFragment
+#                                         ("Photos" screen)
+#                                         └─ auto-opens the image-
+#                                            source MaterialAlertDialog
+#                                            (showChooser=true)
+#
+# `ProductDetailViewModel.onAddImageButtonClicked()` triggers a
+# `ViewProductImageGallery(…, showChooser = true)` navigation target.
+# The navigation target is ProductImagesFragment, NOT an in-place
+# dialog on the detail screen, so after we dismiss the dialog we're
+# still on the "Photos" screen — we need ONE more back press to
+# return to product detail.
+#
 # This catches regressions in:
 #   - The "Add image" control wiring on ProductDetailFragment
 #     (binding.addImageContainer → ProductDetailViewModel
 #     .onAddImageButtonClicked)
-#   - The ProductDetailViewModel → ShowImageSourceDialog event handling
+#   - The navigation to ProductImagesFragment with showChooser=true
 #   - dialog_product_image_source.xml rendering all three options
 #
 # Source strings (res/values/strings.xml):
-#   - image_source_title           → "Select an upload method"
-#   - image_source_device_chooser  → "Choose from device"
-#   - image_source_device_camera   → "Take a photo"
+#   - image_source_title            → "Select an upload method"
+#   - image_source_device_chooser   → "Choose from device"
+#   - image_source_device_camera    → "Take a photo"
 #   - image_source_wp_media_library → "WordPress media library"
 appId: com.woocommerce.android.dev
 name: "Products - Media upload entry point"
@@ -43,9 +54,12 @@ tags:
     index: 0
     label: "Tap first product"
 
-# Wait for product detail screen to render.
+# Wait for product detail screen to render. "Describe your product"
+# and "Write with AI" appear on every product type, so they're safer
+# readiness signals than price-related text (booking / grouped /
+# external products have no Price row).
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -69,8 +83,8 @@ tags:
 # addImageIcon / addImageContainer) or as the empty-state
 # addImageContainer FrameLayout directly on the detail screen. Both
 # paths call ProductDetailViewModel.onAddImageButtonClicked which
-# fires the same ShowImageSourceDialog event — we try the icon first
-# and fall back to the container.
+# navigates to ProductImagesFragment with showChooser=true — we try
+# the icon first and fall back to the container.
 - tapOn:
     id: "addImageIcon"
     optional: true
@@ -100,7 +114,8 @@ tags:
           retryTapIfNoChange: true
           label: "Tap by Add image content description"
 
-# Wait for the MaterialAlertDialog with the image-source options.
+# Wait for the MaterialAlertDialog with the image-source options —
+# it auto-opens once ProductImagesFragment is presented.
 - extendedWaitUntil:
     visible: "Select an upload method"
     timeout: 15000
@@ -124,7 +139,20 @@ tags:
 # on back press.
 - back
 
-# Verify we're back on the product detail screen.
+# We're now on ProductImagesFragment (toolbar title "Photos",
+# body shows an "Add photos" outline button). Assert that state —
+# it's the proof that the navigation target is wired up correctly —
+# then back out to product detail.
+- extendedWaitUntil:
+    visible: ".*Photos.*|.*Add photos.*"
+    timeout: 10000
+    label: "Wait for ProductImagesFragment after dialog dismissal"
+
+- takeScreenshot: products_media_photos_screen
+
+- back
+
+# Product detail screen should now be back in focus.
 - extendedWaitUntil:
     visible:
       id: "editText"
@@ -134,9 +162,9 @@ tags:
 # Return to the products list.
 - back
 
-# Products list may show the "Discard changes" dialog if any edit
-# was inadvertently applied (shouldn't happen in this flow, but we
-# guard for safety on staging stores).
+# Products list may show a "Discard changes" dialog if the user
+# accidentally dirtied the draft. We didn't mutate anything but
+# guard anyway to stay resilient on staging stores.
 - runFlow:
     when:
       visible: "Discard"

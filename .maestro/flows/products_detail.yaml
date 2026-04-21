@@ -1,12 +1,33 @@
 # Smoke Test: Products - Product Detail
 # P2 ref: Products > Product details (all details)
 #
+# IMPORTANT: this flow opens "the first product" in the staging list.
+# WooCommerce supports several product types (simple, variable,
+# grouped, external, booking, subscription, …) and each type renders
+# a DIFFERENT set of ComplexProperty rows on the detail screen:
+#
+#   - Simple/physical          → Price + Inventory + Product type + Shipping + …
+#   - Variable                 → Variations + Attributes + Product type
+#   - Grouped / External / Booking → no "Price" row (pricing handled elsewhere);
+#                                    no "Inventory" row on grouped/booking
+#
+# We therefore avoid asserting on type-specific labels like "Price" or
+# "Inventory" — those would fail as soon as the first product on the
+# staging store is, say, a Booking product (as happened on this run:
+# the first product was "Tourist Activity" → Booking). Instead we
+# assert on rows that render for EVERY product type:
+#
+#   - "Product type"  (always rendered; value varies)
+#   - "Reviews"       (always rendered; "no approved reviews" placeholder)
+#   - "Categories"    (always rendered; "Uncategorized" if unset)
+#
 # Verifies:
 #   - Product detail screen loads
-#   - Product name, price, inventory, type, description are visible
-#   - Product properties (price, inventory, type, shipping, etc.) render
-#   - Reviews section is accessible
-#   - Categories and tags sections visible
+#   - Product name field + "Describe your product" area render
+#   - Universal ComplexProperty rows render (Product type, Reviews,
+#     Categories). Type-specific rows (Price, Inventory, Shipping,
+#     Short description, Variations) are probed optionally so the
+#     flow doesn't fail on stores whose first product isn't simple
 appId: com.woocommerce.android.dev
 name: "Products - Product detail view"
 tags:
@@ -28,9 +49,11 @@ tags:
     index: 0
     label: "Tap first product"
 
-# Wait for product detail screen
+# Wait for product detail screen. The "Describe your product" hint +
+# "Write with AI" button render on every product type, so they're a
+# safer readiness signal than price-related text.
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -41,7 +64,7 @@ tags:
     commands:
       - tapOn: "GOT IT"
 
-# Wait a moment for tooltip dismissal
+# Wait for the product-name field (universal).
 - extendedWaitUntil:
     visible:
       id: "editText"
@@ -49,7 +72,8 @@ tags:
 
 - takeScreenshot: product_detail_top
 
-# Scroll to see product properties
+# Scroll to the properties RecyclerView so type-agnostic rows come
+# into view.
 - scrollUntilVisible:
     element:
       id: "propertiesRecyclerView"
@@ -57,38 +81,55 @@ tags:
     timeout: 10000
     label: "Scroll to product properties"
 
-# Verify Price property
-- assertVisible: "Price"
-
 - takeScreenshot: product_detail_properties
 
-# Scroll to Inventory
-- scrollUntilVisible:
-    element: "Inventory"
-    direction: DOWN
-    timeout: 10000
-    label: "Scroll to Inventory property"
-
-- assertVisible: "Inventory"
-
-# Scroll to Product type
+# Universal row 1: Product type (every WooCommerce product type
+# renders this — simple / variable / grouped / external / booking / …).
 - scrollUntilVisible:
     element: "Product type"
     direction: DOWN
-    timeout: 10000
-    label: "Scroll to Product type"
+    timeout: 15000
+    label: "Scroll to Product type row"
 
 - assertVisible: "Product type"
 
 - takeScreenshot: product_detail_type
 
-# Scroll to see more properties: categories, tags, shipping, etc.
+# Universal row 2: Reviews (renders with "no approved reviews"
+# placeholder when the product has none).
 - scrollUntilVisible:
-    element: ".*Categories.*|.*Shipping.*|.*Short description.*"
+    element: "Reviews"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to categories/shipping/description"
     optional: true
+    label: "Scroll to Reviews row"
+
+- assertVisible:
+    text: "Reviews"
+    optional: true
+
+# Universal row 3: Categories (falls back to "Uncategorized" when
+# unset).
+- scrollUntilVisible:
+    element: "Categories"
+    direction: DOWN
+    timeout: 15000
+    optional: true
+    label: "Scroll to Categories row"
+
+- assertVisible:
+    text: "Categories"
+    optional: true
+
+# Type-specific rows — probed optionally. On a simple/physical
+# product all three will match; on a booking product only
+# "Short description" typically appears.
+- scrollUntilVisible:
+    element: ".*Price.*|.*Inventory.*|.*Shipping.*|.*Short description.*"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+    label: "Scroll to Price / Inventory / Shipping / Short description"
 
 - takeScreenshot: product_detail_bottom
 

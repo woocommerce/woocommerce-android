@@ -79,8 +79,13 @@ tags:
 
 - takeScreenshot: product_create_named
 
-# Verify key product fields are visible
-- assertVisible: "Price"
+# Verify key product fields are visible. A freshly-created (unsaved)
+# product shows a CTA-style "Add price" label instead of "Price" —
+# the ComplexProperty only reads "Price" after a value has been
+# entered. We match either form with a regex. Inventory and Product
+# type are rendered unconditionally.
+- assertVisible:
+    text: ".*Add price.*|.*Price.*"
 - assertVisible: "Inventory"
 - assertVisible: "Product type"
 
