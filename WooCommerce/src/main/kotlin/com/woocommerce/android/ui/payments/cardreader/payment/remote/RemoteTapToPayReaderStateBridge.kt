@@ -28,6 +28,6 @@ class RemoteTapToPayReaderStateBridge {
 
     fun emitEvent(event: MultiLiveEvent.Event) {
         event.isHandled = false
-        _events.postValue(event)
+        _events.value = event
     }
 }
