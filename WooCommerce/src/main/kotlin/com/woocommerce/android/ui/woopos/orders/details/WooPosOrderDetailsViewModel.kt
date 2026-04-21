@@ -103,7 +103,8 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     fun loadOrder(orderId: Long) {
         lastRequestedOrderId = orderId
         sideLoadJob?.cancel()
-        refreshOrderJob?.cancel()
+        // Do not cancel refreshOrderJob: a pending refresh must complete so the list row
+        // for the previously selected order is updated even after selection changes.
 
         viewModelScope.launch {
             _state.value = WooPosOrderDetailsState.Loading
@@ -314,11 +315,11 @@ class WooPosOrderDetailsViewModel @Inject constructor(
 
         val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
 
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        if (current.details.id == updated.id) {
+        val current = _state.value as? WooPosOrderDetailsState.Loaded
+        if (current != null && current.details.id == updated.id) {
             _state.value = current.copy(details = newDetailsViewState)
-            coordinator.notifyOrderRefreshed(updated.id)
         }
+        coordinator.notifyOrderRefreshed(updated.id)
     }
 
     private fun cacheRefundData(orderId: Long, refundRows: List<RefundRowData>, order: Order) {
