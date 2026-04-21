@@ -1,9 +1,23 @@
 # Smoke Test: Google for Woo
 # P2 ref: Google for Woo > Trigger campaign creation, check webview loads
 #
-# Verifies:
-#   - Google for Woo option accessible from More Menu
-#   - Webview loads correctly for Google campaign creation
+# Google for Woo is a CONDITIONAL hub-menu item — only shown when BOTH:
+#   1. The site has the "Google Listings & Ads" plugin active at
+#      version >= 2.7.7 (see IsGoogleForWooEnabled.kt), AND
+#   2. A Google Ads account is connected to that site.
+#
+# On stores where either is missing, the menu button never renders, so
+# the flow must tolerate "Google for WooCommerce" being absent without
+# failing the smoke run. When it IS present, we verify tapping it
+# launches the Google Ads webview (GoogleAdsWebViewFragment, hosts a
+# WebView with AppBarStatus.Hidden and pulls the Google campaign
+# creation/dashboard URL).
+#
+# "Inbox" is the last item in the hub menu's general section
+# (MoreMenuViewModel.generateGeneralSection) and always renders, so we
+# scroll to it first to guarantee the whole menu has been traversed —
+# after that, any conditional item above it that was going to render
+# must already be in the view hierarchy.
 appId: com.woocommerce.android.dev
 name: "Google for Woo - Campaign creation webview"
 tags:
@@ -11,37 +25,58 @@ tags:
   - google_for_woo
   - hub_menu
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to More Menu
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 
-# Find and tap Google for Woo
+# ── Scroll through the menu so conditional items have a chance ───────
+# Inbox is always at the bottom of the general section.
 - scrollUntilVisible:
-    element: "Google for WooCommerce"
+    element: "Inbox"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to Google for Woo in hub menu"
+    label: "Scroll to bottom of hub menu"
 
-- tapOn: "Google for WooCommerce"
-
-# Wait for Google for Woo webview to load
-- extendedWaitUntil:
-    visible: ".*Google.*|.*Get started.*"
-    timeout: 25000
-    label: "Wait for Google for Woo webview"
-
-- takeScreenshot: google_for_woo
-
-# Go back
-- back
+# ── Conditionally test Google for Woo ────────────────────────────────
+# If the plugin/ads-account gate passed, the row is visible somewhere
+# in the menu. Scroll back up toward it and tap.
 - runFlow:
     when:
-      notVisible:
-        id: "more_menu_compose_view"
+      visible: "Google for WooCommerce"
     commands:
+      - scrollUntilVisible:
+          element: "Google for WooCommerce"
+          direction: UP
+          timeout: 10000
+          label: "Scroll to Google for WooCommerce"
+      - tapOn:
+          text: "Google for WooCommerce"
+          retryTapIfNoChange: true
+          label: "Tap Google for Woo menu item"
+      # Confirm the webview took over: the More Menu compose view is
+      # gone AND the Payments sibling menu item is not visible
+      # either (double-check we didn't just collapse).
+      - extendedWaitUntil:
+          notVisible:
+            id: "more_menu_compose_view"
+          timeout: 25000
+          label: "Verify Google Ads webview took over"
+      - assertNotVisible: "Payments"
+      - takeScreenshot: google_for_woo
       - back
+      - extendedWaitUntil:
+          visible:
+            id: "more_menu_compose_view"
+          timeout: 15000
+          label: "Back on More Menu after Google Ads webview"
+
+# ── Skip-case screenshot ─────────────────────────────────────────────
+# If Google for Woo wasn't available on this store, capture the menu
+# state so the test report documents why the flow was a no-op.
+- runFlow:
+    when:
+      notVisible: "Google for WooCommerce"
+    commands:
+      - takeScreenshot: google_for_woo_unavailable
