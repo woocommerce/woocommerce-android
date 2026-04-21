@@ -39,6 +39,21 @@ fi
 
 If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
 
+## Verification Status of Agent-CLI Blocks
+
+The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have been exercised end-to-end against this repo. The `USE_ANDROID_CLI=1` blocks have **not** all been executed against Google's agent CLI — the skill was authored without the agent CLI installed locally, and not every CLI invocation has since been run in this repo. Treat the CLI blocks as best-effort until proven otherwise:
+
+| CLI block | Status |
+|---|---|
+| `android describe` (APK resolution in step 7) | Verified by @irfano on 2026-04-20 — requires `GRADLE_OPTS='-Dorg.gradle.configuration-cache=false'` in this repo |
+| `android run` (step 7 install + launch) | **Unverified** — written from Google's docs, not executed against this repo |
+| `android emulator create/start/stop` (step 0) | **Unverified** |
+| `android layout --diff` (screen-transition polling) | **Unverified** |
+| `android screen capture --annotate` / `screen resolve` (Option B tap) | **Unverified** |
+| `android docs search/fetch` | **Unverified** |
+
+If a CLI block fails in practice, **do not assume the docs are right**. Fall back to the `USE_ANDROID_CLI=0` path for that step, file the discrepancy as a skill issue, and fix it in the skill before the next run.
+
 ## Critical Rule: Default to Main App (Store Management)
 
 Unless the task explicitly mentions **POS**, **Point of Sale**, or **WooPos**, always operate in the **main app** (store management) context — `MainActivity` with bottom navigation tabs. This applies to all workflows: creating orders, viewing products, collecting payments, etc. The main app is the default; POS is only used when specifically requested.
@@ -283,16 +298,7 @@ If the build fails with "SDK location not found", check that `local.properties` 
 
 ### 5. Install the APK
 
-**Preferred path (`USE_ANDROID_CLI=1`):** the single `android run` call in step 7 installs and launches in one shot, so you can skip this step entirely. Optionally resolve the APK path from project metadata rather than hardcoding it. Note: `android describe` prints **paths to JSON files** on stdout, not JSON content, so it cannot be piped directly to `jq` — read the reported file first:
-
-```bash
-# 1. Ask describe for the metadata file paths (one per line).
-DESCRIBE_JSON=$(android describe --project_dir=. | head -n1)
-
-# 2. Parse the JSON file that path points to. Adjust the jq query to match
-#    the actual schema on first run if needed.
-APK=$(jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]' "$DESCRIBE_JSON")
-```
+**Preferred path (`USE_ANDROID_CLI=1`):** skip this step. The single `android run` call in step 7 installs and launches in one shot — APK resolution and the install itself happen there.
 
 **Fallback (no `android` CLI):** install via mobile-mcp.
 
@@ -309,19 +315,27 @@ If the user requests verification of a specific scenario (error states, empty da
 
 Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
 
-**Preferred path (`USE_ANDROID_CLI=1`):** one `android run` call reinstalls the APK and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
+**Preferred path (`USE_ANDROID_CLI=1`):** resolve the APK path from project metadata, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
 
 ```bash
-# Force-stop first — android run does not guarantee a cold start.
+# 1. Resolve the APK path from project metadata. `android describe` prints paths
+#    to JSON files (not JSON content), and the underlying Gradle task fails with
+#    the configuration cache enabled in this repo — disable it via GRADLE_OPTS.
+#    (GRADLE_OPTS workaround verified by @irfano in PR #15685.)
+DESCRIBE_JSON=$(GRADLE_OPTS='-Dorg.gradle.configuration-cache=false' \
+  android describe --project_dir=. | head -n1)
+APK=$(jq -r '.variants[] | select(.name=="wasabiDebug").outputs[0]' "$DESCRIBE_JSON")
+
+# 2. Force-stop — android run does not guarantee a cold start.
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 
-# Combined install + launch. $APK was resolved in step 5 via android describe.
+# 3. Combined install + launch.
 android run --apks="$APK" \
   --activity=com.woocommerce.android.ui.main.MainActivity \
   --device=<device_id>
 ```
 
-For POS tasks (only when explicitly requested):
+For POS tasks (only when explicitly requested) — reuses `$APK` from the block above:
 ```bash
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 android run --apks="$APK" \
