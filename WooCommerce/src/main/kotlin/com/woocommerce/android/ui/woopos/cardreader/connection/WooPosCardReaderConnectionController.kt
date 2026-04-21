@@ -91,13 +91,20 @@ class WooPosCardReaderConnectionController(
         )
     }
 
+    private fun enterScanningState() {
+        if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        _state.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+        )
+    }
+
     fun startConnectionFlow() {
         isRequiredUpdate = true
         if (connectionFlowJob?.isActive == true) {
             logger.d("Connection flow already in progress, ignoring")
             return
         }
-        _state.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+        enterScanningState()
         connectionFlowJob = scope.launch {
             val onboardingState = cardReaderOnboardingChecker.getOnboardingState()
             if (onboardingState !is CardReaderOnboardingState.OnboardingCompleted) {
@@ -128,7 +135,7 @@ class WooPosCardReaderConnectionController(
             logger.d("Connection flow already in progress, ignoring onOnboardingCompleted")
             return
         }
-        _state.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+        enterScanningState()
         connectionFlowJob = scope.launch {
             continueConnectionFlowAfterOnboarding()
         }
@@ -255,7 +262,7 @@ class WooPosCardReaderConnectionController(
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
         selectedReader = null
-        _state.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+        enterScanningState()
         emitEvent(ControllerEvent.Cancelled)
     }
 
@@ -295,9 +302,7 @@ class WooPosCardReaderConnectionController(
         when (event) {
             is CardReaderDiscoveryEvents.Started -> {
                 logger.d("Discovery started")
-                _state.value = WooPosCardReaderConnectionState.Scanning(
-                    isRemoteTapToPaySupported = isRemoteTapToPayEnabled
-                )
+                enterScanningState()
             }
             is CardReaderDiscoveryEvents.ReadersFound -> {
                 logger.d("Found ${event.list.size} readers")
@@ -333,9 +338,7 @@ class WooPosCardReaderConnectionController(
 
         when {
             readers.isEmpty() -> {
-                _state.value = WooPosCardReaderConnectionState.Scanning(
-                    isRemoteTapToPaySupported = isRemoteTapToPayEnabled
-                )
+                enterScanningState()
             }
             readers.size == 1 -> {
                 val reader = readers.first()
@@ -369,7 +372,7 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun continueSearching() {
-        _state.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+        enterScanningState()
     }
 
     private fun onConnectToReaderClicked(reader: CardReader) {
@@ -473,9 +476,7 @@ class WooPosCardReaderConnectionController(
                     errorMessage = errorMessage ?: "Connection failed",
                     onRetryClicked = {
                         selectedReader?.let { connectToReader(it) } ?: run {
-                            _state.value = WooPosCardReaderConnectionState.Scanning(
-                                isRemoteTapToPaySupported = isRemoteTapToPayEnabled
-                            )
+                            enterScanningState()
                             startDiscovery()
                         }
                     },
