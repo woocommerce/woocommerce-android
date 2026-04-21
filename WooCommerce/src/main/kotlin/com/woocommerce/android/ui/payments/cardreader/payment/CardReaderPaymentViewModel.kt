@@ -146,7 +146,11 @@ class CardReaderPaymentViewModel @Inject constructor(
         require(state is ViewState.ReadyToPair || state is ViewState.WaitingForPayment) {
             "pushRemoteReaderState only accepts ReadyToPair or WaitingForPayment"
         }
-        remoteReaderStateOverride.value = state
+        remoteReaderStateOverride.postValue(state)
+    }
+
+    internal fun clearRemoteReaderState() {
+        remoteReaderStateOverride.postValue(null)
     }
 
     private fun emitEvent(event: MultiLiveEvent.Event) {

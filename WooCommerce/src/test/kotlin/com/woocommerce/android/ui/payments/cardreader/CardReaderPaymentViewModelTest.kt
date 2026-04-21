@@ -2772,4 +2772,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.viewStateData.value).isEqualTo(waiting)
         }
+
+    @Test
+    fun `given remote state pushed, when another remote state is pushed, then latest override wins`() =
+        testBlocking {
+            // GIVEN
+            viewModel.pushRemoteReaderState(
+                WaitingForPayment(tabletName = null, onPrimaryActionClicked = {})
+            )
+
+            // WHEN
+            val next = ReadyToPair(deviceName = "Pixel 7", fingerprintSuffix = "AB4F", onPrimaryActionClicked = {})
+            viewModel.pushRemoteReaderState(next)
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(next)
+        }
 }
