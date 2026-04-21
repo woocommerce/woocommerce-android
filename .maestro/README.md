@@ -60,18 +60,34 @@ maestro test --format junit --output report.xml .maestro/flows/
 maestro test --format html --output report.html .maestro/flows/
 ```
 
-### Local HTML report (recommended)
-Use the wrapper script — it runs preflight checks, emits an HTML report plus
-a screenshots/logs artifact directory under `.maestro/output/<timestamp>/`,
-and auto-opens the report on macOS.
+### Local runner (recommended)
+Use the wrapper script — it runs preflight checks, executes every flow in
+the exact order declared in the P2 post, captures a per-flow screen
+recording (kept **only** for flows that fail), and emits a self-contained
+HTML report plus a JUnit XML file.
+
+Artifacts are written **outside the repo** under
+`$HOME/woocommerce-maestro-output/<timestamp>/` so runs don't pollute the
+working tree. Override with `--output-dir <path>` or the
+`WOO_MAESTRO_OUTPUT_DIR` env var.
+
 ```bash
-.maestro/scripts/run-smoke-tests.sh                 # all flows
-.maestro/scripts/run-smoke-tests.sh -t login        # filter by tag
+.maestro/scripts/run-smoke-tests.sh                         # all flows, P2 order
+.maestro/scripts/run-smoke-tests.sh --apk path/to/app.apk   # install APK first
+.maestro/scripts/run-smoke-tests.sh -t login                # filter by tag
+.maestro/scripts/run-smoke-tests.sh --output-dir /tmp/run1  # custom output dir
+.maestro/scripts/run-smoke-tests.sh --no-record             # skip screen recording
 .maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml  # single
 ```
-CI continues to use `.buildkite/commands/run-maestro-tests.sh` (JUnit for
-Buildkite Test Analytics) — `maestro test --format` only accepts one output
-format per run, so the two scripts coexist rather than share a single invocation.
+
+Why "per-flow recording" requires its own wrapper: Maestro's single
+`maestro test .maestro/flows/` invocation can't bracket each flow with
+`adb shell screenrecord`, because `screenrecord` only supports one
+concurrent invocation per device. The script therefore runs Maestro once
+per flow and starts/stops the recorder around each run.
+
+CI continues to use `.buildkite/commands/run-maestro-tests.sh`, which uses
+Maestro's single-invocation JUnit output for Buildkite Test Analytics.
 
 ### Interactive development (auto-rerun on changes)
 ```bash
@@ -236,6 +252,8 @@ Use one of these instead:
 
 - Use `maestro studio` to visually inspect the view hierarchy and find element selectors.
 - Use `maestro test -c flow.yaml` for continuous mode during development.
-- Non-login flows reuse the existing logged-in session via `subflows/ensure_logged_in.yaml`. Only login-specific flows `clearState` and re-authenticate — repeated re-logins with the same account trigger WPCom security screens (magic-link, CAPTCHA) that block the rest of the suite.
+- **Execution order follows the P2 post.** Within the login group, `login_successful` runs LAST so the app ends authenticated with the primary Woo account. Every non-login flow then reuses that session via `subflows/ensure_logged_in.yaml`. Only login-specific flows `clearState` and re-authenticate — repeated re-logins with the same account trigger WPCom security screens (magic-link, CAPTCHA) that block the rest of the suite.
+- The local runner keeps a screen recording **only** for flows that fail. Passing flows have their recording and log deleted immediately after completion.
+- Artifacts live outside the repo at `$HOME/woocommerce-maestro-output/<timestamp>/` by default. The HTML report embeds each failure's video inline, along with the first Maestro error line and a short troubleshooting hint.
 - Screenshots are automatically saved at key checkpoints for visual verification.
 - Flows use `optional: true` on interactions that may not be present on all store configurations.

@@ -1,103 +1,107 @@
 ---
 name: smoke-tests
-description: Run the full Maestro smoke-test suite on an Android emulator against a user-supplied APK, with per-flow video recording and an HTML failure report. Always prompts for the APK up front — path, drag-and-drop, or `build`.
+description: Prepare the local environment for the Maestro smoke-test suite — verify tooling, ensure an emulator is ready, collect the APK from the user, validate the .env file — then hand the user the exact CLI command to run (or run it for them on request).
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion
 user-invocable: true
 ---
 
-# Run Maestro Smoke Tests
+# Prepare & launch the Maestro smoke-test suite
 
-Orchestrate a full run of the Maestro smoke-test suite (everything under `.maestro/flows/`) on an Android emulator against **an APK the user supplies**, record each flow as it runs, discard recordings for passing flows, and hand the user an HTML report that links the failure videos with short troubleshooting hints.
+This skill is a **setup + handoff** flow. Its job is to get everything ready so `.maestro/scripts/run-smoke-tests.sh` will work on the first try, then give the user the CLI command.
 
-**Prerequisites**
-- Maestro CLI on PATH (`curl -fsSL "https://get.maestro.mobile.dev" | bash`)
-- Android SDK platform-tools on PATH (`adb`, `emulator`)
-- At least one Android Virtual Device created in Android Studio
+It does NOT own the test-runner mechanics. Ordering, per-flow recording, report generation, and the "recordings are kept only for failures, outside the repo" contract all live in the script itself.
+
+## Scope (what this skill is responsible for)
+
+1. **Tooling** — confirm `maestro` and `adb` are on PATH. If not, tell the user how to install them and stop.
+2. **Emulator** — confirm at least one Android device/emulator is attached (`adb devices`). If none, help boot an AVD.
+3. **APK** — ask the user which APK to install and run against; install it.
+4. **`.env.local`** — confirm `.maestro/.env.local` exists and contains every variable the current flows reference.
+5. **Handoff** — print the exact CLI command (with output-dir flag already populated). If the user explicitly asks ("run it", "go ahead", etc.), invoke the script for them and stream its output.
+
+Everything below the handoff — P2 ordering, screen recording per flow, keeping only failure artifacts outside the repo, HTML + JUnit reports — is handled by `.maestro/scripts/run-smoke-tests.sh`.
 
 ## Steps
 
-### 1. Ask the user for the APK (required — do this first, always)
+### 1. Check tooling
 
-The smoke suite runs against the APK the user provides. Do NOT assume an install already exists on the emulator, do NOT default to the last-built debug APK, and do NOT skip this step even if the user's invocation message already references a file. Confirm explicitly.
+Run `command -v maestro` and `command -v adb`. If either is missing:
 
-Use `AskUserQuestion` as the very first action of the skill, before any other tool call. Example question:
+- maestro → `curl -fsSL "https://get.maestro.mobile.dev" | bash` (requires Java 17+).
+- adb → install Android SDK platform-tools and add to PATH.
 
-> Which APK should I run the smoke tests against?
->
-> - Paste an absolute or repo-relative path to an `.apk` on disk, OR
-> - Drag-and-drop the `.apk` into this chat (Claude Code exposes it under a temp path), OR
-> - Reply "build" and I'll build the wasabi debug APK with `./gradlew :WooCommerce:assembleWasabiDebug` and use the output.
+Tell the user which is missing and how to install it, then stop.
 
-Handle the three branches:
+### 2. Ensure an emulator is running
 
-- **Path supplied:** expand `~`, resolve relative paths against the repo root, and check the file exists.
-- **Attached APK:** the conversation provides a temp path like `/tmp/.../file.apk`. Read that path directly.
-- **"build":** run `./gradlew :WooCommerce:assembleWasabiDebug` (foreground so the user sees progress), then use `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`.
+Run `adb devices`. Count the lines whose second column is `device`.
 
-Before moving on, validate:
-- The file exists on disk.
-- The filename ends in `.apk`.
-- `aapt dump badging <path> | head -1` reports `package: name='com.woocommerce.android.dev'` (wasabi build). If it reports a different package, stop and confirm with the user before continuing — installing a non-wasabi APK will make the flows fail at the very first `appId` check.
+- **0 devices:** list AVDs with `emulator -list-avds`.
+  - If none → tell the user to create one in Android Studio (AVD Manager) and stop.
+  - If exactly one → ask the user if they want to boot it, then `emulator -avd <name> -no-snapshot-save &` (backgrounded), `adb wait-for-device`, and poll `adb shell getprop sys.boot_completed` until `1` (up to ~90s).
+  - If multiple → ask which one to boot.
+- **1+ devices:** proceed.
 
-Keep the resolved absolute APK path in a variable for the rest of the run.
+### 3. Ask the user for the APK (do this up front, every run)
 
-### 2. Validate the Maestro env file
+Use `AskUserQuestion` as the first user-facing step. Do NOT assume the previous install on the emulator is the right build.
 
-Required env vars live in `.maestro/.env.local` (git-ignored). Check that the file exists and that every variable the current flows reference is populated.
+Prompt the user for one of:
 
-- Read `.maestro/env.example` for the canonical list. The variables marked REQUIRED at the top of that file are the minimum: `MAESTRO_WOO_EMAIL`, `MAESTRO_WOO_PASSWORD`, `MAESTRO_WOO_STORE_URL`.
-- Also check every `MAESTRO_WOO_*` variable that is referenced by at least one flow under `.maestro/flows/`. Grep flow YAMLs for `${WOO_*}` patterns to build the list; for each one, verify the matching `MAESTRO_WOO_*` is set in `.env.local`.
+- An absolute or repo-relative path to an `.apk` on disk.
+- A drag-and-drop attachment (Claude Code exposes it as a temp path like `/tmp/.../file.apk`).
+- The word `build` — in which case run `./gradlew :WooCommerce:assembleWasabiDebug` in the foreground and use `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`.
 
-If anything is missing:
-1. List the missing variables and their purpose (mirror the comments in `.maestro/env.example`).
-2. Ask the user to either paste the values in chat OR edit `.maestro/.env.local` directly.
-3. Do NOT proceed until all referenced variables resolve to non-empty values. Re-read the file after the user updates it.
+Validate the chosen APK:
 
-Never commit `.env.local` or echo secret values back to the user.
+- File exists on disk.
+- Extension is `.apk`.
+- `aapt dump badging <path> | head -1` reports `package: name='com.woocommerce.android.dev'` (the wasabi build). If it reports a different package, stop and ask the user whether to continue — a non-wasabi APK will fail the `appId` check on the first flow.
 
-### 3. Ensure an emulator is running
+Install it: `adb install -r -g <apk-path>`. If the install fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, tell the user a previous build with a different signature is already installed and ask whether to uninstall first (`adb uninstall com.woocommerce.android.dev`). Do not uninstall without confirmation.
 
-Check `adb devices`. If no device line has state `device`:
-1. List available AVDs with `emulator -list-avds`.
-2. If none exist, tell the user to create one in Android Studio (AVD Manager) and stop.
-3. If multiple AVDs exist, ask the user which to boot.
-4. Boot with `emulator -avd <name> -no-snapshot-save &` (backgrounded) and wait for `adb wait-for-device` to return, then poll `adb shell getprop sys.boot_completed` until it returns `1` (up to ~90 seconds).
+### 4. Validate `.maestro/.env.local`
 
-If exactly one device is already connected, use that one and skip the boot step.
+The required vars are:
 
-### 4. Install the APK
+- `MAESTRO_WOO_EMAIL`
+- `MAESTRO_WOO_PASSWORD`
+- `MAESTRO_WOO_STORE_URL`
 
-`adb install -r -g <apk-path>`.
+Additional `MAESTRO_WOO_*` vars are required per-flow (e.g. `MAESTRO_WOO_NOT_A_WOO_STORE_URL` for `login_not_woo_store.yaml`, `MAESTRO_WOO_JN_*` for `login_no_jetpack.yaml`). The canonical list lives in `.maestro/env.example`.
 
-The `-r` reinstalls over any existing install without clearing state; `-g` grants runtime permissions upfront so Maestro isn't blocked by permission dialogs.
+To build the list of actually-referenced vars, grep flow YAMLs for `\${WOO_[A-Z_]+}` under `.maestro/flows/` and check each one resolves to a non-empty value in `.maestro/.env.local`.
 
-If the install fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, tell the user a previous build with a different signature is installed and ask whether to `adb uninstall com.woocommerce.android.dev` first. Don't uninstall without confirmation — they may have state they want.
+If the file is missing or any required var is empty:
 
-### 5. Run the suite
+1. List the missing variable names and their purpose (mirror `.maestro/env.example`).
+2. Ask the user whether they want to paste the values in chat or edit `.maestro/.env.local` directly.
+3. Do NOT proceed until every referenced var resolves. Re-read the file after the user updates it.
 
-Invoke the recording wrapper:
+Never commit `.env.local`. Never echo secret values back to the user.
+
+### 5. Hand off the CLI command
+
+Once steps 1–4 all pass, print the command the user should run:
 
 ```
-.maestro/scripts/run-smoke-tests-recorded.sh --no-open
+.maestro/scripts/run-smoke-tests.sh
 ```
 
-That script handles everything from here: it runs the login flows first, then the rest; starts an `adb shell screenrecord` around each flow; deletes the recording if the flow passed, keeps it if it failed; and produces `.maestro/output/<timestamp>/report.html` with the failures, embedded videos, and inline troubleshooting tips.
+Tell the user:
 
-Do NOT use `--apk` on the wrapper — you already installed it in step 4. Passing `--apk` would reinstall unnecessarily.
+- The script runs every flow in the exact P2 order (error-path login flows first, then `login_successful` — which leaves the app logged in — then the rest of the suite in Dashboard → Orders → Products → Hub Menu → Blaze → Google for Woo → POS order).
+- Screen recordings are kept only for flows that fail.
+- Artifacts (recordings, logs, HTML + JUnit report) are written OUTSIDE the repo, under `$HOME/woocommerce-maestro-output/<timestamp>/` by default. Override with `--output-dir <path>` or the `WOO_MAESTRO_OUTPUT_DIR` env var.
+- The HTML report auto-opens at the end on macOS, or can be opened manually from the path the script prints.
 
-Stream the wrapper's output so the user can see progress. The whole suite typically takes 20–40 minutes depending on device speed.
+If the user asks to run it ("go ahead", "run it", "yes please", etc.), invoke the script yourself via `Bash` and stream its output. Do NOT pass `--apk` — the APK was already installed in step 3, and `--apk` would reinstall unnecessarily.
 
-### 6. Share the report
-
-When the wrapper exits, locate the most recent `.maestro/output/<timestamp>/report.html`. Print a clickable `file://` link to it for the user, plus a one-line summary (e.g. `14 passed, 3 failed in 23m`).
-
-If failures exist, also call out the first failing flow by name — it's usually the most actionable one, and login-suite failures in particular cascade into every downstream flow.
-
-Briefly mention that recordings for passing flows were deleted to save space, and that each failure's section in the HTML report has an embedded video, the Maestro error line, and likely-causes hints.
+When the script exits, read the last line of its output (it prints `Report:` and `Result:` summary lines) and relay a one-line summary to the user plus the clickable `file://` path to the HTML report. If any flows failed, call out the first failing flow by name — it's usually the most actionable one.
 
 ## Notes
 
-- **Do not parallelize.** `adb shell screenrecord` can only run one process per device, and a single emulator can only run one Maestro flow at a time. The wrapper runs sequentially by design.
-- **3-minute recording cap.** Android's `screenrecord` hard-limits each invocation to 180 seconds. Every current smoke flow finishes well under that. If a new flow ever exceeds it, the recording will be truncated but the flow result is unaffected.
-- **Login flows run first.** The wrapper orders `login_*` flows before everything else. If login breaks, the rest of the suite is guaranteed to fail with irrelevant errors, so seeing those failures at the top of the report is intentional.
-- **The `.env.local` file is git-ignored.** Never stage or commit it, even if the user asks you to save their credentials.
+- The skill's job ends at handoff. Don't reinvent the test-runner behaviour here — if something about per-flow recording, ordering, or artifact location needs to change, change it in `.maestro/scripts/run-smoke-tests.sh`.
+- `.env.local` is git-ignored. Never stage or commit it, even if the user asks you to save their credentials.
+- Artifacts default to `$HOME/woocommerce-maestro-output/` (outside the repo) — the repo's `.gitignore` still excludes the legacy `.maestro/output/` path for safety.
+- Do NOT parallelize. `adb shell screenrecord` only supports one invocation per device, and Maestro runs one flow at a time against a single emulator. The script runs sequentially by design.
