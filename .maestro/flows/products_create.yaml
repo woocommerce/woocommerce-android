@@ -1,19 +1,50 @@
-# Smoke Test: Products - Create Product
+# Smoke Test: Products - Create and publish a full product
 # P2 ref: Products > Create product
 #
-# Verifies:
-#   - Add product button works
-#   - Manual product creation option available
-#   - Product name can be entered
-#   - Product description, price, inventory can be set
+# Exercises the full happy-path creation flow for a Simple physical
+# product, filling in the fields most commonly set at creation time
+# and then actually publishing so we can confirm the product lands
+# in the list:
+#
+#   1. FAB → Manual → Simple physical product
+#   2. Enter the product name (fixed string "Maestro Smoke Product" —
+#      re-using the same name each run keeps staging cleanup to a
+#      single bulk-delete by search rather than piling up timestamped
+#      orphans)
+#   3. "Add price" → enter regular price → back (auto-saves)
+#   4. Tap "Add more details" (productDetail_addMoreButton) — on a
+#      freshly-created simple product the Short description and
+#      Categories rows don't appear on the detail screen until the
+#      user opts them in from this bottom sheet
+#   5. From the sheet pick "Short description" → Aztec visual editor
+#      → type → back (auto-saves + adds the row to the detail list)
+#   6. Tap "Add more details" again → pick "Categories" → ProductCategorySelector
+#      → select the first category ("Uncategorized" if present) → Done
+#   7. Tap PUBLISH in the toolbar
+#   8. Return to the Products list and search for "Maestro Smoke" via
+#      menu_search + search_src_text; assert at least one matching row
+#
+# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on
+# the staging store every run. Clean up periodically by searching
+# "Maestro Smoke" in wp-admin → Products and bulk-trashing the matches.
+# A future improvement would be to trash the product automatically at
+# the end of the flow (menu_trash_product exists).
+#
+# Source strings (res/values/strings.xml):
+#   - product_price_empty                → "Add price"
+#   - product_detail_add_more            → "Add more details"
+#   - product_short_description          → "Short description"
+#   - product_categories                 → "Categories"
+#   - product_category_selector_title    → "Select categories"
+#   - product_category_selector_select_button_title_one → "Select 1 category"
+#   - product_add_tool_bar_menu_button_done → "Publish"
 appId: com.woocommerce.android.dev
-name: "Products - Create a new product"
+name: "Products - Create and publish a full product"
 tags:
   - smoke
   - products
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
+# Reuse the logged-in session.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
@@ -21,85 +52,302 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
-# Tap Add Product button
+# ─────────────────────────────────────────────────────────────────────
+# 1. Start product creation
+# ─────────────────────────────────────────────────────────────────────
 - tapOn:
     id: "addProductButton"
     retryTapIfNoChange: true
-    label: "Tap Add Product"
+    label: "Tap Add Product FAB"
 
-# Wait for creation options sheet or product type selection
 - extendedWaitUntil:
     visible: ".*manual.*|.*Manual.*|.*Select a product type.*|.*Simple physical.*"
     timeout: 15000
-    label: "Wait for product creation entry"
+    label: "Wait for creation entry sheet"
 
-# Select manual creation if the AI vs Manual option sheet appears
 - runFlow:
     when:
       visible: ".*manual.*|.*Manual.*"
     commands:
       - tapOn: ".*manual.*|.*Manual.*"
 
-# Handle product type selection sheet if it appears
 - runFlow:
     when:
       visible: ".*Simple physical product.*"
     commands:
       - tapOn: ".*Simple physical product.*"
 
-# Wait for product detail/creation form
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Write with AI.*|.*Describe your product.*"
     timeout: 20000
-    label: "Wait for product creation form"
+    label: "Wait for creation form"
 
-# Dismiss "Write with AI" tooltip if it appears
 - runFlow:
     when:
       visible: "GOT IT"
     commands:
       - tapOn: "GOT IT"
 
-# Wait for form to be ready
 - extendedWaitUntil:
     visible:
       id: "editText"
     timeout: 10000
 
-- takeScreenshot: product_create_empty
+- takeScreenshot: product_create_empty_form
 
-# Enter product name
+# ─────────────────────────────────────────────────────────────────────
+# 2. Name — fixed string so search at the end is deterministic even
+#    after previous runs have accumulated duplicates.
+# ─────────────────────────────────────────────────────────────────────
 - tapOn:
     id: "editText"
     label: "Tap product name field"
-- inputText: "Maestro Test Product"
 
-# Hide keyboard
+- inputText: "Maestro Smoke Product"
+
 - hideKeyboard
 
 - takeScreenshot: product_create_named
 
-# Verify key product fields are visible. A freshly-created (unsaved)
-# product shows a CTA-style "Add price" label instead of "Price" —
-# the ComplexProperty only reads "Price" after a value has been
-# entered. We match either form with a regex. Inventory and Product
-# type are rendered unconditionally.
-- assertVisible:
+# ─────────────────────────────────────────────────────────────────────
+# 3. Price — "Add price" ComplexProperty → ProductPricingFragment
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: ".*Add price.*|.*Price.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add price row"
+
+- tapOn:
     text: ".*Add price.*|.*Price.*"
-- assertVisible: "Inventory"
-- assertVisible: "Product type"
+    retryTapIfNoChange: true
+    label: "Tap Add price row"
 
-- takeScreenshot: product_create_with_fields
+- extendedWaitUntil:
+    visible:
+      id: "product_regular_price"
+    timeout: 15000
+    label: "Wait for pricing editor"
 
-# Discard instead of publishing (smoke test only)
+- tapOn:
+    id: "product_regular_price"
+    label: "Tap regular price field"
+
+- inputText: "19.99"
+
+- hideKeyboard
+
+- takeScreenshot: product_create_price_entered
+
+# Back auto-saves the price via navigateBackWithResult.
 - back
 
-# Handle discard dialog
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after price edit"
+
+# ─────────────────────────────────────────────────────────────────────
+# 4. Open the "Add more details" bottom sheet to unlock the Short
+#    description + Categories rows. The sheet's list items are built
+#    by ProductDetailBottomSheetBuilder; their visible text comes
+#    from the same string resources used on the detail rows.
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details button"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Tap Add more details"
+
+- extendedWaitUntil:
+    visible: "Short description"
+    timeout: 10000
+    label: "Wait for Add more details bottom sheet"
+
+- takeScreenshot: product_create_add_more_sheet_1
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Short description — Aztec visual editor
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    text: "Short description"
+    retryTapIfNoChange: true
+    label: "Tap Short description in sheet"
+
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+    label: "Wait for Aztec visual editor"
+
+- tapOn:
+    id: "visualEditor"
+    label: "Focus the Aztec editor"
+
+# Maestro inputText does not support Unicode (see mobile-dev-inc/maestro#146),
+# so we stick to plain ASCII — no em-dashes, smart quotes, etc.
+- inputText: "Automated smoke test product - safe to delete."
+
+- hideKeyboard
+
+- takeScreenshot: product_create_short_description_entered
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after description edit"
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Categories — open "Add more details" sheet again, pick Categories
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details button again"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Tap Add more details (Categories)"
+
+- extendedWaitUntil:
+    visible: "Categories"
+    timeout: 10000
+    label: "Wait for Add more details bottom sheet"
+
+- takeScreenshot: product_create_add_more_sheet_2
+
+- tapOn:
+    text: "Categories"
+    retryTapIfNoChange: true
+    label: "Tap Categories in sheet"
+
+# ViewProductCategories navigates to ProductCategoriesFragment —
+# a View-based screen (NOT the Compose ProductCategorySelectorScreen
+# that's also in the codebase). Signal that the screen has loaded by
+# waiting for its RecyclerView instead of a title string, since
+# "Categories" text is ambiguous with the still-visible detail row.
+- extendedWaitUntil:
+    visible:
+      id: "productCategoriesRecycler"
+    timeout: 15000
+    label: "Wait for category list"
+
+- takeScreenshot: product_create_category_screen
+
+# Only the checkbox itself toggles selection —
+# ProductCategoriesAdapter wires the click listener exclusively on
+# `categoryCheckbox`, NOT on the row or the category name TextView
+# (the row's `selectableItemBackground` is purely decorative). We
+# therefore tap the first `categoryCheckbox` directly (index 0 =
+# whichever category renders at the top of the list; which one is
+# irrelevant for this smoke — the point is "product gets a category").
+- tapOn:
+    id: "categoryCheckbox"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Tick first category checkbox"
+
+# Small settle so the checked-state animation completes before the
+# back press tears the fragment down.
+- extendedWaitUntil:
+    visible:
+      id: "categoryCheckbox"
+    timeout: 3000
+
+# ProductCategoriesFragment saves via viewModel.onBackButtonClicked
+# → setResult back to the detail fragment when the user presses back.
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 15000
+    label: "Wait for detail screen after category edit"
+
+- takeScreenshot: product_create_all_fields_set
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Publish
+# ─────────────────────────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible: ".*PUBLISH.*"
+    timeout: 10000
+    label: "Wait for Publish action"
+
+- tapOn:
+    text: "PUBLISH"
+    retryTapIfNoChange: true
+    label: "Tap Publish"
+
+# After publishing the app may stay on the detail screen (with
+# action label swapping PUBLISH → SAVE) or return to the products
+# list. Either settling signal is good.
+- extendedWaitUntil:
+    visible: ".*productsRecycler.*|.*SAVE.*|.*updated.*|.*published.*"
+    timeout: 45000
+    label: "Wait for publish to complete"
+
+- takeScreenshot: product_create_published
+
+# ─────────────────────────────────────────────────────────────────────
+# 8. Confirm the product is in the list
+# ─────────────────────────────────────────────────────────────────────
 - runFlow:
     when:
-      visible: "Discard"
+      notVisible:
+        id: "productsRecycler"
     commands:
-      - tapOn: "Discard"
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 15000
+    label: "Wait for products list"
+
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+
+- inputText: "Maestro Smoke"
+
+- hideKeyboard
+
+# The search is debounced, and the staging backend can take a couple
+# of seconds to return results for a just-published product. Generous
+# timeout to accommodate that round-trip.
+- extendedWaitUntil:
+    visible: "Maestro Smoke Product"
+    timeout: 30000
+    label: "Wait for the new product in search results"
+
+- assertVisible: "Maestro Smoke Product"
+
+- takeScreenshot: product_create_found_in_list
+
+# Close search to leave the UI clean for downstream flows.
+- back
 
 - extendedWaitUntil:
     visible:
