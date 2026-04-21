@@ -74,7 +74,11 @@ class WooPosOrdersDataSource @Inject constructor(
 
     suspend fun loadMore(searchQuery: String? = null): Result<List<Order>> =
         withContext(Dispatchers.IO) {
-            loadNextPage(searchQuery)
+            loadNextPage(searchQuery).onSuccess { orders ->
+                if (searchQuery == null) {
+                    ordersCache.appendAll(orders)
+                }
+            }
         }
 
     suspend fun getOrderById(orderId: Long): Result<Order> {
