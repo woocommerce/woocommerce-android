@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentS
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
 import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
+import com.woocommerce.android.ui.payments.cardreader.payment.ExitCardReaderMode
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
@@ -77,8 +78,10 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.External
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.WaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -2741,4 +2744,32 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
     }
+
+    @Test
+    fun `given ReadyToPair state pushed, when onCancelClicked, then ExitCardReaderMode event is emitted`() =
+        testBlocking {
+            // GIVEN
+            viewModel.pushRemoteReaderState(
+                ReadyToPair(deviceName = "Pixel 7", fingerprintSuffix = "AB4F", onPrimaryActionClicked = {})
+            )
+
+            // WHEN
+            viewModel.onCancelClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ExitCardReaderMode)
+        }
+
+    @Test
+    fun `given WaitingForPayment state pushed, when viewStateData read, then remote override wins over derived state`() =
+        testBlocking {
+            // GIVEN
+            val waiting = WaitingForPayment(tabletName = "Studio iPad", onPrimaryActionClicked = {})
+
+            // WHEN
+            viewModel.pushRemoteReaderState(waiting)
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(waiting)
+        }
 }

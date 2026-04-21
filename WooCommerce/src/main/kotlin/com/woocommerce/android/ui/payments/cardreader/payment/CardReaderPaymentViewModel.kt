@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.payments.cardreader.payment
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
@@ -90,10 +92,24 @@ class CardReaderPaymentViewModel @Inject constructor(
         isTTPPaymentInProgress = ::isTTPPaymentInProgress,
     )
 
-    val viewStateData: LiveData<ViewState> =
+    private val remoteReaderStateOverride = MutableLiveData<ViewState?>(null)
+
+    private val derivedPaymentState: LiveData<ViewState> =
         paymentController.paymentState.map(paymentStateMapper()).asLiveData(coroutineContext)
 
-    override val event: LiveData<MultiLiveEvent.Event> =
+    val viewStateData: LiveData<ViewState> = MediatorLiveData<ViewState>().apply {
+        addSource(derivedPaymentState) { derived ->
+            if (remoteReaderStateOverride.value == null) value = derived
+        }
+        addSource(remoteReaderStateOverride) { override ->
+            val next = override ?: derivedPaymentState.value
+            if (next != null) value = next
+        }
+    }
+
+    private val viewModelEvents = MutableLiveData<MultiLiveEvent.Event>()
+
+    private val mappedControllerEvents: LiveData<MultiLiveEvent.Event> =
         paymentController.event.asLiveData(coroutineContext).map {
             when (it) {
                 CardReaderPaymentEvent.ContactSupportTapped -> ContactSupport
@@ -113,6 +129,30 @@ class CardReaderPaymentViewModel @Inject constructor(
                 is CardReaderPaymentEvent.ShowErrorMessage -> MultiLiveEvent.Event.ShowSnackbar(it.message)
             }
         }
+
+    override val event: LiveData<MultiLiveEvent.Event> = MediatorLiveData<MultiLiveEvent.Event>().apply {
+        addSource(mappedControllerEvents) { value = it }
+        addSource(viewModelEvents) { value = it }
+    }
+
+    fun onCancelClicked() {
+        when (viewStateData.value) {
+            is ViewState.ReadyToPair, is ViewState.WaitingForPayment -> emitEvent(ExitCardReaderMode)
+            else -> viewStateData.value?.onSecondaryActionClicked?.invoke()
+        }
+    }
+
+    internal fun pushRemoteReaderState(state: ViewState) {
+        require(state is ViewState.ReadyToPair || state is ViewState.WaitingForPayment) {
+            "pushRemoteReaderState only accepts ReadyToPair or WaitingForPayment"
+        }
+        remoteReaderStateOverride.value = state
+    }
+
+    private fun emitEvent(event: MultiLiveEvent.Event) {
+        event.isHandled = false
+        viewModelEvents.value = event
+    }
 
     fun start() = paymentController.start()
 
