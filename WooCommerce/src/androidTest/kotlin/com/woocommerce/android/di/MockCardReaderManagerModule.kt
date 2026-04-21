@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
@@ -64,6 +65,8 @@ class MockCardReaderManagerModule {
             get() = emptyFlow()
         override val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
             get() = emptyFlow()
+        override val connectionTokenProvider: CompositeConnectionTokenProvider
+            get() = error("connectionTokenProvider is not used in instrumented tests")
 
         override fun initialize(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean, isDebug: Boolean) {}
         override fun reinitializeSimulatedTerminal(
