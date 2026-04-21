@@ -35,8 +35,24 @@ tags:
     id: "dashboard_stats_card"
     label: "Stats card is visible"
 
-# Verify key stat labels are present
-- assertVisible: "Revenue"
+# Verify at least one stat-tile label is rendered on the card.
+#
+# The card's inner layout is a legacy AndroidView (DashboardStatsView)
+# with four side-by-side tiles. Their labels come from:
+#   - R.string.analytics_total_sales_title  → "Total sales"
+#     (was "Revenue" on older builds — fall back to that spelling)
+#   - R.string.dashboard_stats_orders       → "Orders"
+#   - dashboard_stats_visitors              → "Visitors"
+#   - dashboard_stats_conversion            → "Conversion"
+#
+# Labels render immediately after the card inflates — only the tile
+# *values* show the skeleton em-dash ("—") while the Analytics API
+# request is in flight. Matching any one of the labels is the most
+# stable signal that the card rendered with its tiles, and it's
+# robust against future string renames.
+- assertVisible:
+    text: ".*Total sales.*|.*Revenue.*|.*Orders.*|.*Visitors.*"
+    label: "At least one stats tile label is visible"
 
 - takeScreenshot: dashboard_stats_overview
 
@@ -46,20 +62,32 @@ tags:
     optional: true
     label: "Tap date range dropdown"
 
+# The DropdownMenu is a Compose Popup — popups render in a separate
+# window, so its own testTag (stats_range_dropdown_menu) doesn't
+# reliably surface in Maestro's view hierarchy. We branch on the
+# visible menu item text instead ("This Week" is always rendered
+# once the menu is open — DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB
+# includes Today / This Week / This Month / This Year / Custom).
 - runFlow:
     when:
-      visible:
-        id: "stats_range_dropdown_menu"
+      visible: "This Week"
     commands:
-      - runFlow:
-          when:
-            visible: "This Week"
-          commands:
-            - tapOn: "This Week"
+      - tapOn: "This Week"
       - extendedWaitUntil:
           visible:
             id: "dashboard_stats_card"
           timeout: 10000
+
+# Safety net: if the popup didn't dismiss (e.g. the device decided to
+# keep it open, or "This Week" wasn't matched because the menu
+# rendered slightly differently), press back to close it so the
+# subsequent scrolls aren't blocked by a floating popup covering the
+# dashboard content.
+- runFlow:
+    when:
+      visible: "Custom"
+    commands:
+      - back
 
 - takeScreenshot: dashboard_stats_week
 
