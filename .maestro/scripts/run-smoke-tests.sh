@@ -221,6 +221,118 @@ if [[ "$RECORD" == "yes" ]]; then
 fi
 
 # ─────────────────────────────────────────────────────────────────────────
+# Maestro Android driver preflight
+#
+# Maestro 2.2.0 has a regression where `maestro test` doesn't reliably
+# auto-install the `dev.mobile.maestro` driver APK or auto-start its
+# instrumentation. When it fails, every flow dies after ~2s with:
+#     io.grpc.StatusRuntimeException: UNAVAILABLE: io exception
+#     Caused by: Connection refused: localhost/…:7001
+# — the gRPC driver port is simply not listening on the device.
+#
+# We work around it by:
+#   1. Extracting the bundled maestro-app.apk + maestro-server.apk from
+#      maestro-client.jar (ships with the brew install) if they aren't
+#      already installed.
+#   2. Starting `am instrument -w …/AndroidJUnitRunner` in the
+#      background so the MaestroDriverService binds port 7001 on the
+#      device.
+#   3. Setting up `adb forward tcp:7001 tcp:7001` and polling it until
+#      it accepts a connection (up to 30s).
+# An EXIT trap tears the instrumentation + forward back down when the
+# script finishes, so we don't leave zombie processes behind between
+# runs.
+# ─────────────────────────────────────────────────────────────────────────
+MAESTRO_DRIVER_PORT=7001
+MAESTRO_DRIVER_PID=""
+
+cleanup_maestro_driver() {
+  if [[ -n "$MAESTRO_DRIVER_PID" ]]; then
+    kill "$MAESTRO_DRIVER_PID" 2>/dev/null || true
+  fi
+  adb -s "$DEVICE_SERIAL" forward --remove "tcp:$MAESTRO_DRIVER_PORT" 2>/dev/null || true
+  adb -s "$DEVICE_SERIAL" shell "am force-stop dev.mobile.maestro; am force-stop dev.mobile.maestro.test" >/dev/null 2>&1 || true
+}
+trap cleanup_maestro_driver EXIT
+
+# Resolve the real path of the maestro binary (brew wraps it in a
+# couple of symlinks). We need this to find the bundled APK jar.
+resolve_maestro_bin() {
+  local p
+  p="$(command -v maestro)"
+  while [[ -L "$p" ]]; do
+    local target
+    target="$(readlink "$p")"
+    case "$target" in
+      /*) p="$target" ;;
+      *)  p="$(cd "$(dirname "$p")" && cd "$(dirname "$target")" && pwd)/$(basename "$target")" ;;
+    esac
+  done
+  printf '%s' "$p"
+}
+
+install_maestro_driver_apks() {
+  local maestro_bin maestro_root client_jar tmpdir
+  maestro_bin="$(resolve_maestro_bin)"
+  # Homebrew layout: .../Cellar/maestro/<ver>/libexec/lib/maestro-client.jar
+  maestro_root="$(cd "$(dirname "$maestro_bin")/.." && pwd)"
+  client_jar=""
+  for candidate in \
+    "$maestro_root/libexec/lib/maestro-client.jar" \
+    "$maestro_root/lib/maestro-client.jar"; do
+    if [[ -f "$candidate" ]]; then
+      client_jar="$candidate"
+      break
+    fi
+  done
+  if [[ -z "$client_jar" ]]; then
+    echo "⚠️  Couldn't locate maestro-client.jar near $maestro_bin." >&2
+    echo "    Install the driver manually or upgrade Maestro." >&2
+    return 1
+  fi
+  tmpdir="$(mktemp -d)"
+  (cd "$tmpdir" && unzip -qo "$client_jar" maestro-app.apk maestro-server.apk)
+  adb -s "$DEVICE_SERIAL" install -r -t "$tmpdir/maestro-app.apk"    >/dev/null
+  adb -s "$DEVICE_SERIAL" install -r -t "$tmpdir/maestro-server.apk" >/dev/null
+  rm -rf "$tmpdir"
+}
+
+start_maestro_driver() {
+  # `am instrument -w` blocks until the test class exits; back it with
+  # nohup + background so the instrumented service stays up for the
+  # life of this script.
+  adb -s "$DEVICE_SERIAL" shell "am instrument -w dev.mobile.maestro.test/androidx.test.runner.AndroidJUnitRunner" \
+    >/dev/null 2>&1 &
+  MAESTRO_DRIVER_PID=$!
+  adb -s "$DEVICE_SERIAL" forward "tcp:$MAESTRO_DRIVER_PORT" "tcp:$MAESTRO_DRIVER_PORT" >/dev/null
+
+  local waited=0
+  while (( waited < 30 )); do
+    if nc -z localhost "$MAESTRO_DRIVER_PORT" 2>/dev/null; then
+      return 0
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+  echo "⚠️  Maestro driver didn't start listening on :$MAESTRO_DRIVER_PORT within 30s." >&2
+  return 1
+}
+
+echo "--- :wrench: Maestro driver preflight"
+if ! adb -s "$DEVICE_SERIAL" shell "pm list packages dev.mobile.maestro" 2>/dev/null | grep -q '^package:dev.mobile.maestro$'; then
+  echo "Installing driver APKs…"
+  install_maestro_driver_apks || true
+fi
+if ! adb -s "$DEVICE_SERIAL" shell "pm list packages dev.mobile.maestro.test" 2>/dev/null | grep -q '^package:dev.mobile.maestro.test$'; then
+  echo "Installing driver test APKs…"
+  install_maestro_driver_apks || true
+fi
+# Always (re)start the instrumentation — the driver service only binds
+# port 7001 while its test runner is alive.
+echo "Starting instrumentation (dev.mobile.maestro.test)…"
+start_maestro_driver || true
+
+# ─────────────────────────────────────────────────────────────────────────
 # Build the flow execution list
 # ─────────────────────────────────────────────────────────────────────────
 ORDERED_FLOWS=()
@@ -258,10 +370,19 @@ fi
 # Maestro CLI 2.x does NOT auto-import MAESTRO_*-prefixed env vars (the
 # mobile.dev docs describing that predate the rebrand), so we strip the
 # prefix ourselves and forward each var explicitly.
+#
+# We read from `env | grep '^MAESTRO_'` instead of `compgen -e` or the
+# `${!MAESTRO_*}` indirect-expansion form. Both of those have bash-3.2
+# bugs (compgen emits all names on a single space-separated line;
+# `${!name}` under `set -u` spuriously reports "unbound variable") and
+# macOS ships bash 3.2 by default. `env` is POSIX and emits one
+# NAME=VALUE per line on every platform. `IFS='=' read -r n v` splits
+# on the first `=` only, so values containing `=` (e.g. URLs with a
+# query string) survive intact.
 MAESTRO_ENV_ARGS=()
-while IFS= read -r name; do
-  MAESTRO_ENV_ARGS+=(-e "${name#MAESTRO_}=${!name}")
-done < <(compgen -e | grep '^MAESTRO_' || true)
+while IFS='=' read -r name value; do
+  [[ -n "$name" ]] && MAESTRO_ENV_ARGS+=(-e "${name#MAESTRO_}=${value}")
+done < <(env | grep '^MAESTRO_' || true)
 
 # Results accumulator. Each entry: "<status>|<flow_basename>|<duration>|<rec_rel>|<log_rel>|<error_line>"
 RESULTS=()
