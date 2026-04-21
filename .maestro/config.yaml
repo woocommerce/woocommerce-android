@@ -43,6 +43,7 @@ executionOrder:
     # ── Dashboard / Stats ───────────────────────────────────────────────
     - flows/dashboard_stats.yaml
     - flows/dashboard_view_all_analytics.yaml
+    - flows/dashboard_customize.yaml
 
     # ── Orders ───────────────────────────────────────────────────────────
     - flows/orders_list_and_search.yaml
@@ -55,7 +56,9 @@ executionOrder:
     # ── Products ─────────────────────────────────────────────────────────
     - flows/products_list_and_sort.yaml
     - flows/products_detail.yaml
+    - flows/products_variations_and_tags.yaml
     - flows/products_create.yaml
+    - flows/products_media_upload.yaml
 
     # ── Hub Menu ────────────────────────────────────────────────────────
     - flows/hub_menu_settings.yaml
@@ -71,4 +74,5 @@ executionOrder:
     - flows/google_for_woo.yaml
 
     # ── POS (tablet only) ────────────────────────────────────────────────
+    - flows/pos_search_and_coupons.yaml
     - flows/pos_cash_payment.yaml

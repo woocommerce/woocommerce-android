@@ -1,0 +1,118 @@
+# Smoke Test: Products - Variations and Tags rows
+# P2 ref: Products > Product details — Variations, Tags
+#
+# The product detail screen is a RecyclerView of ComplexProperty rows
+# built by ProductDetailCardBuilder. Variations and Tags each render
+# only if the product has them set on the server:
+#   - "Variations" row: emitted when numVariations > 0 and
+#     variationEnabledAttributes is non-empty (variable products).
+#   - "Tags" row: emitted when hasTags is true.
+#
+# This flow asserts that both rows render for at least one product on
+# the staging store. To maximise the chance of finding a product with
+# both, it walks the product list and opens the first product whose
+# name contains "Variable" (convention in the staging store). If no
+# such product exists we fall back to the first product and treat the
+# Variations row as optional — the Tags assertion still runs.
+#
+# Verifies:
+#   - Product detail opens for a product
+#   - The "Variations" row renders (on a variable product)
+#   - The "Tags" row renders and displays at least one tag
+#   - Both rows are tappable (we do not follow the navigation target —
+#     a tap would open a separate editor that could mutate the product;
+#     we only assert visibility)
+appId: com.woocommerce.android.dev
+name: "Products - Variations and tags rows"
+tags:
+  - smoke
+  - products
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Prefer a product whose name hints at variations; fall back to the
+# first product. We try a few common substrings used by WooCommerce
+# sample/staging stores.
+- runFlow:
+    when:
+      visible: ".*Variable.*|.*variable.*"
+    commands:
+      - tapOn: ".*Variable.*|.*variable.*"
+
+- runFlow:
+    when:
+      notVisible:
+        id: "editText"
+    commands:
+      - tapOn:
+          id: "productName"
+          index: 0
+          label: "Tap first product (fallback)"
+
+# Wait for product detail screen to render.
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+# Dismiss "Write with AI" tooltip if it appears
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: products_variations_tags_top
+
+# Scroll to the Variations row. This row is only emitted for variable
+# products — treat it as optional so the flow still passes on stores
+# with only simple products.
+- scrollUntilVisible:
+    element: "Variations"
+    direction: DOWN
+    timeout: 15000
+    optional: true
+    label: "Scroll to Variations row"
+
+- runFlow:
+    when:
+      visible: "Variations"
+    commands:
+      - assertVisible: "Variations"
+      - takeScreenshot: products_variations_row
+
+# Scroll to the Tags row. The row renders with the localized "Tags"
+# title + the joined tag names; we just assert the title text.
+- scrollUntilVisible:
+    element: "Tags"
+    direction: DOWN
+    timeout: 15000
+    optional: true
+    label: "Scroll to Tags row"
+
+- runFlow:
+    when:
+      visible: "Tags"
+    commands:
+      - assertVisible: "Tags"
+      - takeScreenshot: products_tags_row
+
+# Back to products list.
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000

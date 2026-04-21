@@ -1,0 +1,149 @@
+# Smoke Test: Products - Media upload entry point
+# P2 ref: Products > Media upload
+#
+# Exercising a real upload from an emulator requires seeding the
+# device's gallery with an image AND using Maestro's `addMedia`
+# command from the caller side — both of which are out of scope for a
+# local smoke run against a clean emulator.
+#
+# Instead this flow asserts the ENTRY POINT for media upload: that
+# tapping the gallery's "Add image" action from the product detail
+# screen opens the image-source bottom sheet with all three standard
+# sources wired up (Device chooser, Camera, WordPress media library).
+# This catches regressions in:
+#   - The "Add image" control wiring on ProductDetailFragment
+#     (binding.addImageContainer → ProductDetailViewModel
+#     .onAddImageButtonClicked)
+#   - The ProductDetailViewModel → ShowImageSourceDialog event handling
+#   - dialog_product_image_source.xml rendering all three options
+#
+# Source strings (res/values/strings.xml):
+#   - image_source_title           → "Select an upload method"
+#   - image_source_device_chooser  → "Choose from device"
+#   - image_source_device_camera   → "Take a photo"
+#   - image_source_wp_media_library → "WordPress media library"
+appId: com.woocommerce.android.dev
+name: "Products - Media upload entry point"
+tags:
+  - smoke
+  - products
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Open the first product
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Tap first product"
+
+# Wait for product detail screen to render.
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+# Dismiss "Write with AI" tooltip if it appears
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: products_media_detail_opened
+
+# Tap the "Add image" entry. Depending on whether the product already
+# has images, the add affordance renders either inside the gallery
+# recycler (WCProductImageGalleryView → image_gallery_item.xml's
+# addImageIcon / addImageContainer) or as the empty-state
+# addImageContainer FrameLayout directly on the detail screen. Both
+# paths call ProductDetailViewModel.onAddImageButtonClicked which
+# fires the same ShowImageSourceDialog event — we try the icon first
+# and fall back to the container.
+- tapOn:
+    id: "addImageIcon"
+    optional: true
+    retryTapIfNoChange: true
+    label: "Tap add image icon (gallery)"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageContainer"
+          optional: true
+          retryTapIfNoChange: true
+          label: "Tap add image container (empty state fallback)"
+
+# Final fallback: the image's contentDescription is "Add image"
+# (R.string.product_add_image_content_description). If neither id
+# selector matched on this build, we still have a readable label.
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          text: "Add image"
+          optional: true
+          retryTapIfNoChange: true
+          label: "Tap by Add image content description"
+
+# Wait for the MaterialAlertDialog with the image-source options.
+- extendedWaitUntil:
+    visible: "Select an upload method"
+    timeout: 15000
+    label: "Wait for image source dialog"
+
+- takeScreenshot: products_media_source_dialog
+
+# All three upload options must render. `textCamera` is hidden on
+# devices without a camera system feature — the wasabi emulator has
+# an emulated camera, so the option should be present. We still mark
+# it optional to keep the flow green if someone runs against a
+# headless emulator build.
+- assertVisible: "Choose from device"
+- assertVisible:
+    text: "Take a photo"
+    optional: true
+- assertVisible: "WordPress media library"
+
+# Dismiss the dialog without picking a source — we don't want to
+# attempt a real upload in a smoke run. MaterialAlertDialogs cancel
+# on back press.
+- back
+
+# Verify we're back on the product detail screen.
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for product detail to reappear"
+
+# Return to the products list.
+- back
+
+# Products list may show the "Discard changes" dialog if any edit
+# was inadvertently applied (shouldn't happen in this flow, but we
+# guard for safety on staging stores).
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn: "Discard"
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000

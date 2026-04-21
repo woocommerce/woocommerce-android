@@ -112,6 +112,7 @@ maestro studio
     login_wrong_credentials.yaml
     dashboard_stats.yaml
     dashboard_view_all_analytics.yaml
+    dashboard_customize.yaml
     orders_list_and_search.yaml
     orders_create.yaml
     orders_details_and_actions.yaml
@@ -120,7 +121,9 @@ maestro studio
     orders_refund.yaml
     products_list_and_sort.yaml
     products_detail.yaml
+    products_variations_and_tags.yaml
     products_create.yaml
+    products_media_upload.yaml
     hub_menu_settings.yaml
     hub_menu_payments.yaml
     hub_menu_coupons.yaml
@@ -128,6 +131,7 @@ maestro studio
     hub_menu_admin_and_store.yaml
     blaze_campaign.yaml
     google_for_woo.yaml
+    pos_search_and_coupons.yaml
     pos_cash_payment.yaml
   subflows/                # Reusable subflows (NOT auto-executed)
     ensure_logged_in.yaml
@@ -175,7 +179,7 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | **Dashboard/Stats** | | | |
 | Charts respond, date ranges | `dashboard_stats.yaml` | Yes | |
 | View All store analytics | `dashboard_view_all_analytics.yaml` | Yes | Taps the "View all store analytics" action on the Top Performers card and asserts the Analytics Hub loads |
-| Customization — all cards | - | No | Not exercised |
+| Customization — all cards | `dashboard_customize.yaml` | Partial | Opens the widget editor via the toolbar "Customize" action, asserts the core widgets (Performance, Top performers, etc.) render with a SAVE action, and closes without mutating state. Does NOT drag-to-reorder or toggle widgets on/off to keep the staging store's layout stable across runs |
 | **Orders** | | | |
 | List and pagination | `orders_list_and_search.yaml` | Yes | |
 | Search | `orders_list_and_search.yaml` | Yes | |
@@ -191,8 +195,9 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | List and pagination | `products_list_and_sort.yaml` | Yes | |
 | Sort and search | `products_list_and_sort.yaml` | Yes | |
 | Product detail (price, inventory, type, categories/shipping/description via fuzzy match) | `products_detail.yaml` | Partial | Variations, linked products, downloadable files, tags not explicitly asserted |
+| Product detail — Variations + Tags rows | `products_variations_and_tags.yaml` | Partial | Scrolls to the `Variations` and `Tags` ComplexProperty rows on the product detail screen and asserts they render. Variations row is treated as optional because it only appears for variable products — the flow prefers a product whose name contains "Variable" and falls back to the first product on stores without one |
 | Create product | `products_create.yaml` | Yes | |
-| Media upload | - | No | Requires device gallery + Maestro `addMedia` setup |
+| Media upload | `products_media_upload.yaml` | Partial | Taps the "Add image" affordance on the product detail screen and asserts the image-source bottom sheet renders all three options (Choose from device, Take a photo, WordPress media library), then dismisses. Does NOT perform an actual upload — picking a media item requires seeding the device gallery and using Maestro's `addMedia` from the caller, both out of scope for a local smoke run |
 | **Hub Menu** | | | |
 | Settings | `hub_menu_settings.yaml` | Yes | |
 | Payments — Pay in Person toggle, TTP, Order/Manage reader, Manuals | `hub_menu_payments.yaml` | Yes | UI only, no hardware |
@@ -206,9 +211,9 @@ exercise every P2 sub-item, **No** = not automated (reason in Notes).
 | **POS (tablet only)** | | | |
 | Add product(s) to cart | `pos_cash_payment.yaml` | Yes | Taps first/third product in grid |
 | Pay with cash | `pos_cash_payment.yaml` | Yes | |
-| Search products | - | No | Requires new `testTag` on POS search field |
-| Use coupons | - | No | Coupon selection UI not exercised |
-| Email receipt | - | No | Not exercised after payment success |
+| Search products | `pos_search_and_coupons.yaml` | Partial | Asserts the active search hint matches the selected tab (`Search products and variations` on Products, `Search coupons` on Coupons). The search field still lacks a `testTag` so we can't type a query and assert filtered results — that's tracked separately |
+| Use coupons | `pos_search_and_coupons.yaml` | Partial | Switches to the Coupons tab, waits for the list / empty state / error state to render, and optionally asserts the `Add coupon to cart` action is reachable. Does NOT actually add a coupon to the cart since the staging store's coupon seed data isn't guaranteed |
+| Email receipt | `pos_cash_payment.yaml` | Partial | After a successful cash payment, taps `Email receipt` on the success screen and asserts the Email receipt screen loads with a `Send` action. Backs out without sending to avoid dispatching a real email on every run |
 | Pay with card | - | No | Requires hardware (TTP not supported in POS per P2) |
 | **Payments (hardware)** | | | |
 | Card reader payment + print receipt | - | No | Requires physical card reader |

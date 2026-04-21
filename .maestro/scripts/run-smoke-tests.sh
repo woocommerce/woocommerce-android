@@ -123,6 +123,7 @@ P2_ORDERED_FLOWS=(
   # ── Dashboard / Stats ────────────────────────────────────────────────
   dashboard_stats.yaml
   dashboard_view_all_analytics.yaml
+  dashboard_customize.yaml
 
   # ── Orders ────────────────────────────────────────────────────────────
   orders_list_and_search.yaml
@@ -135,7 +136,9 @@ P2_ORDERED_FLOWS=(
   # ── Products ──────────────────────────────────────────────────────────
   products_list_and_sort.yaml
   products_detail.yaml
+  products_variations_and_tags.yaml
   products_create.yaml
+  products_media_upload.yaml
 
   # ── Hub Menu ─────────────────────────────────────────────────────────
   hub_menu_settings.yaml
@@ -151,6 +154,7 @@ P2_ORDERED_FLOWS=(
   google_for_woo.yaml
 
   # ── POS (tablet only) ─────────────────────────────────────────────────
+  pos_search_and_coupons.yaml
   pos_cash_payment.yaml
 )
 

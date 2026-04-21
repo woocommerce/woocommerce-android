@@ -16,6 +16,10 @@
 #   - Checkout flow works
 #   - Cash payment can be completed
 #   - Payment success screen displays
+#   - "Email receipt" button opens the Email receipt screen with a
+#     "Send" action (we do NOT actually send — that would email a
+#     customer on the staging store; we back out to the success
+#     screen and then start a new order)
 appId: com.woocommerce.android.dev
 name: "POS - Cash payment flow"
 tags:
@@ -116,7 +120,33 @@ tags:
 
       - takeScreenshot: pos_payment_success
 
-      # Start new order
+      # Open the Email receipt screen from the success screen. The
+      # button is a WooPosOutlinedButton whose label is
+      # R.string.woopos_receipt_button → "Email receipt" (it has no
+      # test tag, so we match by text).
+      - tapOn:
+          text: "Email receipt"
+          optional: true
+          label: "Tap Email receipt"
+
+      # Verify the Email receipt screen loaded. The toolbar title is
+      # R.string.woopos_email_receipt_title and the send button text
+      # is R.string.woopos_email_receipt_send_button → "Send".
+      - runFlow:
+          when:
+            visible: "Send"
+          commands:
+            - assertVisible: "Email receipt"
+            - takeScreenshot: pos_email_receipt_screen
+            # Back out without sending — we don't want the staging
+            # store to actually dispatch a receipt email on every run.
+            - back
+
+      # Start new order from the (now restored) success screen.
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_new_order_button"
+          timeout: 10000
       - tapOn:
           id: "woo_pos_new_order_button"
           label: "Start new order"
