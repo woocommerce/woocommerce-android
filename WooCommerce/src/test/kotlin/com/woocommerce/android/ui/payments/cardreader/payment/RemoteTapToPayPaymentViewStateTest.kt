@@ -4,12 +4,12 @@ import com.woocommerce.android.R
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class CardReaderPaymentViewStateTest {
+class RemoteTapToPayPaymentViewStateTest {
 
     @Test
-    fun `given ReadyToPair state, when rendered, then device name, fingerprint and cancel action are exposed`() {
+    fun `given RemoteTapToPayReadyToPair state, when rendered, then device name, fingerprint and cancel action are exposed`() {
         // GIVEN
-        val state = ViewState.ReadyToPair(
+        val state = RemoteTapToPayReadyToPair(
             deviceName = "Pixel 7",
             fingerprintSuffix = "AB4F",
             onPrimaryActionClicked = {}
@@ -22,9 +22,9 @@ class CardReaderPaymentViewStateTest {
     }
 
     @Test
-    fun `given WaitingForPayment state, when rendered, then tablet name and cancel action are exposed`() {
+    fun `given RemoteTapToPayWaitingForPayment state, when rendered, then tablet name and cancel action are exposed`() {
         // GIVEN
-        val state = ViewState.WaitingForPayment(
+        val state = RemoteTapToPayWaitingForPayment(
             tabletName = "Studio iPad",
             onPrimaryActionClicked = {}
         )

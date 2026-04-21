@@ -57,13 +57,14 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentS
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
 import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
-import com.woocommerce.android.ui.payments.cardreader.payment.ExitCardReaderMode
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
 import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
@@ -78,12 +79,11 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.External
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingRefundState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.WaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
+import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -2746,11 +2746,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given ReadyToPair state pushed, when onCancelClicked, then ExitCardReaderMode event is emitted`() =
+    fun `given RemoteTapToPayReadyToPair state pushed, when onCancelClicked, then ExitCardReaderMode event is emitted`() =
         testBlocking {
             // GIVEN
             viewModel.pushRemoteReaderState(
-                ReadyToPair(deviceName = "Pixel 7", fingerprintSuffix = "AB4F", onPrimaryActionClicked = {})
+                RemoteTapToPayReadyToPair(
+                    deviceName = "Pixel 7",
+                    fingerprintSuffix = "AB4F",
+                    onPrimaryActionClicked = {}
+                )
             )
 
             // WHEN
@@ -2761,10 +2765,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given WaitingForPayment state pushed, when viewStateData read, then remote override wins over derived state`() =
+    fun `given RemoteTapToPayWaitingForPayment state pushed, when viewStateData read, then override wins over derived state`() =
         testBlocking {
             // GIVEN
-            val waiting = WaitingForPayment(tabletName = "Studio iPad", onPrimaryActionClicked = {})
+            val waiting = RemoteTapToPayWaitingForPayment(tabletName = "Studio iPad", onPrimaryActionClicked = {})
 
             // WHEN
             viewModel.pushRemoteReaderState(waiting)
@@ -2778,11 +2782,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             viewModel.pushRemoteReaderState(
-                WaitingForPayment(tabletName = null, onPrimaryActionClicked = {})
+                RemoteTapToPayWaitingForPayment(tabletName = null, onPrimaryActionClicked = {})
             )
 
             // WHEN
-            val next = ReadyToPair(deviceName = "Pixel 7", fingerprintSuffix = "AB4F", onPrimaryActionClicked = {})
+            val next = RemoteTapToPayReadyToPair(
+                deviceName = "Pixel 7",
+                fingerprintSuffix = "AB4F",
+                onPrimaryActionClicked = {}
+            )
             viewModel.pushRemoteReaderState(next)
 
             // THEN

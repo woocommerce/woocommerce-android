@@ -14,5 +14,3 @@ object ContactSupport : Event()
 object EnableNfc : Event()
 
 data class PrintReceipt(val receiptUrl: String, val documentName: String) : Event()
-
-object ExitCardReaderMode : Event()
