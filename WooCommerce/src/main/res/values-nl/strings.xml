@@ -512,8 +512,6 @@ Language: nl
     <string name="woopos_scanning_setup_device_selection_title">Een streepjescodescanner instellen</string>
     <string name="woopos_scanning_setup_barcode_content_description">Streepjescode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Instelvenster scanner</string>
-    <string name="woopos_eligibility_screen_UK_country_name">het Verenigd Koninkrijk</string>
-    <string name="woopos_eligibility_screen_US_country_name">de Verenigde Staten</string>
     <string name="woopos_eligibility_screen_unable_to_load">Kan niet laden</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. In %1$sondersteunt het momenteel alleen %2$s. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>

@@ -512,8 +512,6 @@ Language: ar
     <string name="woopos_scanning_setup_device_selection_title">إعداد الماسح الضوئي للرمز الشريطي</string>
     <string name="woopos_scanning_setup_barcode_content_description">الرمز الشريطي</string>
     <string name="woopos_scanning_setup_dialog_content_description">مربع حوار إعداد الماسح الضوئي</string>
-    <string name="woopos_eligibility_screen_UK_country_name">المملكة المتحدة</string>
-    <string name="woopos_eligibility_screen_US_country_name">الولايات المتحدة</string>
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>

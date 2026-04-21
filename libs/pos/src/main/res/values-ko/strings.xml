@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string name="woopos_eligibility_screen_US_country_name">미국</string>
+        <string name="woopos_eligibility_screen_UK_country_name">영국</string>
+</resources>

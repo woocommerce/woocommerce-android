@@ -512,8 +512,6 @@ Language: zh_CN
     <string name="woopos_scanning_setup_device_selection_title">设置条形码扫描仪</string>
     <string name="woopos_scanning_setup_barcode_content_description">条形码</string>
     <string name="woopos_scanning_setup_dialog_content_description">扫描仪设置对话框</string>
-    <string name="woopos_eligibility_screen_UK_country_name">英国</string>
-    <string name="woopos_eligibility_screen_US_country_name">美国</string>
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
