@@ -165,11 +165,11 @@ private fun <T> ReceiveChannel<T>.bufferUntil(trigger: Flow<Unit>): Flow<List<T>
         while (true) {
             val bufferChunks = ArrayList<T>()
 
+            trigger.first()
+
             // receive the first element (suspend until it is there)
             val first = receiveCatching().getOrNull() ?: break
             bufferChunks.add(first)
-
-            trigger.first()
 
             // drain the channel until it is empty
             while (true) {
