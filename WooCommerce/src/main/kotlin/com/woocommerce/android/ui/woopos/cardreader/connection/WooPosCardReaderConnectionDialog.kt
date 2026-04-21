@@ -29,9 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,7 +52,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
-import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerDialog
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderTipStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -64,12 +60,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 
@@ -233,23 +231,16 @@ private fun WooPosCardReaderDialogInternal(
         viewModel.onBackPressed()
     }
 
-    var isExplainerVisible by rememberSaveable { mutableStateOf(false) }
-
     WooPosCardReaderConnectionDialogContent(
         isVisible = true,
         state = connectionState,
         isRemoteTapToPayEnabled = viewModel.isRemoteTapToPayEnabled,
-        onExplainerClick = { isExplainerVisible = true },
         onBackPressed = { viewModel.onBackPressed() },
         onDismiss = {
             viewModel.dismissDialog()
             onDismiss()
         },
     )
-
-    if (isExplainerVisible) {
-        WooPosRemoteReaderExplainerDialog(onDismiss = { isExplainerVisible = false })
-    }
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -260,7 +251,6 @@ fun WooPosCardReaderConnectionDialogContent(
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
     isRemoteTapToPayEnabled: Boolean = false,
-    onExplainerClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -284,10 +274,7 @@ fun WooPosCardReaderConnectionDialogContent(
         ) { currentState ->
             when (currentState) {
                 is WooPosCardReaderConnectionState.Scanning -> {
-                    ScanningContent(
-                        isRemoteTapToPayEnabled = isRemoteTapToPayEnabled,
-                        onExplainerClick = onExplainerClick,
-                    )
+                    ScanningContent(isRemoteTapToPayEnabled = isRemoteTapToPayEnabled)
                 }
                 is WooPosCardReaderConnectionState.ReaderFound -> {
                     ReaderFoundContent(
@@ -467,16 +454,14 @@ private fun CardReaderDialogContent(
 }
 
 @Composable
-private fun ScanningContent(
-    isRemoteTapToPayEnabled: Boolean,
-    onExplainerClick: () -> Unit,
-) {
-    when (isRemoteTapToPayEnabled) {
+private fun ScanningContent(isRemoteTapToPayEnabled: Boolean) {
+    val showTip = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
+    when (showTip) {
         true -> Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            WooPosRemoteReaderTipStrip(onExplainerClick = onExplainerClick)
+            WooPosRemoteReaderTipStrip()
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             ScanningDialogBody()
         }
