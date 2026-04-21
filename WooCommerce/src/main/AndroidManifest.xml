@@ -19,6 +19,7 @@
         android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <queries>
         <package android:name="com.whatsapp" />
@@ -157,6 +158,11 @@
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
+        <activity
+            android:name=".ui.readermode.CardReaderModeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Woo.DayNight" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false"
