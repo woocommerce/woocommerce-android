@@ -262,8 +262,24 @@ done < <(compgen -e | grep '^MAESTRO_' || true)
 # Results accumulator. Each entry: "<status>|<flow_basename>|<duration>|<rec_rel>|<log_rel>|<error_line>"
 RESULTS=()
 SUITE_START=$(date +%s)
+TOTAL=${#ORDERED_FLOWS[@]}
+PASSED=0
+FAILED=0
 
-echo "--- :rocket: Running ${#ORDERED_FLOWS[@]} flow(s) in P2 order"
+# tty-only colours so piped/CI output stays clean.
+if [[ -t 1 ]]; then
+  C_RESET=$'\033[0m'
+  C_BOLD=$'\033[1m'
+  C_DIM=$'\033[2m'
+  C_GREEN=$'\033[32m'
+  C_RED=$'\033[31m'
+  C_BLUE=$'\033[34m'
+  C_YELLOW=$'\033[33m'
+else
+  C_RESET=""; C_BOLD=""; C_DIM=""; C_GREEN=""; C_RED=""; C_BLUE=""; C_YELLOW=""
+fi
+
+echo "--- :rocket: Running $TOTAL flow(s) in P2 order"
 echo "Output:     $OUTPUT_DIR"
 echo "Recording:  $RECORD (kept for failures only)"
 echo "Tag filter: ${TAG:-<none>}"
@@ -287,12 +303,16 @@ strip_ansi() {
 # ─────────────────────────────────────────────────────────────────────────
 # Run each flow
 # ─────────────────────────────────────────────────────────────────────────
+INDEX=0
 for flow in "${ORDERED_FLOWS[@]}"; do
+  INDEX=$((INDEX + 1))
   base="$(basename "$flow" .yaml)"
   log_file="$LOGS_DIR/$base.log"
+  remaining=$((TOTAL - INDEX))
 
   echo ""
-  echo "--- :arrow_forward: $base"
+  echo "--- ${C_BOLD}[${INDEX}/${TOTAL}] ▶ ${base}${C_RESET}"
+  printf '%s\n' "${C_DIM}progress: ${PASSED} passed · ${FAILED} failed · ${remaining} remaining${C_RESET}"
 
   RECORDER_PID=""
   device_recording=""
@@ -335,7 +355,8 @@ for flow in "${ORDERED_FLOWS[@]}"; do
     [[ -n "$host_recording" ]] && rm -f "$host_recording"
     rm -f "$log_file"
     RESULTS+=("PASS|$base|${duration}|||")
-    echo "✅ $base passed (${duration}s)"
+    PASSED=$((PASSED + 1))
+    printf '%s\n' "${C_GREEN}${C_BOLD}✅ [${INDEX}/${TOTAL}] ${base} passed${C_RESET}${C_DIM} in ${duration}s · ${PASSED} passed · ${FAILED} failed · ${remaining} remaining${C_RESET}"
   else
     error_line=""
     if [[ -f "$log_file" ]]; then
@@ -347,18 +368,13 @@ for flow in "${ORDERED_FLOWS[@]}"; do
     fi
     log_rel="logs/$base.log"
     RESULTS+=("FAIL|$base|${duration}|$rec_rel|$log_rel|$error_line")
-    echo "❌ $base failed (${duration}s) — log + recording kept"
+    FAILED=$((FAILED + 1))
+    printf '%s\n' "${C_RED}${C_BOLD}❌ [${INDEX}/${TOTAL}] ${base} failed${C_RESET}${C_DIM} in ${duration}s · ${PASSED} passed · ${FAILED} failed · ${remaining} remaining — log + recording kept${C_RESET}"
   fi
 done
 
 SUITE_END=$(date +%s)
 SUITE_DURATION=$((SUITE_END - SUITE_START))
-
-PASSED=0
-FAILED=0
-for r in "${RESULTS[@]}"; do
-  [[ "$r" == PASS* ]] && PASSED=$((PASSED+1)) || FAILED=$((FAILED+1))
-done
 
 # ─────────────────────────────────────────────────────────────────────────
 # JUnit XML (machine-readable, stable schema)
@@ -524,7 +540,11 @@ HTML_FOOT
 echo ""
 echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
-echo "Result: $PASSED passed, $FAILED failed (${SUITE_DURATION}s)"
+if [[ "$FAILED" -eq 0 ]]; then
+  printf '%s\n' "${C_GREEN}${C_BOLD}Result: $PASSED/$TOTAL passed, $FAILED failed (${SUITE_DURATION}s)${C_RESET}"
+else
+  printf '%s\n' "${C_RED}${C_BOLD}Result: $PASSED/$TOTAL passed, $FAILED failed (${SUITE_DURATION}s)${C_RESET}"
+fi
 
 if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" ]]; then
   if [[ -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
