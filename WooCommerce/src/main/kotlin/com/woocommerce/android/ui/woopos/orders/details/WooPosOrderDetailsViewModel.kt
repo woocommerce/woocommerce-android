@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -78,10 +77,22 @@ class WooPosOrderDetailsViewModel @Inject constructor(
 
     private fun observeSelectedOrder() {
         viewModelScope.launch {
-            coordinator.selectedOrderId.filterNotNull().collectLatest { orderId ->
-                loadOrder(orderId)
+            coordinator.selectedOrderId.collectLatest { orderId ->
+                if (orderId == null) {
+                    clearSelection()
+                } else {
+                    loadOrder(orderId)
+                }
             }
         }
+    }
+
+    private fun clearSelection() {
+        sideLoadJob?.cancel()
+        refreshOrderJob?.cancel()
+        cachedRefundData = null
+        lastRequestedOrderId = null
+        _state.value = WooPosOrderDetailsState.Idle
     }
 
     fun retryLoadOrder() {

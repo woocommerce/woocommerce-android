@@ -322,6 +322,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
                 is SearchOrdersResult.Success -> {
                     if (result.orders.isEmpty()) {
+                        coordinator.selectOrder(null)
                         _state.value = WooPosOrdersListState.Content(
                             items = WooPosOrdersListState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
