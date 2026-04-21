@@ -296,6 +296,31 @@ sealed class ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_completed_header,
         illustration = R.drawable.img_celebration,
     )
+
+    /**********************************************************
+     * Card Reader Mode (Remote Tap-to-Pay) UI States
+     **********************************************************/
+
+    data class ReadyToPair(
+        val deviceName: String,
+        val fingerprintSuffix: String,
+        override val onPrimaryActionClicked: (() -> Unit),
+    ) : ViewState(
+        headerLabel = R.string.card_reader_mode_ready_to_pair_header,
+        paymentStateLabel = UiStringRes(R.string.card_reader_mode_ready_to_pair_subtitle),
+        illustration = R.drawable.img_card_reader_tpp_connecting,
+        primaryActionLabel = R.string.card_reader_mode_cancel,
+    )
+
+    data class WaitingForPayment(
+        val tabletName: String?,
+        override val onPrimaryActionClicked: (() -> Unit),
+    ) : ViewState(
+        headerLabel = R.string.card_reader_mode_waiting_header,
+        paymentStateLabel = UiStringRes(R.string.card_reader_mode_waiting_subtitle),
+        illustration = R.drawable.img_card_reader_tpp_collecting_payment,
+        primaryActionLabel = R.string.card_reader_mode_cancel,
+    )
 }
 
 sealed class PaymentFlowError(val message: UiString) {
