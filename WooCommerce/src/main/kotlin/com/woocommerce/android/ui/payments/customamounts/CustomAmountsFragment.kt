@@ -107,7 +107,11 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
     private fun bindPercentageLabel(binding: DialogCustomAmountsBinding) {
         with(binding.percentageLabel) {
-            text = context.getString(R.string.custom_amounts_percentage_label, arguments.orderTotal)
+            val orderTotal = arguments.orderTotal.orEmpty()
+            val formattedOrderTotal = arguments.customAmountUIModel.currencyCode?.value
+                ?.let { currencyFormatter.formatCurrency(orderTotal, it) }
+                ?: currencyFormatter.formatCurrency(orderTotal)
+            text = context.getString(R.string.custom_amounts_percentage_label, formattedOrderTotal)
         }
     }
 
