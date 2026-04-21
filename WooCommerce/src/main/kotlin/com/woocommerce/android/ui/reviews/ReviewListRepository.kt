@@ -13,6 +13,7 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -46,7 +47,8 @@ class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus
 ) {
     companion object {
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
@@ -84,14 +86,17 @@ class ReviewListRepository @Inject constructor(
     ): Flow<FetchReviewsResult> =
         channelFlow {
             if (!isFetchingProductReviews) {
+                val notificationsSupported = supportsReviewsReadStatus()
                 coroutineScope {
-                    launch {
-                        val fetchNotificationsResult = fetchNotifications()
-                        send(
-                            FetchReviewsResult.NotificationsFetched(
-                                if (fetchNotificationsResult.isSuccess) SUCCESS else ERROR
+                    if (notificationsSupported) {
+                        launch {
+                            val fetchNotificationsResult = fetchNotifications()
+                            send(
+                                FetchReviewsResult.NotificationsFetched(
+                                    if (fetchNotificationsResult.isSuccess) SUCCESS else ERROR
+                                )
                             )
-                        )
+                        }
                     }
 
                     launch {
@@ -122,6 +127,8 @@ class ReviewListRepository @Inject constructor(
     suspend fun fetchMostRecentReviews(
         status: ProductReviewStatus
     ): Result<Unit> = coroutineScope {
+        val notificationsSupported = supportsReviewsReadStatus()
+
         val reviewsTask = async {
             val payload = WCProductStore.FetchProductReviewsPayload(
                 site = selectedSite.get(),
@@ -140,14 +147,16 @@ class ReviewListRepository @Inject constructor(
             }
         }
 
-        val notificationsTask = async {
-            fetchNotifications()
+        val notificationsTask = if (notificationsSupported) {
+            async { fetchNotifications() }
+        } else {
+            null
         }
 
         reviewsTask.await()
             .onFailure { return@coroutineScope Result.failure(it) }
-        notificationsTask.await()
-            .onFailure { return@coroutineScope Result.failure(it) }
+        notificationsTask?.await()
+            ?.onFailure { return@coroutineScope Result.failure(it) }
 
         Result.success(Unit)
     }
