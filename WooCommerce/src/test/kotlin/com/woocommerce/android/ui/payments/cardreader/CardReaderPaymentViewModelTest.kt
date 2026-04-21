@@ -63,6 +63,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.A
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
 import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
@@ -81,6 +83,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLo
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
+import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
+import com.woocommerce.android.ui.payments.cardreader.payment.remote.RemoteTapToPayReaderStateBridge
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -178,6 +182,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentStateMapper = CardReaderPaymentStateToViewStateMapper(
         cardReaderPaymentReaderTypeStateProvider
     )
+    private val remoteTapToPayStateBridge = RemoteTapToPayReaderStateBridge()
 
     @Suppress("LongMethod")
     @Before
@@ -204,6 +209,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            remoteTapToPayStateBridge = remoteTapToPayStateBridge,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -2699,6 +2705,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            remoteTapToPayStateBridge = remoteTapToPayStateBridge,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
@@ -2737,8 +2744,61 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            remoteTapToPayStateBridge = remoteTapToPayStateBridge,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
     }
+
+    @Test
+    fun `given RemoteTapToPayReadyToPair state pushed, when onCancelClicked, then ExitCardReaderMode event is emitted`() =
+        testBlocking {
+            // GIVEN
+            remoteTapToPayStateBridge.push(
+                RemoteTapToPayReadyToPair(
+                    deviceName = "Pixel 7",
+                    fingerprintSuffix = "AB4F",
+                    onPrimaryActionClicked = {}
+                )
+            )
+
+            // WHEN
+            viewModel.onCancelClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ExitCardReaderMode)
+        }
+
+    @Test
+    fun `given RemoteTapToPayWaitingForPayment state pushed, when viewStateData read, then override wins over derived state`() =
+        testBlocking {
+            // GIVEN
+            val waiting = RemoteTapToPayWaitingForPayment(tabletName = "Studio iPad", onPrimaryActionClicked = {})
+
+            // WHEN
+            remoteTapToPayStateBridge.push(waiting)
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(waiting)
+        }
+
+    @Test
+    fun `given remote state pushed, when another remote state is pushed, then latest override wins`() =
+        testBlocking {
+            // GIVEN
+            remoteTapToPayStateBridge.push(
+                RemoteTapToPayWaitingForPayment(tabletName = null, onPrimaryActionClicked = {})
+            )
+
+            // WHEN
+            val next = RemoteTapToPayReadyToPair(
+                deviceName = "Pixel 7",
+                fingerprintSuffix = "AB4F",
+                onPrimaryActionClicked = {}
+            )
+            remoteTapToPayStateBridge.push(next)
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(next)
+        }
 }
