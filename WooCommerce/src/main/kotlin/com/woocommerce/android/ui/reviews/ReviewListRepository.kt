@@ -169,6 +169,7 @@ class ReviewListRepository @Inject constructor(
      * @return the result of the action as a [RequestResult]
      */
     suspend fun markAllProductReviewsAsRead(): RequestResult {
+        if (!supportsReviewsReadStatus()) return NO_ACTION_NEEDED
         return if (getHasUnreadCachedProductReviews()) {
             val unreadProductReviews = wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
@@ -244,6 +245,7 @@ class ReviewListRepository @Inject constructor(
      * @return true if unread product reviews exist in db, else false
      */
     suspend fun getHasUnreadCachedProductReviews(): Boolean {
+        if (!supportsReviewsReadStatus()) return false
         return coroutineScope {
             wpComPushNotificationStore.hasUnreadNotificationsForSite(
                 site = selectedSite.get(),
@@ -259,6 +261,10 @@ class ReviewListRepository @Inject constructor(
      * If [productId] is provided, then only unread notifications for that product will be fetched.
      */
     suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean, productId: Long? = null): RequestResult {
+        if (!supportsReviewsReadStatus()) {
+            unreadProductReviewIds = emptyList()
+            return NO_ACTION_NEEDED
+        }
         unreadProductReviewIds = wpComPushNotificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -429,6 +435,7 @@ class ReviewListRepository @Inject constructor(
      * [org.wordpress.android.fluxc.model.notification.NotificationModel.read] by [ProductReview.remoteId].
      */
     private suspend fun getReviewNotifReadValueByRemoteIdMap(): Map<Long, Boolean> {
+        if (!supportsReviewsReadStatus()) return emptyMap()
         return withContext(Dispatchers.IO) {
             wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
