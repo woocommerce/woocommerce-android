@@ -11,6 +11,9 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSSRModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -81,9 +84,9 @@ class WooPOSIsRemotelyEnabledTest {
     @Test
     fun `given error result, when invoked, then returns failure unknown`() = runTest {
         val cacheResult = WooResult<WCSSRModel>(model = null).apply {
-            error = org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError(
-                type = org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR,
-                original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+            error = WooError(
+                type = WooErrorType.GENERIC_ERROR,
+                original = BaseRequest.GenericErrorType.UNKNOWN
             )
         }
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)

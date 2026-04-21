@@ -512,8 +512,6 @@ Language: de
     <string name="woopos_scanning_setup_device_selection_title">Einen Barcode-Scanner einrichten</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Einrichtungsdialog für Scanner</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Im Vereinigten Königreich</string>
-    <string name="woopos_eligibility_screen_US_country_name">In den Vereinigten Staaten von Amerika</string>
     <string name="woopos_eligibility_screen_unable_to_load">Konnte nicht geladen werden</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Das POS-System ist für die Währung deines Shops nicht verfügbar. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Das POS-System ist für die Währung deines Shops nicht verfügbar. %1$s wird derzeit nur folgende Währung unterstützt: %2$s. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
