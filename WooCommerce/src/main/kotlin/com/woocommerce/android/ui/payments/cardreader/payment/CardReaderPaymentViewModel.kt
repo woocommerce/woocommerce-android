@@ -59,6 +59,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
+    private val remoteTapToPayStateBridge: RemoteTapToPayReaderStateBridge,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -92,8 +93,6 @@ class CardReaderPaymentViewModel @Inject constructor(
         cardReaderType = arguments.cardReaderType,
         isTTPPaymentInProgress = ::isTTPPaymentInProgress,
     )
-
-    private val remoteTapToPayStateBridge = RemoteTapToPayReaderStateBridge()
 
     private val derivedPaymentState: LiveData<ViewState> =
         paymentController.paymentState.map(paymentStateMapper()).asLiveData(coroutineContext)
@@ -141,10 +140,6 @@ class CardReaderPaymentViewModel @Inject constructor(
             else -> viewStateData.value?.onSecondaryActionClicked?.invoke()
         }
     }
-
-    internal fun pushRemoteReaderState(state: ViewState) = remoteTapToPayStateBridge.push(state)
-
-    internal fun clearRemoteReaderState() = remoteTapToPayStateBridge.clear()
 
     fun start() = paymentController.start()
 

@@ -6,8 +6,11 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayRead
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RemoteTapToPayReaderStateBridge {
+@Singleton
+class RemoteTapToPayReaderStateBridge @Inject constructor() {
 
     private val _stateOverride = MutableLiveData<ViewState?>(null)
     val stateOverride: LiveData<ViewState?> = _stateOverride
