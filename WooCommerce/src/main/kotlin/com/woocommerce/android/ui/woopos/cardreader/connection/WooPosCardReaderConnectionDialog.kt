@@ -29,6 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +55,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerDialog
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderTipStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -228,15 +233,23 @@ private fun WooPosCardReaderDialogInternal(
         viewModel.onBackPressed()
     }
 
+    var isExplainerVisible by rememberSaveable { mutableStateOf(false) }
+
     WooPosCardReaderConnectionDialogContent(
         isVisible = true,
         state = connectionState,
+        isRemoteTapToPayEnabled = viewModel.isRemoteTapToPayEnabled,
+        onExplainerClick = { isExplainerVisible = true },
         onBackPressed = { viewModel.onBackPressed() },
         onDismiss = {
             viewModel.dismissDialog()
             onDismiss()
         },
     )
+
+    if (isExplainerVisible) {
+        WooPosRemoteReaderExplainerDialog(onDismiss = { isExplainerVisible = false })
+    }
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -246,6 +259,8 @@ fun WooPosCardReaderConnectionDialogContent(
     state: WooPosCardReaderConnectionState,
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
+    isRemoteTapToPayEnabled: Boolean = false,
+    onExplainerClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -269,7 +284,10 @@ fun WooPosCardReaderConnectionDialogContent(
         ) { currentState ->
             when (currentState) {
                 is WooPosCardReaderConnectionState.Scanning -> {
-                    ScanningContent()
+                    ScanningContent(
+                        isRemoteTapToPayEnabled = isRemoteTapToPayEnabled,
+                        onExplainerClick = onExplainerClick,
+                    )
                 }
                 is WooPosCardReaderConnectionState.ReaderFound -> {
                     ReaderFoundContent(
@@ -449,7 +467,25 @@ private fun CardReaderDialogContent(
 }
 
 @Composable
-private fun ScanningContent() {
+private fun ScanningContent(
+    isRemoteTapToPayEnabled: Boolean,
+    onExplainerClick: () -> Unit,
+) {
+    when (isRemoteTapToPayEnabled) {
+        true -> Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            WooPosRemoteReaderTipStrip(onExplainerClick = onExplainerClick)
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            ScanningDialogBody()
+        }
+        false -> ScanningDialogBody()
+    }
+}
+
+@Composable
+private fun ScanningDialogBody() {
     CardReaderDialogContent(
         title = stringResource(R.string.woopos_card_reader_scanning_title),
         icon = WooPosIcons.CardReaderScanning,

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cardreader.connection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.woopos.featureflags.WooPosRemoteTapToPayEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,7 +16,10 @@ import javax.inject.Inject
 class WooPosCardReaderConnectionViewModel @Inject constructor(
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory,
     private val permissionUtils: WooPosPermissionUtils,
+    remoteTapToPayEnabled: WooPosRemoteTapToPayEnabled,
 ) : ViewModel() {
+
+    val isRemoteTapToPayEnabled: Boolean = remoteTapToPayEnabled()
 
     private val controller: WooPosCardReaderConnectionController by lazy {
         controllerFactory.create(viewModelScope)

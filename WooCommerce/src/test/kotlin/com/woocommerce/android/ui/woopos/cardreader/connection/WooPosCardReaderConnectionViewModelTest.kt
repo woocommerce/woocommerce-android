@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.cardreader.connection
 
 import app.cash.turbine.test
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.woopos.featureflags.WooPosRemoteTapToPayEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +30,9 @@ class WooPosCardReaderConnectionViewModelTest {
         on { create(any()) }.thenReturn(controller)
     }
     private val permissionUtils: WooPosPermissionUtils = mock()
+    private val remoteTapToPayEnabled: WooPosRemoteTapToPayEnabled = mock {
+        on { invoke() }.thenReturn(false)
+    }
 
     private val controllerStateFlow = MutableStateFlow<WooPosCardReaderConnectionState>(
         WooPosCardReaderConnectionState.Scanning
@@ -288,5 +292,6 @@ class WooPosCardReaderConnectionViewModelTest {
     private fun createViewModel() = WooPosCardReaderConnectionViewModel(
         controllerFactory = controllerFactory,
         permissionUtils = permissionUtils,
+        remoteTapToPayEnabled = remoteTapToPayEnabled,
     )
 }
