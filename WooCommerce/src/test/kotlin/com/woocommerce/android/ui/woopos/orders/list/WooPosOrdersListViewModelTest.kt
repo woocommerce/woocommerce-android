@@ -408,6 +408,30 @@ class WooPosOrdersListViewModelTest {
     }
 
     @Test
+    fun `given order selected, when search returns empty, then coordinator selection cleared`() = runTest {
+        // GIVEN
+        val query = "no results"
+        whenever(dataSource.searchOrders(eq(query))).thenReturn(
+            SearchOrdersResult.Success(emptyList())
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onOrderSelected(1L)
+        advanceUntilIdle()
+        assertThat(coordinator.selectedOrderId.value).isEqualTo(1L)
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(coordinator.selectedOrderId.value).isNull()
+    }
+
+    @Test
     fun `given search open, when close event, then search state closed and orders reloaded`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()

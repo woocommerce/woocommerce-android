@@ -138,6 +138,23 @@ class WooPosOrderDetailsViewModelTest {
         assertThat(loaded.details.actionsState).isInstanceOf(OrderActionsState.Loaded::class.java)
     }
 
+    @Test
+    fun `given loaded order, when coordinator emits null, then state transitions to Idle`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Loaded::class.java)
+
+        // WHEN
+        coordinator.selectOrder(null)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosOrderDetailsState.Idle)
+    }
+
     // endregion
 
     // region Single Order Mode
