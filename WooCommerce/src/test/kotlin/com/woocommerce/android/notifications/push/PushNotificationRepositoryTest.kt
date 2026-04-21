@@ -370,6 +370,49 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given deletePushToken returns INVALID_ID error, when unregisterDevice called, then clears local token`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn 123L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
+                WooResult(WooError(WooErrorType.INVALID_ID, BaseRequest.GenericErrorType.NOT_FOUND, "Not found"))
+            )
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterDeviceFromPushNotifications()
+
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_locale_123"))
+        }
+
+    @Test
+    fun `given deletePushToken returns non-INVALID_ID error, when unregisterDevice called, then keeps local token`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn 123L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
+                WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN, "oops"))
+            )
+
+            sut.unregisterDeviceFromPushNotifications()
+
+            verify(pushNotificationsDataStore, never()).updateData(any())
+        }
+
+    @Test
     fun `given token exists for site and plugin is compatible, when isWooPushTokenRegisteredForSite called, then returns true`() =
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")

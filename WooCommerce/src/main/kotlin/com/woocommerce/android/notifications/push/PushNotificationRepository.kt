@@ -244,7 +244,8 @@ class PushNotificationRepository @Inject constructor(
         val registration = preferences.getPushRegistration(site.siteId) ?: return Result.success(Unit)
 
         val result = wooPushNotificationsStore.deletePushToken(site, registration.tokenId)
-        if (result.isError) {
+        val isAlreadyDeleted = result.error?.type == WooErrorType.INVALID_ID
+        if (result.isError && !isAlreadyDeleted) {
             WooLog.w(
                 WooLog.T.NOTIFICATIONS,
                 "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
@@ -255,7 +256,14 @@ class PushNotificationRepository @Inject constructor(
         pushNotificationsDataStore.edit {
             it.clearPushRegistration(site.siteId)
         }
-        WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
+        if (isAlreadyDeleted) {
+            WooLog.d(
+                WooLog.T.NOTIFICATIONS,
+                "Woo Core push token already deleted on server for site ${site.siteId}, clearing local entry"
+            )
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
+        }
         return Result.success(Unit)
     }
 
