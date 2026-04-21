@@ -50,7 +50,9 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() } doReturn siteModel
     }
-    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock()
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
+        on { invoke(SITE_ID) } doReturn PushNotificationRegistrationStatus.Status.UNREGISTERED
+    }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var savedState: SavedStateHandle
@@ -59,10 +61,6 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        testBlocking {
-            whenever(pushNotificationRegistrationStatus.invoke(SITE_ID))
-                .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
-        }
         createViewModel()
     }
 
