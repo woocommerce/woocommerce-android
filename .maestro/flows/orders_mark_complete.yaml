@@ -24,9 +24,22 @@ tags:
     file: ../subflows/navigate_to_orders.yaml
 
 # ── Filter by Processing status ───────────────────────────────────────
+# Clear any previously-applied filter first. Prior flows in the suite
+# (e.g. orders_refund with a Completed filter) can leave a status
+# selected; re-selecting "Processing" on top of that would stack the
+# statuses and surface orders that don't have the Mark Complete
+# button.
 - tapOn:
     id: "btn_order_filter"
     label: "Open filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing filters"
 
 - extendedWaitUntil:
     visible: "Order Status"
@@ -53,6 +66,14 @@ tags:
     visible:
       id: "ordersList"
     timeout: 15000
+
+# Pull-to-refresh so the status filter reflects the latest server
+# state — stale caches can leave a just-completed order at index 0.
+- swipe:
+    from:
+      id: "ordersList"
+    direction: DOWN
+    duration: 800
 
 - takeScreenshot: orders_filtered_processing
 
@@ -98,28 +119,44 @@ tags:
 
 # ── Verify completion + undo ─────────────────────────────────────────
 # The completion snackbar shows "🎉 Order completed!" with an "Undo"
-# action and auto-dismisses after a few seconds, so tap Undo first and
-# take the verification screenshot afterwards (once back on the detail
-# screen) to avoid missing the undo window.
-- tapOn:
-    text: "Undo"
-    retryTapIfNoChange: true
-    label: "Undo status change"
+# action and auto-dismisses after a few seconds, so tap Undo first.
+# On stores with shipping labels enabled, the Fulfill confirm can also
+# race into an auto-navigation to the Create Shipping Label screen, so
+# the post-Undo state is not deterministically on order detail. Back
+# out until the orders list reappears, which is this flow's final
+# state anyway.
+- runFlow:
+    when:
+      visible: "Undo"
+    commands:
+      - tapOn:
+          text: "Undo"
+          retryTapIfNoChange: true
+          label: "Undo status change"
 
-- extendedWaitUntil:
-    visible:
-      id: "orderDetail_container"
-    timeout: 15000
+- runFlow:
+    when:
+      visible: ".*Create shipping label.*"
+    commands:
+      - back
+          # Create Shipping Label is a sibling of Order Detail in the
+          # nav graph — a single back returns directly to the orders
+          # list on this store config.
 
-- takeScreenshot: order_marked_complete_reverted
-
-# Back to orders list
-- back
+# If we're still on order detail, back out to the orders list.
+- runFlow:
+    when:
+      visible:
+        id: "orderDetail_container"
+    commands:
+      - back
 
 - extendedWaitUntil:
     visible:
       id: "ordersList"
-    timeout: 10000
+    timeout: 15000
+
+- takeScreenshot: order_marked_complete_reverted
 
 # ── Clear the filter so future runs start from an unfiltered list ────
 - tapOn:

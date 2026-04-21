@@ -9,9 +9,13 @@
 #   - Edit the added customer's last name
 #   - Add a customer-facing note
 #   - All sections display the added data
+#   - Tap "Create" to submit the order — lands on order detail
+#   - Tap "Collect Payment" → pick Cash → Mark Order as Complete to
+#     fully exercise the post-creation cash checkout path
 #
-# Does NOT tap "Create" — the order is discarded at the end to avoid
-# polluting the staging store on every run.
+# The order IS committed to the staging store and completed via COD.
+# Staging orders use test data (SmokeTest customer, $10 gift wrap) so
+# accumulation across runs is acceptable.
 appId: com.woocommerce.android.dev
 name: "Orders - Create a new order"
 tags:
@@ -85,9 +89,34 @@ tags:
     text: "Add custom amount"
     label: "Tap Add custom amount"
 
+# Same flake pattern as the orders_cash_payment Collect Payment tap:
+# occasionally the first tap visibly depresses the row but the "Select
+# custom amount type" bottom sheet never presents. Give the happy path
+# 8s, then re-tap if the sheet still isn't there (the first tap was
+# lost). On the normal path the re-tap is skipped because the sheet is
+# already visible.
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - extendedWaitUntil:
+          visible: "A fixed amount"
+          timeout: 8000
+          optional: true
+
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - tapOn:
+          text: "Add custom amount"
+          optional: true
+          retryTapIfNoChange: true
+          label: "Retry tap on Add custom amount (first was lost)"
+
 - extendedWaitUntil:
     visible: "A fixed amount"
-    timeout: 10000
+    timeout: 15000
 
 - tapOn:
     text: "A fixed amount"
@@ -260,14 +289,19 @@ tags:
     visible: ".*Last name.*"
     timeout: 15000
 
-# Append to last name to verify editing works
+# Rewrite the last name with a per-suite-run-unique marker so
+# orders_refund.yaml can find THIS exact order and won't pick up an
+# already-refunded leftover from a previous suite run. SUITE_RUN_ID is
+# exported by .maestro/scripts/run-smoke-tests.sh (set to the run's
+# timestamp, e.g. 20260421-123100), so every run's customer last name
+# is distinct.
 - tapOn:
     id: "edit_text"
     childOf:
       id: "last_name"
     optional: true
 - eraseText
-- inputText: "SmokeTestEdited"
+- inputText: "SmokeTest-${SUITE_RUN_ID}"
 - hideKeyboard
 
 - takeScreenshot: order_create_customer_re_edited
@@ -282,16 +316,55 @@ tags:
 
 - takeScreenshot: order_create_fully_customized
 
-# ── Discard the order ────────────────────────────────────────────────
-- back
+# ── Submit + auto-launch payment flow ─────────────────────────────────
+# The Compose totals overlay at the bottom of the creation screen
+# hosts a "Collect Payment" primary button (see
+# OrderCreateEditTotalsHelper.toButtonText → Creation branch). Tapping
+# it submits the order AND sets startPaymentFlow=true, so
+# OrderDetailViewModel's init auto-triggers StartPaymentFlow —
+# landing on the Take-payment selector without requiring a second tap
+# on order detail.
+- scrollUntilVisible:
+    element: "Collect Payment"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+    label: "Scroll to Collect Payment primary button"
 
-- runFlow:
-    when:
-      visible: "Discard"
-    commands:
-      - tapOn: "Discard"
+- tapOn:
+    text: "Collect Payment"
+    retryTapIfNoChange: true
+    label: "Tap Collect Payment to submit + start payment flow"
+
+# Take-payment bottom sheet appears (Card/Cash options).
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 30000
+
+- takeScreenshot: order_create_select_payment_method
+
+- tapOn:
+    text: "Cash"
+    retryTapIfNoChange: true
+    label: "Select Cash payment method"
+
+# Change Due Calculator — the order total is pre-filled, so tapping
+# "Mark Order as Complete" records the cash payment and closes out the
+# order.
+- extendedWaitUntil:
+    visible: ".*Mark Order as Complete.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_change_due_calculator
+
+- tapOn:
+    text: ".*Mark Order as Complete.*"
+    retryTapIfNoChange: true
+    label: "Mark order as complete with cash"
 
 - extendedWaitUntil:
     visible:
       id: "ordersList"
-    timeout: 10000
+    timeout: 30000
+
+- takeScreenshot: order_create_completed

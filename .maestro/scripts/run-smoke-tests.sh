@@ -42,6 +42,13 @@ ENV_FILE="$REPO_ROOT/.maestro/.env.local"
 DEFAULT_OUTPUT_ROOT="${WOO_MAESTRO_OUTPUT_DIR:-$HOME/woocommerce-maestro-output}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 
+# Shared suite-run ID that individual flows can reference. orders_create
+# stamps the created order's customer name with this, so orders_refund can
+# target that exact order without colliding with leftover orders from
+# prior suite runs on the staging store. Exported via the MAESTRO_ prefix
+# so the env-forwarding loop below passes it through to each flow.
+export MAESTRO_SUITE_RUN_ID="$TIMESTAMP"
+
 APK_PATH=""
 TAG=""
 TARGET=""

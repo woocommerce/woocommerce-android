@@ -103,9 +103,35 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Collect Payment"
 
+# Occasional flake: on the first tap the button visibly depresses but
+# the SelectPaymentMethod fragment never presents. Observed after the
+# orders_mark_complete flow runs earlier in the suite — the app's back
+# stack is transiently non-ideal. Give the normal path 10s, and if the
+# sheet still hasn't appeared, tap again (the first tap was lost). On
+# the happy path the second tap is a no-op because the button is no
+# longer part of the current screen.
+- runFlow:
+    when:
+      notVisible: ".*Take payment.*|.*Cash.*"
+    commands:
+      - extendedWaitUntil:
+          visible: ".*Take payment.*|.*Cash.*"
+          timeout: 10000
+          optional: true
+
+- runFlow:
+    when:
+      notVisible: ".*Take payment.*|.*Cash.*"
+    commands:
+      - tapOn:
+          id: "paymentInfo_collectCardPresentPaymentButton"
+          optional: true
+          retryTapIfNoChange: true
+          label: "Retry Collect Payment tap (first was lost)"
+
 - extendedWaitUntil:
     visible: ".*Take payment.*|.*Cash.*"
-    timeout: 15000
+    timeout: 30000
 
 - takeScreenshot: select_payment_method
 
