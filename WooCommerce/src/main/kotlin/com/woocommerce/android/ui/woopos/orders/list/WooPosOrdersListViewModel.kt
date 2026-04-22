@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -131,7 +132,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
         val query = currentSearchQuery
         if (query.isNullOrEmpty()) {
-            loadOrders(isRefreshing = true)
+            loadOrders()
         } else {
             performSearch(query, isRefreshing = true)
         }
@@ -246,16 +247,17 @@ class WooPosOrdersListViewModel @Inject constructor(
         }
     }
 
-    private fun loadOrders(isRefreshing: Boolean = false) {
+    private fun loadOrders() {
         cancelJobs()
         val mark = Monotonic.markNow()
         loadingJob = viewModelScope.launch {
-            ordersDataSource.loadOrders(forceRefreshRefunds = isRefreshing).collect { result ->
+            ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
                         val elapsedMs = mark.elapsedNow().inWholeMilliseconds
                         ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
 
+                        coordinator.selectOrder(null)
                         _state.value = WooPosOrdersListState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
@@ -263,12 +265,12 @@ class WooPosOrdersListViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
-                        if (result.ordersWithRefunds.isEmpty()) {
+                        if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersListState.Loading(
                                 searchInputState = WooPosSearchInputState.Closed
                             )
                         } else {
-                            replaceOrders(result.ordersWithRefunds.keys.toList())
+                            replaceOrders(result.orders)
                         }
                     }
 
@@ -276,12 +278,12 @@ class WooPosOrdersListViewModel @Inject constructor(
                         val elapsedMs = mark.elapsedNow().inWholeMilliseconds
                         ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
 
-                        if (result.ordersWithRefunds.isEmpty()) {
+                        if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersListState.Empty(
                                 searchInputState = WooPosSearchInputState.Closed
                             )
                         } else {
-                            replaceOrders(result.ordersWithRefunds.keys.toList())
+                            replaceOrders(result.orders)
                         }
                     }
                 }
@@ -303,7 +305,7 @@ class WooPosOrdersListViewModel @Inject constructor(
             }
 
             val mark = Monotonic.markNow()
-            val result = ordersDataSource.searchOrders(query, forceRefreshRefunds = isRefreshing)
+            val result = ordersDataSource.searchOrders(query)
             val elapsedMs = mark.elapsedNow().inWholeMilliseconds
             ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
             when (result) {
@@ -320,7 +322,8 @@ class WooPosOrdersListViewModel @Inject constructor(
                 }
 
                 is SearchOrdersResult.Success -> {
-                    if (result.ordersWithRefunds.isEmpty()) {
+                    if (result.orders.isEmpty()) {
+                        coordinator.selectOrder(null)
                         _state.value = WooPosOrdersListState.Content(
                             items = WooPosOrdersListState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
@@ -331,7 +334,7 @@ class WooPosOrdersListViewModel @Inject constructor(
                             paginationState = WooPosPaginationState.None
                         )
                     } else {
-                        replaceOrders(result.ordersWithRefunds.keys.toList())
+                        replaceOrders(result.orders)
                     }
                 }
             }
@@ -358,7 +361,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
-                appendOrders(result.getOrThrow().keys.toList())
+                appendOrders(result.getOrThrow())
             } else {
                 _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
             }
@@ -366,7 +369,7 @@ class WooPosOrdersListViewModel @Inject constructor(
     }
 
     private fun replaceOrders(
-        orders: List<com.woocommerce.android.model.Order>,
+        orders: List<Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val currentState = _state.value
@@ -405,7 +408,7 @@ class WooPosOrdersListViewModel @Inject constructor(
     }
 
     private fun appendOrders(
-        orders: List<com.woocommerce.android.model.Order>,
+        orders: List<Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val current = _state.value as? WooPosOrdersListState.Content ?: return

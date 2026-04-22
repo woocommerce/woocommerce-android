@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -78,10 +78,22 @@ class WooPosOrderDetailsViewModel @Inject constructor(
 
     private fun observeSelectedOrder() {
         viewModelScope.launch {
-            coordinator.selectedOrderId.filterNotNull().collectLatest { orderId ->
-                loadOrder(orderId)
+            coordinator.selectedOrderId.collectLatest { orderId ->
+                if (orderId == null) {
+                    clearSelection()
+                } else {
+                    loadOrder(orderId)
+                }
             }
         }
+    }
+
+    private fun clearSelection() {
+        sideLoadJob?.cancel()
+        refreshOrderJob?.cancel()
+        cachedRefundData = null
+        lastRequestedOrderId = null
+        _state.value = WooPosOrderDetailsState.Idle
     }
 
     fun retryLoadOrder() {
@@ -128,23 +140,21 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun handleActionClicked(action: com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction) {
+    private fun handleActionClicked(action: OrderAction) {
         when (action) {
-            is com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction.EmailReceipt ->
-                onEmailReceiptButtonClicked(action.orderId)
-            is com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction.IssueRefund ->
-                onIssueRefundButtonClicked(action.orderId)
+            is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
+            is OrderAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
         }
     }
 
-    fun onEmailReceiptButtonClicked(orderId: Long) {
+    private fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
             ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(ToEmailReceipt(orderId))
         }
     }
 
-    fun onIssueRefundButtonClicked(orderId: Long) {
+    private fun onIssueRefundButtonClicked(orderId: Long) {
         val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
         _state.value = current.copy(
             dialogState = WooPosOrderDetailsState.DialogState.IssueRefund(orderId = orderId)

@@ -17,7 +17,7 @@ class WooPosOrdersCoordinator @Inject constructor() {
     private val _orderRefreshed = MutableSharedFlow<Long>()
     val orderRefreshed: SharedFlow<Long> = _orderRefreshed.asSharedFlow()
 
-    fun selectOrder(orderId: Long) {
+    fun selectOrder(orderId: Long?) {
         _selectedOrderId.value = orderId
     }
 
