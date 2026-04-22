@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.util
 
-import com.woocommerce.android.R
+import com.woocommerce.android.pos.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers

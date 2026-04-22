@@ -8,9 +8,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.BundledProductItemViewBinding
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.ui.products.ProductStockStatus
-import org.wordpress.android.util.PhotonUtils
 
 class BundleProductViewHolder(val viewBinding: BundledProductItemViewBinding) :
     RecyclerView.ViewHolder(viewBinding.root) {
@@ -32,9 +32,8 @@ class BundleProductViewHolder(val viewBinding: BundledProductItemViewBinding) :
             }
             else -> {
                 size = imageSize
-                val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
                 Glide.with(viewBinding.productImage)
-                    .load(photonUrl)
+                    .loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(viewBinding.productImage)

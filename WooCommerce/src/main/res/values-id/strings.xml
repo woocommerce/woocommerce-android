@@ -512,8 +512,6 @@ Language: id
     <string name="woopos_scanning_setup_device_selection_title">Menyiapkan pemindai barcode</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Dialog penyiapan pemindai</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Britania Raya</string>
-    <string name="woopos_eligibility_screen_US_country_name">Amerika Serikat</string>
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>

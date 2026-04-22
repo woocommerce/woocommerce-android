@@ -79,6 +79,7 @@ private fun WooPosHomeScreen(
 
     val productsWidthAnimatedDp by animateDpAsState(
         when (state.screenPositionState) {
+            WooPosHomeState.ScreenPositionState.Products,
             is WooPosHomeState.ScreenPositionState.Cart,
             WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> productsWidthDp
 
@@ -90,6 +91,7 @@ private fun WooPosHomeScreen(
     val totalsWidthAnimatedDp by animateDpAsState(
         when (state.screenPositionState) {
             is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals -> screenWidthDp
+            WooPosHomeState.ScreenPositionState.Products,
             is WooPosHomeState.ScreenPositionState.Cart,
             WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> totalsWidthDp
         },
@@ -166,6 +168,7 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState.Scr
     LaunchedEffect(state) {
         val animationSpec = spring<Float>(dampingRatio = 0.8f, stiffness = 200f)
         when (state) {
+            WooPosHomeState.ScreenPositionState.Products,
             is WooPosHomeState.ScreenPositionState.Cart ->
                 scrollState.animateScrollTo(
                     0,

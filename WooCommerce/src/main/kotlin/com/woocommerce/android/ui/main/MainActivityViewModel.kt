@@ -21,6 +21,8 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS
 import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
@@ -116,7 +118,8 @@ class MainActivityViewModel @Inject constructor(
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
-            val isSiteSpecificNotification = it.remoteSiteId != 0L
+            val isSiteSpecificNotification = it.remoteSiteId != 0L &&
+                currentSite.connectionType != SiteConnectionType.ApplicationPasswords
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
@@ -137,7 +140,7 @@ class MainActivityViewModel @Inject constructor(
             }
 
             is ResolveAppLink.Action.ViewOrderDetail -> {
-                triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
+                triggerEvent(ViewOrderDetail(event.orderId))
             }
 
             ResolveAppLink.Action.ViewStats -> {
@@ -192,20 +195,11 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
-        notificationHandler.markNotificationTapped(notification.remoteNoteId)
+        notificationHandler.markNotificationTapped(localPushId)
         notificationHandler.removeTappedNotificationAndSummaryIfNeeded(localPushId, notification)
         when (notification.noteType) {
             is WooNotificationType.NewOrder -> {
-                when {
-                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
-                        ViewOrderDetail(
-                            notification.uniqueId,
-                            notification.remoteNoteId
-                        )
-                    )
-
-                    else -> triggerEvent(ViewOrderList)
-                }
+                triggerEvent(ViewOrderDetail(notification.uniqueId))
             }
 
             is WooNotificationType.ProductReview -> {
@@ -378,7 +372,7 @@ class MainActivityViewModel @Inject constructor(
 
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
-    data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ViewOrderDetail(val uniqueId: Long) : Event()
     data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
     object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()

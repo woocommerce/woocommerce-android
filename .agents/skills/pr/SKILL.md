@@ -34,8 +34,10 @@ Create a pull request following the project's PR conventions.
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 
 8. **Create the PR.** Read `.github/PULL_REQUEST_TEMPLATE.md` and use it as the body. Strip the HTML comments and fill in each section, following the conventions from the guidelines doc above:
-   - **Description**: start with `Fixes WOOMOB-XYZ` on its own line, then a 1-3 sentence summary of what and why.
-   - **Test Steps**: numbered steps to verify the changes.
+   - **Description**: start with `Fixes WOOMOB-XYZ` on its own line, then a self-contained summary of what changed and why.
+     - Write so a reviewer who never saw this branch can understand it. It's fine to walk through the author's reasoning — just make sure the description carries its own context rather than assuming the reviewer was part of the conversation that produced the PR.
+     - References the reviewer can follow (a Linear issue, a linked Slack thread, a prior PR) are fine. What's not fine is referencing things the reviewer has no access to: the Claude session, findings-by-number from a private review ("HIGH-#2"), or severity labels from a one-off discussion. If you write "as discussed," make sure "discussed" is a link the reviewer can open.
+   - **Test Steps**: numbered manual verification steps — a reviewer tapping through the app or reproducing a scenario. Do NOT include "run the unit tests" (or any `./gradlew test*` invocation) as a step — CI already runs them, so they add noise without helping the reviewer.
    - **Images/gif**: include if applicable, otherwise `N/A`.
    - Keep the release-notes checkbox line as-is.
 

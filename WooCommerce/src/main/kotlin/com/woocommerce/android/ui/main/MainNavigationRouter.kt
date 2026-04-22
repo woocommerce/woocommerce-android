@@ -18,7 +18,6 @@ interface MainNavigationRouter {
     fun showOrderDetail(
         orderId: Long,
         navHostFragment: NavHostFragment? = null,
-        remoteNoteId: Long = 0,
         launchedFromNotification: Boolean = false,
         startPaymentsFlow: Boolean = false,
     )
@@ -26,7 +25,6 @@ interface MainNavigationRouter {
     fun showOrderDetailWithSharedTransition(
         orderId: Long,
         allOrderIds: List<Long>,
-        remoteNoteId: Long = 0,
         sharedView: View
     )
 
