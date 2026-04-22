@@ -12,6 +12,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
 import java.net.Socket
+import java.net.SocketException
 
 internal class CardReaderRemoteConnection internal constructor(
     private val socket: Socket,
@@ -34,7 +35,7 @@ internal class CardReaderRemoteConnection internal constructor(
         while (!socket.isClosed) {
             val next = runCatching { protocol.read(input) }
                 .getOrElse { err ->
-                    if (err is EOFException) return@flow
+                    if (err is EOFException || err is SocketException) return@flow
                     throw err
                 }
             emit(next)
