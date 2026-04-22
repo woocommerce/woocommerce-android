@@ -30,7 +30,7 @@ internal class CardReaderRemoteTlsClient(
         CardReaderRemoteConnection(socket, ioDispatcher = ioDispatcher)
     }
 
-    private class PinnedFingerprintTrustManager(
+    internal class PinnedFingerprintTrustManager(
         private val pinnedFingerprintBase64: String,
     ) : X509TrustManager {
         override fun checkClientTrusted(chain: Array<out X509Certificate>, authType: String) {
