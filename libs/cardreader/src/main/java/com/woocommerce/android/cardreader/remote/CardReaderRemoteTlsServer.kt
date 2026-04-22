@@ -18,7 +18,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLServerSocket
 import javax.security.auth.x500.X500Principal
 
-class RemoteReaderTlsServer(
+internal class CardReaderRemoteTlsServer(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
     private var serverSocket: SSLServerSocket? = null
@@ -29,7 +29,7 @@ class RemoteReaderTlsServer(
         get() = requireNotNull(serverSocket) { "Server not started" }.localPort
 
     val fingerprint: String
-        get() = RemoteReaderFingerprint.sha256Base64(
+        get() = CardReaderRemoteFingerprint.sha256Base64(
             requireNotNull(certificate) { "Server not started" }
         )
 
@@ -58,12 +58,12 @@ class RemoteReaderTlsServer(
         keyAlias = alias
     }
 
-    suspend fun acceptOne(): RemoteReaderConnection = withContext(ioDispatcher) {
+    suspend fun acceptOne(): CardReaderRemoteConnection = withContext(ioDispatcher) {
         val socket = requireNotNull(serverSocket) { "Server not started" }
         val accepted = socket.accept().apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
-        RemoteReaderConnection(accepted, ioDispatcher = ioDispatcher)
+        CardReaderRemoteConnection(accepted, ioDispatcher = ioDispatcher)
     }
 
     override fun close() {

@@ -11,30 +11,30 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.lang.reflect.Type
 
-class RemoteReaderProtocol {
+internal class CardReaderRemoteProtocol {
     private val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(RemoteReaderMessage::class.java, MessageSerializer())
-        .registerTypeAdapter(RemoteReaderMessage::class.java, MessageDeserializer())
+        .registerTypeAdapter(CardReaderRemoteMessage::class.java, MessageSerializer())
+        .registerTypeAdapter(CardReaderRemoteMessage::class.java, MessageDeserializer())
         .create()
 
-    fun write(out: DataOutputStream, msg: RemoteReaderMessage) {
-        val bytes = gson.toJson(msg, RemoteReaderMessage::class.java).toByteArray(Charsets.UTF_8)
+    fun write(out: DataOutputStream, msg: CardReaderRemoteMessage) {
+        val bytes = gson.toJson(msg, CardReaderRemoteMessage::class.java).toByteArray(Charsets.UTF_8)
         require(bytes.size in 1..MAX_MESSAGE_BYTES) { "Invalid frame size ${bytes.size}" }
         out.writeInt(bytes.size)
         out.write(bytes)
         out.flush()
     }
 
-    fun read(input: DataInputStream): RemoteReaderMessage {
+    fun read(input: DataInputStream): CardReaderRemoteMessage {
         val size = input.readInt()
         require(size in 1..MAX_MESSAGE_BYTES) { "Invalid frame size $size" }
         val bytes = ByteArray(size).also { input.readFully(it) }
-        return gson.fromJson(String(bytes, Charsets.UTF_8), RemoteReaderMessage::class.java)
+        return gson.fromJson(String(bytes, Charsets.UTF_8), CardReaderRemoteMessage::class.java)
     }
 
-    private class MessageSerializer : JsonSerializer<RemoteReaderMessage> {
+    private class MessageSerializer : JsonSerializer<CardReaderRemoteMessage> {
         override fun serialize(
-            src: RemoteReaderMessage,
+            src: CardReaderRemoteMessage,
             typeOfSrc: Type,
             context: JsonSerializationContext,
         ): JsonElement {
@@ -44,12 +44,12 @@ class RemoteReaderProtocol {
         }
     }
 
-    private class MessageDeserializer : JsonDeserializer<RemoteReaderMessage> {
+    private class MessageDeserializer : JsonDeserializer<CardReaderRemoteMessage> {
         override fun deserialize(
             json: JsonElement,
             typeOfT: Type,
             context: JsonDeserializationContext,
-        ): RemoteReaderMessage {
+        ): CardReaderRemoteMessage {
             val obj = json.asJsonObject
             val typeLabel = obj.get(FIELD_TYPE)?.asString
                 ?: error("Missing '$FIELD_TYPE' discriminator in message")
@@ -68,21 +68,21 @@ class RemoteReaderProtocol {
         private const val TYPE_PAYMENT_INTENT_RESULT = "payment_intent_result"
         private const val TYPE_ERROR = "error"
 
-        private fun typeLabelFor(clazz: Class<out RemoteReaderMessage>): String = when (clazz) {
-            RemoteReaderMessage.ConnectRequest::class.java -> TYPE_CONNECT_REQUEST
-            RemoteReaderMessage.ConnectAck::class.java -> TYPE_CONNECT_ACK
-            RemoteReaderMessage.CollectPaymentRequest::class.java -> TYPE_COLLECT_PAYMENT
-            RemoteReaderMessage.PaymentIntentResult::class.java -> TYPE_PAYMENT_INTENT_RESULT
-            RemoteReaderMessage.ErrorMessage::class.java -> TYPE_ERROR
-            else -> error("Unknown RemoteReaderMessage subtype: $clazz")
+        private fun typeLabelFor(clazz: Class<out CardReaderRemoteMessage>): String = when (clazz) {
+            CardReaderRemoteMessage.ConnectRequest::class.java -> TYPE_CONNECT_REQUEST
+            CardReaderRemoteMessage.ConnectAck::class.java -> TYPE_CONNECT_ACK
+            CardReaderRemoteMessage.CollectPaymentRequest::class.java -> TYPE_COLLECT_PAYMENT
+            CardReaderRemoteMessage.PaymentIntentResult::class.java -> TYPE_PAYMENT_INTENT_RESULT
+            CardReaderRemoteMessage.ErrorMessage::class.java -> TYPE_ERROR
+            else -> error("Unknown CardReaderRemoteMessage subtype: $clazz")
         }
 
-        private fun classForTypeLabel(label: String): Class<out RemoteReaderMessage> = when (label) {
-            TYPE_CONNECT_REQUEST -> RemoteReaderMessage.ConnectRequest::class.java
-            TYPE_CONNECT_ACK -> RemoteReaderMessage.ConnectAck::class.java
-            TYPE_COLLECT_PAYMENT -> RemoteReaderMessage.CollectPaymentRequest::class.java
-            TYPE_PAYMENT_INTENT_RESULT -> RemoteReaderMessage.PaymentIntentResult::class.java
-            TYPE_ERROR -> RemoteReaderMessage.ErrorMessage::class.java
+        private fun classForTypeLabel(label: String): Class<out CardReaderRemoteMessage> = when (label) {
+            TYPE_CONNECT_REQUEST -> CardReaderRemoteMessage.ConnectRequest::class.java
+            TYPE_CONNECT_ACK -> CardReaderRemoteMessage.ConnectAck::class.java
+            TYPE_COLLECT_PAYMENT -> CardReaderRemoteMessage.CollectPaymentRequest::class.java
+            TYPE_PAYMENT_INTENT_RESULT -> CardReaderRemoteMessage.PaymentIntentResult::class.java
+            TYPE_ERROR -> CardReaderRemoteMessage.ErrorMessage::class.java
             else -> error("Unknown message type label: $label")
         }
     }

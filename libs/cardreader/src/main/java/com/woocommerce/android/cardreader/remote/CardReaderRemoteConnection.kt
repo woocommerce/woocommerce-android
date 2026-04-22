@@ -13,16 +13,16 @@ import java.io.DataOutputStream
 import java.io.EOFException
 import java.net.Socket
 
-class RemoteReaderConnection internal constructor(
+internal class CardReaderRemoteConnection internal constructor(
     private val socket: Socket,
-    private val protocol: RemoteReaderProtocol = RemoteReaderProtocol(),
+    private val protocol: CardReaderRemoteProtocol = CardReaderRemoteProtocol(),
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
     private val output = DataOutputStream(socket.getOutputStream())
     private val input = DataInputStream(socket.getInputStream())
     private val writeLock = Mutex()
 
-    suspend fun send(msg: RemoteReaderMessage) {
+    suspend fun send(msg: CardReaderRemoteMessage) {
         writeLock.withLock {
             withContext(ioDispatcher) {
                 protocol.write(output, msg)
@@ -30,7 +30,7 @@ class RemoteReaderConnection internal constructor(
         }
     }
 
-    fun receive(): Flow<RemoteReaderMessage> = flow {
+    fun receive(): Flow<CardReaderRemoteMessage> = flow {
         while (!socket.isClosed) {
             val next = runCatching { protocol.read(input) }
                 .getOrElse { err ->
