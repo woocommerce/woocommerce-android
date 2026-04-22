@@ -9,6 +9,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartCheckoutButtonSlot
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
@@ -30,6 +31,7 @@ fun WooPosPhoneCartScreen(
             state = rawState.copy(toolbar = rawState.toolbar.copy(backIconVisible = true)),
             onUIEvent = viewModel::onUIEvent,
             onPhoneBack = onBack,
+            checkoutSlot = WooPosCartCheckoutButtonSlot.External,
         )
     }
 }
