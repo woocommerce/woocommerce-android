@@ -3,7 +3,9 @@ package com.woocommerce.android.cardreader.remote
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -15,11 +17,11 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.InetAddress
+import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.random.Random
 
-@Suppress("DEPRECATION")
 internal class CardReaderRemoteNsd(
     context: Context,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -100,7 +102,7 @@ internal class CardReaderRemoteNsd(
             }
 
             override fun onServiceFound(service: NsdServiceInfo) {
-                nsdManager.resolveService(service, buildResolveListener(this@callbackFlow::trySend))
+                resolve(service) { resolved -> trySend(resolved) }
             }
 
             override fun onServiceLost(service: NsdServiceInfo) {
@@ -117,41 +119,84 @@ internal class CardReaderRemoteNsd(
         }
     }.flowOn(ioDispatcher)
 
-    private fun buildResolveListener(
-        emit: (CardReaderRemoteResolvedHost) -> Unit,
-    ): NsdManager.ResolveListener =
-        object : NsdManager.ResolveListener {
-            override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
-                Log.w(TAG, "NSD resolve failed (errorCode=$errorCode)")
+    private fun resolve(service: NsdServiceInfo, emit: (CardReaderRemoteResolvedHost) -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            resolveWithCallback(service, emit)
+        } else {
+            resolveLegacy(service, emit)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun resolveWithCallback(service: NsdServiceInfo, emit: (CardReaderRemoteResolvedHost) -> Unit) {
+        val executor = Executor { it.run() }
+        val callback = object : NsdManager.ServiceInfoCallback {
+            override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
+                Log.w(TAG, "NSD service info callback registration failed (errorCode=$errorCode)")
             }
 
-            override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                val attributes = serviceInfo.attributes
-                val version = attributes[TXT_KEY_VERSION]?.toString(Charsets.UTF_8)
-                if (version != PROTOCOL_VERSION) {
-                    Log.w(TAG, "Dropping NSD service with unsupported version: $version")
-                    return
-                }
-                val fingerprint = attributes[TXT_KEY_FINGERPRINT]?.toString(Charsets.UTF_8)
-                if (fingerprint.isNullOrEmpty()) {
-                    Log.w(TAG, "Dropping NSD service without fingerprint TXT record")
-                    return
-                }
-                val host: InetAddress? = serviceInfo.host
-                if (host == null) {
-                    Log.w(TAG, "Dropping NSD service without resolved host: ${serviceInfo.serviceName}")
-                    return
-                }
-                emit(
-                    CardReaderRemoteResolvedHost(
-                        name = serviceInfo.serviceName,
-                        host = host,
-                        port = serviceInfo.port,
-                        fingerprintBase64 = fingerprint,
-                        version = version,
-                    )
-                )
+            override fun onServiceInfoCallbackUnregistered() = Unit
+
+            override fun onServiceLost() {
+                nsdManager.unregisterServiceInfoCallback(this)
             }
+
+            override fun onServiceUpdated(serviceInfo: NsdServiceInfo) {
+                val resolved = serviceInfo.toResolvedHost()
+                nsdManager.unregisterServiceInfoCallback(this)
+                if (resolved != null) emit(resolved)
+            }
+        }
+        nsdManager.registerServiceInfoCallback(service, executor, callback)
+    }
+
+    private fun resolveLegacy(service: NsdServiceInfo, emit: (CardReaderRemoteResolvedHost) -> Unit) {
+        @Suppress("DEPRECATION")
+        nsdManager.resolveService(
+            service,
+            object : NsdManager.ResolveListener {
+                override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
+                    Log.w(TAG, "NSD resolve failed (errorCode=$errorCode)")
+                }
+
+                override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                    serviceInfo.toResolvedHost()?.let(emit)
+                }
+            }
+        )
+    }
+
+    private fun NsdServiceInfo.toResolvedHost(): CardReaderRemoteResolvedHost? {
+        val version = attributes[TXT_KEY_VERSION]?.toString(Charsets.UTF_8)
+        if (version != PROTOCOL_VERSION) {
+            Log.w(TAG, "Dropping NSD service with unsupported version: $version")
+            return null
+        }
+        val fingerprint = attributes[TXT_KEY_FINGERPRINT]?.toString(Charsets.UTF_8)
+        if (fingerprint.isNullOrEmpty()) {
+            Log.w(TAG, "Dropping NSD service without fingerprint TXT record")
+            return null
+        }
+        val host = firstHost()
+        if (host == null) {
+            Log.w(TAG, "Dropping NSD service without resolved host: $serviceName")
+            return null
+        }
+        return CardReaderRemoteResolvedHost(
+            name = serviceName,
+            host = host,
+            port = port,
+            fingerprintBase64 = fingerprint,
+            version = version,
+        )
+    }
+
+    private fun NsdServiceInfo.firstHost(): InetAddress? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            hostAddresses.firstOrNull()
+        } else {
+            @Suppress("DEPRECATION")
+            host
         }
 
     private fun uniqueServiceName(): String {
