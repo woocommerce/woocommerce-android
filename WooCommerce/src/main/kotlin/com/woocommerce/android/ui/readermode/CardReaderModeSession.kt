@@ -26,12 +26,16 @@ import com.woocommerce.android.ui.payments.cardreader.payment.remote.RemoteTapTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,6 +47,7 @@ class CardReaderModeSession internal constructor(
     private val tlsServerFactory: TlsServerFactory,
     private val nsdFactory: NsdFactory,
     private val remoteTokenProviderFactory: RemoteTokenProviderFactory,
+    private val disconnectScope: CoroutineScope = defaultDisconnectScope(),
 ) {
     @Inject
     constructor(
@@ -58,56 +63,54 @@ class CardReaderModeSession internal constructor(
         remoteTokenProviderFactory = RemoteTokenProviderFactory { RemoteTokenChannelProvider() },
     )
 
-    private var sessionJob: Job? = null
+    private var sessionScope: CoroutineScope? = null
     private var tlsServer: RemoteReaderTlsServer? = null
     private var nsdRegistration: NsdRegistration? = null
     private var remoteTokenProvider: RemoteTokenChannelProvider? = null
     private var connection: RemoteReaderConnection? = null
     private var readerWasConnected: Boolean = false
 
-    suspend fun start(scope: CoroutineScope) {
-        val server = tlsServerFactory.create()
-        tlsServer = server
-        server.start()
-
-        val nsd = nsdFactory.create(appContext)
-        val registration = nsd.advertise(server.port, server.fingerprint)
-        nsdRegistration = registration
-
-        val deviceName = Build.MODEL ?: DEFAULT_DEVICE_NAME
-        val fingerprintSuffix = RemoteReaderFingerprint.suffix4FromBase64(server.fingerprint)
-
-        bridge.push(
-            RemoteTapToPayReadyToPair(
-                deviceName = deviceName,
-                fingerprintSuffix = fingerprintSuffix,
-                onPrimaryActionClicked = { bridge.emitEvent(ExitCardReaderMode) },
-            )
-        )
-
-        sessionJob = scope.launch {
-            runCatching { acceptAndRunProtocolLoop(server) }
-                .onFailure { WooLog.e(CARD_READER, "Card reader mode session ended with error", it) }
+    fun start(parentScope: CoroutineScope) {
+        if (sessionScope != null) return
+        val parentJob = parentScope.coroutineContext[Job]
+        val scope = CoroutineScope(parentScope.coroutineContext + SupervisorJob(parentJob))
+        sessionScope = scope
+        scope.launch {
+            @Suppress("TooGenericExceptionCaught")
+            try {
+                runSession()
+            } catch (c: CancellationException) {
+                throw c
+            } catch (t: Throwable) {
+                WooLog.e(CARD_READER, "Card reader mode session ended with error", t)
+            } finally {
+                cleanupSync()
+            }
         }
     }
 
     fun stop() {
-        sessionJob?.cancel()
-        sessionJob = null
-        runCatching { connection?.close() }
-        connection = null
-        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
-        runCatching { remoteTokenProvider?.close() }
-        remoteTokenProvider = null
-        runCatching { nsdRegistration?.close() }
-        nsdRegistration = null
-        runCatching { tlsServer?.close() }
-        tlsServer = null
-        runCatching { bridge.clear() }
+        val scope = sessionScope ?: return
+        sessionScope = null
+        scope.cancel()
         if (readerWasConnected) {
             readerWasConnected = false
-            runCatching { runBlocking { cardReaderManager.disconnectReader() } }
+            disconnectScope.launch {
+                runCatching { cardReaderManager.disconnectReader() }
+            }
         }
+    }
+
+    private suspend fun runSession() {
+        val server = tlsServerFactory.create().also { tlsServer = it }
+        server.start()
+
+        val registration = nsdFactory.create(appContext).advertise(server.port, server.fingerprint)
+        nsdRegistration = registration
+
+        pushReadyToPair(server)
+
+        acceptAndRunProtocolLoop(server)
     }
 
     private suspend fun acceptAndRunProtocolLoop(server: RemoteReaderTlsServer) {
@@ -141,35 +144,40 @@ class CardReaderModeSession internal constructor(
         request: ConnectRequest,
         accepted: RemoteReaderConnection,
         tokenProvider: RemoteTokenChannelProvider,
-    ) {
-        runCatching {
-            tokenProvider.supply(request.connectionToken)
-            val reader = discoverFirstTapToPayReader()
-            cardReaderManager.startConnectionToReader(reader, request.locationId)
-            reader
-        }.onSuccess { reader ->
-            readerWasConnected = true
-            accepted.send(ConnectAck(requestId = request.requestId, readerSerial = reader.id))
-            bridge.push(
-                RemoteTapToPayWaitingForPayment(
-                    tabletName = null,
-                    onPrimaryActionClicked = { bridge.emitEvent(ExitCardReaderMode) },
+    ) = coroutineScope {
+        // supply() suspends on a rendezvous channel until the Stripe SDK calls fetchConnectionToken
+        // during startConnectionToReader; launch it so the outer coroutine can proceed.
+        val supplyJob = launch { tokenProvider.supply(request.connectionToken) }
+        try {
+            runCatching {
+                val reader = discoverFirstTapToPayReader()
+                cardReaderManager.startConnectionToReader(reader, request.locationId)
+                reader
+            }.onSuccess { reader ->
+                readerWasConnected = true
+                accepted.send(ConnectAck(requestId = request.requestId, readerSerial = reader.id))
+                bridge.push(
+                    RemoteTapToPayWaitingForPayment(
+                        tabletName = null,
+                        onPrimaryActionClicked = { bridge.emitEvent(ExitCardReaderMode) },
+                    )
                 )
-            )
-        }.onFailure { err ->
-            accepted.send(
-                ErrorMessage(
-                    requestId = request.requestId,
-                    code = CODE_CONNECT_FAILED,
-                    description = err.message.orEmpty(),
+            }.onFailure { err ->
+                accepted.send(
+                    ErrorMessage(
+                        requestId = request.requestId,
+                        code = CODE_CONNECT_FAILED,
+                        description = err.message.orEmpty(),
+                    )
                 )
-            )
-            pushReadyToPair()
+                tlsServer?.let { pushReadyToPair(it) }
+            }
+        } finally {
+            supplyJob.cancel()
         }
     }
 
-    private fun pushReadyToPair() {
-        val server = tlsServer ?: return
+    private fun pushReadyToPair(server: RemoteReaderTlsServer) {
         bridge.push(
             RemoteTapToPayReadyToPair(
                 deviceName = Build.MODEL ?: DEFAULT_DEVICE_NAME,
@@ -204,16 +212,25 @@ class CardReaderModeSession internal constructor(
                 description = "Payment collection deferred to WOOMOB-2739-b",
             )
         )
-        pushWaitingForPayment()
-    }
-
-    private fun pushWaitingForPayment() {
         bridge.push(
             RemoteTapToPayWaitingForPayment(
                 tabletName = null,
                 onPrimaryActionClicked = { bridge.emitEvent(ExitCardReaderMode) },
             )
         )
+    }
+
+    private fun cleanupSync() {
+        runCatching { connection?.close() }
+        connection = null
+        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
+        runCatching { remoteTokenProvider?.close() }
+        remoteTokenProvider = null
+        runCatching { nsdRegistration?.close() }
+        nsdRegistration = null
+        runCatching { tlsServer?.close() }
+        tlsServer = null
+        runCatching { bridge.clear() }
     }
 
     fun interface TlsServerFactory {
@@ -232,5 +249,8 @@ class CardReaderModeSession internal constructor(
         private const val CODE_CONNECT_FAILED = "connect_failed"
         private const val CODE_NOT_IMPLEMENTED = "not_implemented"
         private const val DEFAULT_DEVICE_NAME = "Android"
+
+        private fun defaultDisconnectScope(): CoroutineScope =
+            CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }
 }

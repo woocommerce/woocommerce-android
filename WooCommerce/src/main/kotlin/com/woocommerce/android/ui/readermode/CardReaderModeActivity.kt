@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,7 +36,7 @@ class CardReaderModeActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch { session.start(lifecycleScope) }
+        session.start(lifecycleScope)
     }
 
     override fun onDestroy() {
