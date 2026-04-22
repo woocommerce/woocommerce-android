@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.orders.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -49,9 +48,6 @@ class WooPosOrdersListViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosOrdersListState> = _state.asStateFlow()
-
-    private val _openUrlEvent = MutableSharedFlow<String>()
-    val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
@@ -216,9 +212,7 @@ class WooPosOrdersListViewModel @Inject constructor(
     }
 
     fun onOrdersEmptyActionClicked() {
-        viewModelScope.launch {
-            _openUrlEvent.emit(AppUrls.URL_LEARN_MORE_ORDERS)
-        }
+        onRefresh()
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
