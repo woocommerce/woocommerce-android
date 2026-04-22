@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.woopos.orders
 import androidx.compose.runtime.Immutable
 import com.woocommerce.android.model.Order.Status
 
-/**
- * Shared types used by both the list and detail ViewModels and the UI layer.
- */
 object WooPosOrdersState {
 
     @Immutable
