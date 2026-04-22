@@ -102,7 +102,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         loadOrder(orderId)
     }
 
-    fun loadOrder(orderId: Long) {
+    private fun loadOrder(orderId: Long) {
         lastRequestedOrderId = orderId
         sideLoadJob?.cancel()
         refreshOrderJob?.cancel()
