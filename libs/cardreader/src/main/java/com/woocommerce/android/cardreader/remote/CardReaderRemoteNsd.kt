@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.InetAddress
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.random.Random
 
 @Suppress("DEPRECATION")
@@ -51,7 +53,7 @@ internal class CardReaderRemoteNsd(
                     val cont = registrationContinuation
                     registrationContinuation = null
                     if (cont != null && cont.isActive) {
-                        cont.resume(info ?: serviceInfo)
+                        cont.resumeWithException(IOException("NSD registration failed (errorCode=$errorCode)"))
                     } else {
                         Log.w(TAG, "NSD registration failed (errorCode=$errorCode)")
                     }
