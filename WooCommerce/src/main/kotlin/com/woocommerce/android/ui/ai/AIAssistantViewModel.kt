@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.ai.model.AIAssistantEvent
 import com.woocommerce.android.ui.ai.model.ChatMessage
 import com.woocommerce.android.ui.ai.model.ChatMessage.Role
+import com.woocommerce.android.ui.ai.model.MessageContent
+import com.woocommerce.android.ui.ai.parser.AssistantResponseParser
 import com.woocommerce.android.ui.ai.repository.AIAssistantRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -95,7 +97,7 @@ class AIAssistantViewModel @Inject constructor(
                             role = Role.ASSISTANT,
                             content = event.fullText
                         )
-                        addMessageToUi(assistantMessage)
+                        addParsedAssistantMessageToUi(assistantMessage)
                         conversationHistory.add(userMessage)
                         conversationHistory.add(assistantMessage)
                         _uiState.update { it.copy(isLoading = false) }
@@ -127,8 +129,26 @@ class AIAssistantViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
+    fun onOrderClicked(orderId: Long) {
+        // TODO: Navigate to order detail
+    }
+
+    fun onProductClicked(productId: Long) {
+        // TODO: Navigate to product detail
+    }
+
     private fun addMessageToUi(message: ChatMessage) {
         _uiState.update { it.copy(messages = it.messages + UiChatMessage.fromChatMessage(message)) }
+    }
+
+    private fun addParsedAssistantMessageToUi(message: ChatMessage) {
+        val segments = AssistantResponseParser.parse(message.content ?: "")
+        val uiMessage = UiChatMessage(
+            text = message.content ?: "",
+            contentSegments = segments,
+            isAssistant = true
+        )
+        _uiState.update { it.copy(messages = it.messages + uiMessage) }
     }
 
     private fun addStatusMessage(text: String) {
@@ -179,13 +199,16 @@ class AIAssistantViewModel @Inject constructor(
 
     data class UiChatMessage(
         val text: String,
+        val contentSegments: List<MessageContent> = listOf(MessageContent.Text(text)),
         val isAssistant: Boolean = false,
         val isStatus: Boolean = false
     ) {
         companion object {
             fun fromChatMessage(message: ChatMessage): UiChatMessage {
+                val content = message.content ?: ""
                 return UiChatMessage(
-                    text = message.content ?: "",
+                    text = content,
+                    contentSegments = listOf(MessageContent.Text(content)),
                     isAssistant = message.role == Role.ASSISTANT
                 )
             }

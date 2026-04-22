@@ -16,15 +16,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.ai.AIAssistantViewModel.UiChatMessage
+import com.woocommerce.android.ui.ai.model.MessageContent
 
 @Composable
 fun ChatMessageItem(
     message: UiChatMessage,
+    onOrderClicked: (Long) -> Unit,
+    onProductClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when {
         message.isStatus -> StatusMessageBubble(text = message.text, modifier = modifier)
-        message.isAssistant -> AssistantMessageBubble(text = message.text, modifier = modifier)
+        message.isAssistant -> AssistantMessageBubble(
+            contentSegments = message.contentSegments,
+            onOrderClicked = onOrderClicked,
+            onProductClicked = onProductClicked,
+            modifier = modifier
+        )
         else -> UserMessageBubble(text = message.text, modifier = modifier)
     }
 }
@@ -55,24 +63,48 @@ private fun UserMessageBubble(
 
 @Composable
 private fun AssistantMessageBubble(
-    text: String,
+    contentSegments: List<MessageContent>,
+    onOrderClicked: (Long) -> Unit,
+    onProductClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
     ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.fillMaxWidth(0.8f)
+        Column(
+            modifier = Modifier.fillMaxWidth(0.95f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = text,
-                modifier = Modifier.padding(12.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            contentSegments.forEach { segment ->
+                when (segment) {
+                    is MessageContent.Text -> {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        ) {
+                            Text(
+                                text = segment.value,
+                                modifier = Modifier.padding(12.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    is MessageContent.OrderCards -> {
+                        OrderCardList(
+                            orders = segment.orders,
+                            onOrderClicked = onOrderClicked
+                        )
+                    }
+                    is MessageContent.ProductCards -> {
+                        ProductCardList(
+                            products = segment.products,
+                            onProductClicked = onProductClicked
+                        )
+                    }
+                }
+            }
         }
     }
 }

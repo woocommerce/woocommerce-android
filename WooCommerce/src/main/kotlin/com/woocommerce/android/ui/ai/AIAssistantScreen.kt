@@ -50,6 +50,8 @@ fun AIAssistantScreen(
         onSendMessage = viewModel::onSendMessage,
         onDismissError = viewModel::onDismissError,
         onRetry = viewModel::onRetry,
+        onOrderClicked = viewModel::onOrderClicked,
+        onProductClicked = viewModel::onProductClicked,
         modifier = modifier
     )
 }
@@ -63,6 +65,8 @@ fun AIAssistantScreen(
     onSendMessage: () -> Unit,
     onDismissError: () -> Unit,
     onRetry: () -> Unit,
+    onOrderClicked: (Long) -> Unit = {},
+    onProductClicked: (Long) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -139,6 +143,8 @@ fun AIAssistantScreen(
                     MessageList(
                         messages = uiState.messages,
                         isLoading = uiState.isLoading,
+                        onOrderClicked = onOrderClicked,
+                        onProductClicked = onProductClicked,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -194,6 +200,8 @@ private fun EmptyState(
 private fun MessageList(
     messages: List<UiChatMessage>,
     isLoading: Boolean,
+    onOrderClicked: (Long) -> Unit,
+    onProductClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -211,7 +219,11 @@ private fun MessageList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(messages) { message ->
-            ChatMessageItem(message = message)
+            ChatMessageItem(
+                message = message,
+                onOrderClicked = onOrderClicked,
+                onProductClicked = onProductClicked
+            )
         }
 
         if (isLoading && messages.none { it.isStatus }) {
