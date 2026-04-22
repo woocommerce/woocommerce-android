@@ -9,7 +9,7 @@ import org.mockito.kotlin.verifyNoInteractions
 
 class CompositeConnectionTokenProviderTest {
     private val defaultDelegate: ConnectionTokenProvider = mock()
-    private val altDelegate: ConnectionTokenProvider = mock()
+    private val remoteDelegate: RemoteTokenChannelProvider = mock()
     private val callback: ConnectionTokenCallback = mock()
 
     private val sut = CompositeConnectionTokenProvider(defaultDelegate)
@@ -24,26 +24,26 @@ class CompositeConnectionTokenProviderTest {
 
         // THEN
         verify(defaultDelegate).fetchConnectionToken(callback)
-        verifyNoInteractions(altDelegate)
+        verifyNoInteractions(remoteDelegate)
     }
 
     @Test
-    fun `given use(alt) was called, when fetchConnectionToken is called, then alt delegate receives it`() {
+    fun `given useRemote was called, when fetchConnectionToken is called, then remote delegate receives it`() {
         // GIVEN
-        sut.use(altDelegate)
+        sut.useRemote(remoteDelegate)
 
         // WHEN
         sut.fetchConnectionToken(callback)
 
         // THEN
-        verify(altDelegate).fetchConnectionToken(callback)
+        verify(remoteDelegate).fetchConnectionToken(callback)
         verifyNoInteractions(defaultDelegate)
     }
 
     @Test
-    fun `given alt was active, when useDefault is called, then default delegate receives fetch`() {
+    fun `given remote was active, when useDefault is called, then default delegate receives fetch`() {
         // GIVEN
-        sut.use(altDelegate)
+        sut.useRemote(remoteDelegate)
         sut.useDefault()
 
         // WHEN
@@ -51,6 +51,6 @@ class CompositeConnectionTokenProviderTest {
 
         // THEN
         verify(defaultDelegate).fetchConnectionToken(callback)
-        verifyNoInteractions(altDelegate)
+        verifyNoInteractions(remoteDelegate)
     }
 }
