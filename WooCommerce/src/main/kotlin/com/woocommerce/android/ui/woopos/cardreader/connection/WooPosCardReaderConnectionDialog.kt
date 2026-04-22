@@ -53,7 +53,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
-import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderTipStrip
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHintStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -240,7 +240,7 @@ private fun WooPosCardReaderDialogInternal(
             viewModel.dismissDialog()
             onDismiss()
         },
-        onTipClick = viewModel::onRemoteTapToPayTipClicked,
+        onHintClick = viewModel::onRemoteTapToPayHintClicked,
     )
 }
 
@@ -251,7 +251,7 @@ fun WooPosCardReaderConnectionDialogContent(
     state: WooPosCardReaderConnectionState,
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
-    onTipClick: () -> Unit = {},
+    onHintClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -280,7 +280,7 @@ fun WooPosCardReaderConnectionDialogContent(
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
                         isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
-                        onTipClick = onTipClick,
+                        onHintClick = onHintClick,
                     )
                 }
                 is WooPosCardReaderConnectionState.ReaderFound -> {
@@ -463,16 +463,16 @@ private fun CardReaderDialogContent(
 @Composable
 private fun ScanningContent(
     isRemoteTapToPayEnabled: Boolean,
-    onTipClick: () -> Unit,
+    onHintClick: () -> Unit,
 ) {
-    val showTip = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
-    when (showTip) {
+    val showHint = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
+    when (showHint) {
         true -> Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
             ScanningDialogBody()
-            WooPosRemoteReaderTipStrip(onClick = onTipClick)
+            WooPosRemoteReaderHintStrip(onClick = onHintClick)
         }
         false -> ScanningDialogBody()
     }

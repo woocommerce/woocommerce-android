@@ -4106,7 +4106,7 @@
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
-    <string name="woopos_remote_ttp_tip_strip_text">Use an Android phone as a card reader</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
     <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
     <string name="woopos_remote_ttp_explainer_setup_heading">Set up your phone</string>

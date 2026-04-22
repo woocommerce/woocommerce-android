@@ -20,7 +20,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
         controllerFactory.create(viewModelScope)
     }
 
-    fun onRemoteTapToPayTipClicked() = controller.showRemoteTapToPayExplainer()
+    fun onRemoteTapToPayHintClicked() = controller.showRemoteTapToPayExplainer()
 
     val state: StateFlow<WooPosCardReaderConnectionState> = controller.state
 

@@ -18,12 +18,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosRemoteReaderTipStrip(
+fun WooPosRemoteReaderHintStrip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WooPosText(
-        text = stringResource(R.string.woopos_remote_ttp_tip_strip_text),
+        text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.primary,
         textAlign = TextAlign.Center,
@@ -40,8 +40,8 @@ fun WooPosRemoteReaderTipStrip(
 
 @WooPosPreview
 @Composable
-fun WooPosRemoteReaderTipStripPreview() {
+fun WooPosRemoteReaderHintStripPreview() {
     WooPosTheme {
-        WooPosRemoteReaderTipStrip(onClick = {})
+        WooPosRemoteReaderHintStrip(onClick = {})
     }
 }
