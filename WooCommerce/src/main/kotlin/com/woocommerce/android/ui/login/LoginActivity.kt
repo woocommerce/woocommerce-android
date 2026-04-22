@@ -53,6 +53,9 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPayload
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -60,6 +63,8 @@ import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -110,7 +115,9 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginSiteCredentialsFragment.Listener {
+    LoginSiteCredentialsFragment.Listener,
+    QrLoginPrologueFragment.Listener,
+    QrLoginScannerFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -159,6 +166,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var registerDevice: RegisterDevice
+
+    @Inject
+    internal lateinit var featureFlagRepository: FeatureFlagRepository
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -263,11 +273,71 @@ class LoginActivity :
     }
 
     private fun showPrologue() {
+        if (featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)) {
+            showQrLoginPrologueFragment()
+        } else if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+            showPrologueCarouselFragment()
+        } else {
+            showPrologueFragment()
+        }
+    }
+
+    private fun showQrLoginPrologueFragment() = lifecycleScope.launch {
+        withStarted {
+            val existing = supportFragmentManager.findFragmentByTag(QrLoginPrologueFragment.TAG) as? QrLoginPrologueFragment
+            changeFragment(existing ?: QrLoginPrologueFragment(), true, QrLoginPrologueFragment.TAG)
+        }
+    }
+
+    override fun onQrLoginScanClicked() {
+        changeFragment(QrLoginScannerFragment(), true, QrLoginScannerFragment.TAG)
+    }
+
+    override fun onQrLoginFallbackClicked() {
         if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
             showPrologueCarouselFragment()
         } else {
             showPrologueFragment()
         }
+    }
+
+    override fun onQrLoginScanned(payload: QrLoginPayload) {
+        when (payload) {
+            is QrLoginPayload.SiteAppPassword -> handleQrSiteAppPassword(payload)
+            is QrLoginPayload.WpComToken -> handleQrWpComToken()
+            is QrLoginPayload.UrlOnly -> handleQrUrlOnly(payload)
+            QrLoginPayload.Invalid -> Unit
+        }
+    }
+
+    private fun handleQrSiteAppPassword(payload: QrLoginPayload.SiteAppPassword) {
+        // Application Password auth is wired in a follow-up PR; landing on the existing
+        // site-credentials screen with the URL and username pre-filled is strictly better
+        // than today's type-the-URL-yourself experience.
+        appPrefsWrapper.setLoginSiteAddress(payload.siteUrl)
+        showUsernamePasswordScreen(
+            siteAddress = payload.siteUrl,
+            endpointAddress = null,
+            inputUsername = payload.username,
+            inputPassword = payload.appPassword
+        )
+    }
+
+    private fun handleQrWpComToken() {
+        // Token-based .com exchange is wired in a follow-up PR; fall back to the standard
+        // .com email/password screen so the merchant still reaches a usable login state.
+        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
+        showEmailLoginScreen()
+    }
+
+    private fun handleQrUrlOnly(payload: QrLoginPayload.UrlOnly) {
+        appPrefsWrapper.setLoginSiteAddress(payload.siteUrl)
+        showUsernamePasswordScreen(
+            siteAddress = payload.siteUrl,
+            endpointAddress = null,
+            inputUsername = null,
+            inputPassword = null
+        )
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
