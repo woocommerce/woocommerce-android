@@ -257,6 +257,7 @@ class WooPosOrdersListViewModel @Inject constructor(
                         val elapsedMs = mark.elapsedNow().inWholeMilliseconds
                         ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
 
+                        coordinator.selectOrder(null)
                         _state.value = WooPosOrdersListState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
