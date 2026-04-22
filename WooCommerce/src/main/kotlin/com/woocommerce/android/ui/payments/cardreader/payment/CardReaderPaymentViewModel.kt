@@ -17,8 +17,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.RemoteTapToPayReaderStateBridge
+import com.woocommerce.android.ui.payments.cardreader.readermode.CardReaderModeExit
+import com.woocommerce.android.ui.payments.cardreader.readermode.CardReaderModeStateBridge
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -59,7 +59,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
-    private val remoteTapToPayStateBridge: RemoteTapToPayReaderStateBridge,
+    private val remoteTapToPayStateBridge: CardReaderModeStateBridge,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -136,7 +136,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun onCancelClicked() {
         when (viewStateData.value) {
             is RemoteTapToPayReadyToPair,
-            is RemoteTapToPayWaitingForPayment -> remoteTapToPayStateBridge.emitEvent(ExitCardReaderMode)
+            is RemoteTapToPayWaitingForPayment -> remoteTapToPayStateBridge.emitEvent(CardReaderModeExit)
             else -> viewStateData.value?.onSecondaryActionClicked?.invoke()
         }
     }
