@@ -34,6 +34,7 @@ internal class CardReaderRemoteTlsServer(
         )
 
     suspend fun start(): Unit = withContext(ioDispatcher) {
+        check(serverSocket == null) { "Server already started" }
         sweepOrphanAliases()
 
         val alias = "$ALIAS_PREFIX${UUID.randomUUID()}"

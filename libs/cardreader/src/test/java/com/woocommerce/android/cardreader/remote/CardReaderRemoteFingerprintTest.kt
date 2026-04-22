@@ -12,16 +12,16 @@ class CardReaderRemoteFingerprintTest {
         // Precomputed SHA-256 of bytes [1,2,3,4,5] in URL-safe base64 no padding:
         // hex: 74f81fe167d99b4cb41d6d0ccda82278caee9f3e2f25d5e5a3936ff3dcec60d0
         val expectedBase64 = "dPgf4WfZm0y0HW0MzagieMrunz4vJdXlo5Nv89zsYNA"
-        val expectedSuffix = "74F8"
+        val expectedPairingCode = "74F8"
         val cert = StubCert(expectedDerBytes)
 
         // WHEN
         val base64 = CardReaderRemoteFingerprint.sha256Base64(cert)
-        val suffix = CardReaderRemoteFingerprint.suffix4(cert)
+        val pairingCode = CardReaderRemoteFingerprint.pairingCode(cert)
 
         // THEN
         assertThat(base64).isEqualTo(expectedBase64)
-        assertThat(suffix).isEqualTo(expectedSuffix)
+        assertThat(pairingCode).isEqualTo(expectedPairingCode)
     }
 
     private class StubCert(private val der: ByteArray) : X509Certificate() {
