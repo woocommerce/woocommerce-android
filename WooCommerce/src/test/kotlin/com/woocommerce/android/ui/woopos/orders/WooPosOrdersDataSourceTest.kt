@@ -382,6 +382,71 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
+    fun `when loadMore without query succeeds, then new orders appended to cache`() = runTest {
+        // GIVEN
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+        val firstPayload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = emptyList(),
+            canLoadMore = true
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
+            .thenReturn(firstPayload)
+        sut.loadOrders().toList(mutableListOf())
+
+        val e3 = OrderEntity(LocalOrRemoteId.LocalId(1), 3L)
+        val e4 = OrderEntity(LocalOrRemoteId.LocalId(1), 4L)
+        val mapped3 = OrderTestUtils.generateTestOrder(orderId = 3)
+        val mapped4 = OrderTestUtils.generateTestOrder(orderId = 4)
+        whenever(orderMapper.toAppModel(e3)).thenReturn(mapped3)
+        whenever(orderMapper.toAppModel(e4)).thenReturn(mapped4)
+        val page2Payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
+            canLoadMore = false
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
+            .thenReturn(page2Payload)
+
+        // WHEN
+        sut.loadMore()
+
+        // THEN
+        verify(ordersCache).appendAll(listOf(mapped3, mapped4))
+    }
+
+    @Test
+    fun `when loadMore with search query succeeds, then cache is not appended`() = runTest {
+        // GIVEN
+        val query = "abc"
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+        val firstPayload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = emptyList(),
+            canLoadMore = true
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), eq(query), eq(8)))
+            .thenReturn(firstPayload)
+        sut.searchOrders(query)
+
+        val e1 = OrderEntity(LocalOrRemoteId.LocalId(1), 9L)
+        whenever(orderMapper.toAppModel(e1)).thenReturn(OrderTestUtils.generateTestOrder(orderId = 9))
+        val page2Payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e1 to emptyList()),
+            canLoadMore = false
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), eq(query), eq(8)))
+            .thenReturn(page2Payload)
+
+        // WHEN
+        sut.loadMore(query)
+
+        // THEN
+        verify(ordersCache, never()).appendAll(any())
+    }
+
+    @Test
     fun `when loadMore fails, then page does not advance and hasMorePages unchanged`() = runTest {
         whenever(ordersCache.getAll()).thenReturn(emptyList())
 
