@@ -212,6 +212,16 @@
 
     <string name="login_prologue_start_new_store">Starting a new store?</string>
 
+    <!-- QR login prologue -->
+    <string name="login_qr_prologue_title">Sign in with a QR code</string>
+    <string name="login_qr_prologue_instruction">Go to woo.com/mobilelogin on your computer, then tap Scan.</string>
+    <string name="login_qr_prologue_scan_button">Scan QR code</string>
+    <string name="login_qr_prologue_fallback_link">Don\'t have your computer?</string>
+    <string name="login_qr_scanner_title">Scan login QR</string>
+    <string name="login_qr_scanner_hint">Point your camera at the QR on woo.com/mobilelogin</string>
+    <string name="login_qr_scanner_error_generic">We couldn\'t read that QR code. Please try again.</string>
+    <string name="login_qr_scanner_error_payload">This QR isn\'t a WooCommerce login code.</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_verifying_site">Verifying site…</string>
