@@ -8,6 +8,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -61,8 +62,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
                 when (event) {
                     is CardReaderDiscoveryEvents.Started -> send(WooPosUnifiedDiscoveryEvent.Started)
                     is CardReaderDiscoveryEvents.ReadersFound -> {
-                        mutex.withLock { state.bluetoothReaders = event.list }
-                        sendSnapshot(mutex, state)
+                        updateBluetoothAndSendSnapshot(mutex, state, event.list)
                     }
                     is CardReaderDiscoveryEvents.Failed -> send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
                     is CardReaderDiscoveryEvents.Succeeded -> send(WooPosUnifiedDiscoveryEvent.Succeeded)
@@ -72,26 +72,51 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
 
         if (featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)) {
             launch {
-                remoteDiscovery.discover().collect { phone ->
-                    mutex.withLock { state.phonesByName[phone.name] = phone }
-                    sendSnapshot(mutex, state)
-                }
+                remoteDiscovery.discover()
+                    // NSD failures must not tear down BT discovery — degrade to BT-only silently.
+                    .catch { }
+                    .collect { phone ->
+                        addPhoneAndSendSnapshot(mutex, state, phone)
+                    }
             }
         }
     }
 
-    private suspend fun ProducerScope<WooPosUnifiedDiscoveryEvent>.sendSnapshot(
+    private suspend fun ProducerScope<WooPosUnifiedDiscoveryEvent>.updateBluetoothAndSendSnapshot(
         mutex: Mutex,
         state: DiscoveryState,
+        readers: List<CardReader>,
     ) {
-        val snapshot = mutex.withLock {
-            state.bluetoothReaders.map(WooPosDiscoveredReader::Bluetooth) + state.phonesByName.values
+        mutex.withLock {
+            state.bluetoothReaders = readers
+            send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
         }
-        send(WooPosUnifiedDiscoveryEvent.ReadersFound(snapshot))
+    }
+
+    private suspend fun ProducerScope<WooPosUnifiedDiscoveryEvent>.addPhoneAndSendSnapshot(
+        mutex: Mutex,
+        state: DiscoveryState,
+        phone: WooPosDiscoveredReader.Phone,
+    ) {
+        mutex.withLock {
+            val key = phone.fingerprintBase64
+            val isUpdate = state.phonesByFingerprint.containsKey(key)
+            if (isUpdate || state.phonesByFingerprint.size < MAX_DISCOVERED_PHONES) {
+                state.phonesByFingerprint[key] = phone
+                send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
+            }
+        }
     }
 
     private class DiscoveryState {
         var bluetoothReaders: List<CardReader> = emptyList()
-        val phonesByName: LinkedHashMap<String, WooPosDiscoveredReader.Phone> = linkedMapOf()
+        val phonesByFingerprint: LinkedHashMap<String, WooPosDiscoveredReader.Phone> = linkedMapOf()
+
+        fun snapshot(): List<WooPosDiscoveredReader> =
+            bluetoothReaders.map(WooPosDiscoveredReader::Bluetooth) + phonesByFingerprint.values
+    }
+
+    private companion object {
+        const val MAX_DISCOVERED_PHONES = 32
     }
 }

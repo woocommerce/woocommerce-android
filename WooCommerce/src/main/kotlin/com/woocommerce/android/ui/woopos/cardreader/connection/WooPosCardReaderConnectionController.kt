@@ -313,7 +313,7 @@ class WooPosCardReaderConnectionController(
                 val bluetoothReaders = event.readers
                     .filterIsInstance<WooPosDiscoveredReader.Bluetooth>()
                     .map { it.cardReader }
-                logger.d("Found ${bluetoothReaders.size} bluetooth readers (of ${event.readers.size} total)")
+                logger.d("Found ${bluetoothReaders.size} readers")
                 handleReadersFound(bluetoothReaders)
             }
             is WooPosUnifiedDiscoveryEvent.Failed -> {
