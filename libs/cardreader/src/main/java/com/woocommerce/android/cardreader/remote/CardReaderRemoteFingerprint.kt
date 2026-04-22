@@ -12,11 +12,11 @@ internal object CardReaderRemoteFingerprint {
 
     fun sha256Base64(cert: X509Certificate): String = encodeBase64(sha256(cert))
 
-    fun suffix4(cert: X509Certificate): String = suffix4FromBytes(sha256(cert))
+    fun pairingCode(cert: X509Certificate): String = pairingCodeFromBytes(sha256(cert))
 
-    fun suffix4FromBase64(fingerprintBase64: String): String = suffix4FromBytes(decodeBase64(fingerprintBase64))
+    fun pairingCodeFromBase64(fingerprintBase64: String): String = pairingCodeFromBytes(decodeBase64(fingerprintBase64))
 
-    private fun suffix4FromBytes(fingerprint: ByteArray): String {
+    private fun pairingCodeFromBytes(fingerprint: ByteArray): String {
         require(fingerprint.size >= 2) { "Fingerprint too short" }
         return fingerprint.take(2).joinToString("") { "%02X".format(it) }
     }
