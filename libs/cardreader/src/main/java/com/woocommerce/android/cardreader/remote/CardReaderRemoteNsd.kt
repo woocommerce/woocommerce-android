@@ -92,7 +92,7 @@ internal class CardReaderRemoteNsd(
             }
 
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-                Log.w(TAG, "NSD start discovery failed (errorCode=$errorCode)")
+                close(IOException("NSD start discovery failed (errorCode=$errorCode)"))
             }
 
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
@@ -110,7 +110,7 @@ internal class CardReaderRemoteNsd(
 
         runCatching {
             nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
-        }.onFailure { Log.w(TAG, "Failed to start NSD discovery", it) }
+        }.onFailure { close(it) }
 
         awaitClose {
             runCatching { nsdManager.stopServiceDiscovery(discoveryListener) }
