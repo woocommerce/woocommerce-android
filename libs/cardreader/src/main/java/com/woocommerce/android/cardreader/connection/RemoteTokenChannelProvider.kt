@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class RemoteTokenChannelProvider : ConnectionTokenProvider, AutoCloseable {
     private val tokens = Channel<String>(Channel.RENDEZVOUS)
@@ -20,18 +20,27 @@ class RemoteTokenChannelProvider : ConnectionTokenProvider, AutoCloseable {
     }
 
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
-        if (!scope.isActive) {
-            callback.onFailure(ConnectionTokenException("Remote token provider is closed"))
-            return
-        }
-        scope.launch {
+        val delivered = AtomicBoolean(false)
+        val job = scope.launch {
             runCatching { tokens.receive() }
-                .onSuccess { callback.onSuccess(it) }
-                .onFailure { err ->
-                    callback.onFailure(
-                        ConnectionTokenException(err.message.orEmpty(), err)
-                    )
+                .onSuccess { token ->
+                    if (delivered.compareAndSet(false, true)) callback.onSuccess(token)
                 }
+                .onFailure { err ->
+                    if (delivered.compareAndSet(false, true)) {
+                        callback.onFailure(ConnectionTokenException(err.message.orEmpty(), err))
+                    }
+                }
+        }
+        job.invokeOnCompletion { cause ->
+            if (cause != null && delivered.compareAndSet(false, true)) {
+                callback.onFailure(
+                    ConnectionTokenException(
+                        cause.message ?: "Remote token provider is closed",
+                        cause
+                    )
+                )
+            }
         }
     }
 
