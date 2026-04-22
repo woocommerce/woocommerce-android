@@ -95,6 +95,8 @@ class CardReaderRemoteSession internal constructor(
     }
 
     private suspend fun runSession() {
+        _state.value = CardReaderRemoteSessionState.Starting
+
         val server = tlsServerFactory.create().also { tlsServer = it }
         server.start()
 

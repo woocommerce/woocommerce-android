@@ -83,8 +83,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLo
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.RemoteTapToPayReaderStateBridge
+import com.woocommerce.android.ui.payments.cardreader.readermode.CardReaderModeExit
+import com.woocommerce.android.ui.payments.cardreader.readermode.CardReaderModeStateBridge
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -182,7 +182,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentStateMapper = CardReaderPaymentStateToViewStateMapper(
         cardReaderPaymentReaderTypeStateProvider
     )
-    private val remoteTapToPayStateBridge = RemoteTapToPayReaderStateBridge()
+    private val remoteTapToPayStateBridge = CardReaderModeStateBridge()
 
     @Suppress("LongMethod")
     @Before
@@ -2751,7 +2751,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given RemoteTapToPayReadyToPair state pushed, when onCancelClicked, then ExitCardReaderMode event is emitted`() =
+    fun `given RemoteTapToPayReadyToPair state pushed, when onCancelClicked, then CardReaderModeExit event is emitted`() =
         testBlocking {
             // GIVEN
             remoteTapToPayStateBridge.push(
@@ -2766,7 +2766,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onCancelClicked()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(ExitCardReaderMode)
+            assertThat(viewModel.event.value).isEqualTo(CardReaderModeExit)
         }
 
     @Test

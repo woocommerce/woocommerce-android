@@ -1,5 +1,10 @@
-package com.woocommerce.android.ui.readermode
+package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +31,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.util.UiHelpers
+
+private const val TRANSITION_DURATION_MS = 250
 
 @Composable
 fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
@@ -42,13 +51,65 @@ fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
 
 @Composable
 private fun CardReaderModeContent(state: ViewState?) {
-    if (state == null) {
-        StartingContent()
-        return
-    }
-    Column(
+    Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize(),
+    ) {
+        AnimatedContent(
+            targetState = state,
+            label = "CardReaderModeContent",
+            transitionSpec = {
+                fadeIn(animationSpec = tween(TRANSITION_DURATION_MS)) togetherWith
+                    fadeOut(animationSpec = tween(TRANSITION_DURATION_MS))
+            },
+            contentKey = { it?.let { it::class.simpleName } ?: "null" },
+        ) { targetState ->
+            when (targetState) {
+                null, is RemoteTapToPayStarting -> StartingContent(targetState)
+                else -> StatefulContent(targetState)
+            }
+        }
+    }
+}
+
+@Composable
+private fun StartingContent(state: ViewState?) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(SPINNER_SIZE_DP),
+                strokeWidth = SPINNER_STROKE_DP,
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            Text(
+                text = stringResource(
+                    id = state?.headerLabel ?: R.string.card_reader_mode_starting_header
+                ),
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+            )
+            state?.paymentStateLabel?.let { subtitle ->
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Text(
+                    text = UiHelpers.getTextOfUiString(LocalContext.current, subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatefulContent(state: ViewState) {
+    Column(
+        modifier = Modifier
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100)),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,32 +169,14 @@ private fun CardReaderModeContent(state: ViewState?) {
     }
 }
 
-@Composable
-private fun StartingContent() {
-    Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_100)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Text(
-                text = stringResource(id = R.string.card_reader_mode_starting),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
+private val SPINNER_SIZE_DP = 72.dp
+private val SPINNER_STROKE_DP = 6.dp
 
 @PreviewLightDark
 @Composable
 fun CardReaderModeStartingPreview() {
     WooThemeWithBackground {
-        CardReaderModeContent(state = null)
+        CardReaderModeContent(state = RemoteTapToPayStarting(onPrimaryActionClicked = {}))
     }
 }
 

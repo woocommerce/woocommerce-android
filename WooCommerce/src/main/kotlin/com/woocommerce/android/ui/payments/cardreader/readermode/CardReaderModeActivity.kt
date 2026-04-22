@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.readermode
+package com.woocommerce.android.ui.payments.cardreader.readermode
 
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,7 +33,7 @@ class CardReaderModeActivity : AppCompatActivity() {
         }
 
         viewModel.events.observe(this) { event ->
-            if (event is ExitCardReaderMode) {
+            if (event is CardReaderModeExit) {
                 event.isHandled = true
                 finish()
             }
