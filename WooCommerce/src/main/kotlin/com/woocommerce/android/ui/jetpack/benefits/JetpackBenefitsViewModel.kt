@@ -51,7 +51,7 @@ class JetpackBenefitsViewModel @Inject constructor(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
             isPushNotificationsBenefitVisible = !featureFlagRepository.isEnabled(
-                FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2
+                FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1
             ),
         )
     )

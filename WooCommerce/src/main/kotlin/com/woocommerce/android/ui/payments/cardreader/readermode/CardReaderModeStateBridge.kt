@@ -36,6 +36,6 @@ class CardReaderModeStateBridge @Inject constructor() {
 
     fun emitEvent(event: MultiLiveEvent.Event) {
         event.isHandled = false
-        _events.value = event
+        _events.postValue(event)
     }
 }

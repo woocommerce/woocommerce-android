@@ -151,7 +151,10 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun onPrintResult(result: PrintJobResult) = paymentController.onPrintResult(result)
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun onCleared() = paymentController.stop()
+    public override fun onCleared() {
+        remoteTapToPayStateBridge.clear()
+        paymentController.stop()
+    }
 
     fun onBackPressed() = paymentController.onBackPressed()
 }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
 }
 
@@ -18,6 +19,13 @@ android {
         targetSdkVersion gradle.ext.targetSdkVersion
         compileSdk = gradle.ext.compileSdkVersion
     }
+
+    lint {
+        // Disabled due to kotlinx-metadata-jvm version incompatibility
+        // The lint detector expects metadata version 2.0.0 but the project uses 2.1.0
+        // This can be re-enabled once the compose lint library supports newer metadata versions
+        disable "FlowOperatorInvokedInComposition"
+    }
 }
 
 dependencies {
@@ -25,8 +33,20 @@ dependencies {
     implementation(project(":libs:fluxc"))
     implementation(project(":libs:fluxc-plugin"))
     implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.main)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.compose.ui.main)
+    implementation(libs.google.gson)
+    implementation(libs.google.guava)
+
+    ksp(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(testFixtures(project(":libs:commons")))
+    testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 }

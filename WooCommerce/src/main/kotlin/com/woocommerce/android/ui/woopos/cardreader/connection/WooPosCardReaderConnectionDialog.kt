@@ -52,6 +52,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHintStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -59,12 +61,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 
@@ -236,6 +240,7 @@ private fun WooPosCardReaderDialogInternal(
             viewModel.dismissDialog()
             onDismiss()
         },
+        onHintClick = viewModel::onRemoteTapToPayHintClicked,
     )
 }
 
@@ -246,6 +251,7 @@ fun WooPosCardReaderConnectionDialogContent(
     state: WooPosCardReaderConnectionState,
     onBackPressed: () -> Unit,
     onDismiss: () -> Unit,
+    onHintClick: () -> Unit = {},
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -268,8 +274,14 @@ fun WooPosCardReaderConnectionDialogContent(
             modifier = Modifier.fillMaxWidth()
         ) { currentState ->
             when (currentState) {
+                is WooPosCardReaderConnectionState.RemoteTapToPayExplainer -> {
+                    WooPosRemoteReaderExplainerContent(onDismiss = currentState.onDismissClicked)
+                }
                 is WooPosCardReaderConnectionState.Scanning -> {
-                    ScanningContent()
+                    ScanningContent(
+                        isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
+                        onHintClick = onHintClick,
+                    )
                 }
                 is WooPosCardReaderConnectionState.ReaderFound -> {
                     ReaderFoundContent(
@@ -449,7 +461,25 @@ private fun CardReaderDialogContent(
 }
 
 @Composable
-private fun ScanningContent() {
+private fun ScanningContent(
+    isRemoteTapToPayEnabled: Boolean,
+    onHintClick: () -> Unit,
+) {
+    val showHint = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
+    when (showHint) {
+        true -> Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ScanningDialogBody()
+            WooPosRemoteReaderHintStrip(onClick = onHintClick)
+        }
+        false -> ScanningDialogBody()
+    }
+}
+
+@Composable
+private fun ScanningDialogBody() {
     CardReaderDialogContent(
         title = stringResource(R.string.woopos_card_reader_scanning_title),
         icon = WooPosIcons.CardReaderScanning,
@@ -915,7 +945,7 @@ fun WooPosCardReaderConnectionDialogScanningPreview() {
     WooPosTheme {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning,
+            state = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = true),
             onBackPressed = {},
             onDismiss = {},
         )

@@ -9,7 +9,6 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductListAdapter(
@@ -30,8 +29,7 @@ class OrderDetailProductListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = orderItems[position]
-        val imageSize = holder.itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-        val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+        val productImage = productImageMap.get(item.uniqueId)
         (holder as ProductViewHolder).view.initView(
             orderItems[position],
             productImage,

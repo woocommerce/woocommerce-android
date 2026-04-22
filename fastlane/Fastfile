@@ -57,7 +57,8 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
 LOCAL_LIBRARIES_STRINGS_PATHS = [
   # NOTE: for those we don't set `add_ignore_attr` to true because we currently use `checkDependencies true` in `WooCommerce/build.gradle`
   # Which will correctly detect strings from the app's `strings.xml` being used by one of the module.
-  { library: 'Login Library', strings_path: './libs/login/src/main/res/values/strings.xml', source_id: 'module:login' }
+  { library: 'Login Library', strings_path: './libs/login/src/main/res/values/strings.xml', source_id: 'module:login' },
+  { library: 'POS Library', strings_path: './libs/pos/src/main/res/values/strings.xml', source_id: 'module:pos' }
 ].freeze
 
 # URL of the GlotPress project containing the app's strings

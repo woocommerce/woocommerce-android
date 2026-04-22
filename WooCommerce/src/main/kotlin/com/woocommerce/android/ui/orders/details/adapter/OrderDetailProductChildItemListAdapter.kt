@@ -11,11 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductChildItemListAdapter(
@@ -64,7 +64,7 @@ class OrderDetailProductChildItemListAdapter(
         ) {
             val item = productItem.product
             val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-            val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+            val productImage = productImageMap.get(item.uniqueId)
 
             binding.productInfoName.text = item.name
             val orderTotal = formatCurrencyForDisplay(item.total)
@@ -87,9 +87,8 @@ class OrderDetailProductChildItemListAdapter(
 
             productImage?.let {
                 val imageCornerRadius = itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 Glide.with(binding.productInfoIcon)
-                    .load(imageUrl)
+                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
                     .placeholder(R.drawable.ic_product)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .into(binding.productInfoIcon)

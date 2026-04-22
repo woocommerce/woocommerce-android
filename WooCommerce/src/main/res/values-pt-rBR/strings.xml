@@ -512,8 +512,6 @@ Language: pt_BR
     <string name="woopos_scanning_setup_device_selection_title">Configurar um scanner de código de barras</string>
     <string name="woopos_scanning_setup_barcode_content_description">Código de barras</string>
     <string name="woopos_scanning_setup_dialog_content_description">Caixa de diálogo de configuração do scanner</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Reino Unido</string>
-    <string name="woopos_eligibility_screen_US_country_name">Estados Unidos</string>
     <string name="woopos_eligibility_screen_unable_to_load">Não foi possível carregar</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">O sistema PDV não está disponível para a moeda da sua loja. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>

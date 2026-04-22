@@ -19,11 +19,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.RefundViewHolder
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 typealias ViewAddonClickListener = (Order.Item) -> Unit
@@ -115,9 +115,8 @@ class RefundProductListAdapter(
             imageMap.get(item.orderItem.productId)?.let {
                 val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 Glide.with(itemView.context)
-                    .load(imageUrl)
+                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(productImageView)
@@ -156,9 +155,8 @@ class RefundProductListAdapter(
             imageMap.get(item.orderItem.productId)?.let {
                 val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 Glide.with(itemView.context)
-                    .load(imageUrl)
+                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(productImageView)

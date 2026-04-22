@@ -28,6 +28,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ImageGalleryItemBinding
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Product
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -422,13 +423,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 glideRequest.load(Uri.parse(image.source)).apply(glideTransform).into(viewBinding.productImage)
             } else if (viewType == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(
+                glideRequest.loadPhotonUrlWithFallback(
                     image.source,
                     0,
                     imageSize,
                     PhotonUtils.Quality.LOW
-                )
-                glideRequest.load(photonUrl).apply(glideTransform).into(viewBinding.productImage)
+                ).apply(glideTransform).into(viewBinding.productImage)
             }
 
             when (viewType) {

@@ -25,6 +25,8 @@ import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.CoroutineScope
@@ -53,8 +55,12 @@ class WooPosCardReaderConnectionController(
     private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
+    featureFlagRepository: FeatureFlagRepository,
 ) {
-    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(WooPosCardReaderConnectionState.Scanning)
+    private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
+    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(
+        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+    )
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
 
     private val _event = MutableSharedFlow<ControllerEvent>()
@@ -71,13 +77,36 @@ class WooPosCardReaderConnectionController(
     private var isBluetoothPermissionPermanentlyDenied = false
     private var isLocationPermissionPermanentlyDenied = false
 
+    fun showRemoteTapToPayExplainer() {
+        if (_state.value !is WooPosCardReaderConnectionState.Scanning) return
+        discoveryJob?.cancel()
+        _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
+            onDismissClicked = ::hideRemoteTapToPayExplainer,
+        )
+    }
+
+    fun hideRemoteTapToPayExplainer() {
+        if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        _state.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+        )
+        startDiscovery()
+    }
+
+    private fun enterScanningState() {
+        if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        _state.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+        )
+    }
+
     fun startConnectionFlow() {
         isRequiredUpdate = true
         if (connectionFlowJob?.isActive == true) {
             logger.d("Connection flow already in progress, ignoring")
             return
         }
-        _state.value = WooPosCardReaderConnectionState.Scanning
+        enterScanningState()
         connectionFlowJob = scope.launch {
             val onboardingState = cardReaderOnboardingChecker.getOnboardingState()
             if (onboardingState !is CardReaderOnboardingState.OnboardingCompleted) {
@@ -108,7 +137,7 @@ class WooPosCardReaderConnectionController(
             logger.d("Connection flow already in progress, ignoring onOnboardingCompleted")
             return
         }
-        _state.value = WooPosCardReaderConnectionState.Scanning
+        enterScanningState()
         connectionFlowJob = scope.launch {
             continueConnectionFlowAfterOnboarding()
         }
@@ -235,7 +264,7 @@ class WooPosCardReaderConnectionController(
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
         selectedReader = null
-        _state.value = WooPosCardReaderConnectionState.Scanning
+        enterScanningState()
         emitEvent(ControllerEvent.Cancelled)
     }
 
@@ -275,7 +304,7 @@ class WooPosCardReaderConnectionController(
         when (event) {
             is CardReaderDiscoveryEvents.Started -> {
                 logger.d("Discovery started")
-                _state.value = WooPosCardReaderConnectionState.Scanning
+                enterScanningState()
             }
             is CardReaderDiscoveryEvents.ReadersFound -> {
                 logger.d("Found ${event.list.size} readers")
@@ -311,7 +340,7 @@ class WooPosCardReaderConnectionController(
 
         when {
             readers.isEmpty() -> {
-                _state.value = WooPosCardReaderConnectionState.Scanning
+                enterScanningState()
             }
             readers.size == 1 -> {
                 val reader = readers.first()
@@ -345,7 +374,7 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun continueSearching() {
-        _state.value = WooPosCardReaderConnectionState.Scanning
+        enterScanningState()
     }
 
     private fun onConnectToReaderClicked(reader: CardReader) {
@@ -449,7 +478,7 @@ class WooPosCardReaderConnectionController(
                     errorMessage = errorMessage ?: "Connection failed",
                     onRetryClicked = {
                         selectedReader?.let { connectToReader(it) } ?: run {
-                            _state.value = WooPosCardReaderConnectionState.Scanning
+                            enterScanningState()
                             startDiscovery()
                         }
                     },

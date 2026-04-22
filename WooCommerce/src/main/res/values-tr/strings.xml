@@ -512,8 +512,6 @@ Language: tr
     <string name="woopos_scanning_setup_device_selection_title">Bir barkod tarayıcı ayarlama</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barkod</string>
     <string name="woopos_scanning_setup_dialog_content_description">Tarayıcı kurulum iletişim kutusu</string>
-    <string name="woopos_eligibility_screen_UK_country_name">İngiltere</string>
-    <string name="woopos_eligibility_screen_US_country_name">ABD</string>
     <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
