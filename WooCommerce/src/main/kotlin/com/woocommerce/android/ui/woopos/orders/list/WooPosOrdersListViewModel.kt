@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -36,6 +37,7 @@ class WooPosOrdersListViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val orderItemMapper: WooPosOrderItemMapper,
+    private val coordinator: WooPosOrdersCoordinator,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -46,9 +48,6 @@ class WooPosOrdersListViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosOrdersListState> = _state.asStateFlow()
-
-    private val _selectedOrderId = MutableStateFlow<Long?>(null)
-    val selectedOrderId: StateFlow<Long?> = _selectedOrderId.asStateFlow()
 
     private val _openUrlEvent = MutableSharedFlow<String>()
     val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
@@ -75,13 +74,22 @@ class WooPosOrdersListViewModel @Inject constructor(
         if (singleOrderId == null) {
             loadOrders()
         }
+        observeOrderRefreshed()
+    }
+
+    private fun observeOrderRefreshed() {
+        viewModelScope.launch {
+            coordinator.orderRefreshed.collect { orderId ->
+                refreshOrderItem(orderId)
+            }
+        }
     }
 
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersListState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersListState.Content.Items.Loaded ?: return
 
-        if (_selectedOrderId.value == orderId) return
+        if (coordinator.selectedOrderId.value == orderId) return
 
         val position = loadedItems.items.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
         val selectedItem = loadedItems.items.firstOrNull { it.id == orderId } ?: return
@@ -99,7 +107,7 @@ class WooPosOrdersListViewModel @Inject constructor(
         _state.value = current.copy(
             items = WooPosOrdersListState.Content.Items.Loaded(updatedItems)
         )
-        _selectedOrderId.value = orderId
+        coordinator.selectOrder(orderId)
     }
 
     fun onRefresh() {
@@ -219,7 +227,7 @@ class WooPosOrdersListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun refreshOrderItem(orderId: Long) {
+    private fun refreshOrderItem(orderId: Long) {
         viewModelScope.launch {
             val order = ordersDataSource.getOrderById(orderId).getOrNull() ?: return@launch
             val current = _state.value as? WooPosOrdersListState.Content ?: return@launch
@@ -227,7 +235,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
             val updatedItems = loadedItems.items.map { item ->
                 if (item.id == orderId) {
-                    orderItemMapper.mapOrderItem(order, _selectedOrderId.value)
+                    orderItemMapper.mapOrderItem(order, coordinator.selectedOrderId.value)
                 } else {
                     item
                 }
@@ -368,7 +376,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
         val newFirstOrderId = orders.firstOrNull()?.id
 
-        val currentSelectedId = _selectedOrderId.value
+        val currentSelectedId = coordinator.selectedOrderId.value
         val isSelectedOrderStillInList = currentSelectedId != null && orders.any { it.id == currentSelectedId }
         val newSelectedId = if (isSelectedOrderStillInList) {
             currentSelectedId
@@ -387,7 +395,7 @@ class WooPosOrdersListViewModel @Inject constructor(
             searchInputState = _state.value.searchInputState
         )
 
-        _selectedOrderId.value = newSelectedId
+        coordinator.selectOrder(newSelectedId)
 
         viewModelScope.launch {
             if (currentFirstOrderId != null && currentFirstOrderId != newFirstOrderId) {
@@ -404,7 +412,7 @@ class WooPosOrdersListViewModel @Inject constructor(
         val loadedItems = current.items as? WooPosOrdersListState.Content.Items.Loaded ?: return
 
         val newItems = orders.map { order ->
-            orderItemMapper.mapOrderItem(order, _selectedOrderId.value)
+            orderItemMapper.mapOrderItem(order, coordinator.selectedOrderId.value)
         }
         val allItems = loadedItems.items + newItems
 
