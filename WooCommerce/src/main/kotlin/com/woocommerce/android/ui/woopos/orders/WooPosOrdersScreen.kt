@@ -148,7 +148,7 @@ private fun WooPosOrdersScreen(
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
-    onRetryDetailLoad: () -> Unit = {},
+    onRetryDetailLoad: () -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
     onRefundDetailsDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -750,6 +750,7 @@ fun WooPosOrdersScreenPreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onRetryDetailLoad = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -786,6 +787,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onRetryDetailLoad = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -822,6 +824,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onRetryDetailLoad = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {}
@@ -850,6 +853,7 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onRetryDetailLoad = {},
             onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
             onNavigationEvent = {},
