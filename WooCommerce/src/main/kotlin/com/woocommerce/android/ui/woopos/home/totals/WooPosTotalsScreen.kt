@@ -331,7 +331,7 @@ private fun ReaderDisconnected(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .adaptiveContentWidth()
                 .height(WooPosComponentSize.Small.value)
         )
     }
@@ -342,7 +342,7 @@ private fun TotalsGrid(totals: Totals.Visible) {
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .adaptiveContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -420,7 +420,9 @@ private fun TotalsGridRow(
 @Composable
 private fun TotalsLoading() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = WooPosSpacing.XLarge.value),
         contentAlignment = Alignment.Center,
     ) {
         Column(

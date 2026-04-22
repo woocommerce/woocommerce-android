@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.ui.woopos.util.WooPosScreenSizeUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -14,7 +14,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "wo
 fun Context.isWooPosPhoneLayout(): Boolean {
     val shortSize = min(getScreenWidthDp(), getScreenHeightDp()).dp
     val longSize = max(getScreenWidthDp(), getScreenHeightDp()).dp
-    return !WooPosIsScreenSizeAllowed.isTabletSize(shortSize, longSize)
+    return !WooPosScreenSizeUtils.isTabletSize(shortSize, longSize)
 }
 
 fun Context.getScreenWidthDp(): Int {

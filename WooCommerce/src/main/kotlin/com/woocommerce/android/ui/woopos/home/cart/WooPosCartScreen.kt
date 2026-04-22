@@ -98,17 +98,18 @@ fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
 ) {
-    viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
+    viewModel.state.observeAsState().value?.let { state ->
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent)
     }
 }
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun WooPosCartScreen(
+fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -126,6 +127,7 @@ private fun WooPosCartScreen(
             toolbar = state.toolbar,
             onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
             onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+            onPhoneBack = onPhoneBack,
         )
 
         when (state.body) {
@@ -336,7 +338,8 @@ private fun CartToolbar(
     modifier: Modifier = Modifier,
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     val iconSize = 28.dp
     val iconTitlePadding = WooPosSpacing.Medium.value
@@ -354,12 +357,26 @@ private fun CartToolbar(
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        AnimatedVisibility(
-            visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
-        ) {
-            WooPosBackButton(
+        when (onPhoneBack) {
+            null -> AnimatedVisibility(
+                visible = toolbar.backIconVisible,
+                enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+                exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+            ) {
+                WooPosBackButton(
+                    modifier = Modifier
+                        .constrainAs(backButton) {
+                            start.linkTo(parent.start)
+                            centerVerticallyTo(parent)
+                        }
+                        .padding(start = WooPosSpacing.Small.value),
+                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                    iconModifier = Modifier
+                        .size(iconSize)
+                        .offset(y = 4.dp)
+                ) { onBackClicked() }
+            }
+            else -> WooPosBackButton(
                 modifier = Modifier
                     .constrainAs(backButton) {
                         start.linkTo(parent.start)
@@ -367,12 +384,11 @@ private fun CartToolbar(
                     }
                     .padding(start = WooPosSpacing.Small.value),
                 contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                iconModifier = Modifier
-                    .size(iconSize)
-                    .offset(y = 4.dp)
-            ) { onBackClicked() }
+                onClick = onPhoneBack,
+            )
         }
 
+        val titleStartMargin = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(R.string.woopos_cart_title),
             style = WooPosTypography.Heading,
@@ -380,11 +396,17 @@ private fun CartToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    start.linkTo(parent.start, margin = titleOffset)
+                    when (onPhoneBack) {
+                        null -> start.linkTo(parent.start, margin = titleOffset)
+                        else -> start.linkTo(backButton.end, margin = titleStartMargin)
+                    }
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = WooPosSpacing.Medium.value,
+                    start = when (onPhoneBack) {
+                        null -> WooPosSpacing.Medium.value
+                        else -> 0.dp
+                    },
                     end = WooPosSpacing.XSmall.value,
                 )
         )
@@ -923,8 +945,9 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+        )
     }
 }
 
@@ -988,8 +1011,9 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+        )
     }
 }
 
@@ -1008,8 +1032,9 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+        )
     }
 }
 
@@ -1044,7 +1069,8 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+        )
     }
 }

@@ -42,23 +42,20 @@ class ReviewListViewModelTest : BaseUnitTest() {
         on { pendingModerationStatus } doReturn emptyFlow()
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val supportsReviewsReadStatus: SupportsReviewsReadStatus = mock()
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus = mock {
+        on { invoke() } doReturn true
+    }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
-    private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: ReviewListViewModel
 
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        testBlocking {
-            whenever(supportsReviewsReadStatus.invoke()).thenReturn(true)
-        }
         createViewModel()
     }
 
     private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()) {
-        this.savedState = savedState
         viewModel = spy(
             ReviewListViewModel(
                 networkStatus,
