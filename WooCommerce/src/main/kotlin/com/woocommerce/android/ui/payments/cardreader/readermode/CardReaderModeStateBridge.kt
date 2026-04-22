@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,8 +20,12 @@ class CardReaderModeStateBridge @Inject constructor() {
     val events: LiveData<MultiLiveEvent.Event> = _events
 
     fun push(state: ViewState) {
-        require(state is RemoteTapToPayReadyToPair || state is RemoteTapToPayWaitingForPayment) {
-            "push only accepts RemoteTapToPayReadyToPair or RemoteTapToPayWaitingForPayment"
+        require(
+            state is RemoteTapToPayStarting ||
+                state is RemoteTapToPayReadyToPair ||
+                state is RemoteTapToPayWaitingForPayment
+        ) {
+            "push only accepts RemoteTapToPayStarting, RemoteTapToPayReadyToPair, or RemoteTapToPayWaitingForPayment"
         }
         _stateOverride.postValue(state)
     }
