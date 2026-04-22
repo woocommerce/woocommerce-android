@@ -62,6 +62,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
 
+    private var loadOrderJob: Job? = null
     private var sideLoadJob: Job? = null
     private var refreshOrderJob: Job? = null
     private var cachedRefundData: CachedRefundData? = null
@@ -90,10 +91,11 @@ class WooPosOrderDetailsViewModel @Inject constructor(
 
     fun loadOrder(orderId: Long) {
         lastRequestedOrderId = orderId
+        loadOrderJob?.cancel()
         sideLoadJob?.cancel()
         refreshOrderJob?.cancel()
 
-        viewModelScope.launch {
+        loadOrderJob = viewModelScope.launch {
             _state.value = WooPosOrderDetailsState.Loading
 
             val order = ordersDataSource.getOrderById(orderId).getOrElse {
