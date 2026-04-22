@@ -195,7 +195,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
-        notificationHandler.markNotificationTapped(notification.remoteNoteId)
+        notificationHandler.markNotificationTapped(localPushId)
         notificationHandler.removeTappedNotificationAndSummaryIfNeeded(localPushId, notification)
         when (notification.noteType) {
             is WooNotificationType.NewOrder -> {

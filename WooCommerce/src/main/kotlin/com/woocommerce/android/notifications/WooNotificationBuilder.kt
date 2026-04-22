@@ -51,6 +51,9 @@ class WooNotificationBuilder @Inject constructor(
                 channelType = sbn.notification.extras.getString(EXTRA_CHANNEL_TYPE),
                 noteMessage = sbn.notification.extras.getString(EXTRA_NOTE_MESSAGE),
                 noteTypeTrackingValue = sbn.notification.extras.getString(EXTRA_NOTE_TYPE),
+                source = sbn.notification.extras.getString(EXTRA_SOURCE)
+                    ?.let { runCatching { NotificationSource.valueOf(it) }.getOrNull() },
+                analyticsId = sbn.notification.extras.getString(EXTRA_ANALYTICS_ID),
                 isGroupSummary = (sbn.notification.flags and FLAG_GROUP_SUMMARY) != 0
             )
         }
@@ -130,6 +133,8 @@ class WooNotificationBuilder @Inject constructor(
     fun buildAndDisplayWooNotification(
         pushId: Int,
         notification: Notification,
+        source: NotificationSource,
+        analyticsId: String?,
         isGroupNotification: Boolean
     ) {
         val channelType = notification.channelType
@@ -137,7 +142,7 @@ class WooNotificationBuilder @Inject constructor(
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             setDefaults(NotificationCompat.DEFAULT_ALL)
         }.apply {
-            showNotification(pushId, notification, this)
+            showNotification(pushId, notification, source, analyticsId, this)
 
             // Also add a group summary notification, which is required for non-wearable devices
             // Do not need to play the sound again. We've already played it in the individual builder.
@@ -147,7 +152,7 @@ class WooNotificationBuilder @Inject constructor(
                 setDefaults(0)
                 setSound(null)
                 setVibrate(null)
-                showNotification(notification.getGroupPushId(), notification, this)
+                showNotification(notification.getGroupPushId(), notification, source, analyticsId, this)
             }
         }
     }
@@ -155,7 +160,9 @@ class WooNotificationBuilder @Inject constructor(
     fun buildAndDisplayWooGroupNotification(
         inboxMessage: String,
         subject: String,
-        notification: Notification
+        notification: Notification,
+        source: NotificationSource,
+        analyticsId: String?
     ) {
         val inboxStyle = NotificationCompat.InboxStyle().addLine(inboxMessage)
         val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
@@ -176,6 +183,8 @@ class WooNotificationBuilder @Inject constructor(
                 showNotification(
                     notification.getGroupPushId(),
                     notification,
+                    source,
+                    analyticsId,
                     this
                 )
             }
@@ -184,6 +193,8 @@ class WooNotificationBuilder @Inject constructor(
     private fun showNotification(
         pushId: Int,
         notification: Notification,
+        source: NotificationSource,
+        analyticsId: String?,
         builder: NotificationCompat.Builder
     ) {
         try {
@@ -194,6 +205,8 @@ class WooNotificationBuilder @Inject constructor(
                     putString(EXTRA_CHANNEL_TYPE, notification.channelType.name)
                     putString(EXTRA_NOTE_MESSAGE, notification.noteMessage)
                     putString(EXTRA_NOTE_TYPE, notification.noteType.trackingValue)
+                    putString(EXTRA_SOURCE, source.name)
+                    putString(EXTRA_ANALYTICS_ID, analyticsId)
                 }
             )
 
@@ -275,6 +288,8 @@ class WooNotificationBuilder @Inject constructor(
         private const val EXTRA_CHANNEL_TYPE = "channel_type"
         private const val EXTRA_NOTE_MESSAGE = "note_message"
         private const val EXTRA_NOTE_TYPE = "note_type"
+        private const val EXTRA_SOURCE = "source"
+        private const val EXTRA_ANALYTICS_ID = "analytics_id"
     }
 }
 
@@ -285,5 +300,7 @@ data class ActiveNotificationData(
     val channelType: String?,
     val noteMessage: String?,
     val noteTypeTrackingValue: String?,
+    val source: NotificationSource?,
+    val analyticsId: String?,
     val isGroupSummary: Boolean = false
 )

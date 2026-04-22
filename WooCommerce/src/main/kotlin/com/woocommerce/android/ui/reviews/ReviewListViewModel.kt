@@ -16,7 +16,9 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
@@ -48,6 +50,8 @@ class ReviewListViewModel @Inject constructor(
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val reviewModerationHandler: ReviewModerationHandler,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
@@ -104,6 +108,7 @@ class ReviewListViewModel @Inject constructor(
             }
             // Fetch after cache check to avoid race where fetchReviewList sets
             // isSkeletonShown = false before the cache check sets it to true.
+            syncUnreadFilterAvailability()
             fetchReviewList(loadMore = false)
         }
     }
@@ -177,6 +182,7 @@ class ReviewListViewModel @Inject constructor(
                             ReviewListRepository.FetchReviewsResult.NothingFetched -> {
                                 // No action needed
                             }
+
                             is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
                                 if (result.requestResult == SUCCESS) {
                                     val reviews = reviewRepository.getCachedProductReviews()
@@ -246,6 +252,16 @@ class ReviewListViewModel @Inject constructor(
         fetchReviewList(loadMore = false)
     }
 
+    private suspend fun syncUnreadFilterAvailability() {
+        val registrationStatus = pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)
+        val isUnreadFilterVisible = !registrationStatus.isWooRegistered
+
+        viewState = viewState.copy(
+            isUnreadFilterVisible = isUnreadFilterVisible,
+            isUnreadFilterEnabled = viewState.isUnreadFilterEnabled && isUnreadFilterVisible
+        )
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -261,6 +277,7 @@ class ReviewListViewModel @Inject constructor(
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val hasUnreadReviews: Boolean? = null,
+        val isUnreadFilterVisible: Boolean = true,
         val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 
