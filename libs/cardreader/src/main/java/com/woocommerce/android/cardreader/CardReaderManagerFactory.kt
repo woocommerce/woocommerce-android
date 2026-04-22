@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader
 
 import android.app.Application
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
@@ -43,11 +44,12 @@ object CardReaderManagerFactory {
         val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper, terminalListener)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
+        val compositeTokenProvider = CompositeConnectionTokenProvider(TokenProvider(cardReaderStore))
 
         return CardReaderManagerImpl(
             application,
             terminal,
-            TokenProvider(cardReaderStore),
+            compositeTokenProvider,
             logWrapper,
             PaymentManager(
                 terminal,
