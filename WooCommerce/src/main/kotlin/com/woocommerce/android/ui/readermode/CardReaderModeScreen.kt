@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.readermode
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +23,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -39,7 +42,10 @@ fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
 
 @Composable
 private fun CardReaderModeContent(state: ViewState?) {
-    if (state == null) return
+    if (state == null) {
+        StartingContent()
+        return
+    }
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -77,16 +83,57 @@ private fun CardReaderModeContent(state: ViewState?) {
                     textAlign = TextAlign.Center,
                 )
             }
+            if (state is RemoteTapToPayReadyToPair) {
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Text(
+                    text = stringResource(
+                        id = R.string.card_reader_mode_device_identifier,
+                        state.deviceName,
+                        state.fingerprintSuffix,
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
 
         state.primaryActionLabel?.let { labelRes ->
-            Button(
+            WCColoredButton(
                 onClick = { state.onPrimaryActionClicked?.invoke() },
+                text = stringResource(id = labelRes),
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = labelRes))
-            }
+            )
         }
+    }
+}
+
+@Composable
+private fun StartingContent() {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = stringResource(id = R.string.card_reader_mode_starting),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun CardReaderModeStartingPreview() {
+    WooThemeWithBackground {
+        CardReaderModeContent(state = null)
     }
 }
 

@@ -214,7 +214,7 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private val isPhoneEligibleAsCardReader: Boolean
-        get() = tapToPayAvailabilityStatus().isAvailable &&
+        get() = !tapToPayAvailabilityStatus().isAvailable &&
             featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
 
     private fun MutableList<ListItem>.addTapToPay() {
@@ -250,7 +250,7 @@ class PaymentsHubViewModel @Inject constructor(
         if (!isPhoneEligibleAsCardReader) return
         add(
             NonToggleableListItem(
-                icon = R.drawable.ic_baseline_contactless,
+                icon = R.drawable.ic_smartphone_24dp,
                 label = UiStringRes(R.string.card_reader_mode_settings_row_label),
                 index = 10,
                 onClick = ::onCardReaderModeClicked,

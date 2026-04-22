@@ -21,12 +21,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 class CardReaderRemoteSession internal constructor(
     private val context: Context,
@@ -100,7 +103,14 @@ class CardReaderRemoteSession internal constructor(
 
         _state.value = readyToPairState(server)
 
-        acceptAndRunProtocolLoop(server)
+        while (currentCoroutineContext().isActive) {
+            try {
+                acceptAndRunProtocolLoop(server)
+                break
+            } catch (e: SocketTimeoutException) {
+                logWrapper.d(LOG_TAG, "Waiting for tablet to connect: ${e.message}")
+            }
+        }
     }
 
     private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) {
