@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
     @PointOfSaleMode private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     fun create(scope: CoroutineScope): WooPosCardReaderConnectionController {
         return WooPosCardReaderConnectionController(
@@ -45,6 +47,7 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
             tracker = tracker,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             onboardingErrorMapper = onboardingErrorMapper,
+            featureFlagRepository = featureFlagRepository,
         )
     }
 }
