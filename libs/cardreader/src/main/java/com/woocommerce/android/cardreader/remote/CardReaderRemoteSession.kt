@@ -201,7 +201,7 @@ class CardReaderRemoteSession internal constructor(
     private fun readyToPairState(server: CardReaderRemoteTlsServer) =
         CardReaderRemoteSessionState.ReadyToPair(
             deviceName = Build.MODEL ?: DEFAULT_DEVICE_NAME,
-            fingerprintSuffix = CardReaderRemoteFingerprint.suffix4FromBase64(server.fingerprint),
+            fingerprintSuffix = CardReaderRemoteFingerprint.pairingCodeFromBase64(server.fingerprint),
         )
 
     private fun cleanupSync() {
