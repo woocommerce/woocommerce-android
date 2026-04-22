@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
@@ -145,6 +146,43 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given phone is eligible and feature flag enabled, when screen shown, then card reader mode row present`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .anyMatch {
+                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+            }
+    }
+
+    @Test
+    fun `given feature flag disabled, when screen shown, then card reader mode row is absent`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(false)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .noneMatch {
+                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+            }
+    }
+
+    @Test
+    fun `given phone is not eligible, when screen shown, then card reader mode row is absent`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(CountryNotSupported)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .noneMatch {
+                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+            }
+    }
+
+    @Test
     fun `given supported country, when screen shown, then manual card reader row is present`() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
@@ -195,6 +233,20 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED)
+    }
+
+    @Test
+    fun `given card reader mode row shown, when user clicks it, then navigate to card reader mode event triggered`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+
+        initViewModel()
+
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+        }!!.onClick!!.invoke()
+
+        assertThat(viewModel.event.getOrAwaitValue())
+            .isEqualTo(PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderMode)
     }
 
     @Test
