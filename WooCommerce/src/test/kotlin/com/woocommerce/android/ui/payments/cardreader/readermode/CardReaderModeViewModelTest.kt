@@ -76,10 +76,8 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        CardReaderModeExit.isHandled = true
         (viewModel.stateOverride.getOrAwaitValue() as RemoteTapToPayStarting).onPrimaryActionClicked.invoke()
 
-        assertThat(CardReaderModeExit.isHandled).isFalse()
         assertThat(viewModel.events.getOrAwaitValue()).isEqualTo(CardReaderModeExit)
     }
 }

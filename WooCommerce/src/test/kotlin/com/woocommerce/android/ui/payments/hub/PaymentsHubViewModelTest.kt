@@ -39,8 +39,8 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
@@ -151,7 +151,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
             .anyMatch {
                 it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
             }
@@ -163,7 +163,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
             .noneMatch {
                 it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
             }
@@ -176,7 +176,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
             .noneMatch {
                 it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
             }
@@ -241,7 +241,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+        viewModel.viewStateData.getOrAwaitValue().rows.find {
             it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
         }!!.onClick!!.invoke()
 
