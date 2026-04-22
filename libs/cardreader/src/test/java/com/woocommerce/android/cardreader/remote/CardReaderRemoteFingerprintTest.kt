@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.security.cert.X509Certificate
 
-class RemoteReaderFingerprintTest {
+class CardReaderRemoteFingerprintTest {
     @Test
     fun `given a known DER-encoded cert, when sha256Base64 computed, then matches expected value`() {
         // GIVEN
@@ -16,8 +16,8 @@ class RemoteReaderFingerprintTest {
         val cert = StubCert(expectedDerBytes)
 
         // WHEN
-        val base64 = RemoteReaderFingerprint.sha256Base64(cert)
-        val suffix = RemoteReaderFingerprint.suffix4(cert)
+        val base64 = CardReaderRemoteFingerprint.sha256Base64(cert)
+        val suffix = CardReaderRemoteFingerprint.suffix4(cert)
 
         // THEN
         assertThat(base64).isEqualTo(expectedBase64)

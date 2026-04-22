@@ -18,67 +18,68 @@ import kotlin.coroutines.resume
 import kotlin.random.Random
 
 @Suppress("DEPRECATION")
-class RemoteReaderNsd(
+internal class CardReaderRemoteNsd(
     context: Context,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val nsdManager: NsdManager =
         context.applicationContext.getSystemService(Context.NSD_SERVICE) as NsdManager
 
-    suspend fun advertise(port: Int, fingerprint: String): NsdRegistration = withContext(ioDispatcher) {
-        val serviceInfo = NsdServiceInfo().apply {
-            serviceName = uniqueServiceName()
-            serviceType = SERVICE_TYPE
-            setPort(port)
-            setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
-            setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
-        }
-
-        val listener = object : NsdManager.RegistrationListener {
-            private var registrationContinuation: CancellableContinuation<NsdServiceInfo>? = null
-
-            fun bind(cont: CancellableContinuation<NsdServiceInfo>) {
-                registrationContinuation = cont
+    suspend fun advertise(port: Int, fingerprint: String): CardReaderRemoteNsdRegistration =
+        withContext(ioDispatcher) {
+            val serviceInfo = NsdServiceInfo().apply {
+                serviceName = uniqueServiceName()
+                serviceType = SERVICE_TYPE
+                setPort(port)
+                setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
+                setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
             }
 
-            override fun onServiceRegistered(registered: NsdServiceInfo) {
-                registrationContinuation?.takeIf { it.isActive }?.resume(registered)
-                registrationContinuation = null
-            }
+            val listener = object : NsdManager.RegistrationListener {
+                private var registrationContinuation: CancellableContinuation<NsdServiceInfo>? = null
 
-            override fun onRegistrationFailed(info: NsdServiceInfo?, errorCode: Int) {
-                val cont = registrationContinuation
-                registrationContinuation = null
-                if (cont != null && cont.isActive) {
-                    cont.resume(info ?: serviceInfo)
-                } else {
-                    Log.w(TAG, "NSD registration failed (errorCode=$errorCode)")
+                fun bind(cont: CancellableContinuation<NsdServiceInfo>) {
+                    registrationContinuation = cont
+                }
+
+                override fun onServiceRegistered(registered: NsdServiceInfo) {
+                    registrationContinuation?.takeIf { it.isActive }?.resume(registered)
+                    registrationContinuation = null
+                }
+
+                override fun onRegistrationFailed(info: NsdServiceInfo?, errorCode: Int) {
+                    val cont = registrationContinuation
+                    registrationContinuation = null
+                    if (cont != null && cont.isActive) {
+                        cont.resume(info ?: serviceInfo)
+                    } else {
+                        Log.w(TAG, "NSD registration failed (errorCode=$errorCode)")
+                    }
+                }
+
+                override fun onServiceUnregistered(info: NsdServiceInfo?) {
+                    Log.d(TAG, "NSD service unregistered: ${info?.serviceName}")
+                }
+
+                override fun onUnregistrationFailed(info: NsdServiceInfo?, errorCode: Int) {
+                    Log.w(TAG, "NSD unregistration failed (errorCode=$errorCode)")
                 }
             }
 
-            override fun onServiceUnregistered(info: NsdServiceInfo?) {
-                Log.d(TAG, "NSD service unregistered: ${info?.serviceName}")
+            val registered = suspendCancellableCoroutine<NsdServiceInfo> { cont ->
+                listener.bind(cont)
+                nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, listener)
+                cont.invokeOnCancellation {
+                    runCatching { nsdManager.unregisterService(listener) }
+                }
             }
 
-            override fun onUnregistrationFailed(info: NsdServiceInfo?, errorCode: Int) {
-                Log.w(TAG, "NSD unregistration failed (errorCode=$errorCode)")
-            }
-        }
-
-        val registered = suspendCancellableCoroutine<NsdServiceInfo> { cont ->
-            listener.bind(cont)
-            nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, listener)
-            cont.invokeOnCancellation {
+            CardReaderRemoteNsdRegistration(registered.serviceName) {
                 runCatching { nsdManager.unregisterService(listener) }
             }
         }
 
-        NsdRegistration(registered.serviceName) {
-            runCatching { nsdManager.unregisterService(listener) }
-        }
-    }
-
-    fun discover(): Flow<ResolvedHost> = callbackFlow {
+    fun discover(): Flow<CardReaderRemoteResolvedHost> = callbackFlow {
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onDiscoveryStarted(serviceType: String) {
                 Log.d(TAG, "NSD discovery started: $serviceType")
@@ -114,7 +115,9 @@ class RemoteReaderNsd(
         }
     }.flowOn(ioDispatcher)
 
-    private fun buildResolveListener(emit: (ResolvedHost) -> Unit): NsdManager.ResolveListener =
+    private fun buildResolveListener(
+        emit: (CardReaderRemoteResolvedHost) -> Unit,
+    ): NsdManager.ResolveListener =
         object : NsdManager.ResolveListener {
             override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
                 Log.w(TAG, "NSD resolve failed (errorCode=$errorCode)")
@@ -138,7 +141,7 @@ class RemoteReaderNsd(
                     return
                 }
                 emit(
-                    ResolvedHost(
+                    CardReaderRemoteResolvedHost(
                         name = serviceInfo.serviceName,
                         host = host,
                         port = serviceInfo.port,
@@ -157,7 +160,7 @@ class RemoteReaderNsd(
     }
 
     companion object {
-        private const val TAG = "RemoteReaderNsd"
+        private const val TAG = "CardReaderRemoteNsd"
         const val SERVICE_TYPE = "_wooposremote._tcp."
         const val TXT_KEY_FINGERPRINT = "fp"
         const val TXT_KEY_VERSION = "ver"
@@ -169,7 +172,7 @@ class RemoteReaderNsd(
     }
 }
 
-class NsdRegistration internal constructor(
+internal class CardReaderRemoteNsdRegistration internal constructor(
     val serviceName: String,
     private val onClose: () -> Unit,
 ) : AutoCloseable {
@@ -178,7 +181,7 @@ class NsdRegistration internal constructor(
     }
 }
 
-data class ResolvedHost(
+internal data class CardReaderRemoteResolvedHost(
     val name: String,
     val host: InetAddress,
     val port: Int,

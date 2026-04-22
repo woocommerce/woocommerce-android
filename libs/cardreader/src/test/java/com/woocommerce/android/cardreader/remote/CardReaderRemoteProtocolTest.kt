@@ -7,13 +7,13 @@ import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 
-class RemoteReaderProtocolTest {
-    private val protocol = RemoteReaderProtocol()
+class CardReaderRemoteProtocolTest {
+    private val protocol = CardReaderRemoteProtocol()
 
     @Test
     fun `given a ConnectRequest, when written and read back, then fields match`() {
         // GIVEN
-        val original = RemoteReaderMessage.ConnectRequest(
+        val original = CardReaderRemoteMessage.ConnectRequest(
             requestId = "req-1",
             connectionToken = "tok",
             locationId = "loc-xyz",
@@ -29,7 +29,7 @@ class RemoteReaderProtocolTest {
     @Test
     fun `given a ConnectAck, when written and read back, then fields match`() {
         // GIVEN
-        val original = RemoteReaderMessage.ConnectAck(
+        val original = CardReaderRemoteMessage.ConnectAck(
             requestId = "req-2",
             readerSerial = "SN-42",
         )
@@ -44,7 +44,7 @@ class RemoteReaderProtocolTest {
     @Test
     fun `given a CollectPaymentRequest, when written and read back, then fields match`() {
         // GIVEN
-        val original = RemoteReaderMessage.CollectPaymentRequest(
+        val original = CardReaderRemoteMessage.CollectPaymentRequest(
             requestId = "req-3",
             paymentIntentClientSecret = "pi_client_secret",
         )
@@ -59,7 +59,7 @@ class RemoteReaderProtocolTest {
     @Test
     fun `given a PaymentIntentResult, when written and read back, then fields match`() {
         // GIVEN
-        val original = RemoteReaderMessage.PaymentIntentResult(
+        val original = CardReaderRemoteMessage.PaymentIntentResult(
             requestId = "req-4",
             paymentIntentId = "pi_123",
             status = "requires_capture",
@@ -75,7 +75,7 @@ class RemoteReaderProtocolTest {
     @Test
     fun `given an ErrorMessage, when written and read back, then fields match`() {
         // GIVEN
-        val original = RemoteReaderMessage.ErrorMessage(
+        val original = CardReaderRemoteMessage.ErrorMessage(
             requestId = "req-5",
             code = "timeout",
             description = "Reader did not respond in time",
@@ -88,7 +88,7 @@ class RemoteReaderProtocolTest {
         assertThat(decoded).isEqualTo(original)
     }
 
-    private fun roundTrip(msg: RemoteReaderMessage): RemoteReaderMessage {
+    private fun roundTrip(msg: CardReaderRemoteMessage): CardReaderRemoteMessage {
         val buffer = ByteArrayOutputStream()
         protocol.write(DataOutputStream(buffer), msg)
         return protocol.read(DataInputStream(ByteArrayInputStream(buffer.toByteArray())))
