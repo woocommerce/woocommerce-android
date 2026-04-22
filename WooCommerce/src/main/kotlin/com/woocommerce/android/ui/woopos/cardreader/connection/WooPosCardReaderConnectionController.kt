@@ -79,6 +79,7 @@ class WooPosCardReaderConnectionController(
 
     fun showRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.Scanning) return
+        discoveryJob?.cancel()
         _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
             onDismissClicked = ::hideRemoteTapToPayExplainer,
         )
@@ -89,6 +90,7 @@ class WooPosCardReaderConnectionController(
         _state.value = WooPosCardReaderConnectionState.Scanning(
             isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
         )
+        startDiscovery()
     }
 
     private fun enterScanningState() {
