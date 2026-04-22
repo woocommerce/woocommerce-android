@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 13:56:12+0000
+Translation-Revision-Date: 2026-04-07 13:56:05+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Подробнее</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. &lt;b&gt;Перейдите на Pro&lt;/b&gt;, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. Перейдите на Pro, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
+    <string name="woopos_eligibility_ciab_title">Требуется тарифный план Pro</string>
+    <string name="ciab_order_status_open">Открыть</string>
     <string name="booking_payment_status_authorization_voided">Авторизация аннулирована</string>
     <string name="booking_payment_status_authorized">Авторизовано</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Не удалось приобрести транспортную этикетку. Укажите адрес отправителя.</string>

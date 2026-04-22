@@ -2,6 +2,13 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.7
+-----
+- [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
+- [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
+- [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
+- [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
+
 24.6
 -----
 - [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
@@ -20,6 +27,7 @@
 - [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
 - [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
 - [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
+- [*] Shipping Labels: Improved destination name validation when fetching shipping rates [https://github.com/woocommerce/woocommerce-android/pull/15661]
 
 24.5.1
 -----

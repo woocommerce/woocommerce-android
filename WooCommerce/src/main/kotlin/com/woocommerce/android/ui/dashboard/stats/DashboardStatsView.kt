@@ -545,9 +545,9 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val netRevenue = revenueStatsModel?.netRevenue ?: 0.0
+        val totalSales = revenueStatsModel?.totalSales ?: 0.0
         val revenue = currencyFormatter.getFormattedAmountZeroRounded(
-            netRevenue,
+            totalSales,
             revenueStatsModel?.currencyCode.orEmpty()
         )
 
@@ -557,7 +557,7 @@ class DashboardStatsView @JvmOverloads constructor(
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.netRevenue == 0.toDouble()) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
             binding.chart.clear()
             isRequestingStats = false
             return

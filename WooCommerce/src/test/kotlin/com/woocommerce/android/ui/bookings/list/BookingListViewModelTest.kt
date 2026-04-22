@@ -62,14 +62,14 @@ import kotlin.test.Test
 class BookingListViewModelTest : BaseUnitTest() {
     private val bookingListHandler: BookingListHandler = mock {
         on { bookingsFlow } doReturn flowOf(emptyList())
-        onBlocking {
+        on {
             loadBookings(
                 searchQuery = anyOrNull(),
                 filters = any(),
                 sortBy = any()
             )
         } doReturn Result.success(0)
-        onBlocking { loadMore() } doReturn Result.success(0)
+        on { loadMore() } doReturn Result.success(0)
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListDateFilterBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
@@ -85,7 +85,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val paymentStatusResolver: PaymentStatusResolver = mock {
-        onBlocking { resolveAll(any()) } doReturn mapOf(1L to PaymentStatus.UNPAID)
+        on { resolveAll(any()) } doReturn mapOf(1L to PaymentStatus.UNPAID)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 

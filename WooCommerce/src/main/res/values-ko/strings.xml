@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 09:55:26+0000
+Translation-Revision-Date: 2026-04-07 09:54:55+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">더 알아보기</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">거래당 단 2.70% + $0.10로 대면 결제를 수락하세요. &lt;b&gt;Pro로 업그레이드&lt;/b&gt;하여 실시간 재고 및 주문 동기화를 통해 스마트폰과 전체 POS(판매 지점) 시스템의 눌러서 결제 기능을 이용하세요.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">거래당 단 2.70% + $0.10로 대면 결제를 수락하세요. Pro로 업그레이드하여 실시간 재고 및 주문 동기화를 통해 스마트폰과 전체 POS(판매 지점) 시스템의 눌러서 결제 기능을 이용하세요.</string>
+    <string name="woopos_eligibility_ciab_title">Pro 요금제 필수</string>
+    <string name="ciab_order_status_open">열기</string>
     <string name="booking_payment_status_authorization_voided">인증 무효화됨</string>
     <string name="booking_payment_status_authorized">인증됨</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">배송 레이블을 구매할 수 없습니다. 출발지 주소를 작성하세요.</string>

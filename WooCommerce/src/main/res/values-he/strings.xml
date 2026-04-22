@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-23 15:56:36+0000
+Translation-Revision-Date: 2026-04-06 20:55:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">למידע נוסף</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. &lt;b&gt;יש לשדרג לתוכנית Pro&lt;/b&gt; כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. יש לשדרג לתוכנית Pro כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
+    <string name="woopos_eligibility_ciab_title">נדרשת תוכנית Pro</string>
+    <string name="ciab_order_status_open">פתיחה</string>
     <string name="booking_payment_status_authorization_voided">האישור בוטל</string>
     <string name="booking_payment_status_authorized">אושר</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">לא ניתן לרכוש את תווית המשלוח. יש להשלים את כתובת המוצא.</string>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-25 09:55:25+0000
+Translation-Revision-Date: 2026-04-07 15:56:24+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Daha Fazla Bilgi Edinin</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için &lt;b&gt;Pro\'ya yükseltin&lt;/b&gt;.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için Pro\'ya yükseltin.</string>
+    <string name="woopos_eligibility_ciab_title">Pro paket gerekli</string>
+    <string name="ciab_order_status_open">Açık</string>
     <string name="booking_payment_status_authorization_voided">Yetkilendirme İptal Edildi</string>
     <string name="booking_payment_status_authorized">Kimlik Doğrulandı</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Gönderim etiketi satın alınamıyor. Lütfen menşe adresini tamamlayın.</string>

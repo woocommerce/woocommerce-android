@@ -23,7 +23,7 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val variationRepository: VariationRepository = mock()
     private val customFieldsRepository: CustomFieldsRepository = mock {
-        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+        on { hasDisplayableCustomFields(any()) } doReturn false
     }
 
     @Before

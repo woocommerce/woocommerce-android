@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -31,9 +32,9 @@ class WooPosRefundInfoBuilder @Inject constructor(
             }
             is RefundsFetchResult.Error -> {
                 RefundInfo(
-                    emptyList(),
-                    BigDecimal.ZERO,
-                    refundLoadError = resourceProvider.getString(
+                    refundRows = emptyList(),
+                    totalRefunded = BigDecimal.ZERO,
+                    loadError = resourceProvider.getString(
                         R.string.woopos_orders_details_refund_error
                     )
                 )
@@ -71,6 +72,20 @@ class WooPosRefundInfoBuilder @Inject constructor(
 
         val discountCode = order.couponLines.firstOrNull()?.code
 
+        val refundsState = when {
+            refundInfo.loadError != null -> RefundsState.Error(refundInfo.loadError)
+            else -> RefundsState.Loaded(
+                refunds = refundInfo.refundRows.map { row ->
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = row.label,
+                        amount = row.formattedAmount,
+                        date = row.date,
+                        reason = row.reason,
+                    )
+                }
+            )
+        }
+
         return WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = formatPrice(order.productsTotal, order.currency),
             discount = order.discountTotal.takeIf { !it.isZero() }
@@ -78,16 +93,8 @@ class WooPosRefundInfoBuilder @Inject constructor(
             discountCode = discountCode,
             taxes = formatPrice(order.totalTax, order.currency),
             shipping = order.shippingTotal.takeIf { !it.isZero() }?.let { formatPrice(it, order.currency) },
-            refunds = refundInfo.refundRows.map { row ->
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = row.label,
-                    amount = row.formattedAmount,
-                    date = row.date,
-                    reason = row.reason,
-                )
-            },
+            refundsState = refundsState,
             netPayment = netPayment,
-            refundLoadError = refundInfo.refundLoadError
         )
     }
 }
@@ -103,7 +110,7 @@ data class RefundRowData(
 data class RefundInfo(
     val refundRows: List<RefundRowData>,
     val totalRefunded: BigDecimal,
-    val refundLoadError: String? = null
+    val loadError: String? = null
 )
 
 private fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

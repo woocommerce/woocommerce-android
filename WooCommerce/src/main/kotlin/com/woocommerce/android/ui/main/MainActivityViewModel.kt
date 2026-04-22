@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.main
 
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
@@ -23,8 +21,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS
 import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType.Jetpack
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
@@ -38,6 +34,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.shortcuts.AppShortcut
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -63,6 +60,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
+    private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     ageEligibilityChecker: AgeEligibilityChecker,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
@@ -195,7 +193,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
-        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
+        notificationHandler.removeTappedNotificationAndSummaryIfNeeded(localPushId, notification)
         when (notification.noteType) {
             is WooNotificationType.NewOrder -> {
                 when {
@@ -261,9 +259,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
-        val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
-            !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
-            selectedSite.get().connectionType == Jetpack
+        val shouldShowNotificationsPermissionBar = systemVersionUtilsWrapper.isAtLeastT() &&
+            !hasNotificationsPermission &&
+            !prefs.getWasNotificationsPermissionBarDismissed()
 
         if (_isNotificationPermissionCardVisible.value != shouldShowNotificationsPermissionBar) {
             _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
@@ -283,7 +281,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun onNotificationsPermissionBarDismissButtonTapped() {
         analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
-        AppPrefs.setWasNotificationsPermissionBarDismissed(true)
+        prefs.setWasNotificationsPermissionBarDismissed(true)
         _isNotificationPermissionCardVisible.update { false }
     }
 

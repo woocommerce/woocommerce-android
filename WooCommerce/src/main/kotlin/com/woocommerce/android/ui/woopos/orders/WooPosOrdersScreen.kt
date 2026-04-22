@@ -872,18 +872,20 @@ private fun sampleOrderDetails(
         discountCode = "8qew4mnq",
         taxes = "$0.00",
         shipping = null,
-        refunds = listOf(
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                label = "Refund #1",
-                amount = "-$3.00",
-                date = "Aug 29, 2025 at 12:26 PM",
-                reason = "Customer bought an extra item.",
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                label = "Refund #2",
-                amount = "-$2.00",
-                date = "Aug 30, 2025 at 2:15 PM",
-                reason = null,
+        refundsState = WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded(
+            refunds = listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #1",
+                    amount = "-$3.00",
+                    date = "Aug 29, 2025 at 12:26 PM",
+                    reason = "Customer bought an extra item.",
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #2",
+                    amount = "-$2.00",
+                    date = "Aug 30, 2025 at 2:15 PM",
+                    reason = null,
+                ),
             ),
         ),
         netPayment = "$12.00"

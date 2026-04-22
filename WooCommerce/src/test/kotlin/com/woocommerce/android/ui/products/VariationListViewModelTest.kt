@@ -61,8 +61,8 @@ class VariationListViewModelTest : BaseUnitTest() {
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(product)
 
         variationRepository = mock {
-            onBlocking { fetchProductVariations(any(), any()) } doReturn emptyList()
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
+            on { fetchProductVariations(any(), any()) } doReturn emptyList()
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
         }
     }
 
@@ -251,8 +251,8 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun `Show error and hide progress bar if variation generation failed`() = testBlocking {
         // given
         variationRepository.stub {
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
-            onBlocking { getProductVariationList(productRemoteId) } doReturn emptyList()
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            on { getProductVariationList(productRemoteId) } doReturn emptyList()
         }
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
@@ -369,7 +369,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // When AddAllVariations fails
         variationRepository.stub {
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
         viewModel.onGenerateVariationsConfirmed(variationCandidates)
 
@@ -391,7 +391,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         val expectedUpdatedProduct = product.copy(name = "Updated Product")
 
         productRepository.stub {
-            onBlocking { fetchAndGetProduct(productRemoteId) } doReturn expectedUpdatedProduct
+            on { fetchAndGetProduct(productRemoteId) } doReturn expectedUpdatedProduct
         }
         createViewModel()
         viewModel.start()

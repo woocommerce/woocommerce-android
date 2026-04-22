@@ -39,12 +39,12 @@ class VariationPickerViewModelTest : BaseUnitTest() {
     fun setup() {
         // Initialize mocks
         variationListHandler = mock {
-            onBlocking { getVariationsFlow(any()) } doReturn flowOf(emptyList())
+            on { getVariationsFlow(any()) } doReturn flowOf(emptyList())
         }
 
         val productMock = mock<Product>()
         variationRepository = mock {
-            onBlocking { getProduct(any()) } doReturn productMock
+            on { getProduct(any()) } doReturn productMock
         }
 
         val savedState = navArgs.toSavedStateHandle()

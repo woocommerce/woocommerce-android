@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.TerminalException
@@ -12,13 +11,9 @@ import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
@@ -32,25 +27,14 @@ internal class CreatePaymentAction(
         data class Failure(val exception: TerminalException) : CreatePaymentStatus()
     }
 
-    fun createPaymentIntent(paymentInfo: PaymentInfo): Flow<CreatePaymentStatus> {
-        return callbackFlow {
-            terminal.createPaymentIntent(
-                createParams(paymentInfo),
-                object : PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        logWrapper.d(LOG_TAG, "Creating payment intent succeeded")
-                        this@callbackFlow.sendAndLog(Success(paymentIntent), logWrapper)
-                        this@callbackFlow.close()
-                    }
-
-                    override fun onFailure(e: TerminalException) {
-                        logWrapper.d(LOG_TAG, "Creating payment intent failed")
-                        this@callbackFlow.sendAndLog(Failure(e), logWrapper)
-                        this@callbackFlow.close()
-                    }
-                }
-            )
-            awaitClose()
+    suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentStatus {
+        return try {
+            val paymentIntent = terminal.createPaymentIntent(createParams(paymentInfo))
+            logWrapper.d(LOG_TAG, "Creating payment intent succeeded")
+            Success(paymentIntent)
+        } catch (e: TerminalException) {
+            logWrapper.d(LOG_TAG, "Creating payment intent failed")
+            Failure(e)
         }
     }
 

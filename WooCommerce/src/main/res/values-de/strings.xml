@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-25 09:54:30+0000
+Translation-Revision-Date: 2026-04-07 09:54:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Weitere Informationen</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Nimm persönlich Zahlungen für nur 2,70 % + 0,10 USD pro Transaktion entgegen. Führe ein &lt;b&gt;Upgrade auf Pro&lt;/b&gt; durch, um Tap-to-Pay auf deinem Mobiltelefon und unserem vollständigen Point-of-Sale-System mit Echtzeit-Inventarisierung und Bestellsynchronisierung zu nutzen.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Nimm persönlich Zahlungen für nur 2,70 % + 0,10 USD pro Transaktion entgegen. Führe ein Upgrade auf Pro durch, um Tap-to-Pay auf deinem Mobiltelefon und unserem vollständigen Point-of-Sale-System mit Echtzeit-Inventarisierung und Bestellsynchronisierung zu nutzen.</string>
+    <string name="woopos_eligibility_ciab_title">Pro-Tarif erforderlich</string>
+    <string name="ciab_order_status_open">Offen</string>
     <string name="booking_payment_status_authorization_voided">Autorisierung ungültig</string>
     <string name="booking_payment_status_authorized">Autorisiert</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Das Versandetikett kann nicht gekauft werden. Bitte gib die Adresse des Absenders an.</string>

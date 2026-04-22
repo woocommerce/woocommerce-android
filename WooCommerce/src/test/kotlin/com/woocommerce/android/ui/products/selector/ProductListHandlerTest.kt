@@ -21,7 +21,7 @@ internal class ProductListHandlerTest : BaseUnitTest() {
     private val repo: ProductSelectorRepository = mock {
         on(it.observeProducts(any())) doReturn flow { emit(generateSampleProducts()) }
 
-        onBlocking {
+        on {
             (it.fetchProducts(any(), any(), any(), any(), any(), any()))
         } doReturn Result.success(true)
     }

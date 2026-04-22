@@ -19,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -198,6 +199,6 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
         presenter.dropView()
         advanceUntilIdle()
-        assertEquals(0, shouldShowPushNotificationOption.subscriptionCount.value)
+        assertThat(shouldShowPushNotificationOption.subscriptionCount.value).isEqualTo(0)
     }
 }

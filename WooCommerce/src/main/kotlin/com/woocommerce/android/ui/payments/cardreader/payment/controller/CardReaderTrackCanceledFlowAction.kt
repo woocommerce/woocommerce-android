@@ -12,7 +12,6 @@ class CardReaderTrackCanceledFlowAction @Inject constructor(
     operator fun invoke(state: CardReaderPaymentOrRefundState) = when (state) {
         is CardReaderPaymentState -> {
             val nameForTracking = when (state) {
-                is CardReaderPaymentState.CollectingPayment -> "Collecting"
                 is CardReaderPaymentState.PaymentCapturing -> "Capturing"
                 is CardReaderPaymentState.ProcessingPayment -> "Processing"
                 is CardReaderPaymentState.LoadingData -> "Loading"

@@ -90,6 +90,12 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissCardReaderConnectionDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -267,6 +273,12 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.RefreshProductList -> {
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
+                    }
+
+                    ChildToParentEvent.ShowCardReaderConnectionDialog -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.CardReaderConnectionDialog
+                        )
                     }
 
                     is ChildToParentEvent.SettingsEvent -> Unit

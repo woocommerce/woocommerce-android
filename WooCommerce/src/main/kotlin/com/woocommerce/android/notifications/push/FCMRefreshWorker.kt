@@ -43,7 +43,7 @@ class FCMRefreshWorker @AssistedInject constructor(
                 onSuccess = { token ->
                     WooLog.d(WooLog.T.NOTIFICATIONS, "FCM token retrieved")
                     appPrefs.setFCMToken(token)
-                    registerDevice(RegisterDevice.Mode.FORCEFULLY)
+                    registerDevice(RegisterDevice.Trigger.TOKEN_REFRESH)
                     Result.success()
                 },
                 onFailure = { e ->

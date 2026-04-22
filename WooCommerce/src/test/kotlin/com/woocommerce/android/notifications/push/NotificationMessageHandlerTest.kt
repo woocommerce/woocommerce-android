@@ -58,7 +58,7 @@ class NotificationMessageHandlerTest {
         on { account } doReturn accountModel
     }
     private val registrationStatus: PushNotificationRegistrationStatus = mock {
-        onBlocking { invoke(any()) } doReturn UNREGISTERED
+        on { invoke(any()) } doReturn UNREGISTERED
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
@@ -154,7 +154,7 @@ class NotificationMessageHandlerTest {
             }
         }
         getWooVisibleSites = mock {
-            onBlocking { invoke() } doReturn visibleSites
+            on { invoke() } doReturn visibleSites
         }
         createNotificationMessageHandler()
 
@@ -354,15 +354,16 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given site is hidden and user has no access token, when woo notification received, then process it`() = runTest {
-        doReturn(false).whenever(accountStore).hasAccessToken()
-        createWooNotificationMessageHandler()
-        whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+    fun `given site is hidden and user has no access token, when woo notification received, then process it`() =
+        runTest {
+            doReturn(false).whenever(accountStore).hasAccessToken()
+            createWooNotificationMessageHandler()
+            whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
 
-        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
 
-        verify(dispatcher, atLeastOnce()).dispatch(any())
-    }
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+        }
 
     @Test
     fun `when an incoming notification is received, then we should update that notification to local cache`() {
@@ -600,6 +601,70 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `when tapped notification is the last child in its group, then remove child and summary`() {
+        val childNotificationId = 10000
+        val summaryNotificationId = orderNotification.getGroupPushId()
+        doReturn(
+            listOf(
+                orderNotification.toActiveNotificationData(id = childNotificationId),
+                orderNotification.toActiveNotificationData(id = summaryNotificationId, isGroupSummary = true)
+            )
+        ).whenever(notificationBuilder).getActiveNotifications()
+
+        notificationMessageHandler.removeTappedNotificationAndSummaryIfNeeded(
+            localPushId = childNotificationId,
+            notification = orderNotification
+        )
+
+        verify(notificationBuilder).cancelNotification(childNotificationId)
+        verify(notificationBuilder).cancelNotification(summaryNotificationId)
+    }
+
+    @Test
+    fun `when another child in the same group remains, then keep summary notification`() {
+        val tappedNotificationId = 10000
+        val remainingChildId = 10001
+        val summaryNotificationId = orderNotification.getGroupPushId()
+        doReturn(
+            listOf(
+                orderNotification.toActiveNotificationData(id = tappedNotificationId),
+                orderNotification.toActiveNotificationData(id = remainingChildId),
+                orderNotification.toActiveNotificationData(id = summaryNotificationId, isGroupSummary = true)
+            )
+        ).whenever(notificationBuilder).getActiveNotifications()
+
+        notificationMessageHandler.removeTappedNotificationAndSummaryIfNeeded(
+            localPushId = tappedNotificationId,
+            notification = orderNotification
+        )
+
+        verify(notificationBuilder).cancelNotification(tappedNotificationId)
+        verify(notificationBuilder, never()).cancelNotification(summaryNotificationId)
+    }
+
+    @Test
+    fun `when only notifications from another store remain, then remove tapped group summary`() {
+        val tappedNotificationId = 10000
+        val otherStoreChildId = 10001
+        val summaryNotificationId = orderNotification.getGroupPushId()
+        doReturn(
+            listOf(
+                orderNotification.toActiveNotificationData(id = tappedNotificationId),
+                orderNotificationSite2.toActiveNotificationData(id = otherStoreChildId),
+                orderNotification.toActiveNotificationData(id = summaryNotificationId, isGroupSummary = true)
+            )
+        ).whenever(notificationBuilder).getActiveNotifications()
+
+        notificationMessageHandler.removeTappedNotificationAndSummaryIfNeeded(
+            localPushId = tappedNotificationId,
+            notification = orderNotification
+        )
+
+        verify(notificationBuilder).cancelNotification(tappedNotificationId)
+        verify(notificationBuilder).cancelNotification(summaryNotificationId)
+    }
+
+    @Test
     fun `remove notifications concurrently without throwing ConcurrentModificationException`() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -620,13 +685,16 @@ class NotificationMessageHandlerTest {
         }
     }
 
-    private fun Notification.toActiveNotificationData(id: Int) = ActiveNotificationData(
+    private fun Notification.toActiveNotificationData(
+        id: Int,
+        isGroupSummary: Boolean = false
+    ) = ActiveNotificationData(
         id = id,
         remoteNoteId = remoteNoteId,
         remoteSiteId = remoteSiteId,
         channelType = channelType.name,
         noteMessage = noteMessage,
         noteTypeTrackingValue = noteType.trackingValue,
-        isGroupSummary = false
+        isGroupSummary = isGroupSummary
     )
 }

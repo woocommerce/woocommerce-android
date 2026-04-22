@@ -26,7 +26,7 @@ class SiteObserverTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val environmentRepository: EnvironmentRepository = mock {
-        onBlocking { fetchOrGetStoreID(any()) } doReturn Result.success("storeID")
+        on { fetchOrGetStoreID(any()) } doReturn Result.success("storeID")
     }
     private val wearableConnectionRepository: WearableConnectionRepository = mock()
     private val featureFlagRepository: WPComRemoteFeatureFlagRepository = mock()

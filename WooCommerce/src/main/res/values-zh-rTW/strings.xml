@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 11:55:07+0000
+Translation-Revision-Date: 2026-04-07 11:57:54+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">深入了解</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">當面付款，每筆交易只要 2.70% + 0.10 美元。 &lt;b&gt;升級至專業版&lt;/b&gt;，即可存取手機的感應支付功能，以及我們的完整銷售點系統，包括即時庫存與訂單同步處理。</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">當面付款，每筆交易只要 2.70% + 0.10 美元。 升級至專業版，即可存取手機的感應支付功能，以及我們的完整銷售點系統，包括即時庫存與訂單同步處理。</string>
+    <string name="woopos_eligibility_ciab_title">需要專業版方案</string>
+    <string name="ciab_order_status_open">開啟</string>
     <string name="booking_payment_status_authorization_voided">授權作廢</string>
     <string name="booking_payment_status_authorized">已授權</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">無法購買運送標籤。 請填寫來源地址。</string>

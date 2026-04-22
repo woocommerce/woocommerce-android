@@ -55,7 +55,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { get() } doReturn selectedSiteFlow.value
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
-        onBlocking { isInboxEnabled() } doReturn true
+        on { isInboxEnabled() } doReturn true
     }
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply {
@@ -63,7 +63,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
     }
     private val planRepository: SitePlanRepository = mock {
-        onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+        on { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
             name = "",
             expirationDate = ZonedDateTime.now(),
             type = SitePlan.Type.FREE_TRIAL
@@ -78,11 +78,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
 
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()

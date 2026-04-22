@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
@@ -74,7 +75,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
                 discountCode = null,
                 taxes = "$0.00",
                 shipping = null,
-                refunds = emptyList(),
+                refundsState = RefundsState.Loaded(refunds = emptyList()),
                 netPayment = null,
             )
         )
@@ -587,5 +588,59 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             assertThat(result).hasSize(1)
             assertThat(result.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
             assertThat(result.first().lineTotal).isEqualTo("$4.00")
+        }
+
+    @Test
+    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then refundsState is Loading`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("2.00"))
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutActions(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
+        }
+
+    @Test
+    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then refundsState is Loading`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(
+                status = Order.Status.Refunded,
+                refundTotal = BigDecimal("4.00")
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutActions(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
+        }
+
+    @Test
+    fun `given order without refunds, when mapOrderDetailsWithoutActions, then refundsState is Loaded empty`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems)
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutActions(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loaded(refunds = emptyList()))
         }
 }

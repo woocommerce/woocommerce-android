@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShip
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.NoAvailableRatesException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
@@ -709,20 +710,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                             set(index, result)
                         }
+                        selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply {
+                            set(index, null)
+                        }
                         trackShippingRatesLoading(isSuccess = true)
                     },
                     onFailure = { exception ->
-                        val errorMessage = if (exception is NoAvailableRatesException) {
-                            exception.messageResId
-                        } else {
-                            R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
+                        val errorMessage = when (exception) {
+                            is NoAvailableRatesException -> exception.messageResId
+                            is InvalidDestinationNameRateException ->
+                                R.string.woo_shipping_labels_package_creation_shipping_rates_destination_name_error
+                            else -> R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
                         }
 
                         updateState(ShippingRatesState.Error(errorMessage))
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
-                selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }
     }

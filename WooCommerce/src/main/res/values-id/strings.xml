@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-24 13:56:24+0000
+Translation-Revision-Date: 2026-04-07 09:55:30+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Baca Selengkapnya</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. &lt;b&gt;Upgrade ke paket Pro&lt;/b&gt; guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. Upgrade ke paket Pro guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
+    <string name="woopos_eligibility_ciab_title">Paket Pro diperlukan</string>
+    <string name="ciab_order_status_open">Buka</string>
     <string name="booking_payment_status_authorization_voided">Otorisasi Dibatalkan</string>
     <string name="booking_payment_status_authorized">Diotorisasi</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Tidak dapat membeli label pengiriman. Silakan lengkapi alamat asal.</string>

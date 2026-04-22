@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -34,6 +35,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
+    private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -84,6 +86,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             timeProvider = mockTimeProvider,
             syncStatusChecker = syncStatusChecker,
             analyticsTracker = analyticsTracker,
+            syncTimestampManager = syncTimestampManager,
         )
     }
 
@@ -165,6 +168,47 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given POS never opened and never synced, when worker runs, then proceeds with sync`() = testBlocking {
+        // GIVEN
+        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
+        whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(null)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(analyticsTracker, never()).track(any())
+    }
+
+    @Test
+    fun `given POS never opened and full sync already completed, when worker runs, then skips sync`() =
+        testBlocking {
+            // GIVEN
+            whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
+            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp())
+                .thenReturn(CURRENT_TIME_MILLIS)
+            val worker = createWorker()
+
+            // WHEN
+            val result = worker.doWork()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            assertThat(result).isEqualTo(ListenableWorker.Result.success())
+            verify(syncRepository, never()).syncLocalCatalogFull(any())
+            verify(analyticsTracker).track(
+                LocalCatalogSyncSkipped(
+                    syncType = SyncType.FULL,
+                    skipReason = SyncSkipReason.POS_NOT_OPENED_30_DAYS
+                )
+            )
+        }
 
     @Test
     fun `when sync fails with unexpected error, then returns failure with retry`() = testBlocking {

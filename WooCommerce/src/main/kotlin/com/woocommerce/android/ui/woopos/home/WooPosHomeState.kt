@@ -47,5 +47,8 @@ data class WooPosHomeState(
             @IgnoredOnParcel
             val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
         }
+
+        @Parcelize
+        data object CardReaderConnectionDialog : DialogState()
     }
 }
