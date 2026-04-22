@@ -128,8 +128,8 @@ fun ExpandableProductCard(
                     start.linkTo(parent.start)
                     bottom.linkTo(collapsedStateBottomBarrier)
                 }
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .size(dimensionResource(R.dimen.major_300)),
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            imageSize = dimensionResource(R.dimen.major_300),
             imageUrl = product.productInfo.imageUrl
         )
         Text(

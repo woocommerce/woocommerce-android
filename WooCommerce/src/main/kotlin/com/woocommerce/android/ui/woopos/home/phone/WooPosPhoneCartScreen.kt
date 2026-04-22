@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartCheckoutButtonSlot
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 
 @Composable
@@ -29,23 +28,12 @@ fun WooPosPhoneCartScreen(
     state?.let { rawState ->
         WooPosCartScreen(
             modifier = modifier.fillMaxSize(),
-            state = applyPhoneOverrides(rawState),
+            state = rawState.copy(toolbar = rawState.toolbar.copy(backIconVisible = true)),
             onUIEvent = viewModel::onUIEvent,
             onPhoneBack = onBack,
             checkoutSlot = WooPosCartCheckoutButtonSlot.External,
         )
     }
-}
-
-private fun applyPhoneOverrides(state: WooPosCartState): WooPosCartState {
-    val hasItems = state.body is WooPosCartState.Body.WithItems
-    return state.copy(
-        toolbar = state.toolbar.copy(
-            backIconVisible = true,
-            isClearAllButtonVisible = hasItems,
-        ),
-        areItemsRemovable = hasItems,
-    )
 }
 
 @Composable
