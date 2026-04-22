@@ -1412,7 +1412,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12)
         }
 
     @Test
@@ -1550,7 +1550,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(11)
+        assertThat(learnMoreListItems[0].index).isEqualTo(12)
     }
 
     @Test

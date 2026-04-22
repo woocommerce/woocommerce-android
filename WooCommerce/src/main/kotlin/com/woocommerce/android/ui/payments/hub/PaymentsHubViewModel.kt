@@ -213,6 +213,10 @@ class PaymentsHubViewModel @Inject constructor(
         addLearnMoreAboutIPP()
     }
 
+    private val isPhoneEligibleAsCardReader: Boolean
+        get() = tapToPayAvailabilityStatus().isAvailable &&
+            featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
+
     private fun MutableList<ListItem>.addTapToPay() {
         if (tapToPayAvailabilityStatus().isAvailable) {
             add(
@@ -243,12 +247,12 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun MutableList<ListItem>.addCardReaderMode() {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)) return
+        if (!isPhoneEligibleAsCardReader) return
         add(
             NonToggleableListItem(
                 icon = R.drawable.ic_baseline_contactless,
                 label = UiStringRes(R.string.card_reader_mode_settings_row_label),
-                index = CARD_READER_MODE_INDEX,
+                index = 10,
                 onClick = ::onCardReaderModeClicked,
             )
         )
@@ -264,7 +268,7 @@ class PaymentsHubViewModel @Inject constructor(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 10,
+                    index = 11,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
@@ -276,7 +280,7 @@ class PaymentsHubViewModel @Inject constructor(
             LearnMoreListItem(
                 icon = R.drawable.ic_info_outline_20dp,
                 label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
-                index = 11,
+                index = 12,
                 onClick = ::onLearnMoreIppClicked
             )
         )
@@ -568,6 +572,5 @@ class PaymentsHubViewModel @Inject constructor(
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
         private const val SOURCE = "payments_menu"
-        private const val CARD_READER_MODE_INDEX = 30
     }
 }

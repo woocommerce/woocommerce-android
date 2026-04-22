@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,7 +16,10 @@ import javax.inject.Inject
 class CardReaderModeActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var session: CardReaderModeSession
+    lateinit var session: CardReaderRemoteSession
+
+    @Inject
+    lateinit var stateBinder: CardReaderModeStateBinder
 
     private val viewModel: CardReaderModeViewModel by viewModels()
 
@@ -36,6 +40,7 @@ class CardReaderModeActivity : AppCompatActivity() {
             }
         }
 
+        stateBinder.bind(lifecycleScope)
         session.start(lifecycleScope)
     }
 
