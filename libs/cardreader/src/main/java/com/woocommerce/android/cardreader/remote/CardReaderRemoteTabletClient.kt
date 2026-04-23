@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import android.util.Log
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -58,10 +59,13 @@ internal class DefaultCardReaderRemoteTabletClient(
     ): ConnectOutcome {
         disconnect()
         return try {
+            Log.d(TAG, "Opening TLS connection")
             val opened = tlsClient.connect(reader.host, reader.port, reader.fingerprintBase64)
             connection = opened
             val requestId = UUID.randomUUID().toString()
+            Log.d(TAG, "Sending ConnectRequest requestId=$requestId")
             opened.send(ConnectRequest(requestId, connectionToken, locationId))
+            Log.d(TAG, "ConnectRequest sent, awaiting reply")
             when (val reply = opened.receive().first { it.requestId == requestId }) {
                 is ConnectAck -> ConnectOutcome.Success(reply.readerSerial)
                 is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)
@@ -121,5 +125,6 @@ internal class DefaultCardReaderRemoteTabletClient(
 
     private companion object {
         const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
+        const val TAG = "CardReaderRemoteTabletClient"
     }
 }

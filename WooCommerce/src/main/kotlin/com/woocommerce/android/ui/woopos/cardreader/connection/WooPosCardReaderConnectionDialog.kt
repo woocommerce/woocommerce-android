@@ -297,6 +297,7 @@ fun WooPosCardReaderConnectionDialogContent(
                 is WooPosCardReaderConnectionState.ReaderFound -> {
                     ReaderFoundContent(
                         readerName = currentState.reader.name,
+                        fingerprintSuffix = currentState.reader.fingerprintSuffix,
                         onConnectClicked = currentState.reader.onConnectClicked,
                         onKeepSearchingClicked = currentState.onKeepSearchingClicked,
                     )
@@ -508,11 +509,17 @@ private fun ScanningDialogBody() {
 @Composable
 private fun ReaderFoundContent(
     readerName: String,
+    fingerprintSuffix: String?,
     onConnectClicked: () -> Unit,
     onKeepSearchingClicked: () -> Unit,
 ) {
+    val title = if (fingerprintSuffix != null) {
+        stringResource(R.string.woopos_card_reader_found_title, "$readerName · $fingerprintSuffix")
+    } else {
+        stringResource(R.string.woopos_card_reader_found_title, readerName)
+    }
     CardReaderDialogContent(
-        title = stringResource(R.string.woopos_card_reader_found_title, readerName),
+        title = title,
         icon = WooPosIcons.CardReaderFound,
     ) {
         WooPosButton(
@@ -1039,6 +1046,7 @@ fun WooPosCardReaderConnectionDialogReaderFoundPreview() {
     WooPosTheme {
         ReaderFoundContent(
             readerName = "STRM261380012691",
+            fingerprintSuffix = null,
             onConnectClicked = {},
             onKeepSearchingClicked = {},
         )

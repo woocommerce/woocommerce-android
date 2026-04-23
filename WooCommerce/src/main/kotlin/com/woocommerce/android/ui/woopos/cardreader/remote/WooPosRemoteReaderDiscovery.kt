@@ -30,7 +30,7 @@ class WooPosRemoteReaderDiscovery @Inject constructor(
             when (event) {
                 is RemoteReaderDiscoveryEvent.Added -> WooPosPhoneDiscoveryEvent.Added(
                     WooPosDiscoveredReader.Phone(
-                        name = event.reader.name,
+                        name = event.reader.deviceName?.takeIf { it.isNotBlank() } ?: event.reader.name,
                         host = event.reader.host,
                         port = event.reader.port,
                         fingerprintBase64 = event.reader.fingerprintBase64,

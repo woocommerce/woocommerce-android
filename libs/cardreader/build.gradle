@@ -44,6 +44,7 @@ dependencies {
 
     // Remote reader transport
     implementation(libs.google.gson)
+    implementation libs.squareup.okhttp3.tls
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)

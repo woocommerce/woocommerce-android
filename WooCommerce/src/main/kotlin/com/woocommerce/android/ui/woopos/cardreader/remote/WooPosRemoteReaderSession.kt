@@ -85,12 +85,15 @@ class WooPosRemoteReaderSession @Inject constructor(
             host = reader.host,
             port = reader.port,
             fingerprintBase64 = reader.fingerprintBase64,
+            deviceName = reader.name,
         )
         return when (val outcome = newClient.connect(discovered, token, locationId)) {
             is ConnectOutcome.Success -> State.Connected(reader, outcome.readerSerial)
                 .also { _state.value = it }
             is ConnectOutcome.Rejected -> fail("${outcome.code}: ${outcome.description}")
-            is ConnectOutcome.Failed -> fail(outcome.cause.message ?: "Connection failed")
+            is ConnectOutcome.Failed -> fail(
+                "${outcome.cause::class.java.simpleName}: ${outcome.cause.message ?: "Connection failed"}"
+            )
         }
     }
 

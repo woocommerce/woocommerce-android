@@ -16,10 +16,12 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -114,6 +116,17 @@ internal class CardReaderManagerImpl(
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
         resetBluetoothDisplayMessage()
         return paymentManager.acceptPayment(paymentInfo)
+    }
+
+    override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        return paymentManager.createPaymentIntentOnly(paymentInfo)
+    }
+
+    override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        resetBluetoothDisplayMessage()
+        return paymentManager.retrieveAndCollectPayment(clientSecret)
     }
 
     override suspend fun refundInteracPayment(

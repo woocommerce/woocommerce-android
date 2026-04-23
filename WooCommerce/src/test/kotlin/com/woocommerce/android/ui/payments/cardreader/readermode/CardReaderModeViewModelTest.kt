@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,15 +26,19 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
     }
+    private val cardReaderManager: CardReaderManager = mock {
+        on { initialized }.thenReturn(true)
+    }
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
 
     @Before
     fun setUp() {
-        viewModel = CardReaderModeViewModel(session)
+        viewModel = CardReaderModeViewModel(session, cardReaderManager, developerOptionsRepository)
     }
 
     @Test
     fun `when view model initialized, then session started`() {
-        verify(session).start(any())
+        verify(session).start(any(), any())
     }
 
     @Test
