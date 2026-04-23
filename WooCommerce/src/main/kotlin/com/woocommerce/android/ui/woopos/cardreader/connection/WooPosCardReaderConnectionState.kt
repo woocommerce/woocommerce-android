@@ -16,7 +16,6 @@ sealed interface WooPosCardReaderConnectionState {
 
     data class Scanning(
         val isRemoteTapToPaySupported: Boolean,
-        val lastConnectedPhoneName: String?,
     ) : WooPosCardReaderConnectionState
 
     data class RemoteTapToPayExplainer(
