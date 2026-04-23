@@ -14,8 +14,8 @@ import java.io.IOException
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * Calls the QR login token-exchange endpoint on the merchant's WordPress site.
@@ -24,14 +24,10 @@ import javax.inject.Inject
  * authorization. See `~/Code/Automattic/qr-code-login-flow.html` for the full design.
  */
 class QrLoginExchangeClient @Inject constructor(
+    @Named("custom-ssl") private val okHttpClient: OkHttpClient,
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(EXCHANGE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        .readTimeout(EXCHANGE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        .writeTimeout(EXCHANGE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        .build()
 
     suspend fun exchange(siteUrl: String, token: String): Result<QrLoginCredentials> =
         withContext(dispatchers.io) {
@@ -47,7 +43,7 @@ class QrLoginExchangeClient @Inject constructor(
             .post(payload.toRequestBody(JSON_MEDIA_TYPE))
             .build()
 
-        client.newCall(request).execute().use { response ->
+        okHttpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw mapHttpStatus(response.code)
             return parseExchangeBody(response.body.string())
                 ?: throw QrLoginExchangeException.MalformedResponse
@@ -102,7 +98,6 @@ class QrLoginExchangeClient @Inject constructor(
 
     private companion object {
         const val EXCHANGE_PATH = "/wp-json/wc-admin/mobile-app/qr-login-exchange"
-        const val EXCHANGE_TIMEOUT_SECONDS = 20L
         const val HTTP_TOO_MANY_REQUESTS = 429
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
