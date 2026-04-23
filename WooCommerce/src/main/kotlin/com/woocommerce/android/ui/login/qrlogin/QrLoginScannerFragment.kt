@@ -82,7 +82,8 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
                                 granted,
                                 shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                             )
-                        }
+                        },
+                        overlayLabel = R.string.login_qr_scanner_hint
                     )
                     if (authenticating) {
                         AuthenticatingOverlay()

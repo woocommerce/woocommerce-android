@@ -45,6 +45,7 @@ import androidx.camera.core.Preview as CameraPreview
 fun BarcodeScanner(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
+    @androidx.annotation.StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -132,12 +133,12 @@ fun BarcodeScanner(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
-        ScannerOverlay()
+        ScannerOverlay(overlayLabel = overlayLabel)
     }
 }
 
 @Composable
-private fun ScannerOverlay() {
+private fun ScannerOverlay(@androidx.annotation.StringRes overlayLabel: Int) {
     Column {
         Box(
             modifier = Modifier
@@ -155,7 +156,7 @@ private fun ScannerOverlay() {
         ) {
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(R.string.barcode_scanning_scan_product_barcode_label)
+                text = stringResource(overlayLabel)
             )
         }
     }
