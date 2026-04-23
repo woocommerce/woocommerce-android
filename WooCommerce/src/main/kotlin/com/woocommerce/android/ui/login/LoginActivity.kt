@@ -272,20 +272,17 @@ class LoginActivity :
     }
 
     private fun showPrologue() {
-        if (featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)) {
-            showQrLoginPrologueFragment()
-        } else if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
             showPrologueCarouselFragment()
         } else {
             showPrologueFragment()
         }
     }
 
-    private fun showQrLoginPrologueFragment() = lifecycleScope.launch {
-        withStarted {
-            val existing = supportFragmentManager.findFragmentByTag(QrLoginPrologueFragment.TAG) as? QrLoginPrologueFragment
-            changeFragment(existing ?: QrLoginPrologueFragment(), true, QrLoginPrologueFragment.TAG)
-        }
+    private fun showQrLoginPrologueFragment() {
+        val existing = supportFragmentManager.findFragmentByTag(QrLoginPrologueFragment.TAG)
+            as? QrLoginPrologueFragment
+        changeFragment(existing ?: QrLoginPrologueFragment(), true, QrLoginPrologueFragment.TAG)
     }
 
     override fun onQrLoginScanClicked() {
@@ -293,11 +290,7 @@ class LoginActivity :
     }
 
     override fun onQrLoginFallbackClicked() {
-        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
-            showPrologueCarouselFragment()
-        } else {
-            showPrologueFragment()
-        }
+        loginViaSiteAddress()
     }
 
     override fun onQrLoginCompleted(localSiteId: Int) {
@@ -389,7 +382,11 @@ class LoginActivity :
     override fun onPrimaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         disableDynamicEdgeToEdge()
-        loginViaSiteAddress()
+        if (featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)) {
+            showQrLoginPrologueFragment()
+        } else {
+            loginViaSiteAddress()
+        }
     }
 
     override fun onSecondaryButtonClicked() {
