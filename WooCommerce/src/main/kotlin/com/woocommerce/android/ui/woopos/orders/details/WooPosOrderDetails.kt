@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
-import com.woocommerce.android.ui.woopos.orders.WOO_POS_ORDERS_TOOLBAR_HEIGHT
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
@@ -75,7 +74,7 @@ fun WooPosOrderDetails(
             )
     ) {
         Row(
-            modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+            modifier = Modifier.heightIn(min = WooPosComponentSize.XSmall.value),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (showOrderNumber) {

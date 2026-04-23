@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,6 +74,7 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetai
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -87,6 +89,7 @@ fun WooPosOrdersScreen(
     navigatedFromEmailReceiptSent: Boolean,
     refundReasonResult: String? = null,
 ) {
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
     val detailViewModel: WooPosOrderDetailsViewModel = hiltViewModel()
 
@@ -103,10 +106,15 @@ fun WooPosOrdersScreen(
         listState = listState,
         detailState = detailState,
         isSingleOrderMode = detailViewModel.isSingleOrderMode,
+        isPhoneLayout = isPhoneLayout,
         scrollToTopEvent = listViewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = listViewModel::onRefresh,
-        onOrderSelected = listViewModel::onOrderSelected,
+        onOrderSelected = if (isPhoneLayout && !detailViewModel.isSingleOrderMode) {
+            { orderId -> onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId)) }
+        } else {
+            listViewModel::onOrderSelected
+        },
         onEndOfOrdersListReached = listViewModel::onEndOfOrdersListReached,
         onPaginationErrorTryAgain = listViewModel::onPaginationErrorTryAgain,
         onSearchEvent = listViewModel::onSearchEvent,
@@ -127,6 +135,7 @@ private fun WooPosOrdersScreen(
     listState: WooPosOrdersListState,
     detailState: WooPosOrderDetailsState,
     isSingleOrderMode: Boolean = false,
+    isPhoneLayout: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -179,19 +188,37 @@ private fun WooPosOrdersScreen(
         } else {
             when (listState) {
                 is WooPosOrdersListState.Content -> {
-                    OrdersListWithDetails(
-                        listContent = listState,
-                        detailState = detailState,
-                        scrollToTopEvent = scrollToTopEvent,
-                        onRefresh = onRefresh,
-                        onOrderSelected = onOrderSelected,
-                        onEndOfOrdersListReached = onEndOfOrdersListReached,
-                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                        onSearchEvent = onSearchEvent,
-                        onSearchErrorRetry = onSearchErrorRetry,
-                        onUIEvent = onUIEvent,
-                        onRetryDetailLoad = onRetryDetailLoad
-                    )
+                    if (isPhoneLayout) {
+                        OrdersListPane(
+                            state = listState.withoutSelection(),
+                            scrollToTopEvent = scrollToTopEvent,
+                            onRefresh = onRefresh,
+                            isRefreshing = listState.pullToRefreshState ==
+                                WooPosPullToRefreshState.Refreshing,
+                            onOrderSelected = onOrderSelected,
+                            onEndOfOrdersListReached = onEndOfOrdersListReached,
+                            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                            onSearchEvent = onSearchEvent,
+                            onSearchErrorRetry = onSearchErrorRetry,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.surfaceBright)
+                        )
+                    } else {
+                        OrdersListWithDetails(
+                            listContent = listState,
+                            detailState = detailState,
+                            scrollToTopEvent = scrollToTopEvent,
+                            onRefresh = onRefresh,
+                            onOrderSelected = onOrderSelected,
+                            onEndOfOrdersListReached = onEndOfOrdersListReached,
+                            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                            onSearchEvent = onSearchEvent,
+                            onSearchErrorRetry = onSearchErrorRetry,
+                            onUIEvent = onUIEvent,
+                            onRetryDetailLoad = onRetryDetailLoad
+                        )
+                    }
                 }
                 is WooPosOrdersListState.Empty -> OrdersEmpty(
                     onActionClicked = onOrdersEmptyActionClicked,
@@ -664,6 +691,16 @@ private fun OrdersError(
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
+        )
+    )
+}
+
+private fun WooPosOrdersListState.Content.withoutSelection(): WooPosOrdersListState.Content {
+    val items = this.items
+    if (items !is WooPosOrdersListState.Content.Items.Loaded) return this
+    return copy(
+        items = WooPosOrdersListState.Content.Items.Loaded(
+            items.items.map { it.copy(isSelected = false) }
         )
     )
 }
