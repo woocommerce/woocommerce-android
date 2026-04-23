@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability
 import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
@@ -62,8 +63,6 @@ import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -167,7 +166,7 @@ class LoginActivity :
     internal lateinit var registerDevice: RegisterDevice
 
     @Inject
-    internal lateinit var featureFlagRepository: FeatureFlagRepository
+    internal lateinit var qrLoginAvailability: QrLoginAvailability
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -383,7 +382,7 @@ class LoginActivity :
     override fun onPrimaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         disableDynamicEdgeToEdge()
-        if (featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)) {
+        if (qrLoginAvailability.isAvailable()) {
             showQrLoginPrologueFragment()
         } else {
             loginViaSiteAddress()
