@@ -582,7 +582,8 @@ private fun FoundReaderRow(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.clickable(onClick = reader.onConnectClicked),
+        modifier = modifier.clickable(onClick = reader.onConnectClicked)
+            .height(WooPosComponentSize.Small.value),
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         color = WooPosTheme.colors.transparent,
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseSurface),
@@ -610,7 +611,7 @@ private fun FoundReaderRow(
                 painter = painterResource(iconRes),
                 contentDescription = iconContentDescription,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(WooPosIconSize.XSmall.value),
+                modifier = Modifier.size(WooPosIconSize.Small.value),
             )
             Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
             WooPosText(
@@ -618,27 +619,17 @@ private fun FoundReaderRow(
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
+                fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            when (reader.transport) {
-                WooPosDiscoveryTransport.Bluetooth -> Unit
-                WooPosDiscoveryTransport.WifiLan -> {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_card_reader_transport_wifi),
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    reader.fingerprintSuffix?.let { suffix ->
-                        Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
-                        WooPosText(
-                            text = suffix,
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+            reader.fingerprintSuffix?.let { suffix ->
+                WooPosText(
+                    text = suffix,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }
