@@ -67,8 +67,9 @@ class WooPosCardReaderConnectionController(
     featureFlagRepository: FeatureFlagRepository,
 ) {
     private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
-    private var hasAnyReaderAppeared: Boolean = false
-    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(buildScanningState())
+    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(
+        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+    )
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
 
     private val _event = MutableSharedFlow<ControllerEvent>()
@@ -96,20 +97,18 @@ class WooPosCardReaderConnectionController(
 
     fun hideRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = buildScanningState()
+        _state.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+        )
         startDiscovery()
     }
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = buildScanningState()
-    }
-
-    private fun buildScanningState(): WooPosCardReaderConnectionState.Scanning =
-        WooPosCardReaderConnectionState.Scanning(
+        _state.value = WooPosCardReaderConnectionState.Scanning(
             isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
-            lastConnectedPhoneName = if (hasAnyReaderAppeared) null else appPrefsWrapper.getLastConnectedPhoneName(),
         )
+    }
 
     fun startConnectionFlow() {
         isRequiredUpdate = true
@@ -291,6 +290,7 @@ class WooPosCardReaderConnectionController(
 
     suspend fun disconnect() {
         appPrefsWrapper.removeLastConnectedCardReaderId()
+        appPrefsWrapper.removeLastConnectedPhoneName()
         remoteReaderSession.disconnect()
         cardReaderManager.disconnectReader()
     }
@@ -357,10 +357,6 @@ class WooPosCardReaderConnectionController(
     ) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
 
-        if (bluetoothReaders.isNotEmpty() || phones.isNotEmpty()) {
-            hasAnyReaderAppeared = true
-        }
-
         tracker.trackReadersDiscovered(bluetoothReaders.size + phones.size)
 
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
@@ -368,6 +364,14 @@ class WooPosCardReaderConnectionController(
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
+            return
+        }
+
+        val lastKnownPhone = findLastKnownPhone(phones)
+        if (lastKnownPhone != null) {
+            logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
+            tracker.trackAutoConnectionStarted()
+            onPhoneConnectClicked(lastKnownPhone)
             return
         }
 
@@ -417,6 +421,11 @@ class WooPosCardReaderConnectionController(
     private fun findLastKnownReader(readers: List<CardReader>): CardReader? {
         val lastConnectedId = appPrefsWrapper.getLastConnectedCardReaderId()
         return readers.find { it.id == lastConnectedId }
+    }
+
+    private fun findLastKnownPhone(phones: List<WooPosDiscoveredReader.Phone>): WooPosDiscoveredReader.Phone? {
+        val lastConnectedName = appPrefsWrapper.getLastConnectedPhoneName() ?: return null
+        return phones.find { it.name == lastConnectedName }
     }
 
     private fun continueSearching() {
