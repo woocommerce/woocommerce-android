@@ -221,6 +221,14 @@
     <string name="login_qr_scanner_hint">Point your camera at the QR on woo.com/mobilelogin</string>
     <string name="login_qr_scanner_error_generic">We couldn\'t read that QR code. Please try again.</string>
     <string name="login_qr_scanner_error_payload">This QR isn\'t a WooCommerce login code.</string>
+    <string name="login_qr_scanner_error_token">That code expired or has already been used. Generate a new one in your store.</string>
+    <string name="login_qr_scanner_error_endpoint">This store doesn\'t support QR login yet. Please update WooCommerce.</string>
+    <string name="login_qr_scanner_error_rate_limited">Too many attempts. Please wait a few minutes and try again.</string>
+    <string name="login_qr_scanner_error_network">Couldn\'t reach your store. Check your connection and try again.</string>
+    <string name="login_qr_scanner_error_site_auth">Couldn\'t authenticate with your store. Please try again.</string>
+    <string name="login_qr_scanner_error_not_woo">This site doesn\'t have WooCommerce installed.</string>
+    <string name="login_qr_scanner_error_user_role">Your account doesn\'t have permission to use the app for this store.</string>
+    <string name="login_qr_scanner_authenticating">Signing you in…</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>

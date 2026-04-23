@@ -6,9 +6,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
@@ -19,10 +35,11 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import org.wordpress.android.login.LoginListener
 
 /**
- * Hosts the QR scanner for the QR-first login flow. Hands parsed payloads to the
- * hosting [com.woocommerce.android.ui.login.LoginActivity] via [Listener].
+ * Hosts the QR scanner for the QR-first login flow. Drives the parse → exchange → login chain
+ * via [QrLoginScannerViewModel] and tells the activity when the user is logged in via [Listener].
  */
 @AndroidEntryPoint
 class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
@@ -32,7 +49,7 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
     }
 
     interface Listener {
-        fun onQrLoginScanned(payload: QrLoginPayload)
+        fun onQrLoginCompleted(localSiteId: Int)
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -53,18 +70,24 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
             val permissionState = scannerViewModel.permissionState.observeAsState(
                 initial = BarcodeScanningViewModel.PermissionState.Unknown
             )
+            val authenticating by qrLoginViewModel.isAuthenticating.observeAsState(initial = false)
             WooThemeWithBackground {
-                BarcodeScannerScreen(
-                    onNewFrame = scannerViewModel::onNewFrame,
-                    onBindingException = scannerViewModel::onBindingException,
-                    permissionState = permissionState,
-                    onResult = { granted ->
-                        scannerViewModel.updatePermissionState(
-                            granted,
-                            shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                        )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    BarcodeScannerScreen(
+                        onNewFrame = scannerViewModel::onNewFrame,
+                        onBindingException = scannerViewModel::onBindingException,
+                        permissionState = permissionState,
+                        onResult = { granted ->
+                            scannerViewModel.updatePermissionState(
+                                granted,
+                                shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                            )
+                        }
+                    )
+                    if (authenticating) {
+                        AuthenticatingOverlay()
                     }
-                )
+                }
             }
         }
     }
@@ -114,21 +137,54 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
     private fun observeQrLoginEvents() {
         qrLoginViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is QrLoginScannerViewModel.Dispatch.SiteAppPassword ->
-                    listener?.onQrLoginScanned(event.payload)
+                is QrLoginScannerViewModel.Dispatch.LoggedIn -> {
+                    // Stop the camera before handing off so the preview doesn't leak.
+                    scannerViewModel.stopCodesRecognition()
+                    listener?.onQrLoginCompleted(event.localSiteId)
+                        ?: (requireActivity() as LoginListener)
+                            .loggedInViaUsernamePassword(arrayListOf(event.localSiteId))
+                }
 
-                is QrLoginScannerViewModel.Dispatch.WpComToken ->
-                    listener?.onQrLoginScanned(event.payload)
-
-                is QrLoginScannerViewModel.Dispatch.UrlOnly ->
-                    listener?.onQrLoginScanned(event.payload)
-
-                QrLoginScannerViewModel.Dispatch.InvalidPayload ->
-                    uiMessageResolver.showSnack(R.string.login_qr_scanner_error_payload)
-
-                QrLoginScannerViewModel.Dispatch.ScannerFailure ->
-                    uiMessageResolver.showSnack(R.string.login_qr_scanner_error_generic)
+                is QrLoginScannerViewModel.Dispatch.RecoverableError ->
+                    uiMessageResolver.showSnack(event.reason.toMessage())
             }
         }
     }
+
+    @StringRes
+    private fun QrLoginScannerViewModel.ErrorReason.toMessage(): Int = when (this) {
+        QrLoginScannerViewModel.ErrorReason.InvalidPayload -> R.string.login_qr_scanner_error_payload
+        QrLoginScannerViewModel.ErrorReason.Scanner -> R.string.login_qr_scanner_error_generic
+        QrLoginScannerViewModel.ErrorReason.TokenRejected -> R.string.login_qr_scanner_error_token
+        QrLoginScannerViewModel.ErrorReason.EndpointMissing -> R.string.login_qr_scanner_error_endpoint
+        QrLoginScannerViewModel.ErrorReason.RateLimited -> R.string.login_qr_scanner_error_rate_limited
+        QrLoginScannerViewModel.ErrorReason.Network -> R.string.login_qr_scanner_error_network
+        QrLoginScannerViewModel.ErrorReason.SiteAuthFailure -> R.string.login_qr_scanner_error_site_auth
+        QrLoginScannerViewModel.ErrorReason.NotAWooSite -> R.string.login_qr_scanner_error_not_woo
+        QrLoginScannerViewModel.ErrorReason.UserNotEligible -> R.string.login_qr_scanner_error_user_role
+        QrLoginScannerViewModel.ErrorReason.Unknown -> R.string.login_qr_scanner_error_generic
+    }
 }
+
+@Composable
+private fun AuthenticatingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(24.dp)
+        ) {
+            CircularProgressIndicator(color = Color.White)
+            Text(
+                text = stringResource(id = R.string.login_qr_scanner_authenticating),
+                color = Color.White
+            )
+        }
+    }
+}
+

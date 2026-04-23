@@ -9,95 +9,73 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginScannerViewModelTest : BaseUnitTest() {
 
-    private fun createViewModel(parser: QrLoginPayloadParser) = QrLoginScannerViewModel(
-        savedState = SavedStateHandle(),
-        parser = parser
-    )
+    private val ticket = QrLoginPayload.Ticket(token = "tok", siteUrl = "https://store.example")
 
-    private fun success(raw: String) = CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
-
-    @Test
-    fun `given SiteAppPassword payload, when scan result received, then emits SiteAppPassword dispatch`() {
-        val payload = QrLoginPayload.SiteAppPassword(
-            siteUrl = "https://store.example",
-            username = "admin",
-            appPassword = "abc"
+    private fun createViewModel(parser: QrLoginPayloadParser, authenticator: QrLoginAuthenticator) =
+        QrLoginScannerViewModel(
+            savedState = SavedStateHandle(),
+            parser = parser,
+            authenticator = authenticator
         )
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("raw") } doReturn payload
-        }
-        val viewModel = createViewModel(parser)
+
+    private fun successScan(raw: String) =
+        CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
+
+    private fun parserReturning(payload: QrLoginPayload, forCode: String = "raw"): QrLoginPayloadParser =
+        mock { on { parse(forCode) }.thenReturn(payload) }
+
+    @Test
+    fun `given valid ticket and successful auth, when scan succeeds, then emits LoggedIn`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(42))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
         val events = viewModel.event.captureValues()
 
-        viewModel.onScanResult(success("raw"))
+        viewModel.onScanResult(successScan("raw"))
 
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.SiteAppPassword(payload))
+        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 42))
     }
 
     @Test
-    fun `given WpComToken payload, when scan result received, then emits WpComToken dispatch`() {
-        val payload = QrLoginPayload.WpComToken(token = "t")
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("raw") } doReturn payload
-        }
-        val viewModel = createViewModel(parser)
+    fun `given Invalid payload, when scan succeeds, then emits InvalidPayload error`() = testBlocking {
+        val viewModel = createViewModel(parserReturning(QrLoginPayload.Invalid), mock())
         val events = viewModel.event.captureValues()
 
-        viewModel.onScanResult(success("raw"))
+        viewModel.onScanResult(successScan("raw"))
 
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.WpComToken(payload))
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
+        )
     }
 
     @Test
-    fun `given UrlOnly payload, when scan result received, then emits UrlOnly dispatch`() {
-        val payload = QrLoginPayload.UrlOnly(siteUrl = "https://store.example")
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("raw") } doReturn payload
-        }
-        val viewModel = createViewModel(parser)
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(success("raw"))
-
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.UrlOnly(payload))
-    }
-
-    @Test
-    fun `given Invalid payload, when scan result received, then emits InvalidPayload dispatch`() {
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("raw") } doReturn QrLoginPayload.Invalid
-        }
-        val viewModel = createViewModel(parser)
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(success("raw"))
-
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.InvalidPayload)
-    }
-
-    @Test
-    fun `given scanner Failure, when scan result received, then emits ScannerFailure dispatch`() {
-        val parser: QrLoginPayloadParser = mock()
-        val viewModel = createViewModel(parser)
+    fun `given scanner Failure, when scan result received, then emits Scanner error`() = testBlocking {
+        val viewModel = createViewModel(mock(), mock())
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(
             CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
         )
 
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.ScannerFailure)
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Scanner)
+        )
     }
 
     @Test
-    fun `given NotFound status, when scan result received, then no dispatch emitted`() {
-        val parser: QrLoginPayloadParser = mock()
-        val viewModel = createViewModel(parser)
+    fun `given NotFound status, when scan result received, then no events emitted`() = testBlocking {
+        val viewModel = createViewModel(mock(), mock())
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(CodeScannerStatus.NotFound)
@@ -106,34 +84,146 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given successful dispatch, when another scan arrives, then ignored to avoid double-submit`() {
-        val payload = QrLoginPayload.UrlOnly(siteUrl = "https://store.example")
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("raw") } doReturn payload
-        }
-        val viewModel = createViewModel(parser)
+    fun `given token rejected by server, when scan succeeds, then emits TokenRejected error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.TokenRejected))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
         val events = viewModel.event.captureValues()
 
-        viewModel.onScanResult(success("raw"))
-        viewModel.onScanResult(success("raw"))
+        viewModel.onScanResult(successScan("raw"))
 
-        assertThat(events).hasSize(1)
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.TokenRejected)
+        )
     }
 
     @Test
-    fun `given invalid payload, when another scan arrives with valid payload, then valid dispatch is emitted`() {
-        val validPayload = QrLoginPayload.UrlOnly(siteUrl = "https://store.example")
-        val parser: QrLoginPayloadParser = mock {
-            on { parse("invalid") } doReturn QrLoginPayload.Invalid
-            on { parse("valid") } doReturn validPayload
-        }
-        val viewModel = createViewModel(parser)
+    fun `given network error, when scan succeeds, then emits Network error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.Network))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
         val events = viewModel.event.captureValues()
 
-        viewModel.onScanResult(success("invalid"))
-        viewModel.onScanResult(success("valid"))
+        viewModel.onScanResult(successScan("raw"))
 
-        assertThat(events).hasSize(2)
-        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.UrlOnly(validPayload))
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Network)
+        )
+    }
+
+    @Test
+    fun `given rate limited error, when scan succeeds, then emits RateLimited error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.RateLimited)
+        )
+    }
+
+    @Test
+    fun `given endpoint missing, when scan succeeds, then emits EndpointMissing error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.EndpointMissing)
+        )
+    }
+
+    @Test
+    fun `given site is not Woo, when auth fails with NotAWooSite, then emits NotAWooSite error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginAuthenticationException.NotAWooSite))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
+        )
+    }
+
+    @Test
+    fun `given user is ineligible, when auth fails, then emits UserNotEligible error`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginAuthenticationException.UserNotEligible(original = null)))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
+        )
+    }
+
+    @Test
+    fun `given login succeeded, when another scan arrives, then ignored to avoid double-submit`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(7))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+
+        viewModel.onScanResult(successScan("raw"))
+        viewModel.onScanResult(successScan("raw"))
+
+        verify(authenticator, times(1)).authenticate(eq(ticket))
+    }
+
+    @Test
+    fun `given exchange failure, when another valid scan arrives, then it is processed`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.Network))
+            .thenReturn(Result.success(99))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("raw"))
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 99))
+    }
+
+    @Test
+    fun `given Invalid payload, when scan invalid then valid, then second scan still processed`() = testBlocking {
+        val parser: QrLoginPayloadParser = mock {
+            on { parse("invalid") }.thenReturn(QrLoginPayload.Invalid)
+            on { parse("valid") }.thenReturn(ticket)
+        }
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(11))
+        val viewModel = createViewModel(parser, authenticator)
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan("invalid"))
+        viewModel.onScanResult(successScan("valid"))
+
+        assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 11))
+    }
+
+    @Test
+    fun `given Invalid payload, when scan succeeds, then authenticator is not called`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        val viewModel = createViewModel(parserReturning(QrLoginPayload.Invalid), authenticator)
+
+        viewModel.onScanResult(successScan("raw"))
+
+        verify(authenticator, never()).authenticate(any())
     }
 }

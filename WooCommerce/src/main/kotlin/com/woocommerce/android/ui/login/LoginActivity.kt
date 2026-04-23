@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
-import com.woocommerce.android.ui.login.qrlogin.QrLoginPayload
 import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
@@ -301,43 +300,8 @@ class LoginActivity :
         }
     }
 
-    override fun onQrLoginScanned(payload: QrLoginPayload) {
-        when (payload) {
-            is QrLoginPayload.SiteAppPassword -> handleQrSiteAppPassword(payload)
-            is QrLoginPayload.WpComToken -> handleQrWpComToken()
-            is QrLoginPayload.UrlOnly -> handleQrUrlOnly(payload)
-            QrLoginPayload.Invalid -> Unit
-        }
-    }
-
-    private fun handleQrSiteAppPassword(payload: QrLoginPayload.SiteAppPassword) {
-        // Application Password auth is wired in a follow-up PR; landing on the existing
-        // site-credentials screen with the URL and username pre-filled is strictly better
-        // than today's type-the-URL-yourself experience.
-        appPrefsWrapper.setLoginSiteAddress(payload.siteUrl)
-        showUsernamePasswordScreen(
-            siteAddress = payload.siteUrl,
-            endpointAddress = null,
-            inputUsername = payload.username,
-            inputPassword = payload.appPassword
-        )
-    }
-
-    private fun handleQrWpComToken() {
-        // Token-based .com exchange is wired in a follow-up PR; fall back to the standard
-        // .com email/password screen so the merchant still reaches a usable login state.
-        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
-        showEmailLoginScreen()
-    }
-
-    private fun handleQrUrlOnly(payload: QrLoginPayload.UrlOnly) {
-        appPrefsWrapper.setLoginSiteAddress(payload.siteUrl)
-        showUsernamePasswordScreen(
-            siteAddress = payload.siteUrl,
-            endpointAddress = null,
-            inputUsername = null,
-            inputPassword = null
-        )
+    override fun onQrLoginCompleted(localSiteId: Int) {
+        loggedInViaUsernamePassword(arrayListOf(localSiteId))
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
