@@ -1,28 +1,23 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 /**
- * Parsed representation of a scanned login QR code.
+ * Result of parsing a scanned login QR code.
  *
- * The wire format is proposed (pending backend alignment):
+ * The wire format is a deep link:
  *
  * ```
- * { "v": 1, "type": "app_password", "url": "https://store.example", "password": "xxx" }
- * { "v": 1, "type": "wpcom_token", "token": "xxx" }
- * { "v": 1, "type": "url_only",    "url": "https://store.example" }
+ * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
  * ```
  *
- * Any other shape is treated as [Invalid].
+ * The [Ticket.token] is a single-use 5-minute bearer ticket — not a credential. The app exchanges
+ * it for an Application Password by POSTing to
+ * `{siteUrl}/wp-json/wc-admin/mobile-app/qr-login-exchange`.
  */
 sealed interface QrLoginPayload {
-    data class SiteAppPassword(
-        val siteUrl: String,
-        val username: String?,
-        val appPassword: String
+    data class Ticket(
+        val token: String,
+        val siteUrl: String
     ) : QrLoginPayload
-
-    data class WpComToken(val token: String) : QrLoginPayload
-
-    data class UrlOnly(val siteUrl: String) : QrLoginPayload
 
     data object Invalid : QrLoginPayload
 }

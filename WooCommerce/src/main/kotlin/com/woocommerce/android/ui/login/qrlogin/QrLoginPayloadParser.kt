@@ -1,93 +1,55 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonSyntaxException
+import java.net.URLDecoder
 import javax.inject.Inject
 
 /**
- * Parses a raw QR payload string into a [QrLoginPayload].
+ * Parses the deep link encoded in a login QR code:
  *
- * Expected JSON shapes (proposed, pending backend alignment):
- *  - `{ "v": 1, "type": "app_password", "url": "...", "password": "...", "username": "..." }`
- *  - `{ "v": 1, "type": "wpcom_token",  "token": "..." }`
- *  - `{ "v": 1, "type": "url_only",     "url": "..." }`
+ * ```
+ * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
+ * ```
  *
- * Also accepts a bare URL string (e.g. `"https://store.example"`) as shorthand for `url_only`,
- * which keeps the fallback QR from woo.com simple to produce.
- *
- * Unknown / malformed / future-version payloads return [QrLoginPayload.Invalid].
+ * Anything malformed, missing parameters, with the wrong scheme/host, or with a non-https
+ * `siteUrl` returns [QrLoginPayload.Invalid]. The parser does not validate the token format
+ * beyond non-blank — that's the server's job during exchange.
  */
-class QrLoginPayloadParser @Inject constructor(
-    private val gson: Gson
-) {
+class QrLoginPayloadParser @Inject constructor() {
+
     fun parse(raw: String?): QrLoginPayload {
-        val trimmed = raw?.trim().orEmpty()
-        if (trimmed.isEmpty()) return QrLoginPayload.Invalid
-        if (!trimmed.startsWith("{")) return parseBareUrl(trimmed)
-        return parseJson(trimmed)
-    }
-
-    private fun parseBareUrl(raw: String): QrLoginPayload =
-        if (looksLikeHttpUrl(raw)) QrLoginPayload.UrlOnly(siteUrl = raw) else QrLoginPayload.Invalid
-
-    private fun parseJson(raw: String): QrLoginPayload {
-        val json = runCatching { gson.fromJson(raw, JsonObject::class.java) }.getOrNull()
-            ?: return QrLoginPayload.Invalid
-
-        val version = json.get(KEY_VERSION)?.takeIf { it.isJsonPrimitive }?.asInt
-        if (version != SUPPORTED_VERSION) return QrLoginPayload.Invalid
-
-        return when (json.stringOrNull(KEY_TYPE)) {
-            TYPE_APP_PASSWORD -> parseAppPassword(json)
-            TYPE_WPCOM_TOKEN -> parseWpComToken(json)
-            TYPE_URL_ONLY -> parseUrlOnly(json)
-            else -> QrLoginPayload.Invalid
+        val params = extractQueryParams(raw) ?: return QrLoginPayload.Invalid
+        val token = params[PARAM_TOKEN]?.takeIf { it.isNotBlank() }
+        val siteUrl = params[PARAM_SITE_URL]?.takeIf { it.isNotBlank() && it.lowercase().startsWith(HTTPS_PREFIX) }
+        return if (token != null && siteUrl != null) {
+            QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
+        } else {
+            QrLoginPayload.Invalid
         }
     }
 
-    private fun parseAppPassword(json: JsonObject): QrLoginPayload {
-        val url = json.stringOrNull(KEY_URL)?.takeIf { looksLikeHttpUrl(it) } ?: return QrLoginPayload.Invalid
-        val password = json.stringOrNull(KEY_PASSWORD)?.takeIf { it.isNotBlank() } ?: return QrLoginPayload.Invalid
-        return QrLoginPayload.SiteAppPassword(
-            siteUrl = url,
-            username = json.stringOrNull(KEY_USERNAME),
-            appPassword = password
-        )
+    private fun extractQueryParams(raw: String?): Map<String, String>? {
+        val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
+        val prefix = "$DEEP_LINK_PREFIX?"
+        if (!trimmed.regionMatches(0, prefix, 0, prefix.length, ignoreCase = true)) return null
+        val query = trimmed.substring(prefix.length).takeIf { it.isNotBlank() } ?: return null
+        return parseQuery(query)
     }
 
-    private fun parseWpComToken(json: JsonObject): QrLoginPayload {
-        val token = json.stringOrNull(KEY_TOKEN)?.takeIf { it.isNotBlank() } ?: return QrLoginPayload.Invalid
-        return QrLoginPayload.WpComToken(token)
-    }
-
-    private fun parseUrlOnly(json: JsonObject): QrLoginPayload {
-        val url = json.stringOrNull(KEY_URL)?.takeIf { looksLikeHttpUrl(it) } ?: return QrLoginPayload.Invalid
-        return QrLoginPayload.UrlOnly(url)
-    }
-
-    private fun JsonObject.stringOrNull(key: String): String? =
-        get(key)?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
-
-    @Suppress("SwallowedException")
-    private fun looksLikeHttpUrl(candidate: String): Boolean = try {
-        val lower = candidate.lowercase()
-        (lower.startsWith("http://") || lower.startsWith("https://")) && candidate.length > "https://".length
-    } catch (_: JsonSyntaxException) {
-        false
-    }
+    private fun parseQuery(query: String): Map<String, String> = query.split('&')
+        .mapNotNull { pair ->
+            val idx = pair.indexOf('=')
+            if (idx <= 0 || idx == pair.lastIndex) return@mapNotNull null
+            val key = pair.substring(0, idx)
+            val value = runCatching { URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name()) }
+                .getOrElse { return@mapNotNull null }
+            key to value
+        }
+        .toMap()
 
     private companion object {
-        const val SUPPORTED_VERSION = 1
-        const val KEY_VERSION = "v"
-        const val KEY_TYPE = "type"
-        const val KEY_URL = "url"
-        const val KEY_USERNAME = "username"
-        const val KEY_PASSWORD = "password"
-        const val KEY_TOKEN = "token"
-
-        const val TYPE_APP_PASSWORD = "app_password"
-        const val TYPE_WPCOM_TOKEN = "wpcom_token"
-        const val TYPE_URL_ONLY = "url_only"
+        const val DEEP_LINK_PREFIX = "woocommerce://qr-login"
+        const val PARAM_TOKEN = "token"
+        const val PARAM_SITE_URL = "siteUrl"
+        const val HTTPS_PREFIX = "https://"
     }
 }
