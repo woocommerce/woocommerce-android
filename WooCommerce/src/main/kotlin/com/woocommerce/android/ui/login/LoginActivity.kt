@@ -290,6 +290,7 @@ class LoginActivity :
     }
 
     override fun onQrLoginFallbackClicked() {
+        disableDynamicEdgeToEdge()
         loginViaSiteAddress()
     }
 
