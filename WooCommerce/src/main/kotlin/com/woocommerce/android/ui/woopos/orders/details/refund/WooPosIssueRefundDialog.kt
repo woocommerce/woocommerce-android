@@ -8,9 +8,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -52,7 +55,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -60,6 +62,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
@@ -71,23 +74,18 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
 
 @Composable
-fun WooPosIssueRefundDialog(
+fun WooPosIssueRefundScreen(
     orderId: Long,
-    isVisible: Boolean,
-    onDismissRequest: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
-    disablePartialRefund: Boolean = false
 ) {
     val viewModel: WooPosRefundViewModel =
-        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
+        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
             factory.create(orderId)
         }
 
-    LaunchedEffect(isVisible) {
-        if (isVisible) {
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
-        }
+    LaunchedEffect(Unit) {
+        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
     }
 
     refundReasonUpdate?.let { reason ->
@@ -99,7 +97,12 @@ fun WooPosIssueRefundDialog(
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
-            onDismissRequest()
+            onNavigationEvent(
+                WooPosNavigationEvent.GoBackWithResult(
+                    key = ISSUE_REFUND_DISMISSED_KEY,
+                    value = true
+                )
+            )
         }
     }
 
@@ -107,64 +110,86 @@ fun WooPosIssueRefundDialog(
         viewModel.onUIEvent(event)
     }
 
-    BackHandler(enabled = isVisible) {
+    BackHandler {
         handleDismiss()
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val showCloseButton = state is WooPosRefundState.Loading ||
-        (state as? WooPosRefundState.Content)?.showCloseButton ?: false
-    WooPosDialogWrapper(
-        isVisible = isVisible,
-        dialogBackgroundContentDescription = stringResource(
-            R.string.woopos_orders_issue_refund_content_description
-        ),
-        onCloseClick = if (showCloseButton) handleDismiss else null,
-        onDismissRequest = handleDismiss
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
     ) {
-        AnimatedContent(
-            targetState = state,
-            contentKey = { it::class },
-            transitionSpec = {
-                fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 250,
-                        delayMillis = 200,
-                        easing = FastOutSlowInEasing
-                    )
-                ) togetherWith
-                    fadeOut(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(
+                    start = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.Medium.value,
+                    bottom = WooPosSpacing.XLarge.value,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Spacer(modifier = Modifier.height(WooPosComponentSize.XSmall.value))
+
+            AnimatedContent(
+                targetState = state,
+                contentKey = { it::class },
+                transitionSpec = {
+                    fadeIn(
                         animationSpec = tween(
-                            durationMillis = 200,
+                            durationMillis = 250,
+                            delayMillis = 200,
                             easing = FastOutSlowInEasing
                         )
+                    ) togetherWith
+                        fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                },
+                label = "refund_state_transition",
+            ) { animatedState ->
+                when (animatedState) {
+                    is WooPosRefundState.Loading -> SelectItemsContent(
+                        state = animatedState,
+                        onEvent = {},
+                        onContinue = {},
                     )
-            },
-            label = "refund_state_transition",
-        ) { animatedState ->
-            when (animatedState) {
-                is WooPosRefundState.Loading -> SelectItemsContent(
-                    state = animatedState,
-                    onEvent = {},
-                    onContinue = {},
-                )
-                is WooPosRefundState.Content -> ContentStateHandler(
-                    state = animatedState,
-                    orderId = orderId,
-                    viewModel = viewModel,
-                    onNavigationEvent = onNavigationEvent,
-                    onEvent = handleEvent,
-                    disablePartialRefund = disablePartialRefund
-                )
-                is WooPosRefundState.Error -> ErrorContent(animatedState, handleEvent, handleDismiss)
-                is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
-                is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
-                    state = animatedState,
-                    onDismissRequest = handleDismiss,
-                    onNavigationEvent = onNavigationEvent
-                )
+                    is WooPosRefundState.Content -> ContentStateHandler(
+                        state = animatedState,
+                        orderId = orderId,
+                        viewModel = viewModel,
+                        onNavigationEvent = onNavigationEvent,
+                        onEvent = handleEvent,
+                    )
+                    is WooPosRefundState.Error -> ErrorContent(
+                        animatedState,
+                        handleEvent,
+                        handleDismiss
+                    )
+                    is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
+                    is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
+                        state = animatedState,
+                        onDismissRequest = handleDismiss,
+                        onNavigationEvent = onNavigationEvent
+                    )
+                }
             }
         }
+
+        WooPosToolbar(
+            titleText = stringResource(R.string.orderdetail_issue_refund_button),
+            onBackClicked = { handleDismiss() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+        )
     }
 }
 
@@ -175,7 +200,6 @@ private fun ContentStateHandler(
     viewModel: WooPosRefundViewModel,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
-    disablePartialRefund: Boolean = false
 ) {
     AnimatedContent(
         targetState = state.step,
@@ -204,7 +228,6 @@ private fun ContentStateHandler(
                     onContinue = {
                         viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
                     },
-                    disableItemSelection = disablePartialRefund
                 )
             }
 
@@ -224,8 +247,7 @@ private fun ContentStateHandler(
                                 initialReason = state.refundReason
                             )
                         )
-                    },
-                    showEditRefundButton = !disablePartialRefund
+                    }
                 )
             }
 

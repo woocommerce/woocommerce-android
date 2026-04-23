@@ -225,7 +225,7 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
-    fun `given loaded order, when issue refund action clicked, then dialog state is IssueRefund`() = runTest {
+    fun `given loaded order, when issue refund action clicked, then dialog state is unchanged`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -235,13 +235,9 @@ class WooPosOrderDetailsViewModelTest {
         // WHEN
         viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L)))
 
-        // THEN
+        // THEN - IssueRefund is handled at composable level via navigation, VM state unchanged
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.dialogState)
-            .isInstanceOf(WooPosOrderDetailsState.DialogState.IssueRefund::class.java)
-        assertThat(
-            (loaded.dialogState as WooPosOrderDetailsState.DialogState.IssueRefund).orderId
-        ).isEqualTo(1L)
+        assertThat(loaded.dialogState).isEqualTo(WooPosOrderDetailsState.DialogState.Hidden)
     }
 
     @Test
@@ -303,21 +299,19 @@ class WooPosOrderDetailsViewModelTest {
     // region Dialogs
 
     @Test
-    fun `given issue refund dialog open, when dismissed, then dialog hidden`() = runTest {
+    fun `when back from issue refund, then order is refreshed`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
         coordinator.selectOrder(1L)
         advanceUntilIdle()
-        viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L)))
 
         // WHEN
-        viewModel.onIssueRefundDialogDismissed()
+        viewModel.onBackFromIssueRefund()
         advanceUntilIdle()
 
         // THEN
-        val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.dialogState).isEqualTo(WooPosOrderDetailsState.DialogState.Hidden)
+        verify(dataSource).refreshOrderById(1L)
     }
 
     @Test
@@ -494,16 +488,15 @@ class WooPosOrderDetailsViewModelTest {
         }
 
     @Test
-    fun `given issue refund dialog open, when dismissed, then order is refreshed`() = runTest {
+    fun `given loaded order, when back from issue refund, then order data source refreshes order`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
         coordinator.selectOrder(1L)
         advanceUntilIdle()
-        viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(1L)))
 
         // WHEN
-        viewModel.onIssueRefundDialogDismissed()
+        viewModel.onBackFromIssueRefund()
         advanceUntilIdle()
 
         // THEN

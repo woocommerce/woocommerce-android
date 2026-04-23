@@ -145,7 +145,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private fun handleActionClicked(action: OrderAction) {
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
+            is OrderAction.IssueRefund -> {
+                // Handled at the composable level via navigation
+            }
         }
     }
 
@@ -156,18 +158,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onIssueRefundButtonClicked(orderId: Long) {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        _state.value = current.copy(
-            dialogState = WooPosOrderDetailsState.DialogState.IssueRefund(orderId = orderId)
-        )
-    }
-
-    fun onIssueRefundDialogDismissed() {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        _state.value = current.copy(
-            dialogState = WooPosOrderDetailsState.DialogState.Hidden
-        )
+    fun onBackFromIssueRefund() {
         refreshSelectedOrder()
     }
 

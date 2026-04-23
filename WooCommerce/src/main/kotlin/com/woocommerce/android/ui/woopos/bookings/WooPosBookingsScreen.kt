@@ -73,10 +73,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
+import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -91,7 +90,6 @@ val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     backStackEntry: NavBackStackEntry,
-    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -129,6 +127,17 @@ fun WooPosBookingsScreen(
         }
     }
 
+    val issueRefundDismissed = backStackEntry.savedStateHandle
+        .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(issueRefundDismissed.value) {
+        if (issueRefundDismissed.value) {
+            viewModel.onIssueRefundDialogDismissed()
+            backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
+        }
+    }
+
     WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
@@ -139,9 +148,7 @@ fun WooPosBookingsScreen(
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
-        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult,
     )
 }
 
@@ -157,9 +164,7 @@ private fun WooPosBookingsScreen(
     onPaginationErrorTryAgain: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -200,23 +205,12 @@ private fun WooPosBookingsScreen(
         if (state is WooPosBookingsState.Content) {
             val dialogState = state.dialogState
 
-            val retainedIssueRefund: WooPosBookingsState.Content.DialogState.IssueRefund? = rememberRetained(
-                when (dialogState) {
-                    is WooPosBookingsState.Content.DialogState.IssueRefund -> dialogState
-                    is WooPosBookingsState.Content.DialogState.CancelBooking -> null
-                    WooPosBookingsState.Content.DialogState.Hidden -> null
+            if (dialogState is WooPosBookingsState.Content.DialogState.IssueRefund) {
+                LaunchedEffect(dialogState.orderId) {
+                    onNavigationEvent(
+                        WooPosNavigationEvent.OpenIssueRefund(dialogState.orderId)
+                    )
                 }
-            )
-
-            retainedIssueRefund?.let { issueRefund ->
-                WooPosIssueRefundDialog(
-                    orderId = issueRefund.orderId,
-                    isVisible = dialogState is WooPosBookingsState.Content.DialogState.IssueRefund,
-                    onDismissRequest = onIssueRefundDialogDismissed,
-                    onNavigationEvent = onNavigationEvent,
-                    refundReasonUpdate = refundReasonUpdate,
-                    disablePartialRefund = true
-                )
             }
         }
     }
@@ -692,7 +686,6 @@ fun WooPosBookingsScreenPreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -726,7 +719,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
