@@ -141,6 +141,7 @@ class CardReaderConnectViewModel @Inject constructor(
             onLocationPermissionsVerified()
         } else if (viewState.value !is MissingLocationPermissionsError) {
             if (shouldShowRationale) {
+                tracker.trackLocationPermissionPreAlertShown()
                 viewState.value = LocationPermissionRationale(::onLocationPermissionRationaleConfirmed)
             } else {
                 triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
@@ -156,6 +157,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (granted) {
             onLocationPermissionsVerified()
         } else {
+            tracker.trackLocationPermissionRequiredShown()
             viewState.value = MissingLocationPermissionsError(
                 onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
                 onSecondaryActionClicked = ::onCancelClicked
