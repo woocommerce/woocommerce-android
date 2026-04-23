@@ -3710,6 +3710,9 @@
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
     <string name="woopos_settings_card_reader_update_firmware_title">Update firmware version</string>
     <string name="woopos_settings_card_reader_update_firmware_message">Update the firmware version to continue accepting payments.</string>
+    <string name="woopos_settings_card_reader_transport_title">Transport</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Fingerprint</string>
     <string name="woopos_settings_help_category">Get help and support</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
     <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
