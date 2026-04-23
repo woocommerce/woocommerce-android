@@ -31,7 +31,7 @@ class WooPosCardReaderConnectionViewModelTest {
     private val permissionUtils: WooPosPermissionUtils = mock()
 
     private val controllerStateFlow = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
+        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false, lastConnectedPhoneName = null)
     )
     private val controllerEventFlow = MutableSharedFlow<WooPosCardReaderConnectionController.ControllerEvent>()
 
@@ -172,7 +172,10 @@ class WooPosCardReaderConnectionViewModelTest {
     fun `given Scanning state, when onBackPressed, then calls controller cancel`() = runTest {
         // GIVEN
         setupControllerMocks()
-        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
+        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = false,
+            lastConnectedPhoneName = null,
+        )
         val viewModel = createViewModel()
 
         // WHEN
