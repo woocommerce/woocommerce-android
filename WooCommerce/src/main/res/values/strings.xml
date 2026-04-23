@@ -213,12 +213,14 @@
     <string name="login_prologue_start_new_store">Starting a new store?</string>
 
     <!-- QR login prologue -->
-    <string name="login_qr_prologue_title">Sign in with a QR code</string>
-    <string name="login_qr_prologue_instruction">Go to woo.com/mobilelogin on your computer, then tap Scan.</string>
+    <string name="login_qr_prologue_title">Sign in from your computer</string>
+    <string name="login_qr_prologue_subtitle">The fastest way to log in. On the computer where you manage your store, open:</string>
+    <string name="login_qr_prologue_url">woo.com/mobilelogin</string>
+    <string name="login_qr_prologue_step_hint">Then tap the button below and point your phone at the code on screen.</string>
     <string name="login_qr_prologue_scan_button">Scan QR code</string>
-    <string name="login_qr_prologue_fallback_link">Don\'t have your computer?</string>
+    <string name="login_qr_prologue_fallback_link">Don\'t have your computer? Enter site URL</string>
     <string name="login_qr_scanner_title">Scan login QR</string>
-    <string name="login_qr_scanner_hint">Point your camera at the QR on woo.com/mobilelogin</string>
+    <string name="login_qr_scanner_hint">Point at the QR on woo.com/mobilelogin</string>
     <string name="login_qr_scanner_error_generic">We couldn\'t read that QR code. Please try again.</string>
     <string name="login_qr_scanner_error_payload">This QR isn\'t a WooCommerce login code.</string>
     <string name="login_qr_scanner_error_token">That code expired or has already been used. Generate a new one in your store.</string>
