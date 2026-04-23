@@ -4075,6 +4075,10 @@
     <string name="woopos_card_reader_keep_searching_button">Keep searching</string>
     <string name="woopos_card_reader_multiple_found_title">Multiple readers found</string>
     <string name="woopos_card_reader_multiple_found_description">Choose a reader</string>
+    <string name="woopos_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Phone reader</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Bluetooth reader</string>
+    <string name="woopos_card_reader_unknown_reader_name">Unknown reader</string>
     <string name="woopos_card_reader_connecting_title">Connecting</string>
     <string name="woopos_card_reader_connecting_message">Please wait while we connect to your reader</string>
     <string name="woopos_card_reader_connecting_failed_title">Connection failed</string>

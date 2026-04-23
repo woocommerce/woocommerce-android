@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
+
 sealed interface WooPosCardReaderConnectionState {
     val showCloseButton: Boolean
         get() = true
@@ -7,6 +9,8 @@ sealed interface WooPosCardReaderConnectionState {
     data class FoundReader(
         val id: String,
         val name: String,
+        val transport: WooPosDiscoveryTransport,
+        val fingerprintSuffix: String?,
         val onConnectClicked: () -> Unit,
     )
 

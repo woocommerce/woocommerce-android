@@ -16,15 +16,22 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -44,6 +52,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,6 +61,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHintStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -63,6 +73,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -545,11 +556,9 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         readers.forEach { reader ->
-            WooPosOutlinedButton(
+            FoundReaderRow(
+                reader = reader,
                 modifier = Modifier.fillMaxWidth(),
-                text = reader.name,
-                maxLines = 1,
-                onClick = reader.onConnectClicked,
             )
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
@@ -563,6 +572,74 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
             WooPosCircularLoadingIndicator(
                 modifier = Modifier.size(WooPosIconSize.Small.value)
             )
+        }
+    }
+}
+
+@Composable
+private fun FoundReaderRow(
+    reader: WooPosCardReaderConnectionState.FoundReader,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = reader.onConnectClicked),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        color = WooPosTheme.colors.transparent,
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseSurface),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    PaddingValues(
+                        horizontal = WooPosSpacing.Medium.value,
+                        vertical = WooPosSpacing.Small.value,
+                    )
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val (iconRes, iconContentDescription) = when (reader.transport) {
+                WooPosDiscoveryTransport.Bluetooth ->
+                    R.drawable.ic_bluetooth_24dp to
+                        stringResource(R.string.woopos_card_reader_bluetooth_icon_content_description)
+                WooPosDiscoveryTransport.WifiLan ->
+                    R.drawable.ic_smartphone_24dp to
+                        stringResource(R.string.woopos_card_reader_phone_icon_content_description)
+            }
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = iconContentDescription,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(WooPosIconSize.XSmall.value),
+            )
+            Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
+            WooPosText(
+                text = reader.name,
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            when (reader.transport) {
+                WooPosDiscoveryTransport.Bluetooth -> Unit
+                WooPosDiscoveryTransport.WifiLan -> {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_card_reader_transport_wifi),
+                        style = WooPosTypography.BodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    reader.fingerprintSuffix?.let { suffix ->
+                        Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
+                        WooPosText(
+                            text = suffix,
+                            style = WooPosTypography.BodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -985,16 +1062,9 @@ fun WooPosCardReaderConnectionDialogMultipleReadersPreview() {
             isVisible = true,
             state = WooPosCardReaderConnectionState.MultipleReadersFound(
                 readers = listOf(
-                    WooPosCardReaderConnectionState.FoundReader(
-                        id = "STRM261380012691",
-                        name = "STRM261380012691",
-                        onConnectClicked = {}
-                    ),
-                    WooPosCardReaderConnectionState.FoundReader(
-                        id = "STRM261380012692",
-                        name = "STRM261380012692",
-                        onConnectClicked = {}
-                    )
+                    btReader("STRM261380012691"),
+                    btReader("STRM261380012692"),
+                    phoneReader("Andrey's Pixel 7", "AB4F"),
                 ),
                 onCancelClicked = {},
             ),
@@ -1003,6 +1073,60 @@ fun WooPosCardReaderConnectionDialogMultipleReadersPreview() {
         )
     }
 }
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogPhonesOnlyPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MultipleReadersFound(
+                readers = listOf(
+                    phoneReader("Andrey's Pixel 7", "AB4F"),
+                    phoneReader("Sales floor phone", "3C21"),
+                ),
+                onCancelClicked = {},
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogMixedReadersPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MultipleReadersFound(
+                readers = listOf(
+                    btReader("STRM261380012691"),
+                    phoneReader("Andrey's Pixel 7", "AB4F"),
+                ),
+                onCancelClicked = {},
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+private fun btReader(id: String) = WooPosCardReaderConnectionState.FoundReader(
+    id = id,
+    name = id,
+    transport = WooPosDiscoveryTransport.Bluetooth,
+    fingerprintSuffix = null,
+    onConnectClicked = {},
+)
+
+private fun phoneReader(name: String, suffix: String) = WooPosCardReaderConnectionState.FoundReader(
+    id = "phone-$suffix",
+    name = name,
+    transport = WooPosDiscoveryTransport.WifiLan,
+    fingerprintSuffix = suffix,
+    onConnectClicked = {},
+)
 
 @WooPosPreview
 @Composable
