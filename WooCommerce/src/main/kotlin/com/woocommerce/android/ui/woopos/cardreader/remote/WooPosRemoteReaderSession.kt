@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocation
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,9 +37,18 @@ class WooPosRemoteReaderSession @Inject constructor(
         disconnectInternal()
         _state.value = State.Connecting(reader)
 
+        if (reader.isSimulated) return@withLock simulateConnect(reader)
+
         val token = fetchToken() ?: return@withLock _state.value
         val locationId = fetchLocationIdOrFail() ?: return@withLock _state.value
         runConnect(reader, token, locationId)
+    }
+
+    private suspend fun simulateConnect(reader: WooPosDiscoveredReader.Phone): State {
+        delay(SIMULATED_CONNECT_DELAY_MS)
+        val connected = State.Connected(reader, readerSerial = "SIM-${reader.fingerprintBase64}")
+        _state.value = connected
+        return connected
     }
 
     private suspend fun fetchToken(): String? {
@@ -128,6 +138,7 @@ class WooPosRemoteReaderSession @Inject constructor(
     private companion object {
         const val REASON_MISSING_ADDRESS = "missing_merchant_address"
         const val REASON_INVALID_POSTAL_CODE = "invalid_postal_code"
+        const val SIMULATED_CONNECT_DELAY_MS = 800L
     }
 }
 

@@ -29,6 +29,7 @@ sealed class WooPosDiscoveredReader {
         val host: InetAddress,
         val port: Int,
         val fingerprintBase64: String,
+        val isSimulated: Boolean = false,
     ) : WooPosDiscoveredReader() {
         override val transport = WooPosDiscoveryTransport.WifiLan
     }
