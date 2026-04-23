@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,8 +42,14 @@ class QrLoginPrologueFragment : Fragment() {
         setContent {
             WooThemeWithBackground {
                 QrLoginPrologueScreen(
-                    onScanClicked = { listener?.onQrLoginScanClicked() },
-                    onFallbackClicked = { listener?.onQrLoginFallbackClicked() }
+                    onScanClicked = {
+                        AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
+                        listener?.onQrLoginScanClicked()
+                    },
+                    onFallbackClicked = {
+                        AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
+                        listener?.onQrLoginFallbackClicked()
+                    }
                 )
             }
         }
@@ -49,6 +57,9 @@ class QrLoginPrologueFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge(forceDarkStatusBar = true)
+        if (savedInstanceState == null) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
+        }
     }
 
     override fun onAttach(context: Context) {

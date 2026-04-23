@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -22,11 +25,14 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private val ticket = QrLoginPayload.Ticket(token = "tok", siteUrl = "https://store.example")
 
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+
     private fun createViewModel(parser: QrLoginPayloadParser, authenticator: QrLoginAuthenticator) =
         QrLoginScannerViewModel(
             savedState = SavedStateHandle(),
             parser = parser,
-            authenticator = authenticator
+            authenticator = authenticator,
+            analyticsTracker = analyticsTracker
         )
 
     private fun successScan(raw: String) =
@@ -225,5 +231,68 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan("raw"))
 
         verify(authenticator, never()).authenticate(any())
+    }
+
+    @Test
+    fun `given successful login, when authenticator returns site id, then tracks LOGIN_QR_SUCCESS`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(42))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+
+        viewModel.onScanResult(successScan("raw"))
+
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+    }
+
+    @Test
+    fun `given scanner binding failure, when delivered as Failure, then tracks scan failed with scanner step`() =
+        testBlocking {
+            val viewModel = createViewModel(mock(), mock())
+
+            viewModel.onScanResult(
+                CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
+            )
+
+            verify(analyticsTracker).track(
+                stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
+                properties = mapOf(AnalyticsTracker.KEY_STEP to "scanner"),
+                errorContext = "Unknown",
+                errorType = "CodeScanningErrorType\$Unknown",
+                errorDescription = "boom"
+            )
+        }
+
+    @Test
+    fun `given exchange network error, when scan succeeds, then tracks scan failed with exchange step`() =
+        testBlocking {
+            val authenticator: QrLoginAuthenticator = mock()
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(QrLoginExchangeException.Network))
+            val viewModel = createViewModel(parserReturning(ticket), authenticator)
+
+            viewModel.onScanResult(successScan("raw"))
+
+            verify(analyticsTracker).track(
+                stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
+                properties = mapOf(AnalyticsTracker.KEY_STEP to "exchange"),
+                errorContext = "Network",
+                errorType = "Network",
+                errorDescription = "Network failure during exchange"
+            )
+        }
+
+    @Test
+    fun `given invalid payload, when scan succeeds, then tracks scan failed with payload step`() = testBlocking {
+        val viewModel = createViewModel(parserReturning(QrLoginPayload.Invalid), mock())
+
+        viewModel.onScanResult(successScan("raw"))
+
+        verify(analyticsTracker).track(
+            stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
+            properties = mapOf(AnalyticsTracker.KEY_STEP to "payload"),
+            errorContext = null,
+            errorType = "InvalidPayload",
+            errorDescription = "Scanned QR did not match the expected deep link format"
+        )
     }
 }
