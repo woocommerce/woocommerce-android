@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.cardreader.payment
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
@@ -17,8 +16,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.ExitCardReaderMode
-import com.woocommerce.android.ui.payments.cardreader.payment.remote.RemoteTapToPayReaderStateBridge
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -59,7 +56,6 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
-    private val remoteTapToPayStateBridge: RemoteTapToPayReaderStateBridge,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -97,15 +93,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val derivedPaymentState: LiveData<ViewState> =
         paymentController.paymentState.map(paymentStateMapper()).asLiveData(coroutineContext)
 
-    val viewStateData: LiveData<ViewState> = MediatorLiveData<ViewState>().apply {
-        addSource(derivedPaymentState) { derived ->
-            if (remoteTapToPayStateBridge.stateOverride.value == null) value = derived
-        }
-        addSource(remoteTapToPayStateBridge.stateOverride) { override ->
-            val next = override ?: derivedPaymentState.value
-            if (next != null) value = next
-        }
-    }
+    val viewStateData: LiveData<ViewState> = derivedPaymentState
 
     private val mappedControllerEvents: LiveData<MultiLiveEvent.Event> =
         paymentController.event.asLiveData(coroutineContext).map {
@@ -128,17 +116,10 @@ class CardReaderPaymentViewModel @Inject constructor(
             }
         }
 
-    override val event: LiveData<MultiLiveEvent.Event> = MediatorLiveData<MultiLiveEvent.Event>().apply {
-        addSource(mappedControllerEvents) { value = it }
-        addSource(remoteTapToPayStateBridge.events) { value = it }
-    }
+    override val event: LiveData<MultiLiveEvent.Event> = mappedControllerEvents
 
     fun onCancelClicked() {
-        when (viewStateData.value) {
-            is RemoteTapToPayReadyToPair,
-            is RemoteTapToPayWaitingForPayment -> remoteTapToPayStateBridge.emitEvent(ExitCardReaderMode)
-            else -> viewStateData.value?.onSecondaryActionClicked?.invoke()
-        }
+        viewStateData.value?.onSecondaryActionClicked?.invoke()
     }
 
     fun start() = paymentController.start()
@@ -151,10 +132,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun onPrintResult(result: PrintJobResult) = paymentController.onPrintResult(result)
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun onCleared() {
-        remoteTapToPayStateBridge.clear()
-        paymentController.stop()
-    }
+    public override fun onCleared() = paymentController.stop()
 
     fun onBackPressed() = paymentController.onBackPressed()
 }
