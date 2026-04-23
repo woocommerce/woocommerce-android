@@ -291,6 +291,7 @@ fun WooPosCardReaderConnectionDialogContent(
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
                         isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
+                        lastConnectedPhoneName = currentState.lastConnectedPhoneName,
                         onHintClick = onHintClick,
                     )
                 }
@@ -474,18 +475,30 @@ private fun CardReaderDialogContent(
 @Composable
 private fun ScanningContent(
     isRemoteTapToPayEnabled: Boolean,
+    lastConnectedPhoneName: String?,
     onHintClick: () -> Unit,
 ) {
     val showHint = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
-    when (showHint) {
-        true -> Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            ScanningDialogBody()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ScanningDialogBody()
+        if (lastConnectedPhoneName != null) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            WooPosText(
+                text = stringResource(
+                    R.string.woopos_card_reader_scanning_last_connected_subtitle,
+                    lastConnectedPhoneName,
+                ),
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+        if (showHint) {
             WooPosRemoteReaderHintStrip(onClick = onHintClick)
         }
-        false -> ScanningDialogBody()
     }
 }
 
@@ -1013,7 +1026,26 @@ fun WooPosCardReaderConnectionDialogScanningPreview() {
     WooPosTheme {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = true),
+            state = WooPosCardReaderConnectionState.Scanning(
+                isRemoteTapToPaySupported = true,
+                lastConnectedPhoneName = null,
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogScanningWithLastConnectedPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.Scanning(
+                isRemoteTapToPaySupported = true,
+                lastConnectedPhoneName = "Andrey's Pixel 7",
+            ),
             onBackPressed = {},
             onDismiss = {},
         )

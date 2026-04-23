@@ -67,9 +67,8 @@ class WooPosCardReaderConnectionController(
     featureFlagRepository: FeatureFlagRepository,
 ) {
     private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
-    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
-    )
+    private var hasAnyReaderAppeared: Boolean = false
+    private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(buildScanningState())
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
 
     private val _event = MutableSharedFlow<ControllerEvent>()
@@ -97,18 +96,20 @@ class WooPosCardReaderConnectionController(
 
     fun hideRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = WooPosCardReaderConnectionState.Scanning(
-            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
-        )
+        _state.value = buildScanningState()
         startDiscovery()
     }
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = WooPosCardReaderConnectionState.Scanning(
-            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
-        )
+        _state.value = buildScanningState()
     }
+
+    private fun buildScanningState(): WooPosCardReaderConnectionState.Scanning =
+        WooPosCardReaderConnectionState.Scanning(
+            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
+            lastConnectedPhoneName = if (hasAnyReaderAppeared) null else appPrefsWrapper.getLastConnectedPhoneName(),
+        )
 
     fun startConnectionFlow() {
         isRequiredUpdate = true
@@ -353,6 +354,10 @@ class WooPosCardReaderConnectionController(
     ) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
 
+        if (bluetoothReaders.isNotEmpty() || phones.isNotEmpty()) {
+            hasAnyReaderAppeared = true
+        }
+
         tracker.trackReadersDiscovered(bluetoothReaders.size + phones.size)
 
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
@@ -443,6 +448,7 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Connected -> {
                 logger.d("Remote reader connected: ${phone.name}")
                 tracker.trackConnectionSucceeded()
+                appPrefsWrapper.setLastConnectedPhoneName(phone.name)
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
