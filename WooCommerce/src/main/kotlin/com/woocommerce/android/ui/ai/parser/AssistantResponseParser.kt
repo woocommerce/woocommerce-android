@@ -84,26 +84,20 @@ object AssistantResponseParser {
         val id: Long = 0L,
         val number: String = "",
         val status: String = "",
-        @SerialName("billing") val billing: BillingData? = null,
+        @SerialName("customer_name") val customerName: String = "",
         val total: String = "",
-        @SerialName("date_created") val dateCreated: String = ""
+        val date: String = ""
     ) {
         fun toOrderCardData() = OrderCardData(
             id = id,
-            number = "#$number",
+            number = number,
             status = status.replace("-", " ").replaceFirstChar { it.uppercase() },
             statusColor = ProductCardData.orderStatusToColorRes(status),
-            customerName = billing?.let { "${it.firstName} ${it.lastName}".trim() } ?: "",
+            customerName = customerName,
             totalPrice = total,
-            date = dateCreated.take(10)
+            date = date
         )
     }
-
-    @Serializable
-    private data class BillingData(
-        @SerialName("first_name") val firstName: String = "",
-        @SerialName("last_name") val lastName: String = ""
-    )
 
     @Serializable
     private data class ProductApiData(
