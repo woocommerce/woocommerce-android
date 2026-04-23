@@ -275,13 +275,16 @@ class WooPosCardReaderConnectionController(
     }
 
     fun cancel() {
+        val wasAlreadyConnected = _state.value is Connected
         connectionFlowJob?.cancel()
         discoveryJob?.cancel()
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
         remoteConnectionJob?.cancel()
         selectedReader = null
-        scope.launch { remoteReaderSession.disconnect() }
+        if (!wasAlreadyConnected) {
+            scope.launch { remoteReaderSession.disconnect() }
+        }
         enterScanningState()
         emitEvent(ControllerEvent.Cancelled)
     }
