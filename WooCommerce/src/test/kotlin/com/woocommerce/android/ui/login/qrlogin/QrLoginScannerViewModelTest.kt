@@ -135,7 +135,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint missing, when scan succeeds, then emits EndpointMissing error`() = testBlocking {
+    fun `given endpoint missing, when scan succeeds, then endpointMissing flag is raised`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
@@ -144,9 +144,35 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         viewModel.onScanResult(successScan("raw"))
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.EndpointMissing)
-        )
+        assertThat(events).isEmpty()
+        assertThat(viewModel.endpointMissing.value).isTrue()
+    }
+
+    @Test
+    fun `given endpoint missing flag raised, when retry called, then flag is cleared`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        viewModel.onScanResult(successScan("raw"))
+        assertThat(viewModel.endpointMissing.value).isTrue()
+
+        viewModel.onRetryAfterBlockingError()
+
+        assertThat(viewModel.endpointMissing.value).isFalse()
+    }
+
+    @Test
+    fun `given endpoint missing flag raised, when another scan arrives, then it is ignored`() = testBlocking {
+        val authenticator: QrLoginAuthenticator = mock()
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
+        val viewModel = createViewModel(parserReturning(ticket), authenticator)
+        viewModel.onScanResult(successScan("raw"))
+
+        viewModel.onScanResult(successScan("raw"))
+
+        verify(authenticator, times(1)).authenticate(eq(ticket))
     }
 
     @Test
@@ -256,8 +282,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             verify(analyticsTracker).track(
                 stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
                 properties = mapOf(AnalyticsTracker.KEY_STEP to "scanner"),
-                errorContext = "Unknown",
-                errorType = "CodeScanningErrorType\$Unknown",
+                errorContext = "CodeScanningErrorType\$Unknown",
+                errorType = "Scanner",
                 errorDescription = "boom"
             )
         }

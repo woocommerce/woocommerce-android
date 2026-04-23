@@ -38,19 +38,22 @@ class QrLoginScannerViewModel @Inject constructor(
     private val _isAuthenticating = MutableLiveData(false)
     val isAuthenticating: LiveData<Boolean> = _isAuthenticating
 
+    private val _endpointMissing = MutableLiveData(false)
+    val endpointMissing: LiveData<Boolean> = _endpointMissing
+
     private var inFlight = false
     private var loggedIn = false
 
     fun onScanResult(status: CodeScannerStatus) {
-        if (loggedIn || inFlight) return
+        if (loggedIn || inFlight || _endpointMissing.value == true) return
 
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
             is CodeScannerStatus.Failure -> {
                 trackScanFailure(
                     step = Step.SCANNER,
-                    errorContext = status.type::class.simpleName,
-                    errorType = status.type.toString(),
+                    errorContext = status.type.toString(),
+                    errorType = ErrorReason.Scanner.name,
                     errorDescription = status.error
                 )
                 triggerEvent(Dispatch.RecoverableError(ErrorReason.Scanner))
@@ -95,10 +98,19 @@ class QrLoginScannerViewModel @Inject constructor(
                         errorType = reason.name,
                         errorDescription = failure.message
                     )
-                    triggerEvent(Dispatch.RecoverableError(reason))
+                    if (reason == ErrorReason.EndpointMissing) {
+                        _endpointMissing.value = true
+                    } else {
+                        triggerEvent(Dispatch.RecoverableError(reason))
+                    }
                 }
             )
         }
+    }
+
+    fun onRetryAfterBlockingError() {
+        _endpointMissing.value = false
+        inFlight = false
     }
 
     private fun trackScanFailure(
