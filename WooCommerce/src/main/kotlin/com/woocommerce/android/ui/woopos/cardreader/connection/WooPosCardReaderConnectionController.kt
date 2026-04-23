@@ -6,7 +6,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
@@ -23,6 +22,9 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryEvent
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
@@ -55,6 +57,7 @@ class WooPosCardReaderConnectionController(
     private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
+    private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
     featureFlagRepository: FeatureFlagRepository,
 ) {
     private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
@@ -286,8 +289,8 @@ class WooPosCardReaderConnectionController(
     private fun startDiscovery() {
         discoveryJob?.cancel()
         discoveryJob = scope.launch {
-            cardReaderManager
-                .discoverReaders(
+            unifiedDiscoveryStream
+                .discover(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                     cardReaderTypesToDiscover = ExternalReaders(
                         listOf(Chipper2X, StripeM2, WisePade3)
@@ -300,17 +303,20 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun handleDiscoveryEvent(event: CardReaderDiscoveryEvents) {
+    private fun handleDiscoveryEvent(event: WooPosUnifiedDiscoveryEvent) {
         when (event) {
-            is CardReaderDiscoveryEvents.Started -> {
+            is WooPosUnifiedDiscoveryEvent.Started -> {
                 logger.d("Discovery started")
                 enterScanningState()
             }
-            is CardReaderDiscoveryEvents.ReadersFound -> {
-                logger.d("Found ${event.list.size} readers")
-                handleReadersFound(event.list)
+            is WooPosUnifiedDiscoveryEvent.ReadersFound -> {
+                val bluetoothReaders = event.readers
+                    .filterIsInstance<WooPosDiscoveredReader.Bluetooth>()
+                    .map { it.cardReader }
+                logger.d("Found ${bluetoothReaders.size} readers")
+                handleReadersFound(bluetoothReaders)
             }
-            is CardReaderDiscoveryEvents.Failed -> {
+            is WooPosUnifiedDiscoveryEvent.Failed -> {
                 logger.e("Discovery failed - ${event.msg}")
                 tracker.trackReaderDiscoveryFailed(event.msg)
                 _state.value = WooPosCardReaderConnectionState.ScanningFailed(
@@ -319,7 +325,7 @@ class WooPosCardReaderConnectionController(
                     onCancelClicked = { cancel() }
                 )
             }
-            is CardReaderDiscoveryEvents.Succeeded -> {
+            is WooPosUnifiedDiscoveryEvent.Succeeded -> {
                 logger.d("Discovery succeeded")
             }
         }
