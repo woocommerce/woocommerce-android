@@ -9,15 +9,11 @@ import javax.inject.Inject
 /**
  * Decides whether the QR login entry point should be offered on this device.
  *
- * We skip the QR flow entirely (falling straight through to the existing site URL step) when:
- *   - The [FeatureFlag.QR_LOGIN] flag is off.
- *   - The device has no camera ([android.content.pm.PackageManager.FEATURE_CAMERA_ANY]).
- *     Scanning a QR is the whole point of the flow; without a camera it's dead weight.
- *   - Google Play Services aren't available. The bundled ML Kit variant we ship also transitively
- *     pulls in `play-services-mlkit-barcode-scanning` and uses it when present. To avoid shipping
- *     a scan button that might silently fail on GMS-less devices (AOSP builds, some Huawei phones,
- *     etc.) we gate on GMS being present. If the bundled fallback later proves reliable across
- *     that fleet this check can be loosened.
+ * Hard requirement: the device needs a camera — there's no QR flow without one. We don't gate on
+ * Google Play Services: we ship the bundled ML Kit barcode scanning variant, which is designed to
+ * work on GMS-less devices. If the scanner fails at runtime (binding error, model init, etc.),
+ * [com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.onBindingException] already
+ * surfaces a snackbar, so offering the entry point optimistically is safe.
  */
 class QrLoginAvailability @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
@@ -28,11 +24,6 @@ class QrLoginAvailability @Inject constructor(
 
         if (!deviceFeatures.hasCamera()) {
             WooLog.d(WooLog.T.LOGIN, "QR login unavailable: device has no camera")
-            return false
-        }
-
-        if (!deviceFeatures.isGooglePlayServicesAvailable()) {
-            WooLog.d(WooLog.T.LOGIN, "QR login unavailable: Google Play Services missing")
             return false
         }
 
