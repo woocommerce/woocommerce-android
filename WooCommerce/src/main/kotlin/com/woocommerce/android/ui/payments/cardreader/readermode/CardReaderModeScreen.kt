@@ -41,8 +41,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWait
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.util.UiHelpers
 
-private const val TRANSITION_DURATION_MS = 250
-
 @Composable
 fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
     val state by viewModel.stateOverride.observeAsState()
@@ -60,8 +58,7 @@ private fun CardReaderModeContent(state: ViewState?) {
             targetState = state,
             label = "CardReaderModeContent",
             transitionSpec = {
-                fadeIn(animationSpec = tween(TRANSITION_DURATION_MS)) togetherWith
-                    fadeOut(animationSpec = tween(TRANSITION_DURATION_MS))
+                fadeIn(animationSpec = tween()) togetherWith fadeOut(animationSpec = tween())
             },
             contentKey = { it?.let { it::class.simpleName } ?: "null" },
         ) { targetState ->

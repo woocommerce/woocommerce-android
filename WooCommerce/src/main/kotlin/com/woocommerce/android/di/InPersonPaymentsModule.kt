@@ -80,6 +80,14 @@ class InPersonPaymentsModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
+
+    @Provides
+    @Singleton
+    fun provideCardReaderRemoteSession(
+        @ApplicationContext context: Context,
+        cardReaderManager: CardReaderManager,
+        logWrapper: LogWrapper,
+    ): CardReaderRemoteSession = CardReaderRemoteSession(context, cardReaderManager, logWrapper)
 }
 
 @InstallIn(SingletonComponent::class)
@@ -92,12 +100,4 @@ class CardReaderManagerModule {
         cardReaderStore: CardReaderStore,
         logWrapper: LogWrapper
     ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
-
-    @Provides
-    @Singleton
-    fun provideCardReaderRemoteSession(
-        @ApplicationContext context: Context,
-        cardReaderManager: CardReaderManager,
-        logWrapper: LogWrapper,
-    ): CardReaderRemoteSession = CardReaderRemoteSession(context, cardReaderManager, logWrapper)
 }
