@@ -23,6 +23,7 @@ import java.net.InetAddress
 class WooPosUnifiedDiscoveryStreamTest {
     private val cardReaderManager: CardReaderManager = mock()
     private val remoteDiscovery: WooPosRemoteReaderDiscovery = mock()
+    private val simulatedRemoteDiscovery: WooPosSimulatedRemoteReaderDiscovery = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val logger: WooPosLogWrapper = mock()
 
@@ -43,7 +44,13 @@ class WooPosUnifiedDiscoveryStreamTest {
             flowOf(WooPosPhoneDiscoveryEvent.Added(phone(name = "Pixel 7")))
         )
         whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(false)
-        val sut = WooPosUnifiedDiscoveryStream(cardReaderManager, remoteDiscovery, featureFlagRepository, logger)
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            featureFlagRepository,
+            logger,
+        )
 
         // WHEN / THEN
         sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
@@ -68,7 +75,13 @@ class WooPosUnifiedDiscoveryStreamTest {
         val phone = phone(name = "Pixel 7")
         whenever(remoteDiscovery.discover()).thenReturn(flowOf(WooPosPhoneDiscoveryEvent.Added(phone)))
         whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
-        val sut = WooPosUnifiedDiscoveryStream(cardReaderManager, remoteDiscovery, featureFlagRepository, logger)
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            featureFlagRepository,
+            logger,
+        )
 
         // WHEN / THEN
         sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
@@ -98,7 +111,13 @@ class WooPosUnifiedDiscoveryStreamTest {
             )
         )
         whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
-        val sut = WooPosUnifiedDiscoveryStream(cardReaderManager, remoteDiscovery, featureFlagRepository, logger)
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            featureFlagRepository,
+            logger,
+        )
 
         // WHEN / THEN
         sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {

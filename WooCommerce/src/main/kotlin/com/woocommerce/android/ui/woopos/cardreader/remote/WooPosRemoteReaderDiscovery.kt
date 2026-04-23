@@ -18,10 +18,14 @@ sealed class WooPosPhoneDiscoveryEvent {
     data class Removed(val name: String) : WooPosPhoneDiscoveryEvent()
 }
 
+interface WooPosPhoneDiscoverySource {
+    fun discover(): Flow<WooPosPhoneDiscoveryEvent>
+}
+
 class WooPosRemoteReaderDiscovery @Inject constructor(
     private val remoteDiscovery: CardReaderRemoteDiscovery,
-) {
-    fun discover(): Flow<WooPosPhoneDiscoveryEvent> =
+) : WooPosPhoneDiscoverySource {
+    override fun discover(): Flow<WooPosPhoneDiscoveryEvent> =
         remoteDiscovery.discover().map { event ->
             when (event) {
                 is RemoteReaderDiscoveryEvent.Added -> WooPosPhoneDiscoveryEvent.Added(

@@ -49,6 +49,7 @@ sealed class WooPosUnifiedDiscoveryEvent {
 class WooPosUnifiedDiscoveryStream @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val remoteDiscovery: WooPosRemoteReaderDiscovery,
+    private val simulatedRemoteDiscovery: WooPosSimulatedRemoteReaderDiscovery,
     private val featureFlagRepository: FeatureFlagRepository,
     private val logger: WooPosLogWrapper,
 ) {
@@ -73,8 +74,10 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         }
 
         if (featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)) {
+            val phoneSource: WooPosPhoneDiscoverySource =
+                if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
             launch {
-                remoteDiscovery.discover()
+                phoneSource.discover()
                     // NSD failures must not tear down BT discovery — degrade to BT-only.
                     .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
                     .collect { event ->
@@ -138,6 +141,6 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     }
 
     private companion object {
-        const val MAX_DISCOVERED_PHONES = 32
+        const val MAX_DISCOVERED_PHONES = 8
     }
 }
