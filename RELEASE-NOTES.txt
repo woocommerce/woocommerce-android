@@ -9,6 +9,7 @@
 - [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
 - [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
 - [*] Replaced the POS Orders "Learn more" empty-state button with a "Refresh" action and updated the empty-state copy [https://github.com/woocommerce/woocommerce-android/pull/15694]
+- [*] Fixed product images failing to load when the Photon service is unavailable [https://github.com/woocommerce/woocommerce-android/pull/15646]
 
 24.6
 -----

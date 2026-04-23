@@ -75,10 +75,12 @@ private fun ReviewListScreen(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        UnreadFilterRow(
-            isChecked = viewState.isUnreadFilterEnabled,
-            onCheckedChange = onUnreadFilterChanged
-        )
+        if (viewState.isUnreadFilterVisible) {
+            UnreadFilterRow(
+                isChecked = viewState.isUnreadFilterEnabled,
+                onCheckedChange = onUnreadFilterChanged
+            )
+        }
         if (viewState.isSkeletonShown == true) {
             ReviewListSkeleton()
         } else {

@@ -1034,7 +1034,6 @@ class MainActivity :
         intent.data = null
         showOrderDetail(
             orderId = event.uniqueId,
-            remoteNoteId = event.remoteNoteId,
             launchedFromNotification = true
         )
     }
@@ -1248,7 +1247,6 @@ class MainActivity :
     override fun showOrderDetail(
         orderId: Long,
         navHostFragment: NavHostFragment?,
-        remoteNoteId: Long,
         launchedFromNotification: Boolean,
         startPaymentsFlow: Boolean,
     ) {
@@ -1260,15 +1258,13 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            arrayOf(orderId).toLongArray(),
-            remoteNoteId
+            longArrayOf(orderId)
         )
         navHostFragment?.navController?.let { navController ->
             val bundle = OrderDetailFragmentArgs(
-                orderId,
-                longArrayOf(orderId),
-                remoteNoteId,
-                startPaymentsFlow
+                orderId = orderId,
+                allOrderIds = longArrayOf(orderId),
+                startPaymentFlow = startPaymentsFlow
             ).toBundle()
             navController.navigate(
                 R.id.orderDetailFragment,
@@ -1284,7 +1280,6 @@ class MainActivity :
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
         allOrderIds: List<Long>,
-        remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
@@ -1292,8 +1287,7 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            allOrderIds.toLongArray(),
-            remoteNoteId
+            allOrderIds.toLongArray()
         )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(

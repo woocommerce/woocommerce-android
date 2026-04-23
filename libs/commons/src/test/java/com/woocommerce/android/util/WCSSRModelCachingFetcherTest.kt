@@ -1,12 +1,11 @@
 package com.woocommerce.android.util
 
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
-import kotlinx.coroutines.test.runTest
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSSRModel
@@ -16,52 +15,43 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class WCSSRModelCachingFetcherTest {
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class WCSSRModelCachingFetcherTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
-    private val ssrModel: WCSSRModel = mock()
+    private val ssrModel = WCSSRModel(remoteSiteId = 123L)
 
-    private val sut: WCSSRModelCachingFetcher = WCSSRModelCachingFetcher(wooCommerceStore)
+    private val sut = WCSSRModelCachingFetcher(wooCommerceStore)
 
     @Test
-    fun `given cached value when load called again then store is not called`() = runTest {
-        // GIVEN
+    fun `given cached value, when load called again, then store is not called`() = testBlocking {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
-        sut.load(siteModel) // Populate cache
+        sut.load(siteModel)
 
-        // WHEN
         val result = sut.load(siteModel)
 
-        // THEN
-        assertEquals(ssrModel, result.model)
+        assertThat(result.model).isEqualTo(ssrModel)
         verify(wooCommerceStore, times(1)).fetchSSR(siteModel)
     }
 
     @Test
-    fun `given empty cache when load called then fetches from remote`() = runTest {
-        // GIVEN
+    fun `given empty cache, when load called, then fetches from remote`() = testBlocking {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
 
-        // WHEN
         val result = sut.load(siteModel)
 
-        // THEN
-        assertEquals(ssrModel, result.model)
+        assertThat(result.model).isEqualTo(ssrModel)
         verify(wooCommerceStore).fetchSSR(siteModel)
     }
 
     @Test
-    fun `given remote failure when load called then returns error`() = runTest {
-        // GIVEN
-        val type = WooErrorType.API_ERROR
-        val error = WooError(type, BaseRequest.GenericErrorType.NETWORK_ERROR)
+    fun `given remote failure, when load called, then returns error`() = testBlocking {
+        val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(error))
 
-        // WHEN
         val result = sut.load(siteModel)
 
-        // THEN
-        assertNotNull(result.error)
+        assertThat(result.error).isNotNull()
         verify(wooCommerceStore).fetchSSR(siteModel)
     }
 }

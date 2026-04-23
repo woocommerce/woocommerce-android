@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.Ma
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -48,6 +49,7 @@ class ReviewListViewModel @Inject constructor(
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val reviewModerationHandler: ReviewModerationHandler,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
@@ -104,6 +106,7 @@ class ReviewListViewModel @Inject constructor(
             }
             // Fetch after cache check to avoid race where fetchReviewList sets
             // isSkeletonShown = false before the cache check sets it to true.
+            syncUnreadFilterAvailability()
             fetchReviewList(loadMore = false)
         }
     }
@@ -177,6 +180,7 @@ class ReviewListViewModel @Inject constructor(
                             ReviewListRepository.FetchReviewsResult.NothingFetched -> {
                                 // No action needed
                             }
+
                             is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
                                 if (result.requestResult == SUCCESS) {
                                     val reviews = reviewRepository.getCachedProductReviews()
@@ -246,6 +250,14 @@ class ReviewListViewModel @Inject constructor(
         fetchReviewList(loadMore = false)
     }
 
+    private suspend fun syncUnreadFilterAvailability() {
+        val isUnreadFilterVisible = supportsReviewsReadStatus()
+        viewState = viewState.copy(
+            isUnreadFilterVisible = isUnreadFilterVisible,
+            isUnreadFilterEnabled = viewState.isUnreadFilterEnabled && isUnreadFilterVisible
+        )
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -261,6 +273,7 @@ class ReviewListViewModel @Inject constructor(
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val hasUnreadReviews: Boolean? = null,
+        val isUnreadFilterVisible: Boolean = true,
         val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 

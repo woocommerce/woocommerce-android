@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.sitepicker.sitevisibility
 
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerTestUtils
 import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityViewModel.WooStoreUi
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -16,11 +20,16 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingsUpdateError
@@ -49,6 +58,13 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
                     isSelected = true
                 )
             }
+        private val HIDDEN_WOO_SITE = ALL_WOO_SITES[1]
+        private val HIDDEN_WOO_SITE_UI_MODEL = WooStoreUi(
+            siteName = HIDDEN_WOO_SITE.name,
+            siteUrl = HIDDEN_WOO_SITE.url,
+            siteId = HIDDEN_WOO_SITE.siteId,
+            isSelected = false
+        )
         private val A_WOO_SITE_UI_MODEL = ALL_WOO_SITES.last().let {
             WooStoreUi(
                 siteName = it.name,
@@ -70,8 +86,17 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     }
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
     private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock {
+        on { getFCMToken() }.thenReturn("token")
+    }
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1) }.thenReturn(true)
+    }
     private val pushNotificationRepository: PushNotificationRepository = mock {
         on { getWooPushRegisteredSiteIds() } doReturn emptySet()
+        on { shouldRegisterWooPushForSite(any(), any()) } doReturn true
+        on { registerPushTokenInWooCoreSystem(any(), any(), any()) } doReturn Result.success(Unit)
+        on { unregisterWooPushTokenForSite(any()) } doReturn Result.success(Unit)
     }
 
     @Test
@@ -211,12 +236,173 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
             verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
         }
 
+    @Test
+    fun `given hidden woo push site, when tapping save, then unregister woo push for that site`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(A_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(pushNotificationRepository).unregisterWooPushTokenForSite(
+                argThat { siteId == A_WOO_SITE_UI_MODEL.siteId }
+            )
+        }
+
+    @Test
+    fun `given newly visible site will be woo registered, when tapping save, then exclude it from wpcom update`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            // Simulate registration side effect: the site becomes woo-registered after registerPushTokenInWooCoreSystem.
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(emptySet())
+                .thenReturn(setOf(HIDDEN_WOO_SITE.siteId))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { none { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+        }
+
+    @Test
+    fun `given feature flag disabled, when tapping save, then newly visible site is included in wpcom update`() =
+        testBlocking {
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { any { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+        }
+
+    @Test
+    fun `given previously hidden site, when tapping save, then register woo push immediately without wpcom fallback`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(
+                token = eq("token"),
+                selectedSite = argThat { siteId == HIDDEN_WOO_SITE.siteId },
+                allowWpComFallback = eq(false)
+            )
+        }
+
+    @Test
+    fun `given previously hidden site still marked as woo registered, when tapping save, then do not register again`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(HIDDEN_WOO_SITE.siteId))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+            viewModel.onSaveTapped()
+
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(
+                token = eq("token"),
+                selectedSite = argThat { siteId == HIDDEN_WOO_SITE.siteId },
+                allowWpComFallback = eq(false)
+            )
+        }
+
+    @Test
+    fun `given woo register fails for unhidden site, when tapping save, then show error dialog and do not persist visibility`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                .thenReturn(Result.failure(IllegalStateException("registration failed")))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onSaveTapped()
+            }.last()
+
+            verify(visibleWooSitesDataStore, never()).updateSiteVisibilityStatus(any())
+            assertThat(event).isInstanceOf(ShowDialog::class.java)
+            assertFalse(viewModel.viewState.getOrAwaitValue().isLoading)
+        }
+
+    @Test
+    fun `given site lacks woo push endpoint, when tapping save, then skip registration and persist visibility`() =
+        testBlocking {
+            whenever(visibleWooSitesDataStore.isSiteVisible(HIDDEN_WOO_SITE.siteId)).thenReturn(flowOf(false))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                .thenReturn(
+                    Result.failure(
+                        WooException(
+                            WooError(
+                                type = WooErrorType.API_NOT_FOUND,
+                                original = GenericErrorType.NOT_FOUND,
+                                apiErrorCode = "rest_no_route"
+                            )
+                        )
+                    )
+                )
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(HIDDEN_WOO_SITE_UI_MODEL)
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onSaveTapped()
+            }.last()
+
+            verify(visibleWooSitesDataStore).updateSiteVisibilityStatus(any())
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                argThat { any { it.siteId == HIDDEN_WOO_SITE.siteId } }
+            )
+            assertThat(event).isEqualTo(ExitWithResult(data = true))
+        }
+
+    @Test
+    fun `given woo unregister fails, when tapping save, then persist visibility and still exit with success`() =
+        testBlocking {
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(setOf(A_WOO_SITE_UI_MODEL.siteId))
+            whenever(pushNotificationRepository.unregisterWooPushTokenForSite(any()))
+                .thenReturn(Result.failure(IllegalStateException("delete failed")))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            val viewModel = createViewModel()
+
+            viewModel.onSiteTapped(A_WOO_SITE_UI_MODEL)
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onSaveTapped()
+            }.last()
+
+            verify(visibleWooSitesDataStore).updateSiteVisibilityStatus(any())
+            assertThat(event).isEqualTo(ExitWithResult(data = true))
+        }
+
     private fun createViewModel() = WooSitesVisibilityViewModel(
         sitePickerRepository = sitePickerRepository,
         selectedSite = selectedSite,
         visibleSitesDataStore = visibleWooSitesDataStore,
         notificationsStore = wpComPushNotificationStore,
         pushNotificationRepository = pushNotificationRepository,
+        appPrefsWrapper = appPrefsWrapper,
+        featureFlagRepository = featureFlagRepository,
         trackerWrapper = trackerWrapper,
         savedStateHandle = mock()
     )
