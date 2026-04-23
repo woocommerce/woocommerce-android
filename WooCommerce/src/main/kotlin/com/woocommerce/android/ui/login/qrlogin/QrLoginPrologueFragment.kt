@@ -12,10 +12,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
- * QR-first login prologue shown when [com.woocommerce.android.util.FeatureFlag.QR_LOGIN] is on.
+ * QR-first login prologue shown after the merchant taps "Login to Store" when
+ * [com.woocommerce.android.util.FeatureFlag.QR_LOGIN] is on.
  *
  * Offers a single primary action ("Scan QR code") and a fallback link into the existing
  * credentials flow for merchants without access to their computer.
@@ -31,6 +34,9 @@ class QrLoginPrologueFragment : Fragment() {
         fun onQrLoginFallbackClicked()
     }
 
+    @Inject
+    lateinit var unifiedLoginTracker: UnifiedLoginTracker
+
     private var listener: Listener? = null
 
     override fun onCreateView(
@@ -44,10 +50,12 @@ class QrLoginPrologueFragment : Fragment() {
                 QrLoginPrologueScreen(
                     onScanClicked = {
                         AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
+                        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
                         listener?.onQrLoginScanClicked()
                     },
                     onFallbackClicked = {
                         AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
+                        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
                         listener?.onQrLoginFallbackClicked()
                     }
                 )
@@ -59,7 +67,13 @@ class QrLoginPrologueFragment : Fragment() {
         (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge(forceDarkStatusBar = true)
         if (savedInstanceState == null) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
+            unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
     }
 
     override fun onAttach(context: Context) {

@@ -7,30 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +42,7 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
 
     interface Listener {
         fun onQrLoginCompleted(localSiteId: Int)
+        fun onQrLoginFallbackClicked()
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -57,6 +50,9 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var listener: Listener? = null
 
@@ -71,22 +67,33 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
                 initial = BarcodeScanningViewModel.PermissionState.Unknown
             )
             val authenticating by qrLoginViewModel.isAuthenticating.observeAsState(initial = false)
+            val endpointMissing by qrLoginViewModel.endpointMissing.observeAsState(initial = false)
             WooThemeWithBackground {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    BarcodeScannerScreen(
-                        onNewFrame = scannerViewModel::onNewFrame,
-                        onBindingException = scannerViewModel::onBindingException,
-                        permissionState = permissionState,
-                        onResult = { granted ->
-                            scannerViewModel.updatePermissionState(
-                                granted,
-                                shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                    if (endpointMissing) {
+                        QrLoginEndpointMissingScreen(
+                            onEnterUrlClicked = { listener?.onQrLoginFallbackClicked() },
+                            onRetryClicked = { qrLoginViewModel.onRetryAfterBlockingError() }
+                        )
+                    } else {
+                        BarcodeScannerScreen(
+                            onNewFrame = scannerViewModel::onNewFrame,
+                            onBindingException = scannerViewModel::onBindingException,
+                            permissionState = permissionState,
+                            onResult = { granted ->
+                                scannerViewModel.updatePermissionState(
+                                    granted,
+                                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                                )
+                            },
+                            overlayLabel = R.string.login_qr_scanner_hint
+                        )
+                        if (authenticating) {
+                            ProgressDialog(
+                                title = "",
+                                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating)
                             )
-                        },
-                        overlayLabel = R.string.login_qr_scanner_hint
-                    )
-                    if (authenticating) {
-                        AuthenticatingOverlay()
+                        }
                     }
                 }
             }
@@ -96,11 +103,15 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeScannerEvents()
         observeQrLoginEvents()
+        if (savedInstanceState == null) {
+            unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
+        }
     }
 
     override fun onResume() {
         super.onResume()
         scannerViewModel.startCodesRecognition()
+        unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
     }
 
     override fun onPause() {
@@ -167,25 +178,4 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
     }
 }
 
-@Composable
-private fun AuthenticatingOverlay() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.6f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp)
-        ) {
-            CircularProgressIndicator(color = Color.White)
-            Text(
-                text = stringResource(id = R.string.login_qr_scanner_authenticating),
-                color = Color.White
-            )
-        }
-    }
-}
 
