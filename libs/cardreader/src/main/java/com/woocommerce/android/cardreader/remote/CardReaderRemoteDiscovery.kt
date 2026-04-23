@@ -6,12 +6,17 @@ import kotlinx.coroutines.flow.map
 import java.net.InetAddress
 
 interface CardReaderRemoteDiscovery {
-    fun discover(): Flow<DiscoveredRemoteReader>
+    fun discover(): Flow<RemoteReaderDiscoveryEvent>
 
     companion object {
         fun create(context: Context): CardReaderRemoteDiscovery =
             DefaultCardReaderRemoteDiscovery(CardReaderRemoteNsd(context))
     }
+}
+
+sealed class RemoteReaderDiscoveryEvent {
+    data class Added(val reader: DiscoveredRemoteReader) : RemoteReaderDiscoveryEvent()
+    data class Removed(val name: String) : RemoteReaderDiscoveryEvent()
 }
 
 data class DiscoveredRemoteReader(
@@ -24,8 +29,13 @@ data class DiscoveredRemoteReader(
 internal class DefaultCardReaderRemoteDiscovery(
     private val nsd: CardReaderRemoteNsd,
 ) : CardReaderRemoteDiscovery {
-    override fun discover(): Flow<DiscoveredRemoteReader> =
-        nsd.discover().map { it.toPublic() }
+    override fun discover(): Flow<RemoteReaderDiscoveryEvent> =
+        nsd.discover().map { event ->
+            when (event) {
+                is CardReaderRemoteNsdEvent.Found -> RemoteReaderDiscoveryEvent.Added(event.host.toPublic())
+                is CardReaderRemoteNsdEvent.Lost -> RemoteReaderDiscoveryEvent.Removed(event.serviceName)
+            }
+        }
 }
 
 private fun CardReaderRemoteResolvedHost.toPublic() =

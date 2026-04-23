@@ -83,7 +83,7 @@ internal class CardReaderRemoteNsd(
             }
         }
 
-    fun discover(): Flow<CardReaderRemoteResolvedHost> = callbackFlow {
+    fun discover(): Flow<CardReaderRemoteNsdEvent> = callbackFlow {
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onDiscoveryStarted(serviceType: String) {
                 Log.d(TAG, "NSD discovery started: $serviceType")
@@ -102,11 +102,11 @@ internal class CardReaderRemoteNsd(
             }
 
             override fun onServiceFound(service: NsdServiceInfo) {
-                resolve(service) { resolved -> trySend(resolved) }
+                resolve(service) { resolved -> trySend(CardReaderRemoteNsdEvent.Found(resolved)) }
             }
 
             override fun onServiceLost(service: NsdServiceInfo) {
-                Log.d(TAG, "NSD service lost: ${service.serviceName}")
+                trySend(CardReaderRemoteNsdEvent.Lost(service.serviceName))
             }
         }
 
@@ -235,3 +235,8 @@ internal data class CardReaderRemoteResolvedHost(
     val fingerprintBase64: String,
     val version: String,
 )
+
+internal sealed class CardReaderRemoteNsdEvent {
+    data class Found(val host: CardReaderRemoteResolvedHost) : CardReaderRemoteNsdEvent()
+    data class Lost(val serviceName: String) : CardReaderRemoteNsdEvent()
+}

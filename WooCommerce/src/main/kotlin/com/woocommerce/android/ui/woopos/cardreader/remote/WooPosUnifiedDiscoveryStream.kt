@@ -4,6 +4,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.channels.ProducerScope
@@ -49,6 +50,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val remoteDiscovery: WooPosRemoteReaderDiscovery,
     private val featureFlagRepository: FeatureFlagRepository,
+    private val logger: WooPosLogWrapper,
 ) {
     fun discover(
         isSimulated: Boolean,
@@ -73,10 +75,15 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         if (featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)) {
             launch {
                 remoteDiscovery.discover()
-                    // NSD failures must not tear down BT discovery — degrade to BT-only silently.
-                    .catch { }
-                    .collect { phone ->
-                        addPhoneAndSendSnapshot(mutex, state, phone)
+                    // NSD failures must not tear down BT discovery — degrade to BT-only.
+                    .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
+                    .collect { event ->
+                        when (event) {
+                            is WooPosPhoneDiscoveryEvent.Added ->
+                                addPhoneAndSendSnapshot(mutex, state, event.phone)
+                            is WooPosPhoneDiscoveryEvent.Removed ->
+                                removePhoneAndSendSnapshot(mutex, state, event.name)
+                        }
                     }
             }
         }
@@ -99,18 +106,32 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
-            val key = phone.fingerprintBase64
-            val isUpdate = state.phonesByFingerprint.containsKey(key)
+            val fingerprint = phone.fingerprintBase64
+            val isUpdate = state.phonesByFingerprint.containsKey(fingerprint)
             if (isUpdate || state.phonesByFingerprint.size < MAX_DISCOVERED_PHONES) {
-                state.phonesByFingerprint[key] = phone
+                state.phonesByFingerprint[fingerprint] = phone
+                state.fingerprintByName[phone.name] = fingerprint
                 send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
             }
+        }
+    }
+
+    private suspend fun ProducerScope<WooPosUnifiedDiscoveryEvent>.removePhoneAndSendSnapshot(
+        mutex: Mutex,
+        state: DiscoveryState,
+        serviceName: String,
+    ) {
+        mutex.withLock {
+            val fingerprint = state.fingerprintByName.remove(serviceName) ?: return@withLock
+            state.phonesByFingerprint.remove(fingerprint)
+            send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
         }
     }
 
     private class DiscoveryState {
         var bluetoothReaders: List<CardReader> = emptyList()
         val phonesByFingerprint: LinkedHashMap<String, WooPosDiscoveredReader.Phone> = linkedMapOf()
+        val fingerprintByName: MutableMap<String, String> = mutableMapOf()
 
         fun snapshot(): List<WooPosDiscoveredReader> =
             bluetoothReaders.map(WooPosDiscoveredReader::Bluetooth) + phonesByFingerprint.values
