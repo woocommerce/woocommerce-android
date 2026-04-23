@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -464,6 +465,33 @@ class WooPosOrderDetailsViewModelTest {
         // THEN
         verify(dataSource).refreshOrderById(1L)
     }
+
+    @Test
+    fun `given refresh in flight, when user selects different order, then coordinator notifies for original order`() =
+        runTest {
+            // GIVEN
+            val refreshedIds = mutableListOf<Long>()
+            val collectorJob = launch {
+                coordinator.orderRefreshed.collect { refreshedIds.add(it) }
+            }
+            doReturn(Result.success(order(2L))).whenever(dataSource).getOrderById(2L)
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            coordinator.selectOrder(1L)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onBackFromSuccessfullySendingEmailReceipt()
+            coordinator.selectOrder(2L)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(refreshedIds).contains(1L)
+            val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
+            assertThat(loaded.details.id).isEqualTo(2L)
+
+            collectorJob.cancel()
+        }
 
     @Test
     fun `given issue refund dialog open, when dismissed, then order is refreshed`() = runTest {

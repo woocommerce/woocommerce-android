@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -300,8 +302,15 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         sideLoadJob?.cancel()
         refreshOrderJob?.cancel()
         refreshOrderJob = viewModelScope.launch {
-            ordersDataSource.refreshOrderById(selectedOrderId)
-                .onSuccess { applyOrderUpdate(it) }
+            // Fetch + notify run atomically so the list row is always refreshed when the cache
+            // is updated, even if the user has already selected a different order. Only the
+            // detail-pane work below is cancellable and skipped on selection change.
+            val updated = withContext(NonCancellable) {
+                ordersDataSource.refreshOrderById(selectedOrderId).getOrNull()?.also {
+                    coordinator.notifyOrderRefreshed(it.id)
+                }
+            } ?: return@launch
+            applyOrderUpdate(updated)
         }
     }
 
@@ -319,7 +328,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
         if (current.details.id == updated.id) {
             _state.value = current.copy(details = newDetailsViewState)
-            coordinator.notifyOrderRefreshed(updated.id)
         }
     }
 
