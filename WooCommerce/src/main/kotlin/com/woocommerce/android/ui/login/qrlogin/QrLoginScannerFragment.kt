@@ -214,5 +214,3 @@ class QrLoginScannerFragment : Fragment() {
         QrLoginScannerViewModel.ErrorReason.Unknown -> R.string.login_qr_scanner_error_generic
     }
 }
-
-
