@@ -83,6 +83,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Currency
 import kotlin.reflect.KMutableProperty0
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -299,7 +300,7 @@ class CardReaderPaymentController(
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
                 countryCode = countryCode,
-                feeAmount = calculateFeeInCents(countryCode, order.total),
+                feeAmount = calculateFeeInCents(countryCode, order.total, order.currency),
                 channel = determinePaymentChannel(paymentOrRefund)
             )
         ).collect { paymentStatus ->
@@ -860,11 +861,12 @@ class CardReaderPaymentController(
         }
     }
 
-    private fun calculateFeeInCents(countryCode: String, orderTotal: BigDecimal): Long? =
+    private fun calculateFeeInCents(countryCode: String, orderTotal: BigDecimal, currencyCode: String): Long? =
         if (countryCode == "CA") {
+            val fractionDigits = Currency.getInstance(currencyCode).defaultFractionDigits
             val percentageInCents = orderTotal
                 .multiply(CANADA_FEE_PERCENTAGE)
-                .movePointRight(2)
+                .movePointRight(fractionDigits)
                 .setScale(0, RoundingMode.HALF_UP)
                 .toLong()
             percentageInCents + CANADA_FEE_FLAT_IN_CENTS + INTERAC_FEE_FLAT_IN_CENTS
