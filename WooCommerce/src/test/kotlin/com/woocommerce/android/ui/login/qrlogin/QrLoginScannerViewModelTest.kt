@@ -42,15 +42,68 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         mock { on { parse(forCode) }.thenReturn(payload) }
 
     @Test
-    fun `given valid ticket and successful auth, when scan succeeds, then emits LoggedIn`() = testBlocking {
+    fun `given valid ticket and successful auth, when scan confirmed, then emits LoggedIn`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(42))
         val viewModel = createViewModel(parserReturning(ticket), authenticator)
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 42))
+    }
+
+    @Test
+    fun `given valid ticket, when scan succeeds, then pending confirmation exposes host and no exchange`() =
+        testBlocking {
+            val authenticator: QrLoginAuthenticator = mock()
+            val viewModel = createViewModel(parserReturning(ticket), authenticator)
+
+            viewModel.onScanResult(successScan("raw"))
+
+            assertThat(viewModel.pendingConfirmation.value).isEqualTo(
+                QrLoginScannerViewModel.PendingConfirmation(ticket = ticket, host = "store.example")
+            )
+            verify(authenticator, never()).authenticate(any())
+        }
+
+    @Test
+    fun `given pending confirmation, when cancel, then pending is cleared and authenticator not called`() =
+        testBlocking {
+            val authenticator: QrLoginAuthenticator = mock()
+            val viewModel = createViewModel(parserReturning(ticket), authenticator)
+
+            viewModel.onScanResult(successScan("raw"))
+            viewModel.onCancelSite()
+
+            assertThat(viewModel.pendingConfirmation.value).isNull()
+            verify(authenticator, never()).authenticate(any())
+        }
+
+    @Test
+    fun `given pending confirmation, when another scan arrives, then it is ignored`() = testBlocking {
+        val parser: QrLoginPayloadParser = mock {
+            on { parse("first") }.thenReturn(ticket)
+        }
+        val viewModel = createViewModel(parser, mock())
+
+        viewModel.onScanResult(successScan("first"))
+        viewModel.onScanResult(successScan("second"))
+
+        assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
+        verify(parser, never()).parse("second")
+    }
+
+    @Test
+    fun `given canceled confirmation, when next valid scan, then a fresh confirmation is shown`() = testBlocking {
+        val viewModel = createViewModel(parserReturning(ticket), mock())
+
+        viewModel.onScanResult(successScan("raw"))
+        viewModel.onCancelSite()
+        viewModel.onScanResult(successScan("raw"))
+
+        assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
     }
 
     @Test
@@ -90,7 +143,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given token rejected by server, when scan succeeds, then emits TokenRejected error`() = testBlocking {
+    fun `given token rejected by server, when scan confirmed, then emits TokenRejected error`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.TokenRejected))
@@ -98,6 +151,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
             QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.TokenRejected)
@@ -105,7 +159,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given network error, when scan succeeds, then emits Network error`() = testBlocking {
+    fun `given network error, when scan confirmed, then emits Network error`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.Network))
@@ -113,6 +167,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
             QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Network)
@@ -120,7 +175,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given rate limited error, when scan succeeds, then emits RateLimited error`() = testBlocking {
+    fun `given rate limited error, when scan confirmed, then emits RateLimited error`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
@@ -128,6 +183,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
             QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.RateLimited)
@@ -135,7 +191,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint missing, when scan succeeds, then endpointMissing flag is raised`() = testBlocking {
+    fun `given endpoint missing, when scan confirmed, then endpointMissing flag is raised`() = testBlocking {
         val authenticator: QrLoginAuthenticator = mock()
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
@@ -143,6 +199,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events).isEmpty()
         assertThat(viewModel.endpointMissing.value).isTrue()
@@ -155,6 +212,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
         val viewModel = createViewModel(parserReturning(ticket), authenticator)
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
         assertThat(viewModel.endpointMissing.value).isTrue()
 
         viewModel.onRetryAfterBlockingError()
@@ -169,6 +227,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
         val viewModel = createViewModel(parserReturning(ticket), authenticator)
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         viewModel.onScanResult(successScan("raw"))
 
@@ -184,6 +243,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
             QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
@@ -199,6 +259,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
             QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
@@ -212,6 +273,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(parserReturning(ticket), authenticator)
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
         viewModel.onScanResult(successScan("raw"))
 
         verify(authenticator, times(1)).authenticate(eq(ticket))
@@ -227,7 +289,9 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 99))
     }
@@ -245,6 +309,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         viewModel.onScanResult(successScan("invalid"))
         viewModel.onScanResult(successScan("valid"))
+        viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 11))
     }
@@ -266,6 +331,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(parserReturning(ticket), authenticator)
 
         viewModel.onScanResult(successScan("raw"))
+        viewModel.onConfirmSite()
 
         verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
     }
@@ -289,7 +355,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given exchange network error, when scan succeeds, then tracks scan failed with exchange step`() =
+    fun `given exchange network error, when scan confirmed, then tracks scan failed with exchange step`() =
         testBlocking {
             val authenticator: QrLoginAuthenticator = mock()
             whenever(authenticator.authenticate(ticket))
@@ -297,6 +363,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel(parserReturning(ticket), authenticator)
 
             viewModel.onScanResult(successScan("raw"))
+            viewModel.onConfirmSite()
 
             verify(analyticsTracker).track(
                 stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,

@@ -9,6 +9,10 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -68,6 +72,7 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
             )
             val authenticating by qrLoginViewModel.isAuthenticating.observeAsState(initial = false)
             val endpointMissing by qrLoginViewModel.endpointMissing.observeAsState(initial = false)
+            val pendingConfirmation by qrLoginViewModel.pendingConfirmation.observeAsState(initial = null)
             WooThemeWithBackground {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (endpointMissing) {
@@ -92,6 +97,13 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
                             ProgressDialog(
                                 title = "",
                                 subtitle = stringResource(id = R.string.login_qr_scanner_authenticating)
+                            )
+                        }
+                        pendingConfirmation?.let { pending ->
+                            ConfirmSiteDialog(
+                                host = pending.host,
+                                onConfirm = qrLoginViewModel::onConfirmSite,
+                                onCancel = qrLoginViewModel::onCancelSite
                             )
                         }
                     }
@@ -161,6 +173,29 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
                     uiMessageResolver.showSnack(event.reason.toMessage())
             }
         }
+    }
+
+    @Composable
+    private fun ConfirmSiteDialog(
+        host: String,
+        onConfirm: () -> Unit,
+        onCancel: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onCancel,
+            title = { Text(text = stringResource(id = R.string.login_qr_confirm_title)) },
+            text = { Text(text = stringResource(id = R.string.login_qr_confirm_body, host)) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text(text = stringResource(id = R.string.login_qr_confirm_connect))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onCancel) {
+                    Text(text = stringResource(id = R.string.login_qr_confirm_cancel))
+                }
+            }
+        )
     }
 
     @StringRes

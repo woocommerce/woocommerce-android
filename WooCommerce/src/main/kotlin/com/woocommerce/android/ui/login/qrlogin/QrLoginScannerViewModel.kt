@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import java.net.URI
 import javax.inject.Inject
 
 /**
@@ -41,11 +42,14 @@ class QrLoginScannerViewModel @Inject constructor(
     private val _endpointMissing = MutableLiveData(false)
     val endpointMissing: LiveData<Boolean> = _endpointMissing
 
+    private val _pendingConfirmation = MutableLiveData<PendingConfirmation?>(null)
+    val pendingConfirmation: LiveData<PendingConfirmation?> = _pendingConfirmation
+
     private var inFlight = false
     private var loggedIn = false
 
     fun onScanResult(status: CodeScannerStatus) {
-        if (loggedIn || inFlight || _endpointMissing.value == true) return
+        if (loggedIn || inFlight || _endpointMissing.value == true || _pendingConfirmation.value != null) return
 
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
@@ -64,7 +68,10 @@ class QrLoginScannerViewModel @Inject constructor(
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
-            is QrLoginPayload.Ticket -> startExchange(payload)
+            is QrLoginPayload.Ticket -> _pendingConfirmation.value = PendingConfirmation(
+                ticket = payload,
+                host = payload.siteUrl.toHostOrSelf()
+            )
             QrLoginPayload.Invalid -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -113,6 +120,19 @@ class QrLoginScannerViewModel @Inject constructor(
         inFlight = false
     }
 
+    fun onConfirmSite() {
+        val pending = _pendingConfirmation.value ?: return
+        _pendingConfirmation.value = null
+        startExchange(pending.ticket)
+    }
+
+    fun onCancelSite() {
+        _pendingConfirmation.value = null
+    }
+
+    private fun String.toHostOrSelf(): String =
+        runCatching { URI(this).host }.getOrNull()?.takeIf { it.isNotBlank() } ?: this
+
     private fun trackScanFailure(
         step: Step,
         errorContext: String?,
@@ -150,6 +170,11 @@ class QrLoginScannerViewModel @Inject constructor(
         data class LoggedIn(val localSiteId: Int) : Dispatch()
         data class RecoverableError(val reason: ErrorReason) : Dispatch()
     }
+
+    data class PendingConfirmation(
+        val ticket: QrLoginPayload.Ticket,
+        val host: String
+    )
 
     enum class ErrorReason {
         InvalidPayload,

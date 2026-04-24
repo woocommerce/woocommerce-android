@@ -235,6 +235,10 @@
     <string name="login_qr_endpoint_missing_body">Your WooCommerce plugin doesn\'t support QR login. Please update WooCommerce on your store and try again, or sign in by entering your site URL.</string>
     <string name="login_qr_endpoint_missing_enter_url">Enter site URL instead</string>
     <string name="login_qr_endpoint_missing_retry">Try scanning again</string>
+    <string name="login_qr_confirm_title">Connect to this store?</string>
+    <string name="login_qr_confirm_body">You\'re about to sign in to %1$s. Only continue if this is your store.</string>
+    <string name="login_qr_confirm_connect">Continue</string>
+    <string name="login_qr_confirm_cancel">Cancel</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
