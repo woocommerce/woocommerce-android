@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -53,6 +54,10 @@ class CardReaderModeViewModel @Inject constructor(
         )
         is CardReaderRemoteSessionState.WaitingForPayment -> RemoteTapToPayWaitingForPayment(
             tabletName = state.tabletName,
+            onPrimaryActionClicked = ::exit,
+        )
+        is CardReaderRemoteSessionState.Error -> RemoteTapToPayError(
+            message = state.message,
             onPrimaryActionClicked = ::exit,
         )
     }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -72,6 +73,17 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewState.value as RemoteTapToPayWaitingForPayment
             assertThat(viewState.tabletName).isEqualTo("Tablet 1")
         }
+
+    @Test
+    fun `given error session state, when emitted, then error view state carries the message`() = testBlocking {
+        // WHEN
+        sessionState.value = CardReaderRemoteSessionState.Error(message = "java.net.SocketException: closed")
+        advanceUntilIdle()
+
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayError
+        assertThat(viewState.message).isEqualTo("java.net.SocketException: closed")
+    }
 
     @Test
     fun `given starting view state, when cancel clicked, then exit event is emitted`() = testBlocking {

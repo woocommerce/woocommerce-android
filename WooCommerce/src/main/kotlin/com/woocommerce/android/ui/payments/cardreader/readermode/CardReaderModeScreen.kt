@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -198,6 +199,19 @@ fun CardReaderModeWaitingForPaymentPreview() {
         CardReaderModeContent(
             state = RemoteTapToPayWaitingForPayment(
                 tabletName = "iPad Pro",
+                onPrimaryActionClicked = {},
+            )
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun CardReaderModeErrorPreview() {
+    WooThemeWithBackground {
+        CardReaderModeContent(
+            state = RemoteTapToPayError(
+                message = "java.net.SocketTimeoutException: Connection timed out",
                 onPrimaryActionClicked = {},
             )
         )
