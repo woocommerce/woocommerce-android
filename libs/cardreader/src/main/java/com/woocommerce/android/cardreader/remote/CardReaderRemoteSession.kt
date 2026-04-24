@@ -75,7 +75,7 @@ class CardReaderRemoteSession internal constructor(
             } catch (c: CancellationException) {
                 throw c
             } catch (t: Throwable) {
-                logWrapper.e(LOG_TAG, "Session ended with error: ${t.message}")
+                logWrapper.e(LOG_TAG, "Session ended with error: ${t::class.java.name}: ${t.message}")
             } finally {
                 cleanupSync()
                 if (sessionScope === scope) {
