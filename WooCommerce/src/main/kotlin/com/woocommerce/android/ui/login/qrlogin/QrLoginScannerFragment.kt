@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
@@ -39,7 +40,7 @@ import org.wordpress.android.login.LoginListener
  * via [QrLoginScannerViewModel] and tells the activity when the user is logged in via [Listener].
  */
 @AndroidEntryPoint
-class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
+class QrLoginScannerFragment : Fragment() {
     companion object {
         const val TAG = "qr-login-scanner-fragment"
         const val KEY_CAMERA_PERMISSION = Manifest.permission.CAMERA
