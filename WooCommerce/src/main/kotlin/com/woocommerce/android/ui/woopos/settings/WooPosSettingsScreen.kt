@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.settings
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -35,6 +43,7 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPa
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
@@ -50,24 +59,118 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
-    BackHandler { backHandler() }
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
-    WooPosSettingsContent(
-        state = state,
-        onBackClicked = backHandler,
-        onCategorySelected = containerViewModel::onCategorySelected,
-        onNavigate = containerViewModel::navigateToDetail,
-        onBack = containerViewModel::navigateBack,
-        onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-        onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-        onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-        onDismissDialog = containerViewModel::hideDialog,
-        onNavigationEvent = onNavigationEvent
+    if (isPhoneLayout) {
+        WooPosSettingsPhoneContent(
+            state = state,
+            onBackClicked = backHandler,
+            onCategorySelected = containerViewModel::onCategorySelected,
+            onNavigate = containerViewModel::navigateToDetail,
+            onBack = containerViewModel::navigateBack,
+            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+            onDismissDialog = containerViewModel::hideDialog,
+            onNavigationEvent = onNavigationEvent
+        )
+    } else {
+        BackHandler { backHandler() }
+
+        WooPosSettingsTabletContent(
+            state = state,
+            onBackClicked = backHandler,
+            onCategorySelected = containerViewModel::onCategorySelected,
+            onNavigate = containerViewModel::navigateToDetail,
+            onBack = containerViewModel::navigateBack,
+            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+            onDismissDialog = containerViewModel::hideDialog,
+            onNavigationEvent = onNavigationEvent
+        )
+    }
+}
+
+@Composable
+private fun WooPosSettingsPhoneContent(
+    state: WooPosSettingsState,
+    onBackClicked: () -> Unit,
+    onCategorySelected: (WooPosSettingsCategory) -> Unit,
+    onNavigate: (WooPosSettingsDetailDestination) -> Unit,
+    onBack: () -> Unit,
+    onShowProductInfoDialog: () -> Unit,
+    onShowScanningSetupDialog: () -> Unit,
+    onRetrySync: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
+    var isShowingDetail by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler {
+        when {
+            isShowingDetail && state.canGoBack -> onBack()
+            isShowingDetail -> isShowingDetail = false
+            else -> onBackClicked()
+        }
+    }
+
+    AnimatedContent(
+        targetState = isShowingDetail,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "settings_phone_transition",
+    ) { showingDetail ->
+        if (!showingDetail) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            ) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_settings_title),
+                    onBackClicked = onBackClicked,
+                )
+
+                WooPosSettingsCategoriesPaneScreen(
+                    selectedCategory = state.selectedCategory,
+                    onCategorySelected = { category ->
+                        onCategorySelected(category)
+                        isShowingDetail = true
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        } else {
+            WooPosSettingsDetailPaneScreen(
+                state = state,
+                onNavigate = onNavigate,
+                onBack = {
+                    if (state.canGoBack) {
+                        onBack()
+                    } else {
+                        isShowingDetail = false
+                    }
+                },
+                onShowProductInfoDialog = onShowProductInfoDialog,
+                onShowScanningSetupDialog = onShowScanningSetupDialog,
+                onNavigationEvent = onNavigationEvent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                alwaysShowBackButton = true,
+            )
+        }
+    }
+
+    SettingsDialogs(
+        dialogState = state.dialogState,
+        onRetrySync = onRetrySync,
+        onDismissDialog = onDismissDialog,
     )
 }
 
 @Composable
-private fun WooPosSettingsContent(
+private fun WooPosSettingsTabletContent(
     state: WooPosSettingsState,
     onBackClicked: () -> Unit,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
@@ -112,7 +215,19 @@ private fun WooPosSettingsContent(
         )
     }
 
-    val dialogState = state.dialogState
+    SettingsDialogs(
+        dialogState = state.dialogState,
+        onRetrySync = onRetrySync,
+        onDismissDialog = onDismissDialog,
+    )
+}
+
+@Composable
+private fun SettingsDialogs(
+    dialogState: WooPosSettingsDialogState,
+    onRetrySync: () -> Unit,
+    onDismissDialog: () -> Unit,
+) {
     WooPosSettingsProductInfoDialog(
         state = WooPosSettingsProductInfoDialogState,
         isVisible = dialogState is WooPosSettingsDialogState.ProductsInfoDialog,

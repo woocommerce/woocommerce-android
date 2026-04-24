@@ -37,11 +37,13 @@ fun WooPosSettingsDetailPaneScreen(
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alwaysShowBackButton: Boolean = false,
 ) {
     val currentDestination = state.currentDestination
+    val showBack = state.canGoBack || alwaysShowBackButton
 
-    BackHandler(enabled = state.canGoBack) {
+    BackHandler(enabled = showBack) {
         onBack()
     }
 
@@ -56,7 +58,7 @@ fun WooPosSettingsDetailPaneScreen(
                     end = WooPosSpacing.Medium.value,
                 ),
             titleText = stringResource(state.currentDestination.titleRes),
-            onBackClicked = if (state.canGoBack) onBack else null,
+            onBackClicked = if (showBack) onBack else null,
             titleStyle = WooPosTypography.Heading,
             titleFontWeight = FontWeight.Bold
         )

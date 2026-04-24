@@ -19,9 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -38,6 +40,7 @@ fun WooPosSettingsCategoriesPaneScreen(
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
     WooPosSettingsCategoriesPaneScreenContent(
         modifier = modifier,
@@ -45,6 +48,7 @@ fun WooPosSettingsCategoriesPaneScreen(
         fixedCategories = state.fixedCategories,
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
+        isSelectable = !isPhoneLayout,
     )
 }
 
@@ -55,6 +59,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
     fixedCategories: List<WooPosSettingsCategory>,
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
+    isSelectable: Boolean = true,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -68,7 +73,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             scrollableCategories.forEach { item ->
                 CategoryItem(
                     item = item,
-                    isSelected = item == selectedCategory,
+                    isSelected = isSelectable && item == selectedCategory,
                     onClick = {
                         onCategorySelected(item)
                     },
@@ -84,6 +89,8 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
                 onClick = { onCategorySelected(item) }
             )
         }
+
+        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
     }
 }
 
