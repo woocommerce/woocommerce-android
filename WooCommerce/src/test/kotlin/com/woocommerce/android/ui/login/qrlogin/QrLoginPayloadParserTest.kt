@@ -30,6 +30,23 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given trailing slash before query, when parsed, then returns Ticket`() {
+        val raw = "woocommerce://qr-login/?token=abc&siteUrl=https%3A%2F%2Fstore.example"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.Ticket(token = "abc", siteUrl = "https://store.example")
+        )
+    }
+
+    @Test
+    fun `given prefix but no query, when parsed, then returns Invalid`() {
+        assertThat(parser.parse("woocommerce://qr-login")).isEqualTo(QrLoginPayload.Invalid)
+        assertThat(parser.parse("woocommerce://qr-login/")).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
     fun `given null raw payload, when parsed, then returns Invalid`() {
         assertThat(parser.parse(null)).isEqualTo(QrLoginPayload.Invalid)
     }

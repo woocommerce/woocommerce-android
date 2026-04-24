@@ -29,9 +29,10 @@ class QrLoginPayloadParser @Inject constructor() {
 
     private fun extractQueryParams(raw: String?): Map<String, String>? {
         val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
-        val prefix = "$DEEP_LINK_PREFIX?"
-        if (!trimmed.regionMatches(0, prefix, 0, prefix.length, ignoreCase = true)) return null
-        val query = trimmed.substring(prefix.length).takeIf { it.isNotBlank() } ?: return null
+        if (!trimmed.regionMatches(0, DEEP_LINK_PREFIX, 0, DEEP_LINK_PREFIX.length, ignoreCase = true)) return null
+        val afterPrefix = trimmed.substring(DEEP_LINK_PREFIX.length).removePrefix("/")
+        val query = afterPrefix.removePrefix("?").takeIf { afterPrefix.startsWith('?') && it.isNotBlank() }
+            ?: return null
         return parseQuery(query)
     }
 
