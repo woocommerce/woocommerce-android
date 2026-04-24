@@ -115,13 +115,7 @@ private fun OrderActions(
 ) {
     when (val actionsState = details.actionsState) {
         is WooPosOrdersState.OrderActionsState.Loading -> {
-            if (foldPrimaryAction) {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .size(40.dp.toAdaptiveComponentSize())
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-                )
-            } else {
+            if (!foldPrimaryAction) {
                 WooPosShimmerBox(
                     modifier = Modifier
                         .height(40.dp.toAdaptiveComponentSize())
