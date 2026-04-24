@@ -219,7 +219,6 @@
     <string name="login_qr_prologue_step_hint">Then tap the button below and point your phone at the code on screen.</string>
     <string name="login_qr_prologue_scan_button">Scan QR code</string>
     <string name="login_qr_prologue_fallback_link">Don\'t have your computer? Enter site URL</string>
-    <string name="login_qr_scanner_title">Scan login QR</string>
     <string name="login_qr_scanner_hint">Point at the QR on woo.com/mobilelogin</string>
     <string name="login_qr_scanner_error_generic">We couldn\'t read that QR code. Please try again.</string>
     <string name="login_qr_scanner_error_payload">This QR isn\'t a WooCommerce login code.</string>
