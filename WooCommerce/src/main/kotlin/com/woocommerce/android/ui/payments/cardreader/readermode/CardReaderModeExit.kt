@@ -1,3 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
-object CardReaderModeExit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+
+object CardReaderModeExit : Event()

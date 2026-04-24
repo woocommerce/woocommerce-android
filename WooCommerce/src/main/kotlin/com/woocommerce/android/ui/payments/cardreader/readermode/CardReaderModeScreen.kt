@@ -20,8 +20,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -44,7 +43,7 @@ import com.woocommerce.android.util.UiHelpers
 
 @Composable
 fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
-    val state by viewModel.viewState.collectAsState()
+    val state by viewModel.stateOverride.observeAsState()
     CardReaderModeContent(state)
 }
 
@@ -199,19 +198,6 @@ fun CardReaderModeWaitingForPaymentPreview() {
         CardReaderModeContent(
             state = RemoteTapToPayWaitingForPayment(
                 tabletName = "iPad Pro",
-                onPrimaryActionClicked = {},
-            )
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun CardReaderModeErrorPreview() {
-    WooThemeWithBackground {
-        CardReaderModeContent(
-            state = RemoteTapToPayError(
-                message = "java.net.SocketTimeoutException: Connection timed out",
                 onPrimaryActionClicked = {},
             )
         )

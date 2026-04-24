@@ -5,13 +5,8 @@ import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CardReaderModeActivity : AppCompatActivity() {
@@ -23,14 +18,15 @@ class CardReaderModeActivity : AppCompatActivity() {
         window.addFlags(FLAG_KEEP_SCREEN_ON)
 
         setContent {
-            WooThemeWithBackground {
+            WooTheme {
                 CardReaderModeScreen(viewModel = viewModel)
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.events.collect { finish() }
+        viewModel.events.observe(this) { event ->
+            if (event is CardReaderModeExit) {
+                event.isHandled = true
+                finish()
             }
         }
     }
