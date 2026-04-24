@@ -16,12 +16,13 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
-import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -49,7 +50,8 @@ class ReviewListViewModel @Inject constructor(
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val reviewModerationHandler: ReviewModerationHandler,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val supportsReviewsReadStatus: SupportsReviewsReadStatus,
+    private val selectedSite: SelectedSite,
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
@@ -251,7 +253,9 @@ class ReviewListViewModel @Inject constructor(
     }
 
     private suspend fun syncUnreadFilterAvailability() {
-        val isUnreadFilterVisible = supportsReviewsReadStatus()
+        val registrationStatus = pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)
+        val isUnreadFilterVisible = !registrationStatus.isWooRegistered
+
         viewState = viewState.copy(
             isUnreadFilterVisible = isUnreadFilterVisible,
             isUnreadFilterEnabled = viewState.isUnreadFilterEnabled && isUnreadFilterVisible

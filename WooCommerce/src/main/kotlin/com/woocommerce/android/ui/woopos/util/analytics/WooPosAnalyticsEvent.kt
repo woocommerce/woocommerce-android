@@ -1221,14 +1221,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_reader_location_missing_tapped"
         }
 
-        data object CardReaderLocationPermissionPreAlertShown : PaymentFlowTrackerEvent() {
-            override val name: String = "card_reader_location_permission_pre_alert_shown"
-        }
-
-        data object CardReaderLocationPermissionRequiredShown : PaymentFlowTrackerEvent() {
-            override val name: String = "card_reader_location_permission_required_shown"
-        }
-
         data object CardReaderLocationSuccess : PaymentFlowTrackerEvent() {
             override val name: String = "card_reader_location_success"
         }

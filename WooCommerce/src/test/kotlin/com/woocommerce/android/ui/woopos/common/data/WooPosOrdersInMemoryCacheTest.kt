@@ -65,58 +65,6 @@ class WooPosOrdersInMemoryCacheTest {
     }
 
     @Test
-    fun `when appendAll is called, then new orders are added to existing cache`() {
-        // GIVEN
-        val first = listOf(
-            OrderTestUtils.generateTestOrder(1),
-            OrderTestUtils.generateTestOrder(2)
-        )
-        val more = listOf(
-            OrderTestUtils.generateTestOrder(3),
-            OrderTestUtils.generateTestOrder(4)
-        )
-        cache.setAll(first)
-
-        // WHEN
-        cache.appendAll(more)
-
-        // THEN
-        assertThat(cache.getAll()).containsExactlyElementsOf(first + more)
-    }
-
-    @Test
-    fun `given empty cache, when appendAll is called, then orders become the cache`() {
-        // GIVEN
-        val orders = listOf(
-            OrderTestUtils.generateTestOrder(1),
-            OrderTestUtils.generateTestOrder(2)
-        )
-
-        // WHEN
-        cache.appendAll(orders)
-
-        // THEN
-        assertThat(cache.getAll()).containsExactlyElementsOf(orders)
-    }
-
-    @Test
-    fun `when setAll is called after appendAll, then cache is replaced`() {
-        // GIVEN
-        cache.setAll(listOf(OrderTestUtils.generateTestOrder(1)))
-        cache.appendAll(listOf(OrderTestUtils.generateTestOrder(2)))
-
-        // WHEN
-        val replacement = listOf(
-            OrderTestUtils.generateTestOrder(10),
-            OrderTestUtils.generateTestOrder(11)
-        )
-        cache.setAll(replacement)
-
-        // THEN
-        assertThat(cache.getAll()).containsExactlyElementsOf(replacement)
-    }
-
-    @Test
     fun `when cache is cleared, then getAll returns empty list`() {
         // GIVEN
         val orders = listOf(

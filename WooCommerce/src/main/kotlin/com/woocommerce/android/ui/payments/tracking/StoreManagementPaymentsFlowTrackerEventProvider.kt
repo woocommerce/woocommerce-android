@@ -82,12 +82,6 @@ class StoreManagementPaymentsFlowTrackerEventProvider : PaymentsFlowTrackerEvent
     override val CARD_READER_LOCATION_MISSING_TAPPED: IAnalyticsEvent
         get() = AnalyticsEvent.CARD_READER_LOCATION_MISSING_TAPPED
 
-    override val CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN: IAnalyticsEvent
-        get() = AnalyticsEvent.CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN
-
-    override val CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN: IAnalyticsEvent
-        get() = AnalyticsEvent.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN
-
     override val CARD_READER_CONNECTION_FAILED: IAnalyticsEvent
         get() = AnalyticsEvent.CARD_READER_CONNECTION_FAILED
 

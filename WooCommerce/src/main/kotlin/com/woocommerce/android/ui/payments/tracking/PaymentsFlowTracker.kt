@@ -334,14 +334,6 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_LOCATION_MISSING_TAPPED)
     }
 
-    fun trackLocationPermissionPreAlertShown() {
-        track(eventProvider.CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN)
-    }
-
-    fun trackLocationPermissionRequiredShown() {
-        track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
-    }
-
     fun trackConnectionFailed() {
         track(eventProvider.CARD_READER_CONNECTION_FAILED)
     }

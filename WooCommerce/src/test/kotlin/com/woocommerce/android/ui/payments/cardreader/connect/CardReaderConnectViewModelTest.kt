@@ -141,24 +141,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given should show permissions rationale, when connection flow started, then pre alert event tracked`() =
-        testBlocking {
-            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, true)
-
-            verify(tracker).trackLocationPermissionPreAlertShown()
-        }
-
-    @Test
-    fun `given permissions not granted, when permissions requested, then required shown event tracked`() =
-        testBlocking {
-            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, false)
-
-            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
-
-            verify(tracker).trackLocationPermissionRequiredShown()
-        }
-
-    @Test
     fun `given permissions rationale shown, when continue clicked, then  permissions requested`() =
         testBlocking {
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, true)

@@ -10,7 +10,6 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toProductReviewProductModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +28,7 @@ import javax.inject.Inject
 class ReviewDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
-    private val selectedSite: SelectedSite,
-    private val supportsReviewsReadStatus: SupportsReviewsReadStatus
+    private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val TAG = "ReviewDetailRepository"
@@ -56,7 +54,6 @@ class ReviewDetailRepository @Inject constructor(
     }
 
     suspend fun getCachedNotificationForReview(remoteReviewId: Long): NotificationModel? {
-        if (!supportsReviewsReadStatus()) return null
         return withContext(Dispatchers.IO) {
             wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
@@ -66,7 +63,6 @@ class ReviewDetailRepository @Inject constructor(
     }
 
     suspend fun markNotificationAsRead(notification: NotificationModel, remoteReviewId: Long) {
-        if (!supportsReviewsReadStatus()) return
         if (!notification.read) {
             val updatedNotification = notification.copy(read = true)
             trackMarkNotificationAsReadStarted(updatedNotification, remoteReviewId)
