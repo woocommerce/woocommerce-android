@@ -219,6 +219,12 @@ class CardReaderRemoteSession internal constructor(
         nsdRegistration = null
         runCatching { tlsServer?.close() }
         tlsServer = null
+        if (readerWasConnected) {
+            readerWasConnected = false
+            disconnectScope.launch {
+                runCatching { cardReaderManager.disconnectReader() }
+            }
+        }
         _state.value = CardReaderRemoteSessionState.Idle
     }
 
