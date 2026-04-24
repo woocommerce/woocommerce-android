@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -124,6 +125,7 @@ fun WooPosIssueRefundScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
@@ -396,6 +398,13 @@ private fun ContentStateHandler(
 ) {
     AnimatedContent(
         targetState = state.step,
+        contentKey = { step ->
+            when (step) {
+                WooPosRefundState.Content.RefundStep.ConfirmRefund,
+                WooPosRefundState.Content.RefundStep.Processing -> "confirm"
+                else -> step
+            }
+        },
         transitionSpec = {
             fadeIn(
                 animationSpec = tween(
@@ -615,9 +624,9 @@ private fun SelectItemsContent(
                     .padding(vertical = WooPosSpacing.Medium.value),
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
             ) {
-                repeat(2) { index ->
+                repeat(4) { index ->
                     ShimmerItemRow()
-                    if (index < 1) {
+                    if (index < 3) {
                         Divider()
                     }
                 }
@@ -656,7 +665,7 @@ private fun ItemsHeaderRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = WooPosSpacing.Medium.value)
+            .padding(vertical = WooPosSpacing.Medium.value)
             .then(
                 if (enabled) {
                     Modifier.clickable(
@@ -778,7 +787,10 @@ private fun ReviewRefundContent(
     state: WooPosRefundState.Content,
     onEditReason: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
@@ -903,6 +915,7 @@ private fun ConfirmRefundContent(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         WooPosText(
@@ -914,7 +927,7 @@ private fun ConfirmRefundContent(
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Normal,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.fillMaxWidth()
+            textAlign = TextAlign.Center,
         )
     }
 }
