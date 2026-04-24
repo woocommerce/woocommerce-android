@@ -5,6 +5,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
@@ -409,7 +410,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         networkStatus,
         resourceProvider,
         analyticsTracker,
-        remoteReaderSession,
+        WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         controllerFactory
     )
 }

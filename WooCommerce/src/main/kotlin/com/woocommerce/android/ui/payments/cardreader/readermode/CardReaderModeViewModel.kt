@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -35,10 +36,17 @@ class CardReaderModeViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<ViewState?>(null)
     val viewState: StateFlow<ViewState?> = _viewState.asStateFlow()
 
-    private val _events = Channel<CardReaderModeExit>(capacity = Channel.BUFFERED)
-    val events: Flow<CardReaderModeExit> = _events.receiveAsFlow()
+    private val _events = Channel<CardReaderModeEvent>(capacity = Channel.BUFFERED)
+    val events: Flow<CardReaderModeEvent> = _events.receiveAsFlow()
 
     private var sessionStarted = false
+
+    fun onLocationPermissionMissing() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayLocationPermissionExplainer(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.RequestLocationPermission) },
+        )
+    }
 
     fun onLocationPermissionResult(granted: Boolean) {
         when (granted) {
@@ -96,6 +104,6 @@ class CardReaderModeViewModel @Inject constructor(
     }
 
     private fun exit() {
-        _events.trySend(CardReaderModeExit)
+        _events.trySend(CardReaderModeEvent.Exit)
     }
 }

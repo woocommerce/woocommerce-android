@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
@@ -121,8 +122,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
-            remoteReaderSession = remoteReaderSession,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
     }
 
@@ -412,8 +413,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
-            remoteReaderSession = remoteReaderSession,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
         advanceUntilIdle()
 

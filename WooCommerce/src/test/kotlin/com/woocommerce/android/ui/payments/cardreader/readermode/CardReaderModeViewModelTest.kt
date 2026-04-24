@@ -168,7 +168,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         (viewModel.viewState.value as RemoteTapToPayStarting).onPrimaryActionClicked.invoke()
 
         // THEN
-        assertThat(viewModel.events.first()).isEqualTo(CardReaderModeExit)
+        assertThat(viewModel.events.first()).isEqualTo(CardReaderModeEvent.Exit)
     }
 
     @Test

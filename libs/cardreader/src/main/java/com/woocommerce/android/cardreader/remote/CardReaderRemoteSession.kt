@@ -18,6 +18,7 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Connect
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ErrorMessage
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.PaymentIntentResult
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Ping
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -131,14 +132,17 @@ class CardReaderRemoteSession internal constructor(
         while (currentCoroutineContext().isActive) {
             try {
                 acceptAndRunProtocolLoop(server)
-                break
+                // Tablet disconnected — reset per-connection state and wait for the next one
+                logWrapper.d(LOG_TAG, "Tablet disconnected, resetting to ready-to-pair")
+                cleanupConnectionOnly()
+                _state.value = readyToPairState(server)
             } catch (e: SocketTimeoutException) {
                 logWrapper.d(LOG_TAG, "Waiting for tablet to connect: ${e.message}")
             }
         }
     }
 
-    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) {
+    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) = coroutineScope {
         logWrapper.d(LOG_TAG, "Waiting for TLS accept...")
         val accepted = server.acceptOne()
         logWrapper.d(LOG_TAG, "TLS accepted, starting protocol loop")
@@ -148,9 +152,14 @@ class CardReaderRemoteSession internal constructor(
         remoteTokenProvider = tokenProvider
         cardReaderManager.connectionTokenProvider.useRemote(tokenProvider)
 
-        accepted.receive().collect { message ->
-            logWrapper.d(LOG_TAG, "Received message: ${message::class.java.simpleName}")
-            handleMessage(message, accepted, tokenProvider)
+        val pingJob = launchHeartbeat(accepted)
+        try {
+            accepted.receive().collect { message ->
+                logWrapper.d(LOG_TAG, "Received message: ${message::class.java.simpleName}")
+                handleMessage(message, accepted, tokenProvider)
+            }
+        } finally {
+            pingJob.cancel()
         }
     }
 
@@ -162,6 +171,7 @@ class CardReaderRemoteSession internal constructor(
         when (message) {
             is ConnectRequest -> handleConnectRequest(message, accepted, tokenProvider)
             is CollectPaymentRequest -> handleCollectPaymentRequest(message, accepted)
+            is Ping,
             is ConnectAck,
             is PaymentIntentResult,
             is ErrorMessage -> Unit
@@ -287,22 +297,26 @@ class CardReaderRemoteSession internal constructor(
 
     private fun deviceName(): String = Build.MODEL ?: DEFAULT_DEVICE_NAME
 
-    private fun cleanupSync() {
+    private fun cleanupConnectionOnly() {
         runCatching { connection?.close() }
         connection = null
         runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
         runCatching { remoteTokenProvider?.close() }
         remoteTokenProvider = null
-        runCatching { nsdRegistration?.close() }
-        nsdRegistration = null
-        runCatching { tlsServer?.close() }
-        tlsServer = null
         if (readerWasConnected) {
             readerWasConnected = false
             disconnectScope.launch {
                 runCatching { cardReaderManager.disconnectReader() }
             }
         }
+    }
+
+    private fun cleanupSync() {
+        cleanupConnectionOnly()
+        runCatching { nsdRegistration?.close() }
+        nsdRegistration = null
+        runCatching { tlsServer?.close() }
+        tlsServer = null
     }
 
     internal fun interface TlsServerFactory {

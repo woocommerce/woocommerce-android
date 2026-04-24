@@ -38,20 +38,20 @@ class CardReaderModeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.events.collect { finish() }
+                viewModel.events.collect { event ->
+                    when (event) {
+                        CardReaderModeEvent.Exit -> finish()
+                        CardReaderModeEvent.RequestLocationPermission ->
+                            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
             }
         }
 
-        ensureLocationPermission(isFirstCreate = savedInstanceState == null)
-    }
-
-    private fun ensureLocationPermission(isFirstCreate: Boolean) {
-        when {
-            WooPermissionUtils.hasFineLocationPermission(this) ->
-                viewModel.onLocationPermissionResult(true)
-
-            isFirstCreate ->
-                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (WooPermissionUtils.hasFineLocationPermission(this)) {
+            viewModel.onLocationPermissionResult(true)
+        } else {
+            viewModel.onLocationPermissionMissing()
         }
     }
 }

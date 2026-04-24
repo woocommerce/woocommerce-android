@@ -4,9 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
@@ -15,8 +13,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
-import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
@@ -34,8 +33,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -51,8 +48,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
     private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val remoteReaderSession: WooPosRemoteReaderSession,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -106,44 +103,30 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun observeReaderStatus() {
         viewModelScope.launch {
-            combine(
-                cardReaderFacade.readerStatus,
-                remoteReaderSession.state,
-            ) { bt, remote -> toEffectiveReaderStatus(bt, remote) }
-                .distinctUntilChanged()
+            effectiveReaderStatusProvider.flow
                 .collect { effective ->
                     val currentState = _state.value
                     if (currentState is WooPosCardPaymentState.PaymentInProgress) {
                         return@collect
                     }
                     when (effective) {
-                        EffectiveReaderStatus.RemoteConnected -> {
+                        WooPosEffectiveReaderStatus.RemoteConnected -> {
                             _state.value = buildPreparingState()
                             collectPaymentRemote()
                         }
-                        EffectiveReaderStatus.BluetoothConnected -> {
+                        WooPosEffectiveReaderStatus.BluetoothConnected -> {
                             _state.value = buildPreparingState()
                             collectPayment()
                         }
-                        EffectiveReaderStatus.Connecting,
-                        EffectiveReaderStatus.Disconnected -> {
+                        WooPosEffectiveReaderStatus.Connecting,
+                        WooPosEffectiveReaderStatus.Reconnecting,
+                        WooPosEffectiveReaderStatus.Disconnected -> {
                             _state.value = buildReaderDisconnectedState()
                             cancelPayment()
                         }
                     }
                 }
         }
-    }
-
-    private fun toEffectiveReaderStatus(
-        bt: CardReaderStatus,
-        remote: WooPosRemoteReaderSession.State,
-    ): EffectiveReaderStatus = when {
-        remote is WooPosRemoteReaderSession.State.Connected -> EffectiveReaderStatus.RemoteConnected
-        bt is Connected -> EffectiveReaderStatus.BluetoothConnected
-        bt is Connecting || remote is WooPosRemoteReaderSession.State.Connecting ->
-            EffectiveReaderStatus.Connecting
-        else -> EffectiveReaderStatus.Disconnected
     }
 
     private fun collectPaymentRemote() {
@@ -343,10 +326,12 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onScreenResumed() {
         if (_state.value is WooPosCardPaymentState.Collecting) {
-            if (remoteReaderSession.state.value is WooPosRemoteReaderSession.State.Connected) {
-                collectPaymentRemote()
-            } else {
-                collectPayment()
+            when (effectiveReaderStatusProvider.current()) {
+                WooPosEffectiveReaderStatus.RemoteConnected -> collectPaymentRemote()
+                WooPosEffectiveReaderStatus.BluetoothConnected -> collectPayment()
+                WooPosEffectiveReaderStatus.Connecting,
+                WooPosEffectiveReaderStatus.Reconnecting,
+                WooPosEffectiveReaderStatus.Disconnected -> Unit
             }
         }
     }
@@ -431,13 +416,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
         remotePaymentJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
-    }
-
-    private enum class EffectiveReaderStatus {
-        RemoteConnected,
-        BluetoothConnected,
-        Connecting,
-        Disconnected,
     }
 
     override fun onCleared() {

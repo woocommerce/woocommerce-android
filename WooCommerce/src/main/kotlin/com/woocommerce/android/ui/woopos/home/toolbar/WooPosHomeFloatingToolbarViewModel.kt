@@ -3,17 +3,13 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
-import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
@@ -29,8 +25,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -45,7 +39,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val remoteReaderSession: WooPosRemoteReaderSession,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
 
@@ -63,30 +57,26 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                cardReaderFacade.readerStatus,
-                remoteReaderSession.state,
-            ) { bt, remote -> toEffectiveReaderStatus(bt, remote) }
-                .distinctUntilChanged()
+            effectiveReaderStatusProvider.flow
                 .flatMapLatest { effective ->
                     when (effective) {
-                        EffectiveReaderStatus.RemoteConnected -> flowOf(
+                        WooPosEffectiveReaderStatus.RemoteConnected -> flowOf(
                             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
                                 batteryState = WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
                             )
                         )
-                        EffectiveReaderStatus.BluetoothConnected ->
+                        WooPosEffectiveReaderStatus.BluetoothConnected ->
                             cardReaderFacade.batteryStatus
                                 .map { batteryStatus ->
                                     WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
                                         batteryState = mapBatteryState(batteryStatus)
                                     )
                                 }
-                        EffectiveReaderStatus.Reconnecting -> flowOf(
+                        WooPosEffectiveReaderStatus.Reconnecting -> flowOf(
                             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
                         )
-                        EffectiveReaderStatus.Connecting,
-                        EffectiveReaderStatus.Disconnected -> flowOf(
+                        WooPosEffectiveReaderStatus.Connecting,
+                        WooPosEffectiveReaderStatus.Disconnected -> flowOf(
                             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
                         )
                     }
@@ -95,18 +85,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
                 }
         }
-    }
-
-    private fun toEffectiveReaderStatus(
-        bt: CardReaderStatus,
-        remote: WooPosRemoteReaderSession.State,
-    ): EffectiveReaderStatus = when {
-        remote is WooPosRemoteReaderSession.State.Connected -> EffectiveReaderStatus.RemoteConnected
-        bt is Connected -> EffectiveReaderStatus.BluetoothConnected
-        bt is Reconnecting -> EffectiveReaderStatus.Reconnecting
-        bt is Connecting || remote is WooPosRemoteReaderSession.State.Connecting ->
-            EffectiveReaderStatus.Connecting
-        else -> EffectiveReaderStatus.Disconnected
     }
 
     fun onUiEvent(event: WooPosHomeFloatingToolbarUIEvent) {
@@ -223,13 +201,5 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    private enum class EffectiveReaderStatus {
-        RemoteConnected,
-        BluetoothConnected,
-        Reconnecting,
-        Connecting,
-        Disconnected,
     }
 }
