@@ -72,10 +72,13 @@ class CardReaderRemoteSession internal constructor(
             @Suppress("TooGenericExceptionCaught")
             try {
                 runSession()
+                _state.value = CardReaderRemoteSessionState.Idle
             } catch (c: CancellationException) {
+                _state.value = CardReaderRemoteSessionState.Idle
                 throw c
             } catch (t: Throwable) {
                 logWrapper.e(LOG_TAG, "Session ended with error: ${t::class.java.name}: ${t.message}")
+                _state.value = CardReaderRemoteSessionState.Error(message = t.toString())
             } finally {
                 cleanupSync()
                 if (sessionScope === scope) {
@@ -225,7 +228,6 @@ class CardReaderRemoteSession internal constructor(
                 runCatching { cardReaderManager.disconnectReader() }
             }
         }
-        _state.value = CardReaderRemoteSessionState.Idle
     }
 
     internal fun interface TlsServerFactory {
