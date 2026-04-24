@@ -13,4 +13,6 @@ sealed class CardReaderRemoteSessionState {
     data class WaitingForPayment(
         val tabletName: String?,
     ) : CardReaderRemoteSessionState()
+
+    data class Error(val message: String?) : CardReaderRemoteSessionState()
 }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,21 +33,17 @@ internal class CardReaderRemoteConnection internal constructor(
     private val messages = Channel<CardReaderRemoteMessage>(capacity = MESSAGE_BUFFER_CAPACITY)
 
     private val readerJob: Job = readerScope.launch {
-        Log.d(TAG, "reader loop started")
         var fatalError: Throwable? = null
         try {
             while (!socket.isClosed) {
                 val next = runCatching { protocol.read(input) }.getOrElse { err ->
-                    Log.d(TAG, "reader terminated: ${err::class.java.simpleName}: ${err.message}")
                     if (err !is EOFException && err !is SocketException && err !is SSLException) {
                         fatalError = err
                     }
                     return@launch
                 }
-                Log.d(TAG, "reader got message: ${next::class.java.simpleName} requestId=${next.requestId}")
                 messages.send(next)
             }
-            Log.d(TAG, "reader exited (socket closed=${socket.isClosed})")
         } finally {
             messages.close(fatalError)
         }
@@ -72,7 +67,6 @@ internal class CardReaderRemoteConnection internal constructor(
     }
 
     private companion object {
-        const val TAG = "CardReaderRemoteConnection"
         const val MESSAGE_BUFFER_CAPACITY = 64
     }
 }

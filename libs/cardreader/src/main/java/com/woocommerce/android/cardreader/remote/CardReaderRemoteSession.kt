@@ -79,12 +79,18 @@ class CardReaderRemoteSession internal constructor(
             @Suppress("TooGenericExceptionCaught")
             try {
                 runSession()
+                _state.value = CardReaderRemoteSessionState.Idle
             } catch (c: CancellationException) {
+                _state.value = CardReaderRemoteSessionState.Idle
                 throw c
             } catch (t: Throwable) {
-                logWrapper.e(LOG_TAG, "Session ended with error: ${t.message}")
+                logWrapper.e(LOG_TAG, "Session ended with error: ${t::class.java.name}: ${t.message}")
+                _state.value = CardReaderRemoteSessionState.Error(message = t.toString())
             } finally {
                 cleanupSync()
+                if (sessionScope === scope) {
+                    sessionScope = null
+                }
             }
         }
     }
@@ -256,7 +262,12 @@ class CardReaderRemoteSession internal constructor(
         nsdRegistration = null
         runCatching { tlsServer?.close() }
         tlsServer = null
-        _state.value = CardReaderRemoteSessionState.Idle
+        if (readerWasConnected) {
+            readerWasConnected = false
+            disconnectScope.launch {
+                runCatching { cardReaderManager.disconnectReader() }
+            }
+        }
     }
 
     internal fun interface TlsServerFactory {

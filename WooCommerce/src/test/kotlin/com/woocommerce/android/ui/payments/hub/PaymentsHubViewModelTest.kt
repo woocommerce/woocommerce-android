@@ -171,7 +171,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given phone is not eligible, when screen shown, then card reader mode row is absent`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(CountryNotSupported)
 
         initViewModel()

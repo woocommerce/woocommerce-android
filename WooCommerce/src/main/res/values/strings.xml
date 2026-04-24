@@ -1526,9 +1526,12 @@
     <string name="card_reader_mode_waiting_subtitle">Waiting for payment…</string>
     <string name="card_reader_mode_cancel">Cancel</string>
     <string name="card_reader_mode_settings_row_label">Card Reader Mode</string>
-    <string name="card_reader_mode_device_identifier">%1$s · %2$s</string>
+    <string name="card_reader_mode_device_identifier" translatable="false">%1$s · %2$s</string>
     <string name="card_reader_mode_starting_header">Starting Card Reader Mode</string>
     <string name="card_reader_mode_starting_subtitle">Setting up discovery on the local network…</string>
+    <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
+    <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
+    <string name="card_reader_mode_error_close">Close</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
