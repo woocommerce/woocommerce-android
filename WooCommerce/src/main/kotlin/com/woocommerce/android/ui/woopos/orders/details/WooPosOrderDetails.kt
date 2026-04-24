@@ -60,6 +60,7 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     showOrderNumber: Boolean = true,
+    foldPrimaryAction: Boolean = false,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
@@ -87,7 +88,7 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            OrderActions(details, onUIEvent)
+            OrderActions(details, onUIEvent, foldPrimaryAction)
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -109,22 +110,31 @@ fun WooPosOrderDetails(
 @Composable
 private fun OrderActions(
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    foldPrimaryAction: Boolean = false,
 ) {
     when (val actionsState = details.actionsState) {
         is WooPosOrdersState.OrderActionsState.Loading -> {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .height(40.dp.toAdaptiveComponentSize())
-                    .width(WooPosComponentSize.XLarge.value)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            )
+            if (foldPrimaryAction) {
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .size(40.dp.toAdaptiveComponentSize())
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                )
+            } else {
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(40.dp.toAdaptiveComponentSize())
+                        .width(WooPosComponentSize.XLarge.value)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                )
+            }
         }
 
         is WooPosOrdersState.OrderActionsState.Loaded -> {
             val actions = actionsState.actions
-            val primaryAction = actions.firstOrNull()
-            val overflowActions = actions.drop(1)
+            val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
+            val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
 
             WooPosOverflowMenu(
                 primaryAction = primaryAction?.let { action ->
