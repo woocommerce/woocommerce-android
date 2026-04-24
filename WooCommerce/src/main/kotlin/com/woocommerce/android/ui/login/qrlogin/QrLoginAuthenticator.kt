@@ -4,14 +4,15 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 /**
- * Glue layer that turns a scanned QR ticket into a logged-in [com.woocommerce.android.tools.SelectedSite].
+ * Glue layer that turns a scanned QR ticket into a logged-in [SelectedSite].
  *
  * Steps:
  *   1. Exchange the QR ticket for an Application Password (unauthenticated POST to the merchant site).
- *   2. Discover and persist the [org.wordpress.android.fluxc.model.SiteModel] using the AP credentials.
+ *   2. Discover and persist the [SiteModel] using the AP credentials.
  *   3. Save the AP into encrypted shared preferences so subsequent REST calls authenticate.
  *   4. Verify the user is eligible to use the app, then promote the site to the selected site.
  *
@@ -50,7 +51,7 @@ class QrLoginAuthenticator @Inject constructor(
     private suspend fun fetchAndValidateSite(
         siteUrl: String,
         credentials: QrLoginCredentials
-    ): org.wordpress.android.fluxc.model.SiteModel {
+    ): SiteModel {
         val site = wpApiSiteRepository.fetchSite(
             url = siteUrl,
             username = credentials.userLogin,
@@ -64,7 +65,7 @@ class QrLoginAuthenticator @Inject constructor(
         return site
     }
 
-    private suspend fun ensureUserEligible(site: org.wordpress.android.fluxc.model.SiteModel) {
+    private suspend fun ensureUserEligible(site: SiteModel) {
         val isEligible = wpApiSiteRepository.checkIfUserIsEligible(site)
             .getOrElse { throw QrLoginAuthenticationException.UserNotEligible(it) }
         if (!isEligible) throw QrLoginAuthenticationException.UserNotEligible(original = null)
