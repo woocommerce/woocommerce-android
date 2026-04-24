@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.qrlogin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 
 /**
@@ -25,7 +26,13 @@ class QrLoginAuthenticator @Inject constructor(
         val credentials = exchangeClient.exchange(ticket.siteUrl, ticket.token)
             .getOrElse { return Result.failure(it) }
 
-        return runCatching { authenticateWithCredentials(ticket.siteUrl, credentials) }
+        return try {
+            Result.success(authenticateWithCredentials(ticket.siteUrl, credentials))
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (t: Throwable) {
+            Result.failure(t)
+        }
     }
 
     private suspend fun authenticateWithCredentials(siteUrl: String, credentials: QrLoginCredentials): Int {

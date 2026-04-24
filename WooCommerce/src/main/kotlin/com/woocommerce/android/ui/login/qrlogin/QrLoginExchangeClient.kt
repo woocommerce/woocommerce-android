@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -31,8 +32,13 @@ class QrLoginExchangeClient @Inject constructor(
 
     suspend fun exchange(siteUrl: String, token: String): Result<QrLoginCredentials> =
         withContext(dispatchers.io) {
-            runCatching { performExchange(siteUrl, token) }
-                .recoverCatching { throw mapException(it) }
+            try {
+                Result.success(performExchange(siteUrl, token))
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (t: Throwable) {
+                Result.failure(mapException(t))
+            }
         }
 
     private fun performExchange(siteUrl: String, token: String): QrLoginCredentials {
