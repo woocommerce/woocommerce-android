@@ -228,7 +228,9 @@ private fun WooPosOrdersScreen(
                     onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
                     modifier = Modifier.statusBarsPadding()
                 )
-                is WooPosOrdersListState.Loading -> WooPosOrdersLoadingScreen()
+                is WooPosOrdersListState.Loading -> WooPosOrdersLoadingScreen(
+                    isPhoneLayout = isPhoneLayout
+                )
             }
         }
 
