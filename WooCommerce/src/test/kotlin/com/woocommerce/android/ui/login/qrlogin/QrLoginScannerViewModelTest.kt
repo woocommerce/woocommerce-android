@@ -168,6 +168,20 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given server HttpError, when scan confirmed, then emits Unknown error`() = testBlocking {
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.HttpError(500)))
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan())
+        viewModel.onConfirmSite()
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Unknown)
+        )
+    }
+
+    @Test
     fun `given network error, when scan confirmed, then emits Network error`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.Network))

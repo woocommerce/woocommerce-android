@@ -155,7 +155,7 @@ class QrLoginScannerViewModel @Inject constructor(
         QrLoginExchangeException.EndpointMissing -> ErrorReason.EndpointMissing
         QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
         QrLoginExchangeException.Network -> ErrorReason.Network
-        is QrLoginExchangeException.HttpError -> ErrorReason.Network
+        is QrLoginExchangeException.HttpError -> ErrorReason.Unknown
         is QrLoginExchangeException.Unknown -> ErrorReason.Unknown
         QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
         is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
