@@ -114,9 +114,12 @@ private fun TopCopy() {
 private fun UrlBadge() {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
             .background(Color.White.copy(alpha = 0.18f))
-            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_125),
+                vertical = dimensionResource(id = R.dimen.major_85)
+            )
     ) {
         Text(
             text = stringResource(id = R.string.login_qr_prologue_url),
