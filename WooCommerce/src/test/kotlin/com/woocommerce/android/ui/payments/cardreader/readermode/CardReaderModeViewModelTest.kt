@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
@@ -20,15 +23,23 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class CardReaderModeViewModelTest : BaseUnitTest() {
-    private lateinit var viewModel: CardReaderModeViewModel
     private val sessionState = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
     }
 
+    private lateinit var store: ViewModelStore
+    private lateinit var viewModel: CardReaderModeViewModel
+
     @Before
     fun setUp() {
-        viewModel = CardReaderModeViewModel(session)
+        store = ViewModelStore()
+        val factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                CardReaderModeViewModel(session) as T
+        }
+        viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
     }
 
     @Test
@@ -96,5 +107,14 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.events.first()).isEqualTo(CardReaderModeExit)
+    }
+
+    @Test
+    fun `when view model store cleared, then session is stopped`() {
+        // WHEN
+        store.clear()
+
+        // THEN
+        verify(session).stop()
     }
 }
