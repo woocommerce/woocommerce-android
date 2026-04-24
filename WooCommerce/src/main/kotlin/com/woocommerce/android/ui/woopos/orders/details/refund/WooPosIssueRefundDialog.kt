@@ -29,6 +29,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +60,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
@@ -183,12 +183,9 @@ fun WooPosIssueRefundScreen(
             )
         }
 
-        WooPosToolbar(
-            titleText = toolbarTitle,
-            onBackClicked = { handleDismiss() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
+        RefundScreenHeader(
+            title = toolbarTitle,
+            onCloseClicked = { handleDismiss() },
         )
     }
 }
@@ -213,6 +210,47 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String {
             stringResource(R.string.orderdetail_issue_refund_button)
         is WooPosRefundState.RefundSuccess ->
             stringResource(R.string.woopos_orders_refund_complete)
+    }
+}
+
+@Composable
+private fun RefundScreenHeader(
+    title: String,
+    onCloseClicked: () -> Unit,
+) {
+    val closeContentDescription = stringResource(R.string.close)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .height(WooPosComponentSize.XSmall.value),
+    ) {
+        IconButton(
+            onClick = onCloseClicked,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = WooPosSpacing.Small.value)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                contentDescription = closeContentDescription,
+                modifier = Modifier.size(WooPosIconSize.Large.value),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        WooPosText(
+            text = title,
+            style = WooPosTypography.Heading,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = WooPosComponentSize.XSmall.value)
+        )
     }
 }
 
