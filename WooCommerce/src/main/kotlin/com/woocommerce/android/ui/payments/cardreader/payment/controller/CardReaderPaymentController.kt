@@ -864,7 +864,7 @@ class CardReaderPaymentController(
         if (countryCode == "CA") {
             val percentageInCents = orderTotal
                 .multiply(CANADA_FEE_PERCENTAGE)
-                .multiply(BigDecimal(100))
+                .movePointRight(2)
                 .setScale(0, RoundingMode.HALF_UP)
                 .toLong()
             percentageInCents + CANADA_FEE_FLAT_IN_CENTS + INTERAC_FEE_FLAT_IN_CENTS
