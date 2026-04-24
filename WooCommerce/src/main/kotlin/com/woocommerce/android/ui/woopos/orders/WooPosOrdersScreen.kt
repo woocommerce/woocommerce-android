@@ -236,7 +236,9 @@ private fun WooPosOrdersScreen(
                     onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
                     modifier = Modifier.statusBarsPadding()
                 )
-                is WooPosOrdersListState.Loading -> WooPosOrdersLoadingScreen()
+                is WooPosOrdersListState.Loading -> WooPosOrdersLoadingScreen(
+                    isPhoneLayout = isPhoneLayout
+                )
             }
         }
 
@@ -299,6 +301,7 @@ private fun OrderDetailsPane(
     onRetryDetailLoad: () -> Unit,
     modifier: Modifier = Modifier,
     showOrderNumber: Boolean = true,
+    foldPrimaryAction: Boolean = false,
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
         when (detailState) {
@@ -307,6 +310,7 @@ private fun OrderDetailsPane(
                     modifier = Modifier.fillMaxHeight(),
                     details = detailState.details,
                     showOrderNumber = showOrderNumber,
+                    foldPrimaryAction = foldPrimaryAction,
                     onUIEvent = onUIEvent
                 )
             }
@@ -397,6 +401,7 @@ private fun SingleOrderDetails(
         onUIEvent = onUIEvent,
         onRetryDetailLoad = {},
         showOrderNumber = false,
+        foldPrimaryAction = true,
         modifier = Modifier.fillMaxSize()
     )
 }
