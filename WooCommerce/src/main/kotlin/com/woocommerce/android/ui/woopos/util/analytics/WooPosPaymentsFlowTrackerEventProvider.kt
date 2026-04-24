@@ -85,6 +85,12 @@ class WooPosPaymentsFlowTrackerEventProvider(
     override val CARD_READER_LOCATION_MISSING_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardReaderLocationMissingTapped
 
+    override val CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN: IAnalyticsEvent
+        get() = PaymentFlowTrackerEvent.CardReaderLocationPermissionPreAlertShown
+
+    override val CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN: IAnalyticsEvent
+        get() = PaymentFlowTrackerEvent.CardReaderLocationPermissionRequiredShown
+
     override val CARD_READER_CONNECTION_FAILED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardReaderConnectionFailed
 

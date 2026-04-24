@@ -228,6 +228,11 @@ class WooPosCardReaderConnectionController(
             }
             !WooPermissionUtils.hasFineLocationPermission(context) -> {
                 logger.d("Location permission not granted")
+                if (isLocationPermissionPermanentlyDenied) {
+                    tracker.trackLocationPermissionRequiredShown()
+                } else {
+                    tracker.trackLocationPermissionPreAlertShown()
+                }
                 _state.value = WooPosCardReaderConnectionState.MissingLocationPermission(
                     onRequestPermissionClicked = {
                         if (isLocationPermissionPermanentlyDenied) {
