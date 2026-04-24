@@ -13,6 +13,10 @@ class WooPosOrdersInMemoryCache @Inject constructor() {
         ordersCache.set(orders.toList())
     }
 
+    fun appendAll(orders: List<Order>) {
+        ordersCache.updateAndGet { current -> current + orders }
+    }
+
     fun getAll(): List<Order> = ordersCache.get()
 
     fun clear() {
