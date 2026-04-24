@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -30,26 +30,10 @@ fun NavGraphBuilder.issueRefundScreen(
         arguments = listOf(
             navArgument(ISSUE_REFUND_ORDER_ID_KEY) { type = NavType.LongType }
         ),
-        enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { fullWidth -> fullWidth },
-            )
-        },
-        exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { fullWidth -> -fullWidth },
-            )
-        },
-        popEnterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { fullWidth -> -fullWidth },
-            )
-        },
-        popExitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { fullWidth -> fullWidth },
-            )
-        },
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
+        popEnterTransition = { fadeIn() },
+        popExitTransition = { fadeOut() },
     ) { backStackEntry ->
         val orderId = backStackEntry.arguments?.getLong(ISSUE_REFUND_ORDER_ID_KEY) ?: 0L
 
