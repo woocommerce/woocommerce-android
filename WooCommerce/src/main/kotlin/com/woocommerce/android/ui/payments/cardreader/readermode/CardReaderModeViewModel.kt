@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
@@ -10,8 +8,13 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayRead
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,16 +23,16 @@ class CardReaderModeViewModel @Inject constructor(
     private val session: CardReaderRemoteSession,
 ) : ViewModel() {
 
-    private val _stateOverride = MutableLiveData<ViewState?>(null)
-    val stateOverride: LiveData<ViewState?> = _stateOverride
+    private val _viewState = MutableStateFlow<ViewState?>(null)
+    val viewState: StateFlow<ViewState?> = _viewState.asStateFlow()
 
-    private val _events = MutableLiveData<MultiLiveEvent.Event>()
-    val events: LiveData<MultiLiveEvent.Event> = _events
+    private val _events = Channel<CardReaderModeExit>(capacity = Channel.BUFFERED)
+    val events: Flow<CardReaderModeExit> = _events.receiveAsFlow()
 
     init {
         viewModelScope.launch {
             session.state.collect { sessionState ->
-                _stateOverride.postValue(mapToViewState(sessionState))
+                _viewState.value = mapToViewState(sessionState)
             }
         }
         session.start(viewModelScope)
@@ -55,7 +58,6 @@ class CardReaderModeViewModel @Inject constructor(
     }
 
     private fun exit() {
-        CardReaderModeExit.isHandled = false
-        _events.postValue(CardReaderModeExit)
+        _events.trySend(CardReaderModeExit)
     }
 }

@@ -20,8 +20,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +43,7 @@ import com.woocommerce.android.util.UiHelpers
 
 @Composable
 fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
-    val state by viewModel.stateOverride.observeAsState()
+    val state by viewModel.viewState.collectAsState()
     CardReaderModeContent(state)
 }
 

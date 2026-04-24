@@ -5,10 +5,10 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
-import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -32,28 +32,31 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model initialized, then session started`() {
+        // THEN
         verify(session).start(any())
     }
 
     @Test
     fun `given starting session state, when emitted, then starting view state is shown`() = testBlocking {
+        // WHEN
         sessionState.value = CardReaderRemoteSessionState.Starting
-
         advanceUntilIdle()
 
-        assertThat(viewModel.stateOverride.getOrAwaitValue()).isInstanceOf(RemoteTapToPayStarting::class.java)
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayStarting::class.java)
     }
 
     @Test
     fun `given ready to pair session state, when emitted, then ready to pair view state is shown`() = testBlocking {
+        // WHEN
         sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
             deviceName = "Pixel",
             fingerprintSuffix = "1234"
         )
-
         advanceUntilIdle()
 
-        val viewState = viewModel.stateOverride.getOrAwaitValue() as RemoteTapToPayReadyToPair
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayReadyToPair
         assertThat(viewState.deviceName).isEqualTo("Pixel")
         assertThat(viewState.fingerprintSuffix).isEqualTo("1234")
     }
@@ -61,22 +64,25 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given waiting for payment session state, when emitted, then waiting for payment view state is shown`() =
         testBlocking {
+            // WHEN
             sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "Tablet 1")
-
             advanceUntilIdle()
 
-            val viewState = viewModel.stateOverride.getOrAwaitValue() as RemoteTapToPayWaitingForPayment
+            // THEN
+            val viewState = viewModel.viewState.value as RemoteTapToPayWaitingForPayment
             assertThat(viewState.tabletName).isEqualTo("Tablet 1")
         }
 
     @Test
     fun `given starting view state, when cancel clicked, then exit event is emitted`() = testBlocking {
+        // GIVEN
         sessionState.value = CardReaderRemoteSessionState.Starting
-
         advanceUntilIdle()
 
-        (viewModel.stateOverride.getOrAwaitValue() as RemoteTapToPayStarting).onPrimaryActionClicked.invoke()
+        // WHEN
+        (viewModel.viewState.value as RemoteTapToPayStarting).onPrimaryActionClicked.invoke()
 
-        assertThat(viewModel.events.getOrAwaitValue()).isEqualTo(CardReaderModeExit)
+        // THEN
+        assertThat(viewModel.events.first()).isEqualTo(CardReaderModeExit)
     }
 }
