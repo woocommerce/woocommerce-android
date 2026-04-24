@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
@@ -70,9 +71,9 @@ class QrLoginScannerFragment : androidx.fragment.app.Fragment() {
             val permissionState = scannerViewModel.permissionState.observeAsState(
                 initial = BarcodeScanningViewModel.PermissionState.Unknown
             )
-            val authenticating by qrLoginViewModel.isAuthenticating.observeAsState(initial = false)
-            val endpointMissing by qrLoginViewModel.endpointMissing.observeAsState(initial = false)
-            val pendingConfirmation by qrLoginViewModel.pendingConfirmation.observeAsState(initial = null)
+            val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
+            val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
+            val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
             WooThemeWithBackground {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (endpointMissing) {

@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -12,6 +10,9 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import java.net.URI
@@ -36,20 +37,20 @@ class QrLoginScannerViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
-    private val _isAuthenticating = MutableLiveData(false)
-    val isAuthenticating: LiveData<Boolean> = _isAuthenticating
+    private val _isAuthenticating = MutableStateFlow(false)
+    val isAuthenticating: StateFlow<Boolean> = _isAuthenticating.asStateFlow()
 
-    private val _endpointMissing = MutableLiveData(false)
-    val endpointMissing: LiveData<Boolean> = _endpointMissing
+    private val _endpointMissing = MutableStateFlow(false)
+    val endpointMissing: StateFlow<Boolean> = _endpointMissing.asStateFlow()
 
-    private val _pendingConfirmation = MutableLiveData<PendingConfirmation?>(null)
-    val pendingConfirmation: LiveData<PendingConfirmation?> = _pendingConfirmation
+    private val _pendingConfirmation = MutableStateFlow<PendingConfirmation?>(null)
+    val pendingConfirmation: StateFlow<PendingConfirmation?> = _pendingConfirmation.asStateFlow()
 
     private var inFlight = false
     private var loggedIn = false
 
     fun onScanResult(status: CodeScannerStatus) {
-        if (loggedIn || inFlight || _endpointMissing.value == true || _pendingConfirmation.value != null) return
+        if (loggedIn || inFlight || _endpointMissing.value || _pendingConfirmation.value != null) return
 
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
