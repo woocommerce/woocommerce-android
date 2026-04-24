@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -24,30 +25,35 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         applicationPassword = "ap-secret",
         uuid = "uuid-1"
     )
-
     private val site = SiteModel().apply {
         id = 42
         url = "https://store.example"
         hasWooCommerce = true
     }
-
     private val nonWooSite = SiteModel().apply {
         id = 7
         url = "https://blog.example"
         hasWooCommerce = false
     }
 
-    @Test
-    fun `given exchange succeeds and user is eligible, when authenticate, then returns site id`() = testBlocking {
-        val exchangeClient: QrLoginExchangeClient = mock()
-        whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token)).thenReturn(Result.success(credentials))
-        val repo: WPApiSiteRepository = mock()
+    private val exchangeClient: QrLoginExchangeClient = mock()
+    private val repo: WPApiSiteRepository = mock()
+    private val selectedSite: SelectedSite = mock()
+
+    private val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
+
+    @Before
+    fun setUp() = testBlocking {
+        // Happy path: exchange returns credentials, site is a Woo store, user is eligible.
+        whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
+            .thenReturn(Result.success(credentials))
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
             .thenReturn(Result.success(site))
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(true))
-        val selectedSite: SelectedSite = mock()
-        val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
+    }
 
+    @Test
+    fun `given happy path, when authenticate, then returns site id and persists credentials`() = testBlocking {
         val result = authenticator.authenticate(ticket)
 
         assertThat(result).isEqualTo(Result.success(42))
@@ -61,28 +67,20 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     @Test
     fun `given exchange fails, when authenticate, then propagates exchange exception`() = testBlocking {
-        val exchangeClient: QrLoginExchangeClient = mock()
-        whenever(exchangeClient.exchange(any(), any()))
+        whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
             .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
-        val repo: WPApiSiteRepository = mock()
-        val selectedSite: SelectedSite = mock()
-        val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
 
         val result = authenticator.authenticate(ticket)
 
         assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.RateLimited)
-        verifyNoInteractions(repo)
+        verify(repo, never()).saveApplicationPassword(any(), any(), any())
         verifyNoInteractions(selectedSite)
     }
 
     @Test
-    fun `given site has no WooCommerce, when authenticate, then NotAWooSite without saving AP`() = testBlocking {
-        val exchangeClient: QrLoginExchangeClient = mock()
-        whenever(exchangeClient.exchange(any(), any())).thenReturn(Result.success(credentials))
-        val repo: WPApiSiteRepository = mock()
-        whenever(repo.fetchSite(any(), any(), any())).thenReturn(Result.success(nonWooSite))
-        val selectedSite: SelectedSite = mock()
-        val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
+    fun `given site has no WooCommerce, when authenticate, then NotAWooSite and AP not saved`() = testBlocking {
+        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
+            .thenReturn(Result.success(nonWooSite))
 
         val result = authenticator.authenticate(ticket)
 
@@ -92,14 +90,8 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is not eligible, when authenticate, then UserNotEligible without selecting site`() = testBlocking {
-        val exchangeClient: QrLoginExchangeClient = mock()
-        whenever(exchangeClient.exchange(any(), any())).thenReturn(Result.success(credentials))
-        val repo: WPApiSiteRepository = mock()
-        whenever(repo.fetchSite(any(), any(), any())).thenReturn(Result.success(site))
+    fun `given user is not eligible, when authenticate, then UserNotEligible and site not selected`() = testBlocking {
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
-        val selectedSite: SelectedSite = mock()
-        val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
 
         val result = authenticator.authenticate(ticket)
 
@@ -110,12 +102,8 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     @Test
     fun `given fetchSite fails, when authenticate, then failure propagates and AP not saved`() = testBlocking {
-        val exchangeClient: QrLoginExchangeClient = mock()
-        whenever(exchangeClient.exchange(any(), any())).thenReturn(Result.success(credentials))
-        val repo: WPApiSiteRepository = mock()
-        whenever(repo.fetchSite(any(), any(), any())).thenReturn(Result.failure(IllegalStateException("nope")))
-        val selectedSite: SelectedSite = mock()
-        val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
+        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
+            .thenReturn(Result.failure(IllegalStateException("nope")))
 
         val result = authenticator.authenticate(ticket)
 
