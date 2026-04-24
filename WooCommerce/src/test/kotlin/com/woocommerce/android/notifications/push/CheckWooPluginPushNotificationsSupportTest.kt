@@ -16,6 +16,7 @@ import org.mockito.kotlin.whenever
 class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion = mock()
     private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion = mock()
+    private val minSupportedWooVersion = CheckWooPluginPushNotificationsSupport.PUSH_NOTIFICATIONS_MIN_WC_VERSION
 
     private val sut = CheckWooPluginPushNotificationsSupport(
         fetchActiveWCPluginVersion,
@@ -24,7 +25,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
 
     @Test
     fun `given compatible version, when invoked, then returns Compatible`() = testBlocking {
-        whenever(fetchActiveWCPluginVersion()).thenReturn("10.6.0")
+        whenever(fetchActiveWCPluginVersion()).thenReturn(minSupportedWooVersion)
 
         val result = sut(forceRefresh = true)
 
@@ -61,7 +62,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     @Test
     fun `given compatible cached version, when invoked with forceRefresh=false, then returns Compatible`() =
         testBlocking {
-            whenever(getWooCorePluginCachedVersion()).thenReturn("10.6.0")
+            whenever(getWooCorePluginCachedVersion()).thenReturn(minSupportedWooVersion)
 
             val result = sut(forceRefresh = false)
 
@@ -89,7 +90,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
 
     @Test
     fun `given forceRefresh=false, when invoked, then does not call fetchActiveWCPluginVersion`() = testBlocking {
-        whenever(getWooCorePluginCachedVersion()).thenReturn("10.6.0")
+        whenever(getWooCorePluginCachedVersion()).thenReturn(minSupportedWooVersion)
 
         sut(forceRefresh = false)
 
