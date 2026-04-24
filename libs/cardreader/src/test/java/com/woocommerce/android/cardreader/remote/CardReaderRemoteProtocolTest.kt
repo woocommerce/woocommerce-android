@@ -46,7 +46,19 @@ class CardReaderRemoteProtocolTest {
         // GIVEN
         val original = CardReaderRemoteMessage.CollectPaymentRequest(
             requestId = "req-3",
-            paymentIntentClientSecret = "pi_client_secret",
+            paymentDescription = "Order #123",
+            statementDescriptorRaw = "STORE",
+            orderId = 123L,
+            amount = java.math.BigDecimal("12.34"),
+            currency = "usd",
+            customerEmail = "customer@example.com",
+            isPluginCanSendReceipt = true,
+            customerName = "Jane Doe",
+            storeName = "Test Store",
+            siteUrl = "https://example.com",
+            orderKey = "wc_order_key",
+            feeAmount = 15L,
+            countryCode = "US",
         )
 
         // WHEN

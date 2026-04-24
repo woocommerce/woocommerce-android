@@ -1532,6 +1532,7 @@
     <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
     <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
     <string name="card_reader_mode_error_close">Close</string>
+    <string name="card_reader_mode_location_permission_required">Location permission is required to connect with the tablet.</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>

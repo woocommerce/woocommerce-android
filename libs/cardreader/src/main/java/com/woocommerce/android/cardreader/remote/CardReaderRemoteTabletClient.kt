@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.remote
 
 import android.util.Log
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -20,7 +21,7 @@ interface CardReaderRemoteTabletClient {
     ): ConnectOutcome
 
     suspend fun collectPayment(
-        paymentIntentClientSecret: String,
+        paymentInfo: PaymentInfo,
         timeoutMillis: Long = DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
     ): CollectPaymentOutcome
 
@@ -86,7 +87,7 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     override suspend fun collectPayment(
-        paymentIntentClientSecret: String,
+        paymentInfo: PaymentInfo,
         timeoutMillis: Long,
     ): CollectPaymentOutcome {
         val active = connection ?: return CollectPaymentOutcome.Failed(
@@ -94,7 +95,7 @@ internal class DefaultCardReaderRemoteTabletClient(
         )
         return try {
             val requestId = UUID.randomUUID().toString()
-            active.send(CollectPaymentRequest(requestId, paymentIntentClientSecret))
+            active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
                 active.receive().first { it.requestId == requestId }
             }
@@ -128,3 +129,21 @@ internal class DefaultCardReaderRemoteTabletClient(
         const val TAG = "CardReaderRemoteTabletClient"
     }
 }
+
+private fun PaymentInfo.toCollectPaymentRequest(requestId: String): CollectPaymentRequest =
+    CollectPaymentRequest(
+        requestId = requestId,
+        paymentDescription = paymentDescription,
+        statementDescriptorRaw = statementDescriptor.value,
+        orderId = orderId,
+        amount = amount,
+        currency = currency,
+        customerEmail = customerEmail,
+        isPluginCanSendReceipt = isPluginCanSendReceipt,
+        customerName = customerName,
+        storeName = storeName,
+        siteUrl = siteUrl,
+        orderKey = orderKey,
+        feeAmount = feeAmount,
+        countryCode = countryCode,
+    )

@@ -1,22 +1,30 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import android.Manifest
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.WooPermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CardReaderModeActivity : AppCompatActivity() {
 
     private val viewModel: CardReaderModeViewModel by viewModels()
+
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        viewModel.onLocationPermissionResult(granted)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +40,18 @@ class CardReaderModeActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.events.collect { finish() }
             }
+        }
+
+        ensureLocationPermission(isFirstCreate = savedInstanceState == null)
+    }
+
+    private fun ensureLocationPermission(isFirstCreate: Boolean) {
+        when {
+            WooPermissionUtils.hasFineLocationPermission(this) ->
+                viewModel.onLocationPermissionResult(true)
+
+            isFirstCreate ->
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 }

@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
@@ -17,7 +15,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class WooPosRemoteReaderPaymentFlow @Inject constructor(
-    private val cardReaderManager: CardReaderManager,
     private val cardReaderStore: CardReaderStore,
     private val remoteReaderSession: WooPosRemoteReaderSession,
     private val selectedSite: SelectedSite,
@@ -59,23 +56,15 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             channel = PaymentInfo.PaymentChannel.Pos,
         )
 
-        return when (val createResult = cardReaderManager.createPaymentIntent(paymentInfo)) {
-            is CreatePaymentIntentResult.Success -> handleIntentCreated(order.id, createResult.clientSecret)
-            is CreatePaymentIntentResult.Failed -> Result.Failed(
-                createResult.cause.message ?: "Failed to create payment intent"
-            )
-        }
-    }
-
-    private suspend fun handleIntentCreated(orderId: Long, clientSecret: String): Result =
-        when (val outcome = remoteReaderSession.sendCollectPayment(clientSecret)) {
-            is CollectPaymentOutcome.Success -> capture(orderId, outcome.paymentIntentId)
+        return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
+            is CollectPaymentOutcome.Success -> capture(order.id, outcome.paymentIntentId)
             is CollectPaymentOutcome.Rejected -> Result.Failed("${outcome.code}: ${outcome.description}")
             CollectPaymentOutcome.TimedOut -> Result.Failed("Timed out waiting for phone reader")
             is CollectPaymentOutcome.Failed -> Result.Failed(
                 outcome.cause.message ?: "Remote collection failed"
             )
         }
+    }
 
     private suspend fun capture(orderId: Long, paymentIntentId: String): Result =
         when (val response = cardReaderStore.capturePaymentIntent(orderId, paymentIntentId)) {

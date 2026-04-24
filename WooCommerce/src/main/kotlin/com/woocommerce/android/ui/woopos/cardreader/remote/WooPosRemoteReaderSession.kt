@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
@@ -103,10 +104,10 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 
     suspend fun sendCollectPayment(
-        paymentIntentClientSecret: String,
+        paymentInfo: PaymentInfo,
         timeoutMillis: Long = CardReaderRemoteTabletClient.DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
     ): CollectPaymentOutcome =
-        client?.collectPayment(paymentIntentClientSecret, timeoutMillis)
+        client?.collectPayment(paymentInfo, timeoutMillis)
             ?: CollectPaymentOutcome.Failed(IllegalStateException("Remote session is not connected"))
 
     private fun disconnectInternal() {

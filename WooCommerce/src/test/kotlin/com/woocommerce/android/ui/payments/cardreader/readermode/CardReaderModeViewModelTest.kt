@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -21,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
@@ -33,6 +36,10 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         on { initialized }.thenReturn(true)
     }
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.card_reader_mode_location_permission_required) }
+            .thenReturn("Location permission is required to connect with the tablet.")
+    }
 
     private lateinit var store: ViewModelStore
     private lateinit var viewModel: CardReaderModeViewModel
@@ -43,19 +50,58 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         val factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                CardReaderModeViewModel(session, cardReaderManager, developerOptionsRepository) as T
+                CardReaderModeViewModel(
+                    session,
+                    cardReaderManager,
+                    developerOptionsRepository,
+                    resourceProvider,
+                ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
     }
 
     @Test
-    fun `when view model initialized, then session started`() {
+    fun `when view model initialized, then session is not started yet`() {
+        // THEN
+        verify(session, never()).start(any(), any())
+    }
+
+    @Test
+    fun `given location permission granted, when result received, then session started`() {
+        // WHEN
+        viewModel.onLocationPermissionResult(granted = true)
+
         // THEN
         verify(session).start(any(), any())
     }
 
     @Test
+    fun `given location permission granted twice, when received, then session started only once`() {
+        // WHEN
+        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true)
+
+        // THEN
+        verify(session).start(any(), any())
+    }
+
+    @Test
+    fun `given location permission denied, when result received, then error state is shown`() = testBlocking {
+        // WHEN
+        viewModel.onLocationPermissionResult(granted = false)
+        advanceUntilIdle()
+
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayError
+        assertThat(viewState.message).isEqualTo("Location permission is required to connect with the tablet.")
+        verify(session, never()).start(any(), any())
+    }
+
+    @Test
     fun `given starting session state, when emitted, then starting view state is shown`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true)
+
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.Starting
         advanceUntilIdle()
@@ -66,6 +112,9 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given ready to pair session state, when emitted, then ready to pair view state is shown`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true)
+
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
             deviceName = "Pixel",
@@ -82,6 +131,9 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given waiting for payment session state, when emitted, then waiting for payment view state is shown`() =
         testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true)
+
             // WHEN
             sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "Tablet 1")
             advanceUntilIdle()
@@ -93,6 +145,9 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given error session state, when emitted, then error view state carries the message`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true)
+
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.Error(message = "java.net.SocketException: closed")
         advanceUntilIdle()
@@ -105,6 +160,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given starting view state, when cancel clicked, then exit event is emitted`() = testBlocking {
         // GIVEN
+        viewModel.onLocationPermissionResult(granted = true)
         sessionState.value = CardReaderRemoteSessionState.Starting
         advanceUntilIdle()
 

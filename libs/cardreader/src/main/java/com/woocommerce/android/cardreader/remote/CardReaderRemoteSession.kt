@@ -9,7 +9,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.RemoteTokenChannelProvider
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -222,27 +225,59 @@ class CardReaderRemoteSession internal constructor(
         request: CollectPaymentRequest,
         accepted: CardReaderRemoteConnection,
     ) {
-        when (val result = cardReaderManager.retrieveAndCollectPayment(request.paymentIntentClientSecret)) {
-            is RetrieveAndCollectResult.Success -> accepted.send(
-                PaymentIntentResult(
-                    requestId = request.requestId,
-                    paymentIntentId = result.paymentIntentId,
-                    status = result.status,
-                )
-            )
-            is RetrieveAndCollectResult.Failed -> {
-                logWrapper.e(LOG_TAG, "Collect payment failed: ${result.cause.message}")
+        val paymentInfo = request.toPaymentInfo()
+        when (val createResult = cardReaderManager.createPaymentIntent(paymentInfo)) {
+            is CreatePaymentIntentResult.Success -> {
+                when (val collectResult = cardReaderManager.retrieveAndCollectPayment(createResult.clientSecret)) {
+                    is RetrieveAndCollectResult.Success -> accepted.send(
+                        PaymentIntentResult(
+                            requestId = request.requestId,
+                            paymentIntentId = collectResult.paymentIntentId,
+                            status = collectResult.status,
+                        )
+                    )
+                    is RetrieveAndCollectResult.Failed -> {
+                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.message}")
+                        accepted.send(
+                            ErrorMessage(
+                                requestId = request.requestId,
+                                code = CODE_COLLECT_FAILED,
+                                description = collectResult.cause.message.orEmpty(),
+                            )
+                        )
+                    }
+                }
+            }
+            is CreatePaymentIntentResult.Failed -> {
+                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.message}")
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
-                        code = CODE_COLLECT_FAILED,
-                        description = result.cause.message.orEmpty(),
+                        code = CODE_CREATE_INTENT_FAILED,
+                        description = createResult.cause.message.orEmpty(),
                     )
                 )
             }
         }
         _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
     }
+
+    private fun CollectPaymentRequest.toPaymentInfo(): PaymentInfo = PaymentInfo(
+        paymentDescription = paymentDescription,
+        statementDescriptor = StatementDescriptor(statementDescriptorRaw),
+        orderId = orderId,
+        amount = amount,
+        currency = currency,
+        customerEmail = customerEmail,
+        isPluginCanSendReceipt = isPluginCanSendReceipt,
+        customerName = customerName,
+        storeName = storeName,
+        siteUrl = siteUrl,
+        orderKey = orderKey,
+        feeAmount = feeAmount,
+        channel = PaymentInfo.PaymentChannel.Pos,
+        countryCode = countryCode,
+    )
 
     private fun readyToPairState(server: CardReaderRemoteTlsServer) =
         CardReaderRemoteSessionState.ReadyToPair(
@@ -286,6 +321,7 @@ class CardReaderRemoteSession internal constructor(
         private const val LOG_TAG = "CardReaderRemoteSession"
         private const val CODE_CONNECT_FAILED = "connect_failed"
         private const val CODE_COLLECT_FAILED = "collect_failed"
+        private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
         private const val DEFAULT_DEVICE_NAME = "Android"
 
         private fun defaultDisconnectScope(): CoroutineScope =
