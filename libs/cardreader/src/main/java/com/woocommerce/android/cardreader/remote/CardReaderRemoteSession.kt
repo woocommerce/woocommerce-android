@@ -78,6 +78,9 @@ class CardReaderRemoteSession internal constructor(
                 logWrapper.e(LOG_TAG, "Session ended with error: ${t.message}")
             } finally {
                 cleanupSync()
+                if (sessionScope === scope) {
+                    sessionScope = null
+                }
             }
         }
     }
