@@ -10,12 +10,10 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
-import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
@@ -49,7 +47,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val orderDetailsMapper: WooPosOrderDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
-    private val orderActionsProvider: WooPosOrderActionsProvider,
     private val bookingInfoMapper: WooPosBookingInfoMapper,
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
@@ -231,7 +228,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
             val currentLoaded = _state.value as? WooPosOrderDetailsState.Loaded
             if (currentLoaded?.details?.id != orderId) return@launch
 
-            val actions = orderActionsProvider.getAvailableActions(order)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
             val refundedLineItems = orderDetailsMapper.buildRefundedLineItems(order, refundsResult)
@@ -240,12 +236,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
             cacheRefundData(orderId, refundInfo.refundRows, order)
 
             val stateNow = _state.value as? WooPosOrderDetailsState.Loaded ?: return@launch
-            if (stateNow.details.id == orderId &&
-                stateNow.details.actionsState is OrderActionsState.Loading
-            ) {
+            if (stateNow.details.id == orderId) {
                 _state.value = stateNow.copy(
                     details = stateNow.details.copy(
-                        actionsState = OrderActionsState.Loaded(actions),
                         breakdown = updatedBreakdown,
                         lineItems = LineItemsState.Loaded(nonRefundedLineItems),
                         refundedLineItems = LineItemsState.Loaded(refundedLineItems)

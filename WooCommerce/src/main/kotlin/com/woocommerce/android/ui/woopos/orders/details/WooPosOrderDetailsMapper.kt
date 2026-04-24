@@ -110,7 +110,9 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loading
+            actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+                orderActionsProvider.getAvailableActions(order)
+            )
         )
     }
 
