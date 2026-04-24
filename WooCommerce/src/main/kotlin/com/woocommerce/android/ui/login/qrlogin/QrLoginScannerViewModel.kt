@@ -150,8 +150,8 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun Throwable.toReason(): ErrorReason = when (this) {
-        QrLoginExchangeException.TokenRejected,
-        QrLoginExchangeException.MalformedResponse -> ErrorReason.TokenRejected
+        QrLoginExchangeException.TokenRejected -> ErrorReason.TokenRejected
+        QrLoginExchangeException.MalformedResponse -> ErrorReason.Unknown
         QrLoginExchangeException.EndpointMissing -> ErrorReason.EndpointMissing
         QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
         QrLoginExchangeException.Network -> ErrorReason.Network
