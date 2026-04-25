@@ -102,11 +102,10 @@ class QrLoginExchangeClient @Inject constructor(
     ) {
         fun toCredentials(): QrLoginCredentials? {
             val user = userLogin?.takeIf { it.isNotBlank() } ?: return null
-            val site = siteUrl?.takeIf { it.isNotBlank() } ?: return null
+            if (siteUrl.isNullOrBlank()) return null
             val password = applicationPassword?.takeIf { it.isNotBlank() } ?: return null
             return QrLoginCredentials(
                 userLogin = user,
-                siteUrl = site,
                 applicationPassword = Secret(password),
                 uuid = uuid?.takeIf { it.isNotBlank() }
             )
@@ -128,7 +127,6 @@ class QrLoginExchangeClient @Inject constructor(
 
 data class QrLoginCredentials(
     val userLogin: String,
-    val siteUrl: String,
     val applicationPassword: Secret,
     val uuid: String?
 )

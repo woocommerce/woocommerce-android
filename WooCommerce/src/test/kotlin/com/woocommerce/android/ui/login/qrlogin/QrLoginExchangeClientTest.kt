@@ -50,11 +50,18 @@ class QrLoginExchangeClientTest : BaseUnitTest() {
         assertThat(result.getOrNull()).isEqualTo(
             QrLoginCredentials(
                 userLogin = "admin",
-                siteUrl = "https://store.example",
-                applicationPassword = "ap-secret",
+                applicationPassword = Secret("ap-secret"),
                 uuid = "uuid-1"
             )
         )
+    }
+
+    @Test
+    fun `given valid credentials, when toString is called, then password is redacted`() = testBlocking {
+        val credentials = requireNotNull(client.exchange("https://store.example", "tok").getOrNull())
+
+        assertThat(credentials.toString()).doesNotContain("ap-secret")
+        assertThat(credentials.applicationPassword.toString()).doesNotContain("ap-secret")
     }
 
     @Test

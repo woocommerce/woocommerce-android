@@ -21,8 +21,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     private val ticket = QrLoginPayload.Ticket(token = "tok", siteUrl = "https://store.example")
     private val credentials = QrLoginCredentials(
         userLogin = "admin",
-        siteUrl = "https://store.example",
-        applicationPassword = "ap-secret",
+        applicationPassword = Secret("ap-secret"),
         uuid = "uuid-1"
     )
     private val site = SiteModel().apply {
@@ -46,7 +45,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     fun setUp() = testBlocking {
         whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
             .thenReturn(Result.success(credentials))
-        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
+        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword.reveal()))
             .thenReturn(Result.success(site))
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(true))
     }
@@ -59,7 +58,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         verify(repo).saveApplicationPassword(
             localSiteId = 42,
             username = credentials.userLogin,
-            password = credentials.applicationPassword
+            password = credentials.applicationPassword.reveal()
         )
         verify(selectedSite).set(site)
     }
@@ -78,7 +77,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     @Test
     fun `given site has no WooCommerce, when authenticate, then NotAWooSite and AP not saved`() = testBlocking {
-        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
+        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword.reveal()))
             .thenReturn(Result.success(nonWooSite))
 
         val result = authenticator.authenticate(ticket)
@@ -101,7 +100,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     @Test
     fun `given fetchSite fails, when authenticate, then failure propagates and AP not saved`() = testBlocking {
-        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
+        whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword.reveal()))
             .thenReturn(Result.failure(IllegalStateException("nope")))
 
         val result = authenticator.authenticate(ticket)
