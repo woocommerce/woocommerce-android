@@ -1,6 +1,7 @@
 package com.woocommerce.android.network.qrlogin
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.ui.login.qrlogin.Secret
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -12,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
@@ -37,7 +39,7 @@ class QrLoginRestClient @Inject constructor(
             } catch (ce: CancellationException) {
                 throw ce
             } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(t)
+                Result.failure(mapException(t))
             }
         }
 
@@ -66,6 +68,7 @@ class QrLoginRestClient @Inject constructor(
     }
 
     private fun parseExchangeBody(body: String): QrLoginCredentials? {
+        // Let JsonSyntaxException propagate so mapException converts it to MalformedResponse.
         val response = gson.fromJson(body, ExchangeResponse::class.java)
         val credentials = response?.toCredentials()
         if (credentials == null) {
@@ -82,6 +85,22 @@ class QrLoginRestClient @Inject constructor(
         HTTP_NOT_FOUND -> QrLoginExchangeException.EndpointMissing
         HTTP_TOO_MANY_REQUESTS -> QrLoginExchangeException.RateLimited
         else -> QrLoginExchangeException.HttpError(code)
+    }
+
+    private fun mapException(throwable: Throwable): Throwable = when (throwable) {
+        is QrLoginExchangeException -> throwable
+        is IOException -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange network failure: ${throwable.message}")
+            QrLoginExchangeException.Network
+        }
+        is JsonSyntaxException -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange response was not valid JSON: ${throwable.message}")
+            QrLoginExchangeException.MalformedResponse
+        }
+        else -> {
+            WooLog.e(WooLog.T.LOGIN, "QR login exchange unexpected failure: $throwable")
+            QrLoginExchangeException.Unknown(throwable)
+        }
     }
 
     private data class ExchangeRequest(val token: String)
