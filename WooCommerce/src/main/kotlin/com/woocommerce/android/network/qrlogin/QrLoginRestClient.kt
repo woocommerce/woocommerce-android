@@ -12,6 +12,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
+import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -41,7 +44,7 @@ class QrLoginRestClient @Inject constructor(
     private fun performExchange(siteUrl: String, token: String): QrLoginCredentials {
         val request = buildExchangeRequest(siteUrl, token)
         okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw QrLoginExchangeException.HttpError(response.code)
+            if (!response.isSuccessful) throw mapHttpStatus(response.code)
             return parseExchangeBody(response.body.string())
                 ?: throw QrLoginExchangeException.MalformedResponse
         }
@@ -74,6 +77,13 @@ class QrLoginRestClient @Inject constructor(
         return credentials
     }
 
+    private fun mapHttpStatus(code: Int): QrLoginExchangeException = when (code) {
+        HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> QrLoginExchangeException.TokenRejected
+        HTTP_NOT_FOUND -> QrLoginExchangeException.EndpointMissing
+        HTTP_TOO_MANY_REQUESTS -> QrLoginExchangeException.RateLimited
+        else -> QrLoginExchangeException.HttpError(code)
+    }
+
     private data class ExchangeRequest(val token: String)
 
     private data class ExchangeResponse(
@@ -102,6 +112,7 @@ class QrLoginRestClient @Inject constructor(
 
     private companion object {
         const val EXCHANGE_PATH_SEGMENTS = "wp-json/wc-admin/mobile-app/qr-login-exchange"
+        const val HTTP_TOO_MANY_REQUESTS = 429
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }
