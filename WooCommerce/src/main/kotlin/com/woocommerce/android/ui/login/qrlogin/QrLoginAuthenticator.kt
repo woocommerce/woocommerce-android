@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 /**
@@ -29,23 +30,46 @@ class QrLoginAuthenticator @Inject constructor(
             .getOrElse { return Result.failure(it) }
 
         return try {
-            val site = wpApiSiteRepository.fetchSite(
-                url = ticket.siteUrl,
-                username = credentials.userLogin,
-                password = credentials.applicationPassword.reveal()
-            ).getOrThrow()
-            wpApiSiteRepository.saveApplicationPassword(
-                localSiteId = site.id,
-                username = credentials.userLogin,
-                password = credentials.applicationPassword.reveal()
-            )
-            selectedSite.set(site)
-            Result.success(site.id)
+            Result.success(authenticateWithCredentials(ticket.siteUrl, credentials))
         } catch (ce: CancellationException) {
             throw ce
+        } catch (e: QrLoginAuthenticationException) {
+            Result.failure(e)
         } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
             WooLog.e(WooLog.T.LOGIN, "QR login authentication failed", t)
             Result.failure(t)
         }
     }
+
+    private suspend fun authenticateWithCredentials(siteUrl: String, credentials: QrLoginCredentials): Int {
+        val site = fetchAndValidateSite(siteUrl, credentials)
+        wpApiSiteRepository.saveApplicationPassword(
+            localSiteId = site.id,
+            username = credentials.userLogin,
+            password = credentials.applicationPassword.reveal()
+        )
+        selectedSite.set(site)
+        return site.id
+    }
+
+    private suspend fun fetchAndValidateSite(
+        siteUrl: String,
+        credentials: QrLoginCredentials
+    ): SiteModel {
+        val site = wpApiSiteRepository.fetchSite(
+            url = siteUrl,
+            username = credentials.userLogin,
+            password = credentials.applicationPassword.reveal()
+        ).getOrThrow()
+
+        if (!site.hasWooCommerce) {
+            WooLog.w(WooLog.T.LOGIN, "QR login: site ${site.url} does not have WooCommerce installed")
+            throw QrLoginAuthenticationException.NotAWooSite
+        }
+        return site
+    }
+}
+
+sealed class QrLoginAuthenticationException(message: String) : Exception(message) {
+    data object NotAWooSite : QrLoginAuthenticationException("Site is not a WooCommerce store")
 }
