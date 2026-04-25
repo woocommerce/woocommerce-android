@@ -1,17 +1,23 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import javax.inject.Inject
 
 /**
@@ -86,8 +92,13 @@ class QrLoginScannerViewModel @Inject constructor(
                         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
                         triggerEvent(Dispatch.LoggedIn(localSiteId))
                     },
-                    onFailure = {
-                        _currentError.value = ErrorReason.Unknown
+                    onFailure = { failure ->
+                        val reason = failure.toReason()
+                        if (reason == ErrorReason.EndpointMissing) {
+                            _endpointMissing.value = true
+                        } else {
+                            _currentError.value = reason
+                        }
                     }
                 )
             } finally {
@@ -127,6 +138,46 @@ class QrLoginScannerViewModel @Inject constructor(
         val parsed = this.toHttpUrlOrNull() ?: return this
         val defaultPort = if (parsed.scheme == "https") HTTPS_DEFAULT_PORT else HTTP_DEFAULT_PORT
         return if (parsed.port == defaultPort) parsed.host else "${parsed.host}:${parsed.port}"
+    }
+
+    private fun Throwable.toReason(): ErrorReason = when (this) {
+        QrLoginExchangeException.TokenRejected -> ErrorReason.TokenRejected
+        QrLoginExchangeException.EndpointMissing -> ErrorReason.EndpointMissing
+        QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
+        QrLoginExchangeException.Network -> ErrorReason.Network
+        QrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
+        is QrLoginExchangeException.HttpError -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange returned HTTP $code")
+            ErrorReason.ServerError
+        }
+        is QrLoginExchangeException.Unknown -> ErrorReason.Unknown
+        QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
+        is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
+        is CookieNonceAuthenticationException -> ErrorReason.SiteAuthFailure
+        is OnChangedException -> {
+            val siteError = error as? SiteError
+            if (siteError == null) {
+                WooLog.w(
+                    WooLog.T.LOGIN,
+                    "QR login: unmapped OnChangedException error type ${error.javaClass.simpleName}"
+                )
+            }
+            siteError?.type.toErrorReason()
+        }
+        else -> {
+            WooLog.e(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}", this)
+            ErrorReason.Unknown
+        }
+    }
+
+    private fun SiteErrorType?.toErrorReason(): ErrorReason = when (this) {
+        SiteErrorType.UNAUTHORIZED,
+        SiteErrorType.NOT_AUTHENTICATED -> ErrorReason.SiteAuthFailure
+        SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR -> ErrorReason.Network
+        else -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped SiteErrorType $this")
+            ErrorReason.Unknown
+        }
     }
 
     sealed class Dispatch : Event() {
