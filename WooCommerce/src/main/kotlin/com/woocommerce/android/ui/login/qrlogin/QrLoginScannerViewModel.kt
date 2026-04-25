@@ -103,33 +103,34 @@ class QrLoginScannerViewModel @Inject constructor(
         inFlight = true
         _isAuthenticating.value = true
         launch {
-            authenticator.authenticate(ticket).fold(
-                onSuccess = { localSiteId ->
-                    loggedIn = true
-                    inFlight = false
-                    _isAuthenticating.value = false
-                    analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
-                    triggerEvent(Dispatch.LoggedIn(localSiteId))
-                },
-                onFailure = { failure ->
-                    _isAuthenticating.value = false
-                    inFlight = false
-                    val reason = failure.toReason()
-                    val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
-                    trackScanFailure(
-                        step = Step.EXCHANGE,
-                        errorContext = this@QrLoginScannerViewModel::class.java.simpleName,
-                        errorType = reason.name,
-                        errorDescription = failure.message,
-                        extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
-                    )
-                    if (reason == ErrorReason.EndpointMissing) {
-                        _endpointMissing.value = true
-                    } else {
-                        triggerEvent(Dispatch.RecoverableError(reason))
+            try {
+                authenticator.authenticate(ticket).fold(
+                    onSuccess = { localSiteId ->
+                        loggedIn = true
+                        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+                        triggerEvent(Dispatch.LoggedIn(localSiteId))
+                    },
+                    onFailure = { failure ->
+                        val reason = failure.toReason()
+                        val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
+                        trackScanFailure(
+                            step = Step.EXCHANGE,
+                            errorContext = this@QrLoginScannerViewModel::class.java.simpleName,
+                            errorType = reason.name,
+                            errorDescription = failure.message,
+                            extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
+                        )
+                        if (reason == ErrorReason.EndpointMissing) {
+                            _endpointMissing.value = true
+                        } else {
+                            triggerEvent(Dispatch.RecoverableError(reason))
+                        }
                     }
-                }
-            )
+                )
+            } finally {
+                inFlight = false
+                _isAuthenticating.value = false
+            }
         }
     }
 
