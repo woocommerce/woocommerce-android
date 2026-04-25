@@ -31,7 +31,10 @@ class QrLoginAuthenticator @Inject constructor(
             Result.success(authenticateWithCredentials(ticket.siteUrl, credentials))
         } catch (ce: CancellationException) {
             throw ce
-        } catch (t: Throwable) {
+        } catch (e: QrLoginAuthenticationException) {
+            Result.failure(e)
+        } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
+            WooLog.e(WooLog.T.LOGIN, "QR login authentication failed", t)
             Result.failure(t)
         }
     }
@@ -41,7 +44,7 @@ class QrLoginAuthenticator @Inject constructor(
         wpApiSiteRepository.saveApplicationPassword(
             localSiteId = site.id,
             username = credentials.userLogin,
-            password = credentials.applicationPassword
+            password = credentials.applicationPassword.reveal()
         )
         ensureUserEligible(site)
         selectedSite.set(site)
@@ -55,7 +58,7 @@ class QrLoginAuthenticator @Inject constructor(
         val site = wpApiSiteRepository.fetchSite(
             url = siteUrl,
             username = credentials.userLogin,
-            password = credentials.applicationPassword
+            password = credentials.applicationPassword.reveal()
         ).getOrThrow()
 
         if (!site.hasWooCommerce) {
