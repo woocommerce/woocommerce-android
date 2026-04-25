@@ -9,10 +9,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -46,6 +42,16 @@ class QrLoginScannerFragment : Fragment() {
     companion object {
         const val TAG = "qr-login-scanner-fragment"
         const val KEY_CAMERA_PERMISSION = Manifest.permission.CAMERA
+        private const val ARG_DEEP_LINK_PAYLOAD = "arg-deep-link-payload"
+
+        /**
+         * Creates an instance that skips the camera preview and feeds [rawPayload] (a
+         * `woocommerce://qr-login?...` URI) straight into the login pipeline — used when the
+         * user opens the deep link from a browser.
+         */
+        fun forDeepLink(rawPayload: String): QrLoginScannerFragment = QrLoginScannerFragment().apply {
+            arguments = Bundle().apply { putString(ARG_DEEP_LINK_PAYLOAD, rawPayload) }
+        }
     }
 
     interface Listener {
@@ -55,6 +61,8 @@ class QrLoginScannerFragment : Fragment() {
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val qrLoginViewModel: QrLoginScannerViewModel by viewModels()
+
+    private val deepLinkPayload: String? by lazy { arguments?.getString(ARG_DEEP_LINK_PAYLOAD) }
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -85,18 +93,20 @@ class QrLoginScannerFragment : Fragment() {
                             onRetryClicked = { qrLoginViewModel.onRetryAfterBlockingError() }
                         )
                     } else {
-                        BarcodeScannerScreen(
-                            onNewFrame = scannerViewModel::onNewFrame,
-                            onBindingException = scannerViewModel::onBindingException,
-                            permissionState = permissionState,
-                            onResult = { granted ->
-                                scannerViewModel.updatePermissionState(
-                                    granted,
-                                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                                )
-                            },
-                            overlayLabel = R.string.login_qr_scanner_hint
-                        )
+                        if (deepLinkPayload == null) {
+                            BarcodeScannerScreen(
+                                onNewFrame = scannerViewModel::onNewFrame,
+                                onBindingException = scannerViewModel::onBindingException,
+                                permissionState = permissionState,
+                                onResult = { granted ->
+                                    scannerViewModel.updatePermissionState(
+                                        granted,
+                                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                                    )
+                                },
+                                overlayLabel = R.string.login_qr_scanner_hint
+                            )
+                        }
                         if (authenticating) {
                             ProgressDialog(
                                 title = "",
@@ -108,7 +118,7 @@ class QrLoginScannerFragment : Fragment() {
                             )
                         }
                         pendingConfirmation?.let { pending ->
-                            ConfirmSiteDialog(
+                            QrLoginConfirmSiteDialog(
                                 host = pending.host,
                                 onConfirm = qrLoginViewModel::onConfirmSite,
                                 onCancel = qrLoginViewModel::onCancelSite
@@ -125,17 +135,22 @@ class QrLoginScannerFragment : Fragment() {
         observeQrLoginEvents()
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
+            deepLinkPayload?.let { qrLoginViewModel.onDeepLinkPayload(it) }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        scannerViewModel.startCodesRecognition()
+        if (deepLinkPayload == null) {
+            scannerViewModel.startCodesRecognition()
+        }
         unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
     }
 
     override fun onPause() {
-        scannerViewModel.stopCodesRecognition()
+        if (deepLinkPayload == null) {
+            scannerViewModel.stopCodesRecognition()
+        }
         super.onPause()
     }
 
@@ -195,29 +210,6 @@ class QrLoginScannerFragment : Fragment() {
         }
     }
 
-    @Composable
-    private fun ConfirmSiteDialog(
-        host: String,
-        onConfirm: () -> Unit,
-        onCancel: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = onCancel,
-            title = { Text(text = stringResource(id = R.string.login_qr_confirm_title)) },
-            text = { Text(text = stringResource(id = R.string.login_qr_confirm_body, host)) },
-            confirmButton = {
-                TextButton(onClick = onConfirm) {
-                    Text(text = stringResource(id = R.string.login_qr_confirm_connect))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onCancel) {
-                    Text(text = stringResource(id = R.string.login_qr_confirm_cancel))
-                }
-            }
-        )
-    }
-
     @StringRes
     private fun QrLoginScannerViewModel.ErrorReason.toMessage(): Int = when (this) {
         QrLoginScannerViewModel.ErrorReason.InvalidPayload -> R.string.login_qr_scanner_error_payload
@@ -226,6 +218,7 @@ class QrLoginScannerFragment : Fragment() {
         QrLoginScannerViewModel.ErrorReason.EndpointMissing -> R.string.login_qr_scanner_error_endpoint
         QrLoginScannerViewModel.ErrorReason.RateLimited -> R.string.login_qr_scanner_error_rate_limited
         QrLoginScannerViewModel.ErrorReason.Network -> R.string.login_qr_scanner_error_network
+        QrLoginScannerViewModel.ErrorReason.ServerError -> R.string.login_qr_scanner_error_server
         QrLoginScannerViewModel.ErrorReason.SiteAuthFailure -> R.string.login_qr_scanner_error_site_auth
         QrLoginScannerViewModel.ErrorReason.NotAWooSite -> R.string.login_qr_scanner_error_not_woo
         QrLoginScannerViewModel.ErrorReason.UserNotEligible -> R.string.login_qr_scanner_error_user_role
