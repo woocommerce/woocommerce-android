@@ -140,5 +140,6 @@ sealed class QrLoginExchangeException(message: String) : Exception(message) {
     data object Network : QrLoginExchangeException("Network failure during exchange")
     data object MalformedResponse : QrLoginExchangeException("Exchange response was malformed")
     data class HttpError(val code: Int) : QrLoginExchangeException("HTTP $code from exchange endpoint")
-    data class Unknown(val original: Throwable) : QrLoginExchangeException("Unknown exchange failure: $original")
+    data class Unknown(val original: Throwable) :
+        QrLoginExchangeException("Unknown exchange failure: ${original.javaClass.simpleName}")
 }
