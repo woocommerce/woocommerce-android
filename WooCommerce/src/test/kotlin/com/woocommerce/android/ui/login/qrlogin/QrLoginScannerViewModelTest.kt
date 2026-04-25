@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -20,6 +21,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginScannerViewModelTest : BaseUnitTest() {
@@ -153,7 +156,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given malformed exchange response, when scan confirmed, then emits Unknown error`() = testBlocking {
+    fun `given malformed exchange response, when scan confirmed, then emits ServerError`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.MalformedResponse))
         val events = viewModel.event.captureValues()
@@ -162,12 +165,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Unknown)
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.ServerError)
         )
     }
 
     @Test
-    fun `given server HttpError, when scan confirmed, then emits Unknown error`() = testBlocking {
+    fun `given server HttpError, when scan confirmed, then emits ServerError`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.HttpError(500)))
         val events = viewModel.event.captureValues()
@@ -176,9 +179,54 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Unknown)
+            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.ServerError)
         )
     }
+
+    @Test
+    fun `given OnChangedException with UNAUTHORIZED site error, when scan confirmed, then emits SiteAuthFailure`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(siteError(SiteErrorType.UNAUTHORIZED)))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
+            )
+        }
+
+    @Test
+    fun `given OnChangedException with WPCOM connectivity error, when scan confirmed, then emits Network`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(siteError(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Network)
+            )
+        }
+
+    @Test
+    fun `given OnChangedException with generic site error, when scan confirmed, then emits Unknown`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(siteError(SiteErrorType.GENERIC_ERROR)))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Unknown)
+            )
+        }
 
     @Test
     fun `given network error, when scan confirmed, then emits Network error`() = testBlocking {
@@ -348,7 +396,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             verify(analyticsTracker).track(
                 stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
                 properties = mapOf(AnalyticsTracker.KEY_STEP to "exchange"),
-                errorContext = "Network",
+                errorContext = "QrLoginScannerViewModel",
                 errorType = "Network",
                 errorDescription = "Network failure during exchange"
             )
@@ -369,8 +417,30 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given deep link payload, when onDeepLinkPayload invoked, then exposes pending confirmation`() =
+        testBlocking {
+            viewModel.onDeepLinkPayload(RAW_SCAN)
+
+            assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
+        }
+
+    @Test
+    fun `given deep link payload confirmed, when auth succeeds, then emits LoggedIn`() = testBlocking {
+        val events = viewModel.event.captureValues()
+
+        viewModel.onDeepLinkPayload(RAW_SCAN)
+        viewModel.onConfirmSite()
+
+        assertThat(events.last())
+            .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
+    }
+
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
+
+    private fun siteError(type: SiteErrorType): OnChangedException =
+        OnChangedException(SiteError(type, "boom"))
 
     private companion object {
         const val RAW_SCAN = "raw"

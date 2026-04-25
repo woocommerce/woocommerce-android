@@ -115,11 +115,13 @@ class QrLoginScannerViewModel @Inject constructor(
                     _isAuthenticating.value = false
                     inFlight = false
                     val reason = failure.toReason()
+                    val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
                     trackScanFailure(
                         step = Step.EXCHANGE,
-                        errorContext = failure.javaClass.simpleName,
+                        errorContext = this@QrLoginScannerViewModel::class.java.simpleName,
                         errorType = reason.name,
-                        errorDescription = failure.message
+                        errorDescription = failure.message,
+                        extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
                     )
                     if (reason == ErrorReason.EndpointMissing) {
                         _endpointMissing.value = true
@@ -153,11 +155,12 @@ class QrLoginScannerViewModel @Inject constructor(
         step: Step,
         errorContext: String?,
         errorType: String?,
-        errorDescription: String?
+        errorDescription: String?,
+        extras: Map<String, Any> = emptyMap()
     ) {
         analyticsTracker.track(
             AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
-            mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()),
+            mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()) + extras,
             errorContext = errorContext,
             errorType = errorType,
             errorDescription = errorDescription
