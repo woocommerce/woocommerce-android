@@ -132,6 +132,7 @@ class LoginActivity :
         const val SITE_URL_PARAMETER = "siteUrl"
         const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
         const val APP_LOGIN_AUTHORITY = "app-login"
+        const val QR_LOGIN_AUTHORITY = "qr-login"
         const val USERNAME_PARAMETER = "username"
     }
 
@@ -203,6 +204,16 @@ class LoginActivity :
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
                 intent.data?.let { uri -> handleAppLoginUri(uri) }
+            }
+
+            savedInstanceState == null &&
+                intent?.action == Intent.ACTION_VIEW &&
+                intent.data?.authority == QR_LOGIN_AUTHORITY -> {
+                intent.data?.let { uri -> handleQrLoginUri(uri) }
+                // Drop the deep-link payload so a config change or process restart doesn't
+                // re-push the scanner fragment with the same (now-invalid) token.
+                intent.data = null
+                intent.action = null
             }
 
             hasJetpackConnectedIntent() -> {
@@ -1047,6 +1058,11 @@ class LoginActivity :
         // Sometimes, the same website could be fetched from different APIs (WPCom or WPApi), and if cached twice
         // during successive login attempts, it leads to some issues later
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    private fun handleQrLoginUri(uri: Uri) {
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
+        changeFragment(QrLoginScannerFragment.forDeepLink(uri.toString()), true, QrLoginScannerFragment.TAG)
     }
 
     private fun handleAppLoginUri(uri: Uri) {
