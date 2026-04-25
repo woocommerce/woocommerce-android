@@ -200,13 +200,13 @@ class QrLoginScannerViewModel @Inject constructor(
             if (siteError == null) {
                 WooLog.w(
                     WooLog.T.LOGIN,
-                    "QR login: unmapped OnChangedException error type ${error?.javaClass?.simpleName}"
+                    "QR login: unmapped OnChangedException error type ${error.javaClass.simpleName}"
                 )
             }
             siteError?.type.toErrorReason()
         }
         else -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}", this)
+            WooLog.e(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}", this)
             ErrorReason.Unknown
         }
     }

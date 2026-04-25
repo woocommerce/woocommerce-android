@@ -6,22 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.WooLog
@@ -32,8 +23,9 @@ import javax.inject.Inject
 import org.wordpress.android.login.LoginListener
 
 /**
- * Hosts the QR scanner for the QR-first login flow. Drives the parse → exchange → login chain
- * via [QrLoginScannerViewModel] and tells the activity when the user is logged in via [Listener].
+ * Hosts [QrLoginScannerScreen] for the QR-first login flow. Plumbs camera permissions, the
+ * deep-link payload, and the post-login handoff back to the activity; the conditional UI lives
+ * in the screen composable.
  */
 @AndroidEntryPoint
 class QrLoginScannerFragment : Fragment() {
@@ -82,46 +74,25 @@ class QrLoginScannerFragment : Fragment() {
         val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
         val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
         val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (endpointMissing) {
-                QrLoginEndpointMissingScreen(
-                    onEnterUrlClicked = { listener?.onQrLoginFallbackClicked() },
-                    onRetryClicked = { qrLoginViewModel.onStartOver() }
+        QrLoginScannerScreen(
+            permissionState = permissionState,
+            authenticating = authenticating,
+            endpointMissing = endpointMissing,
+            pendingConfirmation = pendingConfirmation,
+            showCamera = deepLinkPayload == null,
+            onNewFrame = scannerViewModel::onNewFrame,
+            onBindingException = scannerViewModel::onBindingException,
+            onPermissionResult = { granted ->
+                scannerViewModel.updatePermissionState(
+                    granted,
+                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                 )
-            } else {
-                if (deepLinkPayload == null) {
-                    BarcodeScannerScreen(
-                        onNewFrame = scannerViewModel::onNewFrame,
-                        onBindingException = scannerViewModel::onBindingException,
-                        permissionState = permissionState,
-                        onResult = { granted ->
-                            scannerViewModel.updatePermissionState(
-                                granted,
-                                shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                            )
-                        },
-                        overlayLabel = R.string.login_qr_scanner_hint
-                    )
-                }
-                if (authenticating) {
-                    ProgressDialog(
-                        title = "",
-                        subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
-                        properties = DialogProperties(
-                            dismissOnBackPress = false,
-                            dismissOnClickOutside = false
-                        )
-                    )
-                }
-                pendingConfirmation?.let { pending ->
-                    QrLoginConfirmSiteDialog(
-                        host = pending.host,
-                        onConfirm = qrLoginViewModel::onConfirmSite,
-                        onCancel = qrLoginViewModel::onCancelSite
-                    )
-                }
-            }
-        }
+            },
+            onConfirmSite = qrLoginViewModel::onConfirmSite,
+            onCancelSite = qrLoginViewModel::onCancelSite,
+            onStartOver = qrLoginViewModel::onStartOver,
+            onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -184,44 +155,30 @@ class QrLoginScannerFragment : Fragment() {
     private fun observeQrLoginEvents() {
         qrLoginViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is QrLoginScannerViewModel.Dispatch.LoggedIn -> {
-                    // Stop the camera before handing off so the preview doesn't leak.
-                    scannerViewModel.stopCodesRecognition()
-                    val activeListener = listener
-                    if (activeListener != null) {
-                        activeListener.onQrLoginCompleted(event.localSiteId)
-                    } else {
-                        val activity = requireActivity()
-                        val loginListener = activity as? LoginListener
-                        if (loginListener == null) {
-                            WooLog.e(
-                                WooLog.T.LOGIN,
-                                "QR login finished but ${activity.javaClass.simpleName} is not a Listener or LoginListener"
-                            )
-                        } else {
-                            loginListener.loggedInViaUsernamePassword(arrayListOf(event.localSiteId))
-                        }
-                    }
-                }
-
+                is QrLoginScannerViewModel.Dispatch.LoggedIn -> handleLoggedIn(event.localSiteId)
                 is QrLoginScannerViewModel.Dispatch.RecoverableError ->
                     uiMessageResolver.showSnack(event.reason.toMessage())
             }
         }
     }
 
-    @StringRes
-    private fun QrLoginScannerViewModel.ErrorReason.toMessage(): Int = when (this) {
-        QrLoginScannerViewModel.ErrorReason.InvalidPayload -> R.string.login_qr_scanner_error_payload
-        QrLoginScannerViewModel.ErrorReason.Scanner -> R.string.login_qr_scanner_error_generic
-        QrLoginScannerViewModel.ErrorReason.TokenRejected -> R.string.login_qr_scanner_error_token
-        QrLoginScannerViewModel.ErrorReason.EndpointMissing -> R.string.login_qr_scanner_error_endpoint
-        QrLoginScannerViewModel.ErrorReason.RateLimited -> R.string.login_qr_scanner_error_rate_limited
-        QrLoginScannerViewModel.ErrorReason.Network -> R.string.login_qr_scanner_error_network
-        QrLoginScannerViewModel.ErrorReason.ServerError -> R.string.login_qr_scanner_error_server
-        QrLoginScannerViewModel.ErrorReason.SiteAuthFailure -> R.string.login_qr_scanner_error_site_auth
-        QrLoginScannerViewModel.ErrorReason.NotAWooSite -> R.string.login_qr_scanner_error_not_woo
-        QrLoginScannerViewModel.ErrorReason.UserNotEligible -> R.string.login_qr_scanner_error_user_role
-        QrLoginScannerViewModel.ErrorReason.Unknown -> R.string.login_qr_scanner_error_generic
+    private fun handleLoggedIn(localSiteId: Int) {
+        // Stop the camera before handing off so the preview doesn't leak.
+        scannerViewModel.stopCodesRecognition()
+        val activeListener = listener
+        if (activeListener != null) {
+            activeListener.onQrLoginCompleted(localSiteId)
+            return
+        }
+        val activity = requireActivity()
+        val loginListener = activity as? LoginListener
+        if (loginListener == null) {
+            WooLog.e(
+                WooLog.T.LOGIN,
+                "QR login finished but ${activity.javaClass.simpleName} is not a Listener or LoginListener"
+            )
+            return
+        }
+        loginListener.loggedInViaUsernamePassword(arrayListOf(localSiteId))
     }
 }
