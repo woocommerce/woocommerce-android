@@ -101,6 +101,29 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given user is not eligible, when authenticate, then saved AP is revoked`() = testBlocking {
+        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
+
+        authenticator.authenticate(ticket)
+
+        verify(repo).saveApplicationPassword(
+            localSiteId = site.id,
+            username = credentials.userLogin,
+            password = credentials.applicationPassword.reveal()
+        )
+        verify(repo).deleteApplicationPassword(site.id)
+    }
+
+    @Test
+    fun `given eligibility check fails, when authenticate, then saved AP is revoked`() = testBlocking {
+        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(IOException("offline")))
+
+        authenticator.authenticate(ticket)
+
+        verify(repo).deleteApplicationPassword(site.id)
+    }
+
+    @Test
     fun `given fetchSite fails, when authenticate, then failure propagates and AP not saved`() = testBlocking {
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword.reveal()))
             .thenReturn(Result.failure(IllegalStateException("nope")))
