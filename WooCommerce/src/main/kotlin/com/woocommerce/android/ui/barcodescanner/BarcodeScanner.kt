@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.barcodescanner
 
 import android.content.res.Configuration
 import android.util.Size
+import androidx.annotation.StringRes
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
@@ -45,6 +46,8 @@ import androidx.camera.core.Preview as CameraPreview
 fun BarcodeScanner(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
+    @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
+    overlayContent: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -132,12 +135,16 @@ fun BarcodeScanner(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
-        ScannerOverlay()
+        if (overlayContent != null) {
+            overlayContent()
+        } else {
+            ScannerOverlay(overlayLabel = overlayLabel)
+        }
     }
 }
 
 @Composable
-private fun ScannerOverlay() {
+private fun ScannerOverlay(@StringRes overlayLabel: Int) {
     Column {
         Box(
             modifier = Modifier
@@ -155,7 +162,7 @@ private fun ScannerOverlay() {
         ) {
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(R.string.barcode_scanning_scan_product_barcode_label)
+                text = stringResource(overlayLabel)
             )
         }
     }
