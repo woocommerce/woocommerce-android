@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.Fragment
@@ -24,7 +22,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -76,55 +74,50 @@ class QrLoginScannerFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            val permissionState = scannerViewModel.permissionState.observeAsState(
-                initial = BarcodeScanningViewModel.PermissionState.Unknown
-            )
-            val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
-            val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
-            val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
-            WooThemeWithBackground {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    if (endpointMissing) {
-                        QrLoginEndpointMissingScreen(
-                            onEnterUrlClicked = { listener?.onQrLoginFallbackClicked() },
-                            onRetryClicked = { qrLoginViewModel.onRetryAfterBlockingError() }
+    ): View = composeView {
+        val permissionState = scannerViewModel.permissionState.observeAsState(
+            initial = BarcodeScanningViewModel.PermissionState.Unknown
+        )
+        val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
+        val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
+        val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (endpointMissing) {
+                QrLoginEndpointMissingScreen(
+                    onEnterUrlClicked = { listener?.onQrLoginFallbackClicked() },
+                    onRetryClicked = { qrLoginViewModel.onRetryAfterBlockingError() }
+                )
+            } else {
+                if (deepLinkPayload == null) {
+                    BarcodeScannerScreen(
+                        onNewFrame = scannerViewModel::onNewFrame,
+                        onBindingException = scannerViewModel::onBindingException,
+                        permissionState = permissionState,
+                        onResult = { granted ->
+                            scannerViewModel.updatePermissionState(
+                                granted,
+                                shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                            )
+                        },
+                        overlayLabel = R.string.login_qr_scanner_hint
+                    )
+                }
+                if (authenticating) {
+                    ProgressDialog(
+                        title = "",
+                        subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
+                        properties = DialogProperties(
+                            dismissOnBackPress = false,
+                            dismissOnClickOutside = false
                         )
-                    } else {
-                        if (deepLinkPayload == null) {
-                            BarcodeScannerScreen(
-                                onNewFrame = scannerViewModel::onNewFrame,
-                                onBindingException = scannerViewModel::onBindingException,
-                                permissionState = permissionState,
-                                onResult = { granted ->
-                                    scannerViewModel.updatePermissionState(
-                                        granted,
-                                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                                    )
-                                },
-                                overlayLabel = R.string.login_qr_scanner_hint
-                            )
-                        }
-                        if (authenticating) {
-                            ProgressDialog(
-                                title = "",
-                                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
-                                properties = DialogProperties(
-                                    dismissOnBackPress = false,
-                                    dismissOnClickOutside = false
-                                )
-                            )
-                        }
-                        pendingConfirmation?.let { pending ->
-                            QrLoginConfirmSiteDialog(
-                                host = pending.host,
-                                onConfirm = qrLoginViewModel::onConfirmSite,
-                                onCancel = qrLoginViewModel::onCancelSite
-                            )
-                        }
-                    }
+                    )
+                }
+                pendingConfirmation?.let { pending ->
+                    QrLoginConfirmSiteDialog(
+                        host = pending.host,
+                        onConfirm = qrLoginViewModel::onConfirmSite,
+                        onCancel = qrLoginViewModel::onCancelSite
+                    )
                 }
             }
         }

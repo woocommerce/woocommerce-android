@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,24 +41,19 @@ class QrLoginPrologueFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            WooThemeWithBackground {
-                QrLoginPrologueScreen(
-                    onScanClicked = {
-                        AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
-                        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
-                        listener?.onQrLoginScanClicked()
-                    },
-                    onFallbackClicked = {
-                        AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
-                        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
-                        listener?.onQrLoginFallbackClicked()
-                    }
-                )
+    ): View = composeView {
+        QrLoginPrologueScreen(
+            onScanClicked = {
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
+                unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
+                listener?.onQrLoginScanClicked()
+            },
+            onFallbackClicked = {
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
+                unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
+                listener?.onQrLoginFallbackClicked()
             }
-        }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
