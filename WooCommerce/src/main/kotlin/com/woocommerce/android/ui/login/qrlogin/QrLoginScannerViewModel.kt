@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import javax.inject.Inject
 
 /**
@@ -34,6 +36,41 @@ class QrLoginScannerViewModel @Inject constructor(
     private var inFlight = false
     private var loggedIn = false
 
+    fun onScanResult(status: CodeScannerStatus) {
+        if (isBusy()) return
+
+        when (status) {
+            is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
+            is CodeScannerStatus.Failure -> {
+                _currentError.value = ErrorReason.Scanner
+            }
+            CodeScannerStatus.NotFound -> Unit
+        }
+    }
+
+    /**
+     * Entry point when the user opens a `woocommerce://qr-login?...` deep link from a browser.
+     * Reuses the same parse → confirm pipeline as a scanned QR, minus the camera.
+     */
+    fun onDeepLinkPayload(raw: String) {
+        if (isBusy()) return
+        handlePayload(parser.parse(raw))
+    }
+
+    private fun isBusy(): Boolean =
+        loggedIn || inFlight || _endpointMissing.value ||
+            _pendingConfirmation.value != null || _currentError.value != null
+
+    private fun handlePayload(payload: QrLoginPayload) {
+        when (payload) {
+            is QrLoginPayload.Ticket -> _pendingConfirmation.value = PendingConfirmation(
+                ticket = payload,
+                host = payload.siteUrl.toDisplayHost()
+            )
+            QrLoginPayload.Invalid -> _currentError.value = ErrorReason.InvalidPayload
+        }
+    }
+
     fun onCancelSite() {
         _pendingConfirmation.value = null
     }
@@ -45,6 +82,19 @@ class QrLoginScannerViewModel @Inject constructor(
     fun onStartOver() {
         _endpointMissing.value = false
         _currentError.value = null
+    }
+
+    /**
+     * Render the host portion the user is being asked to trust. We display the ASCII / punycode
+     * form because OkHttp normalizes IDN hosts for us — homograph attacks like `my-stōre.example`
+     * surface as `xn--my-stre-1za.example`, which the user can read accurately. Non-default ports
+     * are surfaced explicitly. Falls back to the raw URL only if parsing fails (defence in depth;
+     * the parser already gates this).
+     */
+    private fun String.toDisplayHost(): String {
+        val parsed = this.toHttpUrlOrNull() ?: return this
+        val defaultPort = if (parsed.scheme == "https") HTTPS_DEFAULT_PORT else HTTP_DEFAULT_PORT
+        return if (parsed.port == defaultPort) parsed.host else "${parsed.host}:${parsed.port}"
     }
 
     sealed class Dispatch : Event() {
@@ -72,5 +122,10 @@ class QrLoginScannerViewModel @Inject constructor(
 
     enum class Step {
         SCANNER, PAYLOAD, EXCHANGE
+    }
+
+    private companion object {
+        const val HTTPS_DEFAULT_PORT = 443
+        const val HTTP_DEFAULT_PORT = 80
     }
 }
