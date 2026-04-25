@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.qrlogin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -13,6 +14,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import java.io.IOException
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -109,4 +111,33 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         verify(repo, never()).saveApplicationPassword(any(), any(), any())
         verifyNoInteractions(selectedSite)
     }
+
+    @Test
+    fun `given fetchSite throws CancellationException, when authenticate, then it propagates unwrapped`() =
+        testBlocking {
+            whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword.reveal()))
+                .thenAnswer { throw CancellationException("cancelled") }
+
+            var thrown: Throwable? = null
+            try {
+                authenticator.authenticate(ticket)
+            } catch (t: Throwable) {
+                thrown = t
+            }
+
+            assertThat(thrown).isInstanceOf(CancellationException::class.java)
+        }
+
+    @Test
+    fun `given eligibility check fails with IO error, when authenticate, then UserNotEligible carries the cause`() =
+        testBlocking {
+            val cause = IOException("offline")
+            whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(cause))
+
+            val result = authenticator.authenticate(ticket)
+
+            val failure = result.exceptionOrNull()
+            assertThat(failure).isInstanceOf(QrLoginAuthenticationException.UserNotEligible::class.java)
+            assertThat((failure as QrLoginAuthenticationException.UserNotEligible).original).isEqualTo(cause)
+        }
 }

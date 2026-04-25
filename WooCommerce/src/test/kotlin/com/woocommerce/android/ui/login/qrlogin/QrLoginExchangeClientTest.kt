@@ -178,6 +178,18 @@ class QrLoginExchangeClientTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given unexpected RuntimeException, when exchange, then wraps in Unknown preserving cause`() = testBlocking {
+        val boom = RuntimeException("oops")
+        responder = { throw boom }
+
+        val result = client.exchange("https://store.example", "tok")
+
+        val failure = result.exceptionOrNull()
+        assertThat(failure).isInstanceOf(QrLoginExchangeException.Unknown::class.java)
+        assertThat((failure as QrLoginExchangeException.Unknown).original).isEqualTo(boom)
+    }
+
+    @Test
     fun `given CancellationException during call, when exchange, then it propagates unwrapped`() = testBlocking {
         responder = { throw CancellationException("cancelled") }
 
