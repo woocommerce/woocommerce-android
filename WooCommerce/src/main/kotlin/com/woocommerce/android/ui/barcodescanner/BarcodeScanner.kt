@@ -46,6 +46,7 @@ fun BarcodeScanner(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
     @androidx.annotation.StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
+    overlayContent: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -133,7 +134,11 @@ fun BarcodeScanner(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
-        ScannerOverlay(overlayLabel = overlayLabel)
+        if (overlayContent != null) {
+            overlayContent()
+        } else {
+            ScannerOverlay(overlayLabel = overlayLabel)
+        }
     }
 }
 
