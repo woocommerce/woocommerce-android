@@ -16,7 +16,7 @@ import javax.inject.Inject
  *   1. Exchange the QR ticket for an Application Password (unauthenticated POST to the merchant site).
  *   2. Discover and persist the [SiteModel] using the AP credentials.
  *   3. Save the AP into encrypted shared preferences so subsequent REST calls authenticate.
- *   4. Promote the site to the selected site.
+ *   4. Verify the user is eligible to use the app, then promote the site to the selected site.
  *
  * Returns the local site id so the caller can drive `loggedInViaUsernamePassword(localSiteId)`.
  */
@@ -48,6 +48,7 @@ class QrLoginAuthenticator @Inject constructor(
             username = credentials.userLogin,
             password = credentials.applicationPassword.reveal()
         )
+        ensureUserEligible(site)
         selectedSite.set(site)
         return site.id
     }
@@ -68,8 +69,19 @@ class QrLoginAuthenticator @Inject constructor(
         }
         return site
     }
+
+    private suspend fun ensureUserEligible(site: SiteModel) {
+        val isEligible = wpApiSiteRepository.checkIfUserIsEligible(site)
+            .getOrElse { cause ->
+                WooLog.e(WooLog.T.LOGIN, "QR login: eligibility check failed for ${site.url}", cause)
+                throw QrLoginAuthenticationException.UserNotEligible(cause)
+            }
+        if (!isEligible) throw QrLoginAuthenticationException.UserNotEligible(original = null)
+    }
 }
 
 sealed class QrLoginAuthenticationException(message: String) : Exception(message) {
     data object NotAWooSite : QrLoginAuthenticationException("Site is not a WooCommerce store")
+    data class UserNotEligible(val original: Throwable?) :
+        QrLoginAuthenticationException("User is not eligible to use the app")
 }
