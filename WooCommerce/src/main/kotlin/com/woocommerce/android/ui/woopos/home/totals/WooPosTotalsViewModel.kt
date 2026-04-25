@@ -150,7 +150,6 @@ class WooPosTotalsViewModel @Inject constructor(
                             if (state !is WooPosTotalsViewState.Checkout) return@collect
                             uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
                             cancelPaymentAction()
-                            cancelRemotePaymentAction()
                         }
                     }
                 }
@@ -165,6 +164,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+        cancelRemotePaymentAction()
     }
 
     private fun cancelCreateOrderDraftAction() {
@@ -311,7 +311,11 @@ class WooPosTotalsViewModel @Inject constructor(
         val order = totalsRepository.getOrderById(dataState.value.orderId)
         checkNotNull(order)
         uiState.value = buildWooPosTotalsViewState(order)
-        collectPayment()
+        if (effectiveReaderStatusProvider.current() == WooPosEffectiveReaderStatus.RemoteConnected) {
+            collectPaymentRemote(orderOverride = order)
+        } else {
+            collectPayment()
+        }
     }
 
     private fun collectPayment() {

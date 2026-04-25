@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -13,5 +14,10 @@ internal fun CoroutineScope.launchHeartbeat(connection: CardReaderRemoteConnecti
     while (isActive) {
         delay(HEARTBEAT_INTERVAL_MILLIS)
         runCatching { connection.send(CardReaderRemoteMessage.Ping(UUID.randomUUID().toString())) }
+            .onFailure { err ->
+                Log.w("CardReaderRemoteHeartbeat", "Ping failed, closing connection: ${err::class.java.simpleName}")
+                runCatching { connection.close() }
+                return@launch
+            }
     }
 }

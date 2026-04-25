@@ -297,7 +297,7 @@ class CardReaderRemoteSession internal constructor(
 
     private fun deviceName(): String = Build.MODEL ?: DEFAULT_DEVICE_NAME
 
-    private fun cleanupConnectionOnly() {
+    private suspend fun cleanupConnectionOnly() {
         runCatching { connection?.close() }
         connection = null
         runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
@@ -305,18 +305,26 @@ class CardReaderRemoteSession internal constructor(
         remoteTokenProvider = null
         if (readerWasConnected) {
             readerWasConnected = false
-            disconnectScope.launch {
-                runCatching { cardReaderManager.disconnectReader() }
-            }
+            runCatching { cardReaderManager.disconnectReader() }
         }
     }
 
     private fun cleanupSync() {
-        cleanupConnectionOnly()
+        runCatching { connection?.close() }
+        connection = null
+        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
+        runCatching { remoteTokenProvider?.close() }
+        remoteTokenProvider = null
         runCatching { nsdRegistration?.close() }
         nsdRegistration = null
         runCatching { tlsServer?.close() }
         tlsServer = null
+        if (readerWasConnected) {
+            readerWasConnected = false
+            disconnectScope.launch {
+                runCatching { cardReaderManager.disconnectReader() }
+            }
+        }
     }
 
     internal fun interface TlsServerFactory {
