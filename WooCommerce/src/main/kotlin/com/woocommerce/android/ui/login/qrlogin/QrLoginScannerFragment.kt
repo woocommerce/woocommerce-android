@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,7 +99,11 @@ class QrLoginScannerFragment : Fragment() {
                         if (authenticating) {
                             ProgressDialog(
                                 title = "",
-                                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating)
+                                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
+                                properties = DialogProperties(
+                                    dismissOnBackPress = false,
+                                    dismissOnClickOutside = false
+                                )
                             )
                         }
                         pendingConfirmation?.let { pending ->
