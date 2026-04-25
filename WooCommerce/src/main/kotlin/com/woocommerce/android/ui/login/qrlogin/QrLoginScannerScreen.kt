@@ -18,9 +18,9 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorRea
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
 /**
- * Renders the QR-first login screen. Routes between the camera scanner, the endpoint-missing
- * fallback, and the signing-in progress dialog. The fragment plumbs camera permissions and the
- * post-login handoff; this composable is purely UI routing.
+ * Renders the QR-first login screen. Routes between the camera scanner, fullscreen confirm,
+ * the endpoint-missing fallback, and the signing-in progress dialog. The fragment plumbs camera
+ * permissions and the post-login handoff; this composable is purely UI routing.
  */
 @Composable
 fun QrLoginScannerScreen(
@@ -30,6 +30,8 @@ fun QrLoginScannerScreen(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
     onPermissionResult: (Boolean) -> Unit,
+    onConfirmSite: () -> Unit,
+    onCancelSite: () -> Unit,
     onStartOver: () -> Unit,
     onFallbackClicked: () -> Unit,
 ) {
@@ -49,15 +51,19 @@ fun QrLoginScannerScreen(
             )
         }
 
-        if (uiState is UiState.Error && uiState.reason == ErrorReason.EndpointMissing) {
-            QrLoginEndpointMissingScreen(
-                onEnterUrlClicked = onFallbackClicked,
-                onRetryClicked = onStartOver,
+        when (uiState) {
+            is UiState.Confirming -> QrLoginConfirmSiteScreen(
+                host = uiState.host,
+                onConfirm = onConfirmSite,
+                onCancel = onCancelSite,
             )
-        }
-
-        if (uiState is UiState.Authenticating) {
-            ProgressDialog(
+            is UiState.Error -> if (uiState.reason == ErrorReason.EndpointMissing) {
+                QrLoginEndpointMissingScreen(
+                    onEnterUrlClicked = onFallbackClicked,
+                    onRetryClicked = onStartOver,
+                )
+            }
+            UiState.Authenticating -> ProgressDialog(
                 title = "",
                 subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
                 properties = DialogProperties(
@@ -65,6 +71,7 @@ fun QrLoginScannerScreen(
                     dismissOnClickOutside = false
                 )
             )
+            UiState.Idle -> Unit
         }
     }
 }
