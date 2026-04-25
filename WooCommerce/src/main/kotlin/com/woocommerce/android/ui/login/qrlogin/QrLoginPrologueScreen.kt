@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +62,7 @@ fun QrLoginPrologueScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(horizontal = dimensionResource(id = R.dimen.major_150))
                 .padding(top = systemBarsPadding.calculateTopPadding())
                 .padding(
                     bottom = navBarsPadding.calculateBottomPadding()
@@ -68,20 +71,22 @@ fun QrLoginPrologueScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            TopCopy()
+            Hero()
             Buttons(onScanClicked = onScanClicked, onFallbackClicked = onFallbackClicked)
         }
     }
 }
 
 @Composable
-private fun TopCopy() {
+private fun Hero() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = dimensionResource(id = R.dimen.major_300)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        QrIconBadge()
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_title),
             style = MaterialTheme.typography.headlineMedium,
@@ -89,21 +94,39 @@ private fun TopCopy() {
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             color = colorResource(id = R.color.prologue_login_on_background_secondary),
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         UrlBadge()
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_step_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = colorResource(id = R.color.prologue_login_on_background_tertiary),
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun QrIconBadge() {
+    Box(
+        modifier = Modifier
+            .size(dimensionResource(id = R.dimen.image_major_72))
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.prologue_login_url_badge_background)),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner),
+            contentDescription = null,
+            tint = colorResource(id = R.color.prologue_login_on_background),
+            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
         )
     }
 }
