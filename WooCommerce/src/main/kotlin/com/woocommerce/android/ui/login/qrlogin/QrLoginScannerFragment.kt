@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -171,9 +172,21 @@ class QrLoginScannerFragment : Fragment() {
                 is QrLoginScannerViewModel.Dispatch.LoggedIn -> {
                     // Stop the camera before handing off so the preview doesn't leak.
                     scannerViewModel.stopCodesRecognition()
-                    listener?.onQrLoginCompleted(event.localSiteId)
-                        ?: (requireActivity() as LoginListener)
-                            .loggedInViaUsernamePassword(arrayListOf(event.localSiteId))
+                    val activeListener = listener
+                    if (activeListener != null) {
+                        activeListener.onQrLoginCompleted(event.localSiteId)
+                    } else {
+                        val activity = requireActivity()
+                        val loginListener = activity as? LoginListener
+                        if (loginListener == null) {
+                            WooLog.e(
+                                WooLog.T.LOGIN,
+                                "QR login finished but ${activity.javaClass.simpleName} is not a Listener or LoginListener"
+                            )
+                        } else {
+                            loginListener.loggedInViaUsernamePassword(arrayListOf(event.localSiteId))
+                        }
+                    }
                 }
 
                 is QrLoginScannerViewModel.Dispatch.RecoverableError ->
