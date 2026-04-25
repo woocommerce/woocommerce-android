@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.util.WooLog
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URLDecoder
 import javax.inject.Inject
 
@@ -12,19 +14,38 @@ import javax.inject.Inject
  *
  * Anything malformed, missing parameters, with the wrong scheme/host, or with a non-https
  * `siteUrl` returns [QrLoginPayload.Invalid]. The parser does not validate the token format
- * beyond non-blank — that's the server's job during exchange.
+ * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
+ * [okhttp3.HttpUrl] and rejected if it carries userinfo, query, or fragment components — those
+ * have no role in a Woo site root and are classic spoofing surfaces in the confirmation prompt.
  */
 class QrLoginPayloadParser @Inject constructor() {
 
     fun parse(raw: String?): QrLoginPayload {
         val params = extractQueryParams(raw) ?: return QrLoginPayload.Invalid
         val token = params[PARAM_TOKEN]?.takeIf { it.isNotBlank() }
-        val siteUrl = params[PARAM_SITE_URL]?.takeIf { it.isNotBlank() && it.lowercase().startsWith(HTTPS_PREFIX) }
+        val siteUrl = params[PARAM_SITE_URL]?.let(::normalizeSiteUrl)
         return if (token != null && siteUrl != null) {
             QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
         } else {
             QrLoginPayload.Invalid
         }
+    }
+
+    private fun normalizeSiteUrl(raw: String): String? {
+        if (raw.isBlank() || !raw.lowercase().startsWith(HTTPS_PREFIX)) return null
+        val parsed = raw.toHttpUrlOrNull() ?: return null
+        if (parsed.scheme != "https") return null
+        if (parsed.username.isNotEmpty() || parsed.password.isNotEmpty()) {
+            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with userinfo")
+            return null
+        }
+        if (parsed.querySize > 0 || parsed.fragment != null) {
+            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with query or fragment")
+            return null
+        }
+        // Rebuild from the parsed URL so any normalization OkHttp applies (e.g. lowercased host)
+        // is reflected in the value we hand to the exchange client and the confirmation dialog.
+        return parsed.newBuilder().build().toString().trimEnd('/')
     }
 
     private fun extractQueryParams(raw: String?): Map<String, String>? {
@@ -41,8 +62,12 @@ class QrLoginPayloadParser @Inject constructor() {
             val idx = pair.indexOf('=')
             if (idx <= 0 || idx == pair.lastIndex) return@mapNotNull null
             val key = pair.substring(0, idx)
-            val value = runCatching { URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name()) }
-                .getOrElse { return@mapNotNull null }
+            val value = try {
+                URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name())
+            } catch (e: IllegalArgumentException) {
+                WooLog.w(WooLog.T.LOGIN, "QR login: failed to decode query param '$key': ${e.message}")
+                return@mapNotNull null
+            }
             key to value
         }
         .toMap()

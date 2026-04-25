@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
-import java.net.URI
 import javax.inject.Inject
 
 /**
@@ -85,7 +85,7 @@ class QrLoginScannerViewModel @Inject constructor(
         when (payload) {
             is QrLoginPayload.Ticket -> _pendingConfirmation.value = PendingConfirmation(
                 ticket = payload,
-                host = payload.siteUrl.toHostOrSelf()
+                host = payload.siteUrl.toDisplayHost()
             )
             QrLoginPayload.Invalid -> {
                 trackScanFailure(
@@ -152,8 +152,18 @@ class QrLoginScannerViewModel @Inject constructor(
         _pendingConfirmation.value = null
     }
 
-    private fun String.toHostOrSelf(): String =
-        runCatching { URI(this).host }.getOrNull()?.takeIf { it.isNotBlank() } ?: this
+    /**
+     * Render the host portion the user is being asked to trust. We display the ASCII / punycode
+     * form because OkHttp normalizes IDN hosts for us — homograph attacks like `my-stōre.example`
+     * surface as `xn--my-stre-1za.example`, which the user can read accurately. Non-default ports
+     * are surfaced explicitly. Falls back to the raw URL only if parsing fails (defence in depth;
+     * the parser already gates this).
+     */
+    private fun String.toDisplayHost(): String {
+        val parsed = this.toHttpUrlOrNull() ?: return this
+        val defaultPort = if (parsed.scheme == "https") HTTPS_DEFAULT_PORT else HTTP_DEFAULT_PORT
+        return if (parsed.port == defaultPort) parsed.host else "${parsed.host}:${parsed.port}"
+    }
 
     private fun trackScanFailure(
         step: Step,
@@ -237,5 +247,10 @@ class QrLoginScannerViewModel @Inject constructor(
 
     enum class Step {
         SCANNER, PAYLOAD, EXCHANGE
+    }
+
+    private companion object {
+        const val HTTPS_DEFAULT_PORT = 443
+        const val HTTP_DEFAULT_PORT = 80
     }
 }

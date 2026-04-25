@@ -7,6 +7,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -42,10 +43,16 @@ class QrLoginExchangeClient @Inject constructor(
         }
 
     private fun performExchange(siteUrl: String, token: String): QrLoginCredentials {
-        val url = siteUrl.trimEnd('/') + EXCHANGE_PATH
+        // The parser only hands us URLs that survived HttpUrl validation, so this should never
+        // be null in practice — fall through to the generic catch if it ever is.
+        val baseUrl = siteUrl.toHttpUrlOrNull()
+            ?: throw IllegalArgumentException("siteUrl could not be parsed by HttpUrl")
+        val exchangeUrl = baseUrl.newBuilder()
+            .addPathSegments(EXCHANGE_PATH_SEGMENTS)
+            .build()
         val payload = gson.toJson(ExchangeRequest(token))
         val request = Request.Builder()
-            .url(url)
+            .url(exchangeUrl)
             .post(payload.toRequestBody(JSON_MEDIA_TYPE))
             .build()
 
@@ -119,7 +126,7 @@ class QrLoginExchangeClient @Inject constructor(
     }
 
     private companion object {
-        const val EXCHANGE_PATH = "/wp-json/wc-admin/mobile-app/qr-login-exchange"
+        const val EXCHANGE_PATH_SEGMENTS = "wp-json/wc-admin/mobile-app/qr-login-exchange"
         const val HTTP_TOO_MANY_REQUESTS = 429
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
