@@ -4,6 +4,7 @@ import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -21,7 +22,15 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import javax.inject.Inject
 
 /**
- * Drives the QR login flow once the camera has produced a scan result.
+ * Drives the QR login flow once the camera has produced a scan result:
+ *
+ *   1. Parse the deep link.
+ *   2. Exchange the ticket for an Application Password.
+ *   3. Persist credentials and resolve the selected site.
+ *   4. Tell the activity to land in the main app via [Dispatch.LoggedIn].
+ *
+ * Recoverable failures (camera misread, invalid payload, network) keep the scanner running and
+ * are tracked via [AnalyticsEvent.LOGIN_QR_SCAN_FAILED] with a [KEY_STEP] property.
  */
 @HiltViewModel
 class QrLoginScannerViewModel @Inject constructor(
@@ -52,6 +61,12 @@ class QrLoginScannerViewModel @Inject constructor(
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
             is CodeScannerStatus.Failure -> {
+                trackScanFailure(
+                    step = Step.SCANNER,
+                    errorContext = status.type.toString(),
+                    errorType = ErrorReason.Scanner.name,
+                    errorDescription = status.error
+                )
                 _currentError.value = ErrorReason.Scanner
             }
             CodeScannerStatus.NotFound -> Unit
@@ -60,7 +75,7 @@ class QrLoginScannerViewModel @Inject constructor(
 
     /**
      * Entry point when the user opens a `woocommerce://qr-login?...` deep link from a browser.
-     * Reuses the same parse → confirm pipeline as a scanned QR, minus the camera.
+     * Reuses the same parse → confirm → exchange pipeline as a scanned QR, minus the camera.
      */
     fun onDeepLinkPayload(raw: String) {
         if (isBusy()) return
@@ -77,7 +92,15 @@ class QrLoginScannerViewModel @Inject constructor(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
-            QrLoginPayload.Invalid -> _currentError.value = ErrorReason.InvalidPayload
+            QrLoginPayload.Invalid -> {
+                trackScanFailure(
+                    step = Step.PAYLOAD,
+                    errorContext = null,
+                    errorType = ErrorReason.InvalidPayload.name,
+                    errorDescription = "Scanned QR did not match the expected deep link format"
+                )
+                _currentError.value = ErrorReason.InvalidPayload
+            }
         }
     }
 
@@ -94,6 +117,14 @@ class QrLoginScannerViewModel @Inject constructor(
                     },
                     onFailure = { failure ->
                         val reason = failure.toReason()
+                        val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
+                        trackScanFailure(
+                            step = Step.EXCHANGE,
+                            errorContext = this@QrLoginScannerViewModel::class.java.simpleName,
+                            errorType = reason.name,
+                            errorDescription = failure.message,
+                            extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
+                        )
                         if (reason == ErrorReason.EndpointMissing) {
                             _endpointMissing.value = true
                         } else {
@@ -108,6 +139,15 @@ class QrLoginScannerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Reset the blocking state so the user can scan a fresh QR. Tokens are single-use, so we
+     * never retry the same payload — the scanner reappears and the merchant generates a new code.
+     */
+    fun onStartOver() {
+        _endpointMissing.value = false
+        _currentError.value = null
+    }
+
     fun onConfirmSite() {
         val pending = _pendingConfirmation.value ?: return
         _pendingConfirmation.value = null
@@ -116,15 +156,6 @@ class QrLoginScannerViewModel @Inject constructor(
 
     fun onCancelSite() {
         _pendingConfirmation.value = null
-    }
-
-    /**
-     * Reset the blocking state so the user can scan a fresh QR. Tokens are single-use, so we
-     * never retry the same payload — the scanner reappears and the merchant generates a new code.
-     */
-    fun onStartOver() {
-        _endpointMissing.value = false
-        _currentError.value = null
     }
 
     /**
@@ -138,6 +169,22 @@ class QrLoginScannerViewModel @Inject constructor(
         val parsed = this.toHttpUrlOrNull() ?: return this
         val defaultPort = if (parsed.scheme == "https") HTTPS_DEFAULT_PORT else HTTP_DEFAULT_PORT
         return if (parsed.port == defaultPort) parsed.host else "${parsed.host}:${parsed.port}"
+    }
+
+    private fun trackScanFailure(
+        step: Step,
+        errorContext: String?,
+        errorType: String?,
+        errorDescription: String?,
+        extras: Map<String, Any> = emptyMap()
+    ) {
+        analyticsTracker.track(
+            AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
+            mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()) + extras,
+            errorContext = errorContext,
+            errorType = errorType,
+            errorDescription = errorDescription
+        )
     }
 
     private fun Throwable.toReason(): ErrorReason = when (this) {
