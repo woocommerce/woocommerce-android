@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -8,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import javax.inject.Inject
 
@@ -19,6 +22,7 @@ class QrLoginScannerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val parser: QrLoginPayloadParser,
     private val authenticator: QrLoginAuthenticator,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
     private val _isAuthenticating = MutableStateFlow(false)
@@ -69,6 +73,34 @@ class QrLoginScannerViewModel @Inject constructor(
             )
             QrLoginPayload.Invalid -> _currentError.value = ErrorReason.InvalidPayload
         }
+    }
+
+    private fun startExchange(ticket: QrLoginPayload.Ticket) {
+        inFlight = true
+        _isAuthenticating.value = true
+        launch {
+            try {
+                authenticator.authenticate(ticket).fold(
+                    onSuccess = { localSiteId ->
+                        loggedIn = true
+                        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+                        triggerEvent(Dispatch.LoggedIn(localSiteId))
+                    },
+                    onFailure = {
+                        _currentError.value = ErrorReason.Unknown
+                    }
+                )
+            } finally {
+                inFlight = false
+                _isAuthenticating.value = false
+            }
+        }
+    }
+
+    fun onConfirmSite() {
+        val pending = _pendingConfirmation.value ?: return
+        _pendingConfirmation.value = null
+        startExchange(pending.ticket)
     }
 
     fun onCancelSite() {
