@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -87,7 +85,7 @@ private fun TopCopy() {
         Text(
             text = stringResource(id = R.string.login_qr_prologue_title),
             style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
+            color = colorResource(id = R.color.prologue_login_on_background),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold
         )
@@ -95,7 +93,7 @@ private fun TopCopy() {
         Text(
             text = stringResource(id = R.string.login_qr_prologue_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.White.copy(alpha = 0.85f),
+            color = colorResource(id = R.color.prologue_login_on_background_secondary),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
@@ -104,7 +102,7 @@ private fun TopCopy() {
         Text(
             text = stringResource(id = R.string.login_qr_prologue_step_hint),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.75f),
+            color = colorResource(id = R.color.prologue_login_on_background_tertiary),
             textAlign = TextAlign.Center
         )
     }
@@ -115,7 +113,7 @@ private fun UrlBadge() {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
-            .background(Color.White.copy(alpha = 0.18f))
+            .background(colorResource(id = R.color.prologue_login_url_badge_background))
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_125),
                 vertical = dimensionResource(id = R.dimen.major_85)
@@ -124,7 +122,7 @@ private fun UrlBadge() {
         Text(
             text = stringResource(id = R.string.login_qr_prologue_url),
             style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
+            color = colorResource(id = R.color.prologue_login_on_background),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
@@ -148,12 +146,12 @@ private fun Buttons(
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCTextButton(
             onClick = onFallbackClicked,
-            contentPadding = PaddingValues(vertical = 12.dp),
+            contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = stringResource(id = R.string.login_qr_prologue_fallback_link),
-                color = Color.White,
+                color = colorResource(id = R.color.prologue_login_on_background),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
