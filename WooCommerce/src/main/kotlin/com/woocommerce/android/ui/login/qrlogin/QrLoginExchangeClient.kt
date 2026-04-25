@@ -22,7 +22,7 @@ import javax.inject.Named
  * Calls the QR login token-exchange endpoint on the merchant's WordPress site.
  *
  * The endpoint is unauthenticated — possession of a valid, unexpired, single-use token is the
- * authorization. See `~/Code/Automattic/qr-code-login-flow.html` for the full design.
+ * authorization.
  */
 class QrLoginExchangeClient @Inject constructor(
     @Named("custom-ssl") private val okHttpClient: OkHttpClient,
