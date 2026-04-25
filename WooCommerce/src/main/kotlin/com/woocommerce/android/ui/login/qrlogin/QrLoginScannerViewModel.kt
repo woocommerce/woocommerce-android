@@ -134,9 +134,12 @@ class QrLoginScannerViewModel @Inject constructor(
         }
     }
 
-    fun onRetryAfterBlockingError() {
+    /**
+     * Reset the blocking state so the user can scan a fresh QR. Tokens are single-use, so we
+     * never retry the same payload — the scanner reappears and the merchant generates a new code.
+     */
+    fun onStartOver() {
         _endpointMissing.value = false
-        inFlight = false
     }
 
     fun onConfirmSite() {

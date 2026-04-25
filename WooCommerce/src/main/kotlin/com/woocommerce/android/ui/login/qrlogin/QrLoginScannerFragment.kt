@@ -86,7 +86,7 @@ class QrLoginScannerFragment : Fragment() {
             if (endpointMissing) {
                 QrLoginEndpointMissingScreen(
                     onEnterUrlClicked = { listener?.onQrLoginFallbackClicked() },
-                    onRetryClicked = { qrLoginViewModel.onRetryAfterBlockingError() }
+                    onRetryClicked = { qrLoginViewModel.onStartOver() }
                 )
             } else {
                 if (deepLinkPayload == null) {

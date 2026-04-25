@@ -277,7 +277,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onConfirmSite()
         assertThat(viewModel.endpointMissing.value).isTrue()
 
-        viewModel.onRetryAfterBlockingError()
+        viewModel.onStartOver()
 
         assertThat(viewModel.endpointMissing.value).isFalse()
     }
