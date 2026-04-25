@@ -60,7 +60,8 @@ class QrLoginScannerFragment : Fragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val qrLoginViewModel: QrLoginScannerViewModel by viewModels()
 
-    private val deepLinkPayload: String? by lazy { arguments?.getString(ARG_DEEP_LINK_PAYLOAD) }
+    private val deepLinkPayload: String?
+        get() = arguments?.getString(ARG_DEEP_LINK_PAYLOAD)
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -128,7 +129,13 @@ class QrLoginScannerFragment : Fragment() {
         observeQrLoginEvents()
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
-            deepLinkPayload?.let { qrLoginViewModel.onDeepLinkPayload(it) }
+            deepLinkPayload?.let { payload ->
+                qrLoginViewModel.onDeepLinkPayload(payload)
+                // Drop the raw deep link from fragment arguments so it isn't parcelled into
+                // saved-instance-state / recents, and so a state-loss recovery falls back to the
+                // scanner instead of replaying a single-use token.
+                arguments?.remove(ARG_DEEP_LINK_PAYLOAD)
+            }
         }
     }
 
