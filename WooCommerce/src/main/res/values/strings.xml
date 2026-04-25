@@ -226,6 +226,7 @@
     <string name="login_qr_scanner_error_endpoint">This store doesn\'t support QR login yet. Please update WooCommerce.</string>
     <string name="login_qr_scanner_error_rate_limited">Too many attempts. Please wait a few minutes and try again.</string>
     <string name="login_qr_scanner_error_network">Couldn\'t reach your store. Check your connection and try again.</string>
+    <string name="login_qr_scanner_error_server">Your store returned an unexpected error. Please try again in a moment.</string>
     <string name="login_qr_scanner_error_site_auth">Couldn\'t authenticate with your store. Please try again.</string>
     <string name="login_qr_scanner_error_not_woo">This site doesn\'t have WooCommerce installed.</string>
     <string name="login_qr_scanner_error_user_role">Your account doesn\'t have permission to use the app for this store.</string>
