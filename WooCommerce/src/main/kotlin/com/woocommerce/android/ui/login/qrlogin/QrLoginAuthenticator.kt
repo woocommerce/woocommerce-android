@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.network.qrlogin.QrLoginCredentials
+import com.woocommerce.android.network.qrlogin.QrLoginRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
@@ -19,7 +21,7 @@ import javax.inject.Inject
  * Returns the local site id so the caller can drive `loggedInViaUsernamePassword(localSiteId)`.
  */
 class QrLoginAuthenticator @Inject constructor(
-    private val exchangeClient: QrLoginExchangeClient,
+    private val exchangeClient: QrLoginRestClient,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite
 ) {

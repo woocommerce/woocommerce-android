@@ -1,6 +1,7 @@
-package com.woocommerce.android.ui.login.qrlogin
+package com.woocommerce.android.network.qrlogin
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.login.qrlogin.Secret
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +19,7 @@ import org.junit.Test
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class QrLoginExchangeClientTest : BaseUnitTest() {
+class QrLoginRestClientTest : BaseUnitTest() {
 
     private var lastRequest: Request? = null
     private var responder: (Request) -> Response = { ok(it, DEFAULT_SUCCESS_BODY) }
@@ -32,11 +33,11 @@ class QrLoginExchangeClientTest : BaseUnitTest() {
         )
         .build()
 
-    private lateinit var client: QrLoginExchangeClient
+    private lateinit var client: QrLoginRestClient
 
     @Before
     fun setUp() {
-        client = QrLoginExchangeClient(
+        client = QrLoginRestClient(
             okHttpClient = okHttpClient,
             gson = Gson(),
             dispatchers = coroutinesTestRule.testDispatchers

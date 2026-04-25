@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.network.qrlogin.QrLoginCredentials
+import com.woocommerce.android.network.qrlogin.QrLoginRestClient
+import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,7 +40,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         hasWooCommerce = false
     }
 
-    private val exchangeClient: QrLoginExchangeClient = mock()
+    private val exchangeClient: QrLoginRestClient = mock()
     private val repo: WPApiSiteRepository = mock()
     private val selectedSite: SelectedSite = mock()
 

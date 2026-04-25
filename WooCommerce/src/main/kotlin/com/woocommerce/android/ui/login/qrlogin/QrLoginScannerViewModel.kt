@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent

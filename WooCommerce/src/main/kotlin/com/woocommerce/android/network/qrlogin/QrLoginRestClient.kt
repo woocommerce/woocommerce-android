@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.login.qrlogin
+package com.woocommerce.android.network.qrlogin
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
+import com.woocommerce.android.ui.login.qrlogin.Secret
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
@@ -25,7 +26,7 @@ import javax.inject.Named
  * The endpoint is unauthenticated — possession of a valid, unexpired, single-use token is the
  * authorization.
  */
-class QrLoginExchangeClient @Inject constructor(
+class QrLoginRestClient @Inject constructor(
     @Named("custom-ssl") private val okHttpClient: OkHttpClient,
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers
