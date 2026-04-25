@@ -10,11 +10,13 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import java.net.URI
 import javax.inject.Inject
 
@@ -50,7 +52,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private var loggedIn = false
 
     fun onScanResult(status: CodeScannerStatus) {
-        if (loggedIn || inFlight || _endpointMissing.value || _pendingConfirmation.value != null) return
+        if (isBusy()) return
 
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
@@ -66,6 +68,18 @@ class QrLoginScannerViewModel @Inject constructor(
             CodeScannerStatus.NotFound -> Unit
         }
     }
+
+    /**
+     * Entry point when the user opens a `woocommerce://qr-login?...` deep link from a browser.
+     * Reuses the same parse → confirm → exchange pipeline as a scanned QR, minus the camera.
+     */
+    fun onDeepLinkPayload(raw: String) {
+        if (isBusy()) return
+        handlePayload(parser.parse(raw))
+    }
+
+    private fun isBusy(): Boolean =
+        loggedIn || inFlight || _endpointMissing.value || _pendingConfirmation.value != null
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
@@ -92,6 +106,7 @@ class QrLoginScannerViewModel @Inject constructor(
             authenticator.authenticate(ticket).fold(
                 onSuccess = { localSiteId ->
                     loggedIn = true
+                    inFlight = false
                     _isAuthenticating.value = false
                     analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
                     triggerEvent(Dispatch.LoggedIn(localSiteId))
@@ -151,20 +166,42 @@ class QrLoginScannerViewModel @Inject constructor(
 
     private fun Throwable.toReason(): ErrorReason = when (this) {
         QrLoginExchangeException.TokenRejected -> ErrorReason.TokenRejected
-        QrLoginExchangeException.MalformedResponse -> ErrorReason.Unknown
         QrLoginExchangeException.EndpointMissing -> ErrorReason.EndpointMissing
         QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
         QrLoginExchangeException.Network -> ErrorReason.Network
-        is QrLoginExchangeException.HttpError -> ErrorReason.Unknown
+        QrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
+        is QrLoginExchangeException.HttpError -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange returned HTTP $code")
+            ErrorReason.ServerError
+        }
         is QrLoginExchangeException.Unknown -> ErrorReason.Unknown
         QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
         is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
         is CookieNonceAuthenticationException -> ErrorReason.SiteAuthFailure
-        is OnChangedException -> when ((error as? SiteError)?.type) {
-            null -> ErrorReason.Network
-            else -> ErrorReason.SiteAuthFailure
+        is OnChangedException -> {
+            val siteError = error as? SiteError
+            if (siteError == null) {
+                WooLog.w(
+                    WooLog.T.LOGIN,
+                    "QR login: unmapped OnChangedException error type ${error?.javaClass?.simpleName}"
+                )
+            }
+            siteError?.type.toErrorReason()
         }
-        else -> ErrorReason.Unknown
+        else -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}", this)
+            ErrorReason.Unknown
+        }
+    }
+
+    private fun SiteErrorType?.toErrorReason(): ErrorReason = when (this) {
+        SiteErrorType.UNAUTHORIZED,
+        SiteErrorType.NOT_AUTHENTICATED -> ErrorReason.SiteAuthFailure
+        SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR -> ErrorReason.Network
+        else -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped SiteErrorType $this")
+            ErrorReason.Unknown
+        }
     }
 
     sealed class Dispatch : Event() {
@@ -184,6 +221,7 @@ class QrLoginScannerViewModel @Inject constructor(
         EndpointMissing,
         RateLimited,
         Network,
+        ServerError,
         SiteAuthFailure,
         NotAWooSite,
         UserNotEligible,
