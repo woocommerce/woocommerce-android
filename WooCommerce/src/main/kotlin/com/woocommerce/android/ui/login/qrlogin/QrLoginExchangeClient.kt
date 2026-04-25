@@ -43,6 +43,15 @@ class QrLoginExchangeClient @Inject constructor(
         }
 
     private fun performExchange(siteUrl: String, token: String): QrLoginCredentials {
+        val request = buildExchangeRequest(siteUrl, token)
+        okHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw mapHttpStatus(response.code)
+            return parseExchangeBody(response.body.string())
+                ?: throw QrLoginExchangeException.MalformedResponse
+        }
+    }
+
+    private fun buildExchangeRequest(siteUrl: String, token: String): Request {
         // The parser only hands us URLs that survived HttpUrl validation, so this should never
         // be null in practice — fall through to the generic catch if it ever is.
         val baseUrl = siteUrl.toHttpUrlOrNull()
@@ -51,16 +60,10 @@ class QrLoginExchangeClient @Inject constructor(
             .addPathSegments(EXCHANGE_PATH_SEGMENTS)
             .build()
         val payload = gson.toJson(ExchangeRequest(token))
-        val request = Request.Builder()
+        return Request.Builder()
             .url(exchangeUrl)
             .post(payload.toRequestBody(JSON_MEDIA_TYPE))
             .build()
-
-        okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw mapHttpStatus(response.code)
-            return parseExchangeBody(response.body.string())
-                ?: throw QrLoginExchangeException.MalformedResponse
-        }
     }
 
     private fun parseExchangeBody(body: String): QrLoginCredentials? {

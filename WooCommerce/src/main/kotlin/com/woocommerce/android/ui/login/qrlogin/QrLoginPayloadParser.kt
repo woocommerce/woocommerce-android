@@ -33,14 +33,14 @@ class QrLoginPayloadParser @Inject constructor() {
 
     private fun normalizeSiteUrl(raw: String): String? {
         if (raw.isBlank() || !raw.lowercase().startsWith(HTTPS_PREFIX)) return null
-        val parsed = raw.toHttpUrlOrNull() ?: return null
-        if (parsed.scheme != "https") return null
-        if (parsed.username.isNotEmpty() || parsed.password.isNotEmpty()) {
-            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with userinfo")
-            return null
+        val parsed = raw.toHttpUrlOrNull()?.takeIf { it.scheme == "https" } ?: return null
+        val rejection = when {
+            parsed.username.isNotEmpty() || parsed.password.isNotEmpty() -> "userinfo"
+            parsed.querySize > 0 || parsed.fragment != null -> "query or fragment"
+            else -> null
         }
-        if (parsed.querySize > 0 || parsed.fragment != null) {
-            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with query or fragment")
+        if (rejection != null) {
+            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with $rejection")
             return null
         }
         // Rebuild from the parsed URL so any normalization OkHttp applies (e.g. lowercased host)
