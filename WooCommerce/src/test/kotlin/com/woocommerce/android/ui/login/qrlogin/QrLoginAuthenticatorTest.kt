@@ -44,7 +44,6 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     @Before
     fun setUp() = testBlocking {
-        // Happy path: exchange returns credentials, site is a Woo store, user is eligible.
         whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
             .thenReturn(Result.success(credentials))
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))

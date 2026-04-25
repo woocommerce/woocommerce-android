@@ -41,7 +41,6 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() = testBlocking {
-        // Happy path: parser recognises the scanned code as the ticket and auth succeeds.
         whenever(parser.parse(RAW_SCAN)).thenReturn(ticket)
         whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(DEFAULT_SITE_ID))
     }
