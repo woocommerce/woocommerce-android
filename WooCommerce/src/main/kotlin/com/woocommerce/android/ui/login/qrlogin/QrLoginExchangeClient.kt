@@ -36,7 +36,7 @@ class QrLoginExchangeClient @Inject constructor(
                 Result.success(performExchange(siteUrl, token))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (t: Throwable) {
+            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
                 Result.failure(mapException(t))
             }
         }
@@ -56,10 +56,18 @@ class QrLoginExchangeClient @Inject constructor(
         }
     }
 
-    private fun parseExchangeBody(body: String): QrLoginCredentials? =
-        runCatching { gson.fromJson(body, ExchangeResponse::class.java) }
-            .getOrNull()
-            ?.toCredentials()
+    private fun parseExchangeBody(body: String): QrLoginCredentials? {
+        // Let JsonSyntaxException propagate so mapException converts it to MalformedResponse.
+        val response = gson.fromJson(body, ExchangeResponse::class.java)
+        val credentials = response?.toCredentials()
+        if (credentials == null) {
+            WooLog.w(
+                WooLog.T.LOGIN,
+                "QR login exchange response missing required fields: ${response.missingFields()}"
+            )
+        }
+        return credentials
+    }
 
     private fun mapHttpStatus(code: Int): QrLoginExchangeException = when (code) {
         HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> QrLoginExchangeException.TokenRejected
@@ -74,7 +82,10 @@ class QrLoginExchangeClient @Inject constructor(
             WooLog.w(WooLog.T.LOGIN, "QR login exchange network failure: ${throwable.message}")
             QrLoginExchangeException.Network
         }
-        is JsonSyntaxException -> QrLoginExchangeException.MalformedResponse
+        is JsonSyntaxException -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange response was not valid JSON: ${throwable.message}")
+            QrLoginExchangeException.MalformedResponse
+        }
         else -> {
             WooLog.e(WooLog.T.LOGIN, "QR login exchange unexpected failure: $throwable")
             QrLoginExchangeException.Unknown(throwable)
@@ -96,10 +107,16 @@ class QrLoginExchangeClient @Inject constructor(
             return QrLoginCredentials(
                 userLogin = user,
                 siteUrl = site,
-                applicationPassword = password,
+                applicationPassword = Secret(password),
                 uuid = uuid?.takeIf { it.isNotBlank() }
             )
         }
+
+        fun missingFields(): String = buildList {
+            if (userLogin.isNullOrBlank()) add("user_login")
+            if (siteUrl.isNullOrBlank()) add("site_url")
+            if (applicationPassword.isNullOrBlank()) add("application_password")
+        }.joinToString(",").ifEmpty { "(none)" }
     }
 
     private companion object {
@@ -112,7 +129,7 @@ class QrLoginExchangeClient @Inject constructor(
 data class QrLoginCredentials(
     val userLogin: String,
     val siteUrl: String,
-    val applicationPassword: String,
+    val applicationPassword: Secret,
     val uuid: String?
 )
 
