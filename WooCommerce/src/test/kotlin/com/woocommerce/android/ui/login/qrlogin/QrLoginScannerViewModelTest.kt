@@ -105,9 +105,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         viewModel.onScanResult(successScan())
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
     }
 
     @Test
@@ -127,9 +125,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
         )
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Scanner)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Scanner)
     }
 
     @Test
@@ -150,9 +146,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.TokenRejected)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.TokenRejected)
     }
 
     @Test
@@ -164,9 +158,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.ServerError)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
     }
 
     @Test
@@ -178,9 +170,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.ServerError)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
     }
 
     @Test
@@ -193,9 +183,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
-            )
+            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
         }
 
     @Test
@@ -208,9 +196,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Network)
-            )
+            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
         }
 
     @Test
@@ -223,9 +209,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Unknown)
-            )
+            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Unknown)
         }
 
     @Test
@@ -237,9 +221,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.Network)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
     }
 
     @Test
@@ -251,9 +233,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.RateLimited)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.RateLimited)
     }
 
     @Test
@@ -303,9 +283,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
     }
 
     @Test
@@ -317,9 +295,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RecoverableError(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
-        )
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
     }
 
     @Test
@@ -332,7 +308,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given exchange failure, when another valid scan arrives, then it is processed`() = testBlocking {
+    fun `given exchange failure, when user starts over and rescans, then it is processed`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.Network))
             .thenReturn(Result.success(99))
@@ -340,6 +316,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
+        viewModel.onStartOver()
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
@@ -347,17 +324,39 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Invalid payload, when scan invalid then valid, then second scan still processed`() = testBlocking {
+    fun `given Invalid payload, when user starts over and rescans valid, then it is processed`() = testBlocking {
         whenever(parser.parse("invalid")).thenReturn(QrLoginPayload.Invalid)
         whenever(parser.parse("valid")).thenReturn(ticket)
         whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(11))
         val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan("invalid"))
+        viewModel.onStartOver()
         viewModel.onScanResult(successScan("valid"))
         viewModel.onConfirmSite()
 
         assertThat(events.last()).isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = 11))
+    }
+
+    @Test
+    fun `given currentError set, when another scan arrives, then it is ignored`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
+        viewModel.onScanResult(successScan())
+
+        viewModel.onScanResult(successScan("second-raw"))
+
+        verify(parser, never()).parse("second-raw")
+    }
+
+    @Test
+    fun `given an error, when onStartOver, then currentError is cleared`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
+        viewModel.onScanResult(successScan())
+        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
+
+        viewModel.onStartOver()
+
+        assertThat(viewModel.currentError.value).isNull()
     }
 
     @Test

@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.WooLog
@@ -55,13 +54,19 @@ class QrLoginScannerFragment : Fragment() {
     private val deepLinkPayload: String?
         get() = arguments?.getString(ARG_DEEP_LINK_PAYLOAD)
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    // Captured once at fragment creation so subsequent reads survive `arguments?.remove(...)`.
+    // Stays false on process-death recovery so the user falls back to the scanner.
+    private var isDeepLinkEntry: Boolean = false
 
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var listener: Listener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        isDeepLinkEntry = savedInstanceState == null && deepLinkPayload != null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,12 +79,14 @@ class QrLoginScannerFragment : Fragment() {
         val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
         val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
         val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
+        val currentError by qrLoginViewModel.currentError.collectAsStateWithLifecycle()
         QrLoginScannerScreen(
             permissionState = permissionState,
             authenticating = authenticating,
             endpointMissing = endpointMissing,
             pendingConfirmation = pendingConfirmation,
-            showCamera = deepLinkPayload == null,
+            currentError = currentError,
+            showCamera = !isDeepLinkEntry,
             onNewFrame = scannerViewModel::onNewFrame,
             onBindingException = scannerViewModel::onBindingException,
             onPermissionResult = { granted ->
@@ -89,8 +96,8 @@ class QrLoginScannerFragment : Fragment() {
                 )
             },
             onConfirmSite = qrLoginViewModel::onConfirmSite,
-            onCancelSite = qrLoginViewModel::onCancelSite,
-            onStartOver = qrLoginViewModel::onStartOver,
+            onCancelSite = ::handleCancelSite,
+            onStartOver = ::handleStartOver,
             onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
         )
     }
@@ -112,14 +119,14 @@ class QrLoginScannerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (deepLinkPayload == null) {
+        if (!isDeepLinkEntry) {
             scannerViewModel.startCodesRecognition()
         }
         unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
     }
 
     override fun onPause() {
-        if (deepLinkPayload == null) {
+        if (!isDeepLinkEntry) {
             scannerViewModel.stopCodesRecognition()
         }
         super.onPause()
@@ -156,10 +163,28 @@ class QrLoginScannerFragment : Fragment() {
         qrLoginViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is QrLoginScannerViewModel.Dispatch.LoggedIn -> handleLoggedIn(event.localSiteId)
-                is QrLoginScannerViewModel.Dispatch.RecoverableError ->
-                    uiMessageResolver.showSnack(event.reason.toMessage())
             }
         }
+    }
+
+    /**
+     * In camera mode, dismissing confirm just clears the overlay and the camera resumes.
+     * In deep-link mode there is no camera underneath, so the same dismissal would leave the
+     * user on a blank surface — exit the fragment instead.
+     */
+    private fun handleCancelSite() {
+        qrLoginViewModel.onCancelSite()
+        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    /**
+     * Same reasoning as [handleCancelSite]: error/endpoint-missing screens in deep-link mode
+     * have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
+     * resumes underneath as soon as the overlay is cleared.
+     */
+    private fun handleStartOver() {
+        qrLoginViewModel.onStartOver()
+        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     private fun handleLoggedIn(localSiteId: Int) {

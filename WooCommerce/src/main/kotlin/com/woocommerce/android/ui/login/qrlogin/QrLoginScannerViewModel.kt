@@ -48,6 +48,9 @@ class QrLoginScannerViewModel @Inject constructor(
     private val _pendingConfirmation = MutableStateFlow<PendingConfirmation?>(null)
     val pendingConfirmation: StateFlow<PendingConfirmation?> = _pendingConfirmation.asStateFlow()
 
+    private val _currentError = MutableStateFlow<ErrorReason?>(null)
+    val currentError: StateFlow<ErrorReason?> = _currentError.asStateFlow()
+
     private var inFlight = false
     private var loggedIn = false
 
@@ -63,7 +66,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorType = ErrorReason.Scanner.name,
                     errorDescription = status.error
                 )
-                triggerEvent(Dispatch.RecoverableError(ErrorReason.Scanner))
+                _currentError.value = ErrorReason.Scanner
             }
             CodeScannerStatus.NotFound -> Unit
         }
@@ -79,7 +82,8 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun isBusy(): Boolean =
-        loggedIn || inFlight || _endpointMissing.value || _pendingConfirmation.value != null
+        loggedIn || inFlight || _endpointMissing.value ||
+            _pendingConfirmation.value != null || _currentError.value != null
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
@@ -94,7 +98,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorType = ErrorReason.InvalidPayload.name,
                     errorDescription = "Scanned QR did not match the expected deep link format"
                 )
-                triggerEvent(Dispatch.RecoverableError(ErrorReason.InvalidPayload))
+                _currentError.value = ErrorReason.InvalidPayload
             }
         }
     }
@@ -123,7 +127,7 @@ class QrLoginScannerViewModel @Inject constructor(
                         if (reason == ErrorReason.EndpointMissing) {
                             _endpointMissing.value = true
                         } else {
-                            triggerEvent(Dispatch.RecoverableError(reason))
+                            _currentError.value = reason
                         }
                     }
                 )
@@ -140,6 +144,7 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     fun onStartOver() {
         _endpointMissing.value = false
+        _currentError.value = null
     }
 
     fun onConfirmSite() {
@@ -223,7 +228,6 @@ class QrLoginScannerViewModel @Inject constructor(
 
     sealed class Dispatch : Event() {
         data class LoggedIn(val localSiteId: Int) : Dispatch()
-        data class RecoverableError(val reason: ErrorReason) : Dispatch()
     }
 
     data class PendingConfirmation(
