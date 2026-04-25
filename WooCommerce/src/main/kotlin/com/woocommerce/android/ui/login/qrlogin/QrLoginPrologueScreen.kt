@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -13,12 +14,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -28,6 +34,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun QrLoginPrologueScreen(
@@ -62,6 +72,7 @@ fun QrLoginPrologueScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Hero()
+            Buttons(onScanClicked = onScanClicked, onFallbackClicked = onFallbackClicked)
         }
     }
 }
@@ -74,6 +85,8 @@ private fun Hero() {
             .padding(top = dimensionResource(id = R.dimen.major_300)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        QrIconBadge()
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_title),
             style = MaterialTheme.typography.headlineMedium,
@@ -89,11 +102,89 @@ private fun Hero() {
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
+        UrlBadge()
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_step_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = colorResource(id = R.color.prologue_login_on_background_tertiary),
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@Composable
+private fun QrIconBadge() {
+    Box(
+        modifier = Modifier
+            .size(dimensionResource(id = R.dimen.image_major_72))
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.prologue_login_url_badge_background)),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner),
+            contentDescription = null,
+            tint = colorResource(id = R.color.prologue_login_on_background),
+            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
+        )
+    }
+}
+
+@Composable
+private fun UrlBadge() {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
+            .background(colorResource(id = R.color.prologue_login_url_badge_background))
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_125),
+                vertical = dimensionResource(id = R.dimen.major_85)
+            )
+    ) {
+        Text(
+            text = stringResource(id = R.string.login_qr_prologue_url),
+            style = MaterialTheme.typography.titleLarge,
+            color = colorResource(id = R.color.prologue_login_on_background),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun Buttons(
+    onScanClicked: () -> Unit,
+    onFallbackClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WCColoredButton(
+            onClick = onScanClicked,
+            text = stringResource(id = R.string.login_qr_prologue_scan_button),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+        WCTextButton(
+            onClick = onFallbackClicked,
+            contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.major_75)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_fallback_link),
+                color = colorResource(id = R.color.prologue_login_on_background),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun QrLoginPrologueScreenPreview() {
+    WooThemeWithBackground {
+        QrLoginPrologueScreen(onScanClicked = {}, onFallbackClicked = {})
     }
 }
