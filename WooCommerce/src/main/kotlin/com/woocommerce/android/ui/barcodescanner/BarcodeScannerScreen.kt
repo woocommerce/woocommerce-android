@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.barcodescanner
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -25,7 +26,7 @@ fun BarcodeScannerScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
     onResult: (Boolean) -> Unit,
-    @androidx.annotation.StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
+    @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
     overlayContent: (@Composable () -> Unit)? = null,
 ) = BarcodeScannerScreen(
     onNewFrame = onNewFrame,
@@ -42,7 +43,7 @@ fun BarcodeScannerScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
-    @androidx.annotation.StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
+    @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
     overlayContent: (@Composable () -> Unit)? = null,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
