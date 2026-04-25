@@ -48,7 +48,15 @@ class QrLoginAuthenticator @Inject constructor(
             username = credentials.userLogin,
             password = credentials.applicationPassword.reveal()
         )
-        ensureUserEligible(site)
+        try {
+            ensureUserEligible(site)
+        } catch (ce: CancellationException) {
+            wpApiSiteRepository.deleteApplicationPassword(site.id)
+            throw ce
+        } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
+            wpApiSiteRepository.deleteApplicationPassword(site.id)
+            throw t
+        }
         selectedSite.set(site)
         return site.id
     }
