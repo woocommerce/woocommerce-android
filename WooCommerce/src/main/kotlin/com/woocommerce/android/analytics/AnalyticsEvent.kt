@@ -118,6 +118,11 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_USE_SECURITY_KEY_CLICKED(siteless = true),
     LOGIN_SECURITY_KEY_FAILURE(siteless = true),
     LOGIN_SECURITY_KEY_SUCCESS(siteless = true),
+    LOGIN_QR_PROLOGUE_SHOWN(siteless = true),
+    LOGIN_QR_PROLOGUE_SCAN_TAPPED(siteless = true),
+    LOGIN_QR_PROLOGUE_FALLBACK_TAPPED(siteless = true),
+    LOGIN_QR_SCAN_FAILED(siteless = true),
+    LOGIN_QR_SUCCESS(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN,
