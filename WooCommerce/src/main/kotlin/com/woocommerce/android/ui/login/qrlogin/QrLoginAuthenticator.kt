@@ -70,7 +70,10 @@ class QrLoginAuthenticator @Inject constructor(
 
     private suspend fun ensureUserEligible(site: SiteModel) {
         val isEligible = wpApiSiteRepository.checkIfUserIsEligible(site)
-            .getOrElse { throw QrLoginAuthenticationException.UserNotEligible(it) }
+            .getOrElse { cause ->
+                WooLog.w(WooLog.T.LOGIN, "QR login: eligibility check failed for ${site.url}", cause)
+                throw QrLoginAuthenticationException.UserNotEligible(cause)
+            }
         if (!isEligible) throw QrLoginAuthenticationException.UserNotEligible(original = null)
     }
 }
