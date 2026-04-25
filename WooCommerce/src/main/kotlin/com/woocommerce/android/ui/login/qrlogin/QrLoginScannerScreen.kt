@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -85,6 +86,13 @@ fun QrLoginScannerScreen(
         }
     }
 }
+
+data class QrLoginErrorContent(
+    @StringRes val title: Int,
+    @StringRes val body: Int,
+    @StringRes val primaryAction: Int,
+    @StringRes val secondaryAction: Int = R.string.login_qr_endpoint_missing_enter_url,
+)
 
 private fun QrLoginScannerViewModel.ErrorReason.toErrorContent(): QrLoginErrorContent =
     when (this) {

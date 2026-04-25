@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,13 +27,6 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-
-data class QrLoginErrorContent(
-    @StringRes val title: Int,
-    @StringRes val body: Int,
-    @StringRes val primaryAction: Int,
-    @StringRes val secondaryAction: Int = R.string.login_qr_endpoint_missing_enter_url,
-)
 
 @Composable
 fun QrLoginErrorScreen(
