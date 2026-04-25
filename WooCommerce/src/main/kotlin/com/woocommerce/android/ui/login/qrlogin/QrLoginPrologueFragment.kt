@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -35,6 +35,9 @@ class QrLoginPrologueFragment : Fragment() {
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
+    @Inject
+    lateinit var analyticsTracker: AnalyticsTrackerWrapper
+
     private var listener: Listener? = null
 
     override fun onCreateView(
@@ -44,12 +47,12 @@ class QrLoginPrologueFragment : Fragment() {
     ): View = composeView {
         QrLoginPrologueScreen(
             onScanClicked = {
-                AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
                 unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
                 listener?.onQrLoginScanClicked()
             },
             onFallbackClicked = {
-                AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
                 unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
                 listener?.onQrLoginFallbackClicked()
             }
@@ -59,7 +62,7 @@ class QrLoginPrologueFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge(forceDarkStatusBar = true)
         if (savedInstanceState == null) {
-            AnalyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
+            analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
             unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
         }
     }
