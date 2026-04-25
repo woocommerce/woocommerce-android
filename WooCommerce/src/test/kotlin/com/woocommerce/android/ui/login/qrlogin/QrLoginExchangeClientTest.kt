@@ -72,7 +72,7 @@ class QrLoginExchangeClientTest : BaseUnitTest() {
         val request = requireNotNull(lastRequest)
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.body?.contentType()?.toString()).startsWith("application/json")
-        val buffer = Buffer().also { request.body!!.writeTo(it) }
+        val buffer = Buffer().also { requireNotNull(request.body).writeTo(it) }
         assertThat(buffer.readUtf8()).isEqualTo("""{"token":"tok-42"}""")
     }
 
