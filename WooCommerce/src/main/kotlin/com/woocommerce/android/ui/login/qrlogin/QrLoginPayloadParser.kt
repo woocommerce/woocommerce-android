@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import com.woocommerce.android.util.WooLog
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.net.URI
+import java.net.URISyntaxException
 import java.net.URLDecoder
 import javax.inject.Inject
 
@@ -21,59 +22,54 @@ import javax.inject.Inject
 class QrLoginPayloadParser @Inject constructor() {
 
     fun parse(raw: String?): QrLoginPayload {
-        val params = extractQueryParams(raw) ?: return QrLoginPayload.Invalid
-        val token = params[PARAM_TOKEN]?.takeIf { it.isNotBlank() }
-        val siteUrl = params[PARAM_SITE_URL]?.let(::normalizeSiteUrl)
-        return if (token != null && siteUrl != null) {
-            QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
-        } else {
-            QrLoginPayload.Invalid
+        val uri = parseDeepLink(raw) ?: return QrLoginPayload.Invalid
+        val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() } ?: return QrLoginPayload.Invalid
+        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return QrLoginPayload.Invalid
+        return QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
+    }
+
+    private fun parseDeepLink(raw: String?): URI? {
+        val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
+        val uri = try {
+            URI(trimmed)
+        } catch (_: URISyntaxException) {
+            return null
         }
+        val schemeMatches = uri.scheme.equals(SCHEME, ignoreCase = true)
+        val hostMatches = uri.host?.equals(HOST, ignoreCase = true) == true
+        val pathAllowed = uri.rawPath.isNullOrEmpty() || uri.rawPath == "/"
+        return uri.takeIf { schemeMatches && hostMatches && pathAllowed }
+    }
+
+    private fun URI.queryParam(name: String): String? {
+        val query = rawQuery ?: return null
+        for (pair in query.split('&')) {
+            val idx = pair.indexOf('=')
+            if (idx <= 0) continue
+            if (pair.substring(0, idx) != name) continue
+            return try {
+                URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
+        return null
     }
 
     private fun normalizeSiteUrl(raw: String): String? {
         if (raw.isBlank() || !raw.lowercase().startsWith(HTTPS_PREFIX)) return null
         val parsed = raw.toHttpUrlOrNull()?.takeIf { it.scheme == "https" } ?: return null
-        val rejection = when {
-            parsed.username.isNotEmpty() || parsed.password.isNotEmpty() -> "userinfo"
-            parsed.querySize > 0 || parsed.fragment != null -> "query or fragment"
-            else -> null
-        }
-        if (rejection != null) {
-            WooLog.w(WooLog.T.LOGIN, "QR login: rejecting siteUrl with $rejection")
-            return null
-        }
+        val hasUserInfo = parsed.username.isNotEmpty() || parsed.password.isNotEmpty()
+        val hasQueryOrFragment = parsed.querySize > 0 || parsed.fragment != null
+        if (hasUserInfo || hasQueryOrFragment) return null
         // Rebuild from the parsed URL so any normalization OkHttp applies (e.g. lowercased host)
         // is reflected in the value we hand to the exchange client and the confirmation dialog.
         return parsed.newBuilder().build().toString().trimEnd('/')
     }
 
-    private fun extractQueryParams(raw: String?): Map<String, String>? {
-        val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
-        if (!trimmed.regionMatches(0, DEEP_LINK_PREFIX, 0, DEEP_LINK_PREFIX.length, ignoreCase = true)) return null
-        val afterPrefix = trimmed.substring(DEEP_LINK_PREFIX.length).removePrefix("/")
-        val query = afterPrefix.removePrefix("?").takeIf { afterPrefix.startsWith('?') && it.isNotBlank() }
-            ?: return null
-        return parseQuery(query)
-    }
-
-    private fun parseQuery(query: String): Map<String, String> = query.split('&')
-        .mapNotNull { pair ->
-            val idx = pair.indexOf('=')
-            if (idx <= 0 || idx == pair.lastIndex) return@mapNotNull null
-            val key = pair.substring(0, idx)
-            val value = try {
-                URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name())
-            } catch (e: IllegalArgumentException) {
-                WooLog.w(WooLog.T.LOGIN, "QR login: failed to decode query param '$key': ${e.message}")
-                return@mapNotNull null
-            }
-            key to value
-        }
-        .toMap()
-
     private companion object {
-        const val DEEP_LINK_PREFIX = "woocommerce://qr-login"
+        const val SCHEME = "woocommerce"
+        const val HOST = "qr-login"
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
         const val HTTPS_PREFIX = "https://"
