@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,12 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -44,6 +50,30 @@ fun QrLoginPrologueScreen(
     onScanClicked: () -> Unit,
     onFallbackClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            // The scanner asks for the permission again on first composition; if the user just
+            // granted it here, that follow-up returns immediately with no extra dialog.
+            // If the user denied, we stay on the prologue — they can tap again to retry, or
+            // pick the site-URL fallback. We don't navigate to a black scanner-with-permission-
+            // prompt screen.
+            if (granted) onScanClicked()
+        }
+    )
+    val handleScanClicked: () -> Unit = {
+        val alreadyGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+        if (alreadyGranted) {
+            onScanClicked()
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
     val navBarsPadding = WindowInsets.navigationBars.asPaddingValues()
     Box(
@@ -72,7 +102,7 @@ fun QrLoginPrologueScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Hero()
-            Buttons(onScanClicked = onScanClicked, onFallbackClicked = onFallbackClicked)
+            Buttons(onScanClicked = handleScanClicked, onFallbackClicked = onFallbackClicked)
         }
     }
 }
