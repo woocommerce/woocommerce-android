@@ -14,6 +14,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
 /**
  * Renders the QR-first login screen. Routes between the camera scanner, the endpoint-missing
@@ -23,8 +25,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 @Composable
 fun QrLoginScannerScreen(
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
-    authenticating: Boolean,
-    endpointMissing: Boolean,
+    uiState: UiState,
     showCamera: Boolean,
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
@@ -48,14 +49,14 @@ fun QrLoginScannerScreen(
             )
         }
 
-        if (endpointMissing) {
+        if (uiState is UiState.Error && uiState.reason == ErrorReason.EndpointMissing) {
             QrLoginEndpointMissingScreen(
                 onEnterUrlClicked = onFallbackClicked,
                 onRetryClicked = onStartOver,
             )
         }
 
-        if (authenticating) {
+        if (uiState is UiState.Authenticating) {
             ProgressDialog(
                 title = "",
                 subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
