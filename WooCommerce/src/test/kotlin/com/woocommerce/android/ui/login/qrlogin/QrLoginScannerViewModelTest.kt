@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -61,32 +61,31 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given valid ticket, when scan succeeds, then pending confirmation exposes host and no exchange`() =
-        testBlocking {
-            viewModel.onScanResult(successScan())
+    fun `given valid ticket, when scan succeeds, then ui state exposes confirming with host`() = testBlocking {
+        viewModel.onScanResult(successScan())
 
-            assertThat(viewModel.pendingConfirmation.value).isEqualTo(
-                QrLoginScannerViewModel.PendingConfirmation(ticket = ticket, host = "store.example")
-            )
-            verify(authenticator, never()).authenticate(any())
-        }
+        assertThat(viewModel.uiState.value).isEqualTo(
+            QrLoginScannerViewModel.UiState.Confirming(ticket = ticket, host = "store.example")
+        )
+        verify(authenticator, never()).authenticate(any())
+    }
 
     @Test
-    fun `given pending confirmation, when cancel, then pending is cleared and authenticator not called`() =
-        testBlocking {
-            viewModel.onScanResult(successScan())
-            viewModel.onCancelSite()
+    fun `given pending confirmation, when cancel, then ui state returns to idle`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        viewModel.onCancelSite()
 
-            assertThat(viewModel.pendingConfirmation.value).isNull()
-            verify(authenticator, never()).authenticate(any())
-        }
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
+        verify(authenticator, never()).authenticate(any())
+    }
 
     @Test
     fun `given pending confirmation, when another scan arrives, then it is ignored`() = testBlocking {
         viewModel.onScanResult(successScan(RAW_SCAN))
         viewModel.onScanResult(successScan("second-raw"))
 
-        assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
+        assertThat(viewModel.uiState.value)
+            .isInstanceOf(QrLoginScannerViewModel.UiState.Confirming::class.java)
         verify(parser, never()).parse("second-raw")
     }
 
@@ -96,17 +95,22 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onCancelSite()
         viewModel.onScanResult(successScan())
 
-        assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Confirming
+        assertThat(state.ticket).isEqualTo(ticket)
     }
 
     @Test
     fun `given Invalid payload, when scan succeeds, then emits InvalidPayload error`() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
-        val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan())
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
+        assertThat(viewModel.uiState.value).isEqualTo(
+            QrLoginScannerViewModel.UiState.Error(
+                reason = QrLoginScannerViewModel.ErrorReason.InvalidPayload,
+                retryTicket = null,
+            )
+        )
     }
 
     @Test
@@ -120,13 +124,13 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given scanner Failure, when scan result received, then emits Scanner error`() = testBlocking {
-        val events = viewModel.event.captureValues()
-
         viewModel.onScanResult(
             CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
         )
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Scanner)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Scanner)
+        assertThat(state.retryTicket).isNull()
     }
 
     @Test
@@ -136,42 +140,47 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(CodeScannerStatus.NotFound)
 
         assertThat(events).isEmpty()
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
     }
 
     @Test
-    fun `given token rejected by server, when scan confirmed, then emits TokenRejected error`() = testBlocking {
-        whenever(authenticator.authenticate(ticket))
-            .thenReturn(Result.failure(QrLoginExchangeException.TokenRejected))
-        val events = viewModel.event.captureValues()
+    fun `given token rejected by server, when scan confirmed, then emits TokenRejected error without retry`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(QrLoginExchangeException.TokenRejected))
 
-        viewModel.onScanResult(successScan())
-        viewModel.onConfirmSite()
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.TokenRejected)
-    }
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.TokenRejected)
+            assertThat(state.retryTicket).isNull()
+        }
 
     @Test
     fun `given malformed exchange response, when scan confirmed, then emits ServerError`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.MalformedResponse))
-        val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
+        assertThat(state.retryTicket).isEqualTo(ticket)
     }
 
     @Test
-    fun `given server HttpError, when scan confirmed, then emits ServerError`() = testBlocking {
+    fun `given server HttpError, when scan confirmed, then emits ServerError with retry ticket`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.HttpError(500)))
-        val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
+        assertThat(state.retryTicket).isEqualTo(ticket)
     }
 
     @Test
@@ -179,12 +188,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(authenticator.authenticate(ticket))
                 .thenReturn(Result.failure(siteError(SiteErrorType.UNAUTHORIZED)))
-            val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
         }
 
     @Test
@@ -192,12 +201,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(authenticator.authenticate(ticket))
                 .thenReturn(Result.failure(siteError(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)))
-            val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
         }
 
     @Test
@@ -205,66 +214,71 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(authenticator.authenticate(ticket))
                 .thenReturn(Result.failure(siteError(SiteErrorType.GENERIC_ERROR)))
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Unknown)
+        }
+
+    @Test
+    fun `given network error, when scan confirmed, then emits Network error with retry ticket`() = testBlocking {
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.Network))
+
+        viewModel.onScanResult(successScan())
+        viewModel.onConfirmSite()
+
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
+        assertThat(state.retryTicket).isEqualTo(ticket)
+    }
+
+    @Test
+    fun `given rate limited error, when scan confirmed, then emits RateLimited error with retry ticket`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.RateLimited)
+            assertThat(state.retryTicket).isEqualTo(ticket)
+        }
+
+    @Test
+    fun `given endpoint missing, when scan confirmed, then emits EndpointMissing error without retry`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
             val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
             viewModel.onConfirmSite()
 
-            assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Unknown)
+            assertThat(events).isEmpty()
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.EndpointMissing)
+            assertThat(state.retryTicket).isNull()
         }
 
     @Test
-    fun `given network error, when scan confirmed, then emits Network error`() = testBlocking {
-        whenever(authenticator.authenticate(ticket))
-            .thenReturn(Result.failure(QrLoginExchangeException.Network))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(successScan())
-        viewModel.onConfirmSite()
-
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
-    }
-
-    @Test
-    fun `given rate limited error, when scan confirmed, then emits RateLimited error`() = testBlocking {
-        whenever(authenticator.authenticate(ticket))
-            .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(successScan())
-        viewModel.onConfirmSite()
-
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.RateLimited)
-    }
-
-    @Test
-    fun `given endpoint missing, when scan confirmed, then endpointMissing flag is raised`() = testBlocking {
-        whenever(authenticator.authenticate(ticket))
-            .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(successScan())
-        viewModel.onConfirmSite()
-
-        assertThat(events).isEmpty()
-        assertThat(viewModel.endpointMissing.value).isTrue()
-    }
-
-    @Test
-    fun `given endpoint missing flag raised, when retry called, then flag is cleared`() = testBlocking {
+    fun `given endpoint missing error, when start over called, then state returns to idle`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
-        assertThat(viewModel.endpointMissing.value).isTrue()
 
         viewModel.onStartOver()
 
-        assertThat(viewModel.endpointMissing.value).isFalse()
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
     }
 
     @Test
-    fun `given endpoint missing flag raised, when another scan arrives, then it is ignored`() = testBlocking {
+    fun `given endpoint missing error, when another scan arrives, then it is ignored`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginExchangeException.EndpointMissing))
         viewModel.onScanResult(successScan())
@@ -279,24 +293,24 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     fun `given site is not Woo, when auth fails with NotAWooSite, then emits NotAWooSite error`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginAuthenticationException.NotAWooSite))
-        val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.NotAWooSite)
     }
 
     @Test
     fun `given user is ineligible, when auth fails, then emits UserNotEligible error`() = testBlocking {
         whenever(authenticator.authenticate(ticket))
             .thenReturn(Result.failure(QrLoginAuthenticationException.UserNotEligible(original = null)))
-        val events = viewModel.event.captureValues()
 
         viewModel.onScanResult(successScan())
         viewModel.onConfirmSite()
 
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
     }
 
     @Test
@@ -340,7 +354,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given currentError set, when another scan arrives, then it is ignored`() = testBlocking {
+    fun `given error state, when another scan arrives, then it is ignored`() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
         viewModel.onScanResult(successScan())
 
@@ -350,14 +364,42 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given an error, when onStartOver, then currentError is cleared`() = testBlocking {
+    fun `given an error, when onStartOver, then state returns to idle`() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
         viewModel.onScanResult(successScan())
-        assertThat(viewModel.currentError.value).isEqualTo(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
 
         viewModel.onStartOver()
 
-        assertThat(viewModel.currentError.value).isNull()
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
+    }
+
+    @Test
+    fun `given retry-eligible error, when onRetryExchange, then exchange is retried with the same ticket`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(QrLoginExchangeException.Network))
+                .thenReturn(Result.success(DEFAULT_SITE_ID))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+            viewModel.onRetryExchange()
+
+            verify(authenticator, times(2)).authenticate(eq(ticket))
+            assertThat(events.last())
+                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
+        }
+
+    @Test
+    fun `given non-retry-eligible error, when onRetryExchange, then nothing happens`() = testBlocking {
+        whenever(authenticator.authenticate(ticket))
+            .thenReturn(Result.failure(QrLoginExchangeException.TokenRejected))
+
+        viewModel.onScanResult(successScan())
+        viewModel.onConfirmSite()
+        viewModel.onRetryExchange()
+
+        verify(authenticator, times(1)).authenticate(eq(ticket))
     }
 
     @Test
@@ -378,9 +420,9 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             verify(analyticsTracker).track(
                 stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
                 properties = mapOf(AnalyticsTracker.KEY_STEP to "scanner"),
-                errorContext = "CodeScanningErrorType\$Unknown",
+                errorContext = "Unknown",
                 errorType = "Scanner",
-                errorDescription = "boom"
+                errorDescription = null,
             )
         }
 
@@ -396,9 +438,9 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             verify(analyticsTracker).track(
                 stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
                 properties = mapOf(AnalyticsTracker.KEY_STEP to "exchange"),
-                errorContext = "QrLoginScannerViewModel",
+                errorContext = "Network",
                 errorType = "Network",
-                errorDescription = "Network failure during exchange"
+                errorDescription = null,
             )
         }
 
@@ -413,7 +455,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             properties = mapOf(AnalyticsTracker.KEY_STEP to "payload"),
             errorContext = null,
             errorType = "InvalidPayload",
-            errorDescription = "Scanned QR did not match the expected deep link format"
+            errorDescription = null,
         )
     }
 
@@ -422,7 +464,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onDeepLinkPayload(RAW_SCAN)
 
-            assertThat(viewModel.pendingConfirmation.value?.ticket).isEqualTo(ticket)
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Confirming
+            assertThat(state.ticket).isEqualTo(ticket)
         }
 
     @Test

@@ -1,17 +1,21 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Confirming
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Error
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +34,7 @@ import javax.inject.Inject
  *   4. Tell the activity to land in the main app via [Dispatch.LoggedIn].
  *
  * Recoverable failures (camera misread, invalid payload, network) keep the scanner running and
- * are tracked via [AnalyticsEvent.LOGIN_QR_SCAN_FAILED] with a [KEY_STEP] property.
+ * are tracked via [AnalyticsEvent.LOGIN_QR_SCAN_FAILED] with a [AnalyticsTracker.KEY_STEP] property.
  */
 @HiltViewModel
 class QrLoginScannerViewModel @Inject constructor(
@@ -40,39 +44,22 @@ class QrLoginScannerViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
-    private val _isAuthenticating = MutableStateFlow(false)
-    val isAuthenticating: StateFlow<Boolean> = _isAuthenticating.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState>(Idle)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _endpointMissing = MutableStateFlow(false)
-    val endpointMissing: StateFlow<Boolean> = _endpointMissing.asStateFlow()
-
-    private val _pendingConfirmation = MutableStateFlow<PendingConfirmation?>(null)
-    val pendingConfirmation: StateFlow<PendingConfirmation?> = _pendingConfirmation.asStateFlow()
-
-    private val _currentError = MutableStateFlow<ErrorReason?>(null)
-    val currentError: StateFlow<ErrorReason?> = _currentError.asStateFlow()
-
-    private var inFlight = false
     private var loggedIn = false
 
-    // Held while an exchange is pending or has just failed transiently so [onRetryExchange]
-    // can replay the same ticket without bouncing the user back to the scanner. Cleared on
-    // success and on [onStartOver].
-    private var lastTicket: QrLoginPayload.Ticket? = null
-
     fun onScanResult(status: CodeScannerStatus) {
-        if (isBusy()) return
-
+        if (!isIdle()) return
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
             is CodeScannerStatus.Failure -> {
                 trackScanFailure(
                     step = Step.SCANNER,
-                    errorContext = status.type.toString(),
+                    errorContext = status.type::class.java.simpleName,
                     errorType = ErrorReason.Scanner.name,
-                    errorDescription = status.error
                 )
-                _currentError.value = ErrorReason.Scanner
+                _uiState.value = Error(reason = ErrorReason.Scanner, retryTicket = null)
             }
             CodeScannerStatus.NotFound -> Unit
         }
@@ -83,17 +70,15 @@ class QrLoginScannerViewModel @Inject constructor(
      * Reuses the same parse → confirm → exchange pipeline as a scanned QR, minus the camera.
      */
     fun onDeepLinkPayload(raw: String) {
-        if (isBusy()) return
+        if (!isIdle()) return
         handlePayload(parser.parse(raw))
     }
 
-    private fun isBusy(): Boolean =
-        loggedIn || inFlight || _endpointMissing.value ||
-            _pendingConfirmation.value != null || _currentError.value != null
+    private fun isIdle(): Boolean = !loggedIn && _uiState.value is Idle
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
-            is QrLoginPayload.Ticket -> _pendingConfirmation.value = PendingConfirmation(
+            is QrLoginPayload.Ticket -> _uiState.value = Confirming(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
@@ -102,47 +87,36 @@ class QrLoginScannerViewModel @Inject constructor(
                     step = Step.PAYLOAD,
                     errorContext = null,
                     errorType = ErrorReason.InvalidPayload.name,
-                    errorDescription = "Scanned QR did not match the expected deep link format"
                 )
-                _currentError.value = ErrorReason.InvalidPayload
+                _uiState.value = Error(reason = ErrorReason.InvalidPayload, retryTicket = null)
             }
         }
     }
 
     private fun startExchange(ticket: QrLoginPayload.Ticket) {
-        lastTicket = ticket
-        inFlight = true
-        _isAuthenticating.value = true
+        _uiState.value = Authenticating
         launch {
-            try {
-                authenticator.authenticate(ticket).fold(
-                    onSuccess = { localSiteId ->
-                        lastTicket = null
-                        loggedIn = true
-                        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
-                        triggerEvent(Dispatch.LoggedIn(localSiteId))
-                    },
-                    onFailure = { failure ->
-                        val reason = failure.toReason()
-                        val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
-                        trackScanFailure(
-                            step = Step.EXCHANGE,
-                            errorContext = this@QrLoginScannerViewModel::class.java.simpleName,
-                            errorType = reason.name,
-                            errorDescription = failure.message,
-                            extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
-                        )
-                        if (reason == ErrorReason.EndpointMissing) {
-                            _endpointMissing.value = true
-                        } else {
-                            _currentError.value = reason
-                        }
-                    }
-                )
-            } finally {
-                inFlight = false
-                _isAuthenticating.value = false
-            }
+            authenticator.authenticate(ticket).fold(
+                onSuccess = { localSiteId ->
+                    loggedIn = true
+                    analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+                    triggerEvent(Dispatch.LoggedIn(localSiteId))
+                },
+                onFailure = { failure ->
+                    val reason = failure.toReason()
+                    val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
+                    trackScanFailure(
+                        step = Step.EXCHANGE,
+                        errorContext = failure.javaClass.simpleName,
+                        errorType = reason.name,
+                        extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
+                    )
+                    _uiState.value = Error(
+                        reason = reason,
+                        retryTicket = ticket.takeIf { reason.isRetryEligible() }
+                    )
+                }
+            )
         }
     }
 
@@ -151,9 +125,8 @@ class QrLoginScannerViewModel @Inject constructor(
      * never retry the same payload — the scanner reappears and the merchant generates a new code.
      */
     fun onStartOver() {
-        _endpointMissing.value = false
-        _currentError.value = null
-        lastTicket = null
+        if (loggedIn) return
+        _uiState.value = Idle
     }
 
     /**
@@ -164,19 +137,17 @@ class QrLoginScannerViewModel @Inject constructor(
      * via the standard "Scan a new code" action.
      */
     fun onRetryExchange() {
-        val ticket = lastTicket ?: return
-        _currentError.value = null
+        val ticket = (_uiState.value as? Error)?.retryTicket ?: return
         startExchange(ticket)
     }
 
     fun onConfirmSite() {
-        val pending = _pendingConfirmation.value ?: return
-        _pendingConfirmation.value = null
+        val pending = _uiState.value as? Confirming ?: return
         startExchange(pending.ticket)
     }
 
     fun onCancelSite() {
-        _pendingConfirmation.value = null
+        if (_uiState.value is Confirming) _uiState.value = Idle
     }
 
     /**
@@ -196,7 +167,6 @@ class QrLoginScannerViewModel @Inject constructor(
         step: Step,
         errorContext: String?,
         errorType: String?,
-        errorDescription: String?,
         extras: Map<String, Any> = emptyMap()
     ) {
         analyticsTracker.track(
@@ -204,8 +174,15 @@ class QrLoginScannerViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()) + extras,
             errorContext = errorContext,
             errorType = errorType,
-            errorDescription = errorDescription
+            errorDescription = null
         )
+    }
+
+    private fun ErrorReason.isRetryEligible(): Boolean = when (this) {
+        ErrorReason.Network,
+        ErrorReason.ServerError,
+        ErrorReason.RateLimited -> true
+        else -> false
     }
 
     private fun Throwable.toReason(): ErrorReason = when (this) {
@@ -214,26 +191,14 @@ class QrLoginScannerViewModel @Inject constructor(
         QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
         QrLoginExchangeException.Network -> ErrorReason.Network
         QrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
-        is QrLoginExchangeException.HttpError -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login exchange returned HTTP $code")
-            ErrorReason.ServerError
-        }
+        is QrLoginExchangeException.HttpError -> ErrorReason.ServerError
         is QrLoginExchangeException.Unknown -> ErrorReason.Unknown
         QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
         is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
         is CookieNonceAuthenticationException -> ErrorReason.SiteAuthFailure
-        is OnChangedException -> {
-            val siteError = error as? SiteError
-            if (siteError == null) {
-                WooLog.w(
-                    WooLog.T.LOGIN,
-                    "QR login: unmapped OnChangedException error type ${error.javaClass.simpleName}"
-                )
-            }
-            siteError?.type.toErrorReason()
-        }
+        is OnChangedException -> (error as? SiteError)?.type.toErrorReason()
         else -> {
-            WooLog.e(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}", this)
+            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}")
             ErrorReason.Unknown
         }
     }
@@ -242,20 +207,19 @@ class QrLoginScannerViewModel @Inject constructor(
         SiteErrorType.UNAUTHORIZED,
         SiteErrorType.NOT_AUTHENTICATED -> ErrorReason.SiteAuthFailure
         SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR -> ErrorReason.Network
-        else -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped SiteErrorType $this")
-            ErrorReason.Unknown
-        }
+        else -> ErrorReason.Unknown
     }
 
     sealed class Dispatch : Event() {
         data class LoggedIn(val localSiteId: Int) : Dispatch()
     }
 
-    data class PendingConfirmation(
-        val ticket: QrLoginPayload.Ticket,
-        val host: String
-    )
+    sealed interface UiState {
+        data object Idle : UiState
+        data class Confirming(val ticket: QrLoginPayload.Ticket, val host: String) : UiState
+        data object Authenticating : UiState
+        data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
+    }
 
     enum class ErrorReason {
         InvalidPayload,
