@@ -46,7 +46,7 @@ class QrLoginAuthenticator @Inject constructor(
         wpApiSiteRepository.saveApplicationPassword(
             localSiteId = site.id,
             username = credentials.userLogin,
-            password = credentials.applicationPassword.reveal()
+            password = credentials.applicationPassword
         )
         try {
             ensureUserEligible(site)
@@ -68,7 +68,7 @@ class QrLoginAuthenticator @Inject constructor(
         val site = wpApiSiteRepository.fetchSite(
             url = siteUrl,
             username = credentials.userLogin,
-            password = credentials.applicationPassword.reveal()
+            password = credentials.applicationPassword
         ).getOrThrow()
 
         if (!site.hasWooCommerce) {
