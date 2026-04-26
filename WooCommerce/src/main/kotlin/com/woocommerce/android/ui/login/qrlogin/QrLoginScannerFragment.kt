@@ -98,6 +98,7 @@ class QrLoginScannerFragment : Fragment() {
             onConfirmSite = qrLoginViewModel::onConfirmSite,
             onCancelSite = ::handleCancelSite,
             onStartOver = ::handleStartOver,
+            onRetryExchange = qrLoginViewModel::onRetryExchange,
             onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
         )
     }
