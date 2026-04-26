@@ -14,12 +14,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import org.wordpress.android.login.LoginListener
 
 /**
  * Hosts [QrLoginScannerScreen] for the QR-first login flow. Plumbs camera permissions, the
@@ -36,7 +34,9 @@ class QrLoginScannerFragment : Fragment() {
         /**
          * Creates an instance that skips the camera preview and feeds [rawPayload] (a
          * `woocommerce://qr-login?...` URI) straight into the login pipeline — used when the
-         * user opens the deep link from a browser.
+         * user opens the deep link from a browser. The payload is held in [arguments] only
+         * briefly: the fragment moves it into a transient field and clears [arguments] in
+         * [onCreate] so the single-use token is never parcelled into fragment instance state.
          */
         fun forDeepLink(rawPayload: String): QrLoginScannerFragment = QrLoginScannerFragment().apply {
             arguments = Bundle().apply { putString(ARG_DEEP_LINK_PAYLOAD, rawPayload) }
@@ -51,11 +51,10 @@ class QrLoginScannerFragment : Fragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val qrLoginViewModel: QrLoginScannerViewModel by viewModels()
 
-    private val deepLinkPayload: String?
-        get() = arguments?.getString(ARG_DEEP_LINK_PAYLOAD)
-
-    // Captured once at fragment creation so subsequent reads survive `arguments?.remove(...)`.
-    // Stays false on process-death recovery so the user falls back to the scanner.
+    // Captured once at fragment creation. Kept in memory only — never persisted to
+    // saved-instance-state — and consumed in onViewCreated. On process-death recovery this
+    // stays null so the user falls back to the scanner instead of replaying a stale token.
+    private var pendingDeepLinkPayload: String? = null
     private var isDeepLinkEntry: Boolean = false
 
     @Inject
@@ -65,7 +64,13 @@ class QrLoginScannerFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isDeepLinkEntry = savedInstanceState == null && deepLinkPayload != null
+        val payload = arguments?.getString(ARG_DEEP_LINK_PAYLOAD)
+        // Strip the payload from arguments before any save-state cycle can persist it.
+        arguments = null
+        if (savedInstanceState == null && payload != null) {
+            pendingDeepLinkPayload = payload
+            isDeepLinkEntry = true
+        }
     }
 
     override fun onCreateView(
@@ -76,16 +81,10 @@ class QrLoginScannerFragment : Fragment() {
         val permissionState = scannerViewModel.permissionState.observeAsState(
             initial = BarcodeScanningViewModel.PermissionState.Unknown
         )
-        val authenticating by qrLoginViewModel.isAuthenticating.collectAsStateWithLifecycle()
-        val endpointMissing by qrLoginViewModel.endpointMissing.collectAsStateWithLifecycle()
-        val pendingConfirmation by qrLoginViewModel.pendingConfirmation.collectAsStateWithLifecycle()
-        val currentError by qrLoginViewModel.currentError.collectAsStateWithLifecycle()
+        val uiState by qrLoginViewModel.uiState.collectAsStateWithLifecycle()
         QrLoginScannerScreen(
             permissionState = permissionState,
-            authenticating = authenticating,
-            endpointMissing = endpointMissing,
-            pendingConfirmation = pendingConfirmation,
-            currentError = currentError,
+            uiState = uiState,
             showCamera = !isDeepLinkEntry,
             onNewFrame = scannerViewModel::onNewFrame,
             onBindingException = scannerViewModel::onBindingException,
@@ -108,13 +107,8 @@ class QrLoginScannerFragment : Fragment() {
         observeQrLoginEvents()
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_SCAN)
-            deepLinkPayload?.let { payload ->
-                qrLoginViewModel.onDeepLinkPayload(payload)
-                // Drop the raw deep link from fragment arguments so it isn't parcelled into
-                // saved-instance-state / recents, and so a state-loss recovery falls back to the
-                // scanner instead of replaying a single-use token.
-                arguments?.remove(ARG_DEEP_LINK_PAYLOAD)
-            }
+            pendingDeepLinkPayload?.let { qrLoginViewModel.onDeepLinkPayload(it) }
+            pendingDeepLinkPayload = null
         }
     }
 
@@ -191,20 +185,8 @@ class QrLoginScannerFragment : Fragment() {
     private fun handleLoggedIn(localSiteId: Int) {
         // Stop the camera before handing off so the preview doesn't leak.
         scannerViewModel.stopCodesRecognition()
-        val activeListener = listener
-        if (activeListener != null) {
-            activeListener.onQrLoginCompleted(localSiteId)
-            return
-        }
-        val activity = requireActivity()
-        val loginListener = activity as? LoginListener
-        if (loginListener == null) {
-            WooLog.e(
-                WooLog.T.LOGIN,
-                "QR login finished but ${activity.javaClass.simpleName} is not a Listener or LoginListener"
-            )
-            return
-        }
-        loginListener.loggedInViaUsernamePassword(arrayListOf(localSiteId))
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginCompleted(localSiteId)
     }
 }
