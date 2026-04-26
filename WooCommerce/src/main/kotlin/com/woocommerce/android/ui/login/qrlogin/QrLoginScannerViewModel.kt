@@ -55,6 +55,11 @@ class QrLoginScannerViewModel @Inject constructor(
     private var inFlight = false
     private var loggedIn = false
 
+    // Held while an exchange is pending or has just failed transiently so [onRetryExchange]
+    // can replay the same ticket without bouncing the user back to the scanner. Cleared on
+    // success and on [onStartOver].
+    private var lastTicket: QrLoginPayload.Ticket? = null
+
     fun onScanResult(status: CodeScannerStatus) {
         if (isBusy()) return
 
@@ -105,12 +110,14 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun startExchange(ticket: QrLoginPayload.Ticket) {
+        lastTicket = ticket
         inFlight = true
         _isAuthenticating.value = true
         launch {
             try {
                 authenticator.authenticate(ticket).fold(
                     onSuccess = { localSiteId ->
+                        lastTicket = null
                         loggedIn = true
                         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
                         triggerEvent(Dispatch.LoggedIn(localSiteId))
@@ -146,6 +153,20 @@ class QrLoginScannerViewModel @Inject constructor(
     fun onStartOver() {
         _endpointMissing.value = false
         _currentError.value = null
+        lastTicket = null
+    }
+
+    /**
+     * Re-runs the exchange with the same ticket from the last attempt. Wired up to error
+     * screens for transient failures (network, server, rate-limited) where the token is most
+     * likely still valid. If the server actually consumed the token before the failure, the
+     * retry surfaces [ErrorReason.TokenRejected] which then routes the user to the scanner
+     * via the standard "Scan a new code" action.
+     */
+    fun onRetryExchange() {
+        val ticket = lastTicket ?: return
+        _currentError.value = null
+        startExchange(ticket)
     }
 
     fun onConfirmSite() {
