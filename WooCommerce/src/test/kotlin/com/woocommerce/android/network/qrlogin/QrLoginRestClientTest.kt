@@ -1,7 +1,6 @@
 package com.woocommerce.android.network.qrlogin
 
 import com.google.gson.Gson
-import com.woocommerce.android.ui.login.qrlogin.Secret
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,11 +48,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
         val result = client.exchange("https://store.example", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(
-            QrLoginCredentials(
-                userLogin = "admin",
-                applicationPassword = Secret("ap-secret"),
-                uuid = "uuid-1"
-            )
+            QrLoginCredentials(userLogin = "admin", applicationPassword = "ap-secret")
         )
     }
 
@@ -62,7 +57,6 @@ class QrLoginRestClientTest : BaseUnitTest() {
         val credentials = requireNotNull(client.exchange("https://store.example", "tok").getOrNull())
 
         assertThat(credentials.toString()).doesNotContain("ap-secret")
-        assertThat(credentials.applicationPassword.toString()).doesNotContain("ap-secret")
     }
 
     @Test
@@ -168,17 +162,6 @@ class QrLoginRestClientTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given 200 without uuid, when exchange, then credentials have null uuid`() = testBlocking {
-        responder = {
-            ok(it, body = """{"user_login":"admin","site_url":"https://x","application_password":"ap"}""")
-        }
-
-        val result = client.exchange("https://store.example", "tok")
-
-        assertThat(result.getOrNull()?.uuid).isNull()
-    }
-
-    @Test
     fun `given unexpected RuntimeException, when exchange, then wraps in Unknown preserving cause`() = testBlocking {
         val boom = RuntimeException("oops")
         responder = { throw boom }
@@ -223,7 +206,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     private companion object {
         const val DEFAULT_SUCCESS_BODY =
             """{"user_login":"admin","site_url":"https://store.example",""" +
-                """"application_password":"ap-secret","uuid":"uuid-1"}"""
+                """"application_password":"ap-secret"}"""
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

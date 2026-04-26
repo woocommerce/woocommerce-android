@@ -3,7 +3,6 @@ package com.woocommerce.android.network.qrlogin
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
-import com.woocommerce.android.ui.login.qrlogin.Secret
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
@@ -90,15 +89,18 @@ class QrLoginRestClient @Inject constructor(
     private fun mapException(throwable: Throwable): Throwable = when (throwable) {
         is QrLoginExchangeException -> throwable
         is IOException -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login exchange network failure: ${throwable.message}")
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange network failure")
             QrLoginExchangeException.Network
         }
         is JsonSyntaxException -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login exchange response was not valid JSON: ${throwable.message}")
+            WooLog.w(WooLog.T.LOGIN, "QR login exchange response was not valid JSON")
             QrLoginExchangeException.MalformedResponse
         }
         else -> {
-            WooLog.e(WooLog.T.LOGIN, "QR login exchange unexpected failure: $throwable")
+            WooLog.e(
+                WooLog.T.LOGIN,
+                "QR login exchange unexpected failure: ${throwable.javaClass.simpleName}"
+            )
             QrLoginExchangeException.Unknown(throwable)
         }
     }
@@ -108,18 +110,13 @@ class QrLoginRestClient @Inject constructor(
     private data class ExchangeResponse(
         @SerializedName("user_login") val userLogin: String?,
         @SerializedName("site_url") val siteUrl: String?,
-        @SerializedName("application_password") val applicationPassword: String?,
-        @SerializedName("uuid") val uuid: String?
+        @SerializedName("application_password") val applicationPassword: String?
     ) {
         fun toCredentials(): QrLoginCredentials? {
             val user = userLogin?.takeIf { it.isNotBlank() } ?: return null
             if (siteUrl.isNullOrBlank()) return null
             val password = applicationPassword?.takeIf { it.isNotBlank() } ?: return null
-            return QrLoginCredentials(
-                userLogin = user,
-                applicationPassword = Secret(password),
-                uuid = uuid?.takeIf { it.isNotBlank() }
-            )
+            return QrLoginCredentials(userLogin = user, applicationPassword = password)
         }
 
         fun missingFields(): String = buildList {
@@ -138,9 +135,11 @@ class QrLoginRestClient @Inject constructor(
 
 data class QrLoginCredentials(
     val userLogin: String,
-    val applicationPassword: Secret,
-    val uuid: String?
-)
+    val applicationPassword: String,
+) {
+    override fun toString(): String =
+        "QrLoginCredentials(userLogin=$userLogin, applicationPassword=***)"
+}
 
 sealed class QrLoginExchangeException(message: String) : Exception(message) {
     data object TokenRejected : QrLoginExchangeException("Token was rejected by the site")
