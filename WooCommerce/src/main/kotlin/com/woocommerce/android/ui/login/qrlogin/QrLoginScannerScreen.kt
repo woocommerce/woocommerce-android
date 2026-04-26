@@ -9,17 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
-import com.woocommerce.android.ui.compose.component.ProgressDialog
 
 /**
  * Renders the QR-first login screen. Routes between the camera scanner, fullscreen confirm,
- * fullscreen error, endpoint-missing fallback, and the signing-in progress dialog. The fragment
+ * fullscreen error, endpoint-missing fallback, and the fullscreen signing-in state. The fragment
  * plumbs camera permissions and the post-login handoff; this composable is purely UI routing.
  */
 @Composable
@@ -36,6 +32,7 @@ fun QrLoginScannerScreen(
     onConfirmSite: () -> Unit,
     onCancelSite: () -> Unit,
     onStartOver: () -> Unit,
+    onRetryExchange: () -> Unit,
     onFallbackClicked: () -> Unit,
 ) {
     Box(
@@ -56,32 +53,23 @@ fun QrLoginScannerScreen(
             )
         }
 
-        // Routing: prefer terminal screens (endpoint missing, error, confirm) over progress.
+        // Routing: authenticating is fullscreen and trumps everything; otherwise prefer
+        // terminal screens (endpoint missing, error, confirm).
         when {
+            authenticating -> QrLoginAuthenticatingScreen()
             endpointMissing -> QrLoginEndpointMissingScreen(
                 onEnterUrlClicked = onFallbackClicked,
                 onRetryClicked = onStartOver,
             )
             currentError != null -> QrLoginErrorScreen(
                 content = currentError.toErrorContent(),
-                onPrimaryClicked = onStartOver,
+                onPrimaryClicked = if (currentError.isRetryEligible()) onRetryExchange else onStartOver,
                 onSecondaryClicked = onFallbackClicked,
             )
             pendingConfirmation != null -> QrLoginConfirmSiteScreen(
                 host = pendingConfirmation.host,
                 onConfirm = onConfirmSite,
                 onCancel = onCancelSite,
-            )
-        }
-
-        if (authenticating) {
-            ProgressDialog(
-                title = "",
-                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
-                properties = DialogProperties(
-                    dismissOnBackPress = false,
-                    dismissOnClickOutside = false
-                )
             )
         }
     }
@@ -93,6 +81,19 @@ data class QrLoginErrorContent(
     @StringRes val primaryAction: Int,
     @StringRes val secondaryAction: Int = R.string.login_qr_endpoint_missing_enter_url,
 )
+
+/**
+ * Errors where retrying the exchange with the same token is likely to help. Network failures
+ * may not have reached the server, server-side 5xx are typically transient, and rate-limit
+ * windows are short. The other reasons (token rejected, payload invalid, not a Woo site,
+ * etc.) won't be fixed by retrying — those keep the "scan a new code" / start-over action.
+ */
+private fun QrLoginScannerViewModel.ErrorReason.isRetryEligible(): Boolean = when (this) {
+    QrLoginScannerViewModel.ErrorReason.Network,
+    QrLoginScannerViewModel.ErrorReason.ServerError,
+    QrLoginScannerViewModel.ErrorReason.RateLimited -> true
+    else -> false
+}
 
 private fun QrLoginScannerViewModel.ErrorReason.toErrorContent(): QrLoginErrorContent =
     when (this) {
