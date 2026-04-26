@@ -210,10 +210,10 @@ class LoginActivity :
                 intent?.action == Intent.ACTION_VIEW &&
                 intent.data?.authority == QR_LOGIN_AUTHORITY -> {
                 intent.data?.let { uri -> handleQrLoginUri(uri) }
-                // Drop the deep-link payload so a config change or process restart doesn't
-                // re-push the scanner fragment with the same (now-invalid) token.
-                intent.data = null
-                intent.action = null
+                // Replace the activity intent so a process restart from recents cannot replay
+                // the single-use token. Mutating fields on the in-memory Intent is not enough —
+                // Android restores getIntent() from the originally launched intent on cold start.
+                setIntent(Intent())
             }
 
             hasJetpackConnectedIntent() -> {
