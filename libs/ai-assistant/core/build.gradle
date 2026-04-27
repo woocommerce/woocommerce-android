@@ -8,3 +8,12 @@ java {
     sourceCompatibility = libs.versions.java.get()
     targetCompatibility = libs.versions.java.get()
 }
+
+dependencies {
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.serialization.json)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+}
