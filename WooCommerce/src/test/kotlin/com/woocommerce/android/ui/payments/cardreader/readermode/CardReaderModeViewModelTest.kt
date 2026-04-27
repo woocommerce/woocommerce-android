@@ -45,7 +45,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model initialized, then session started`() {
         // THEN
-        verify(session).start(any())
+        verify(session).start(any(), any())
     }
 
     @Test
