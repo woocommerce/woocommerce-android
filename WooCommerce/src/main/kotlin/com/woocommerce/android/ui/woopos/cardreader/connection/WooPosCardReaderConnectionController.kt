@@ -319,8 +319,13 @@ class WooPosCardReaderConnectionController(
     private fun startDiscovery() {
         discoveryJob?.cancel()
         discoveryJob = scope.launch {
-            if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connected) {
-                runCatching { cardReaderManager.disconnectReader() }
+            when (cardReaderManager.readerStatus.value) {
+                is CardReaderStatus.Connected -> Unit
+                is CardReaderStatus.Reconnecting ->
+                    runCatching { cardReaderManager.cancelReconnection() }
+                is CardReaderStatus.Connecting,
+                is CardReaderStatus.NotConnected ->
+                    runCatching { cardReaderManager.disconnectReader() }
             }
             unifiedDiscoveryStream
                 .discover(

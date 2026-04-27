@@ -106,7 +106,11 @@ internal class CardReaderManagerImpl(
     override suspend fun disconnectReader(): Boolean {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         if (terminal.getConnectedReader() == null) {
-            terminalListener.updateReaderStatus(CardReaderStatus.NotConnected())
+            // Don't clobber Reconnecting — that's a legit transient state where Stripe's
+            // auto-reconnect is in flight and connectedReader is null by design.
+            if (terminalListener.readerStatus.value is CardReaderStatus.Connected) {
+                terminalListener.updateReaderStatus(CardReaderStatus.NotConnected())
+            }
             return false
         }
         return connectionManager.disconnectReader()
