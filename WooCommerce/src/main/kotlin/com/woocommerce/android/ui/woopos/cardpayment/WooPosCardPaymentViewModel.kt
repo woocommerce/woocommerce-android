@@ -119,8 +119,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             _state.value = buildPreparingState()
                             collectPayment()
                         }
+                        WooPosEffectiveReaderStatus.Reconnecting -> Unit
                         WooPosEffectiveReaderStatus.Connecting,
-                        WooPosEffectiveReaderStatus.Reconnecting,
                         WooPosEffectiveReaderStatus.Disconnected -> {
                             _state.value = buildReaderDisconnectedState()
                             cancelPayment()
