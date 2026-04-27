@@ -136,9 +136,13 @@ class WooPosRemoteReaderSession @Inject constructor(
     suspend fun sendCollectPayment(
         paymentInfo: PaymentInfo,
         timeoutMillis: Long = CardReaderRemoteTabletClient.DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
-    ): CollectPaymentOutcome =
-        client?.collectPayment(paymentInfo, timeoutMillis)
-            ?: CollectPaymentOutcome.Failed(IllegalStateException("Remote session is not connected"))
+    ): CollectPaymentOutcome {
+        val activeClient = mutex.withLock {
+            if (_state.value !is State.Connected) return@withLock null
+            client
+        } ?: return CollectPaymentOutcome.Failed(IllegalStateException("Reader not connected"))
+        return activeClient.collectPayment(paymentInfo, timeoutMillis)
+    }
 
     private fun disconnectInternal() {
         monitorScope?.cancel()

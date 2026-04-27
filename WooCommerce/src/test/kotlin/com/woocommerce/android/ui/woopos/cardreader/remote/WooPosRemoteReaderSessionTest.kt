@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
+import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository.LocationIdFetchingResult
@@ -19,6 +21,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.net.InetAddress
 import kotlin.coroutines.cancellation.CancellationException
@@ -107,6 +111,21 @@ class WooPosRemoteReaderSessionTest {
             } catch (e: CancellationException) {
                 assertThat(e.message).isEqualTo("cancelled")
             }
+        }
+
+    @Test
+    fun `given session is not connected, when sendCollectPayment, then returns Failed without calling client`() =
+        runTest {
+            // GIVEN
+            val session = createSession()
+            val paymentInfo: PaymentInfo = mock()
+
+            // WHEN
+            val outcome = session.sendCollectPayment(paymentInfo)
+
+            // THEN
+            assertThat(outcome).isInstanceOf(CollectPaymentOutcome.Failed::class.java)
+            verify(client, never()).collectPayment(any(), any())
         }
 
     @Test
