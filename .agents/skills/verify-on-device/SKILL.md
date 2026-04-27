@@ -12,7 +12,7 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 **Prerequisites:** Node.js v22+, Android SDK with platform-tools, and an emulator or device to target (step 0 can provision one when the Android CLI is installed).
 
-**Optional:** Google's Android CLI for agents (`android`). When present, the skill uses `android run` for combined install+launch, `android layout --diff` for low-token screen-transition polling, `android describe` to discover APK paths, and `android docs` for platform-API lookups. If not installed, every step falls back to the mobile-mcp / adb path with no behavior change.
+**Optional:** Google's Android CLI for agents (`android`). When present, the skill uses `android run` for combined install+launch, `android layout --diff` for low-token screen-transition polling, and `android docs` for platform-API lookups. If not installed, every step falls back to the mobile-mcp / adb path with no behavior change.
 
 ## Detect the Android CLI Once Per Session
 
