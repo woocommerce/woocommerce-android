@@ -74,6 +74,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var remotePaymentJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
     private var analyticsTrackerJob: Job? = null
+    private var activePaymentMode: PaymentMode? = null
 
     init {
         viewModelScope.launch {
@@ -142,6 +143,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         val order = this.order ?: return
 
         remotePaymentJob?.cancel()
+        activePaymentMode = PaymentMode.REMOTE
         remotePaymentJob = viewModelScope.launch {
             _state.value = WooPosCardPaymentState.PaymentInProgress(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
@@ -174,6 +176,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         if (cardReaderFacade.readerStatus.value !is Connected) return
 
         cardReaderPaymentController?.stop()
+        activePaymentMode = PaymentMode.BLUETOOTH
         cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
@@ -343,6 +346,14 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onRetryClicked() {
+        when (activePaymentMode) {
+            PaymentMode.REMOTE -> collectPaymentRemote()
+            PaymentMode.BLUETOOTH -> retryBluetoothPayment()
+            null -> error("Retry clicked but no active payment mode")
+        }
+    }
+
+    private fun retryBluetoothPayment() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
         check(paymentState != null) {
             "Retry clicked but payment controller is null"
@@ -359,19 +370,27 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onBackClicked() {
-        val paymentState = cardReaderPaymentController?.paymentState?.value
-        if (paymentState is CardReaderPaymentState.ProcessingPayment ||
-            paymentState is CardReaderPaymentState.PaymentCapturing
-        ) {
-            return
-        }
+        if (isPaymentInFlight()) return
         cancelPayment()
         navigateBack()
     }
 
     fun onDismissClicked() {
+        if (isPaymentInFlight()) return
         cancelPayment()
         navigateBack()
+    }
+
+    private fun isPaymentInFlight(): Boolean {
+        return when (activePaymentMode) {
+            PaymentMode.BLUETOOTH -> {
+                val paymentState = cardReaderPaymentController?.paymentState?.value
+                paymentState is CardReaderPaymentState.ProcessingPayment ||
+                    paymentState is CardReaderPaymentState.PaymentCapturing
+            }
+            PaymentMode.REMOTE -> _state.value is WooPosCardPaymentState.PaymentInProgress
+            null -> false
+        }
     }
 
     private fun navigateBack() {
@@ -416,9 +435,15 @@ class WooPosCardPaymentViewModel @Inject constructor(
         remotePaymentJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+        activePaymentMode = null
     }
 
     override fun onCleared() {
         cancelPayment()
+    }
+
+    private enum class PaymentMode {
+        BLUETOOTH,
+        REMOTE,
     }
 }

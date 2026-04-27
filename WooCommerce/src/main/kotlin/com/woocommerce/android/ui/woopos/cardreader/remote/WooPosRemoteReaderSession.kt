@@ -14,8 +14,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,8 +39,7 @@ class WooPosRemoteReaderSession @Inject constructor(
 
     private var client: CardReaderRemoteTabletClient? = null
     private val mutex = Mutex()
-    private val monitorScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private var closeWatcherJob: Job? = null
+    private var monitorScope: CoroutineScope? = null
 
     suspend fun connect(reader: WooPosDiscoveredReader.Phone): State = mutex.withLock {
         disconnectInternal()
@@ -110,8 +109,10 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 
     private fun watchForRemoteClose(watchedClient: CardReaderRemoteTabletClient) {
-        closeWatcherJob?.cancel()
-        closeWatcherJob = monitorScope.launch {
+        monitorScope?.cancel()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        monitorScope = scope
+        scope.launch {
             watchedClient.connectionClosed.collect { isClosed ->
                 if (isClosed && client === watchedClient && _state.value is State.Connected) {
                     logger.d("Remote reader connection closed by the phone")
@@ -135,8 +136,8 @@ class WooPosRemoteReaderSession @Inject constructor(
             ?: CollectPaymentOutcome.Failed(IllegalStateException("Remote session is not connected"))
 
     private fun disconnectInternal() {
-        closeWatcherJob?.cancel()
-        closeWatcherJob = null
+        monitorScope?.cancel()
+        monitorScope = null
         client?.disconnect()
         client = null
     }

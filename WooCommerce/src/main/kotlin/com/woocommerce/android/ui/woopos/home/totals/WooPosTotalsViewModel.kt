@@ -102,6 +102,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var remotePaymentJob: Job? = null
+    private var activePaymentMode: PaymentMode? = null
 
     private fun createCardReaderPaymentController(orderId: Long) {
         cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
@@ -165,6 +166,7 @@ class WooPosTotalsViewModel @Inject constructor(
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
         cancelRemotePaymentAction()
+        activePaymentMode = null
     }
 
     private fun cancelCreateOrderDraftAction() {
@@ -233,19 +235,30 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleRetryFailedTransactionClicked() {
         viewModelScope.launch {
-            val paymentState = cardReaderPaymentController?.paymentState?.value
-            check(paymentState != null) {
-                "Retry failed transaction clicked but payment controller is null"
-            }
-            check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
-                "Retry failed transaction clicked but payment state is not PaymentFailed"
-            }
-            when {
-                paymentState.onRetry != null -> paymentState.onRetry!!()
-                else -> {
+            when (activePaymentMode) {
+                PaymentMode.REMOTE -> {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
                     retryPaymentCollectionFromScratch()
                 }
+                PaymentMode.BLUETOOTH -> retryBluetoothFailedTransaction()
+                null -> error("Retry failed transaction clicked but no active payment mode")
+            }
+        }
+    }
+
+    private suspend fun retryBluetoothFailedTransaction() {
+        val paymentState = cardReaderPaymentController?.paymentState?.value
+        check(paymentState != null) {
+            "Retry failed transaction clicked but payment controller is null"
+        }
+        check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+            "Retry failed transaction clicked but payment state is not PaymentFailed"
+        }
+        when {
+            paymentState.onRetry != null -> paymentState.onRetry!!()
+            else -> {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+                retryPaymentCollectionFromScratch()
             }
         }
     }
@@ -254,12 +267,7 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             when (state.value) {
                 is PaymentFailed, is PaymentInProgress -> {
-                    val paymentState = cardReaderPaymentController?.paymentState?.value
-                    if (paymentState is CardReaderPaymentState.ProcessingPayment ||
-                        paymentState is CardReaderPaymentState.PaymentCapturing
-                    ) {
-                        return@launch
-                    }
+                    if (isPaymentInFlight()) return@launch
 
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
                     retryPaymentCollectionFromScratch()
@@ -270,6 +278,18 @@ class WooPosTotalsViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 }
             }
+        }
+    }
+
+    private fun isPaymentInFlight(): Boolean {
+        return when (activePaymentMode) {
+            PaymentMode.BLUETOOTH -> {
+                val paymentState = cardReaderPaymentController?.paymentState?.value
+                paymentState is CardReaderPaymentState.ProcessingPayment ||
+                    paymentState is CardReaderPaymentState.PaymentCapturing
+            }
+            PaymentMode.REMOTE -> uiState.value is PaymentInProgress
+            null -> false
         }
     }
 
@@ -337,6 +357,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 val state = uiState.value
                 check(state is WooPosTotalsViewState.Checkout)
                 check(uiState.value is WooPosTotalsViewState.Checkout)
+                activePaymentMode = PaymentMode.BLUETOOTH
                 createCardReaderPaymentController(dataState.value.orderId)
                 cardReaderPaymentController?.start()
                 listenToPaymentState()
@@ -360,6 +381,7 @@ class WooPosTotalsViewModel @Inject constructor(
         if (orderId == EMPTY_ORDER_ID) return
         if (dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) != 1) return
 
+        activePaymentMode = PaymentMode.REMOTE
         remotePaymentJob = viewModelScope.launch {
             val order = orderOverride ?: totalsRepository.getOrderById(orderId) ?: run {
                 wooPosLogWrapper.e("Remote payment: order $orderId not found")
@@ -829,4 +851,9 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderTotal: BigDecimal? = null,
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData> = emptyList()
     ) : Parcelable
+
+    private enum class PaymentMode {
+        BLUETOOTH,
+        REMOTE,
+    }
 }

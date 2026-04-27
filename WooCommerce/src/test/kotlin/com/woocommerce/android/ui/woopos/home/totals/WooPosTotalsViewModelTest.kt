@@ -1949,6 +1949,46 @@ class WooPosTotalsViewModelTest {
             )
         }
 
+    @Test
+    fun `given remote payment failed, when RetryFailedTransactionClicked, then remote flow is invoked again`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            givenCardReaderConnectedAndNetworkAvailable()
+            whenever(cardReaderFacade.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.NotConnected())
+            )
+            val remoteState = MutableStateFlow<WooPosRemoteReaderSession.State>(
+                WooPosRemoteReaderSession.State.Connected(
+                    reader = simulatedRemoteReader(),
+                    readerSerial = "SIM-1",
+                )
+            )
+            whenever(remoteReaderSession.state).thenReturn(remoteState)
+            whenever(remoteReaderPaymentFlow.collect(any()))
+                .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
+
+            val vm = createViewModelAndSetupForSuccessfulOrderCreation()
+            advanceUntilIdle()
+            assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any())
+        }
+
+    private fun simulatedRemoteReader() =
+        com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader.Phone(
+            name = "phone",
+            host = java.net.InetAddress.getByName("127.0.0.1"),
+            port = 1234,
+            fingerprintBase64 = "fp",
+            isSimulated = true,
+        )
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
