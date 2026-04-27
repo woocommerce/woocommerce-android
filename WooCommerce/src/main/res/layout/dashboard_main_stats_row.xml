@@ -80,13 +80,13 @@
                     android:maxLines="2"
                     android:text="@string/dashboard_stats_paid_orders"
                     android:textAppearance="?attr/textAppearanceCaption"
-                    android:textColor="@color/color_on_surface_high" />
+                    android:textColor="@color/color_on_surface_high"
+                    tools:text="Completed Orders"/>
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ordersLabelArrow"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:layout_gravity="bottom"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_arrow_down"
                     app:tint="@color/color_on_surface_high" />
