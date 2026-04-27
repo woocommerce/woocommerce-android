@@ -132,6 +132,11 @@ internal class DefaultCardReaderRemoteTabletClient(
         closedBridgeJob = scope.launch {
             connection.closed.collect { isClosed ->
                 _connectionClosed.value = isClosed
+                if (isClosed) {
+                    heartbeatJob?.cancel()
+                    heartbeatJob = null
+                    this@DefaultCardReaderRemoteTabletClient.connection = null
+                }
             }
         }
     }
