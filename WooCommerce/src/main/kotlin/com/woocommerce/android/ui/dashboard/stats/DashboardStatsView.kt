@@ -58,6 +58,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
@@ -207,6 +208,20 @@ class DashboardStatsView @JvmOverloads constructor(
         )
         isRequestingStats = true
         applyCustomRange(statsTimeRangeSelection)
+    }
+
+    fun setOnOrderDateTypeClickListener(onClick: () -> Unit) {
+        binding.statsViewRow.ordersLayout.setOnClickListener { onClick() }
+    }
+
+    fun setOrderDateType(orderDateType: WCAnalyticsOrderDateType) {
+        binding.statsViewRow.ordersLabel.setText(
+            when (orderDateType) {
+                WCAnalyticsOrderDateType.PAID -> R.string.dashboard_stats_paid_orders
+                WCAnalyticsOrderDateType.CREATED -> R.string.dashboard_stats_all_orders
+                WCAnalyticsOrderDateType.COMPLETED -> R.string.dashboard_stats_completed_orders
+            }
+        )
     }
 
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {

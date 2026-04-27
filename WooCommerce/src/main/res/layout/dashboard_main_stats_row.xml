@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
         android:baselineAligned="false"
-        android:gravity="bottom"
+        android:gravity="top"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -52,6 +52,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -62,13 +65,32 @@
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 tools:text="10" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/ordersLabel"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dashboard_stats_orders"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/color_on_surface_high" />
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/ordersLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:maxWidth="@dimen/major_375"
+                    android:maxLines="2"
+                    android:text="@string/dashboard_stats_paid_orders"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="@color/color_on_surface_high" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ordersLabelArrow"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="bottom"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_down"
+                    app:tint="@color/color_on_surface_high" />
+            </LinearLayout>
 
         </LinearLayout>
 

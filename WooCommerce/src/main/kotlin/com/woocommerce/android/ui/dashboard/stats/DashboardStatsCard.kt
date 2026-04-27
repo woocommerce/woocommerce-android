@@ -1,26 +1,45 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -28,11 +47,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -46,6 +67,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.commons.stats.StatsTimeRange
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import java.util.Date
 
 @Composable
@@ -65,6 +87,8 @@ fun DashboardStatsCard(
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
     val selectedRevenueStatsType by viewModel.selectedRevenueStatsType
         .observeAsState(DashboardStatsViewModel.RevenueStatsType.DEFAULT)
+    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
+    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     HandleEvents(
         event = viewModel.event,
@@ -107,12 +131,17 @@ fun DashboardStatsCard(
                     visitorsStatsState = visitorsStatsState,
                     lastUpdateState = lastUpdateState,
                     selectedRevenueStatsType = selectedRevenueStatsType,
+                    selectedOrderDateType = orderDateTypeState.selectedType,
                     dateUtils = viewModel.dateUtils,
                     currencyFormatter = viewModel.currencyFormatter,
                     usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
                     onAddCustomRangeClick = viewModel::onEditCustomRangeTapped,
                     onTabSelected = viewModel::onRangeChanged,
                     onRevenueStatsTypeSelected = viewModel::onRevenueStatsTypeSelected,
+                    onOrderDateTypeClick = {
+                        viewModel.onOrderDateTypeSelectorTapped()
+                        showOrderDateTypeBottomSheet = true
+                    },
                     onChartDateSelected = viewModel::onChartDateSelected
                 )
             }
@@ -125,6 +154,18 @@ fun DashboardStatsCard(
             }
         }
     }
+
+    if (showOrderDateTypeBottomSheet) {
+        OrderDateTypeBottomSheet(
+            state = orderDateTypeState,
+            onDismiss = { showOrderDateTypeBottomSheet = false },
+            onSelect = { orderDateType ->
+                viewModel.onOrderDateTypeSelected(orderDateType) {
+                    showOrderDateTypeBottomSheet = false
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -134,12 +175,14 @@ private fun DashboardStatsContent(
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
     selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
+    selectedOrderDateType: WCAnalyticsOrderDateType,
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
     onRevenueStatsTypeSelected: (DashboardStatsViewModel.RevenueStatsType) -> Unit,
+    onOrderDateTypeClick: () -> Unit,
     onChartDateSelected: (String?) -> Unit,
 ) {
     Column {
@@ -165,10 +208,12 @@ private fun DashboardStatsContent(
             visitorsStatsState = visitorsStatsState,
             lastUpdateState = lastUpdateState,
             selectedRevenueStatsType = selectedRevenueStatsType,
+            selectedOrderDateType = selectedOrderDateType,
             dateUtils = dateUtils,
             currencyFormatter = currencyFormatter,
             usageTracksEventEmitter = usageTracksEventEmitter,
             onAddCustomRangeClick = onAddCustomRangeClick,
+            onOrderDateTypeClick = onOrderDateTypeClick,
             onChartDateSelected = onChartDateSelected,
             modifier = Modifier.fillMaxWidth()
         )
@@ -182,10 +227,12 @@ private fun StatsChart(
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
     selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
+    selectedOrderDateType: WCAnalyticsOrderDateType,
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onAddCustomRangeClick: () -> Unit,
+    onOrderDateTypeClick: () -> Unit,
     onChartDateSelected: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -213,6 +260,7 @@ private fun StatsChart(
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
                 customRangeLabel.setOnClickListener { onAddCustomRangeClick() }
+                setOnOrderDateTypeClickListener(onOrderDateTypeClick)
             }
         }
     )
@@ -228,6 +276,10 @@ private fun StatsChart(
 
     LaunchedEffect(lastUpdateState) {
         statsView.showLastUpdate(lastUpdateState)
+    }
+
+    LaunchedEffect(selectedOrderDateType) {
+        statsView.setOrderDateType(selectedOrderDateType)
     }
 
     LaunchedEffect(revenueStatsState, selectedRevenueStatsType) {
@@ -297,6 +349,159 @@ private fun RevenueStatsTypeSelector(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun OrderDateTypeBottomSheet(
+    state: DashboardStatsViewModel.OrderDateTypeUiState,
+    onDismiss: () -> Unit,
+    onSelect: (WCAnalyticsOrderDateType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    WCModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = onDismiss,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_description),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            orderDateTypeOptions.forEach { option ->
+                OrderDateTypeOptionRow(
+                    option = option,
+                    state = state,
+                    onDismiss = onDismiss,
+                    onSelect = onSelect
+                )
+            }
+
+            if (state.hasUpdateError) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                    text = stringResource(id = R.string.dashboard_stats_order_date_type_update_error),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_footer),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderDateTypeOptionRow(
+    option: OrderDateTypeOption,
+    state: DashboardStatsViewModel.OrderDateTypeUiState,
+    onDismiss: () -> Unit,
+    onSelect: (WCAnalyticsOrderDateType) -> Unit
+) {
+    val isSelected = state.selectedType == option.type
+    val isUpdating = state.updatingType == option.type
+    val isEnabled = state.updatingType == null && !state.isLoading
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 60.dp)
+            .clickable(enabled = isEnabled) {
+                if (isSelected) {
+                    onDismiss()
+                } else {
+                    onSelect(option.type)
+                }
+            }
+            .padding(horizontal = 24.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(id = option.title),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(id = option.description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        when {
+            isUpdating -> CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                strokeWidth = 2.dp
+            )
+
+            isSelected -> Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+private data class OrderDateTypeOption(
+    val type: WCAnalyticsOrderDateType,
+    @StringRes val title: Int,
+    @StringRes val description: Int
+)
+
+private val orderDateTypeOptions = listOf(
+    OrderDateTypeOption(
+        type = WCAnalyticsOrderDateType.PAID,
+        title = R.string.dashboard_stats_paid_orders,
+        description = R.string.dashboard_stats_paid_orders_description
+    ),
+    OrderDateTypeOption(
+        type = WCAnalyticsOrderDateType.CREATED,
+        title = R.string.dashboard_stats_all_orders,
+        description = R.string.dashboard_stats_all_orders_description
+    ),
+    OrderDateTypeOption(
+        type = WCAnalyticsOrderDateType.COMPLETED,
+        title = R.string.dashboard_stats_completed_orders,
+        description = R.string.dashboard_stats_completed_orders_description
+    )
+)
 
 @Composable
 private fun HandleEvents(

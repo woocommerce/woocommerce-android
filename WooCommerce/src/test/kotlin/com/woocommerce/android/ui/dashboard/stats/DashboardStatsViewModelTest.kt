@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -44,6 +46,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,6 +61,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val getStats: GetStats = mock {
         on { invoke(any(), any(), anyOrNull()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
     }
+    private val statsRepository: StatsRepository = mock()
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
     }
@@ -95,6 +99,10 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DashboardStatsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(statsRepository.fetchAnalyticsOrderDateType())
+            .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
+        whenever(statsRepository.updateAnalyticsOrderDateType(any()))
+            .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
         prepareMocks()
         val getSelectedDateRange = GetSelectedRangeForDashboardStats(
             appPrefs = appPrefsWrapper,
@@ -107,6 +115,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             parentViewModel = parentViewModel,
             selectedSite = selectedSite,
             getStats = getStats,
+            statsRepository = statsRepository,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             dashboardTransactionLauncher = dashboardTransactionLauncher,
             appPrefsWrapper = appPrefsWrapper,
@@ -133,7 +142,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(
                 refresh = ArgumentMatchers.eq(false),
                 selectedRange = any(),
-                orderDateType = anyOrNull()
+                orderDateType = eq(WCAnalyticsOrderDateType.PAID)
             )
         }
 
@@ -173,7 +182,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         verify(getStats, times(2)).invoke(
             refresh = ArgumentMatchers.eq(false),
             selectedRange = getStatsArgumentCaptor.capture(),
-            orderDateType = anyOrNull()
+            orderDateType = eq(WCAnalyticsOrderDateType.PAID)
         )
         Assertions.assertThat(getStatsArgumentCaptor.firstValue.selectionType)
             .isEqualTo(DEFAULT_SELECTION_TYPE)
@@ -196,7 +205,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 selectedRange = argThat {
                     selectionType == DEFAULT_SELECTION_TYPE
                 },
-                orderDateType = anyOrNull()
+                orderDateType = eq(WCAnalyticsOrderDateType.PAID)
             )
         }
 
@@ -308,6 +317,104 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
             Assertions.assertThat(viewModel.selectedRevenueStatsType.value)
                 .isEqualTo(DashboardStatsViewModel.RevenueStatsType.TOTAL)
+        }
+
+    @Test
+    fun `given saved order date type, when screen starts, then selected order date type is updated`() =
+        testBlocking {
+            setup {
+                whenever(statsRepository.fetchAnalyticsOrderDateType())
+                    .thenReturn(Result.success(WCAnalyticsOrderDateType.CREATED))
+            }
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value.selectedType)
+                .isEqualTo(WCAnalyticsOrderDateType.CREATED)
+            verify(getStats).invoke(
+                refresh = eq(true),
+                selectedRange = argThat {
+                    selectionType == DEFAULT_SELECTION_TYPE
+                },
+                orderDateType = eq(WCAnalyticsOrderDateType.CREATED)
+            )
+        }
+
+    @Test
+    fun `when order date type selector is tapped, then interaction is tracked`() =
+        testBlocking {
+            setup()
+
+            viewModel.onOrderDateTypeSelectorTapped()
+
+            verify(usageTracksEventEmitter).interacted(any())
+            verify(parentViewModel).trackCardInteracted("performance")
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTOR_TAPPED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
+    fun `when order date type is selected successfully, then setting is saved and stats are refreshed`() =
+        testBlocking {
+            var dismissed = false
+            setup {
+                whenever(statsRepository.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED))
+                    .thenReturn(Result.success(WCAnalyticsOrderDateType.COMPLETED))
+            }
+
+            viewModel.onOrderDateTypeSelected(WCAnalyticsOrderDateType.COMPLETED) {
+                dismissed = true
+            }
+            advanceUntilIdle()
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value).isEqualTo(
+                DashboardStatsViewModel.OrderDateTypeUiState(selectedType = WCAnalyticsOrderDateType.COMPLETED)
+            )
+            Assertions.assertThat(dismissed).isTrue()
+            verify(statsRepository).updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED)
+            verify(getStats).invoke(
+                refresh = eq(true),
+                selectedRange = argThat {
+                    selectionType == DEFAULT_SELECTION_TYPE
+                },
+                orderDateType = eq(WCAnalyticsOrderDateType.COMPLETED)
+            )
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_OPTION] == WCAnalyticsOrderDateType.COMPLETED.value &&
+                        this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
+    fun `when order date type update fails, then previous selection remains and error is shown`() =
+        testBlocking {
+            var dismissed = false
+            setup {
+                whenever(statsRepository.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED))
+                    .thenReturn(Result.failure(Exception()))
+            }
+
+            viewModel.onOrderDateTypeSelected(WCAnalyticsOrderDateType.COMPLETED) {
+                dismissed = true
+            }
+            advanceUntilIdle()
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value).isEqualTo(
+                DashboardStatsViewModel.OrderDateTypeUiState(
+                    selectedType = WCAnalyticsOrderDateType.PAID,
+                    hasUpdateError = true
+                )
+            )
+            Assertions.assertThat(dismissed).isFalse()
+            verify(analyticsTrackerWrapper, never()).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED),
+                properties = any()
+            )
         }
 
     @Test
