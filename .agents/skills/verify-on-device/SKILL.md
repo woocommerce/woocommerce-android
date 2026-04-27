@@ -331,7 +331,7 @@ If the user requests verification of a specific scenario (error states, empty da
 
 Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
 
-**Preferred path (`USE_ANDROID_CLI=1`):** locate the APK produced by step 4, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), fall through to the `am start` form below to skip the reinstall.
+**Preferred path (`USE_ANDROID_CLI=1`, full flow):** locate the APK produced by step 4, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), use the **launch-only form** further below to skip the reinstall — the CLI does not offer a launch-only equivalent, so both no-CLI users and CLI shortcut users land on the same `am start` block.
 
 ```bash
 # 1. Resolve the APK path. `android describe` was evaluated for this purpose but
@@ -363,7 +363,7 @@ android run --apks="$APK" \
   --device=<device_id>
 ```
 
-**Fallback (no `android` CLI):** force-stop + `am start`.
+**Launch-only form (no reinstall):** force-stop + `am start`. Use this when (a) the agent CLI is not available, or (b) the agent CLI is available but the app is already installed and the build hasn't changed (the CLI shortcut path).
 
 ```bash
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
