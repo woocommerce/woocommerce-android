@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -20,6 +21,7 @@ import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCGiftCardStats
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -66,6 +68,52 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
+    fun `when fetching analytics order date type succeeds then a success response is returned`() = testBlocking {
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wooCommerceStore.fetchAnalyticsOrderDateType(defaultSiteModel))
+            .thenReturn(WooResult(WCAnalyticsOrderDateType.CREATED))
+
+        val result = sut.fetchAnalyticsOrderDateType()
+
+        assertThat(result.getOrNull()).isEqualTo(WCAnalyticsOrderDateType.CREATED)
+    }
+
+    @Test
+    fun `when fetching analytics order date type fails then a failure response is returned`() = testBlocking {
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wooCommerceStore.fetchAnalyticsOrderDateType(defaultSiteModel))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)))
+
+        val result = sut.fetchAnalyticsOrderDateType()
+
+        assertThat(result.isFailure).isTrue
+    }
+
+    @Test
+    fun `when updating analytics order date type succeeds then a success response is returned`() = testBlocking {
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(
+            wooCommerceStore.updateAnalyticsOrderDateType(defaultSiteModel, WCAnalyticsOrderDateType.COMPLETED)
+        ).thenReturn(WooResult(WCAnalyticsOrderDateType.COMPLETED))
+
+        val result = sut.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED)
+
+        assertThat(result.getOrNull()).isEqualTo(WCAnalyticsOrderDateType.COMPLETED)
+    }
+
+    @Test
+    fun `when updating analytics order date type fails then a failure response is returned`() = testBlocking {
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(
+            wooCommerceStore.updateAnalyticsOrderDateType(defaultSiteModel, WCAnalyticsOrderDateType.COMPLETED)
+        ).thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)))
+
+        val result = sut.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED)
+
+        assertThat(result.isFailure).isTrue
+    }
+
+    @Test
     fun `when visitors and revenue requests succeed then a success response is returned containing both value`() =
         testBlocking {
             val granularity = WCStatsStore.StatsGranularity.DAYS
@@ -90,7 +138,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             whenever(wcStatsStore.getNewVisitorStats(defaultSiteModel, granularity, quantity, startDate))
                 .thenReturn(emptyMap())
             whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
-            whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
+            whenever(wcStatsStore.getRawRevenueStatsFromRangeId(eq(defaultSiteModel), any()))
                 .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
             val result = sut.fetchStats(
@@ -129,7 +177,7 @@ class StatsRepositoryTests : BaseUnitTest() {
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
         whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
         whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
-        whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
+        whenever(wcStatsStore.getRawRevenueStatsFromRangeId(eq(defaultSiteModel), any()))
             .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
         val result = sut.fetchStats(
@@ -146,6 +194,38 @@ class StatsRepositoryTests : BaseUnitTest() {
         assertThat(model).isNotNull
         assertThat(model!!.revenue).isNotNull
         assertThat(model.visitors).isNull()
+    }
+
+    @Test
+    fun `when fetching revenue stats succeeds then stats are read by revenue range id`() = testBlocking {
+        val granularity = WCStatsStore.StatsGranularity.DAYS
+        val startDate = "2024-01-25 00:00:00"
+        val endDate = "2024-01-25 23:59:59"
+        val revenueRangeId = "today-date_created"
+        val wrongStats = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", "today-date_paid")
+        val expectedStats = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", revenueRangeId)
+        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
+            granularity = granularity,
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
+        lenient().doReturn(wrongStats).whenever(wcStatsStore)
+            .getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate))
+        whenever(wcStatsStore.getRawRevenueStatsFromRangeId(defaultSiteModel, revenueRangeId))
+            .thenReturn(expectedStats)
+
+        val result = sut.fetchRevenueStats(
+            range = defaultRange,
+            granularity = granularity,
+            forced = true,
+            revenueRangeId = revenueRangeId,
+            orderDateType = WCAnalyticsOrderDateType.CREATED
+        )
+
+        assertThat(result.getOrNull()).isEqualTo(expectedStats)
     }
 
     @Test

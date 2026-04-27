@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -87,6 +88,7 @@ class WCStatsStore @Inject internal constructor(
         val endDate: String,
         val forced: Boolean = false,
         val revenueRangeId: String,
+        val orderDateType: WCAnalyticsOrderDateType? = null,
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsResponsePayload(
@@ -409,7 +411,8 @@ class WCStatsStore @Inject internal constructor(
                 endDate = endDate,
                 perPage = ORDER_REVENUE_QUANTITY,
                 forceRefresh = payload.forced,
-                revenueRangeId = payload.revenueRangeId
+                revenueRangeId = payload.revenueRangeId,
+                orderDateType = payload.orderDateType
             )
 
             with(result) {
