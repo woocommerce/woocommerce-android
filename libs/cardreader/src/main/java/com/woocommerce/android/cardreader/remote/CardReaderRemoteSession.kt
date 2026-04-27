@@ -186,6 +186,7 @@ class CardReaderRemoteSession internal constructor(
         val supplyJob = launch { tokenProvider.supply(request.connectionToken) }
         try {
             runCatching {
+                runCatching { cardReaderManager.disconnectReader() }
                 val reader = discoverFirstTapToPayReader()
                 logWrapper.d(LOG_TAG, "Discovered ${reader.id}, connecting...")
                 cardReaderManager.startConnectionToReader(reader, request.locationId)
@@ -199,6 +200,7 @@ class CardReaderRemoteSession internal constructor(
                 _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
             }.onFailure { err ->
                 logWrapper.e(LOG_TAG, "Connect failed: ${err::class.java.simpleName}: ${err.message}")
+                runCatching { cardReaderManager.disconnectReader() }
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
