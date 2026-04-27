@@ -2,13 +2,19 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -22,21 +28,56 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderModeViewModel @Inject constructor(
     private val session: CardReaderRemoteSession,
+    private val cardReaderManager: CardReaderManager,
+    private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
     val viewState: StateFlow<ViewState?> = _viewState.asStateFlow()
 
-    private val _events = Channel<CardReaderModeExit>(capacity = Channel.BUFFERED)
-    val events: Flow<CardReaderModeExit> = _events.receiveAsFlow()
+    private val _events = Channel<CardReaderModeEvent>(capacity = Channel.BUFFERED)
+    val events: Flow<CardReaderModeEvent> = _events.receiveAsFlow()
 
-    init {
+    private var sessionStarted = false
+
+    fun onLocationPermissionMissing() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayLocationPermissionExplainer(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.RequestLocationPermission) },
+        )
+    }
+
+    fun onLocationPermissionResult(granted: Boolean) {
+        when (granted) {
+            true -> startSessionIfNeeded()
+            false -> _viewState.value = RemoteTapToPayError(
+                message = resourceProvider.getString(R.string.card_reader_mode_location_permission_required),
+                onPrimaryActionClicked = ::exit,
+            )
+        }
+    }
+
+    private fun startSessionIfNeeded() {
+        if (sessionStarted) return
+        sessionStarted = true
+
+        if (!cardReaderManager.initialized) {
+            cardReaderManager.initialize(
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                isDebug = BuildConfig.DEBUG,
+            )
+        }
         viewModelScope.launch {
             session.state.collect { sessionState ->
                 _viewState.value = mapToViewState(sessionState)
             }
         }
-        session.start(viewModelScope)
+        session.start(
+            parentScope = viewModelScope,
+            isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+        )
     }
 
     override fun onCleared() {
@@ -63,6 +104,6 @@ class CardReaderModeViewModel @Inject constructor(
     }
 
     private fun exit() {
-        _events.trySend(CardReaderModeExit)
+        _events.trySend(CardReaderModeEvent.Exit)
     }
 }
