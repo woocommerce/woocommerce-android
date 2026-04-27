@@ -111,7 +111,7 @@
     <color name="prologue_login_on_background">@color/woo_white</color>
     <color name="prologue_login_on_background_secondary">@color/woo_white_alpha_087</color>
     <color name="prologue_login_on_background_tertiary">@color/woo_white_alpha_060</color>
-    <color name="prologue_login_url_badge_background">#2EFFFFFF</color>
+    <color name="prologue_login_url_badge_background">@color/woo_white_alpha_012</color>
 
     <!--
         Rating widget colors

@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -201,9 +202,17 @@ private fun Buttons(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // White-on-purple to stand out from the purple prologue background. The default
+        // WCColoredButton uses the primary purple as its container, which blends into the
+        // background in light mode. Mirrors the existing legacy prologue's
+        // `Woo.Button.Colored.White` style.
         WCColoredButton(
             onClick = onScanClicked,
             text = stringResource(id = R.string.login_qr_prologue_scan_button),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.prologue_login_button_color),
+                contentColor = colorResource(id = R.color.color_on_surface),
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
