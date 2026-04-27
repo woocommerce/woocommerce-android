@@ -50,7 +50,7 @@ The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have bee
 | `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
 | `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
 | `android emulator list` (step 0 lifecycle) | Verified — `list` runs. `create`/`start`/`stop` shape confirmed via `--help` but no AVD was created during verification. |
-| `android describe` (previously used for APK resolution) | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
+| `android describe` | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
 
 If a CLI block fails in practice, **do not assume the docs are right**. Fall back to the `USE_ANDROID_CLI=0` path for that step, file the discrepancy as a skill issue, and fix it in the skill before the next run.
 
