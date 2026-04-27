@@ -73,6 +73,7 @@ data class QrLoginErrorContent(
     @StringRes val body: Int,
     @StringRes val primaryAction: Int,
     @StringRes val secondaryAction: Int = R.string.login_qr_endpoint_missing_enter_url,
+    val bodyHighlightedArgs: List<Int> = emptyList(),
 )
 
 private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
@@ -81,11 +82,7 @@ private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
         body = R.string.login_qr_scanner_error_payload_body,
         primaryAction = R.string.login_qr_error_primary_scan,
     )
-    ErrorReason.InstallQrCode -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_install_qr_title,
-        body = R.string.login_qr_scanner_error_install_qr_body,
-        primaryAction = R.string.login_qr_error_primary_scan,
-    )
+    ErrorReason.InstallQrCode -> installQrErrorContent()
     ErrorReason.TokenRejected -> QrLoginErrorContent(
         title = R.string.login_qr_scanner_error_token_title,
         body = R.string.login_qr_scanner_error_token_body,
@@ -133,3 +130,13 @@ private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
         primaryAction = R.string.login_qr_error_primary_retry,
     )
 }
+
+private fun installQrErrorContent() = QrLoginErrorContent(
+    title = R.string.login_qr_scanner_error_install_qr_title,
+    body = R.string.login_qr_scanner_error_install_qr_body,
+    primaryAction = R.string.login_qr_error_primary_scan,
+    bodyHighlightedArgs = listOf(
+        R.string.login_qr_scanner_error_install_qr_body_button,
+        R.string.login_qr_prologue_url,
+    ),
+)

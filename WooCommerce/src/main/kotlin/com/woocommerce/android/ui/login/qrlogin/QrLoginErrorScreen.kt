@@ -19,7 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -58,7 +62,7 @@ fun QrLoginErrorScreen(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = content.body),
+            text = bodyAnnotatedString(content),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -91,5 +95,31 @@ private fun QrLoginErrorScreenPreview() {
             onPrimaryClicked = {},
             onSecondaryClicked = {},
         )
+    }
+}
+
+/**
+ * Resolves the body text for an error. When [QrLoginErrorContent.bodyHighlightedArgs] is empty
+ * we just return the body string as-is. Otherwise we treat the body as a `%1$s, %2$s, …`
+ * template, substitute each arg in order, and apply a SemiBold span to each substituted run.
+ * This pattern keeps `<b>…</b>` markup out of strings.xml so translators can't accidentally
+ * drop or break it.
+ */
+@Composable
+private fun bodyAnnotatedString(content: QrLoginErrorContent): AnnotatedString {
+    val template = stringResource(id = content.body)
+    if (content.bodyHighlightedArgs.isEmpty()) return AnnotatedString(template)
+    val args = content.bodyHighlightedArgs.map { stringResource(id = it) }
+    return buildAnnotatedString {
+        var cursor = 0
+        args.forEachIndexed { index, value ->
+            val placeholder = "%${index + 1}\$s"
+            val placeholderStart = template.indexOf(placeholder, startIndex = cursor)
+            if (placeholderStart < 0) return@forEachIndexed
+            append(template.substring(cursor, placeholderStart))
+            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(value) }
+            cursor = placeholderStart + placeholder.length
+        }
+        append(template.substring(cursor))
     }
 }
