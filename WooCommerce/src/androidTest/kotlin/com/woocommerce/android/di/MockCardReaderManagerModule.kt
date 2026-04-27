@@ -93,10 +93,10 @@ class MockCardReaderManagerModule {
             flowOf(CardPaymentStatus.ProcessingPayment)
 
         override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult =
-            error("createPaymentIntent is not used in instrumented tests")
+            CreatePaymentIntentResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
         override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
-            error("retrieveAndCollectPayment is not used in instrumented tests")
+            RetrieveAndCollectResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
         override suspend fun refundInteracPayment(
             refundParams: RefundParams,
