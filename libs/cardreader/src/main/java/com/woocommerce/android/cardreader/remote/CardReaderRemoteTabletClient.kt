@@ -17,7 +17,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.util.UUID
@@ -93,7 +93,9 @@ internal class DefaultCardReaderRemoteTabletClient(
                 logWrapper.d(TAG, "Sending ConnectRequest requestId=$requestId")
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
                 logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
-                when (val reply = opened.receive().first { it.requestId == requestId }) {
+                val reply = opened.receive().firstOrNull { it.requestId == requestId }
+                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
+                when (reply) {
                     is ConnectAck -> {
                         bridgeClosedSignal(opened)
                         startHeartbeat(opened)
@@ -152,7 +154,8 @@ internal class DefaultCardReaderRemoteTabletClient(
             val requestId = UUID.randomUUID().toString()
             active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
-                active.receive().first { it.requestId == requestId }
+                active.receive().firstOrNull { it.requestId == requestId }
+                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
             }
             when (reply) {
                 is PaymentIntentResult -> CollectPaymentOutcome.Success(reply.paymentIntentId, reply.status)
@@ -188,6 +191,7 @@ internal class DefaultCardReaderRemoteTabletClient(
     private companion object {
         const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
         const val TAG = "CardReaderRemoteTabletClient"
+        const val CONNECTION_LOST_MESSAGE = "Connection to phone reader was lost"
     }
 }
 

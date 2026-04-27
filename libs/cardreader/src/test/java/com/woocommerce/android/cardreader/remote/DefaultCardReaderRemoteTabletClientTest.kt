@@ -8,13 +8,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.Socket
+import kotlin.concurrent.thread
 
 @ExperimentalCoroutinesApi
 class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
@@ -22,6 +27,35 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
     private val logWrapper: LogWrapper = mock()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
     private val client = DefaultCardReaderRemoteTabletClient(tlsClient, logWrapper, scope)
+
+    private var serverSocket: ServerSocket? = null
+    private var clientSocket: Socket? = null
+    private var acceptedSocket: Socket? = null
+
+    @After
+    fun closeSockets() {
+        runCatching { clientSocket?.close() }
+        runCatching { acceptedSocket?.close() }
+        runCatching { serverSocket?.close() }
+    }
+
+    @Test
+    fun `given remote closes mid-connect, when connect, then Failed cause carries connection-lost message`() {
+        runBlocking {
+            // GIVEN
+            val openedConnection = openConnectionPair()
+            whenever(tlsClient.connect(any(), any(), any())).thenAnswer { openedConnection.first }
+            openedConnection.second.close()
+
+            // WHEN
+            val outcome = client.connect(reader = aReader(), connectionToken = "tok", locationId = "loc")
+
+            // THEN
+            assertThat(outcome).isInstanceOf(ConnectOutcome.Failed::class.java)
+            assertThat((outcome as ConnectOutcome.Failed).cause)
+                .hasMessage("Connection to phone reader was lost")
+        }
+    }
 
     @Test
     fun `given tls handshake throws, when connect, then returns Failed with the cause`() = testBlocking {
@@ -44,6 +78,17 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
 
         // THEN
         assertThat(outcome).isInstanceOf(CollectPaymentOutcome.Failed::class.java)
+    }
+
+    private fun openConnectionPair(): Pair<CardReaderRemoteConnection, CardReaderRemoteConnection> {
+        val server = ServerSocket(0).also { serverSocket = it }
+        val acceptThread = thread { acceptedSocket = server.accept() }
+        val client = Socket("127.0.0.1", server.localPort).also { clientSocket = it }
+        acceptThread.join()
+        val accepted = requireNotNull(acceptedSocket)
+        val openedClient = CardReaderRemoteConnection(client, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
+        val openedServer = CardReaderRemoteConnection(accepted, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
+        return openedClient to openedServer
     }
 
     private fun aReader() = DiscoveredRemoteReader(
