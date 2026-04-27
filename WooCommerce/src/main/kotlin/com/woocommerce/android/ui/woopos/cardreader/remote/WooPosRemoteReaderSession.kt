@@ -25,6 +25,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 
 @Singleton
 class WooPosRemoteReaderSession @Inject constructor(
@@ -59,12 +60,16 @@ class WooPosRemoteReaderSession @Inject constructor(
         return connected
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun fetchToken(): String? {
-        val token = runCatching { cardReaderStore.fetchConnectionToken() }
-            .getOrElse {
-                fail("Failed to fetch connection token: ${it.message}")
-                return null
-            }
+        val token = try {
+            cardReaderStore.fetchConnectionToken()
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (cause: Throwable) {
+            fail("Failed to fetch connection token: ${cause.message}")
+            return null
+        }
         if (token.isBlank()) {
             fail("Empty connection token")
             return null

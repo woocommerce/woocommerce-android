@@ -21,6 +21,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.InetAddress
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosRemoteReaderSessionTest {
@@ -91,6 +92,22 @@ class WooPosRemoteReaderSessionTest {
         // THEN
         assertThat(state).isInstanceOf(WooPosRemoteReaderSession.State.Connected::class.java)
     }
+
+    @Test
+    fun `given fetchConnectionToken throws CancellationException, when connect, then exception is rethrown`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderStore.fetchConnectionToken()).thenThrow(CancellationException("cancelled"))
+            val session = createSession()
+
+            // WHEN / THEN
+            try {
+                session.connect(phone(isSimulated = false))
+                assertThat(false).withFailMessage("Expected CancellationException").isTrue()
+            } catch (e: CancellationException) {
+                assertThat(e.message).isEqualTo("cancelled")
+            }
+        }
 
     @Test
     fun `when disconnect, then state is Idle`() = runTest {
