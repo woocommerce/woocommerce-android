@@ -44,4 +44,8 @@ internal sealed class CardReaderRemoteMessage {
         val code: String,
         val description: String,
     ) : CardReaderRemoteMessage()
+
+    data class Ping(
+        override val requestId: String,
+    ) : CardReaderRemoteMessage()
 }

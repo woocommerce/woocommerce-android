@@ -7,13 +7,24 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Connect
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ErrorMessage
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.PaymentIntentResult
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Ping
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.util.UUID
 
 interface CardReaderRemoteTabletClient {
+    val connectionClosed: StateFlow<Boolean>
+
     suspend fun connect(
         reader: DiscoveredRemoteReader,
         connectionToken: String,
@@ -33,7 +44,11 @@ interface CardReaderRemoteTabletClient {
         const val DEFAULT_CONNECT_TIMEOUT_MILLIS: Long = 30_000
 
         fun create(logWrapper: LogWrapper): CardReaderRemoteTabletClient =
-            DefaultCardReaderRemoteTabletClient(CardReaderRemoteTlsClient(logWrapper), logWrapper)
+            DefaultCardReaderRemoteTabletClient(
+                tlsClient = CardReaderRemoteTlsClient(logWrapper),
+                logWrapper = logWrapper,
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+            )
     }
 }
 
@@ -53,8 +68,13 @@ sealed class CollectPaymentOutcome {
 internal class DefaultCardReaderRemoteTabletClient(
     private val tlsClient: CardReaderRemoteTlsClient,
     private val logWrapper: LogWrapper,
+    private val scope: CoroutineScope,
 ) : CardReaderRemoteTabletClient {
     private var connection: CardReaderRemoteConnection? = null
+    private var closedBridgeJob: Job? = null
+    private var heartbeatJob: Job? = null
+    private val _connectionClosed = MutableStateFlow(true)
+    override val connectionClosed: StateFlow<Boolean> = _connectionClosed.asStateFlow()
 
     override suspend fun connect(
         reader: DiscoveredRemoteReader,
@@ -63,6 +83,7 @@ internal class DefaultCardReaderRemoteTabletClient(
         timeoutMillis: Long,
     ): ConnectOutcome {
         disconnect()
+        _connectionClosed.value = false
         return try {
             withTimeout(timeoutMillis) {
                 logWrapper.d(TAG, "Opening TLS connection")
@@ -73,10 +94,15 @@ internal class DefaultCardReaderRemoteTabletClient(
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
                 logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
                 when (val reply = opened.receive().first { it.requestId == requestId }) {
-                    is ConnectAck -> ConnectOutcome.Success(reply.readerSerial)
+                    is ConnectAck -> {
+                        bridgeClosedSignal(opened)
+                        startHeartbeat(opened)
+                        ConnectOutcome.Success(reply.readerSerial)
+                    }
                     is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)
                     is ConnectRequest,
                     is CollectPaymentRequest,
+                    is Ping,
                     is PaymentIntentResult -> ConnectOutcome.Rejected(
                         CODE_UNEXPECTED_REPLY,
                         "Unexpected reply type: ${reply::class.simpleName}",
@@ -93,6 +119,20 @@ internal class DefaultCardReaderRemoteTabletClient(
             disconnect()
             ConnectOutcome.Failed(cause)
         }
+    }
+
+    private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
+        closedBridgeJob?.cancel()
+        closedBridgeJob = scope.launch {
+            connection.closed.collect { isClosed ->
+                _connectionClosed.value = isClosed
+            }
+        }
+    }
+
+    private fun startHeartbeat(connection: CardReaderRemoteConnection) {
+        heartbeatJob?.cancel()
+        heartbeatJob = scope.launchHeartbeat(connection, logWrapper)
     }
 
     override suspend fun collectPayment(
@@ -113,6 +153,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                 is ErrorMessage -> CollectPaymentOutcome.Rejected(reply.code, reply.description)
                 is ConnectAck,
                 is ConnectRequest,
+                is Ping,
                 is CollectPaymentRequest -> CollectPaymentOutcome.Rejected(
                     CODE_UNEXPECTED_REPLY,
                     "Unexpected reply type: ${reply::class.simpleName}",
@@ -129,8 +170,13 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     override fun disconnect() {
+        closedBridgeJob?.cancel()
+        closedBridgeJob = null
+        heartbeatJob?.cancel()
+        heartbeatJob = null
         connection?.close()
         connection = null
+        _connectionClosed.value = true
     }
 
     private companion object {
