@@ -36,7 +36,8 @@ class ChatStreamParserTest {
 
     @Test
     fun `given a tool-call fragment, when parsed, then a ToolCallDelta is emitted with verbatim arguments`() = runTest {
-        val payload = """{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_1","function":{"name":"show_cards","arguments":"{\"a\":"}}]}}]}"""
+        val payload = """{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_1",""" +
+            """"function":{"name":"show_cards","arguments":"{\"a\":"}}]}}]}"""
 
         val events = parser.parse(flowOf(payload)).toList()
 
