@@ -57,8 +57,7 @@ internal class JetpackAiChatService @Inject constructor(
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
         var attempt = 0
         while (true) {
-            val outcome = collectOnce(request)
-            outcome.events.forEach { emit(it) }
+            val outcome = collectOnce(request, ::emit)
 
             if (shouldRetryAuth(outcome, attempt)) {
                 tokenProvider.invalidate()
@@ -71,18 +70,24 @@ internal class JetpackAiChatService @Inject constructor(
     }
 
     private fun shouldRetryAuth(outcome: TurnOutcome, attempt: Int): Boolean =
-        outcome.retryableAuthFailure && attempt == 0
+        outcome.retryableAuthFailure &&
+            attempt == 0 &&
+            outcome.eventsEmitted == 0
 
     @Suppress("TooGenericExceptionCaught")
-    private suspend fun collectOnce(request: ChatRequest): TurnOutcome {
-        val emitted = mutableListOf<AssistantEvent>()
+    private suspend fun collectOnce(
+        request: ChatRequest,
+        emitEvent: suspend (AssistantEvent) -> Unit,
+    ): TurnOutcome {
+        var eventsEmitted = 0
         var failed: AssistantEvent.Failed? = null
         try {
             streamParser.parse(openStream(request)).collect { event ->
                 if (event is AssistantEvent.Failed) {
                     failed = event
                 } else {
-                    emitted += event
+                    emitEvent(event)
+                    eventsEmitted++
                 }
             }
         } catch (ce: CancellationException) {
@@ -90,20 +95,20 @@ internal class JetpackAiChatService @Inject constructor(
         } catch (e: Exception) {
             val mapped = mapError(e)
             return TurnOutcome(
-                events = emitted,
+                eventsEmitted = eventsEmitted,
                 failure = AssistantEvent.Failed(mapped.kind, mapped.cause),
                 retryableAuthFailure = mapped.retryableAuthFailure,
             )
         }
         return TurnOutcome(
-            events = emitted,
+            eventsEmitted = eventsEmitted,
             failure = failed,
             retryableAuthFailure = false,
         )
     }
 
     private data class TurnOutcome(
-        val events: List<AssistantEvent>,
+        val eventsEmitted: Int,
         val failure: AssistantEvent.Failed?,
         val retryableAuthFailure: Boolean,
     )
