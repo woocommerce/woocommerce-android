@@ -379,7 +379,6 @@ class WooPosOrderDetailsViewModelTest {
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
-            orderActionsProvider = orderActionsProvider,
             bookingInfoMapper = bookingInfoMapper,
             formatPrice = formatPrice,
             coordinator = coordinator,
