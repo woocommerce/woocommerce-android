@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -197,7 +198,11 @@ internal class JetpackAiChatService @Inject constructor(
         }
         is AssistantMessage.Assistant -> buildJsonObject {
             put("role", "assistant")
-            put("content", content.orEmpty())
+            if (content != null) {
+                put("content", content)
+            } else {
+                put("content", JsonNull)
+            }
             if (toolCalls.isNotEmpty()) {
                 put("tool_calls", buildJsonArray { toolCalls.forEach { add(it.toJson()) } })
             }
