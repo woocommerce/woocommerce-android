@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,6 +13,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.X509TrustManager
 
 internal class CardReaderRemoteTlsClient(
+    private val logWrapper: LogWrapper,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend fun connect(
@@ -19,15 +21,18 @@ internal class CardReaderRemoteTlsClient(
         port: Int,
         pinnedFingerprintBase64: String,
     ): CardReaderRemoteConnection = withContext(ioDispatcher) {
+        logWrapper.d(TAG, "Connecting TLS to ${host.hostAddress}:$port")
         val trustManager = PinnedFingerprintTrustManager(pinnedFingerprintBase64)
-        val sslContext = SSLContext.getInstance("TLSv1.3").apply {
+        val sslContext = SSLContext.getInstance("TLS").apply {
             init(null, arrayOf(trustManager), SecureRandom())
         }
         val socket = (sslContext.socketFactory.createSocket(host, port) as SSLSocket).apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
+        logWrapper.d(TAG, "TCP connected, starting handshake")
         socket.startHandshake()
-        CardReaderRemoteConnection(socket, ioDispatcher = ioDispatcher)
+        logWrapper.d(TAG, "Handshake complete")
+        CardReaderRemoteConnection(socket = socket, logWrapper = logWrapper, ioDispatcher = ioDispatcher)
     }
 
     internal class PinnedFingerprintTrustManager(
@@ -41,7 +46,11 @@ internal class CardReaderRemoteTlsClient(
             val leaf = chain.firstOrNull() ?: throw CertificateException("Empty certificate chain")
             val presented = CardReaderRemoteFingerprint.sha256Base64(leaf)
             if (presented != pinnedFingerprintBase64) {
-                throw CertificateException("Server fingerprint mismatch")
+                throw CertificateException(
+                    "Server fingerprint mismatch: " +
+                        "pinned=${pinnedFingerprintBase64.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)} " +
+                        "presented=${presented.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)}"
+                )
             }
         }
 
@@ -50,5 +59,7 @@ internal class CardReaderRemoteTlsClient(
 
     companion object {
         private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
+        private const val TAG = "CardReaderRemoteTlsClient"
+        private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
     }
 }

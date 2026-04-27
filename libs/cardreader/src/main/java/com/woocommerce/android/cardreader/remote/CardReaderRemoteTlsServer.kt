@@ -1,29 +1,23 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.math.BigInteger
-import java.security.KeyPairGenerator
+import okhttp3.tls.HeldCertificate
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import java.security.spec.ECGenParameterSpec
-import java.util.Date
-import java.util.UUID
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLServerSocket
-import javax.security.auth.x500.X500Principal
 
 internal class CardReaderRemoteTlsServer(
+    private val logWrapper: LogWrapper,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
     private var serverSocket: SSLServerSocket? = null
     private var certificate: X509Certificate? = null
-    private var keyAlias: String? = null
 
     val port: Int
         get() = requireNotNull(serverSocket) { "Server not started" }.localPort
@@ -35,19 +29,28 @@ internal class CardReaderRemoteTlsServer(
 
     suspend fun start(): Unit = withContext(ioDispatcher) {
         check(serverSocket == null) { "Server already started" }
-        sweepOrphanAliases()
 
-        val alias = "$ALIAS_PREFIX${UUID.randomUUID()}"
-        generateSelfSignedKeyPair(alias)
+        val held = HeldCertificate.Builder()
+            .commonName(CERT_COMMON_NAME)
+            .ecdsa256()
+            .duration(VALIDITY_DURATION_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
 
-        val keyStore = androidKeyStore()
-        val cert = keyStore.getCertificate(alias) as X509Certificate
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
+            load(null)
+            setKeyEntry(
+                KEY_ALIAS,
+                held.keyPair.private,
+                KEYSTORE_PASSWORD,
+                arrayOf<java.security.cert.Certificate>(held.certificate),
+            )
+        }
 
-        val keyManagerFactory = KeyManagerFactory.getInstance(
-            KeyManagerFactory.getDefaultAlgorithm()
-        ).apply { init(keyStore, null) }
+        val keyManagerFactory = KeyManagerFactory
+            .getInstance(KeyManagerFactory.getDefaultAlgorithm())
+            .apply { init(keyStore, KEYSTORE_PASSWORD) }
 
-        val sslContext = SSLContext.getInstance("TLSv1.3").apply {
+        val sslContext = SSLContext.getInstance("TLS").apply {
             init(keyManagerFactory.keyManagers, null, SecureRandom())
         }
 
@@ -55,8 +58,7 @@ internal class CardReaderRemoteTlsServer(
             soTimeout = ACCEPT_TIMEOUT_MILLIS
         }
         serverSocket = socket
-        certificate = cert
-        keyAlias = alias
+        certificate = held.certificate
     }
 
     suspend fun acceptOne(): CardReaderRemoteConnection = withContext(ioDispatcher) {
@@ -64,58 +66,20 @@ internal class CardReaderRemoteTlsServer(
         val accepted = socket.accept().apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
-        CardReaderRemoteConnection(accepted, ioDispatcher = ioDispatcher)
+        CardReaderRemoteConnection(socket = accepted, logWrapper = logWrapper, ioDispatcher = ioDispatcher)
     }
 
     override fun close() {
         runCatching { serverSocket?.close() }
-        keyAlias?.let { alias ->
-            runCatching { androidKeyStore().deleteEntry(alias) }
-        }
         serverSocket = null
         certificate = null
-        keyAlias = null
-    }
-
-    private fun generateSelfSignedKeyPair(alias: String) {
-        val now = System.currentTimeMillis()
-        val spec = KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_SIGN)
-            .setAlgorithmParameterSpec(ECGenParameterSpec(EC_CURVE))
-            .setDigests(KeyProperties.DIGEST_SHA256)
-            .setCertificateSubject(X500Principal("CN=$CERT_COMMON_NAME"))
-            .setCertificateSerialNumber(BigInteger(SERIAL_BITS, SecureRandom()))
-            .setCertificateNotBefore(Date(now - CLOCK_SKEW_MILLIS))
-            .setCertificateNotAfter(Date(now + VALIDITY_MILLIS))
-            .build()
-
-        val generator = KeyPairGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_EC,
-            ANDROID_KEYSTORE
-        )
-        generator.initialize(spec)
-        generator.generateKeyPair()
-    }
-
-    private fun androidKeyStore(): KeyStore =
-        KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
-
-    private fun sweepOrphanAliases() {
-        runCatching {
-            val keyStore = androidKeyStore()
-            keyStore.aliases().toList()
-                .filter { it.startsWith(ALIAS_PREFIX) }
-                .forEach { runCatching { keyStore.deleteEntry(it) } }
-        }
     }
 
     companion object {
-        private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-        private const val ALIAS_PREFIX = "woopos-remote-"
-        private const val EC_CURVE = "secp256r1"
+        private const val KEY_ALIAS = "woopos-remote"
+        private val KEYSTORE_PASSWORD = CharArray(0)
         private const val CERT_COMMON_NAME = "woopos-remote-reader"
-        private const val CLOCK_SKEW_MILLIS = 5L * 60 * 1000
-        private const val VALIDITY_MILLIS = 24L * 60 * 60 * 1000
-        private const val SERIAL_BITS = 64
+        private const val VALIDITY_DURATION_SECONDS = 24L * 60 * 60
         private const val ACCEPT_TIMEOUT_MILLIS = 30_000
         private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
     }

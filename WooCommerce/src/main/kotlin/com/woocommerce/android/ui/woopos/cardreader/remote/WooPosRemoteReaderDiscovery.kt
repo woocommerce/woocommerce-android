@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import android.content.Context
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteDiscovery
 import com.woocommerce.android.cardreader.remote.RemoteReaderDiscoveryEvent
 import dagger.Module
@@ -48,5 +49,6 @@ object WooPosRemoteReaderDiscoveryModule {
     @Singleton
     fun provideCardReaderRemoteDiscovery(
         @ApplicationContext context: Context,
-    ): CardReaderRemoteDiscovery = CardReaderRemoteDiscovery.create(context)
+        logWrapper: LogWrapper,
+    ): CardReaderRemoteDiscovery = CardReaderRemoteDiscovery.create(context, logWrapper)
 }

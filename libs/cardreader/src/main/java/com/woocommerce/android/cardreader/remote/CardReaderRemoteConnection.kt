@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -23,6 +26,7 @@ import javax.net.ssl.SSLException
 
 internal class CardReaderRemoteConnection internal constructor(
     private val socket: Socket,
+    private val logWrapper: LogWrapper,
     private val protocol: CardReaderRemoteProtocol = CardReaderRemoteProtocol(),
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
@@ -32,6 +36,8 @@ internal class CardReaderRemoteConnection internal constructor(
 
     private val readerScope = CoroutineScope(SupervisorJob() + ioDispatcher)
     private val messages = Channel<CardReaderRemoteMessage>(capacity = MESSAGE_BUFFER_CAPACITY)
+    private val _closed = MutableStateFlow(false)
+    val closed: StateFlow<Boolean> = _closed.asStateFlow()
 
     private val readerJob: Job = readerScope.launch {
         var fatalError: Throwable? = null
@@ -40,7 +46,7 @@ internal class CardReaderRemoteConnection internal constructor(
                 val next = runCatching { protocol.read(input) }.getOrElse { err ->
                     when (err) {
                         is EOFException, is SocketException -> Unit
-                        is SSLException -> Log.w(TAG, "Reader stream closed with SSL error", err)
+                        is SSLException -> logWrapper.w(TAG, "Reader stream closed with SSL error: ${err.message}")
                         else -> fatalError = err
                     }
                     return@launch
@@ -49,6 +55,7 @@ internal class CardReaderRemoteConnection internal constructor(
             }
         } finally {
             messages.close(fatalError)
+            _closed.value = true
         }
     }
 
@@ -67,6 +74,7 @@ internal class CardReaderRemoteConnection internal constructor(
         readerJob.cancel()
         readerScope.cancel()
         messages.close()
+        _closed.value = true
     }
 
     private companion object {
