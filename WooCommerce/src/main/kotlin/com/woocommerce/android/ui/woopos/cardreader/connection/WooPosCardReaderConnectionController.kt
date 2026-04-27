@@ -477,6 +477,7 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Failed -> {
                 logger.e("Remote reader connection failed: ${result.message}")
                 tracker.trackConnectionFailed()
+                appPrefsWrapper.removeLastConnectedPhoneName()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
                     onRetryClicked = { onPhoneConnectClicked(phone) },
