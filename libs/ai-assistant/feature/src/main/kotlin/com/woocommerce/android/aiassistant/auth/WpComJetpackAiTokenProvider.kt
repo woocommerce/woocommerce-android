@@ -42,7 +42,7 @@ internal class WpComJetpackAiTokenProvider @Inject constructor(
             ?: throw AssistantAuthException("No selected site; cannot mint Jetpack AI JWT")
 
         cached?.takeIf { it.matchesSite(site) }
-            ?.validateExpiryDate()
+            ?.validateOrThrow()
             ?.let { return@withLock it.value }
 
         val fresh = mintToken(site)
@@ -56,13 +56,18 @@ internal class WpComJetpackAiTokenProvider @Inject constructor(
 
     private suspend fun mintToken(site: SiteModel): JWTToken =
         when (val response = restClient.fetchJetpackAIJWTToken(site)) {
-            is JetpackAIJWTTokenResponse.Success -> response.token.validateExpiryDate()
+            is JetpackAIJWTTokenResponse.Success -> response.token.validateOrThrow()
                 ?: throw AssistantAuthException("Jetpack AI JWT was returned already expired")
             is JetpackAIJWTTokenResponse.Error -> throw AssistantAuthException(
                 "Failed to mint Jetpack AI JWT: ${response.type} ${response.message.orEmpty()}".trim()
             )
         }
 
-    private fun JWTToken.matchesSite(site: SiteModel): Boolean =
+    private fun JWTToken.validateOrThrow(): JWTToken? = runCatching {
+        validateExpiryDate()
+    }.getOrElse { throw AssistantAuthException("Invalid Jetpack AI JWT", it) }
+
+    private fun JWTToken.matchesSite(site: SiteModel): Boolean = runCatching {
         getPayloadItem("blog_id")?.toLongOrNull() == site.siteId
+    }.getOrElse { throw AssistantAuthException("Invalid Jetpack AI JWT", it) }
 }

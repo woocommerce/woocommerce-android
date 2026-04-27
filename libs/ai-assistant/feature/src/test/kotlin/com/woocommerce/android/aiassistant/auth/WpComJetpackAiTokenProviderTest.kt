@@ -12,10 +12,12 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.JWTToken
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAIJWTTokenResponse
+import java.util.Base64
 
 class WpComJetpackAiTokenProviderTest {
     private val selectedSite: SelectedSite = mock()
@@ -41,7 +43,7 @@ class WpComJetpackAiTokenProviderTest {
 
     @Test
     fun `given REST returns error, when provide is called, then AssistantAuthException carries the error type`() = runTest {
-        val site = SiteModel().apply { siteId = 42L }
+        val site = SiteModel().apply { siteId = SITE_ID }
         selectedSite.stub { on { getOrNull() } doReturn site }
         whenever(restClient.fetchJetpackAIJWTToken(site)).thenReturn(
             JetpackAIJWTTokenResponse.Error(
@@ -59,7 +61,7 @@ class WpComJetpackAiTokenProviderTest {
 
     @Test
     fun `given REST returns error, when provide is called twice, then both calls hit the network`() = runTest {
-        val site = SiteModel().apply { siteId = 42L }
+        val site = SiteModel().apply { siteId = SITE_ID }
         selectedSite.stub { on { getOrNull() } doReturn site }
         whenever(restClient.fetchJetpackAIJWTToken(site)).thenReturn(
             JetpackAIJWTTokenResponse.Error(
@@ -75,7 +77,52 @@ class WpComJetpackAiTokenProviderTest {
     }
 
     @Test
+    fun `given REST returns malformed JWT, when provide is called, then AssistantAuthException is thrown`() = runTest {
+        val site = SiteModel().apply { siteId = SITE_ID }
+        selectedSite.stub { on { getOrNull() } doReturn site }
+        whenever(restClient.fetchJetpackAIJWTToken(site)).thenReturn(
+            JetpackAIJWTTokenResponse.Success(malformedJwtToken())
+        )
+
+        val error = runCatching { provider.provide() }.exceptionOrNull()
+
+        assertThat(error)
+            .isInstanceOf(AssistantAuthException::class.java)
+            .hasMessageContaining(INVALID_JWT_MESSAGE)
+    }
+
+    @Test
+    fun `given cached JWT is malformed, when provide is called, then AssistantAuthException is thrown`() = runTest {
+        val site = SiteModel().apply { siteId = SITE_ID }
+        selectedSite.stub { on { getOrNull() } doReturn site }
+        givenCachedToken(malformedJwtToken())
+
+        val error = runCatching { provider.provide() }.exceptionOrNull()
+
+        assertThat(error)
+            .isInstanceOf(AssistantAuthException::class.java)
+            .hasMessageContaining(INVALID_JWT_MESSAGE)
+        verify(restClient, times(0)).fetchJetpackAIJWTToken(site)
+    }
+
+    @Test
     fun `given no token has been minted, when invalidate is called, then nothing is thrown`() = runTest {
         provider.invalidate()
+    }
+
+    private fun givenCachedToken(token: JWTToken) {
+        val field = provider.javaClass.getDeclaredField("cached")
+        field.isAccessible = true
+        field.set(provider, token.value)
+    }
+
+    private fun malformedJwtToken(): JWTToken {
+        val malformedPayload = Base64.getEncoder().encodeToString("not-json".toByteArray())
+        return JWTToken("ignored.$malformedPayload.ignored")
+    }
+
+    companion object {
+        private const val SITE_ID = 42L
+        private const val INVALID_JWT_MESSAGE = "Invalid Jetpack AI JWT"
     }
 }
