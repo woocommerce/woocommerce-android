@@ -113,6 +113,35 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given install QR url with utm source, when parsed, then returns InstallQrCode`() {
+        val raw = "https://woocommerce.com/mobile/?utm_source=wc_onboarding_mobile_task"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.InstallQrCode)
+    }
+
+    @Test
+    fun `given install QR url without query, when parsed, then returns InstallQrCode`() {
+        assertThat(parser.parse("https://woocommerce.com/mobile/")).isEqualTo(QrLoginPayload.InstallQrCode)
+        assertThat(parser.parse("https://woocommerce.com/mobile")).isEqualTo(QrLoginPayload.InstallQrCode)
+    }
+
+    @Test
+    fun `given install QR url with mixed case host, when parsed, then returns InstallQrCode`() {
+        assertThat(parser.parse("https://WooCommerce.com/mobile/")).isEqualTo(QrLoginPayload.InstallQrCode)
+    }
+
+    @Test
+    fun `given other woocommerce com path, when parsed, then returns Invalid`() {
+        assertThat(parser.parse("https://woocommerce.com/")).isEqualTo(QrLoginPayload.Invalid)
+        assertThat(parser.parse("https://woocommerce.com/blog")).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given http install QR url, when parsed, then returns Invalid`() {
+        assertThat(parser.parse("http://woocommerce.com/mobile/")).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
     fun `given long real-world token, when parsed, then returns Ticket with full token`() {
         val token = "8a3f5b9e2c4d7168f0a2b4c6e8f1a3b5c7d9e1f3a5b7c9d1e3f5a7b9c1d3e5f7"
         val raw = "woocommerce://qr-login?token=$token&siteUrl=https%3A%2F%2Feasyclothes.example"

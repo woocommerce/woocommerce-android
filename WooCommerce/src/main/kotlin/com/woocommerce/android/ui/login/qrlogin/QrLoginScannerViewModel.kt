@@ -83,6 +83,14 @@ class QrLoginScannerViewModel @Inject constructor(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
+            QrLoginPayload.InstallQrCode -> {
+                trackScanFailure(
+                    step = Step.PAYLOAD,
+                    errorContext = null,
+                    errorType = ErrorReason.InstallQrCode.name,
+                )
+                _uiState.value = Error(reason = ErrorReason.InstallQrCode, retryTicket = null)
+            }
             QrLoginPayload.Invalid -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -228,6 +236,7 @@ class QrLoginScannerViewModel @Inject constructor(
 
     enum class ErrorReason {
         InvalidPayload,
+        InstallQrCode,
         Scanner,
         TokenRejected,
         EndpointMissing,

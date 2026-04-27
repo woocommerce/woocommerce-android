@@ -81,10 +81,10 @@ private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
         body = R.string.login_qr_scanner_error_payload_body,
         primaryAction = R.string.login_qr_error_primary_scan,
     )
-    ErrorReason.Scanner -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_generic_title,
-        body = R.string.login_qr_scanner_error_generic_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
+    ErrorReason.InstallQrCode -> QrLoginErrorContent(
+        title = R.string.login_qr_scanner_error_install_qr_title,
+        body = R.string.login_qr_scanner_error_install_qr_body,
+        primaryAction = R.string.login_qr_error_primary_scan,
     )
     ErrorReason.TokenRejected -> QrLoginErrorContent(
         title = R.string.login_qr_scanner_error_token_title,
@@ -126,6 +126,7 @@ private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
         body = R.string.login_qr_scanner_error_user_role_body,
         primaryAction = R.string.login_qr_error_primary_retry,
     )
+    ErrorReason.Scanner,
     ErrorReason.Unknown -> QrLoginErrorContent(
         title = R.string.login_qr_scanner_error_generic_title,
         body = R.string.login_qr_scanner_error_generic_body,

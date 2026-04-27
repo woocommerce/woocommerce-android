@@ -237,6 +237,8 @@
     <string name="login_qr_scanner_error_generic_body">We couldn\'t read that QR code. Please try again.</string>
     <string name="login_qr_scanner_error_payload_title">Not a WooCommerce code</string>
     <string name="login_qr_scanner_error_payload_body">This QR isn\'t a WooCommerce login code. Generate a new one from your store and try again.</string>
+    <string name="login_qr_scanner_error_install_qr_title">That\'s the install QR</string>
+    <string name="login_qr_scanner_error_install_qr_body">You scanned the QR that installs the app — but it\'s already installed. Tap <b>App is installed</b> in your wp-admin onboarding to reveal the sign-in QR. Don\'t see that button? Visit <b>woo.com/mobilelogin</b> on your computer.</string>
     <string name="login_qr_scanner_error_token_title">Code expired</string>
     <string name="login_qr_scanner_error_token_body">That code expired or has already been used. Generate a new one in your store.</string>
     <string name="login_qr_scanner_error_rate_limited_title">Too many attempts</string>
