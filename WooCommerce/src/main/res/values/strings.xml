@@ -214,7 +214,7 @@
 
     <!-- QR login prologue -->
     <string name="login_qr_prologue_title">Scan to sign in</string>
-    <string name="login_qr_prologue_subtitle">On a device where you\'re already signed in, visit:</string>
+    <string name="login_qr_prologue_subtitle">On your computer, visit:</string>
     <string name="login_qr_prologue_url" translatable="false">woo.com/mobilelogin</string>
     <string name="login_qr_prologue_step_hint">Then scan the QR code that appears.</string>
     <string name="login_qr_prologue_scan_button">Scan QR code</string>
