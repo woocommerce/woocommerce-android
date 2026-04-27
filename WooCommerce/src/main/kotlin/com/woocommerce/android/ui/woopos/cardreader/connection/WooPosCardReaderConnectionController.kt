@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -13,6 +14,7 @@ import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.S
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteFingerprint
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository.LocationIdFetchingResult
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -22,7 +24,10 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.FoundReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryEvent
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -58,6 +63,7 @@ class WooPosCardReaderConnectionController(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
     private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
+    private val remoteReaderSession: WooPosRemoteReaderSession,
     featureFlagRepository: FeatureFlagRepository,
 ) {
     private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
@@ -73,6 +79,7 @@ class WooPosCardReaderConnectionController(
     private var discoveryJob: Job? = null
     private var connectionStatusJob: Job? = null
     private var softwareUpdateJob: Job? = null
+    private var remoteConnectionJob: Job? = null
 
     private var selectedReader: CardReader? = null
     private var showUpdateCancelWarning = false
@@ -271,13 +278,17 @@ class WooPosCardReaderConnectionController(
         discoveryJob?.cancel()
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
+        remoteConnectionJob?.cancel()
         selectedReader = null
+        scope.launch { remoteReaderSession.disconnect() }
         enterScanningState()
+        startDiscovery()
         emitEvent(ControllerEvent.Cancelled)
     }
 
     suspend fun disconnect() {
         appPrefsWrapper.removeLastConnectedCardReaderId()
+        remoteReaderSession.disconnect()
         cardReaderManager.disconnectReader()
     }
 
@@ -315,11 +326,12 @@ class WooPosCardReaderConnectionController(
                 enterScanningState()
             }
             is WooPosUnifiedDiscoveryEvent.ReadersFound -> {
-                val bluetoothReaders = event.readers
-                    .filterIsInstance<WooPosDiscoveredReader.Bluetooth>()
-                    .map { it.cardReader }
-                logger.d("Found ${bluetoothReaders.size} readers")
-                handleReadersFound(bluetoothReaders)
+                val (phones, bluetooth) = event.readers
+                    .partition { it is WooPosDiscoveredReader.Phone }
+                val bluetoothReaders = bluetooth.map { (it as WooPosDiscoveredReader.Bluetooth).cardReader }
+                val phoneReaders = phones.map { it as WooPosDiscoveredReader.Phone }
+                logger.d("Found ${bluetoothReaders.size} BT readers, ${phoneReaders.size} phones")
+                handleReadersFound(bluetoothReaders, phoneReaders)
             }
             is WooPosUnifiedDiscoveryEvent.Failed -> {
                 logger.e("Discovery failed - ${event.msg}")
@@ -336,12 +348,15 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun handleReadersFound(readers: List<CardReader>) {
+    private fun handleReadersFound(
+        bluetoothReaders: List<CardReader>,
+        phones: List<WooPosDiscoveredReader.Phone>,
+    ) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
 
-        tracker.trackReadersDiscovered(readers.size)
+        tracker.trackReadersDiscovered(bluetoothReaders.size + phones.size)
 
-        val lastKnownReader = findLastKnownReader(readers)
+        val lastKnownReader = findLastKnownReader(bluetoothReaders)
         if (lastKnownReader != null) {
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
             tracker.trackAutoConnectionStarted()
@@ -349,34 +364,47 @@ class WooPosCardReaderConnectionController(
             return
         }
 
-        when {
-            readers.isEmpty() -> {
-                enterScanningState()
-            }
-            readers.size == 1 -> {
-                val reader = readers.first()
+        val foundReaders = bluetoothReaders.map { it.toFoundReader() } + phones.mapNotNull { it.toFoundReader() }
+
+        when (foundReaders.size) {
+            0 -> enterScanningState()
+            1 -> {
                 _state.value = WooPosCardReaderConnectionState.ReaderFound(
-                    reader = WooPosCardReaderConnectionState.FoundReader(
-                        id = reader.id ?: "",
-                        name = reader.id ?: "Unknown Reader",
-                        onConnectClicked = { onConnectToReaderClicked(reader) }
-                    ),
+                    reader = foundReaders.first(),
                     onKeepSearchingClicked = { continueSearching() },
                 )
             }
             else -> {
                 _state.value = WooPosCardReaderConnectionState.MultipleReadersFound(
-                    readers = readers.map { reader ->
-                        WooPosCardReaderConnectionState.FoundReader(
-                            id = reader.id ?: "",
-                            name = reader.id ?: "Unknown Reader",
-                            onConnectClicked = { onConnectToReaderClicked(reader) }
-                        )
-                    },
-                    onCancelClicked = { cancel() }
+                    readers = foundReaders,
+                    onCancelClicked = { cancel() },
                 )
             }
         }
+    }
+
+    private fun CardReader.toFoundReader(): FoundReader =
+        FoundReader(
+            id = id.orEmpty(),
+            name = id ?: context.getString(R.string.woopos_card_reader_unknown_reader_name),
+            transport = WooPosDiscoveryTransport.Bluetooth,
+            fingerprintSuffix = null,
+            onConnectClicked = { onConnectToReaderClicked(this) },
+        )
+
+    private fun WooPosDiscoveredReader.Phone.toFoundReader(): FoundReader? {
+        val pairingCode = runCatching { CardReaderRemoteFingerprint.pairingCodeFromBase64(fingerprintBase64) }
+            .getOrElse {
+                logger.e("Malformed phone fingerprint '$fingerprintBase64': ${it.message}")
+                return null
+            }
+        return FoundReader(
+            id = fingerprintBase64,
+            name = name,
+            transport = WooPosDiscoveryTransport.WifiLan,
+            fingerprintSuffix = pairingCode,
+            onConnectClicked = { onPhoneConnectClicked(this) },
+        )
     }
 
     private fun findLastKnownReader(readers: List<CardReader>): CardReader? {
@@ -392,6 +420,44 @@ class WooPosCardReaderConnectionController(
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
         tracker.trackOnConnectTapped()
         connectToReader(reader)
+    }
+
+    private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
+        if (_state.value is WooPosCardReaderConnectionState.Connecting) return
+        tracker.trackOnConnectTapped()
+        discoveryJob?.cancel()
+        selectedReader = null
+        _state.value = WooPosCardReaderConnectionState.Connecting
+
+        remoteConnectionJob?.cancel()
+        remoteConnectionJob = scope.launch {
+            val result = remoteReaderSession.connect(phone)
+            handleRemoteConnectionResult(phone, result)
+        }
+    }
+
+    private fun handleRemoteConnectionResult(
+        phone: WooPosDiscoveredReader.Phone,
+        result: WooPosRemoteReaderSession.State,
+    ) {
+        when (result) {
+            is WooPosRemoteReaderSession.State.Connected -> {
+                logger.d("Remote reader connected: ${phone.name}")
+                tracker.trackConnectionSucceeded()
+                _state.value = Connected(readerName = phone.name)
+            }
+            is WooPosRemoteReaderSession.State.Failed -> {
+                logger.e("Remote reader connection failed: ${result.message}")
+                tracker.trackConnectionFailed()
+                _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
+                    errorMessage = result.message,
+                    onRetryClicked = { onPhoneConnectClicked(phone) },
+                    onCancelClicked = { cancel() },
+                )
+            }
+            is WooPosRemoteReaderSession.State.Idle,
+            is WooPosRemoteReaderSession.State.Connecting -> Unit
+        }
     }
 
     private fun connectToReader(reader: CardReader) {

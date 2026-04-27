@@ -4,15 +4,15 @@ import java.security.MessageDigest
 import java.security.cert.X509Certificate
 import java.util.Base64
 
-internal object CardReaderRemoteFingerprint {
-    fun sha256(cert: X509Certificate): ByteArray {
+object CardReaderRemoteFingerprint {
+    internal fun sha256(cert: X509Certificate): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
         return digest.digest(cert.encoded)
     }
 
-    fun sha256Base64(cert: X509Certificate): String = encodeBase64(sha256(cert))
+    internal fun sha256Base64(cert: X509Certificate): String = encodeBase64(sha256(cert))
 
-    fun pairingCode(cert: X509Certificate): String = pairingCodeFromBytes(sha256(cert))
+    internal fun pairingCode(cert: X509Certificate): String = pairingCodeFromBytes(sha256(cert))
 
     fun pairingCodeFromBase64(fingerprintBase64: String): String = pairingCodeFromBytes(decodeBase64(fingerprintBase64))
 

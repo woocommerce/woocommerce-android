@@ -24,12 +24,14 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor() : WooPosPhoneDi
                 host = InetAddress.getLoopbackAddress(),
                 port = 9000,
                 fingerprintBase64 = "SIM1",
+                isSimulated = true,
             ),
             WooPosDiscoveredReader.Phone(
                 name = "Simulated Galaxy S24",
                 host = InetAddress.getLoopbackAddress(),
                 port = 9001,
                 fingerprintBase64 = "SIM2",
+                isSimulated = true,
             ),
         )
     }
