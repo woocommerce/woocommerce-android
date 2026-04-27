@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,11 +48,15 @@ fun QrLoginConfirmSiteScreen(
             .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
+        // Hero scrolls so the Connect / Cancel buttons stay visible in landscape on phones
+        // where the static layout would otherwise push them off the bottom edge.
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            contentAlignment = Alignment.Center,
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
             Hero(host = host)
         }
