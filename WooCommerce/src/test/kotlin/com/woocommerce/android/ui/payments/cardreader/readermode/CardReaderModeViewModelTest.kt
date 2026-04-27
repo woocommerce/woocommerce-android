@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
@@ -64,7 +65,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given location permission granted, when result received, then session started`() {
         // WHEN
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // THEN
         verify(session).start(any(), any())
@@ -73,17 +74,17 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given location permission granted twice, when received, then session started only once`() {
         // WHEN
-        viewModel.onLocationPermissionResult(granted = true)
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // THEN
         verify(session, times(1)).start(any(), any())
     }
 
     @Test
-    fun `given location permission denied, when result received, then explainer state is shown`() = testBlocking {
+    fun `given denied with rationale, when result received, then explainer state is shown`() = testBlocking {
         // WHEN
-        viewModel.onLocationPermissionResult(granted = false)
+        viewModel.onLocationPermissionResult(granted = false, shouldShowRationale = true)
         advanceUntilIdle()
 
         // THEN
@@ -92,9 +93,20 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given permanently denied, when result received, then permission denied state is shown`() = testBlocking {
+        // WHEN
+        viewModel.onLocationPermissionResult(granted = false, shouldShowRationale = false)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionDenied::class.java)
+        verify(session, never()).start(any(), any())
+    }
+
+    @Test
     fun `given starting session state, when emitted, then starting view state is shown`() = testBlocking {
         // GIVEN
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.Starting
@@ -107,7 +119,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given ready to pair session state, when emitted, then ready to pair view state is shown`() = testBlocking {
         // GIVEN
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
@@ -126,7 +138,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     fun `given waiting for payment session state, when emitted, then waiting for payment view state is shown`() =
         testBlocking {
             // GIVEN
-            viewModel.onLocationPermissionResult(granted = true)
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
             // WHEN
             sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "Tablet 1")
@@ -140,7 +152,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given error session state, when emitted, then error view state carries the message`() = testBlocking {
         // GIVEN
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // WHEN
         sessionState.value = CardReaderRemoteSessionState.Error(message = "java.net.SocketException: closed")
@@ -154,7 +166,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `given starting view state, when cancel clicked, then exit event is emitted`() = testBlocking {
         // GIVEN
-        viewModel.onLocationPermissionResult(granted = true)
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
         sessionState.value = CardReaderRemoteSessionState.Starting
         advanceUntilIdle()
 

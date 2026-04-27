@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
@@ -45,10 +46,13 @@ class CardReaderModeViewModel @Inject constructor(
         )
     }
 
-    fun onLocationPermissionResult(granted: Boolean) {
-        when (granted) {
-            true -> startSessionIfNeeded()
-            false -> onLocationPermissionMissing()
+    fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        when {
+            granted -> startSessionIfNeeded()
+            !shouldShowRationale -> _viewState.value = RemoteTapToPayLocationPermissionDenied(
+                onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenAppSettings) },
+            )
+            else -> onLocationPermissionMissing()
         }
     }
 

@@ -23,6 +23,15 @@ data class RemoteTapToPayLocationPermissionExplainer(
     primaryActionLabel = R.string.card_reader_mode_location_permission_continue,
 )
 
+data class RemoteTapToPayLocationPermissionDenied(
+    override val onPrimaryActionClicked: (() -> Unit),
+) : ViewState(
+    headerLabel = R.string.card_reader_mode_location_permission_header,
+    paymentStateLabel = UiStringRes(R.string.card_reader_mode_location_permission_denied_subtitle),
+    illustration = R.drawable.img_card_reader_tpp_connecting,
+    primaryActionLabel = R.string.card_reader_mode_location_permission_open_settings,
+)
+
 data class RemoteTapToPayReadyToPair(
     val deviceName: String,
     val fingerprintSuffix: String,

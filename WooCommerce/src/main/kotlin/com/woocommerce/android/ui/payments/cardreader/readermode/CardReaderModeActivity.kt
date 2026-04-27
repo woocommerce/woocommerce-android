@@ -23,7 +23,10 @@ class CardReaderModeActivity : AppCompatActivity() {
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        viewModel.onLocationPermissionResult(granted)
+        viewModel.onLocationPermissionResult(
+            granted = granted,
+            shouldShowRationale = WooPermissionUtils.shouldShowFineLocationPermissionRationale(this),
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +46,8 @@ class CardReaderModeActivity : AppCompatActivity() {
                         CardReaderModeEvent.Exit -> finish()
                         CardReaderModeEvent.RequestLocationPermission ->
                             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        CardReaderModeEvent.OpenAppSettings ->
+                            WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
                     }
                 }
             }
@@ -50,7 +55,7 @@ class CardReaderModeActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             if (WooPermissionUtils.hasFineLocationPermission(this)) {
-                viewModel.onLocationPermissionResult(true)
+                viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
             } else {
                 viewModel.onLocationPermissionMissing()
             }
