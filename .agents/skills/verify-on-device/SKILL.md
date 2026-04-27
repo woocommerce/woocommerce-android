@@ -18,7 +18,7 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 Run this probe once at the start of a verification task and cache the result. Every CLI-based block in this skill is gated on `USE_ANDROID_CLI=1`.
 
-The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/`, which shadows it whenever the legacy SDK tools dir is on PATH. The probe only detects — it does not mutate PATH or create symlinks, since an in-script `export PATH` would not survive subsequent shell invocations in this skill. If `android` is missing, shadowed, or broken, it sets `USE_ANDROID_CLI=0` and prints a one-line PATH-fix hint when the canonical install exists at `~/.android/bin/android-cli`. The user applies the fix once in their shell rc so it persists.
+The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/`, which shadows it whenever the legacy SDK tools dir is on PATH. The probe only detects — it does not mutate PATH or create symlinks, since an in-script `export PATH` would not survive subsequent shell invocations in this skill. If `android` is missing, shadowed, or broken, it sets `USE_ANDROID_CLI=0` and prints a hint pointing at the canonical install location (`~/.android/bin/android-cli`) when present. Exact PATH/symlink fix depends on the user's environment — the goal is to make `android --version` resolve to the agent CLI; the user applies the fix once in their shell rc so it persists.
 
 ```bash
 _android_is_agent_cli() {
@@ -31,8 +31,8 @@ if command -v android >/dev/null 2>&1 && _android_is_agent_cli; then
 else
   USE_ANDROID_CLI=0
   if [ -x "$HOME/.android/bin/android-cli" ]; then
-    echo 'NOTE: Agent CLI is at ~/.android/bin/android-cli but `android` is not resolving to it (likely shadowed by the legacy Android SDK tool).'
-    echo 'Fix: add `export PATH="$HOME/.android/bin:$PATH"` to your shell rc and restart the session.'
+    echo 'NOTE: Agent CLI binary is at ~/.android/bin/android-cli but `android` does not resolve to it (likely missing symlink or shadowed by the legacy Android SDK tool).'
+    echo 'Fix: update your PATH/symlinks until `android --version` prints a semver (e.g. symlink android-cli to a name `android` on a directory earlier in PATH than the legacy Android SDK tools), then restart the session.'
   fi
 fi
 ```
