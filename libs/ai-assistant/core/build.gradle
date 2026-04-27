@@ -1,0 +1,10 @@
+plugins {
+    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.dependency.analysis)
+}
+
+java {
+    sourceCompatibility = libs.versions.java.get()
+    targetCompatibility = libs.versions.java.get()
+}
