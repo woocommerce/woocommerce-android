@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.BarChartGestureListener
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsType
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -82,6 +83,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
 
     private var revenueStatsModel: RevenueStatsUiModel? = null
+    private var selectedRevenueStatsType = RevenueStatsType.TOTAL
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var visitorStatsState: VisitorStatsViewState = VisitorStatsViewState.NotLoaded
@@ -379,13 +381,22 @@ class DashboardStatsView @JvmOverloads constructor(
         }
     }
 
-    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
+    fun updateView(
+        revenueStatsModel: RevenueStatsUiModel?,
+        selectedRevenueStatsType: RevenueStatsType = RevenueStatsType.TOTAL
+    ) {
+        val revenueStatsTypeChanged = this.selectedRevenueStatsType != selectedRevenueStatsType
         this.revenueStatsModel = revenueStatsModel
+        this.selectedRevenueStatsType = selectedRevenueStatsType
+        if (revenueStatsTypeChanged) {
+            binding.chart.highlightValue(null)
+            isChartValueSelected = false
+        }
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
         this.chartRevenueStats = revenueStatsModel?.intervalList?.associate {
-            it.interval!! to (it.sales ?: 0.0)
+            it.interval!! to (it.salesFor(selectedRevenueStatsType) ?: 0.0)
         } ?: mapOf()
 
         this.chartOrderStats = revenueStatsModel?.intervalList?.associate {
@@ -545,7 +556,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val totalSales = revenueStatsModel?.totalSales ?: 0.0
+        val totalSales = revenueStatsModel?.salesFor(selectedRevenueStatsType) ?: 0.0
         val revenue = currencyFormatter.getFormattedAmountZeroRounded(
             totalSales,
             revenueStatsModel?.currencyCode.orEmpty()
@@ -557,7 +568,7 @@ class DashboardStatsView @JvmOverloads constructor(
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
+        if (chartRevenueStats.isEmpty() || totalSales == 0.0) {
             binding.chart.clear()
             isRequestingStats = false
             return

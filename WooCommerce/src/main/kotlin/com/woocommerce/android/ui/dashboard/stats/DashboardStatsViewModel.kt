@@ -41,6 +41,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -107,6 +108,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private val _selectedRevenueStatsType = MutableStateFlow(
+        RevenueStatsType.fromName(appPrefsWrapper.getDashboardRevenueStatsType())
+    )
+    val selectedRevenueStatsType = _selectedRevenueStatsType.asStateFlow()
 
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
@@ -180,6 +186,20 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onChartDateSelected(date: String?) {
         selectedChartDate.value = date
+    }
+
+    fun onRevenueStatsTypeSelected(type: RevenueStatsType) {
+        if (_selectedRevenueStatsType.value == type) return
+
+        _selectedRevenueStatsType.value = type
+        appPrefsWrapper.setDashboardRevenueStatsType(type.name)
+        selectedChartDate.value = null
+        usageTracksEventEmitter.interacted()
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
+        trackEventForStatsCard(
+            AnalyticsEvent.DASHBOARD_STATS_REVENUE_TYPE_SELECTED,
+            mapOf(AnalyticsTracker.KEY_OPTION to type.trackingValue)
+        )
     }
 
     fun onRefresh() {
@@ -408,7 +428,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
         val totalSales: Double? = null,
         val currencyCode: String?,
         val rangeId: String
-    )
+    ) {
+        fun salesFor(type: RevenueStatsType): Double? = when (type) {
+            RevenueStatsType.GROSS -> grossSales
+            RevenueStatsType.NET -> netSales
+            RevenueStatsType.TOTAL -> totalSales
+        }
+    }
 
     data class StatsIntervalUiModel(
         val interval: String? = null,
@@ -416,7 +442,24 @@ class DashboardStatsViewModel @AssistedInject constructor(
         val sales: Double? = null,
         val grossSales: Double? = null,
         val netSales: Double? = null
-    )
+    ) {
+        fun salesFor(type: RevenueStatsType): Double? = when (type) {
+            RevenueStatsType.GROSS -> grossSales
+            RevenueStatsType.NET -> netSales
+            RevenueStatsType.TOTAL -> sales
+        }
+    }
+
+    enum class RevenueStatsType(val trackingValue: String) {
+        GROSS("gross"),
+        NET("net"),
+        TOTAL("total");
+
+        companion object {
+            fun fromName(name: String): RevenueStatsType =
+                entries.find { it.name == name } ?: TOTAL
+        }
+    }
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
