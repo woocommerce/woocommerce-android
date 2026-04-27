@@ -61,10 +61,17 @@ internal class PaymentManager(
         validateRemoteState(paymentInfo)?.let { return CreatePaymentIntentResult.Failed(it) }
         return try {
             when (val result = createPaymentAction.createPaymentIntent(paymentInfo)) {
-                is Success -> CreatePaymentIntentResult.Success(
-                    paymentIntentId = result.paymentIntent.id.orEmpty(),
-                    clientSecret = result.paymentIntent.clientSecret.orEmpty(),
-                )
+                is Success -> {
+                    val id = result.paymentIntent.id
+                    val secret = result.paymentIntent.clientSecret
+                    if (id == null || secret == null) {
+                        CreatePaymentIntentResult.Failed(
+                            IllegalStateException("createPaymentIntent returned null id or clientSecret"),
+                        )
+                    } else {
+                        CreatePaymentIntentResult.Success(paymentIntentId = id, clientSecret = secret)
+                    }
+                }
                 is Failure -> CreatePaymentIntentResult.Failed(result.exception)
             }
         } catch (cancel: CancellationException) {
@@ -79,10 +86,15 @@ internal class PaymentManager(
         try {
             val retrieved = terminalWrapper.retrievePaymentIntent(clientSecret)
             val processed = terminalWrapper.processPaymentIntent(retrieved)
-            RetrieveAndCollectResult.Success(
-                paymentIntentId = processed.id.orEmpty(),
-                status = processed.status?.name?.lowercase() ?: "unknown",
-            )
+            val id = processed.id
+            val status = processed.status?.name?.lowercase()
+            if (id == null || status == null) {
+                RetrieveAndCollectResult.Failed(
+                    IllegalStateException("processPaymentIntent returned null id or status"),
+                )
+            } else {
+                RetrieveAndCollectResult.Success(paymentIntentId = id, status = status)
+            }
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (cause: Exception) {
