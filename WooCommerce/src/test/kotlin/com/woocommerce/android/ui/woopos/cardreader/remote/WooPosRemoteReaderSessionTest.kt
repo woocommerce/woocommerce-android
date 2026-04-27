@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
@@ -24,6 +25,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import java.net.InetAddress
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -118,7 +120,21 @@ class WooPosRemoteReaderSessionTest {
         runTest {
             // GIVEN
             val session = createSession()
-            val paymentInfo: PaymentInfo = mock()
+            val paymentInfo = PaymentInfo(
+                paymentDescription = "desc",
+                statementDescriptor = StatementDescriptor(null),
+                orderId = 1L,
+                amount = BigDecimal.ONE,
+                currency = "USD",
+                customerEmail = null,
+                isPluginCanSendReceipt = false,
+                customerName = null,
+                storeName = null,
+                siteUrl = null,
+                orderKey = null,
+                feeAmount = null,
+                channel = null,
+            )
 
             // WHEN
             val outcome = session.sendCollectPayment(paymentInfo)
