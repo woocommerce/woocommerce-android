@@ -123,7 +123,7 @@ internal class DefaultCardReaderRemoteTabletClient(
         } catch (cancel: CancellationException) {
             disconnect()
             throw cancel
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
             ConnectOutcome.Failed(cause)
         }
@@ -134,6 +134,11 @@ internal class DefaultCardReaderRemoteTabletClient(
         closedBridgeJob = scope.launch {
             connection.closed.collect { isClosed ->
                 _connectionClosed.value = isClosed
+                if (isClosed) {
+                    heartbeatJob?.cancel()
+                    heartbeatJob = null
+                    this@DefaultCardReaderRemoteTabletClient.connection = null
+                }
             }
         }
     }
@@ -173,7 +178,7 @@ internal class DefaultCardReaderRemoteTabletClient(
             CollectPaymentOutcome.TimedOut
         } catch (cancel: CancellationException) {
             throw cancel
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             CollectPaymentOutcome.Failed(cause)
         }
     }
