@@ -101,6 +101,20 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 403 before any data, when streaming, then the auth failure is not retried`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(403))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        assertThat(events).hasSize(1)
+        val failed = events.single() as AssistantEvent.Failed
+        assertThat(failed.kind).isEqualTo(AssistantErrorKind.AUTH)
+        assertThat(tokenProvider.invalidations).isZero()
+        assertThat(tokenProvider.tokensProvided).containsExactly("fake-token-1")
+    }
+
+    @Test
     fun `given 429, when streaming, then a Failed RATE_LIMIT event is emitted`() = runTest {
         server.enqueue(MockResponse().setResponseCode(429))
 
@@ -123,18 +137,15 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
-    fun `given the token provider throws AssistantAuthException, when streaming, then a Failed AUTH event is emitted`() = runTest {
-        val service = newService(
-            tokenProvider = object : JwtTokenProvider {
-                override suspend fun provide(): String =
-                    throw AssistantAuthException("no site selected")
-            },
-        )
+    fun `given the token provider throws AssistantAuthException, when streaming, then a Failed AUTH event is emitted without retry`() = runTest {
+        val tokenProvider = ThrowingTokenProvider(AssistantAuthException("no site selected"))
+        val service = newService(tokenProvider = tokenProvider)
 
         val events = service.streamTurn(simpleRequest()).toList()
 
         val failed = events.single() as AssistantEvent.Failed
         assertThat(failed.kind).isEqualTo(AssistantErrorKind.AUTH)
+        assertThat(tokenProvider.provideCalls).isEqualTo(1)
     }
 
     private fun newService(
@@ -169,6 +180,17 @@ class JetpackAiChatServiceTest {
 
         override suspend fun invalidate() {
             invalidations++
+        }
+    }
+
+    private class ThrowingTokenProvider(
+        private val exception: AssistantAuthException,
+    ) : JwtTokenProvider {
+        var provideCalls: Int = 0
+
+        override suspend fun provide(): String {
+            provideCalls++
+            throw exception
         }
     }
 

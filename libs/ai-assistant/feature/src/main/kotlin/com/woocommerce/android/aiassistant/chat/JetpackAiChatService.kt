@@ -70,10 +70,8 @@ internal class JetpackAiChatService @Inject constructor(
         }
     }
 
-    private fun shouldRetryAuth(outcome: TurnOutcome, attempt: Int): Boolean {
-        val failure = outcome.failure ?: return false
-        return failure.kind == AssistantErrorKind.AUTH && !outcome.receivedAny && attempt == 0
-    }
+    private fun shouldRetryAuth(outcome: TurnOutcome, attempt: Int): Boolean =
+        outcome.retryableAuthFailure && attempt == 0
 
     @Suppress("TooGenericExceptionCaught")
     private suspend fun collectOnce(request: ChatRequest): TurnOutcome {
@@ -95,12 +93,14 @@ internal class JetpackAiChatService @Inject constructor(
                 events = emitted,
                 receivedAny = emitted.isNotEmpty(),
                 failure = AssistantEvent.Failed(mapped.kind, mapped.cause),
+                retryableAuthFailure = e is MappedException && e.retryableAuthFailure,
             )
         }
         return TurnOutcome(
             events = emitted,
             receivedAny = emitted.isNotEmpty(),
             failure = failed,
+            retryableAuthFailure = false,
         )
     }
 
@@ -108,6 +108,7 @@ internal class JetpackAiChatService @Inject constructor(
         val events: List<AssistantEvent>,
         val receivedAny: Boolean,
         val failure: AssistantEvent.Failed?,
+        val retryableAuthFailure: Boolean,
     )
 
     @Suppress("TooGenericExceptionCaught")
@@ -117,7 +118,6 @@ internal class JetpackAiChatService @Inject constructor(
         } catch (ce: CancellationException) {
             throw ce
         } catch (e: Exception) {
-            // Surface token-provider failures via close cause; the parser turns it into Failed.
             close(mapError(e).toException())
             return@callbackFlow
         }
@@ -158,11 +158,11 @@ internal class JetpackAiChatService @Inject constructor(
             t is IOException -> AssistantErrorKind.NETWORK
             else -> AssistantErrorKind.UNKNOWN
         }
-        return MappedError(kind, t)
+        return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED)
     }
 
     private fun mapError(t: Throwable): MappedError = when (t) {
-        is MappedException -> MappedError(t.kind, t.cause)
+        is MappedException -> MappedError(t.kind, t.cause, t.retryableAuthFailure)
         is AssistantAuthException -> MappedError(AssistantErrorKind.AUTH, t)
         is UnknownHostException, is ConnectException -> MappedError(AssistantErrorKind.NETWORK, t)
         is SocketTimeoutException -> MappedError(AssistantErrorKind.TIMEOUT, t)
@@ -195,7 +195,6 @@ internal class JetpackAiChatService @Inject constructor(
         }
         is AssistantMessage.Assistant -> buildJsonObject {
             put("role", "assistant")
-            // Backend rejects null content on tool-call replays — use empty string instead.
             put("content", content.orEmpty())
             if (toolCalls.isNotEmpty()) {
                 put("tool_calls", buildJsonArray { toolCalls.forEach { add(it.toJson()) } })
@@ -239,12 +238,19 @@ internal class JetpackAiChatService @Inject constructor(
         }
     }
 
-    private data class MappedError(val kind: AssistantErrorKind, val cause: Throwable?) {
-        fun toException(): MappedException = MappedException(kind, cause)
+    private data class MappedError(
+        val kind: AssistantErrorKind,
+        val cause: Throwable?,
+        val retryableAuthFailure: Boolean = false,
+    ) {
+        fun toException(): MappedException = MappedException(kind, cause, retryableAuthFailure)
     }
 
-    private class MappedException(val kind: AssistantErrorKind, cause: Throwable?) :
-        RuntimeException(kind.name, cause)
+    private class MappedException(
+        val kind: AssistantErrorKind,
+        cause: Throwable?,
+        val retryableAuthFailure: Boolean,
+    ) : RuntimeException(kind.name, cause)
 
     companion object {
         internal const val DEFAULT_BASE_URL = "https://public-api.wordpress.com"
