@@ -52,7 +52,7 @@ class CardReaderRemoteSession internal constructor(
         context = context,
         cardReaderManager = cardReaderManager,
         logWrapper = logWrapper,
-        tlsServerFactory = TlsServerFactory { CardReaderRemoteTlsServer() },
+        tlsServerFactory = TlsServerFactory { CardReaderRemoteTlsServer(logWrapper) },
         nsdFactory = NsdFactory { ctx -> CardReaderRemoteNsd(ctx) },
         remoteTokenProviderFactory = RemoteTokenProviderFactory { RemoteTokenChannelProvider() },
     )

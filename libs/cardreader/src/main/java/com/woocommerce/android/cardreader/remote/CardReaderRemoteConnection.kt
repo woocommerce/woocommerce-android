@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +23,7 @@ import javax.net.ssl.SSLException
 
 internal class CardReaderRemoteConnection internal constructor(
     private val socket: Socket,
+    private val logWrapper: LogWrapper,
     private val protocol: CardReaderRemoteProtocol = CardReaderRemoteProtocol(),
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
@@ -40,7 +41,7 @@ internal class CardReaderRemoteConnection internal constructor(
                 val next = runCatching { protocol.read(input) }.getOrElse { err ->
                     when (err) {
                         is EOFException, is SocketException -> Unit
-                        is SSLException -> Log.w(TAG, "Reader stream closed with SSL error", err)
+                        is SSLException -> logWrapper.w(TAG, "Reader stream closed with SSL error: ${err.message}")
                         else -> fatalError = err
                     }
                     return@launch

@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
@@ -32,8 +32,8 @@ interface CardReaderRemoteTabletClient {
         const val DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS: Long = 90_000
         const val DEFAULT_CONNECT_TIMEOUT_MILLIS: Long = 30_000
 
-        fun create(): CardReaderRemoteTabletClient =
-            DefaultCardReaderRemoteTabletClient(CardReaderRemoteTlsClient())
+        fun create(logWrapper: LogWrapper): CardReaderRemoteTabletClient =
+            DefaultCardReaderRemoteTabletClient(CardReaderRemoteTlsClient(logWrapper), logWrapper)
     }
 }
 
@@ -52,6 +52,7 @@ sealed class CollectPaymentOutcome {
 
 internal class DefaultCardReaderRemoteTabletClient(
     private val tlsClient: CardReaderRemoteTlsClient,
+    private val logWrapper: LogWrapper,
 ) : CardReaderRemoteTabletClient {
     private var connection: CardReaderRemoteConnection? = null
 
@@ -64,13 +65,13 @@ internal class DefaultCardReaderRemoteTabletClient(
         disconnect()
         return try {
             withTimeout(timeoutMillis) {
-                Log.d(TAG, "Opening TLS connection")
+                logWrapper.d(TAG, "Opening TLS connection")
                 val opened = tlsClient.connect(reader.host, reader.port, reader.fingerprintBase64)
                 connection = opened
                 val requestId = UUID.randomUUID().toString()
-                Log.d(TAG, "Sending ConnectRequest requestId=$requestId")
+                logWrapper.d(TAG, "Sending ConnectRequest requestId=$requestId")
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
-                Log.d(TAG, "ConnectRequest sent, awaiting reply")
+                logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
                 when (val reply = opened.receive().first { it.requestId == requestId }) {
                     is ConnectAck -> ConnectOutcome.Success(reply.readerSerial)
                     is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)

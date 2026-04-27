@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,6 +13,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLServerSocket
 
 internal class CardReaderRemoteTlsServer(
+    private val logWrapper: LogWrapper,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AutoCloseable {
     private var serverSocket: SSLServerSocket? = null
@@ -64,7 +66,7 @@ internal class CardReaderRemoteTlsServer(
         val accepted = socket.accept().apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
-        CardReaderRemoteConnection(accepted, ioDispatcher = ioDispatcher)
+        CardReaderRemoteConnection(socket = accepted, logWrapper = logWrapper, ioDispatcher = ioDispatcher)
     }
 
     override fun close() {

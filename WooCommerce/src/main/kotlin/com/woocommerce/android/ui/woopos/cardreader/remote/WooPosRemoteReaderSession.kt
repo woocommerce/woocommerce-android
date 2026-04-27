@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
@@ -149,6 +150,8 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 }
 
-class WooPosRemoteReaderClientProvider @Inject constructor() {
-    fun create(): CardReaderRemoteTabletClient = CardReaderRemoteTabletClient.create()
+class WooPosRemoteReaderClientProvider @Inject constructor(
+    private val logWrapper: LogWrapper,
+) {
+    fun create(): CardReaderRemoteTabletClient = CardReaderRemoteTabletClient.create(logWrapper)
 }

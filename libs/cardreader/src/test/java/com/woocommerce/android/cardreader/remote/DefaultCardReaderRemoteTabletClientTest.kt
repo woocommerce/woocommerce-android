@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +14,8 @@ import java.net.InetAddress
 @ExperimentalCoroutinesApi
 class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
     private val tlsClient: CardReaderRemoteTlsClient = mock()
-    private val client = DefaultCardReaderRemoteTabletClient(tlsClient)
+    private val logWrapper: LogWrapper = mock()
+    private val client = DefaultCardReaderRemoteTabletClient(tlsClient, logWrapper)
 
     @Test
     fun `given tls handshake throws, when connect, then returns Failed with the cause`() = testBlocking {
