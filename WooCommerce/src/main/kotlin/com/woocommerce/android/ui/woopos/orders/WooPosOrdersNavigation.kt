@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
@@ -77,8 +78,17 @@ private fun NavGraphBuilder.ordersComposable(
             .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
             .collectAsState()
 
-        backStackEntry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
-        backStackEntry.savedStateHandle.remove<Boolean>(ISSUE_REFUND_DISMISSED_KEY)
+        LaunchedEffect(navigatedFromEmailReceiptSent.value) {
+            if (navigatedFromEmailReceiptSent.value) {
+                backStackEntry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
+            }
+        }
+
+        LaunchedEffect(issueRefundDismissed.value) {
+            if (issueRefundDismissed.value) {
+                backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
+            }
+        }
 
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,

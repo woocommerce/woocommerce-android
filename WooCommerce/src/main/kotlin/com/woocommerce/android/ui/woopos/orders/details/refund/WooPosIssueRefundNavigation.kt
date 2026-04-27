@@ -35,7 +35,9 @@ fun NavGraphBuilder.issueRefundScreen(
         popEnterTransition = { fadeIn() },
         popExitTransition = { fadeOut() },
     ) { backStackEntry ->
-        val orderId = backStackEntry.arguments?.getLong(ISSUE_REFUND_ORDER_ID_KEY) ?: 0L
+        val orderId = checkNotNull(backStackEntry.arguments?.getLong(ISSUE_REFUND_ORDER_ID_KEY)) {
+            "orderId argument is required for issue refund screen"
+        }
 
         val refundReasonResult = backStackEntry.savedStateHandle
             .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)

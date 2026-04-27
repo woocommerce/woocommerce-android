@@ -145,13 +145,12 @@ fun WooPosIssueRefundScreen(
                             delayMillis = 200,
                             easing = FastOutSlowInEasing
                         )
-                    ) togetherWith
-                        fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 200,
-                                easing = FastOutSlowInEasing
-                            )
+                    ) togetherWith fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 200,
+                            easing = FastOutSlowInEasing
                         )
+                    ) using null
                 },
                 label = "refund_state_transition",
             ) { animatedState ->
@@ -178,16 +177,20 @@ fun WooPosIssueRefundScreen(
 
             RefundScreenButtons(
                 state = state,
-                viewModel = viewModel,
                 onDismiss = handleDismiss,
                 onEvent = handleEvent,
                 onNavigationEvent = onNavigationEvent,
             )
         }
 
+        val currentState = state
+        val isProcessing = currentState is WooPosRefundState.Content &&
+            currentState.step == WooPosRefundState.Content.RefundStep.Processing
+
         RefundScreenHeader(
             title = toolbarTitle,
             onCloseClicked = { handleDismiss() },
+            closeButtonEnabled = !isProcessing,
         )
     }
 }
@@ -219,6 +222,7 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String {
 private fun RefundScreenHeader(
     title: String,
     onCloseClicked: () -> Unit,
+    closeButtonEnabled: Boolean = true,
 ) {
     val closeContentDescription = stringResource(R.string.close)
     Box(
@@ -229,6 +233,7 @@ private fun RefundScreenHeader(
     ) {
         IconButton(
             onClick = onCloseClicked,
+            enabled = closeButtonEnabled,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = WooPosSpacing.Small.value)
@@ -237,7 +242,11 @@ private fun RefundScreenHeader(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = closeContentDescription,
                 modifier = Modifier.size(WooPosIconSize.Large.value),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = if (closeButtonEnabled) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                }
             )
         }
 
@@ -259,7 +268,6 @@ private fun RefundScreenHeader(
 @Composable
 private fun RefundScreenButtons(
     state: WooPosRefundState,
-    viewModel: WooPosRefundViewModel,
     onDismiss: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -281,7 +289,7 @@ private fun RefundScreenButtons(
                 WooPosRefundState.Content.RefundStep.SelectItems -> {
                     WooPosButton(
                         text = stringResource(R.string.continue_button),
-                        onClick = { viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
+                        onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
                         state = if (state.selectedItemIds.isNotEmpty()) {
                             WooPosButtonState.ENABLED
                         } else {
@@ -294,14 +302,14 @@ private fun RefundScreenButtons(
                     WooPosButton(
                         text = stringResource(R.string.continue_button),
                         onClick = {
-                            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+                            onEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
                     WooPosOutlinedButton(
                         text = stringResource(R.string.woopos_orders_edit_refund),
                         onClick = {
-                            viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                            onEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -309,13 +317,13 @@ private fun RefundScreenButtons(
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
                     WooPosButton(
                         text = stringResource(R.string.woopos_orders_yes_proceed),
-                        onClick = { viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed) },
+                        onClick = { onEvent(WooPosRefundUIEvent.OnRefundConfirmed) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     WooPosOutlinedButton(
                         text = stringResource(R.string.back),
                         onClick = {
-                            viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+                            onEvent(WooPosRefundUIEvent.BackToReviewClicked)
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -412,13 +420,12 @@ private fun ContentStateHandler(
                     delayMillis = 200,
                     easing = FastOutSlowInEasing
                 )
-            ) togetherWith
-                fadeOut(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        easing = FastOutSlowInEasing
-                    )
+            ) togetherWith fadeOut(
+                animationSpec = tween(
+                    durationMillis = 200,
+                    easing = FastOutSlowInEasing
                 )
+            ) using null
         },
         label = "refund_step_transition",
     ) { step ->
