@@ -15,10 +15,12 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -89,6 +91,12 @@ class MockCardReaderManagerModule {
 
         override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
             flowOf(CardPaymentStatus.ProcessingPayment)
+
+        override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult =
+            error("createPaymentIntent is not used in instrumented tests")
+
+        override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
+            error("retrieveAndCollectPayment is not used in instrumented tests")
 
         override suspend fun refundInteracPayment(
             refundParams: RefundParams,
