@@ -3,17 +3,16 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -24,6 +23,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
@@ -36,10 +36,6 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         on { initialized }.thenReturn(true)
     }
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
-    private val resourceProvider: ResourceProvider = mock {
-        on { getString(R.string.card_reader_mode_location_permission_required) }
-            .thenReturn("Location permission is required to connect with the tablet.")
-    }
 
     private lateinit var store: ViewModelStore
     private lateinit var viewModel: CardReaderModeViewModel
@@ -54,7 +50,6 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                     session,
                     cardReaderManager,
                     developerOptionsRepository,
-                    resourceProvider,
                 ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
@@ -82,18 +77,17 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         viewModel.onLocationPermissionResult(granted = true)
 
         // THEN
-        verify(session).start(any(), any())
+        verify(session, times(1)).start(any(), any())
     }
 
     @Test
-    fun `given location permission denied, when result received, then error state is shown`() = testBlocking {
+    fun `given location permission denied, when result received, then explainer state is shown`() = testBlocking {
         // WHEN
         viewModel.onLocationPermissionResult(granted = false)
         advanceUntilIdle()
 
         // THEN
-        val viewState = viewModel.viewState.value as RemoteTapToPayError
-        assertThat(viewState.message).isEqualTo("Location permission is required to connect with the tablet.")
+        assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionExplainer::class.java)
         verify(session, never()).start(any(), any())
     }
 

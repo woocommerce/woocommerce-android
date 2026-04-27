@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
@@ -14,7 +13,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
-import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +28,6 @@ class CardReaderModeViewModel @Inject constructor(
     private val session: CardReaderRemoteSession,
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
-    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -51,10 +48,7 @@ class CardReaderModeViewModel @Inject constructor(
     fun onLocationPermissionResult(granted: Boolean) {
         when (granted) {
             true -> startSessionIfNeeded()
-            false -> _viewState.value = RemoteTapToPayError(
-                message = resourceProvider.getString(R.string.card_reader_mode_location_permission_required),
-                onPrimaryActionClicked = ::exit,
-            )
+            false -> onLocationPermissionMissing()
         }
     }
 

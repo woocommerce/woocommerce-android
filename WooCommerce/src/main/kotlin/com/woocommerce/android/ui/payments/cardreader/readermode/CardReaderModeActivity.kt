@@ -48,10 +48,12 @@ class CardReaderModeActivity : AppCompatActivity() {
             }
         }
 
-        if (WooPermissionUtils.hasFineLocationPermission(this)) {
-            viewModel.onLocationPermissionResult(true)
-        } else {
-            viewModel.onLocationPermissionMissing()
+        if (savedInstanceState == null) {
+            if (WooPermissionUtils.hasFineLocationPermission(this)) {
+                viewModel.onLocationPermissionResult(true)
+            } else {
+                viewModel.onLocationPermissionMissing()
+            }
         }
     }
 }
