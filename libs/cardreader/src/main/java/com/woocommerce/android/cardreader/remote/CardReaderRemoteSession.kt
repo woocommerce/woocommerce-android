@@ -9,11 +9,16 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.RemoteTokenChannelProvider
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
+import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ErrorMessage
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.PaymentIntentResult
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Ping
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +30,8 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -62,8 +67,14 @@ class CardReaderRemoteSession internal constructor(
     private var remoteTokenProvider: RemoteTokenChannelProvider? = null
     private var connection: CardReaderRemoteConnection? = null
     private var readerWasConnected: Boolean = false
+    private var useSimulatedReader: Boolean = false
 
-    fun start(parentScope: CoroutineScope) {
+    fun start(parentScope: CoroutineScope, isSimulated: Boolean = false) {
+        useSimulatedReader = isSimulated
+        startInternal(parentScope)
+    }
+
+    private fun startInternal(parentScope: CoroutineScope) {
         if (sessionScope != null) return
         val parentJob = parentScope.coroutineContext[Job]
         val scope = CoroutineScope(parentScope.coroutineContext + SupervisorJob(parentJob))
@@ -106,31 +117,49 @@ class CardReaderRemoteSession internal constructor(
         val server = tlsServerFactory.create().also { tlsServer = it }
         server.start()
 
-        val registration = nsdFactory.create(context).advertise(server.port, server.fingerprint)
+        val registration = nsdFactory.create(context)
+            .advertise(server.port, server.fingerprint, deviceName())
         nsdRegistration = registration
+
+        logWrapper.d(
+            LOG_TAG,
+            "Advertising NSD fp=${server.fingerprint} pairingCode=" +
+                CardReaderRemoteFingerprint.pairingCodeFromBase64(server.fingerprint)
+        )
 
         _state.value = readyToPairState(server)
 
         while (currentCoroutineContext().isActive) {
             try {
                 acceptAndRunProtocolLoop(server)
-                break
+                // Tablet disconnected — reset per-connection state and wait for the next one
+                logWrapper.d(LOG_TAG, "Tablet disconnected, resetting to ready-to-pair")
+                cleanupConnectionOnly()
+                _state.value = readyToPairState(server)
             } catch (e: SocketTimeoutException) {
                 logWrapper.d(LOG_TAG, "Waiting for tablet to connect: ${e.message}")
             }
         }
     }
 
-    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) {
+    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) = coroutineScope {
+        logWrapper.d(LOG_TAG, "Waiting for TLS accept...")
         val accepted = server.acceptOne()
+        logWrapper.d(LOG_TAG, "TLS accepted, starting protocol loop")
         connection = accepted
 
         val tokenProvider = remoteTokenProviderFactory.create()
         remoteTokenProvider = tokenProvider
         cardReaderManager.connectionTokenProvider.useRemote(tokenProvider)
 
-        accepted.receive().collect { message ->
-            handleMessage(message, accepted, tokenProvider)
+        val pingJob = launchHeartbeat(accepted)
+        try {
+            accepted.receive().collect { message ->
+                logWrapper.d(LOG_TAG, "Received message: ${message::class.java.simpleName}")
+                handleMessage(message, accepted, tokenProvider)
+            }
+        } finally {
+            pingJob.cancel()
         }
     }
 
@@ -142,6 +171,7 @@ class CardReaderRemoteSession internal constructor(
         when (message) {
             is ConnectRequest -> handleConnectRequest(message, accepted, tokenProvider)
             is CollectPaymentRequest -> handleCollectPaymentRequest(message, accepted)
+            is Ping,
             is ConnectAck,
             is PaymentIntentResult,
             is ErrorMessage -> Unit
@@ -153,22 +183,28 @@ class CardReaderRemoteSession internal constructor(
         accepted: CardReaderRemoteConnection,
         tokenProvider: RemoteTokenChannelProvider,
     ) = coroutineScope {
+        logWrapper.d(LOG_TAG, "handleConnectRequest started")
         val supplyJob = launch { tokenProvider.supply(request.connectionToken) }
         try {
             runCatching {
                 val reader = discoverFirstTapToPayReader()
+                logWrapper.d(LOG_TAG, "Discovered ${reader.id}, connecting...")
                 cardReaderManager.startConnectionToReader(reader, request.locationId)
+                logWrapper.d(LOG_TAG, "Connected to reader ${reader.id}")
                 reader
             }.onSuccess { reader ->
                 readerWasConnected = true
+                logWrapper.d(LOG_TAG, "Sending ConnectAck...")
                 accepted.send(ConnectAck(requestId = request.requestId, readerSerial = reader.id))
+                logWrapper.d(LOG_TAG, "ConnectAck sent, transitioning to WaitingForPayment")
                 _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
             }.onFailure { err ->
+                logWrapper.e(LOG_TAG, "Connect failed: ${err::class.java.simpleName}: ${err.message}")
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
                         code = CODE_CONNECT_FAILED,
-                        description = err.message.orEmpty(),
+                        description = "${err::class.java.simpleName}: ${err.message.orEmpty()}",
                     )
                 )
                 tlsServer?.let { _state.value = readyToPairState(it) }
@@ -179,38 +215,99 @@ class CardReaderRemoteSession internal constructor(
     }
 
     private suspend fun discoverFirstTapToPayReader(): CardReader {
-        val found = cardReaderManager.discoverReaders(
-            isSimulated = false,
-            cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
-                listOf(ReaderType.BuildInReader.TapToPayDevice)
-            )
-        ).filterIsInstance<CardReaderDiscoveryEvents.ReadersFound>()
-            .first { it.list.isNotEmpty() }
-        return found.list.first()
+        logWrapper.d(LOG_TAG, "Discovering TTP reader (isSimulated=$useSimulatedReader)")
+        val config = CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
+            listOf(ReaderType.BuildInReader.TapToPayDevice)
+        )
+        return cardReaderManager.discoverReaders(useSimulatedReader, config)
+            .mapNotNull { event ->
+                when (event) {
+                    is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
+                    is CardReaderDiscoveryEvents.Failed -> error(event.msg)
+                    CardReaderDiscoveryEvents.Started,
+                    CardReaderDiscoveryEvents.Succeeded -> null
+                }
+            }
+            .first()
     }
 
-    @Suppress("ForbiddenComment")
     private suspend fun handleCollectPaymentRequest(
         request: CollectPaymentRequest,
         accepted: CardReaderRemoteConnection,
     ) {
-        // TODO: real Stripe retrieve/collect/confirm against request.paymentIntentClientSecret.
-        //  Deferred as WOOMOB-2739-b until a cardreader-owned API is in place.
-        accepted.send(
-            ErrorMessage(
-                requestId = request.requestId,
-                code = CODE_NOT_IMPLEMENTED,
-                description = "Payment collection deferred to WOOMOB-2739-b",
-            )
-        )
+        val paymentInfo = request.toPaymentInfo()
+        when (val createResult = cardReaderManager.createPaymentIntent(paymentInfo)) {
+            is CreatePaymentIntentResult.Success -> {
+                when (val collectResult = cardReaderManager.retrieveAndCollectPayment(createResult.clientSecret)) {
+                    is RetrieveAndCollectResult.Success -> accepted.send(
+                        PaymentIntentResult(
+                            requestId = request.requestId,
+                            paymentIntentId = collectResult.paymentIntentId,
+                            status = collectResult.status,
+                        )
+                    )
+                    is RetrieveAndCollectResult.Failed -> {
+                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.message}")
+                        accepted.send(
+                            ErrorMessage(
+                                requestId = request.requestId,
+                                code = CODE_COLLECT_FAILED,
+                                description = collectResult.cause.message.orEmpty(),
+                            )
+                        )
+                    }
+                }
+            }
+            is CreatePaymentIntentResult.Failed -> {
+                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.message}")
+                accepted.send(
+                    ErrorMessage(
+                        requestId = request.requestId,
+                        code = CODE_CREATE_INTENT_FAILED,
+                        description = createResult.cause.message.orEmpty(),
+                    )
+                )
+            }
+        }
         _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
     }
 
+    private fun CollectPaymentRequest.toPaymentInfo(): PaymentInfo = PaymentInfo(
+        paymentDescription = paymentDescription,
+        statementDescriptor = StatementDescriptor(statementDescriptorRaw),
+        orderId = orderId,
+        amount = amount,
+        currency = currency,
+        customerEmail = customerEmail,
+        isPluginCanSendReceipt = isPluginCanSendReceipt,
+        customerName = customerName,
+        storeName = storeName,
+        siteUrl = siteUrl,
+        orderKey = orderKey,
+        feeAmount = feeAmount,
+        channel = PaymentInfo.PaymentChannel.Pos,
+        countryCode = countryCode,
+    )
+
     private fun readyToPairState(server: CardReaderRemoteTlsServer) =
         CardReaderRemoteSessionState.ReadyToPair(
-            deviceName = Build.MODEL ?: DEFAULT_DEVICE_NAME,
+            deviceName = deviceName(),
             fingerprintSuffix = CardReaderRemoteFingerprint.pairingCodeFromBase64(server.fingerprint),
         )
+
+    private fun deviceName(): String = Build.MODEL ?: DEFAULT_DEVICE_NAME
+
+    private suspend fun cleanupConnectionOnly() {
+        runCatching { connection?.close() }
+        connection = null
+        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
+        runCatching { remoteTokenProvider?.close() }
+        remoteTokenProvider = null
+        if (readerWasConnected) {
+            readerWasConnected = false
+            runCatching { cardReaderManager.disconnectReader() }
+        }
+    }
 
     private fun cleanupSync() {
         runCatching { connection?.close() }
@@ -245,7 +342,8 @@ class CardReaderRemoteSession internal constructor(
     companion object {
         private const val LOG_TAG = "CardReaderRemoteSession"
         private const val CODE_CONNECT_FAILED = "connect_failed"
-        private const val CODE_NOT_IMPLEMENTED = "not_implemented"
+        private const val CODE_COLLECT_FAILED = "collect_failed"
+        private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
         private const val DEFAULT_DEVICE_NAME = "Android"
 
         private fun defaultDisconnectScope(): CoroutineScope =

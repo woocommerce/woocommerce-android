@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +8,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -32,16 +34,16 @@ internal class CardReaderRemoteConnection internal constructor(
 
     private val readerScope = CoroutineScope(SupervisorJob() + ioDispatcher)
     private val messages = Channel<CardReaderRemoteMessage>(capacity = MESSAGE_BUFFER_CAPACITY)
+    private val _closed = MutableStateFlow(false)
+    val closed: StateFlow<Boolean> = _closed.asStateFlow()
 
     private val readerJob: Job = readerScope.launch {
         var fatalError: Throwable? = null
         try {
             while (!socket.isClosed) {
                 val next = runCatching { protocol.read(input) }.getOrElse { err ->
-                    when (err) {
-                        is EOFException, is SocketException -> Unit
-                        is SSLException -> Log.w(TAG, "Reader stream closed with SSL error", err)
-                        else -> fatalError = err
+                    if (err !is EOFException && err !is SocketException && err !is SSLException) {
+                        fatalError = err
                     }
                     return@launch
                 }
@@ -49,6 +51,7 @@ internal class CardReaderRemoteConnection internal constructor(
             }
         } finally {
             messages.close(fatalError)
+            _closed.value = true
         }
     }
 
@@ -67,10 +70,10 @@ internal class CardReaderRemoteConnection internal constructor(
         readerJob.cancel()
         readerScope.cancel()
         messages.close()
+        _closed.value = true
     }
 
     private companion object {
         const val MESSAGE_BUFFER_CAPACITY = 64
-        const val TAG = "CardReaderRemoteConnection"
     }
 }

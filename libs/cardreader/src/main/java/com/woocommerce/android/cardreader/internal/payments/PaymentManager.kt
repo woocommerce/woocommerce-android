@@ -23,8 +23,10 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFail
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
@@ -52,6 +54,28 @@ internal class PaymentManager(
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
         processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
+
+    suspend fun createPaymentIntentOnly(paymentInfo: PaymentInfo): CreatePaymentIntentResult =
+        when (val result = createPaymentAction.createPaymentIntent(paymentInfo)) {
+            is Success -> CreatePaymentIntentResult.Success(
+                paymentIntentId = result.paymentIntent.id.orEmpty(),
+                clientSecret = result.paymentIntent.clientSecret.orEmpty(),
+            )
+            is Failure -> CreatePaymentIntentResult.Failed(result.exception)
+        }
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
+        try {
+            val retrieved = terminalWrapper.retrievePaymentIntent(clientSecret)
+            val processed = terminalWrapper.processPaymentIntent(retrieved)
+            RetrieveAndCollectResult.Success(
+                paymentIntentId = processed.id.orEmpty(),
+                status = processed.status?.name?.lowercase() ?: "unknown",
+            )
+        } catch (cause: Throwable) {
+            RetrieveAndCollectResult.Failed(cause)
+        }
 
     fun cancelPayment(paymentData: PaymentData) {
         val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent

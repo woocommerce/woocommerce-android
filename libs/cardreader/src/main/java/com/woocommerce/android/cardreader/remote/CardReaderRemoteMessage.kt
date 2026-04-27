@@ -1,5 +1,7 @@
 package com.woocommerce.android.cardreader.remote
 
+import java.math.BigDecimal
+
 internal sealed class CardReaderRemoteMessage {
     abstract val requestId: String
 
@@ -16,7 +18,19 @@ internal sealed class CardReaderRemoteMessage {
 
     data class CollectPaymentRequest(
         override val requestId: String,
-        val paymentIntentClientSecret: String,
+        val paymentDescription: String,
+        val statementDescriptorRaw: String?,
+        val orderId: Long,
+        val amount: BigDecimal,
+        val currency: String,
+        val customerEmail: String?,
+        val isPluginCanSendReceipt: Boolean,
+        val customerName: String?,
+        val storeName: String?,
+        val siteUrl: String?,
+        val orderKey: String?,
+        val feeAmount: Long?,
+        val countryCode: String?,
     ) : CardReaderRemoteMessage()
 
     data class PaymentIntentResult(
@@ -29,5 +43,9 @@ internal sealed class CardReaderRemoteMessage {
         override val requestId: String,
         val code: String,
         val description: String,
+    ) : CardReaderRemoteMessage()
+
+    data class Ping(
+        override val requestId: String,
     ) : CardReaderRemoteMessage()
 }

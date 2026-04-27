@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,14 +20,17 @@ internal class CardReaderRemoteTlsClient(
         port: Int,
         pinnedFingerprintBase64: String,
     ): CardReaderRemoteConnection = withContext(ioDispatcher) {
+        Log.d("CardReaderRemoteTlsClient", "Connecting TLS to ${host.hostAddress}:$port")
         val trustManager = PinnedFingerprintTrustManager(pinnedFingerprintBase64)
-        val sslContext = SSLContext.getInstance("TLSv1.3").apply {
+        val sslContext = SSLContext.getInstance("TLS").apply {
             init(null, arrayOf(trustManager), SecureRandom())
         }
         val socket = (sslContext.socketFactory.createSocket(host, port) as SSLSocket).apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
+        Log.d("CardReaderRemoteTlsClient", "TCP connected, starting handshake")
         socket.startHandshake()
+        Log.d("CardReaderRemoteTlsClient", "Handshake complete")
         CardReaderRemoteConnection(socket, ioDispatcher = ioDispatcher)
     }
 
@@ -41,7 +45,9 @@ internal class CardReaderRemoteTlsClient(
             val leaf = chain.firstOrNull() ?: throw CertificateException("Empty certificate chain")
             val presented = CardReaderRemoteFingerprint.sha256Base64(leaf)
             if (presented != pinnedFingerprintBase64) {
-                throw CertificateException("Server fingerprint mismatch")
+                throw CertificateException(
+                    "Server fingerprint mismatch: pinned=$pinnedFingerprintBase64 presented=$presented"
+                )
             }
         }
 

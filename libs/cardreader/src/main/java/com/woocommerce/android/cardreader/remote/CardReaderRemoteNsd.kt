@@ -29,7 +29,11 @@ internal class CardReaderRemoteNsd(
     private val nsdManager: NsdManager =
         context.applicationContext.getSystemService(Context.NSD_SERVICE) as NsdManager
 
-    suspend fun advertise(port: Int, fingerprint: String): CardReaderRemoteNsdRegistration =
+    suspend fun advertise(
+        port: Int,
+        fingerprint: String,
+        deviceName: String,
+    ): CardReaderRemoteNsdRegistration =
         withContext(ioDispatcher) {
             val serviceInfo = NsdServiceInfo().apply {
                 serviceName = uniqueServiceName()
@@ -37,6 +41,7 @@ internal class CardReaderRemoteNsd(
                 setPort(port)
                 setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
                 setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
+                setAttribute(TXT_KEY_DEVICE_NAME, deviceName)
             }
 
             val listener = object : NsdManager.RegistrationListener {
@@ -182,12 +187,14 @@ internal class CardReaderRemoteNsd(
             Log.w(TAG, "Dropping NSD service without resolved host: $serviceName")
             return null
         }
+        val deviceName = attributes[TXT_KEY_DEVICE_NAME]?.toString(Charsets.UTF_8)
         return CardReaderRemoteResolvedHost(
             name = serviceName,
             host = host,
             port = port,
             fingerprintBase64 = fingerprint,
             version = version,
+            deviceName = deviceName,
         )
     }
 
@@ -211,6 +218,7 @@ internal class CardReaderRemoteNsd(
         const val SERVICE_TYPE = "_wooposremote._tcp."
         const val TXT_KEY_FINGERPRINT = "fp"
         const val TXT_KEY_VERSION = "ver"
+        const val TXT_KEY_DEVICE_NAME = "name"
         const val PROTOCOL_VERSION = "1"
         private const val SERVICE_NAME_PREFIX = "woopos-remote"
         private const val SUFFIX_RANGE_EXCLUSIVE = 0x10000
@@ -234,6 +242,7 @@ internal data class CardReaderRemoteResolvedHost(
     val port: Int,
     val fingerprintBase64: String,
     val version: String,
+    val deviceName: String?,
 )
 
 internal sealed class CardReaderRemoteNsdEvent {
