@@ -23,6 +23,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":libs:ai-assistant:core"))
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.squareup.okhttp3)
@@ -33,4 +35,5 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
