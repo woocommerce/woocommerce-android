@@ -55,7 +55,7 @@ The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have bee
 | `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. |
 | `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
 | `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
-| `android emulator list` (step 0 lifecycle) | Verified — `list` runs. `create`/`start`/`stop` shape confirmed via `--help` but no AVD was created during verification. |
+| `android emulator list` (step 0 lifecycle) | Partial — `list` runs end-to-end. `create`/`start`/`stop` shape confirmed via `--help` only; no AVD was created during verification, so step 0 is flagged **Experimental** in its heading. |
 | `android describe` | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
 
 If a CLI block fails in practice, **do not assume the docs are right**. Fall back to the `USE_ANDROID_CLI=0` path for that step, file the discrepancy as a skill issue, and fix it in the skill before the next run.
@@ -236,9 +236,11 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 **Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
 
-### 0. Provision an Emulator (Optional, macOS/Linux only)
+### 0. Provision an Emulator (Optional, macOS/Linux only — Experimental)
 
 Only run this step when no physical device is attached, no emulator is running, and the task requires a clean-slate device. Skip otherwise.
+
+> **Status: experimental.** Of the three emulator subcommands used here, only `android emulator list` has been exercised end-to-end against this repo. `android emulator create`, `start`, and `stop` were shape-confirmed via `--help` only — no AVD was created during PR verification. Expect to iterate on this step the first time you actually use it; if it fails, fall back to booting the emulator manually via Android Studio or `emulator -avd <name>` and continue from step 1.
 
 ```bash
 . /tmp/.verify_on_device.env  # restore USE_ANDROID_CLI from the probe step
