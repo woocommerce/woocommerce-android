@@ -69,7 +69,7 @@ internal class PaymentManager(
             }
         } catch (cancel: CancellationException) {
             throw cancel
-        } catch (cause: Throwable) {
+        } catch (cause: Exception) {
             CreatePaymentIntentResult.Failed(cause)
         }
     }
@@ -85,7 +85,7 @@ internal class PaymentManager(
             )
         } catch (cancel: CancellationException) {
             throw cancel
-        } catch (cause: Throwable) {
+        } catch (cause: Exception) {
             RetrieveAndCollectResult.Failed(cause)
         }
 

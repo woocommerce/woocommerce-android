@@ -121,7 +121,7 @@ internal class DefaultCardReaderRemoteTabletClient(
         } catch (cancel: CancellationException) {
             disconnect()
             throw cancel
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
             ConnectOutcome.Failed(cause)
         }
@@ -175,7 +175,7 @@ internal class DefaultCardReaderRemoteTabletClient(
             CollectPaymentOutcome.TimedOut
         } catch (cancel: CancellationException) {
             throw cancel
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             CollectPaymentOutcome.Failed(cause)
         }
     }
