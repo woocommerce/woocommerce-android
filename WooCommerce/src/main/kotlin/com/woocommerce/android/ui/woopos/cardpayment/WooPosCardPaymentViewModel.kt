@@ -4,10 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -15,6 +13,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
@@ -47,6 +48,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
     private val cardPaymentRepository: WooPosCardPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
+    private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -63,69 +66,96 @@ class WooPosCardPaymentViewModel @Inject constructor(
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private lateinit var orderTotals: WooPosOrderTotalsViewState
+    private var order: Order? = null
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
+    private var remotePaymentJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
     private var analyticsTrackerJob: Job? = null
 
     init {
         viewModelScope.launch {
-            val totals = loadOrderTotals()
-            if (totals != null) {
-                orderTotals = totals
-                observeCardReaderStatus()
+            val loaded = cardPaymentRepository.fetchOrGetOrder(orderId)
+            if (loaded == null) {
+                _state.value = WooPosCardPaymentState.PaymentFailed(
+                    title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
+                    subtitle = resourceProvider.getString(R.string.woopos_products_loading_error_message),
+                    isDismissButtonVisible = true,
+                )
+            } else {
+                order = loaded
+                orderTotals = WooPosOrderTotalsViewState(
+                    subtotal = priceFormat(loaded.productsTotal),
+                    discount = if (loaded.discountTotal > BigDecimal.ZERO) {
+                        "-${priceFormat(loaded.discountTotal)}"
+                    } else {
+                        null
+                    },
+                    taxes = priceFormat(loaded.totalTax),
+                    total = priceFormat(loaded.total),
+                )
+                observeReaderStatus()
             }
         }
     }
 
-    private suspend fun loadOrderTotals(): WooPosOrderTotalsViewState? {
-        val order = cardPaymentRepository.fetchOrGetOrder(orderId)
-        if (order == null) {
-            _state.value = WooPosCardPaymentState.PaymentFailed(
-                title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
-                subtitle = resourceProvider.getString(R.string.woopos_products_loading_error_message),
-                isDismissButtonVisible = true,
-            )
-            return null
+    private fun observeReaderStatus() {
+        viewModelScope.launch {
+            effectiveReaderStatusProvider.flow
+                .collect { effective ->
+                    val currentState = _state.value
+                    if (currentState is WooPosCardPaymentState.PaymentInProgress) {
+                        return@collect
+                    }
+                    when (effective) {
+                        WooPosEffectiveReaderStatus.RemoteConnected -> {
+                            _state.value = buildPreparingState()
+                            collectPaymentRemote()
+                        }
+                        WooPosEffectiveReaderStatus.BluetoothConnected -> {
+                            _state.value = buildPreparingState()
+                            collectPayment()
+                        }
+                        WooPosEffectiveReaderStatus.Connecting,
+                        WooPosEffectiveReaderStatus.Reconnecting,
+                        WooPosEffectiveReaderStatus.Disconnected -> {
+                            _state.value = buildReaderDisconnectedState()
+                            cancelPayment()
+                        }
+                    }
+                }
         }
-
-        return WooPosOrderTotalsViewState(
-            subtotal = priceFormat(order.productsTotal),
-            discount = if (order.discountTotal > BigDecimal.ZERO) {
-                "-${priceFormat(order.discountTotal)}"
-            } else {
-                null
-            },
-            taxes = priceFormat(order.totalTax),
-            total = priceFormat(order.total),
-        )
     }
 
-    private fun observeCardReaderStatus() {
-        viewModelScope.launch {
-            cardReaderFacade.readerStatus.collect { status ->
-                when (status) {
-                    is NotConnected, is Connecting -> {
-                        val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
-                            return@collect
-                        }
-                        _state.value = buildReaderDisconnectedState()
-                        cancelPayment()
-                    }
+    private fun collectPaymentRemote() {
+        if (!networkStatus.isConnected()) {
+            _state.value = WooPosCardPaymentState.PaymentFailed(
+                title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
+                subtitle = resourceProvider.getString(R.string.woopos_no_internet_message),
+                actionButtonLabel = resourceProvider.getString(R.string.woo_pos_payment_failed_try_again),
+                isDismissButtonVisible = true,
+            )
+            return
+        }
+        val order = this.order ?: return
 
-                    is Connected -> {
-                        val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
-                            return@collect
-                        }
-                        _state.value = buildPreparingState()
-                        collectPayment()
-                    }
-
-                    is CardReaderStatus.Reconnecting -> Unit
+        remotePaymentJob?.cancel()
+        remotePaymentJob = viewModelScope.launch {
+            _state.value = WooPosCardPaymentState.PaymentInProgress(
+                title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
+                subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle),
+            )
+            when (val result = remoteReaderPaymentFlow.collect(order)) {
+                WooPosRemoteReaderPaymentFlow.Result.Completed -> handlePaymentSuccessful()
+                is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
+                    _state.value = WooPosCardPaymentState.PaymentFailed(
+                        title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
+                        subtitle = result.message,
+                        actionButtonLabel = resourceProvider.getString(R.string.woo_pos_payment_failed_try_again),
+                        isDismissButtonVisible = true,
+                    )
                 }
             }
         }
@@ -296,7 +326,13 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onScreenResumed() {
         if (_state.value is WooPosCardPaymentState.Collecting) {
-            collectPayment()
+            when (effectiveReaderStatusProvider.current()) {
+                WooPosEffectiveReaderStatus.RemoteConnected -> collectPaymentRemote()
+                WooPosEffectiveReaderStatus.BluetoothConnected -> collectPayment()
+                WooPosEffectiveReaderStatus.Connecting,
+                WooPosEffectiveReaderStatus.Reconnecting,
+                WooPosEffectiveReaderStatus.Disconnected -> Unit
+            }
         }
     }
 
@@ -376,6 +412,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
         controllerEventJob = null
         analyticsTrackerJob?.cancel()
         analyticsTrackerJob = null
+        remotePaymentJob?.cancel()
+        remotePaymentJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
     }

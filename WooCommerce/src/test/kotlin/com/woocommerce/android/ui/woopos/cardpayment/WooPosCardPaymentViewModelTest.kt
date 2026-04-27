@@ -11,6 +11,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
@@ -74,6 +77,12 @@ class WooPosCardPaymentViewModelTest {
     private val priceFormat: WooPosFormatPrice = mock {
         on { invoke(any<BigDecimal>()) } doReturn "$0.00"
     }
+    private val remoteReaderSessionStateFlow =
+        MutableStateFlow<WooPosRemoteReaderSession.State>(WooPosRemoteReaderSession.State.Idle)
+    private val remoteReaderSession: WooPosRemoteReaderSession = mock {
+        on { state }.thenReturn(remoteReaderSessionStateFlow)
+    }
+    private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
 
     private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(
         productsTotal = BigDecimal.TEN,
@@ -113,6 +122,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
     }
 
@@ -402,6 +413,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
         advanceUntilIdle()
 
