@@ -46,4 +46,5 @@ dependencies {
     testImplementation(libs.assertj.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.squareup.okhttp3.mockwebserver)
 }
