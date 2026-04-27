@@ -98,9 +98,12 @@ class WooPosRemoteReaderSession @Inject constructor(
         }
     }
 
-    suspend fun disconnect() = mutex.withLock {
-        disconnectInternal()
-        _state.value = State.Idle
+    suspend fun disconnect() {
+        client?.disconnect()
+        mutex.withLock {
+            disconnectInternal()
+            _state.value = State.Idle
+        }
     }
 
     suspend fun sendCollectPayment(

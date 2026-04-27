@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,8 +38,10 @@ internal class CardReaderRemoteConnection internal constructor(
         try {
             while (!socket.isClosed) {
                 val next = runCatching { protocol.read(input) }.getOrElse { err ->
-                    if (err !is EOFException && err !is SocketException && err !is SSLException) {
-                        fatalError = err
+                    when (err) {
+                        is EOFException, is SocketException -> Unit
+                        is SSLException -> Log.w(TAG, "Reader stream closed with SSL error", err)
+                        else -> fatalError = err
                     }
                     return@launch
                 }
@@ -68,5 +71,6 @@ internal class CardReaderRemoteConnection internal constructor(
 
     private companion object {
         const val MESSAGE_BUFFER_CAPACITY = 64
+        const val TAG = "CardReaderRemoteConnection"
     }
 }
