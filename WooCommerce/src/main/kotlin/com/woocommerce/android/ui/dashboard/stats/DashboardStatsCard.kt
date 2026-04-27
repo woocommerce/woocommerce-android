@@ -259,7 +259,6 @@ private fun StatsChart(
         factory = {
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
-                customRangeLabel.setOnClickListener { onAddCustomRangeClick() }
                 setOnOrderDateTypeClickListener(onOrderDateTypeClick)
             }
         }

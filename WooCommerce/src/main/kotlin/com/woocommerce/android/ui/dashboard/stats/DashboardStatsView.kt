@@ -109,9 +109,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val statsDateValue
-        get() = binding.statsViewRow.statsDateTextView
-
     private val revenueValue
         get() = binding.statsViewRow.totalRevenueTextView
 
@@ -127,9 +124,6 @@ class DashboardStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
-    val customRangeLabel
-        get() = binding.statsViewRow.statsCustomDateRangeTextView
-
     private val customRangeGranularityLabel
         get() = binding.customRangeGranularityLabel
 
@@ -144,8 +138,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     init {
         // TODO Remove those views from the layout when releasing Dynamic Dashboard
-        customRangeLabel.isVisible = false
-        statsDateValue.isVisible = false
         binding.statsTabLayout.isVisible = false
         customRangeButton.isVisible = false
         binding.viewAnalyticsButton.isVisible = false
