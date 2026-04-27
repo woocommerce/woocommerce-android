@@ -6,7 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -39,29 +39,28 @@ import javax.inject.Singleton
 internal class ChatStreamParser @Inject constructor(
     @AiAssistantJson private val json: Json,
 ) {
-    fun parse(lines: Flow<String>): Flow<AssistantEvent> = flow {
-        var done = false
-        lines.collect { raw ->
-            if (done) return@collect
-            val payload = raw.trim()
-            if (payload.isEmpty()) return@collect
-            if (payload == DONE_SENTINEL) {
-                done = true
-                return@collect
+    fun parse(lines: Flow<String>): Flow<AssistantEvent> = lines.transformWhile { raw ->
+        val payload = raw.trim()
+        when {
+            payload.isEmpty() -> true
+            payload == DONE_SENTINEL -> false
+            else -> parsePayload(payload)
+        }
+    }
+
+    private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
+        val chunk = runCatching { json.parseToJsonElement(payload).jsonObject }
+            .getOrElse {
+                emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, MalformedChunkException(payload, it)))
+                return false
             }
 
-            val chunk = runCatching { json.parseToJsonElement(payload).jsonObject }
-                .getOrElse {
-                    emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, MalformedChunkException(payload, it)))
-                    done = true
-                    return@collect
-                }
-
-            runCatching { emitChunk(chunk) }
-                .onFailure {
-                    emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
-                    done = true
-                }
+        return runCatching {
+            emitChunk(chunk)
+            true
+        }.getOrElse {
+            emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
+            false
         }
     }
 
@@ -112,7 +111,7 @@ internal class ChatStreamParser @Inject constructor(
         else -> FinishReason.OTHER
     }
 
-    companion object {
+    private companion object {
         private const val DONE_SENTINEL = "[DONE]"
     }
 }

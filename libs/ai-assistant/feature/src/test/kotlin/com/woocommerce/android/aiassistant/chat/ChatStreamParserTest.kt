@@ -3,9 +3,12 @@ package com.woocommerce.android.aiassistant.chat
 import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -33,11 +36,7 @@ class ChatStreamParserTest {
 
     @Test
     fun `given a tool-call fragment, when parsed, then a ToolCallDelta is emitted with verbatim arguments`() = runTest {
-        val payload = """
-            {"choices":[{"delta":{"tool_calls":[
-              {"index":0,"id":"call_1","function":{"name":"show_cards","arguments":"{\"a\":"}}
-            ]}}]}
-        """.trimIndent()
+        val payload = """{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_1","function":{"name":"show_cards","arguments":"{\"a\":"}}]}}]}"""
 
         val events = parser.parse(flowOf(payload)).toList()
 
@@ -94,6 +93,24 @@ class ChatStreamParserTest {
         val later = """{"choices":[{"delta":{"content":"ignored"}}]}"""
 
         val events = parser.parse(flowOf(payload1, done, later)).toList()
+
+        assertThat(events).containsExactly(AssistantEvent.TextDelta("Hi"))
+    }
+
+    @Test
+    fun `given the DONE sentinel, when upstream stays open, then parsing completes immediately`() = runTest {
+        val payload = """{"choices":[{"delta":{"content":"Hi"}}]}"""
+        val done = "[DONE]"
+
+        val events = withTimeout(1_000) {
+            parser.parse(
+                flow {
+                    emit(payload)
+                    emit(done)
+                    awaitCancellation()
+                }
+            ).toList()
+        }
 
         assertThat(events).containsExactly(AssistantEvent.TextDelta("Hi"))
     }
