@@ -194,7 +194,7 @@ class JetpackAiChatServiceTest {
         }
     }
 
-    companion object {
+    private companion object {
         private val SAMPLE_SSE_BODY = """
             data: {"choices":[{"delta":{"content":"Hello"}}]}
 

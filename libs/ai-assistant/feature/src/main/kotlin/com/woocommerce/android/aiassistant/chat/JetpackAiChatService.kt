@@ -91,14 +91,12 @@ internal class JetpackAiChatService @Inject constructor(
             val mapped = mapError(e)
             return TurnOutcome(
                 events = emitted,
-                receivedAny = emitted.isNotEmpty(),
                 failure = AssistantEvent.Failed(mapped.kind, mapped.cause),
-                retryableAuthFailure = e is MappedException && e.retryableAuthFailure,
+                retryableAuthFailure = mapped.retryableAuthFailure,
             )
         }
         return TurnOutcome(
             events = emitted,
-            receivedAny = emitted.isNotEmpty(),
             failure = failed,
             retryableAuthFailure = false,
         )
@@ -106,7 +104,6 @@ internal class JetpackAiChatService @Inject constructor(
 
     private data class TurnOutcome(
         val events: List<AssistantEvent>,
-        val receivedAny: Boolean,
         val failure: AssistantEvent.Failed?,
         val retryableAuthFailure: Boolean,
     )
