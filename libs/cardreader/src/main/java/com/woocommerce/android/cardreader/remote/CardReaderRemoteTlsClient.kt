@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
-import android.util.Log
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,6 +13,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.X509TrustManager
 
 internal class CardReaderRemoteTlsClient(
+    private val logWrapper: LogWrapper,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend fun connect(
@@ -20,7 +21,7 @@ internal class CardReaderRemoteTlsClient(
         port: Int,
         pinnedFingerprintBase64: String,
     ): CardReaderRemoteConnection = withContext(ioDispatcher) {
-        Log.d("CardReaderRemoteTlsClient", "Connecting TLS to ${host.hostAddress}:$port")
+        logWrapper.d(TAG, "Connecting TLS to ${host.hostAddress}:$port")
         val trustManager = PinnedFingerprintTrustManager(pinnedFingerprintBase64)
         val sslContext = SSLContext.getInstance("TLS").apply {
             init(null, arrayOf(trustManager), SecureRandom())
@@ -28,10 +29,10 @@ internal class CardReaderRemoteTlsClient(
         val socket = (sslContext.socketFactory.createSocket(host, port) as SSLSocket).apply {
             soTimeout = SESSION_READ_TIMEOUT_MILLIS
         }
-        Log.d("CardReaderRemoteTlsClient", "TCP connected, starting handshake")
+        logWrapper.d(TAG, "TCP connected, starting handshake")
         socket.startHandshake()
-        Log.d("CardReaderRemoteTlsClient", "Handshake complete")
-        CardReaderRemoteConnection(socket, ioDispatcher = ioDispatcher)
+        logWrapper.d(TAG, "Handshake complete")
+        CardReaderRemoteConnection(socket = socket, logWrapper = logWrapper, ioDispatcher = ioDispatcher)
     }
 
     internal class PinnedFingerprintTrustManager(
@@ -56,5 +57,6 @@ internal class CardReaderRemoteTlsClient(
 
     companion object {
         private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
+        private const val TAG = "CardReaderRemoteTlsClient"
     }
 }

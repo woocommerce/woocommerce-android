@@ -25,12 +25,6 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
-
-    testOptions {
-        unitTests {
-            returnDefaultValues = true
-        }
-    }
 }
 
 dependencies {

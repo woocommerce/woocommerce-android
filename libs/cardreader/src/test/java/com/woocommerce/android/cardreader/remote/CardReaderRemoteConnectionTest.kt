@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
@@ -11,6 +12,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -39,8 +41,8 @@ class CardReaderRemoteConnectionTest {
     fun `given first match consumed, when next message arrives, then second first returns without delay`() =
         runBlocking {
             // GIVEN
-            val sender = CardReaderRemoteConnection(acceptedSocket, ioDispatcher = Dispatchers.IO)
-            val receiver = CardReaderRemoteConnection(clientSocket, ioDispatcher = Dispatchers.IO)
+            val sender = CardReaderRemoteConnection(acceptedSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
+            val receiver = CardReaderRemoteConnection(clientSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
             val ack = CardReaderRemoteMessage.ConnectAck(requestId = "a", readerSerial = "S1")
             val result = CardReaderRemoteMessage.PaymentIntentResult(
                 requestId = "b",
@@ -69,8 +71,8 @@ class CardReaderRemoteConnectionTest {
     fun `given socket closes, when collect is in progress, then collect completes without hanging`() =
         runBlocking {
             // GIVEN
-            val sender = CardReaderRemoteConnection(acceptedSocket, ioDispatcher = Dispatchers.IO)
-            val receiver = CardReaderRemoteConnection(clientSocket, ioDispatcher = Dispatchers.IO)
+            val sender = CardReaderRemoteConnection(acceptedSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
+            val receiver = CardReaderRemoteConnection(clientSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
 
             // WHEN
             val collectJob = async { receiver.receive().toList() }
