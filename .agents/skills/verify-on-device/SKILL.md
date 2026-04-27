@@ -116,19 +116,21 @@ After every navigation action (tap, BACK press, app launch, swipe), the screen m
 
 `android layout --diff` returns only the elements that changed since the last snapshot, instead of re-reading the entire accessibility tree (50-200+ elements per call). This is the single biggest token-consumption win over repeated `mobile_list_elements_on_screen` calls — measure on your own flow to confirm the magnitude.
 
+Always pass `--device=<device_id>` to keep these calls pinned to the same device chosen in step 1; without it, `android layout` may target a different connected device than the one the app was launched on.
+
 ```bash
 # Baseline snapshot immediately after the action.
-android layout --pretty --output=/tmp/layout_t0.json
+android layout --device=<device_id> --pretty --output=/tmp/layout_t0.json
 
 # Poll diffs until the expected target appears (1 second between polls).
 for i in 1 2 3 4 5; do
-  android layout --diff --output=/tmp/layout_diff.json
+  android layout --device=<device_id> --diff --output=/tmp/layout_diff.json
   grep -q '"resource-id":"com.woocommerce.android.dev:id/ordersList"' /tmp/layout_diff.json && break
   sleep 1
 done
 
 # Safety net on the 5th failed diff — one full-layout read before giving up.
-android layout --pretty --output=/tmp/layout_final.json
+android layout --device=<device_id> --pretty --output=/tmp/layout_final.json
 ```
 
 Replace the `grep` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference).
