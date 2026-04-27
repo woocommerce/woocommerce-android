@@ -41,7 +41,8 @@ internal class DefaultCardReaderRemoteDiscovery(
                     )
                     logWrapper.d(
                         TAG,
-                        "Discovered phone ${event.host.name} fp=${event.host.fingerprintBase64} " +
+                        "Discovered phone ${event.host.name} " +
+                            "fp=${event.host.fingerprintBase64.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)} " +
                             "pairingCode=$pairingCode"
                     )
                     RemoteReaderDiscoveryEvent.Added(event.host.toPublic())
@@ -52,6 +53,7 @@ internal class DefaultCardReaderRemoteDiscovery(
 
     private companion object {
         const val TAG = "CardReaderRemoteDiscovery"
+        const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
     }
 }
 

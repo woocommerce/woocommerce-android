@@ -123,7 +123,7 @@ class CardReaderRemoteSession internal constructor(
 
         logWrapper.d(
             LOG_TAG,
-            "Advertising NSD fp=${server.fingerprint} pairingCode=" +
+            "Advertising NSD fp=${server.fingerprint.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)} pairingCode=" +
                 CardReaderRemoteFingerprint.pairingCodeFromBase64(server.fingerprint)
         )
 
@@ -344,6 +344,7 @@ class CardReaderRemoteSession internal constructor(
         private const val CODE_COLLECT_FAILED = "collect_failed"
         private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
         private const val DEFAULT_DEVICE_NAME = "Android"
+        private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
 
         private fun defaultDisconnectScope(): CoroutineScope =
             CoroutineScope(SupervisorJob() + Dispatchers.IO)

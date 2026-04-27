@@ -47,7 +47,9 @@ internal class CardReaderRemoteTlsClient(
             val presented = CardReaderRemoteFingerprint.sha256Base64(leaf)
             if (presented != pinnedFingerprintBase64) {
                 throw CertificateException(
-                    "Server fingerprint mismatch: pinned=$pinnedFingerprintBase64 presented=$presented"
+                    "Server fingerprint mismatch: " +
+                        "pinned=${pinnedFingerprintBase64.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)} " +
+                        "presented=${presented.takeLast(FINGERPRINT_LOG_SUFFIX_LENGTH)}"
                 )
             }
         }
@@ -58,5 +60,6 @@ internal class CardReaderRemoteTlsClient(
     companion object {
         private const val SESSION_READ_TIMEOUT_MILLIS = 90_000
         private const val TAG = "CardReaderRemoteTlsClient"
+        private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
     }
 }
