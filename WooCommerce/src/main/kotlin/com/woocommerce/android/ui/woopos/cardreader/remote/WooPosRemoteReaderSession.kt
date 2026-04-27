@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
@@ -85,6 +87,7 @@ class WooPosRemoteReaderSession @Inject constructor(
             host = reader.host,
             port = reader.port,
             fingerprintBase64 = reader.fingerprintBase64,
+            deviceName = reader.name,
         )
         return when (val outcome = newClient.connect(discovered, token, locationId)) {
             is ConnectOutcome.Success -> State.Connected(reader, outcome.readerSerial)
@@ -103,10 +106,10 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 
     suspend fun sendCollectPayment(
-        paymentIntentClientSecret: String,
+        paymentInfo: PaymentInfo,
         timeoutMillis: Long = CardReaderRemoteTabletClient.DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
     ): CollectPaymentOutcome =
-        client?.collectPayment(paymentIntentClientSecret, timeoutMillis)
+        client?.collectPayment(paymentInfo, timeoutMillis)
             ?: CollectPaymentOutcome.Failed(IllegalStateException("Remote session is not connected"))
 
     private fun disconnectInternal() {
@@ -145,6 +148,8 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 }
 
-class WooPosRemoteReaderClientProvider @Inject constructor() {
-    fun create(): CardReaderRemoteTabletClient = CardReaderRemoteTabletClient.create()
+class WooPosRemoteReaderClientProvider @Inject constructor(
+    private val logWrapper: LogWrapper,
+) {
+    fun create(): CardReaderRemoteTabletClient = CardReaderRemoteTabletClient.create(logWrapper)
 }
