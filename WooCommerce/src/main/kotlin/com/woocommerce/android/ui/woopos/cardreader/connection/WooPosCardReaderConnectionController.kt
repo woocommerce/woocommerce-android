@@ -282,6 +282,7 @@ class WooPosCardReaderConnectionController(
         selectedReader = null
         scope.launch { remoteReaderSession.disconnect() }
         enterScanningState()
+        startDiscovery()
         emitEvent(ControllerEvent.Cancelled)
     }
 
