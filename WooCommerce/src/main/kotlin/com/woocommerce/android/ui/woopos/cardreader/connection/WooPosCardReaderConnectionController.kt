@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("LongParameterList")
 class WooPosCardReaderConnectionController(
@@ -290,10 +291,19 @@ class WooPosCardReaderConnectionController(
     }
 
     suspend fun disconnect() {
-        appPrefsWrapper.removeLastConnectedCardReaderId()
-        appPrefsWrapper.removeLastConnectedPhoneName()
-        remoteReaderSession.disconnect()
-        cardReaderManager.disconnectReader()
+        withContext(dispatchers.io) {
+            logger.d("disconnect(): clearing prefs")
+            appPrefsWrapper.removeLastConnectedCardReaderId()
+            appPrefsWrapper.removeLastConnectedPhoneName()
+
+            logger.d("disconnect(): stopping remote session")
+            runCatching { remoteReaderSession.disconnect() }
+                .onFailure { logger.e("disconnect(): remoteReaderSession.disconnect() failed - ${it.message}") }
+
+            logger.d("disconnect(): calling cardReaderManager.disconnectReader()")
+            val result = cardReaderManager.disconnectReader()
+            logger.d("disconnect(): cardReaderManager.disconnectReader() returned $result")
+        }
     }
 
     private fun initializeCardReaderManagerIfNeeded() {
