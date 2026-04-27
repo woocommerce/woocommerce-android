@@ -319,7 +319,9 @@ class WooPosCardReaderConnectionController(
     private fun startDiscovery() {
         discoveryJob?.cancel()
         discoveryJob = scope.launch {
-            runCatching { cardReaderManager.disconnectReader() }
+            if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connected) {
+                runCatching { cardReaderManager.disconnectReader() }
+            }
             unifiedDiscoveryStream
                 .discover(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
