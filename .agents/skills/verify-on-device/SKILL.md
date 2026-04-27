@@ -52,8 +52,8 @@ The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have bee
 | CLI block | Status |
 |---|---|
 | `android run` (step 7 install + launch) | Verified — installs and launches in one call. |
-| `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. |
-| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
+| `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
+| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
 | `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
 | `android emulator list` (step 0 lifecycle) | Partial — `list` runs end-to-end. `create`/`start`/`stop` shape confirmed via `--help` only; no AVD was created during verification, so step 0 is flagged **Experimental** in its heading. |
 | `android describe` | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
