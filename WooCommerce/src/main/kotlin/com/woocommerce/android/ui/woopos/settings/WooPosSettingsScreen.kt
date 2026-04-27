@@ -19,8 +19,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -105,14 +106,10 @@ private fun WooPosSettingsPhoneContent(
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    var isShowingDetail by rememberSaveable { mutableStateOf(false) }
+    var isShowingDetail by remember { mutableStateOf(false) }
 
-    BackHandler {
-        when {
-            isShowingDetail && state.canGoBack -> onBack()
-            isShowingDetail -> isShowingDetail = false
-            else -> onBackClicked()
-        }
+    BackHandler(enabled = !isShowingDetail) {
+        onBackClicked()
     }
 
     AnimatedContent(
@@ -134,8 +131,10 @@ private fun WooPosSettingsPhoneContent(
                 WooPosSettingsCategoriesPaneScreen(
                     selectedCategory = state.selectedCategory,
                     onCategorySelected = { category ->
-                        onCategorySelected(category)
-                        isShowingDetail = true
+                        Snapshot.withMutableSnapshot {
+                            onCategorySelected(category)
+                            isShowingDetail = true
+                        }
                     },
                     modifier = Modifier.fillMaxSize()
                 )

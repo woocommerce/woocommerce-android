@@ -189,8 +189,11 @@ private fun WooPosOrdersScreen(
             when (listState) {
                 is WooPosOrdersListState.Content -> {
                     if (isPhoneLayout) {
+                        // onUIEvent and onRetryDetailLoad are unused here — order details
+                        // are shown on a separate screen via WooPosNavigationEvent.OpenOrderDetails
+                        val deselectedState = remember(listState) { listState.withoutSelection() }
                         OrdersListPane(
-                            state = listState.withoutSelection(),
+                            state = deselectedState,
                             scrollToTopEvent = scrollToTopEvent,
                             onRefresh = onRefresh,
                             isRefreshing = listState.pullToRefreshState ==
