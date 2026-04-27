@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.connection
 
 import com.stripe.stripeterminal.external.callable.ConnectionTokenCallback
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
+import com.woocommerce.android.cardreader.LogWrapper
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 class CompositeConnectionTokenProvider internal constructor(
     private val defaultProvider: ConnectionTokenProvider,
+    private val logWrapper: LogWrapper? = null,
 ) : ConnectionTokenProvider {
     private val active: AtomicReference<ConnectionTokenProvider> = AtomicReference(defaultProvider)
 
@@ -37,6 +39,12 @@ class CompositeConnectionTokenProvider internal constructor(
     }
 
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
-        active.get().fetchConnectionToken(callback)
+        val current = active.get()
+        logWrapper?.d(LOG_TAG, "fetchConnectionToken via ${current::class.java.simpleName}")
+        current.fetchConnectionToken(callback)
+    }
+
+    private companion object {
+        const val LOG_TAG = "CompositeConnectionTokenProvider"
     }
 }

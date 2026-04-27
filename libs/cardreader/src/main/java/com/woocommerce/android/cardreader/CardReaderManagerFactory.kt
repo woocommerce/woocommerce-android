@@ -27,6 +27,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.PaymentMethodTypeMap
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
 object CardReaderManagerFactory {
+    @Suppress("LongMethod")
     fun createCardReaderManager(
         application: Application,
         cardReaderStore: CardReaderStore,
@@ -44,7 +45,10 @@ object CardReaderManagerFactory {
         val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper, terminalListener)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
-        val compositeTokenProvider = CompositeConnectionTokenProvider(TokenProvider(cardReaderStore))
+        val compositeTokenProvider = CompositeConnectionTokenProvider(
+            defaultProvider = TokenProvider(cardReaderStore),
+            logWrapper = logWrapper,
+        )
 
         return CardReaderManagerImpl(
             application,
