@@ -99,14 +99,20 @@ internal class DefaultCardReaderRemoteTabletClient(
                         startHeartbeat(opened)
                         ConnectOutcome.Success(reply.readerSerial)
                     }
-                    is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)
+                    is ErrorMessage -> {
+                        disconnect()
+                        ConnectOutcome.Rejected(reply.code, reply.description)
+                    }
                     is ConnectRequest,
                     is CollectPaymentRequest,
                     is Ping,
-                    is PaymentIntentResult -> ConnectOutcome.Rejected(
-                        CODE_UNEXPECTED_REPLY,
-                        "Unexpected reply type: ${reply::class.simpleName}",
-                    )
+                    is PaymentIntentResult -> {
+                        disconnect()
+                        ConnectOutcome.Rejected(
+                            CODE_UNEXPECTED_REPLY,
+                            "Unexpected reply type: ${reply::class.simpleName}",
+                        )
+                    }
                 }
             }
         } catch (@Suppress("SwallowedException") timeout: TimeoutCancellationException) {
