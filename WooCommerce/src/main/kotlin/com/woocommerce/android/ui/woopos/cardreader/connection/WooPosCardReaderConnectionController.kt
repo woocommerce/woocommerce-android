@@ -274,13 +274,16 @@ class WooPosCardReaderConnectionController(
     }
 
     fun cancel() {
+        val wasAlreadyConnected = _state.value is Connected
         connectionFlowJob?.cancel()
         discoveryJob?.cancel()
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
         remoteConnectionJob?.cancel()
         selectedReader = null
-        scope.launch { remoteReaderSession.disconnect() }
+        if (!wasAlreadyConnected) {
+            scope.launch { remoteReaderSession.disconnect() }
+        }
         enterScanningState()
         startDiscovery()
         emitEvent(ControllerEvent.Cancelled)
@@ -288,6 +291,7 @@ class WooPosCardReaderConnectionController(
 
     suspend fun disconnect() {
         appPrefsWrapper.removeLastConnectedCardReaderId()
+        appPrefsWrapper.removeLastConnectedPhoneName()
         remoteReaderSession.disconnect()
         cardReaderManager.disconnectReader()
     }
@@ -364,6 +368,14 @@ class WooPosCardReaderConnectionController(
             return
         }
 
+        val lastKnownPhone = findLastKnownPhone(phones)
+        if (lastKnownPhone != null) {
+            logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
+            tracker.trackAutoConnectionStarted()
+            onPhoneConnectClicked(lastKnownPhone)
+            return
+        }
+
         val foundReaders = bluetoothReaders.map { it.toFoundReader() } + phones.mapNotNull { it.toFoundReader() }
 
         when (foundReaders.size) {
@@ -412,6 +424,11 @@ class WooPosCardReaderConnectionController(
         return readers.find { it.id == lastConnectedId }
     }
 
+    private fun findLastKnownPhone(phones: List<WooPosDiscoveredReader.Phone>): WooPosDiscoveredReader.Phone? {
+        val lastConnectedName = appPrefsWrapper.getLastConnectedPhoneName() ?: return null
+        return phones.find { it.name == lastConnectedName }
+    }
+
     private fun continueSearching() {
         enterScanningState()
     }
@@ -444,6 +461,7 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Connected -> {
                 logger.d("Remote reader connected: ${phone.name}")
                 tracker.trackConnectionSucceeded()
+                appPrefsWrapper.setLastConnectedPhoneName(phone.name)
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {

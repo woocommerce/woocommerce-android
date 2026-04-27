@@ -156,6 +156,12 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
+    fun setLastConnectedPhoneName(name: String) = AppPrefs.setLastConnectedPhoneName(name)
+
+    fun getLastConnectedPhoneName() = AppPrefs.getLastConnectedPhoneName()
+
+    fun removeLastConnectedPhoneName() = AppPrefs.removeLastConnectedPhoneName()
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }

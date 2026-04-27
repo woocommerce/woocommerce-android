@@ -16,6 +16,13 @@ object CardReaderRemoteFingerprint {
 
     fun pairingCodeFromBase64(fingerprintBase64: String): String = pairingCodeFromBytes(decodeBase64(fingerprintBase64))
 
+    fun pairingCodeFromBase64OrNull(fingerprintBase64: String): String? =
+        try {
+            pairingCodeFromBase64(fingerprintBase64)
+        } catch (ignored: IllegalArgumentException) {
+            null
+        }
+
     private fun pairingCodeFromBytes(fingerprint: ByteArray): String {
         require(fingerprint.size >= 2) { "Fingerprint too short" }
         return fingerprint.take(2).joinToString("") { "%02X".format(it) }
