@@ -127,21 +127,30 @@ After every navigation action (tap, BACK press, app launch, swipe), the screen m
 Always pass `--device=<device_id>` to keep these calls pinned to the same device chosen in step 1; without it, `android layout` may target a different connected device than the one the app was launched on.
 
 ```bash
-# Baseline snapshot immediately after the action.
+# `[[:space:]]*` around the colon makes the pattern tolerant of both
+# compact and pretty-printed JSON, so a stray --pretty in the chain
+# doesn't silently break the grep.
+TARGET='"resource-id"[[:space:]]*:[[:space:]]*"com.woocommerce.android.dev:id/ordersList"'
+
+# Baseline snapshot immediately after the action — also greppable: if the
+# transition was instantaneous, the target is already on screen and every
+# subsequent --diff would return empty (diffs are delta-only).
 android layout --device=<device_id> --pretty --output=/tmp/layout_t0.json
-
-# Poll diffs until the expected target appears (1 second between polls).
-for i in 1 2 3 4 5; do
-  android layout --device=<device_id> --diff --output=/tmp/layout_diff.json
-  grep -q '"resource-id":"com.woocommerce.android.dev:id/ordersList"' /tmp/layout_diff.json && break
-  sleep 1
-done
-
-# Safety net on the 5th failed diff — one full-layout read before giving up.
-android layout --device=<device_id> --pretty --output=/tmp/layout_final.json
+if ! grep -qE "$TARGET" /tmp/layout_t0.json; then
+  # Poll diffs until the expected target appears (1 second between polls).
+  for i in 1 2 3 4 5; do
+    android layout --device=<device_id> --diff --output=/tmp/layout_diff.json
+    grep -qE "$TARGET" /tmp/layout_diff.json && break
+    sleep 1
+  done
+  # Safety net — one full-layout read in case the target arrived between
+  # two diffs but didn't change after that (so no later diff mentions it).
+  android layout --device=<device_id> --pretty --output=/tmp/layout_final.json
+  grep -qE "$TARGET" /tmp/layout_final.json || echo "Target not found after polling."
+fi
 ```
 
-Replace the `grep` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference).
+Replace the `TARGET` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference). Compose test tags surface as `resource-id` because `testTagsAsResourceId` is on, so the example pattern works for both — but `content-description` lives under a different JSON key (typically `content-desc`), so swap the key, not just the value.
 
 ### Fallback: Repeated Layout Reads (no `android` CLI)
 
@@ -257,13 +266,29 @@ if [ "$USE_ANDROID_CLI" = "1" ] && [ "$IS_WINDOWS" = "0" ]; then
   # --list-profiles — the profile name doubles as the device name.
   android emulator create --profile=medium_phone
 
+  # Snapshot existing serials BEFORE start so we can pin every adb call
+  # to the new emulator. The moment a second device is attached, plain
+  # `adb shell ...` errors with "more than one device/emulator" and the
+  # boot-completed loop spins forever.
+  PRE_SERIALS=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | sort -u)
+
   # Start the device using that profile name. `android emulator start`
   # returns once the command is issued — use `adb wait-for-device` plus a
   # boot-completed check before step 1, or `mobile_list_available_devices`
   # will race the boot sequence.
   android emulator start medium_phone
-  adb wait-for-device
-  until [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do sleep 2; done
+
+  # Identify the new serial by diffing `adb devices` (give it up to 30s
+  # to register).
+  for _ in $(seq 1 30); do
+    POST_SERIALS=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | sort -u)
+    NEW_SERIAL=$(comm -13 <(echo "$PRE_SERIALS") <(echo "$POST_SERIALS") | head -n1)
+    [ -n "$NEW_SERIAL" ] && break
+    sleep 1
+  done
+
+  adb -s "$NEW_SERIAL" wait-for-device
+  until [ "$(adb -s "$NEW_SERIAL" shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do sleep 2; done
 fi
 ```
 
@@ -341,8 +366,9 @@ Always force-stop the app first, then launch fresh. This ensures a clean startin
 APK=$(find WooCommerce/build -type f -name 'WooCommerce-wasabi-debug.apk' | head -n1)
 
 # Persist for the POS variant below (each Bash tool call is a fresh shell, so
-# a plain $APK does not survive between separate code blocks).
-echo "APK=$APK" >> /tmp/.verify_on_device.env
+# a plain $APK does not survive between separate code blocks). %q shell-quotes
+# the value so a path with spaces or other special chars survives sourcing.
+printf 'APK=%q\n' "$APK" >> /tmp/.verify_on_device.env
 
 # 2. Force-stop — android run does not guarantee a cold start.
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
