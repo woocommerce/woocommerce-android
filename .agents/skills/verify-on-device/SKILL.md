@@ -340,6 +340,10 @@ Always force-stop the app first, then launch fresh. This ensures a clean startin
 #    works whether the CLI is installed or not.
 APK=$(find WooCommerce/build -type f -name 'WooCommerce-wasabi-debug.apk' | head -n1)
 
+# Persist for the POS variant below (each Bash tool call is a fresh shell, so
+# a plain $APK does not survive between separate code blocks).
+echo "APK=$APK" >> /tmp/.verify_on_device.env
+
 # 2. Force-stop — android run does not guarantee a cold start.
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 
@@ -349,8 +353,10 @@ android run --apks="$APK" \
   --device=<device_id>
 ```
 
-For POS tasks (only when explicitly requested) — reuses `$APK` from the block above:
+For POS tasks (only when explicitly requested) — sources `$APK` from the block above:
 ```bash
+. /tmp/.verify_on_device.env  # restore $APK persisted by the main launch block
+
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 android run --apks="$APK" \
   --activity=com.woocommerce.android.ui.woopos.root.WooPosActivity \
