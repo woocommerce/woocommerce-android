@@ -24,6 +24,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
+import java.net.UnknownHostException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginScannerViewModelTest : BaseUnitTest() {
@@ -372,6 +373,20 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
     }
+
+    @Test
+    fun `given UnknownHostException from site discovery, when scan confirmed, then emits Network error`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ticket))
+                .thenReturn(Result.failure(UnknownHostException("mystore.example.com")))
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSite()
+
+            val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
+            assertThat(state.retryTicket).isEqualTo(ticket)
+        }
 
     @Test
     fun `given retry-eligible error, when onRetryExchange, then exchange is retried with the same ticket`() =

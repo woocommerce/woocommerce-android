@@ -16,6 +16,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -197,6 +198,10 @@ class QrLoginScannerViewModel @Inject constructor(
         is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
         is CookieNonceAuthenticationException -> ErrorReason.SiteAuthFailure
         is OnChangedException -> (error as? SiteError)?.type.toErrorReason()
+        // Catches DNS, socket, SSL handshake, and read failures during the post-exchange site
+        // discovery + AP save chain — those layers throw raw IOException without going through
+        // QrLoginExchangeException.
+        is IOException -> ErrorReason.Network
         else -> {
             WooLog.w(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}")
             ErrorReason.Unknown
