@@ -401,7 +401,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 )
                 childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
             }
-            when (val result = remoteReaderPaymentFlow.collect(order)) {
+            val result = remoteReaderPaymentFlow.collect(
+                order = order,
+                onCaptureStarting = { handleCapturingPaymentState() },
+            )
+            when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> {
                     childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                 }

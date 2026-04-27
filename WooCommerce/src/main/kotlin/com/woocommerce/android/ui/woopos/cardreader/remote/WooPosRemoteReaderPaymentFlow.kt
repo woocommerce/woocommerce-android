@@ -26,9 +26,12 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
-    suspend fun collect(order: Order): Result {
+    suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
         val connected = remoteReaderSession.state.value as? WooPosRemoteReaderSession.State.Connected
-        if (connected?.reader?.isSimulated == true) return simulatePayment()
+        if (connected?.reader?.isSimulated == true) {
+            onCaptureStarting()
+            return simulatePayment()
+        }
 
         val site = selectedSite.get()
         val countryCode = wooStore.getStoreCountryCode(site)
@@ -60,7 +63,10 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         )
 
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
-            is CollectPaymentOutcome.Success -> capture(order.id, outcome.paymentIntentId)
+            is CollectPaymentOutcome.Success -> {
+                onCaptureStarting()
+                capture(order.id, outcome.paymentIntentId)
+            }
             is CollectPaymentOutcome.Rejected -> Result.Failed(genericFailureMessage())
             CollectPaymentOutcome.TimedOut -> Result.Failed(genericFailureMessage())
             is CollectPaymentOutcome.Failed -> Result.Failed(mapFailureToUserMessage(outcome.cause))
