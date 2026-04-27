@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.remote
 
 import android.content.Context
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.net.InetAddress
@@ -9,8 +10,8 @@ interface CardReaderRemoteDiscovery {
     fun discover(): Flow<RemoteReaderDiscoveryEvent>
 
     companion object {
-        fun create(context: Context): CardReaderRemoteDiscovery =
-            DefaultCardReaderRemoteDiscovery(CardReaderRemoteNsd(context))
+        fun create(context: Context, logWrapper: LogWrapper): CardReaderRemoteDiscovery =
+            DefaultCardReaderRemoteDiscovery(CardReaderRemoteNsd(context), logWrapper)
     }
 }
 
@@ -29,14 +30,29 @@ data class DiscoveredRemoteReader(
 
 internal class DefaultCardReaderRemoteDiscovery(
     private val nsd: CardReaderRemoteNsd,
+    private val logWrapper: LogWrapper,
 ) : CardReaderRemoteDiscovery {
     override fun discover(): Flow<RemoteReaderDiscoveryEvent> =
         nsd.discover().map { event ->
             when (event) {
-                is CardReaderRemoteNsdEvent.Found -> RemoteReaderDiscoveryEvent.Added(event.host.toPublic())
+                is CardReaderRemoteNsdEvent.Found -> {
+                    val pairingCode = CardReaderRemoteFingerprint.pairingCodeFromBase64OrNull(
+                        event.host.fingerprintBase64
+                    )
+                    logWrapper.d(
+                        TAG,
+                        "Discovered phone ${event.host.name} fp=${event.host.fingerprintBase64} " +
+                            "pairingCode=$pairingCode"
+                    )
+                    RemoteReaderDiscoveryEvent.Added(event.host.toPublic())
+                }
                 is CardReaderRemoteNsdEvent.Lost -> RemoteReaderDiscoveryEvent.Removed(event.serviceName)
             }
         }
+
+    private companion object {
+        const val TAG = "CardReaderRemoteDiscovery"
+    }
 }
 
 private fun CardReaderRemoteResolvedHost.toPublic() =
