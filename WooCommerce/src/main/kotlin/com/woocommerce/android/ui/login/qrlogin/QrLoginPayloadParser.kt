@@ -43,17 +43,15 @@ class QrLoginPayloadParser @Inject constructor() {
 
     private fun URI.queryParam(name: String): String? {
         val query = rawQuery ?: return null
-        for (pair in query.split('&')) {
+        val rawValue = query.split('&').firstNotNullOfOrNull { pair ->
             val idx = pair.indexOf('=')
-            if (idx <= 0) continue
-            if (pair.substring(0, idx) != name) continue
-            return try {
-                URLDecoder.decode(pair.substring(idx + 1), Charsets.UTF_8.name())
-            } catch (_: IllegalArgumentException) {
-                null
-            }
+            if (idx > 0 && pair.substring(0, idx) == name) pair.substring(idx + 1) else null
+        } ?: return null
+        return try {
+            URLDecoder.decode(rawValue, Charsets.UTF_8.name())
+        } catch (_: IllegalArgumentException) {
+            null
         }
-        return null
     }
 
     private fun normalizeSiteUrl(raw: String): String? {
