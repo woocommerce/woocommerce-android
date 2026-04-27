@@ -20,6 +20,8 @@ Run this probe once at the start of a verification task and cache the result. Ev
 
 The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/`, which shadows it whenever the legacy SDK tools dir is on PATH. The probe only detects — it does not mutate PATH or create symlinks, since an in-script `export PATH` would not survive subsequent shell invocations in this skill. If `android` is missing, shadowed, or broken, it sets `USE_ANDROID_CLI=0` and prints a hint pointing at the canonical install location (`~/.android/bin/android-cli`) when present. Exact PATH/symlink fix depends on the user's environment — the goal is to make `android --version` resolve to the agent CLI; the user applies the fix once in their shell rc so it persists.
 
+The probe also writes `USE_ANDROID_CLI` to `/tmp/.verify_on_device.env`. Each subsequent `Bash` tool call starts a fresh shell, so a plain shell variable would be lost between invocations — every gated block in this skill begins by sourcing that file to restore the cached result.
+
 ```bash
 _android_is_agent_cli() {
   android --version 2>&1 | grep -qE '^[0-9]+\.[0-9]+\.'
@@ -35,6 +37,10 @@ else
     echo 'Fix: update your PATH/symlinks until `android --version` prints a semver (e.g. symlink android-cli to a name `android` on a directory earlier in PATH than the legacy Android SDK tools), then restart the session.'
   fi
 fi
+
+# Persist for subsequent Bash invocations (shell state does not survive
+# across separate Bash tool calls). Subsequent gated blocks `source` this.
+echo "USE_ANDROID_CLI=$USE_ANDROID_CLI" > /tmp/.verify_on_device.env
 ```
 
 If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
@@ -235,6 +241,8 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 Only run this step when no physical device is attached, no emulator is running, and the task requires a clean-slate device. Skip otherwise.
 
 ```bash
+. /tmp/.verify_on_device.env  # restore USE_ANDROID_CLI from the probe step
+
 # `android emulator` is disabled on Windows per Google's docs — detect Git
 # Bash / MSYS / Cygwin and skip there. macOS and Linux both reach the `then`.
 case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;; *) IS_WINDOWS=0 ;; esac
@@ -260,6 +268,8 @@ fi
 At the end of the task, if this session created the AVD, stop it using the device serial (`adb devices` or `android emulator list` will print it):
 
 ```bash
+. /tmp/.verify_on_device.env  # restore USE_ANDROID_CLI from the probe step
+
 if [ "$USE_ANDROID_CLI" = "1" ]; then
   android emulator stop <device-serial-number>
 fi
