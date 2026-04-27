@@ -199,7 +199,9 @@ private fun DashboardStatsContent(
         RevenueStatsTypeSelector(
             selectedType = selectedRevenueStatsType,
             onTypeSelected = onRevenueStatsTypeSelected,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .fillMaxWidth()
         )
 
         StatsChart(
@@ -372,7 +374,7 @@ private fun OrderDateTypeBottomSheet(
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_title),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -447,7 +449,7 @@ private fun OrderDateTypeOptionRow(
             Text(
                 text = stringResource(id = option.title),
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
