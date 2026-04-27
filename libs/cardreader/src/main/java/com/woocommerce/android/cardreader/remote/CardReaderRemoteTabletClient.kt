@@ -16,6 +16,7 @@ interface CardReaderRemoteTabletClient {
         reader: DiscoveredRemoteReader,
         connectionToken: String,
         locationId: String,
+        timeoutMillis: Long = DEFAULT_CONNECT_TIMEOUT_MILLIS,
     ): ConnectOutcome
 
     suspend fun collectPayment(
@@ -27,6 +28,7 @@ interface CardReaderRemoteTabletClient {
 
     companion object {
         const val DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS: Long = 90_000
+        const val DEFAULT_CONNECT_TIMEOUT_MILLIS: Long = 30_000
 
         fun create(): CardReaderRemoteTabletClient =
             DefaultCardReaderRemoteTabletClient(CardReaderRemoteTlsClient())
@@ -55,23 +57,29 @@ internal class DefaultCardReaderRemoteTabletClient(
         reader: DiscoveredRemoteReader,
         connectionToken: String,
         locationId: String,
+        timeoutMillis: Long,
     ): ConnectOutcome {
         disconnect()
         return try {
-            val opened = tlsClient.connect(reader.host, reader.port, reader.fingerprintBase64)
-            connection = opened
-            val requestId = UUID.randomUUID().toString()
-            opened.send(ConnectRequest(requestId, connectionToken, locationId))
-            when (val reply = opened.receive().first { it.requestId == requestId }) {
-                is ConnectAck -> ConnectOutcome.Success(reply.readerSerial)
-                is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)
-                is ConnectRequest,
-                is CollectPaymentRequest,
-                is PaymentIntentResult -> ConnectOutcome.Rejected(
-                    CODE_UNEXPECTED_REPLY,
-                    "Unexpected reply type: ${reply::class.simpleName}",
-                )
+            withTimeout(timeoutMillis) {
+                val opened = tlsClient.connect(reader.host, reader.port, reader.fingerprintBase64)
+                connection = opened
+                val requestId = UUID.randomUUID().toString()
+                opened.send(ConnectRequest(requestId, connectionToken, locationId))
+                when (val reply = opened.receive().first { it.requestId == requestId }) {
+                    is ConnectAck -> ConnectOutcome.Success(reply.readerSerial)
+                    is ErrorMessage -> ConnectOutcome.Rejected(reply.code, reply.description)
+                    is ConnectRequest,
+                    is CollectPaymentRequest,
+                    is PaymentIntentResult -> ConnectOutcome.Rejected(
+                        CODE_UNEXPECTED_REPLY,
+                        "Unexpected reply type: ${reply::class.simpleName}",
+                    )
+                }
             }
+        } catch (@Suppress("SwallowedException") timeout: TimeoutCancellationException) {
+            disconnect()
+            ConnectOutcome.Failed(IllegalStateException("Timed out connecting to remote reader"))
         } catch (cancel: CancellationException) {
             disconnect()
             throw cancel
