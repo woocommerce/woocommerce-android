@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.login.qrlogin
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -158,6 +160,8 @@ class QrLoginScannerFragment : Fragment() {
         qrLoginViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is QrLoginScannerViewModel.Dispatch.LoggedIn -> handleLoggedIn(event.localSiteId)
+                is QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl ->
+                    openWpComMagicLinkUrl(event.url)
             }
         }
     }
@@ -188,5 +192,16 @@ class QrLoginScannerFragment : Fragment() {
         requireNotNull(listener) {
             "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
         }.onQrLoginCompleted(localSiteId)
+    }
+
+    /**
+     * Open the wp.com magic-login URL via [Intent.ACTION_VIEW]. The system routes it (typically
+     * to Chrome), wp.com 3xx-redirects to `woocommerce://magic-login`, and the existing
+     * intent-filter on `MagicLinkInterceptActivity` picks it up — same end-to-end path as a
+     * 3rd-party scanner.
+     */
+    private fun openWpComMagicLinkUrl(url: String) {
+        scannerViewModel.stopCodesRecognition()
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }
