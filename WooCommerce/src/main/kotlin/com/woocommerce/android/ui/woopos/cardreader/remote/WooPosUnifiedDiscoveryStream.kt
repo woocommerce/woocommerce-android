@@ -30,7 +30,7 @@ sealed class WooPosDiscoveredReader {
         val host: InetAddress,
         val port: Int,
         val fingerprintBase64: String,
-        val siteId: Long?,
+        val siteId: Long,
         val isSimulated: Boolean = false,
     ) : WooPosDiscoveredReader() {
         override val transport = WooPosDiscoveryTransport.WifiLan
@@ -114,7 +114,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     ) {
         mutex.withLock {
             val expectedSiteId = selectedSite.getOrNull()?.siteId
-            if (phone.siteId != null && phone.siteId != expectedSiteId) {
+            if (phone.siteId != expectedSiteId) {
                 logger.d("Dropping NSD phone with site mismatch (got=${phone.siteId}, expected=$expectedSiteId)")
                 return@withLock
             }

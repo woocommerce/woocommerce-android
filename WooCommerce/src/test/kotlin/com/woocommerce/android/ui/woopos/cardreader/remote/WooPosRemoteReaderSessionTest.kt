@@ -169,7 +169,7 @@ class WooPosRemoteReaderSessionTest {
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
         fingerprintBase64 = "AB4F",
-        siteId = null,
+        siteId = 1L,
         isSimulated = isSimulated,
     )
 }

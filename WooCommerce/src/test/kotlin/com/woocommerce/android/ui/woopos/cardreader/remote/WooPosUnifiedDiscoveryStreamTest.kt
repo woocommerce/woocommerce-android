@@ -194,7 +194,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
     }
 
-    private fun phone(name: String, siteId: Long? = TABLET_SITE_ID) = WooPosDiscoveredReader.Phone(
+    private fun phone(name: String, siteId: Long = TABLET_SITE_ID) = WooPosDiscoveredReader.Phone(
         name = name,
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
