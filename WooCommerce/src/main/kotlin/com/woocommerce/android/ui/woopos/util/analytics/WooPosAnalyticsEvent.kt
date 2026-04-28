@@ -615,7 +615,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data object RemoteTapToPayExplainerShown : Event() {
-            override val name: String = "woopos_remote_ttp_explainer_shown"
+            override val name: String = "remote_ttp_explainer_shown"
         }
 
         data object SimpleProductExplanationDialogShown : Event() {
