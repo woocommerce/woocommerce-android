@@ -1,7 +1,10 @@
 package com.woocommerce.android.aiassistant.core.loop
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class SlidingWindowHistoryBudgeterTest {
@@ -69,5 +72,31 @@ class SlidingWindowHistoryBudgeterTest {
         val result = budgeter.build(system, listOf(AssistantMessage.User("hello")), user)
 
         assertThat(result.retainedEntityRefs).isEmpty()
+    }
+
+    @Test
+    fun `given window cuts into tool-call exchange, when building, then no orphaned Tool message starts the window`() {
+        val toolCall = ToolCall(id = "call_1", name = "orders_list", arguments = buildJsonObject { })
+        val assistantWithToolCall = AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall))
+        val toolResult = AssistantMessage.Tool(toolCallId = "call_1", content = """{"orders":[]}""")
+        val assistantFinal = AssistantMessage.Assistant(content = "Here are your orders.")
+        val transcript = listOf(
+            AssistantMessage.User("show orders"),
+            assistantWithToolCall,
+            toolResult,
+            assistantFinal,
+        )
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 2)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).doesNotContain(toolResult)
+        assertThat(result.messages.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
+    }
+
+    @Test
+    fun `given negative window size, when constructing, then throws IllegalArgumentException`() {
+        assertThatThrownBy { SlidingWindowHistoryBudgeter(windowSize = -1) }
+            .isInstanceOf(IllegalArgumentException::class.java)
     }
 }
