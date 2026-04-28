@@ -110,8 +110,11 @@ fun WooPosOrdersScreen(
         scrollToTopEvent = listViewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = listViewModel::onRefresh,
-        onOrderSelected = if (isPhoneLayout && !detailViewModel.isSingleOrderMode) {
-            { orderId -> onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId)) }
+        onOrderSelected = if (isPhoneLayout) {
+            { orderId ->
+                listViewModel.trackOrderTapped(orderId)
+                onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId))
+            }
         } else {
             listViewModel::onOrderSelected
         },

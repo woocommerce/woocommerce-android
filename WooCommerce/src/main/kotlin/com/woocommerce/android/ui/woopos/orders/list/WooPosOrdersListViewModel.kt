@@ -88,6 +88,18 @@ class WooPosOrdersListViewModel @Inject constructor(
 
         if (coordinator.selectedOrderId.value == orderId) return
 
+        trackOrderTapped(orderId)
+
+        val updatedItems = loadedItems.items.map { it.copy(isSelected = it.id == orderId) }
+        _state.value = current.copy(
+            items = WooPosOrdersListState.Content.Items.Loaded(updatedItems)
+        )
+        coordinator.selectOrder(orderId)
+    }
+
+    fun trackOrderTapped(orderId: Long) {
+        val current = _state.value as? WooPosOrdersListState.Content ?: return
+        val loadedItems = current.items as? WooPosOrdersListState.Content.Items.Loaded ?: return
         val position = loadedItems.items.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
         val selectedItem = loadedItems.items.firstOrNull { it.id == orderId } ?: return
 
@@ -99,12 +111,6 @@ class WooPosOrdersListViewModel @Inject constructor(
                 createdAtMillis = selectedItem.createdAtMillis
             )
         }
-
-        val updatedItems = loadedItems.items.map { it.copy(isSelected = it.id == orderId) }
-        _state.value = current.copy(
-            items = WooPosOrdersListState.Content.Items.Loaded(updatedItems)
-        )
-        coordinator.selectOrder(orderId)
     }
 
     fun onRefresh() {
