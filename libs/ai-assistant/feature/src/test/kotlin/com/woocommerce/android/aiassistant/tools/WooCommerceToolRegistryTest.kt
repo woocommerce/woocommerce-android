@@ -83,12 +83,17 @@ class WooCommerceToolRegistryTest {
             val result = registry.execute(ToolCall(id = "c1", name = "nonexistent", arguments = buildJsonObject { }))
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            val error = result as ToolResult.ValidationError
+            assertThat(error.reason).contains("nonexistent")
         }
 
     @Test
     fun `given a registered handler, when execute is called with matching tool name, then handler result is returned`() =
         runTest {
-            val expectedResult = ToolResult.ValidationError("call_1", "fixed-response")
+            val expectedResult = ToolResult.Success(
+                toolCallId = "call_1",
+                structured = buildJsonObject { },
+            )
             val handler = AssistantToolHandler { expectedResult }
             val registry = WooCommerceToolRegistry(mapOf("orders_list" to handler))
 
