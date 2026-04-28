@@ -25,7 +25,7 @@ import org.junit.Test
 
 class AgenticLoopImplTest {
     private val json = assistantJsonForTests()
-    private val context = SessionContext(siteId = 1L)
+    private val context = SessionContext(siteId = 1L, catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, emptyList()))
     private val history = listOf<AssistantMessage>(AssistantMessage.System("You are a helpful assistant."))
 
     private fun loopWith(
@@ -55,6 +55,9 @@ class AgenticLoopImplTest {
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
+    private fun contextWithTools(vararg tools: ToolDescriptor) =
+        SessionContext(siteId = 1L, catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, tools.toList()))
+
     @Test
     fun `given model returns STOP finish reason, when running turn, then Finished with COMPLETED is emitted`() = runTest {
         val loop = loopWith(
@@ -83,7 +86,7 @@ class AgenticLoopImplTest {
             registry = registry
         )
 
-        val events = loop.runTurn("conv", "go", history, context).toList()
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.MAX_ITERATIONS)
@@ -168,7 +171,7 @@ class AgenticLoopImplTest {
         }
         val loop = AgenticLoopImpl(service, registry, ConservativeRetryPolicy, json)
 
-        loop.runTurn("conv", "go", history, context).toList()
+        loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
 
         val toolMsg = secondCallMessages?.filterIsInstance<AssistantMessage.Tool>()?.firstOrNull()
         assertThat(toolMsg).isNotNull
@@ -202,7 +205,7 @@ class AgenticLoopImplTest {
             registry = registry
         )
 
-        val events = loop.runTurn("conv", "go", history, context).toList()
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
 
         assertThat(registryExecuted).isFalse
         val validationErrors = events.filterIsInstance<LoopEvent.ToolCallFinished>()
@@ -365,7 +368,7 @@ class AgenticLoopImplTest {
             registry = registry
         )
 
-        val events = loop.runTurn("conv", "echo hello", history, context).toList()
+        val events = loop.runTurn("conv", "echo hello", history, contextWithTools(safeEchoDescriptor())).toList()
 
         assertThat(events.filterIsInstance<LoopEvent.AssistantTextDelta>().map { it.text })
             .containsExactly("I'll echo that.", "Done.")

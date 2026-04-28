@@ -32,7 +32,7 @@ class AgenticLoopImpl(
         history: List<AssistantMessage>,
         context: SessionContext,
     ): Flow<LoopEvent> = flow {
-        val toolDescriptors = toolRegistry.descriptors()
+        val toolDescriptors = context.catalogSnapshot.tools
         val toolDefs = toolDescriptors.map { it.toToolDefinition() }
         val assembler = ToolCallAssembler(json)
 
