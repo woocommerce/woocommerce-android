@@ -55,12 +55,24 @@ class WooCommerceToolRegistryTest {
     }
 
     @Test
-    fun `when descriptors are retrieved, then write-tool descriptions include allowlisted fields`() {
-        val registry = WooCommerceToolRegistry(emptyMap())
-        val descriptorsByName = registry.descriptors().associateBy { it.name }
+    fun `when descriptors are retrieved, then write-tool descriptions include allowlisted fields and constraints`() {
+        val descriptorsByName = WooCommerceToolRegistry.CATALOG.associateBy { it.name }
 
-        assertThat(descriptorsByName.getValue("products_update").description).contains("regular_price")
-        assertThat(descriptorsByName.getValue("orders_update").description).contains("on-hold")
+        val ordersUpdate = requireNotNull(descriptorsByName["orders_update"]).description
+        assertThat(ordersUpdate).contains("status")
+        assertThat(ordersUpdate).contains("on-hold")
+
+        val ordersBulkUpdate = requireNotNull(descriptorsByName["orders_bulk_update"]).description
+        assertThat(ordersBulkUpdate).contains("status")
+        assertThat(ordersBulkUpdate).contains("Bulk writes require confirmation")
+
+        val productsUpdate = requireNotNull(descriptorsByName["products_update"]).description
+        assertThat(productsUpdate).contains("regular_price")
+        assertThat(productsUpdate).contains("stock_quantity")
+
+        val productsBulkUpdate = requireNotNull(descriptorsByName["products_bulk_update"]).description
+        assertThat(productsBulkUpdate).contains("regular_price")
+        assertThat(productsBulkUpdate).contains("Bulk writes require confirmation")
     }
 
     @Test
