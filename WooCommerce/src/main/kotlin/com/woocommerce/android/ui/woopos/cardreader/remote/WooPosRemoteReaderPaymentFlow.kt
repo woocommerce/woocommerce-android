@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
+import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
@@ -27,7 +28,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val resourceProvider: ResourceProvider,
     private val logger: WooPosLogWrapper,
-    private val paymentsFlowTracker: PaymentsFlowTracker,
+    @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
