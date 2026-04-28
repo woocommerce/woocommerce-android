@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -208,6 +209,42 @@ class AgenticLoopImplTest {
             .map { it.result }
             .filterIsInstance<ToolResult.ValidationError>()
         assertThat(validationErrors).isNotEmpty
+    }
+
+    @Test
+    fun `given validation error reason containing quotes, when result is re-submitted, then tool message content is valid json`() = runTest {
+        val quotedToolName = """ev"il"""
+        var secondCallMessages: List<AssistantMessage>? = null
+        val service = object : ChatService {
+            private var count = 0
+
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                count++
+                return if (count == 1) {
+                    flow {
+                        emit(
+                            AssistantEvent.ToolCallDelta(
+                                index = 0,
+                                id = "call_1",
+                                name = quotedToolName,
+                                argumentsDelta = "{}",
+                            )
+                        )
+                        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                    }
+                } else {
+                    secondCallMessages = request.messages
+                    flowOf(AssistantEvent.Finish(FinishReason.STOP))
+                }
+            }
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+
+        loop.runTurn("conv", "go", history, context).toList()
+
+        val toolMsg = secondCallMessages?.filterIsInstance<AssistantMessage.Tool>()?.single()
+        val parsed = json.parseToJsonElement(requireNotNull(toolMsg).content).jsonObject
+        assertThat(parsed["error"]?.jsonPrimitive?.content).isEqualTo("Unknown tool: $quotedToolName")
     }
 
     @Test

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 class AgenticLoopImpl(
     private val chatService: ChatService,
@@ -189,9 +190,9 @@ class AgenticLoopImpl(
 
     private fun ToolResult.toModelContent(): String = when (this) {
         is ToolResult.Success -> structured.toString()
-        is ToolResult.ValidationError -> """{"error":"$reason"}"""
-        is ToolResult.RejectedBySafety -> """{"error":"Action was not approved"}"""
-        is ToolResult.TransportError -> """{"error":"Tool execution failed"}"""
+        is ToolResult.ValidationError -> errorJson(reason)
+        is ToolResult.RejectedBySafety -> errorJson("Action was not approved")
+        is ToolResult.TransportError -> errorJson("Tool execution failed")
     }
 
     private fun ToolCallAssembler.AssemblyResult.toHistoryToolCall(): ToolCall = when (this) {
@@ -202,6 +203,11 @@ class AgenticLoopImpl(
             arguments = JsonObject(emptyMap()),
         )
     }
+
+    private fun errorJson(message: String): String = json.encodeToString(
+        JsonObject.serializer(),
+        JsonObject(mapOf("error" to JsonPrimitive(message))),
+    )
 
     private fun ToolDescriptor.toToolDefinition() = ToolDefinition(
         name = name,
