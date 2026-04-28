@@ -1,14 +1,16 @@
 package com.woocommerce.android.aiassistant.chat
 
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiStreamChunk
+import com.woocommerce.android.aiassistant.chat.openai.toEvents
 import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
-import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.extensions.rethrow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.transformWhile
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,7 +45,7 @@ internal class ChatStreamParser @Inject constructor(
     }
 
     private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
-        val chunk = runCatching { json.decodeFromString<ChatCompletionStreamChunkPayload>(payload) }
+        val chunk = runCatching { json.decodeFromString<OpenAiStreamChunk>(payload) }
             .getOrElse {
                 emit(
                     AssistantEvent.Failed(
@@ -55,49 +57,13 @@ internal class ChatStreamParser @Inject constructor(
             }
 
         return runCatching {
-            emitChunk(chunk)
+            chunk.toEvents().forEach { emit(it) }
             true
         }.rethrow<CancellationException, _>()
             .getOrElse {
                 emit(AssistantEvent.Failed(kind = AssistantErrorKind.INVALID_STREAM, cause = it))
                 false
             }
-    }
-
-    private suspend fun FlowCollector<AssistantEvent>.emitChunk(chunk: ChatCompletionStreamChunkPayload) {
-        val choice = chunk.choices.firstOrNull() ?: return
-        val delta = choice.delta
-
-        if (delta != null) {
-            delta.content
-                ?.takeIf { it.isNotEmpty() }
-                ?.let { emit(AssistantEvent.TextDelta(it)) }
-
-            delta.toolCalls?.forEach { toolCall ->
-                val index = toolCall.index ?: return@forEach
-                emit(
-                    AssistantEvent.ToolCallDelta(
-                        index = index,
-                        id = toolCall.id,
-                        name = toolCall.function?.name,
-                        argumentsDelta = toolCall.function?.arguments,
-                    )
-                )
-            }
-        }
-
-        val finish = choice.finishReason
-        if (finish != null) {
-            emit(AssistantEvent.Finish(finish.toFinishReason()))
-        }
-    }
-
-    private fun String.toFinishReason(): FinishReason = when (this) {
-        "stop" -> FinishReason.STOP
-        "tool_calls" -> FinishReason.TOOL_CALLS
-        "length" -> FinishReason.LENGTH
-        "content_filter" -> FinishReason.CONTENT_FILTER
-        else -> FinishReason.OTHER
     }
 
     private companion object {

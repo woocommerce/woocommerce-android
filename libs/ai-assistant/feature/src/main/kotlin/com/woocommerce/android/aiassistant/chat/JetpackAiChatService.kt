@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.chat
 
-import com.woocommerce.android.aiassistant.core.AssistantConfig
+import com.woocommerce.android.aiassistant.chat.openai.toOpenAi
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
@@ -170,13 +170,7 @@ internal class JetpackAiChatService @Inject constructor(
         else -> MappedError(AssistantErrorKind.UNKNOWN, t)
     }
 
-    private fun buildRequestBody(request: ChatRequest): String = json.encodeToString(
-        ChatCompletionRequestPayload.from(
-            request = request,
-            feature = AssistantConfig.FEATURE_NAME,
-            model = AssistantConfig.MODEL_ID,
-        )
-    )
+    private fun buildRequestBody(request: ChatRequest): String = json.encodeToString(request.toOpenAi())
 
     private data class MappedError(
         val kind: AssistantErrorKind,

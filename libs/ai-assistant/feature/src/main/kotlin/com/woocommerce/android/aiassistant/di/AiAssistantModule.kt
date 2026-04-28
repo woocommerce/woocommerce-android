@@ -14,6 +14,7 @@ internal object AiAssistantModule {
     @Singleton
     @AiAssistantJson
     fun provideAiAssistantJson(): Json = Json {
+        classDiscriminator = "role"
         ignoreUnknownKeys = true
         encodeDefaults = false
     }
