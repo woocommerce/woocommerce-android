@@ -20,9 +20,20 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+
+    lint {
+        // The lint detector expects metadata version 2.0.0 but the project uses 2.1.0
+        // This can be re-enabled once the compose lint library supports newer metadata versions
+        disable "FlowOperatorInvokedInComposition"
+    }
 }
 
 dependencies {
+    implementation(project(":libs:ai-assistant:core"))
+
+    implementation(project(":libs:commons"))
+    implementation(project(":libs:fluxc"))
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.squareup.okhttp3)
@@ -33,4 +44,6 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
