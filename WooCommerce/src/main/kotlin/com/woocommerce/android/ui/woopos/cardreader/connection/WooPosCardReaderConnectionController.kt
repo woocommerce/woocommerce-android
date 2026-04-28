@@ -462,6 +462,7 @@ class WooPosCardReaderConnectionController(
 
     private fun onConnectToReaderClicked(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
         tracker.trackOnConnectTapped()
         connectToReader(reader)
     }
@@ -514,7 +515,6 @@ class WooPosCardReaderConnectionController(
 
     private fun connectToReader(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
         selectedReader = reader
         _state.value = WooPosCardReaderConnectionState.Connecting
 
