@@ -41,10 +41,9 @@ class AgenticLoopImplTest {
     }
 
     private fun stubRegistry(
-        vararg tools: ToolDescriptor,
         result: ToolResult = ToolResult.Success("call_1", buildJsonObject { put("ok", true) }),
     ): ToolRegistry = object : ToolRegistry {
-        override fun descriptors() = tools.toList()
+        override fun descriptors() = emptyList<ToolDescriptor>()
         override suspend fun execute(call: ToolCall) = result
     }
 
@@ -76,7 +75,7 @@ class AgenticLoopImplTest {
             emit(AssistantEvent.ToolCallDelta(index = 0, id = "call_x", name = "echo", argumentsDelta = "{}"))
             emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
         }
-        val registry = stubRegistry(safeEchoDescriptor(), result = ToolResult.Success("call_x", buildJsonObject { }))
+        val registry = stubRegistry(result = ToolResult.Success("call_x", buildJsonObject { }))
         val loop = loopWith(
             singleIteration,
             singleIteration,
@@ -347,7 +346,7 @@ class AgenticLoopImplTest {
     @Test
     fun `given stub SAFE tool, when loop runs one tool call then STOP, then completes with tool result in history`() = runTest {
         val echoResult = buildJsonObject { put("echoed", "hello") }
-        val registry = stubRegistry(safeEchoDescriptor(), result = ToolResult.Success("call_1", echoResult))
+        val registry = stubRegistry(result = ToolResult.Success("call_1", echoResult))
         val loop = loopWith(
             flow {
                 emit(AssistantEvent.TextDelta("I'll echo that."))
@@ -379,5 +378,30 @@ class AgenticLoopImplTest {
         val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
         assertThat(toolMessages).hasSize(1)
         assertThat(toolMessages[0].content).contains("echoed")
+    }
+
+    @Test
+    fun `given UNSAFE tool, when loop runs tool call, then BlockedBySafety is emitted and ToolCallFinished is not`() = runTest {
+        val unsafeDescriptor = ToolDescriptor(
+            name = "dangerous",
+            description = "A dangerous tool",
+            inputSchema = buildJsonObject { },
+            safetyLevel = ToolSafetyLevel.UNSAFE,
+        )
+        val registry = stubRegistry()
+        val loop = loopWith(
+            flow {
+                emit(AssistantEvent.ToolCallDelta(index = 0, id = "call_1", name = "dangerous", argumentsDelta = "{}"))
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            },
+            flowOf(AssistantEvent.Finish(FinishReason.STOP)),
+            registry = registry,
+        )
+        val context = contextWithTools(unsafeDescriptor)
+
+        val events = loop.runTurn("conv", "go", history, context).toList()
+
+        assertThat(events.filterIsInstance<LoopEvent.BlockedBySafety>()).hasSize(1)
+        assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
     }
 }

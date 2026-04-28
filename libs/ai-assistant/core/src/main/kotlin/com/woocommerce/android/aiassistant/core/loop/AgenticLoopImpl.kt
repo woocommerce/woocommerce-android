@@ -167,7 +167,9 @@ class AgenticLoopImpl(
                 else -> toolRegistry.execute(call)
             }
             toolResults += result
-            emit(LoopEvent.ToolCallFinished(result))
+            if (result !is ToolResult.RejectedBySafety) {
+                emit(LoopEvent.ToolCallFinished(result))
+            }
         }
         return toolResults
     }
