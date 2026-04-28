@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -24,6 +25,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val wooStore: WooCommerceStore,
     private val resourceProvider: ResourceProvider,
+    private val logger: WooPosLogWrapper,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
@@ -67,9 +69,18 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 onCaptureStarting()
                 capture(order.id, outcome.paymentIntentId)
             }
-            is CollectPaymentOutcome.Rejected -> Result.Failed(genericFailureMessage())
-            CollectPaymentOutcome.TimedOut -> Result.Failed(genericFailureMessage())
-            is CollectPaymentOutcome.Failed -> Result.Failed(mapFailureToUserMessage(outcome.cause))
+            is CollectPaymentOutcome.Rejected -> {
+                logger.e("Remote payment rejected: ${outcome.code} - ${outcome.description}")
+                Result.Failed(genericFailureMessage())
+            }
+            CollectPaymentOutcome.TimedOut -> {
+                logger.e("Remote payment timed out waiting for phone reader")
+                Result.Failed(genericFailureMessage())
+            }
+            is CollectPaymentOutcome.Failed -> {
+                logger.e("Remote payment failed - ${outcome.cause.message}", outcome.cause)
+                Result.Failed(mapFailureToUserMessage(outcome.cause))
+            }
         }
     }
 
