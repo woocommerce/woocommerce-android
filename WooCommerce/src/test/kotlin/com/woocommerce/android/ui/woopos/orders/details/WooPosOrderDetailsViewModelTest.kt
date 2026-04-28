@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -136,7 +135,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.details.actionsState).isInstanceOf(OrderActionsState.Loaded::class.java)
+        assertThat(loaded.details.actions).isNotEmpty()
     }
 
     @Test
@@ -238,8 +237,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
-        assertThat(actions.actions).anyMatch { it is OrderAction.IssueRefund }
+        assertThat(loaded.details.actions).anyMatch { it is OrderAction.IssueRefund }
     }
 
     @Test
@@ -256,8 +254,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
-        assertThat(actions.actions).isEmpty()
+        assertThat(loaded.details.actions).isEmpty()
     }
 
     @Test
@@ -274,8 +271,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
-        assertThat(actions.actions).anyMatch { it is OrderAction.EmailReceipt }
+        assertThat(loaded.details.actions).anyMatch { it is OrderAction.EmailReceipt }
     }
 
     // endregion

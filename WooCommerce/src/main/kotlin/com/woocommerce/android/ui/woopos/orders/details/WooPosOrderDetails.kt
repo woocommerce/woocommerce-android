@@ -113,38 +113,23 @@ private fun OrderActions(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     foldPrimaryAction: Boolean = false,
 ) {
-    when (val actionsState = details.actionsState) {
-        is WooPosOrdersState.OrderActionsState.Loading -> {
-            if (!foldPrimaryAction) {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(40.dp.toAdaptiveComponentSize())
-                        .width(WooPosComponentSize.XLarge.value)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-                )
+    val actions = details.actions
+    val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
+    val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
+
+    WooPosOverflowMenu(
+        primaryAction = primaryAction?.let { action ->
+            WooPosOverflowPrimaryAction(
+                label = orderActionLabel(action),
+                onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
+            )
+        },
+        items = overflowActions.map { action ->
+            orderActionToMenuItem(action) {
+                onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
             }
         }
-
-        is WooPosOrdersState.OrderActionsState.Loaded -> {
-            val actions = actionsState.actions
-            val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
-            val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
-
-            WooPosOverflowMenu(
-                primaryAction = primaryAction?.let { action ->
-                    WooPosOverflowPrimaryAction(
-                        label = orderActionLabel(action),
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
-                    )
-                },
-                items = overflowActions.map { action ->
-                    orderActionToMenuItem(action) {
-                        onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
-                    }
-                }
-            )
-        }
-    }
+    )
 }
 
 @Composable
@@ -764,11 +749,9 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actionsState = WooPosOrdersState.OrderActionsState.Loaded(
-            listOf(
-                WooPosOrdersState.OrderAction.IssueRefund(1L),
-                WooPosOrdersState.OrderAction.EmailReceipt(1L)
-            )
+        actions = listOf(
+            WooPosOrdersState.OrderAction.IssueRefund(1L),
+            WooPosOrdersState.OrderAction.EmailReceipt(1L)
         )
     )
 
