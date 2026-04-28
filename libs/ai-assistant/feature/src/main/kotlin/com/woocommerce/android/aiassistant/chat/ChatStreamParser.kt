@@ -4,10 +4,11 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.extensions.rethrow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.transformWhile
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -55,10 +56,11 @@ internal class ChatStreamParser @Inject constructor(
         return runCatching {
             emitChunk(chunk)
             true
-        }.getOrElse {
-            emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
-            false
-        }
+        }.rethrow<CancellationException, _>()
+            .getOrElse {
+                emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
+                false
+            }
     }
 
     private suspend fun FlowCollector<AssistantEvent>.emitChunk(chunk: ChatCompletionStreamChunkPayload) {
