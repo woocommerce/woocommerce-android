@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import kotlinx.coroutines.test.runTest
@@ -41,8 +42,12 @@ class WooCommerceToolRegistryTest {
 
     @Test
     fun `given handlers registered for a subset of tools, when descriptors are retrieved, then only those tools are returned`() {
-        val handler = AssistantToolHandler { ToolResult.Success(it.id, buildJsonObject { }) }
-        val registry = WooCommerceToolRegistry(mapOf("orders_list" to handler, "products_get" to handler))
+        val registry = WooCommerceToolRegistry(
+            mapOf(
+                "orders_list" to FakeToolHandler(fakeDescriptor("orders_list")) { ToolResult.Success(it.id, buildJsonObject { }) },
+                "products_get" to FakeToolHandler(fakeDescriptor("products_get")) { ToolResult.Success(it.id, buildJsonObject { }) },
+            )
+        )
 
         val names = registry.descriptors().map { it.name }
 
@@ -108,7 +113,7 @@ class WooCommerceToolRegistryTest {
                 toolCallId = "call_1",
                 structured = buildJsonObject { },
             )
-            val handler = AssistantToolHandler { expectedResult }
+            val handler = FakeToolHandler(fakeDescriptor("orders_list")) { expectedResult }
             val registry = WooCommerceToolRegistry(mapOf("orders_list" to handler))
 
             val result = registry.execute(
@@ -127,4 +132,18 @@ class WooCommerceToolRegistryTest {
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         }
+
+    private class FakeToolHandler(
+        override val descriptor: ToolDescriptor,
+        private val onExecute: suspend (ToolCall) -> ToolResult,
+    ) : AssistantToolHandler {
+        override suspend fun execute(call: ToolCall): ToolResult = onExecute(call)
+    }
+
+    private fun fakeDescriptor(name: String) = ToolDescriptor(
+        name = name,
+        description = "fake",
+        inputSchema = buildJsonObject { },
+        safetyLevel = ToolSafetyLevel.SAFE,
+    )
 }

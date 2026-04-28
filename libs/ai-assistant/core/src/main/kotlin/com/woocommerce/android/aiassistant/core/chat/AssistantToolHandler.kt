@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.chat
 
-fun interface AssistantToolHandler {
+interface AssistantToolHandler {
+    val descriptor: ToolDescriptor
     suspend fun execute(call: ToolCall): ToolResult
 }
