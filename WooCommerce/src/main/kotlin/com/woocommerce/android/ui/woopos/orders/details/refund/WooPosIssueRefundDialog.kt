@@ -76,6 +76,7 @@ fun WooPosIssueRefundScreen(
     orderId: Long,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     refundReasonUpdate: String? = null,
+    disablePartialRefund: Boolean = false,
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
@@ -102,10 +103,6 @@ fun WooPosIssueRefundScreen(
                 )
             )
         }
-    }
-
-    val handleEvent: (WooPosRefundUIEvent) -> Unit = { event ->
-        viewModel.onUIEvent(event)
     }
 
     BackHandler {
@@ -171,7 +168,8 @@ fun WooPosIssueRefundScreen(
                         state = animatedState,
                         orderId = orderId,
                         onNavigationEvent = onNavigationEvent,
-                        onEvent = handleEvent,
+                        onEvent = viewModel::onUIEvent,
+                        disablePartialRefund = disablePartialRefund,
                     )
                     is WooPosRefundState.Error -> ErrorContent(
                         animatedState,
@@ -186,8 +184,9 @@ fun WooPosIssueRefundScreen(
             RefundScreenButtons(
                 state = state,
                 onDismiss = handleDismiss,
-                onEvent = handleEvent,
+                onEvent = viewModel::onUIEvent,
                 onNavigationEvent = onNavigationEvent,
+                disablePartialRefund = disablePartialRefund,
             )
         }
     }
@@ -207,8 +206,7 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String {
             WooPosRefundState.Content.RefundStep.Processing ->
                 stringResource(R.string.woopos_orders_confirm_refund_title, state.formattedTotal)
         }
-        is WooPosRefundState.Error ->
-            stringResource(R.string.orderdetail_issue_refund_button)
+        is WooPosRefundState.Error,
         is WooPosRefundState.NoRefundableItems ->
             stringResource(R.string.orderdetail_issue_refund_button)
         is WooPosRefundState.RefundSuccess ->
@@ -268,6 +266,7 @@ private fun RefundScreenButtons(
     onDismiss: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    disablePartialRefund: Boolean = false,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -303,13 +302,15 @@ private fun RefundScreenButtons(
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    WooPosOutlinedButton(
-                        text = stringResource(R.string.woopos_orders_edit_refund),
-                        onClick = {
-                            onEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (!disablePartialRefund) {
+                        WooPosOutlinedButton(
+                            text = stringResource(R.string.woopos_orders_edit_refund),
+                            onClick = {
+                                onEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
                     WooPosButton(
@@ -400,6 +401,7 @@ private fun ContentStateHandler(
     orderId: Long,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
+    disablePartialRefund: Boolean = false,
 ) {
     AnimatedContent(
         targetState = state.step,
@@ -431,6 +433,7 @@ private fun ContentStateHandler(
                 SelectItemsContent(
                     state = state,
                     onEvent = onEvent,
+                    disableItemSelection = disablePartialRefund,
                 )
             }
 
@@ -606,6 +609,7 @@ private fun RefundSuccessContent(
 private fun SelectItemsContent(
     state: WooPosRefundState,
     onEvent: (WooPosRefundUIEvent) -> Unit,
+    disableItemSelection: Boolean = false,
 ) {
     val contentState = state as? WooPosRefundState.Content
     val isLoading = state is WooPosRefundState.Loading
@@ -616,6 +620,7 @@ private fun SelectItemsContent(
                 allItemsSelected = contentState?.allItemsSelected ?: false,
                 selectedCount = contentState?.selectedItemIds?.size ?: 0,
                 onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) },
+                enabled = !disableItemSelection,
             )
         }
 
@@ -648,6 +653,7 @@ private fun SelectItemsContent(
                         item = item,
                         isSelected = item.uniqueId in (contentState?.selectedItemIds ?: emptySet()),
                         onItemClick = { onEvent(WooPosRefundUIEvent.ItemSelectionToggled(item.uniqueId)) },
+                        enabled = !disableItemSelection,
                     )
                     if (index < (contentState?.refundableItems?.lastIndex ?: 0)) {
                         Divider()

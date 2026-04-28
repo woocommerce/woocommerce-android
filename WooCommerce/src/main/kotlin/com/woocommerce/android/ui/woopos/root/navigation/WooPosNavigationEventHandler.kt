@@ -53,7 +53,7 @@ fun NavHostController.handleNavigationEvent(
             navigateToEmailReceipt(event.orderId, event.receiptAlreadySent)
 
         is WooPosNavigationEvent.OpenIssueRefund ->
-            navigateToIssueRefundScreen(event.orderId)
+            navigateToIssueRefundScreen(event.orderId, event.disablePartialRefund)
 
         is WooPosNavigationEvent.OpenRefundReason ->
             navigateToRefundReason(event.orderId, event.initialReason)

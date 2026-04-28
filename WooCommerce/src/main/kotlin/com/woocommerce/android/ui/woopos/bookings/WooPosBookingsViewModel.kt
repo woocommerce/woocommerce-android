@@ -552,7 +552,10 @@ class WooPosBookingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     analyticsTracker.trackIssueRefundTapped()
                     _navigationEvent.emit(
-                        WooPosNavigationEvent.OpenIssueRefund(orderId = action.orderId)
+                        WooPosNavigationEvent.OpenIssueRefund(
+                            orderId = action.orderId,
+                            disablePartialRefund = true,
+                        )
                     )
                 }
             }
