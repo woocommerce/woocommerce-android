@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
@@ -22,6 +24,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -37,6 +40,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         on { initialized }.thenReturn(true)
     }
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var store: ViewModelStore
     private lateinit var viewModel: CardReaderModeViewModel
@@ -51,6 +55,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                     session,
                     cardReaderManager,
                     developerOptionsRepository,
+                    analyticsTrackerWrapper,
                 ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
@@ -185,4 +190,24 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         // THEN
         verify(session).stop()
     }
+
+    @Test
+    fun `given session transitions to ReadyToPair, when emitted, then session started event is tracked`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+            // WHEN
+            sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+                deviceName = "Pixel",
+                fingerprintSuffix = "1234",
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
+                eq(mapOf("is_simulated" to false)),
+            )
+        }
 }
