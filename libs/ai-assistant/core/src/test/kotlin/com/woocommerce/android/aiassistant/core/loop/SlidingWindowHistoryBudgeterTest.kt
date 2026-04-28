@@ -95,6 +95,29 @@ class SlidingWindowHistoryBudgeterTest {
     }
 
     @Test
+    fun `given window size 2 on 4-message transcript ending with tool then assistant, when building, then orphaned tool is dropped and only assistant response is kept`() {
+        // Transcript: [User, Assistant(toolCalls=[c1]), Tool(c1), Assistant("Done")]
+        // takeLast(2) alone would give [Tool(c1), Assistant("Done")] — Tool(c1) has no
+        // preceding assistant tool-call message, which is invalid for the OpenAI wire format.
+        // The budgeter must advance the window start past orphaned Tool messages.
+        val toolCall = ToolCall(id = "call_1", name = "orders_list", arguments = buildJsonObject { })
+        val assistantWithToolCall = AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall))
+        val toolResult = AssistantMessage.Tool(toolCallId = "call_1", content = """{"orders":[]}""")
+        val assistantFinal = AssistantMessage.Assistant(content = "Here are your orders.")
+        val transcript = listOf(
+            AssistantMessage.User("show orders"),
+            assistantWithToolCall,
+            toolResult,
+            assistantFinal,
+        )
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 2)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(system, assistantFinal, user)
+    }
+
+    @Test
     fun `given negative window size, when constructing, then throws IllegalArgumentException`() {
         assertThatThrownBy { SlidingWindowHistoryBudgeter(windowSize = -1) }
             .isInstanceOf(IllegalArgumentException::class.java)
