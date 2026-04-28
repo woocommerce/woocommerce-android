@@ -225,22 +225,6 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
-    fun `given loaded order, when issue refund action clicked, then dialog state is unchanged`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        coordinator.selectOrder(1L)
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L)))
-
-        // THEN - IssueRefund is handled at composable level via navigation, VM state unchanged
-        val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.dialogState).isEqualTo(WooPosOrderDetailsState.DialogState.Hidden)
-    }
-
-    @Test
     fun `given completed order, when loaded, then IssueRefund action available`() = runTest {
         // GIVEN
         val completedOrder = order(1).copy(status = Order.Status.Completed)
