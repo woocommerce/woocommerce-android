@@ -9,12 +9,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ChatStreamParserTest {
-    private val parser = ChatStreamParser(Json { ignoreUnknownKeys = true })
+    private val parser = ChatStreamParser(assistantJsonForTests())
 
     @Test
     fun `given a content delta payload, when parsed, then a TextDelta is emitted`() = runTest {
@@ -119,6 +118,18 @@ class ChatStreamParserTest {
     @Test
     fun `given a malformed payload, when parsed, then a Failed INVALID_STREAM event is emitted`() = runTest {
         val payload = "not json at all"
+
+        val events = parser.parse(flowOf(payload)).toList()
+
+        assertThat(events).hasSize(1)
+        val failure = events.single() as AssistantEvent.Failed
+        assertThat(failure.kind).isEqualTo(AssistantErrorKind.INVALID_STREAM)
+        assertThat(failure.cause).isInstanceOf(MalformedChunkException::class.java)
+    }
+
+    @Test
+    fun `given choices is null, when parsed, then strict parsing prevents null coercion fallback`() = runTest {
+        val payload = """{"choices":null}"""
 
         val events = parser.parse(flowOf(payload)).toList()
 

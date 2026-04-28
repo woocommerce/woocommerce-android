@@ -1,21 +1,17 @@
 package com.woocommerce.android.aiassistant.chat
 
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiStreamChunk
+import com.woocommerce.android.aiassistant.chat.openai.toEvents
 import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
-import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.extensions.rethrow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.transformWhile
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,66 +45,25 @@ internal class ChatStreamParser @Inject constructor(
     }
 
     private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
-        val chunk = runCatching { json.parseToJsonElement(payload).jsonObject }
+        val chunk = runCatching { json.decodeFromString<OpenAiStreamChunk>(payload) }
             .getOrElse {
-                emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, MalformedChunkException(payload, it)))
+                emit(
+                    AssistantEvent.Failed(
+                        kind = AssistantErrorKind.INVALID_STREAM,
+                        cause = MalformedChunkException(payload, it)
+                    )
+                )
                 return false
             }
 
         return runCatching {
-            emitChunk(chunk)
+            chunk.toEvents().forEach { emit(it) }
             true
-        }.getOrElse {
-            emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
-            false
-        }
-    }
-
-    private suspend fun FlowCollector<AssistantEvent>.emitChunk(chunk: JsonObject) {
-        val choice = chunk["choices"]?.jsonArray?.firstOrNull()?.jsonObject ?: return
-        val delta = choice["delta"]?.jsonObject
-
-        if (delta != null) {
-            delta["content"]?.stringOrNull()
-                ?.takeIf { it.isNotEmpty() }
-                ?.let { emit(AssistantEvent.TextDelta(it)) }
-
-            delta["tool_calls"]?.jsonArray?.forEach { element ->
-                val toolCall = element.jsonObject
-                val index = toolCall["index"]?.jsonPrimitive?.int ?: return@forEach
-                val id = toolCall["id"]?.stringOrNull()
-                val function = toolCall["function"]?.jsonObject
-                val name = function?.get("name")?.stringOrNull()
-                val argumentsDelta = function?.get("arguments")?.stringOrNull()
-                emit(
-                    AssistantEvent.ToolCallDelta(
-                        index = index,
-                        id = id,
-                        name = name,
-                        argumentsDelta = argumentsDelta,
-                    )
-                )
+        }.rethrow<CancellationException, _>()
+            .getOrElse {
+                emit(AssistantEvent.Failed(kind = AssistantErrorKind.INVALID_STREAM, cause = it))
+                false
             }
-        }
-
-        val finish = choice["finish_reason"]?.stringOrNull()
-        if (finish != null) {
-            emit(AssistantEvent.Finish(finish.toFinishReason()))
-        }
-    }
-
-    private fun JsonElement.stringOrNull(): String? {
-        if (this is JsonNull) return null
-        val primitive = this as? JsonPrimitive ?: return null
-        return primitive.content
-    }
-
-    private fun String.toFinishReason(): FinishReason = when (this) {
-        "stop" -> FinishReason.STOP
-        "tool_calls" -> FinishReason.TOOL_CALLS
-        "length" -> FinishReason.LENGTH
-        "content_filter" -> FinishReason.CONTENT_FILTER
-        else -> FinishReason.OTHER
     }
 
     private companion object {

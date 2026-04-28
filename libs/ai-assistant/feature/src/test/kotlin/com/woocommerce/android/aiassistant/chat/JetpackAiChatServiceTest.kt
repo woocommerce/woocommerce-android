@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit
 class JetpackAiChatServiceTest {
     private lateinit var server: MockWebServer
     private val tokenProvider = RecordingTokenProvider()
+    private val assistantJson = assistantJsonForTests()
 
     private val httpClient = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -191,7 +192,8 @@ class JetpackAiChatServiceTest {
     ): JetpackAiChatService = JetpackAiChatService(
         httpClient = httpClient,
         tokenProvider = tokenProvider,
-        streamParser = ChatStreamParser(Json { ignoreUnknownKeys = true }),
+        streamParser = ChatStreamParser(assistantJson),
+        json = assistantJson,
         baseUrl = server.url("/").toString().removeSuffix("/"),
     )
 
