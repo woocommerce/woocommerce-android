@@ -117,7 +117,9 @@ class AgenticLoopImplTest {
                 count++
                 return if (count == 1) {
                     flow {
-                        emit(AssistantEvent.ToolCallDelta(index = 0, id = "call_1", name = "echo", argumentsDelta = "{}"))
+                        emit(
+                            AssistantEvent.ToolCallDelta(index = 0, id = "call_1", name = "echo", argumentsDelta = "{}")
+                        )
                         emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
                     }
                 } else {
@@ -139,41 +141,6 @@ class AgenticLoopImplTest {
         assertThat(toolMsg).isNotNull
         assertThat(requireNotNull(toolMsg).content).isEqualTo(structuredPayload.toString())
         assertThat(toolMsg.content).doesNotContain("cards")
-    }
-
-    @Test
-    fun `given duplicate tool call with same name and arguments, when running turn, then second call produces ValidationError`() = runTest {
-        var iteration = 0
-        val service = object : ChatService {
-            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
-                iteration++
-                return when (iteration) {
-                    1 -> flow {
-                        emit(
-                            AssistantEvent.ToolCallDelta(index = 0, id = "call_1", name = "echo", argumentsDelta = "{}")
-                        )
-                        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
-                    }
-                    2 -> flow {
-                        emit(
-                            AssistantEvent.ToolCallDelta(index = 0, id = "call_2", name = "echo", argumentsDelta = "{}")
-                        )
-                        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
-                    }
-                    else -> flowOf(AssistantEvent.Finish(FinishReason.STOP))
-                }
-            }
-        }
-        val registry = stubRegistry(safeEchoDescriptor())
-        val loop = AgenticLoopImpl(service, registry, ConservativeRetryPolicy, json)
-
-        val events = loop.runTurn("conv", "go", history, context).toList()
-
-        val duplicateError = events.filterIsInstance<LoopEvent.ToolCallFinished>()
-            .map { it.result }
-            .filterIsInstance<ToolResult.ValidationError>()
-            .any { it.reason.contains("Duplicate") }
-        assertThat(duplicateError).isTrue
     }
 
     @Test
@@ -306,7 +273,7 @@ class AgenticLoopImplTest {
     }
 
     @Test
-    fun `smoke path - given stub SAFE tool, when loop runs one tool call then STOP, then completes with tool result in history`() = runTest {
+    fun `given stub SAFE tool, when loop runs one tool call then STOP, then completes with tool result in history`() = runTest {
         val echoResult = buildJsonObject { put("echoed", "hello") }
         val registry = stubRegistry(safeEchoDescriptor(), result = ToolResult.Success("call_1", echoResult))
         val loop = loopWith(

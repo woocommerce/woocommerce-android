@@ -8,7 +8,7 @@ sealed interface LoopEvent {
     data class AssistantTextDelta(val text: String) : LoopEvent
     data class ToolCallStarted(val call: ToolCall) : LoopEvent
     data class ToolCallFinished(val result: ToolResult) : LoopEvent
-    data class AwaitingConfirmation(val call: ToolCall) : LoopEvent
+    data class BlockedBySafety(val call: ToolCall) : LoopEvent
     data class Finished(
         val outcome: LoopOutcome,
         val updatedHistory: List<AssistantMessage>,
