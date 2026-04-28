@@ -12,7 +12,7 @@ class WooCommerceToolRegistry(
     private val handlers: Map<String, AssistantToolHandler>,
 ) : ToolRegistry {
 
-    override fun descriptors(): List<ToolDescriptor> = CATALOG
+    override fun descriptors(): List<ToolDescriptor> = CATALOG.filter { it.name in handlers }
 
     override suspend fun execute(call: ToolCall): ToolResult {
         val handler = handlers[call.name]

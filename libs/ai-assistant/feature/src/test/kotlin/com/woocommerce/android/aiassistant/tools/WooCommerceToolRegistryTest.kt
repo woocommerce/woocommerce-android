@@ -12,10 +12,8 @@ import org.junit.Test
 class WooCommerceToolRegistryTest {
 
     @Test
-    fun `when descriptors are retrieved, then all 13 expected tool names are present`() {
-        val registry = WooCommerceToolRegistry(emptyMap())
-
-        val names = registry.descriptors().map { it.name }
+    fun `when CATALOG is inspected, then all 13 expected tool names are present`() {
+        val names = WooCommerceToolRegistry.CATALOG.map { it.name }
 
         assertThat(names).containsExactlyInAnyOrder(
             "orders_list",
@@ -35,9 +33,25 @@ class WooCommerceToolRegistryTest {
     }
 
     @Test
-    fun `when descriptors are retrieved, then write tools are UNSAFE and read tools are SAFE`() {
+    fun `given no registered handlers, when descriptors are retrieved, then empty list is returned`() {
         val registry = WooCommerceToolRegistry(emptyMap())
-        val descriptorsByName = registry.descriptors().associateBy { it.name }
+
+        assertThat(registry.descriptors()).isEmpty()
+    }
+
+    @Test
+    fun `given handlers registered for a subset of tools, when descriptors are retrieved, then only those tools are returned`() {
+        val handler = AssistantToolHandler { ToolResult.Success(it.id, buildJsonObject { }) }
+        val registry = WooCommerceToolRegistry(mapOf("orders_list" to handler, "products_get" to handler))
+
+        val names = registry.descriptors().map { it.name }
+
+        assertThat(names).containsExactlyInAnyOrder("orders_list", "products_get")
+    }
+
+    @Test
+    fun `when CATALOG is inspected, then write tools are UNSAFE and read tools are SAFE`() {
+        val descriptorsByName = WooCommerceToolRegistry.CATALOG.associateBy { it.name }
 
         val writeToolNames = setOf("orders_update", "orders_bulk_update", "products_update", "products_bulk_update")
         writeToolNames.forEach { name ->
