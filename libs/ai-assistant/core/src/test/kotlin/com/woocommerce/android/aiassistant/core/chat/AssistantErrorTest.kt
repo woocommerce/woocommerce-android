@@ -24,7 +24,7 @@ class AssistantErrorTest {
     }
 
     @Test
-    fun `given outcome_unknown, when compared to network and timeout, then it is a distinct type`() {
+    fun `given OutcomeUnknown, when compared to Network and Timeout, then it is a distinct type`() {
         val outcomeUnknown: AssistantError = AssistantError.OutcomeUnknown
 
         assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network)
