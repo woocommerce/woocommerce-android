@@ -19,6 +19,7 @@ rootProject.afterEvaluate {
                 ':libs:apifaker:testDebugUnitTest',
                 ':libs:commons:testDebugUnitTest',
                 ':libs:pos:testDebugUnitTest',
+                ':libs:ai-assistant:feature:testDebugUnitTest',
         )
 
         group = "Reporting"
