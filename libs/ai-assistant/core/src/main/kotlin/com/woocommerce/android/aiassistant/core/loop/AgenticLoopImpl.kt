@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 class AgenticLoopImpl(
     private val chatService: ChatService,
@@ -47,13 +48,14 @@ class AgenticLoopImpl(
             visibleOutputStarted = stream.visibleOutputStarted
 
             val assembledResults = assembler.assemble(stream.toolCallDeltas)
+            val callsForHistory = assembledResults.map { it.toHistoryToolCall() }
             val validCalls = assembledResults
                 .filterIsInstance<ToolCallAssembler.AssemblyResult.Success>()
                 .map { it.call }
 
             messages = messages + AssistantMessage.Assistant(
                 content = stream.assistantText.takeIf { it.isNotEmpty() },
-                toolCalls = validCalls,
+                toolCalls = callsForHistory,
             )
 
             if (stream.finishReason == null) {
@@ -190,6 +192,15 @@ class AgenticLoopImpl(
         is ToolResult.ValidationError -> """{"error":"$reason"}"""
         is ToolResult.RejectedBySafety -> """{"error":"Action was not approved"}"""
         is ToolResult.TransportError -> """{"error":"Tool execution failed"}"""
+    }
+
+    private fun ToolCallAssembler.AssemblyResult.toHistoryToolCall(): ToolCall = when (this) {
+        is ToolCallAssembler.AssemblyResult.Success -> call
+        is ToolCallAssembler.AssemblyResult.MalformedArguments -> ToolCall(
+            id = callId,
+            name = toolName,
+            arguments = JsonObject(emptyMap()),
+        )
     }
 
     private fun ToolDescriptor.toToolDefinition() = ToolDefinition(

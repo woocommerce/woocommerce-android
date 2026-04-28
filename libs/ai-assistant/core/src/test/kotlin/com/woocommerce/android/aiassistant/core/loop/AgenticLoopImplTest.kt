@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -104,6 +105,37 @@ class AgenticLoopImplTest {
         val malformedError = events.filterIsInstance<LoopEvent.ToolCallFinished>()
             .firstOrNull { it.result is ToolResult.ValidationError }
         assertThat(malformedError).isNotNull
+    }
+
+    @Test
+    fun `given malformed tool call arguments, when running another turn, then tool message references prior assistant tool call id`() = runTest {
+        val loop = loopWith(
+            flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_bad",
+                        name = "echo",
+                        argumentsDelta = """{"msg":"""",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            },
+            flowOf(AssistantEvent.Finish(FinishReason.STOP))
+        )
+
+        val finished = loop.runTurn("conv", "go", history, context).toList()
+            .filterIsInstance<LoopEvent.Finished>()
+            .last()
+
+        finished.updatedHistory.forEachIndexed { index, message ->
+            if (message is AssistantMessage.Tool) {
+                val priorIds = finished.updatedHistory.subList(0, index)
+                    .filterIsInstance<AssistantMessage.Assistant>()
+                    .flatMap { assistant -> assistant.toolCalls.map(ToolCall::id) }
+                assertThat(priorIds).contains(message.toolCallId)
+            }
+        }
     }
 
     @Test
