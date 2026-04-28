@@ -494,8 +494,8 @@ private val orderDateTypeOptions = listOf(
     ),
     OrderDateTypeOption(
         type = WCAnalyticsOrderDateType.CREATED,
-        title = R.string.dashboard_stats_all_orders,
-        description = R.string.dashboard_stats_all_orders_description
+        title = R.string.dashboard_stats_placed_orders,
+        description = R.string.dashboard_stats_placed_orders_description
     ),
     OrderDateTypeOption(
         type = WCAnalyticsOrderDateType.COMPLETED,

@@ -210,7 +210,7 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.statsViewRow.ordersLabel.setText(
             when (orderDateType) {
                 WCAnalyticsOrderDateType.PAID -> R.string.dashboard_stats_paid_orders
-                WCAnalyticsOrderDateType.CREATED -> R.string.dashboard_stats_all_orders
+                WCAnalyticsOrderDateType.CREATED -> R.string.dashboard_stats_placed_orders
                 WCAnalyticsOrderDateType.COMPLETED -> R.string.dashboard_stats_completed_orders
             }
         )
