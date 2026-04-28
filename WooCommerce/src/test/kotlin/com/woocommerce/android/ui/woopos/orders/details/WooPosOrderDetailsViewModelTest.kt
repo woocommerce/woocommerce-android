@@ -136,7 +136,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.details.actionsState).isInstanceOf(OrderActionsState.Loaded::class.java)
+        assertThat(loaded.details.actionsState.actions).isNotNull()
     }
 
     @Test
@@ -258,7 +258,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).anyMatch { it is OrderAction.IssueRefund }
     }
 
@@ -276,7 +276,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).isEmpty()
     }
 
@@ -294,7 +294,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).anyMatch { it is OrderAction.EmailReceipt }
     }
 

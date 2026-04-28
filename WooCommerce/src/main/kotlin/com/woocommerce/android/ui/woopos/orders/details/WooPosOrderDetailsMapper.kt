@@ -67,11 +67,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO, order.currency)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions)
+            actionsState = WooPosOrdersState.OrderActionsState(actions)
         )
     }
 
-    suspend fun mapOrderDetailsWithoutActions(
+    suspend fun mapOrderDetailsWithoutRefunds(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)
@@ -110,7 +110,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+            actionsState = WooPosOrdersState.OrderActionsState(
                 orderActionsProvider.getAvailableActions(order)
             )
         )

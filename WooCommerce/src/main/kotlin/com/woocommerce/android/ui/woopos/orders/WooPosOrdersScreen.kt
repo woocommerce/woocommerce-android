@@ -958,7 +958,7 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+    actionsState = WooPosOrdersState.OrderActionsState(
         listOf(
             WooPosOrdersState.OrderAction.IssueRefund(id),
             WooPosOrdersState.OrderAction.EmailReceipt(id)
