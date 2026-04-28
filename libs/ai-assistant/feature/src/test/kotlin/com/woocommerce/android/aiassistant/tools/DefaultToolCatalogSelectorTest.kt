@@ -1,13 +1,23 @@
 package com.woocommerce.android.aiassistant.tools
 
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class DefaultToolCatalogSelectorTest {
 
     private val selector = DefaultToolCatalogSelector()
-    private val catalog = WooCommerceToolRegistry.CATALOG
+    private val catalog = listOf(
+        "orders_list", "orders_get", "orders_update", "orders_bulk_update",
+        "products_list", "products_get", "products_update", "products_bulk_update",
+        "product_variations_list", "analytics_revenue", "analytics_orders",
+        "show_cards", "customers_list",
+    ).map { name ->
+        ToolDescriptor(name = name, description = "", inputSchema = buildJsonObject { }, safetyLevel = ToolSafetyLevel.SAFE)
+    }
 
     @Test
     fun `when GLOBAL scope is selected, then all 13 tools are returned in catalog order`() {

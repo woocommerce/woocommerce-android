@@ -40,7 +40,7 @@ internal object AiAssistantModule {
     @Provides
     @Singleton
     fun provideToolRegistry(
-        handlers: Map<String, AssistantToolHandler>,
+        handlers: Set<@JvmSuppressWildcards AssistantToolHandler>,
     ): ToolRegistry = WooCommerceToolRegistry(handlers)
 
     @Provides
@@ -49,7 +49,7 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
-    fun provideToolHandlers(): Map<String, AssistantToolHandler> = emptyMap()
+    fun provideToolHandlers(): Set<@JvmSuppressWildcards AssistantToolHandler> = emptySet()
 
     @Provides
     @Singleton
