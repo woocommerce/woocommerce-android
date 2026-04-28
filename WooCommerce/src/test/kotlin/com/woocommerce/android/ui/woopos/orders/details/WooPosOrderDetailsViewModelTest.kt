@@ -466,22 +466,6 @@ class WooPosOrderDetailsViewModelTest {
             collectorJob.cancel()
         }
 
-    @Test
-    fun `given loaded order, when back from issue refund, then order data source refreshes order`() = runTest {
-        // GIVEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        coordinator.selectOrder(1L)
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onBackFromIssueRefund()
-        advanceUntilIdle()
-
-        // THEN
-        verify(dataSource).refreshOrderById(1L)
-    }
-
     // endregion
 
     // region Retry

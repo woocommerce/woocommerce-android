@@ -107,6 +107,12 @@ fun WooPosOrdersScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        detailViewModel.navigationEvent.collect { event ->
+            onNavigationEvent(event)
+        }
+    }
+
     WooPosOrdersScreen(
         listState = listState,
         detailState = detailState,
@@ -126,16 +132,7 @@ fun WooPosOrdersScreen(
         onSearchErrorRetry = listViewModel::onSearchErrorRetry,
         onOrdersEmptyActionClicked = listViewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = listViewModel::onOrdersLoadingErrorRetryButtonClicked,
-        onUIEvent = { event ->
-            when {
-                event is WooPosOrdersUIEvent.OrderActionClicked &&
-                    event.action is WooPosOrdersState.OrderAction.IssueRefund ->
-                    onNavigationEvent(
-                        WooPosNavigationEvent.OpenIssueRefund(event.action.orderId)
-                    )
-                else -> detailViewModel.onUIEvent(event)
-            }
-        },
+        onUIEvent = detailViewModel::onUIEvent,
         onRetryDetailLoad = detailViewModel::retryLoadOrder,
         onRefundDetailsDialogDismissed = detailViewModel::onRefundDetailsDialogDismissed,
     )
