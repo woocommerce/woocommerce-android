@@ -1,0 +1,24 @@
+package com.woocommerce.android.aiassistant.core.loop
+
+import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+
+class SlidingWindowHistoryBudgeter(
+    val windowSize: Int = DEFAULT_WINDOW_SIZE,
+) : HistoryBudgeter {
+
+    override fun build(
+        systemPrompt: AssistantMessage.System,
+        rawTranscript: List<AssistantMessage>,
+        currentUserTurn: AssistantMessage.User,
+    ): BudgetedHistory {
+        val window = rawTranscript.takeLast(windowSize)
+        return BudgetedHistory(
+            messages = listOf(systemPrompt) + window + currentUserTurn,
+            retainedEntityRefs = emptyList(),
+        )
+    }
+
+    companion object {
+        const val DEFAULT_WINDOW_SIZE = 20
+    }
+}
