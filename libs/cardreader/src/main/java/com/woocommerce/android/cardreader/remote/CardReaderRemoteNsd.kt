@@ -33,6 +33,7 @@ internal class CardReaderRemoteNsd(
         port: Int,
         fingerprint: String,
         deviceName: String,
+        siteId: Long?,
     ): CardReaderRemoteNsdRegistration =
         withContext(ioDispatcher) {
             val serviceInfo = NsdServiceInfo().apply {
@@ -42,6 +43,9 @@ internal class CardReaderRemoteNsd(
                 setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
                 setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
                 setAttribute(TXT_KEY_DEVICE_NAME, deviceName)
+                if (siteId != null) {
+                    setAttribute(TXT_KEY_SITE_ID, siteId.toString())
+                }
             }
 
             val listener = object : NsdManager.RegistrationListener {
@@ -188,6 +192,7 @@ internal class CardReaderRemoteNsd(
             return null
         }
         val deviceName = attributes[TXT_KEY_DEVICE_NAME]?.toString(Charsets.UTF_8)
+        val siteId = attributes[TXT_KEY_SITE_ID]?.toString(Charsets.UTF_8)?.toLongOrNull()
         return CardReaderRemoteResolvedHost(
             name = serviceName,
             host = host,
@@ -195,6 +200,7 @@ internal class CardReaderRemoteNsd(
             fingerprintBase64 = fingerprint,
             version = version,
             deviceName = deviceName,
+            siteId = siteId,
         )
     }
 
@@ -219,6 +225,7 @@ internal class CardReaderRemoteNsd(
         const val TXT_KEY_FINGERPRINT = "fp"
         const val TXT_KEY_VERSION = "ver"
         const val TXT_KEY_DEVICE_NAME = "name"
+        const val TXT_KEY_SITE_ID = "siteId"
         const val PROTOCOL_VERSION = "1"
         private const val SERVICE_NAME_PREFIX = "woopos-remote"
         private const val SUFFIX_RANGE_EXCLUSIVE = 0x10000
@@ -243,6 +250,7 @@ internal data class CardReaderRemoteResolvedHost(
     val fingerprintBase64: String,
     val version: String,
     val deviceName: String?,
+    val siteId: Long?,
 )
 
 internal sealed class CardReaderRemoteNsdEvent {

@@ -6,6 +6,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
@@ -29,6 +30,7 @@ class CardReaderModeViewModel @Inject constructor(
     private val session: CardReaderRemoteSession,
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -75,6 +77,7 @@ class CardReaderModeViewModel @Inject constructor(
         session.start(
             parentScope = viewModelScope,
             isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+            siteId = selectedSite.getOrNull()?.siteId,
         )
     }
 
