@@ -21,7 +21,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor() : WooPosPhoneDi
         val simulatedPhones = listOf(
             WooPosDiscoveredReader.Phone(
                 name = "Simulated Pixel 7",
-                host = InetAddress.getLoopbackAddress(),
+                host = InetAddress.getByName("127.0.0.1"),
                 port = 9000,
                 fingerprintBase64 = "SIM1",
                 siteId = null,
@@ -29,7 +29,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor() : WooPosPhoneDi
             ),
             WooPosDiscoveredReader.Phone(
                 name = "Simulated Galaxy S24",
-                host = InetAddress.getLoopbackAddress(),
+                host = InetAddress.getByName("127.0.0.2"),
                 port = 9001,
                 fingerprintBase64 = "SIM2",
                 siteId = null,
