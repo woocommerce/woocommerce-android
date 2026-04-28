@@ -53,7 +53,7 @@ The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have bee
 |---|---|
 | `android run` (step 7 install + launch) | Verified — installs and launches in one call. |
 | `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
-| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
+| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
 | `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
 | `android emulator list` (step 0 lifecycle) | Partial — `list` runs end-to-end. `create`/`start`/`stop` shape confirmed via `--help` only; no AVD was created during verification, so step 0 is flagged **Experimental** in its heading. |
 | `android describe` | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
@@ -98,19 +98,19 @@ Only use `mobile_take_screenshot` for **visual verification** — never for deri
 
 Useful when an element lacks an accessibility label or test tag, or when you already have an annotated screenshot in context. `android screen capture --annotate` overlays numeric labels (#1, #2, ...) on every interactive element; `android screen resolve` substitutes `#N` placeholders in a template string with the element's device-pixel `x y` coordinates.
 
-Pass `--device=<device_id>` to every `android screen ...` call so the capture is taken from the same device the resolved tap will be piped to. Without it, the CLI may pick a different connected device than the `adb -s <device_id> shell` recipient and you get coordinates from one device applied to another.
+The `android screen ...` commands do not support `--device`, so use this workflow only when the CLI's default device is the same device you intend to tap.
 
 ```bash
 # Capture an annotated screenshot — each interactive element gets a number.
-android screen capture --device=<device_id> --annotate --output=/tmp/ui.png
+android screen capture --annotate --output=/tmp/ui.png
 
 # Idiomatic: let resolve produce a complete `input tap X Y` command and pipe
 # it straight to `adb shell`. The CLI replaces `#5` with the resolved coords.
-android screen resolve --device=<device_id> --screenshot=/tmp/ui.png --string="input tap #5" \
+android screen resolve --screenshot=/tmp/ui.png --string="input tap #5" \
   | adb -s <device_id> shell
 
 # Alternative: capture just the coordinates and feed mobile-mcp's tap tool.
-COORDS=$(android screen resolve --device=<device_id> --screenshot=/tmp/ui.png --string="#5")
+COORDS=$(android screen resolve --screenshot=/tmp/ui.png --string="#5")
 # $COORDS is now "<x> <y>"; call mobile_click_on_screen_at_coordinates with those.
 ```
 
