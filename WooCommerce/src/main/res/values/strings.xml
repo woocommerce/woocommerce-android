@@ -4137,7 +4137,7 @@
     <string name="woopos_remote_ttp_explainer_setup_heading">Set up your phone</string>
     <string name="woopos_remote_ttp_explainer_setup_body">Open Woo on your phone, then go to Settings → Payments → Card Reader Mode.</string>
     <string name="woopos_remote_ttp_explainer_requirements_heading">Check compatibility</string>
-    <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 11 or newer, NFC, and Tap-to-Pay support.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 13 or newer, NFC, and Tap-to-Pay support.</string>
     <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
 
     <string name="customers_details_customer_section">Customer</string>
