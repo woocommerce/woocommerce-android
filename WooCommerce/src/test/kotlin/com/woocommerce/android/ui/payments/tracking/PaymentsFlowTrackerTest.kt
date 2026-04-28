@@ -149,10 +149,7 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     fun `given transport is set, when event is tracked, then it contains transport property`() =
         testBlocking {
             // GIVEN
-            val cardReaderTrackingInfo: TrackingInfo = mock {
-                on { transport } doReturn "wifi_lan"
-            }
-            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(cardReaderTrackingInfo)
+            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "wifi_lan"))
             val props = mutableMapOf<String, Any>()
 
             // WHEN
