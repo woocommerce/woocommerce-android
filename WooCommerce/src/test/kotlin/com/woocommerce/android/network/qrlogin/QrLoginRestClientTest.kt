@@ -34,12 +34,23 @@ class QrLoginRestClientTest : BaseUnitTest() {
 
     private lateinit var client: QrLoginRestClient
 
+    private val fakeDeviceInfoProvider = object : QrLoginDeviceInfoProvider() {
+        override fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
+            os = "Android",
+            osVersion = "14",
+            model = "Pixel 8 Pro",
+            brand = "google",
+            appVersion = "24.7.0",
+        )
+    }
+
     @Before
     fun setUp() {
         client = QrLoginRestClient(
             okHttpClient = okHttpClient,
             gson = Gson(),
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            deviceInfoProvider = fakeDeviceInfoProvider,
         )
     }
 
@@ -68,15 +79,38 @@ class QrLoginRestClientTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given exchange call, when executed, then request is POST with JSON token body`() = testBlocking {
+    fun `given exchange call, when executed, then request is POST with JSON body containing the token`() = testBlocking {
         client.exchange("https://store.example", "tok-42")
 
         val request = requireNotNull(lastRequest)
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.body?.contentType()?.toString()).startsWith("application/json")
         val buffer = Buffer().also { requireNotNull(request.body).writeTo(it) }
-        assertThat(buffer.readUtf8()).isEqualTo("""{"token":"tok-42"}""")
+        val body = buffer.readUtf8()
+        // The body now also carries a `device` object alongside the token; assert
+        // on the token field shape rather than the full string so future device
+        // payload tweaks don't break this test.
+        assertThat(body).contains(""""token":"tok-42"""")
     }
+
+    @Test
+    fun `given exchange call, when executed, then JSON body includes device metadata from the provider`() =
+        testBlocking {
+            client.exchange("https://store.example", "tok-42")
+
+            val request = requireNotNull(lastRequest)
+            val body = Buffer().also { requireNotNull(request.body).writeTo(it) }.readUtf8()
+            val parsed = Gson().fromJson(body, com.google.gson.JsonObject::class.java)
+            val device = requireNotNull(parsed.getAsJsonObject("device")) {
+                "Exchange request must include a `device` object alongside the token."
+            }
+
+            assertThat(device.get("os").asString).isEqualTo("Android")
+            assertThat(device.get("os_version").asString).isEqualTo("14")
+            assertThat(device.get("model").asString).isEqualTo("Pixel 8 Pro")
+            assertThat(device.get("brand").asString).isEqualTo("google")
+            assertThat(device.get("app_version").asString).isEqualTo("24.7.0")
+        }
 
     @Test
     fun `given 401, when exchange, then TokenRejected`() = testBlocking {
