@@ -142,9 +142,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private fun handleActionClicked(action: OrderAction) {
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> {
-                // Handled at the composable level via navigation
-            }
+            is OrderAction.IssueRefund -> Unit
         }
     }
 
