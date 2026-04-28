@@ -787,26 +787,26 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given content loaded, when IssueRefund action clicked, then issue refund dialog is shown`() =
+    fun `given content loaded, when IssueRefund action clicked, then navigation event is emitted`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            // WHEN
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                    )
                 )
-            )
-            advanceUntilIdle()
+                advanceUntilIdle()
 
-            // THEN
-            val state = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(state.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
-            val dialogState = state.dialogState as WooPosBookingsState.Content.DialogState.IssueRefund
-            assertThat(dialogState.orderId).isEqualTo(10L)
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
+                assertThat((event as WooPosNavigationEvent.OpenIssueRefund).orderId).isEqualTo(10L)
+            }
         }
 
     @Test
@@ -840,30 +840,20 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed, then dialog is hidden`() =
+    fun `when onIssueRefundDialogDismissed, then selected booking is refreshed`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
-
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
-            advanceUntilIdle()
-            val state = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(state.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
 
             // WHEN
             viewModel.onIssueRefundDialogDismissed()
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(updatedState.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.Hidden::class.java)
+            verify(bookingsRepository).fetchBooking(bookingId)
         }
 
     @Test
@@ -1106,17 +1096,10 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given IssueRefund dialog dismissed, when refreshing, then pullToRefreshState stays Enabled`() =
+    fun `when onIssueRefundDialogDismissed, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
             advanceUntilIdle()
 
             // WHEN
@@ -1185,20 +1168,13 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `when issue refund dialog dismissed, then single booking is fetched instead of full refresh`() =
+    fun `when issue refund dismissed, then single booking is fetched instead of full refresh`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
             val content = viewModel.state.value as WooPosBookingsState.Content
             val bookingId = content.selectedDetails!!.id
-
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
-            advanceUntilIdle()
 
             // WHEN
             viewModel.onIssueRefundDialogDismissed()

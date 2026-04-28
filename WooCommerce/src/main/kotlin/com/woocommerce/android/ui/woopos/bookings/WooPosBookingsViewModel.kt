@@ -413,10 +413,7 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onIssueRefundDialogDismissed() {
-        val currentState = _state.value as? WooPosBookingsState.Content ?: return
-        _state.value = currentState.copy(
-            dialogState = WooPosBookingsState.Content.DialogState.Hidden
-        )
+        if (_state.value !is WooPosBookingsState.Content) return
         selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
@@ -552,13 +549,12 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
-                viewModelScope.launch { analyticsTracker.trackIssueRefundTapped() }
-                val currentState = _state.value as? WooPosBookingsState.Content ?: return
-                _state.value = currentState.copy(
-                    dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(
-                        orderId = action.orderId
+                viewModelScope.launch {
+                    analyticsTracker.trackIssueRefundTapped()
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenIssueRefund(orderId = action.orderId)
                     )
-                )
+                }
             }
             is WooPosBookingsState.BookingAction.CancelBooking -> {
                 showCancelConfirmationDialog(action.bookingId)

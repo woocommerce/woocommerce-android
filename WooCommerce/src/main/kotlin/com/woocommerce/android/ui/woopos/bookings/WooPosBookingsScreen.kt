@@ -148,7 +148,6 @@ fun WooPosBookingsScreen(
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
-        onNavigationEvent = onNavigationEvent,
     )
 }
 
@@ -164,7 +163,6 @@ private fun WooPosBookingsScreen(
     onPaginationErrorTryAgain: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     BackHandler { onBackClicked() }
 
@@ -201,18 +199,6 @@ private fun WooPosBookingsScreen(
                 .fillMaxWidth()
                 .statusBarsPadding()
         )
-
-        if (state is WooPosBookingsState.Content) {
-            val dialogState = state.dialogState
-
-            if (dialogState is WooPosBookingsState.Content.DialogState.IssueRefund) {
-                LaunchedEffect(dialogState.orderId) {
-                    onNavigationEvent(
-                        WooPosNavigationEvent.OpenIssueRefund(dialogState.orderId)
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -686,7 +672,6 @@ fun WooPosBookingsScreenPreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onNavigationEvent = {}
         )
     }
 }
@@ -719,7 +704,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onNavigationEvent = {}
         )
     }
 }
