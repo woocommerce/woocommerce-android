@@ -133,7 +133,7 @@ fun WooPosBookingsScreen(
 
     LaunchedEffect(issueRefundDismissed.value) {
         if (issueRefundDismissed.value) {
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
         }
     }

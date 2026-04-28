@@ -580,7 +580,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
+    fun `given non-content state, when onBackFromIssueRefund, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
@@ -591,7 +591,7 @@ class WooPosBookingsViewModelTest {
         val beforeState = viewModel.state.value
 
         // WHEN
-        viewModel.onIssueRefundDialogDismissed()
+        viewModel.onBackFromIssueRefund()
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(beforeState)
@@ -840,7 +840,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `when onIssueRefundDialogDismissed, then selected booking is refreshed`() =
+    fun `when onBackFromIssueRefund, then selected booking is refreshed`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
@@ -849,7 +849,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN
@@ -1096,14 +1096,14 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `when onIssueRefundDialogDismissed, then pullToRefreshState stays Enabled`() =
+    fun `when onBackFromIssueRefund, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
 
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN
@@ -1177,7 +1177,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN

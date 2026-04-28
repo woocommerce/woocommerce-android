@@ -412,7 +412,7 @@ class WooPosBookingsViewModel @Inject constructor(
         clipboardHelper.copyToClipboard(text)
     }
 
-    fun onIssueRefundDialogDismissed() {
+    fun onBackFromIssueRefund() {
         if (_state.value !is WooPosBookingsState.Content) return
         selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
