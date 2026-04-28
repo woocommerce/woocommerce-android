@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.login.qrlogin
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -195,13 +194,17 @@ class QrLoginScannerFragment : Fragment() {
     }
 
     /**
-     * Open the wp.com magic-login URL via [Intent.ACTION_VIEW]. The system routes it (typically
-     * to Chrome), wp.com 3xx-redirects to `woocommerce://magic-login`, and the existing
-     * intent-filter on `MagicLinkInterceptActivity` picks it up — same end-to-end path as a
-     * 3rd-party scanner.
+     * Hand the wp.com magic-login URL off to the browser. wp.com 3xx-redirects to
+     * `woocommerce://magic-login`, and the existing intent-filter on `MagicLinkInterceptActivity`
+     * picks it up — same end-to-end path as a 3rd-party scanner.
+     *
+     * [ChromeCustomTabUtils.launchUrl] handles the no-browser edge case for us: it falls back to
+     * a plain external launch and shows a toast on `ActivityNotFoundException`, so we don't need
+     * a try/catch here. Custom Tabs forward non-http schemes (here, the redirect target
+     * `woocommerce://magic-login`) to the OS as Intents, so the deeplink still fires.
      */
     private fun openWpComMagicLinkUrl(url: String) {
         scannerViewModel.stopCodesRecognition()
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 }
