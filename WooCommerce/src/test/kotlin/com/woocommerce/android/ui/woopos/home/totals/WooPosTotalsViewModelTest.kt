@@ -1965,7 +1965,7 @@ class WooPosTotalsViewModelTest {
                 )
             )
             whenever(remoteReaderSession.state).thenReturn(remoteState)
-            whenever(remoteReaderPaymentFlow.collect(any()))
+            whenever(remoteReaderPaymentFlow.collect(any(), any()))
                 .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
             val vm = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -1977,7 +1977,7 @@ class WooPosTotalsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any())
+            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any())
         }
 
     private fun simulatedRemoteReader() =

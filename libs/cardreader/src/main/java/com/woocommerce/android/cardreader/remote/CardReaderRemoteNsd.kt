@@ -175,26 +175,19 @@ internal class CardReaderRemoteNsd(
 
     private fun NsdServiceInfo.toResolvedHost(): CardReaderRemoteResolvedHost? {
         val version = attributes[TXT_KEY_VERSION]?.toString(Charsets.UTF_8)
-        if (version != PROTOCOL_VERSION) {
-            Log.w(TAG, "Dropping NSD service with unsupported version: $version")
-            return null
-        }
         val fingerprint = attributes[TXT_KEY_FINGERPRINT]?.toString(Charsets.UTF_8)
-        if (fingerprint.isNullOrEmpty()) {
-            Log.w(TAG, "Dropping NSD service without fingerprint TXT record")
-            return null
-        }
         val host = firstHost()
-        if (host == null) {
-            Log.w(TAG, "Dropping NSD service without resolved host: $serviceName")
+        val siteId = attributes[TXT_KEY_SITE_ID]?.toString(Charsets.UTF_8)?.toLongOrNull()
+        val isValid = version == PROTOCOL_VERSION && !fingerprint.isNullOrEmpty() && host != null && siteId != null
+        if (!isValid) {
+            Log.w(
+                TAG,
+                "Dropping NSD service $serviceName " +
+                    "(version=$version, fingerprintLen=${fingerprint?.length ?: 0}, host=$host, siteId=$siteId)"
+            )
             return null
         }
         val deviceName = attributes[TXT_KEY_DEVICE_NAME]?.toString(Charsets.UTF_8)
-        val siteId = attributes[TXT_KEY_SITE_ID]?.toString(Charsets.UTF_8)?.toLongOrNull()
-        if (siteId == null) {
-            Log.w(TAG, "Dropping NSD service without siteId TXT record: $serviceName")
-            return null
-        }
         return CardReaderRemoteResolvedHost(
             name = serviceName,
             host = host,
