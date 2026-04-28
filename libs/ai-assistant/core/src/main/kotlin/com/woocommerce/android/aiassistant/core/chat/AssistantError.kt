@@ -19,7 +19,7 @@ sealed class AssistantError {
     data object UpstreamFailure : AssistantError()
     data class ToolFailed(val toolName: String, val cause: Throwable? = null) : AssistantError()
     data class InvalidToolCall(val toolName: String) : AssistantError()
-    data object OutcomeUnknown : AssistantError()
+    data class OutcomeUnknown(val toolName: String) : AssistantError()
     data object Cancelled : AssistantError()
     data class Unknown(val cause: Throwable? = null) : AssistantError()
 }

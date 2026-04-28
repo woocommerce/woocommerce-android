@@ -14,7 +14,7 @@ class AssistantErrorTest {
             AssistantError.UpstreamFailure,
             AssistantError.ToolFailed(toolName = "create_order"),
             AssistantError.InvalidToolCall(toolName = "create_order"),
-            AssistantError.OutcomeUnknown,
+            AssistantError.OutcomeUnknown(toolName = "create_order"),
             AssistantError.Cancelled,
             AssistantError.Unknown(),
         )
@@ -25,12 +25,19 @@ class AssistantErrorTest {
 
     @Test
     fun `given OutcomeUnknown, when compared to Network and Timeout, then it is a distinct type`() {
-        val outcomeUnknown: AssistantError = AssistantError.OutcomeUnknown
+        val outcomeUnknown: AssistantError = AssistantError.OutcomeUnknown(toolName = "create_order")
 
         assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network)
         assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Timeout)
         assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Network::class)
         assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Timeout::class)
+    }
+
+    @Test
+    fun `given OutcomeUnknown, when constructed, then carries tool name`() {
+        val error = AssistantError.OutcomeUnknown(toolName = "create_order")
+
+        assertThat(error.toolName).isEqualTo("create_order")
     }
 
     @Test
