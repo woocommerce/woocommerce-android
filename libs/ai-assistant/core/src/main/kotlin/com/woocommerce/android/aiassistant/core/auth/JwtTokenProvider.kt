@@ -16,9 +16,9 @@ interface JwtTokenProvider {
 
 /**
  * Raised by [JwtTokenProvider] implementations when a JWT cannot be obtained.
- * [com.woocommerce.android.aiassistant.core.chat.ChatService] maps this to
- * [com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind.AUTH] before
- * surfacing it to the loop.
+ * The chat service maps this to [com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind.AUTH]
+ * at the stream layer; [com.woocommerce.android.aiassistant.core.chat.toAssistantError] maps it to
+ * [com.woocommerce.android.aiassistant.core.chat.AssistantError.Auth] at the loop layer.
  */
 class AssistantAuthException(
     message: String = "Failed to obtain Jetpack AI JWT",
