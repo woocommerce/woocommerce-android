@@ -390,6 +390,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
         if (lastKnownReader != null) {
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
+            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
             return
@@ -398,6 +399,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownPhone = findLastKnownPhone(phones)
         if (lastKnownPhone != null) {
             logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
+            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
             tracker.trackAutoConnectionStarted()
             onPhoneConnectClicked(lastKnownPhone)
             return
@@ -515,6 +517,7 @@ class WooPosCardReaderConnectionController(
 
     private fun connectToReader(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
         selectedReader = reader
         _state.value = WooPosCardReaderConnectionState.Connecting
 
