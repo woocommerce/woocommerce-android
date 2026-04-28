@@ -99,6 +99,7 @@ class WooPosRemoteReaderSession @Inject constructor(
             port = reader.port,
             fingerprintBase64 = reader.fingerprintBase64,
             deviceName = reader.name,
+            siteId = reader.siteId,
         )
         return when (val outcome = newClient.connect(discovered, token, locationId)) {
             is ConnectOutcome.Success -> State.Connected(reader, outcome.readerSerial)

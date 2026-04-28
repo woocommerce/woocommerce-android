@@ -35,6 +35,7 @@ class WooPosRemoteReaderDiscovery @Inject constructor(
                         host = event.reader.host,
                         port = event.reader.port,
                         fingerprintBase64 = event.reader.fingerprintBase64,
+                        siteId = event.reader.siteId,
                     )
                 )
                 is RemoteReaderDiscoveryEvent.Removed -> WooPosPhoneDiscoveryEvent.Removed(event.name)

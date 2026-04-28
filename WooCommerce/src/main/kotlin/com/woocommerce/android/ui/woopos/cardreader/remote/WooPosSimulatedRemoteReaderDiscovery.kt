@@ -24,6 +24,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor() : WooPosPhoneDi
                 host = InetAddress.getLoopbackAddress(),
                 port = 9000,
                 fingerprintBase64 = "SIM1",
+                siteId = null,
                 isSimulated = true,
             ),
             WooPosDiscoveredReader.Phone(
@@ -31,6 +32,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor() : WooPosPhoneDi
                 host = InetAddress.getLoopbackAddress(),
                 port = 9001,
                 fingerprintBase64 = "SIM2",
+                siteId = null,
                 isSimulated = true,
             ),
         )

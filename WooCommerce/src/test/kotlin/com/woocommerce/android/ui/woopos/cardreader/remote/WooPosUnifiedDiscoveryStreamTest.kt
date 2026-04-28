@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -17,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import java.net.InetAddress
 
 @ExperimentalCoroutinesApi
@@ -25,6 +27,9 @@ class WooPosUnifiedDiscoveryStreamTest {
     private val remoteDiscovery: WooPosRemoteReaderDiscovery = mock()
     private val simulatedRemoteDiscovery: WooPosSimulatedRemoteReaderDiscovery = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { getOrNull() }.thenReturn(SiteModel().apply { siteId = TABLET_SITE_ID })
+    }
     private val logger: WooPosLogWrapper = mock()
 
     private val types: CardReaderTypesToDiscover = ExternalReaders(listOf(Chipper2X))
@@ -49,6 +54,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             remoteDiscovery,
             simulatedRemoteDiscovery,
             featureFlagRepository,
+            selectedSite,
             logger,
         )
 
@@ -80,6 +86,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             remoteDiscovery,
             simulatedRemoteDiscovery,
             featureFlagRepository,
+            selectedSite,
             logger,
         )
 
@@ -116,6 +123,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             remoteDiscovery,
             simulatedRemoteDiscovery,
             featureFlagRepository,
+            selectedSite,
             logger,
         )
 
@@ -130,10 +138,72 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
     }
 
-    private fun phone(name: String) = WooPosDiscoveredReader.Phone(
+    @Test
+    fun `given phone advertises different siteId, when discovered, then phone is not surfaced`() = runTest {
+        // GIVEN
+        whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+            flowOf(CardReaderDiscoveryEvents.Started)
+        )
+        val mismatchedPhone = phone(name = "Pixel 7", siteId = OTHER_SITE_ID)
+        whenever(remoteDiscovery.discover()).thenReturn(
+            flowOf(WooPosPhoneDiscoveryEvent.Added(mismatchedPhone))
+        )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            featureFlagRepository,
+            selectedSite,
+            logger,
+        )
+
+        // WHEN / THEN
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `given phone advertises matching siteId, when discovered, then phone is surfaced`() = runTest {
+        // GIVEN
+        whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+            flowOf(CardReaderDiscoveryEvents.Started)
+        )
+        val matchingPhone = phone(name = "Pixel 7", siteId = TABLET_SITE_ID)
+        whenever(remoteDiscovery.discover()).thenReturn(
+            flowOf(WooPosPhoneDiscoveryEvent.Added(matchingPhone))
+        )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            featureFlagRepository,
+            selectedSite,
+            logger,
+        )
+
+        // WHEN / THEN
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+            val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+            assertThat(found.readers).containsExactly(matchingPhone)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun phone(name: String, siteId: Long? = TABLET_SITE_ID) = WooPosDiscoveredReader.Phone(
         name = name,
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
         fingerprintBase64 = "AB4F",
+        siteId = siteId,
     )
+
+    private companion object {
+        const val TABLET_SITE_ID = 123L
+        const val OTHER_SITE_ID = 456L
+    }
 }
