@@ -69,9 +69,9 @@ class CardReaderRemoteSession internal constructor(
     private var connection: CardReaderRemoteConnection? = null
     private var readerWasConnected: Boolean = false
     private var useSimulatedReader: Boolean = false
-    private var siteId: Long? = null
+    private var siteId: Long = 0L
 
-    fun start(parentScope: CoroutineScope, isSimulated: Boolean = false, siteId: Long? = null) {
+    fun start(parentScope: CoroutineScope, isSimulated: Boolean = false, siteId: Long) {
         useSimulatedReader = isSimulated
         this.siteId = siteId
         startInternal(parentScope)

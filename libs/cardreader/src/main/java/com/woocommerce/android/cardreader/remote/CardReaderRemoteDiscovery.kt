@@ -26,7 +26,7 @@ data class DiscoveredRemoteReader(
     val port: Int,
     val fingerprintBase64: String,
     val deviceName: String?,
-    val siteId: Long?,
+    val siteId: Long,
 )
 
 internal class DefaultCardReaderRemoteDiscovery(

@@ -10,7 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,20 +27,17 @@ class WooPosRemoteReaderDiscovery @Inject constructor(
     private val remoteDiscovery: CardReaderRemoteDiscovery,
 ) : WooPosPhoneDiscoverySource {
     override fun discover(): Flow<WooPosPhoneDiscoveryEvent> =
-        remoteDiscovery.discover().mapNotNull { event ->
+        remoteDiscovery.discover().map { event ->
             when (event) {
-                is RemoteReaderDiscoveryEvent.Added -> {
-                    val siteId = event.reader.siteId ?: return@mapNotNull null
-                    WooPosPhoneDiscoveryEvent.Added(
-                        WooPosDiscoveredReader.Phone(
-                            name = event.reader.deviceName?.takeIf { it.isNotBlank() } ?: event.reader.name,
-                            host = event.reader.host,
-                            port = event.reader.port,
-                            fingerprintBase64 = event.reader.fingerprintBase64,
-                            siteId = siteId,
-                        )
+                is RemoteReaderDiscoveryEvent.Added -> WooPosPhoneDiscoveryEvent.Added(
+                    WooPosDiscoveredReader.Phone(
+                        name = event.reader.deviceName?.takeIf { it.isNotBlank() } ?: event.reader.name,
+                        host = event.reader.host,
+                        port = event.reader.port,
+                        fingerprintBase64 = event.reader.fingerprintBase64,
+                        siteId = event.reader.siteId,
                     )
-                }
+                )
                 is RemoteReaderDiscoveryEvent.Removed -> WooPosPhoneDiscoveryEvent.Removed(event.name)
             }
         }

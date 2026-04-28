@@ -33,7 +33,7 @@ internal class CardReaderRemoteNsd(
         port: Int,
         fingerprint: String,
         deviceName: String,
-        siteId: Long?,
+        siteId: Long,
     ): CardReaderRemoteNsdRegistration =
         withContext(ioDispatcher) {
             val serviceInfo = NsdServiceInfo().apply {
@@ -43,9 +43,7 @@ internal class CardReaderRemoteNsd(
                 setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
                 setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
                 setAttribute(TXT_KEY_DEVICE_NAME, deviceName)
-                if (siteId != null) {
-                    setAttribute(TXT_KEY_SITE_ID, siteId.toString())
-                }
+                setAttribute(TXT_KEY_SITE_ID, siteId.toString())
             }
 
             val listener = object : NsdManager.RegistrationListener {
@@ -193,6 +191,10 @@ internal class CardReaderRemoteNsd(
         }
         val deviceName = attributes[TXT_KEY_DEVICE_NAME]?.toString(Charsets.UTF_8)
         val siteId = attributes[TXT_KEY_SITE_ID]?.toString(Charsets.UTF_8)?.toLongOrNull()
+        if (siteId == null) {
+            Log.w(TAG, "Dropping NSD service without siteId TXT record: $serviceName")
+            return null
+        }
         return CardReaderRemoteResolvedHost(
             name = serviceName,
             host = host,
@@ -250,7 +252,7 @@ internal data class CardReaderRemoteResolvedHost(
     val fingerprintBase64: String,
     val version: String,
     val deviceName: String?,
-    val siteId: Long?,
+    val siteId: Long,
 )
 
 internal sealed class CardReaderRemoteNsdEvent {

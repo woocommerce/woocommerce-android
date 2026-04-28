@@ -60,6 +60,7 @@ class CardReaderModeViewModel @Inject constructor(
 
     private fun startSessionIfNeeded() {
         if (sessionStarted) return
+        val siteId = selectedSite.getOrNull()?.siteId ?: return
         sessionStarted = true
 
         if (!cardReaderManager.initialized) {
@@ -77,7 +78,7 @@ class CardReaderModeViewModel @Inject constructor(
         session.start(
             parentScope = viewModelScope,
             isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-            siteId = selectedSite.getOrNull()?.siteId,
+            siteId = siteId,
         )
     }
 
