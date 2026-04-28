@@ -1,9 +1,13 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
+@JsonClassDiscriminator("role")
 internal sealed interface OpenAiMessage {
     @Serializable
     @SerialName("system")
