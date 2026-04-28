@@ -81,10 +81,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.Currency
 import kotlin.reflect.KMutableProperty0
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
-private const val CANADA_FEE_FLAT_IN_CENTS = 15L
+
+// The base Canada fee and percentage are overwritten by Transact Server at the capture
+// step for non-Interac payments. Interac payments have no capture step, so the full
+// combined fee (base + Interac + percentage) is what Stripe charges.
+private const val CANADA_FEE_FLAT_IN_CENTS = 5L
+private const val INTERAC_FEE_FLAT_IN_CENTS = 15L
+private val CANADA_FEE_PERCENTAGE = BigDecimal("0.027")
 
 @Suppress("LongParameterList", "LargeClass")
 class CardReaderPaymentController(
@@ -291,7 +300,7 @@ class CardReaderPaymentController(
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
                 countryCode = countryCode,
-                feeAmount = calculateFeeInCents(countryCode),
+                feeAmount = calculateFeeInCents(countryCode, order.total, order.currency),
                 channel = determinePaymentChannel(paymentOrRefund)
             )
         ).collect { paymentStatus ->
@@ -852,9 +861,15 @@ class CardReaderPaymentController(
         }
     }
 
-    private fun calculateFeeInCents(countryCode: String) =
+    private fun calculateFeeInCents(countryCode: String, orderTotal: BigDecimal, currencyCode: String): Long? =
         if (countryCode == "CA") {
-            CANADA_FEE_FLAT_IN_CENTS
+            val fractionDigits = Currency.getInstance(currencyCode).defaultFractionDigits
+            val percentageInCents = orderTotal
+                .multiply(CANADA_FEE_PERCENTAGE)
+                .movePointRight(fractionDigits)
+                .setScale(0, RoundingMode.HALF_UP)
+                .toLong()
+            percentageInCents + CANADA_FEE_FLAT_IN_CENTS + INTERAC_FEE_FLAT_IN_CENTS
         } else {
             null
         }
