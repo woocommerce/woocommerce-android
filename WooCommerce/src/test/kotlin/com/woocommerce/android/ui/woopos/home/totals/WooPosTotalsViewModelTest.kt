@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -73,6 +74,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -124,6 +126,10 @@ class WooPosTotalsViewModelTest {
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock {
+        on { invoke() } doReturn false
+    }
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -144,6 +150,7 @@ class WooPosTotalsViewModelTest {
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        cardReaderFacade = cardReaderFacade,
     )
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
@@ -155,7 +162,6 @@ class WooPosTotalsViewModelTest {
         )
     }
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
@@ -2093,5 +2099,6 @@ class WooPosTotalsViewModelTest {
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
+        isTapToPayAvailable = isTapToPayAvailable,
     )
 }

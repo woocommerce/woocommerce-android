@@ -92,6 +92,10 @@ class WooPosCardReaderOnboardingActivity : AppCompatActivity(R.layout.activity_w
                 return
             }
 
+        val cardReaderType = intent.getStringExtra(KEY_READER_TYPE)
+            ?.let { runCatching { CardReaderType.valueOf(it) }.getOrNull() }
+            ?: CardReaderType.EXTERNAL
+
         graph.setStartDestination(R.id.cardReaderOnboardingFragment)
         navController.setGraph(
             graph,
@@ -100,7 +104,7 @@ class WooPosCardReaderOnboardingActivity : AppCompatActivity(R.layout.activity_w
                     cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
                     onboardingState = onboardingState
                 ),
-                cardReaderType = CardReaderType.EXTERNAL
+                cardReaderType = cardReaderType
             ).toBundle()
         )
     }
@@ -108,10 +112,16 @@ class WooPosCardReaderOnboardingActivity : AppCompatActivity(R.layout.activity_w
     companion object {
         const val WOO_POS_CARD_ONBOARDING_REQUEST_KEY = "woo_pos_card_onboarding_request"
         private const val KEY_ONBOARDING_STATE = "key_onboarding_state"
+        private const val KEY_READER_TYPE = "key_reader_type"
 
-        fun buildIntent(context: Context, onboardingState: CardReaderOnboardingState): Intent {
+        fun buildIntent(
+            context: Context,
+            onboardingState: CardReaderOnboardingState,
+            cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
+        ): Intent {
             return Intent(context, WooPosCardReaderOnboardingActivity::class.java).apply {
                 putExtra(KEY_ONBOARDING_STATE, onboardingState)
+                putExtra(KEY_READER_TYPE, cardReaderType.name)
             }
         }
     }

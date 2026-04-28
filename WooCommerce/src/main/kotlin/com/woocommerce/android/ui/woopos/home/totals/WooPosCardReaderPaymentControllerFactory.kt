@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -47,6 +47,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val cardReaderFacade: WooPosCardReaderFacade,
 ) {
     fun create(
         orderId: Long,
@@ -77,7 +78,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
             orderId = orderId,
             paymentType = paymentType
         ),
-        cardReaderType = CardReaderType.EXTERNAL,
+        cardReaderType = cardReaderFacade.getConnectedReaderType(),
         isTTPPaymentInProgress = isTTPPaymentInProgress,
         allowCancelledStatus = allowCancelledStatus,
     )

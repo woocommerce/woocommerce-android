@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -177,12 +178,19 @@ private fun TotalsLoaded(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
 ) {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        if (isPhone) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_checkout_button),
+                onBackClicked = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
+            )
+        }
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -198,7 +206,12 @@ private fun TotalsLoaded(
             ) {
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                        if (readerStatus.isTapToPayAvailable) {
+                            // Don't show fullscreen disconnected error; payment method
+                            // buttons are rendered below the totals grid instead.
+                        } else {
+                            ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                        }
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
                         PreparingReader(
@@ -241,15 +254,98 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+        val readerStatus = state.readerStatus
+        val isDisconnectedWithTtp = readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected &&
+            readerStatus.isTapToPayAvailable
+
+        val buttonPadding = if (isPhone) {
+            Modifier.padding(WooPosSpacing.Large.value)
+        } else {
+            Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+        }
+        if (isDisconnectedWithTtp) {
+            PaymentMethodList(
+                isTapToPayAvailable = true,
+                onUIEvent = onUIEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(buttonPadding)
+                    .navigationBarsPadding()
+            )
+        } else {
+            PaymentButtons(
+                isTapToPayAvailable = state.isTapToPayAvailable,
+                onUIEvent = onUIEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(buttonPadding)
+                    .navigationBarsPadding()
+            )
+        }
+    }
+}
+
+@Composable
+private fun PaymentMethodList(
+    isTapToPayAvailable: Boolean,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+    ) {
+        WooPosOutlinedButton(
+            text = stringResource(R.string.woopos_payment_card_reader_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (isTapToPayAvailable) {
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_payment_tap_to_pay_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         WooPosOutlinedButton(
             text = stringResource(R.string.woopos_payment_take_cash_payment_label),
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .then(if (isPhone) Modifier.padding(WooPosSpacing.Large.value) else Modifier)
-                .navigationBarsPadding()
                 .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+        )
+    }
+}
+
+@Composable
+private fun PaymentButtons(
+    isTapToPayAvailable: Boolean,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (isTapToPayAvailable) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        ) {
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_payment_tap_to_pay_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+            )
+        }
+    } else {
+        WooPosOutlinedButton(
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+            modifier = modifier.testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )
     }
 }

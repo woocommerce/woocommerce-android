@@ -18,6 +18,7 @@ sealed class WooPosNavigationEvent {
         val orderId: Long,
         val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
         val showCashPaymentButton: Boolean = false,
+        val readerType: String = "EXTERNAL",
     ) : WooPosNavigationEvent()
     data class OpenEmailReceipt(
         val orderId: Long,
@@ -42,6 +43,8 @@ sealed class WooPosNavigationEvent {
         val orderId: Long,
         val source: PaymentSuccessSource,
     ) : WooPosNavigationEvent()
+    data object EnsureLocationPermission : WooPosNavigationEvent()
+    data object CheckLocationEnabled : WooPosNavigationEvent()
     data class OpenWebView(
         val url: String,
         val title: String = "",

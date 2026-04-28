@@ -26,6 +26,11 @@ sealed class WooPosCardPaymentState {
         ) : Collecting()
     }
 
+    data class ConnectingTapToPay(
+        val title: String,
+        val subtitle: String,
+    ) : WooPosCardPaymentState()
+
     data class PaymentInProgress(
         val title: String,
         val subtitle: String,

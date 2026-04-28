@@ -3773,6 +3773,12 @@
     <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
     <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Connect to reader</string>
+    <string name="woopos_payment_card_reader_label">Card reader</string>
+    <string name="woopos_payment_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_tap_to_pay_connecting_title">Setting up Tap to Pay</string>
+    <string name="woopos_tap_to_pay_connecting_subtitle">Preparing your device for payment</string>
+    <string name="woopos_tap_to_pay_location_permission_required">Location permission is required to use Tap to Pay</string>
+    <string name="woopos_tap_to_pay_enable_location">Please enable location services to use Tap to Pay</string>
     <string name="woopos_totals_reader_getting_ready">Getting ready</string>
     <string name="woopos_totals_reader_checking_order">Checking order</string>
     <string name="woopos_totals_reader_preparing_reader_for_payment">Preparing reader for payment</string>

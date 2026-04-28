@@ -34,7 +34,7 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
 
         is WooPosNavigationEvent.OpenCardPayment ->
-            navigateToCardPaymentScreen(event.orderId, event.source, event.showCashPaymentButton)
+            navigateToCardPaymentScreen(event.orderId, event.source, event.showCashPaymentButton, event.readerType)
 
         is WooPosNavigationEvent.GoBackWithResult -> {
             previousBackStackEntry
@@ -94,5 +94,8 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenWebView ->
             navigateToWebViewScreen(event.url, event.title)
+
+        WooPosNavigationEvent.EnsureLocationPermission,
+        WooPosNavigationEvent.CheckLocationEnabled -> Unit
     }
 }

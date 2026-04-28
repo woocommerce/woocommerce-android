@@ -1,6 +1,11 @@
 package com.woocommerce.android.ui.woopos.cardpayment
 
+import android.Manifest
+import android.location.LocationManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.fadeIn
@@ -66,9 +71,37 @@ fun WooPosCardPaymentScreen(
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            viewModel.onLocationPermissionGranted()
+        } else {
+            viewModel.onLocationPermissionDenied()
+        }
+    }
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { onNavigationEvent(it) }
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is WooPosNavigationEvent.EnsureLocationPermission -> {
+                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+                is WooPosNavigationEvent.CheckLocationEnabled -> {
+                    val locationManager = context.getSystemService(LocationManager::class.java)
+                    val isEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
+                        locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+                    if (isEnabled) {
+                        viewModel.onLocationEnabled()
+                    } else {
+                        viewModel.onLocationDisabled()
+                    }
+                }
+                else -> onNavigationEvent(event)
+            }
+        }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -110,6 +143,12 @@ private fun WooPosCardPaymentScreenContent(
     Box(modifier = Modifier.fillMaxSize()) {
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Initiating) {
             CardPaymentInitiating()
+        }
+
+        StateChangeAnimated(visible = state is WooPosCardPaymentState.ConnectingTapToPay) {
+            if (state is WooPosCardPaymentState.ConnectingTapToPay) {
+                CardPaymentConnectingTapToPay(state = state, onBackClicked = onBackClicked)
+            }
         }
 
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Collecting.Preparing) {
@@ -183,6 +222,48 @@ private fun CardPaymentInitiating() {
         contentAlignment = Alignment.Center,
     ) {
         WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
+    }
+}
+
+@Composable
+private fun CardPaymentConnectingTapToPay(
+    state: WooPosCardPaymentState.ConnectingTapToPay,
+    onBackClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        WooPosToolbar(
+            titleText = state.title,
+            onBackClicked = onBackClicked,
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+                WooPosText(
+                    text = state.title,
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+                WooPosText(
+                    text = state.subtitle,
+                    style = WooPosTypography.BodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
     }
 }
 
@@ -470,7 +551,10 @@ private fun CardPaymentCenteredLayout(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .defaultMinSize(minHeight = maxHeight)
-                    .padding(vertical = WooPosSpacing.XXXLarge.value),
+                    .padding(
+                        vertical = WooPosSpacing.XXXLarge.value,
+                        horizontal = WooPosSpacing.XLarge.value,
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {

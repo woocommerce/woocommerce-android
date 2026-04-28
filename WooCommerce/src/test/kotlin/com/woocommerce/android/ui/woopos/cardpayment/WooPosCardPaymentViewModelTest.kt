@@ -2,13 +2,17 @@ package com.woocommerce.android.ui.woopos.cardpayment
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
@@ -71,6 +75,10 @@ class WooPosCardPaymentViewModelTest {
     }
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
     private val cardPaymentRepository: WooPosCardPaymentRepository = mock()
+    private val cardReaderManager: CardReaderManager = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val locationRepository: CardReaderLocationRepository = mock()
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val priceFormat: WooPosFormatPrice = mock {
         on { invoke(any<BigDecimal>()) } doReturn "$0.00"
     }
@@ -113,6 +121,11 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            cardReaderManager = cardReaderManager,
+            developerOptionsRepository = developerOptionsRepository,
+            locationRepository = locationRepository,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
+            dispatchers = coroutineTestRule.testDispatchers,
         )
     }
 
@@ -402,6 +415,11 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            cardReaderManager = cardReaderManager,
+            developerOptionsRepository = developerOptionsRepository,
+            locationRepository = locationRepository,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
+            dispatchers = coroutineTestRule.testDispatchers,
         )
         advanceUntilIdle()
 

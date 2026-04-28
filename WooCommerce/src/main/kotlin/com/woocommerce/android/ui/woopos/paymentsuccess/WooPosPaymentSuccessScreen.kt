@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -72,7 +73,8 @@ private fun PaymentSuccessContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright),
+            .background(MaterialTheme.colorScheme.surfaceBright)
+            .padding(horizontal = WooPosSpacing.XLarge.value),
         contentAlignment = Alignment.Center
     ) {
         val hugeSpacing = WooPosSpacing.Huge.value
