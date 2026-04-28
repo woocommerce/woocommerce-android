@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.net.SocketException
 import java.net.SocketTimeoutException
 
 class CardReaderRemoteSession internal constructor(
@@ -102,7 +103,22 @@ class CardReaderRemoteSession internal constructor(
     fun stop() {
         val scope = sessionScope ?: return
         sessionScope = null
+
+        // Capture and clear transport before close so a racing start() can't have its new
+        // resources clobbered by the old session's async cleanupSync().
+        val nsd = nsdRegistration
+        val tls = tlsServer
+        nsdRegistration = null
+        tlsServer = null
+
         scope.cancel()
+
+        // Close synchronously: scope.cancel() does not interrupt the blocking socket.accept()
+        // inside withContext(ioDispatcher), so without an explicit close NSD stays advertising
+        // until ACCEPT_TIMEOUT_MILLIS expires.
+        runCatching { nsd?.close() }
+        runCatching { tls?.close() }
+
         if (readerWasConnected) {
             readerWasConnected = false
             disconnectScope.launch {
@@ -137,6 +153,11 @@ class CardReaderRemoteSession internal constructor(
                 _state.value = readyToPairState(server)
             } catch (e: SocketTimeoutException) {
                 logWrapper.d(LOG_TAG, "Waiting for tablet to connect: ${e.message}")
+            } catch (e: SocketException) {
+                // Server socket was closed externally (typically stop() during shutdown).
+                // Exit the loop gracefully so cleanup runs without an Error state.
+                logWrapper.d(LOG_TAG, "Server socket closed: ${e.message}")
+                return
             }
         }
     }
@@ -311,15 +332,22 @@ class CardReaderRemoteSession internal constructor(
     }
 
     private fun cleanupSync() {
-        runCatching { connection?.close() }
+        // Capture locals first: a racing start() may have already overwritten the fields with
+        // new resources, and we must close only what this session owned.
+        val conn = connection
+        val tokenProv = remoteTokenProvider
+        val nsd = nsdRegistration
+        val tls = tlsServer
         connection = null
-        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
-        runCatching { remoteTokenProvider?.close() }
         remoteTokenProvider = null
-        runCatching { nsdRegistration?.close() }
         nsdRegistration = null
-        runCatching { tlsServer?.close() }
         tlsServer = null
+
+        runCatching { conn?.close() }
+        runCatching { cardReaderManager.connectionTokenProvider.useDefault() }
+        runCatching { tokenProv?.close() }
+        runCatching { nsd?.close() }
+        runCatching { tls?.close() }
         if (readerWasConnected) {
             readerWasConnected = false
             disconnectScope.launch {
