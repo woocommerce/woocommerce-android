@@ -12,7 +12,8 @@ class OrdersUpdateToolHandler @Inject constructor() : StubToolHandler() {
             Update a single order. Accepts only the `status` field.
             Allowed transitions: on-hold -> processing, processing -> completed.
             Cancellation and refund flows are not supported by this tool.
-            At most one write is executed per turn; additional write calls in the same turn will be rejected by the runtime.
+            At most one write is executed per turn;
+            additional write calls in the same turn will be rejected by the runtime.
         """.trimIndent(),
         inputSchema = buildJsonObject { },
         safetyLevel = ToolSafetyLevel.UNSAFE,
