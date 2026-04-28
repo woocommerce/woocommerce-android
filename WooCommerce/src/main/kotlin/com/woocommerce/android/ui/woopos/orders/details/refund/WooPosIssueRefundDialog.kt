@@ -116,24 +116,32 @@ fun WooPosIssueRefundScreen(
 
     val toolbarTitle = resolveToolbarTitle(state)
 
-    Box(
+    val currentState = state
+    val isProcessing = currentState is WooPosRefundState.Content &&
+        currentState.step == WooPosRefundState.Content.RefundStep.Processing
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
+        RefundScreenHeader(
+            title = toolbarTitle,
+            onCloseClicked = { handleDismiss() },
+            closeButtonEnabled = !isProcessing,
+        )
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .weight(1f)
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
                     bottom = WooPosSpacing.XLarge.value,
                 ),
         ) {
-            Spacer(modifier = Modifier.height(WooPosComponentSize.XSmall.value))
-
             AnimatedContent(
                 targetState = state,
                 contentKey = { it::class },
@@ -182,16 +190,6 @@ fun WooPosIssueRefundScreen(
                 onNavigationEvent = onNavigationEvent,
             )
         }
-
-        val currentState = state
-        val isProcessing = currentState is WooPosRefundState.Content &&
-            currentState.step == WooPosRefundState.Content.RefundStep.Processing
-
-        RefundScreenHeader(
-            title = toolbarTitle,
-            onCloseClicked = { handleDismiss() },
-            closeButtonEnabled = !isProcessing,
-        )
     }
 }
 
@@ -228,7 +226,6 @@ private fun RefundScreenHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
             .height(WooPosComponentSize.XSmall.value),
     ) {
         IconButton(
