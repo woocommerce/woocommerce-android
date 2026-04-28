@@ -152,12 +152,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle),
             )
             when (val result = remoteReaderPaymentFlow.collect(order)) {
-                WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                    analyticsTracker.trackRemotePaymentSucceeded()
-                    handlePaymentSuccessful()
-                }
+                WooPosRemoteReaderPaymentFlow.Result.Completed -> handlePaymentSuccessful()
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
-                    analyticsTracker.trackRemotePaymentFailed(result.message)
                     _state.value = WooPosCardPaymentState.PaymentFailed(
                         title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
                         subtitle = result.message,

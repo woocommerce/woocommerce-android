@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardpayment
 
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
-import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentStateAnalyticsTracker
@@ -11,7 +10,6 @@ import javax.inject.Inject
 class WooPosCardPaymentAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val paymentStateTracker: WooPosPaymentStateAnalyticsTracker,
-    private val paymentsFlowTracker: PaymentsFlowTracker,
 ) {
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentStateTracker.trackPaymentStates(paymentState)
@@ -19,13 +17,5 @@ class WooPosCardPaymentAnalyticsTracker @Inject constructor(
 
     suspend fun trackEmailReceiptTapped() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.EmailReceiptTapped)
-    }
-
-    fun trackRemotePaymentSucceeded() {
-        paymentsFlowTracker.trackPaymentSucceeded()
-    }
-
-    fun trackRemotePaymentFailed(message: String) {
-        paymentsFlowTracker.trackPaymentFailed(message)
     }
 }
