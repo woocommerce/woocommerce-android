@@ -86,9 +86,10 @@ json-path = '2.9.0'
 json-smart = '2.6.0'
 junit = '4.13.2'
 lottie = '6.7.1'
-kotlin = '2.3.20'
+kotlin = '2.3.21'
 kotlinx-coroutines = '1.10.2'
-ksp = '2.3.6'
+kotlinx-serialization = '1.11.0'
+ksp = '2.3.7'
 mockito-kotlin = '6.2.3'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
@@ -252,6 +253,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
@@ -259,6 +261,8 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 squareup-javapoet = { module = "com.squareup:javapoet", version.ref = "squareup-javapoet" }
 squareup-leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "squareup-leakcanary" }
 squareup-okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "squareup-okhttp3" }
+squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "squareup-okhttp3" }
+squareup-okhttp3-sse = { module = "com.squareup.okhttp3:okhttp-sse", version.ref = "squareup-okhttp3" }
 squareup-okhttp3-tls = { module = "com.squareup.okhttp3:okhttp-tls", version.ref = "squareup-okhttp3" }
 squareup-okhttp3-urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "squareup-okhttp3" }
 stripe-terminal-taptopay = { group = "com.stripe", name = "stripeterminal-taptopay", version.ref = "stripe-terminal" }
@@ -292,6 +296,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
