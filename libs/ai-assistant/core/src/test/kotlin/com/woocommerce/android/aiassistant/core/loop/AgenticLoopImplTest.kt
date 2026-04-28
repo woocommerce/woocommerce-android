@@ -28,16 +28,21 @@ class AgenticLoopImplTest {
     private val context = SessionContext(siteId = 1L, catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, emptyList()))
     private val history = listOf<AssistantMessage>(AssistantMessage.System("You are a helpful assistant."))
 
+    private fun passThroughBudgeter(): HistoryBudgeter = HistoryBudgeter { system, transcript, user ->
+        BudgetedHistory(messages = listOf(system) + transcript + user)
+    }
+
     private fun loopWith(
         vararg turnResponses: Flow<AssistantEvent>,
         registry: ToolRegistry = NoOpToolRegistry(),
+        budgeter: HistoryBudgeter = passThroughBudgeter(),
     ): AgenticLoopImpl {
         var callCount = 0
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest) =
                 turnResponses[minOf(callCount++, turnResponses.size - 1)]
         }
-        return AgenticLoopImpl(service, registry, ConservativeRetryPolicy, json)
+        return AgenticLoopImpl(service, registry, ConservativeRetryPolicy, budgeter, json)
     }
 
     private fun stubRegistry(
@@ -168,7 +173,7 @@ class AgenticLoopImplTest {
             override suspend fun execute(call: ToolCall) =
                 ToolResult.Success(call.id, structured = structuredPayload, uiStructured = uiOnlyPayload)
         }
-        val loop = AgenticLoopImpl(service, registry, ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, registry, ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
 
@@ -261,7 +266,7 @@ class AgenticLoopImplTest {
                 }
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
@@ -279,7 +284,7 @@ class AgenticLoopImplTest {
                 return flowOf(AssistantEvent.Failed(AssistantErrorKind.AUTH))
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
@@ -298,7 +303,7 @@ class AgenticLoopImplTest {
                 return flowOf(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
@@ -316,7 +321,7 @@ class AgenticLoopImplTest {
                 emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
@@ -333,7 +338,7 @@ class AgenticLoopImplTest {
                 emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
@@ -403,5 +408,59 @@ class AgenticLoopImplTest {
 
         assertThat(events.filterIsInstance<LoopEvent.BlockedBySafety>()).hasSize(1)
         assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
+    }
+
+    @Test
+    fun `given budgeter trims history, when running turn, then model receives only budgeted messages`() = runTest {
+        val bigHistory = listOf(
+            AssistantMessage.System("sys"),
+            AssistantMessage.User("turn 1"),
+            AssistantMessage.Assistant("response 1"),
+            AssistantMessage.User("turn 2"),
+            AssistantMessage.Assistant("response 2"),
+        )
+        val twoMessageBudgeter = HistoryBudgeter { system, _, user ->
+            BudgetedHistory(messages = listOf(system, user))
+        }
+        var capturedMessages: List<AssistantMessage>? = null
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                capturedMessages = request.messages
+                return flowOf(AssistantEvent.TextDelta("Hi"), AssistantEvent.Finish(FinishReason.STOP))
+            }
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, twoMessageBudgeter, json)
+
+        loop.runTurn("conv", "hi", bigHistory, context).toList()
+
+        assertThat(capturedMessages).hasSize(2)
+        assertThat(capturedMessages?.first()).isEqualTo(AssistantMessage.System("sys"))
+        assertThat(capturedMessages?.last()).isEqualTo(AssistantMessage.User("hi"))
+    }
+
+    @Test
+    fun `given budgeter trims history, when running turn, then updatedHistory contains full prior history plus new turn messages`() = runTest {
+        val bigHistory = listOf(
+            AssistantMessage.System("sys"),
+            AssistantMessage.User("turn 1"),
+            AssistantMessage.Assistant("response 1"),
+        )
+        val droppingBudgeter = HistoryBudgeter { system, _, user ->
+            BudgetedHistory(messages = listOf(system, user))
+        }
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
+                flowOf(AssistantEvent.TextDelta("ok"), AssistantEvent.Finish(FinishReason.STOP))
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, droppingBudgeter, json)
+
+        val events = loop.runTurn("conv", "hi", bigHistory, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.updatedHistory).hasSize(bigHistory.size + 2)
+        assertThat(finished.updatedHistory.take(bigHistory.size)).isEqualTo(bigHistory)
+        assertThat(finished.updatedHistory[bigHistory.size]).isEqualTo(AssistantMessage.User("hi"))
+        assertThat(finished.updatedHistory[bigHistory.size + 1])
+            .isEqualTo(AssistantMessage.Assistant(content = "ok", toolCalls = emptyList()))
     }
 }
