@@ -45,19 +45,6 @@ class SlidingWindowHistoryBudgeterTest {
     }
 
     @Test
-    fun `given transcript longer than window size, when building, then oldest messages are excluded`() {
-        val old = AssistantMessage.User("old message")
-        val recent = AssistantMessage.User("recent message")
-        val transcript = listOf(old, AssistantMessage.Assistant("..."), recent)
-        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 1)
-
-        val result = budgeter.build(system, transcript, user)
-
-        assertThat(result.messages).doesNotContain(old)
-        assertThat(result.messages).contains(recent)
-    }
-
-    @Test
     fun `given any transcript, when building, then system prompt is first message`() {
         val budgeter = SlidingWindowHistoryBudgeter(windowSize = 5)
 

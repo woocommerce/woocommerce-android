@@ -3,7 +3,7 @@ package com.woocommerce.android.aiassistant.core.loop
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 
 class SlidingWindowHistoryBudgeter(
-    val windowSize: Int = DEFAULT_WINDOW_SIZE,
+    private val windowSize: Int = DEFAULT_WINDOW_SIZE,
 ) : HistoryBudgeter {
 
     override fun build(
