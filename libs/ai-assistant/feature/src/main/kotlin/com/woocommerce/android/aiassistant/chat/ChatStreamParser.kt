@@ -49,7 +49,12 @@ internal class ChatStreamParser @Inject constructor(
     private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
         val chunk = runCatching { strictJson.decodeFromString<ChatCompletionStreamChunkPayload>(payload) }
             .getOrElse {
-                emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, MalformedChunkException(payload, it)))
+                emit(
+                    AssistantEvent.Failed(
+                        kind = AssistantErrorKind.INVALID_STREAM,
+                        cause = MalformedChunkException(payload, it)
+                    )
+                )
                 return false
             }
 
@@ -58,7 +63,7 @@ internal class ChatStreamParser @Inject constructor(
             true
         }.rethrow<CancellationException, _>()
             .getOrElse {
-                emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, it))
+                emit(AssistantEvent.Failed(kind = AssistantErrorKind.INVALID_STREAM, cause = it))
                 false
             }
     }
