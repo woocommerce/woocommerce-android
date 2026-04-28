@@ -27,5 +27,13 @@ sealed interface QrLoginPayload {
      */
     data object InstallQrCode : QrLoginPayload
 
+    /**
+     * The merchant scanned the canonical wp.com magic-login URL
+     * (`https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=…`).
+     * The scanner opens [url] via `ACTION_VIEW` so the system browser bounces through wp.com —
+     * the same end-to-end path that 3rd-party scanners (Google Lens, etc.) use today.
+     */
+    data class WpComMagicLinkUrl(val url: String) : QrLoginPayload
+
     data object Invalid : QrLoginPayload
 }

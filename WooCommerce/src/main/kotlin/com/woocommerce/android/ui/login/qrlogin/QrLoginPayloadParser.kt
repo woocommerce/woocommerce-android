@@ -18,12 +18,34 @@ import javax.inject.Inject
  * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
  * [okhttp3.HttpUrl] and rejected if it carries userinfo, query, or fragment components — those
  * have no role in a Woo site root and are classic spoofing surfaces in the confirmation prompt.
+ *
+ * Also recognises the WordPress.com magic-login QR
+ * (`https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=…`) and
+ * surfaces it as [QrLoginPayload.WpComMagicLinkUrl] for the scanner to hand off via `ACTION_VIEW`.
  */
 class QrLoginPayloadParser @Inject constructor() {
 
     fun parse(raw: String?): QrLoginPayload {
+        parseWpComMagicLinkUrl(raw)?.let { return it }
         if (looksLikeInstallQr(raw)) return QrLoginPayload.InstallQrCode
         return parseTicket(raw) ?: QrLoginPayload.Invalid
+    }
+
+    /**
+     * Validates the wp.com magic-login URL and returns it verbatim. The `scheme=woocommerce`
+     * requirement is load-bearing: a QR with `scheme=wordpress` is intended for the WordPress
+     * app and we must not silently launch its URL here.
+     */
+    private fun parseWpComMagicLinkUrl(raw: String?): QrLoginPayload.WpComMagicLinkUrl? {
+        val trimmed = raw?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val parsed = trimmed.toHttpUrlOrNull() ?: return null
+        val matches = parsed.scheme == "https" &&
+            parsed.host.equals(WP_COM_HOST, ignoreCase = true) &&
+            parsed.encodedPath == WP_COM_MAGIC_LINK_PATH &&
+            parsed.queryParameter(PARAM_ACTION)?.lowercase() == ACTION_MAGIC_LOGIN &&
+            parsed.queryParameter(PARAM_SCHEME)?.lowercase() == SCHEME &&
+            !parsed.queryParameter(PARAM_TOKEN).isNullOrBlank()
+        return if (matches) QrLoginPayload.WpComMagicLinkUrl(url = trimmed) else null
     }
 
     private fun parseTicket(raw: String?): QrLoginPayload.Ticket? {
@@ -90,8 +112,13 @@ class QrLoginPayloadParser @Inject constructor() {
         const val HOST = "qr-login"
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
+        const val PARAM_ACTION = "action"
+        const val PARAM_SCHEME = "scheme"
         const val HTTPS_PREFIX = "https://"
         const val INSTALL_QR_HOST = "woocommerce.com"
         const val INSTALL_QR_PATH_FIRST_SEGMENT = "mobile"
+        const val WP_COM_HOST = "wordpress.com"
+        const val WP_COM_MAGIC_LINK_PATH = "/wp-login.php"
+        const val ACTION_MAGIC_LOGIN = "magic-login"
     }
 }
