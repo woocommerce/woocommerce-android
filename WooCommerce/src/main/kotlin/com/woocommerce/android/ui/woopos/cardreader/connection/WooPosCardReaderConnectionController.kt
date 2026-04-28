@@ -322,9 +322,11 @@ class WooPosCardReaderConnectionController(
                 is CardReaderStatus.Connected -> Unit
                 is CardReaderStatus.Reconnecting ->
                     runCatching { cardReaderManager.cancelReconnection() }
+                        .onFailure { logger.e("startDiscovery(): cancelReconnection() failed - ${it.message}") }
                 is CardReaderStatus.Connecting,
                 is CardReaderStatus.NotConnected ->
                     runCatching { cardReaderManager.disconnectReader() }
+                        .onFailure { logger.e("startDiscovery(): disconnectReader() failed - ${it.message}") }
             }
             unifiedDiscoveryStream
                 .discover(
