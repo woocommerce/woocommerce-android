@@ -125,9 +125,12 @@ internal class DefaultCardReaderRemoteTabletClient(
             throw cancel
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
-            ConnectOutcome.Failed(cause)
+            ConnectOutcome.Failed(mapToConnectionLostIfIo(cause))
         }
     }
+
+    private fun mapToConnectionLostIfIo(cause: Exception): Exception =
+        if (cause is java.io.IOException) IllegalStateException(CONNECTION_LOST_MESSAGE) else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
