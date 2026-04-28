@@ -146,6 +146,23 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given transport is set, when event is tracked, then it contains transport property`() =
+        testBlocking {
+            // GIVEN
+            val cardReaderTrackingInfo: TrackingInfo = mock {
+                on { transport } doReturn "wifi_lan"
+            }
+            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(cardReaderTrackingInfo)
+            val props = mutableMapOf<String, Any>()
+
+            // WHEN
+            paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            // THEN
+            assertThat(props["transport"]).isEqualTo("wifi_lan")
+        }
+
+    @Test
     fun `when track payment gateway invoked with wcpay, then track event with proper gateway`() =
         testBlocking {
             paymentsFlowTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
