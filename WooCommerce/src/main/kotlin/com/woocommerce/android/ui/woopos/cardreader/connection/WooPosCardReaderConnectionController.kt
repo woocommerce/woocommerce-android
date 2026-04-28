@@ -112,6 +112,7 @@ class WooPosCardReaderConnectionController(
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        cardReaderTrackingInfoKeeper.setTransport(null)
         _state.value = WooPosCardReaderConnectionState.Scanning(
             isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
         )
