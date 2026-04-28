@@ -84,11 +84,12 @@ class QrLoginScannerViewModel @Inject constructor(
                 host = payload.siteUrl.toDisplayHost()
             )
             is QrLoginPayload.WpComMagicLinkUrl -> {
-                // Hand the URL off to the system browser, which mirrors the 3rd-party scanner
-                // path: browser → wp.com 3xx → woocommerce://magic-login → MagicLinkInterceptActivity.
-                // Lock the state machine — the user is leaving the scanner and the outcome is no
-                // longer ours to handle.
+                // Hand the URL off to the browser; wp.com then 3xx-redirects to
+                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
+                // because the user is leaving the scanner and the outcome is no longer ours to
+                // handle. This is the happy path — we track the handoff, not a scan failure.
                 loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
             }
             QrLoginPayload.InstallQrCode -> {
@@ -235,10 +236,10 @@ class QrLoginScannerViewModel @Inject constructor(
         data class LoggedIn(val localSiteId: Int) : Dispatch()
 
         /**
-         * The merchant scanned a wp.com magic-login URL. Because the wp.com `token` is an opaque
-         * envelope only the server can resolve, the fragment opens [url] in the system browser
-         * via `ACTION_VIEW`; wp.com then 3xx-redirects to `woocommerce://magic-login` which the
-         * existing intent-filter routes to `MagicLinkInterceptActivity`.
+         * The merchant scanned a wp.com magic-login URL. The fragment hands [url] to the browser;
+         * wp.com then 3xx-redirects to `woocommerce://magic-login` which the existing
+         * intent-filter routes to `MagicLinkInterceptActivity` — the same end-to-end path a
+         * 3rd-party scanner (Google Lens, etc.) takes today.
          */
         data class OpenWpComMagicLinkUrl(val url: String) : Dispatch()
     }

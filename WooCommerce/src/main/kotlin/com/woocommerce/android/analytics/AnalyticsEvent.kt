@@ -123,6 +123,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_QR_PROLOGUE_FALLBACK_TAPPED(siteless = true),
     LOGIN_QR_SCAN_FAILED(siteless = true),
     LOGIN_QR_SUCCESS(siteless = true),
+    LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN,

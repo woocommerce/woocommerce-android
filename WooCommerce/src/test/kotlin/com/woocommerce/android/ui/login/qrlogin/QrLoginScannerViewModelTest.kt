@@ -538,6 +538,28 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         verify(parser, never()).parse("second-raw")
     }
 
+    @Test
+    fun `given wp dot com url payload, when scan succeeds, then tracks LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+
+            viewModel.onScanResult(successScan())
+
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+        }
+
+    @Test
+    fun `given wp dot com url payload, when scan succeeds, then does not track LOGIN_QR_SCAN_FAILED or LOGIN_QR_SUCCESS`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+
+            viewModel.onScanResult(successScan())
+
+            // The wp.com handoff is the happy path, not a failure, and not a completed sign-in.
+            verify(analyticsTracker, never()).track(eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED), any(), any(), any(), any())
+            verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+        }
+
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
 
