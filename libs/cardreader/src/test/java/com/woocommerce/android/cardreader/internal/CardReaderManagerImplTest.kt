@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.ReaderType
@@ -16,6 +17,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
@@ -43,7 +45,9 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val interacRefundManager: InteracRefundManager = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
-    private val terminalListener: TerminalListenerImpl = mock()
+    private val terminalListener: TerminalListenerImpl = mock {
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+    }
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
