@@ -19,6 +19,6 @@ class SlidingWindowHistoryBudgeter(
     }
 
     companion object {
-        const val DEFAULT_WINDOW_SIZE = 20
+        internal const val DEFAULT_WINDOW_SIZE = 20
     }
 }

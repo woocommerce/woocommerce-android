@@ -463,4 +463,20 @@ class AgenticLoopImplTest {
         assertThat(finished.updatedHistory[bigHistory.size + 1])
             .isEqualTo(AssistantMessage.Assistant(content = "ok", toolCalls = emptyList()))
     }
+
+    @Test
+    fun `given history with no system message, when running turn, then loop completes with empty system prompt`() = runTest {
+        val historyWithoutSystem = listOf(
+            AssistantMessage.User("prior question"),
+            AssistantMessage.Assistant("prior answer"),
+        )
+        val loop = loopWith(
+            flowOf(AssistantEvent.TextDelta("hi"), AssistantEvent.Finish(FinishReason.STOP))
+        )
+
+        val events = loop.runTurn("conv", "hello", historyWithoutSystem, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+    }
 }
