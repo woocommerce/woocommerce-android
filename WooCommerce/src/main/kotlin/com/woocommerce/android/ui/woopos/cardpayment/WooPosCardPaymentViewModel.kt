@@ -119,6 +119,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             _state.value = buildPreparingState()
                             collectPayment()
                         }
+                        // Keep current state during a transient reconnect so an in-flight BT
+                        // payment is not cancelled when the reader briefly drops to Reconnecting.
                         WooPosEffectiveReaderStatus.Reconnecting -> Unit
                         WooPosEffectiveReaderStatus.Connecting,
                         WooPosEffectiveReaderStatus.Disconnected -> {
