@@ -13,8 +13,10 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
 import com.woocommerce.android.aiassistant.di.AssistantOkHttpClient
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.JsonArray
@@ -147,7 +149,7 @@ internal class JetpackAiChatService @Inject constructor(
 
         val eventSource = EventSources.createFactory(httpClient).newEventSource(httpRequest, listener)
         awaitClose { eventSource.cancel() }
-    }
+    }.buffer(Channel.UNLIMITED)
 
     private fun toAssistantException(t: Throwable?, response: Response?): MappedError {
         val code = response?.code
