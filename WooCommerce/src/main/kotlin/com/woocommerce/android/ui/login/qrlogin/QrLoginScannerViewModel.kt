@@ -83,6 +83,14 @@ class QrLoginScannerViewModel @Inject constructor(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
+            is QrLoginPayload.WpComMagicLinkUrl -> {
+                // Hand the URL off to the system browser, which mirrors the 3rd-party scanner
+                // path: browser → wp.com 3xx → woocommerce://magic-login → MagicLinkInterceptActivity.
+                // Lock the state machine — the user is leaving the scanner and the outcome is no
+                // longer ours to handle.
+                loggedIn = true
+                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
+            }
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -225,6 +233,14 @@ class QrLoginScannerViewModel @Inject constructor(
 
     sealed class Dispatch : Event() {
         data class LoggedIn(val localSiteId: Int) : Dispatch()
+
+        /**
+         * The merchant scanned a wp.com magic-login URL. Because the wp.com `token` is an opaque
+         * envelope only the server can resolve, the fragment opens [url] in the system browser
+         * via `ACTION_VIEW`; wp.com then 3xx-redirects to `woocommerce://magic-login` which the
+         * existing intent-filter routes to `MagicLinkInterceptActivity`.
+         */
+        data class OpenWpComMagicLinkUrl(val url: String) : Dispatch()
     }
 
     sealed interface UiState {

@@ -494,6 +494,50 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
     }
 
+    @Test
+    fun `given wp dot com url payload, when scan succeeds, then emits OpenWpComMagicLinkUrl`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+        val events = viewModel.event.captureValues()
+
+        viewModel.onScanResult(successScan())
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
+        )
+    }
+
+    @Test
+    fun `given wp dot com url payload, when scan succeeds, then ui state stays idle`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+
+        viewModel.onScanResult(successScan())
+
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
+        verify(authenticator, never()).authenticate(any())
+    }
+
+    @Test
+    fun `given wp dot com url via deep link, when received, then emits OpenWpComMagicLinkUrl`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+        val events = viewModel.event.captureValues()
+
+        viewModel.onDeepLinkPayload(RAW_SCAN)
+
+        assertThat(events.last()).isEqualTo(
+            QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
+        )
+    }
+
+    @Test
+    fun `given wp dot com url handed off, when another scan arrives, then it is ignored`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+
+        viewModel.onScanResult(successScan(RAW_SCAN))
+        viewModel.onScanResult(successScan("second-raw"))
+
+        verify(parser, never()).parse("second-raw")
+    }
+
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
 
@@ -503,5 +547,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     private companion object {
         const val RAW_SCAN = "raw"
         const val DEFAULT_SITE_ID = 42
+        const val WP_COM_URL =
+            "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
     }
 }
