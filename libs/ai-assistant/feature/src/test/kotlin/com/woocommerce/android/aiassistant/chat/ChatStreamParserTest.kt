@@ -9,18 +9,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ChatStreamParserTest {
-    private val parser = ChatStreamParser(
-        Json {
-            ignoreUnknownKeys = true
-            encodeDefaults = false
-            coerceInputValues = true
-        }
-    )
+    private val parser = ChatStreamParser(assistantJsonForTests())
 
     @Test
     fun `given a content delta payload, when parsed, then a TextDelta is emitted`() = runTest {
@@ -135,7 +128,7 @@ class ChatStreamParserTest {
     }
 
     @Test
-    fun `given choices is null, when parsed, then a Failed INVALID_STREAM event is emitted`() = runTest {
+    fun `given choices is null, when parsed, then strict parsing prevents null coercion fallback`() = runTest {
         val payload = """{"choices":null}"""
 
         val events = parser.parse(flowOf(payload)).toList()

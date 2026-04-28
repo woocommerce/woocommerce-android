@@ -28,11 +28,7 @@ import java.util.concurrent.TimeUnit
 class JetpackAiChatServiceTest {
     private lateinit var server: MockWebServer
     private val tokenProvider = RecordingTokenProvider()
-    private val assistantJson = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = false
-        coerceInputValues = true
-    }
+    private val assistantJson = assistantJsonForTests()
 
     private val httpClient = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)

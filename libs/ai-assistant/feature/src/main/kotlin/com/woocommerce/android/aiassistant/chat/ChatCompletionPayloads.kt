@@ -23,10 +23,9 @@ internal data class ChatCompletionRequestPayload(
             request: ChatRequest,
             feature: String,
             model: String,
-            stream: Boolean = true,
         ): ChatCompletionRequestPayload = ChatCompletionRequestPayload(
             feature = feature,
-            stream = stream,
+            stream = true,
             model = model,
             messages = request.messages.map(AssistantMessage::toPayload),
             tools = request.tools.takeIf { it.isNotEmpty() }?.map(ToolDefinition::toPayload),
@@ -133,6 +132,7 @@ private fun ToolCall.toPayload(): ChatCompletionToolCallPayload = ChatCompletion
     type = FUNCTION_TYPE,
     function = ChatCompletionFunctionCallPayload(
         name = name,
+        // The transport expects tool arguments as a JSON-encoded string, not nested JSON.
         arguments = arguments.toString(),
     ),
 )

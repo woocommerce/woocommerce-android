@@ -6,7 +6,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonArray
@@ -19,11 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ChatCompletionPayloadsTest {
-    private val json = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = false
-        coerceInputValues = true
-    }
+    private val json = assistantJsonForTests()
 
     @Test
     fun `given a chat request, when converted to payload, then serializable transport fields are preserved`() {

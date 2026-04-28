@@ -16,6 +16,5 @@ internal object AiAssistantModule {
     fun provideAiAssistantJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = false
-        coerceInputValues = true
     }
 }

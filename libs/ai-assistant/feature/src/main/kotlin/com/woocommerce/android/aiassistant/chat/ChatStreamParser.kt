@@ -33,10 +33,6 @@ import javax.inject.Singleton
 internal class ChatStreamParser @Inject constructor(
     @AiAssistantJson private val json: Json,
 ) {
-    private val strictJson = Json(json) {
-        coerceInputValues = false
-    }
-
     fun parse(lines: Flow<String>): Flow<AssistantEvent> = lines.transformWhile { raw ->
         val payload = raw.trim()
         when {
@@ -47,7 +43,7 @@ internal class ChatStreamParser @Inject constructor(
     }
 
     private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
-        val chunk = runCatching { strictJson.decodeFromString<ChatCompletionStreamChunkPayload>(payload) }
+        val chunk = runCatching { json.decodeFromString<ChatCompletionStreamChunkPayload>(payload) }
             .getOrElse {
                 emit(
                     AssistantEvent.Failed(
