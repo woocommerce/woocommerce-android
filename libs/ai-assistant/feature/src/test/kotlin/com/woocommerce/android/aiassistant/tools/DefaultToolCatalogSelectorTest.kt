@@ -16,7 +16,12 @@ class DefaultToolCatalogSelectorTest {
         "product_variations_list", "analytics_revenue", "analytics_orders",
         "show_cards", "customers_list",
     ).map { name ->
-        ToolDescriptor(name = name, description = "", inputSchema = buildJsonObject { }, safetyLevel = ToolSafetyLevel.SAFE)
+        ToolDescriptor(
+            name = name,
+            description = "",
+            inputSchema = buildJsonObject { },
+            safetyLevel = ToolSafetyLevel.SAFE,
+        )
     }
 
     @Test
