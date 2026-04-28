@@ -7,15 +7,8 @@ import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.transformWhile
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,6 +32,10 @@ import javax.inject.Singleton
 internal class ChatStreamParser @Inject constructor(
     @AiAssistantJson private val json: Json,
 ) {
+    private val strictJson = Json(json) {
+        coerceInputValues = false
+    }
+
     fun parse(lines: Flow<String>): Flow<AssistantEvent> = lines.transformWhile { raw ->
         val payload = raw.trim()
         when {
@@ -49,7 +46,7 @@ internal class ChatStreamParser @Inject constructor(
     }
 
     private suspend fun FlowCollector<AssistantEvent>.parsePayload(payload: String): Boolean {
-        val chunk = runCatching { json.parseToJsonElement(payload).jsonObject }
+        val chunk = runCatching { strictJson.decodeFromString<ChatCompletionStreamChunkPayload>(payload) }
             .getOrElse {
                 emit(AssistantEvent.Failed(AssistantErrorKind.INVALID_STREAM, MalformedChunkException(payload, it)))
                 return false
@@ -64,43 +61,32 @@ internal class ChatStreamParser @Inject constructor(
         }
     }
 
-    private suspend fun FlowCollector<AssistantEvent>.emitChunk(chunk: JsonObject) {
-        val choice = chunk["choices"]?.jsonArray?.firstOrNull()?.jsonObject ?: return
-        val delta = choice["delta"]?.jsonObject
+    private suspend fun FlowCollector<AssistantEvent>.emitChunk(chunk: ChatCompletionStreamChunkPayload) {
+        val choice = chunk.choices.firstOrNull() ?: return
+        val delta = choice.delta
 
         if (delta != null) {
-            delta["content"]?.stringOrNull()
+            delta.content
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { emit(AssistantEvent.TextDelta(it)) }
 
-            delta["tool_calls"]?.jsonArray?.forEach { element ->
-                val toolCall = element.jsonObject
-                val index = toolCall["index"]?.jsonPrimitive?.int ?: return@forEach
-                val id = toolCall["id"]?.stringOrNull()
-                val function = toolCall["function"]?.jsonObject
-                val name = function?.get("name")?.stringOrNull()
-                val argumentsDelta = function?.get("arguments")?.stringOrNull()
+            delta.toolCalls?.forEach { toolCall ->
+                val index = toolCall.index ?: return@forEach
                 emit(
                     AssistantEvent.ToolCallDelta(
                         index = index,
-                        id = id,
-                        name = name,
-                        argumentsDelta = argumentsDelta,
+                        id = toolCall.id,
+                        name = toolCall.function?.name,
+                        argumentsDelta = toolCall.function?.arguments,
                     )
                 )
             }
         }
 
-        val finish = choice["finish_reason"]?.stringOrNull()
+        val finish = choice.finishReason
         if (finish != null) {
             emit(AssistantEvent.Finish(finish.toFinishReason()))
         }
-    }
-
-    private fun JsonElement.stringOrNull(): String? {
-        if (this is JsonNull) return null
-        val primitive = this as? JsonPrimitive ?: return null
-        return primitive.content
     }
 
     private fun String.toFinishReason(): FinishReason = when (this) {

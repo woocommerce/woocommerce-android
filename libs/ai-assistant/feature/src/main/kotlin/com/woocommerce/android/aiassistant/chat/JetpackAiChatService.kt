@@ -5,11 +5,9 @@ import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
-import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
 import com.woocommerce.android.aiassistant.di.AssistantOkHttpClient
 import kotlinx.coroutines.CancellationException
@@ -19,12 +17,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,6 +48,7 @@ internal class JetpackAiChatService @Inject constructor(
     @AssistantOkHttpClient private val httpClient: OkHttpClient,
     private val tokenProvider: JwtTokenProvider,
     private val streamParser: ChatStreamParser,
+    @AiAssistantJson private val json: Json,
     @AssistantBaseUrl private val baseUrl: String,
 ) : ChatService {
 
@@ -130,7 +125,7 @@ internal class JetpackAiChatService @Inject constructor(
             .url(baseUrl.trimEnd('/') + JETPACK_AI_QUERY_PATH)
             .header("Authorization", "Bearer $token")
             .header("Accept", "text/event-stream")
-            .post(buildRequestBody(request).toString().toRequestBody(APPLICATION_JSON))
+            .post(buildRequestBody(request).toRequestBody(APPLICATION_JSON))
             .build()
 
         val listener = object : EventSourceListener() {
@@ -175,77 +170,13 @@ internal class JetpackAiChatService @Inject constructor(
         else -> MappedError(AssistantErrorKind.UNKNOWN, t)
     }
 
-    private fun buildRequestBody(request: ChatRequest): JsonObject = buildJsonObject {
-        put("feature", AssistantConfig.FEATURE_NAME)
-        put("stream", true)
-        put("model", AssistantConfig.MODEL_ID)
-        put("messages", request.messages.toJsonArray())
-        if (request.tools.isNotEmpty()) {
-            put("tools", request.tools.toJsonArray())
-        }
-    }
-
-    private fun List<AssistantMessage>.toJsonArray(): JsonArray = buildJsonArray {
-        forEach { add(it.toJson()) }
-    }
-
-    private fun AssistantMessage.toJson(): JsonObject = when (this) {
-        is AssistantMessage.System -> buildJsonObject {
-            put("role", "system")
-            put("content", content)
-        }
-        is AssistantMessage.User -> buildJsonObject {
-            put("role", "user")
-            put("content", content)
-        }
-        is AssistantMessage.Assistant -> buildJsonObject {
-            put("role", "assistant")
-            if (content != null) {
-                put("content", content)
-            } else {
-                put("content", JsonNull)
-            }
-            if (toolCalls.isNotEmpty()) {
-                put("tool_calls", buildJsonArray { toolCalls.forEach { add(it.toJson()) } })
-            }
-        }
-        is AssistantMessage.Tool -> buildJsonObject {
-            put("role", "tool")
-            put("tool_call_id", toolCallId)
-            put("content", content)
-        }
-    }
-
-    private fun ToolCall.toJson(): JsonObject = buildJsonObject {
-        put("id", id)
-        put("type", "function")
-        put(
-            "function",
-            buildJsonObject {
-                put("name", name)
-                put("arguments", arguments.toString())
-            },
+    private fun buildRequestBody(request: ChatRequest): String = json.encodeToString(
+        ChatCompletionRequestPayload.from(
+            request = request,
+            feature = AssistantConfig.FEATURE_NAME,
+            model = AssistantConfig.MODEL_ID,
         )
-    }
-
-    @JvmName("toolDefinitionsToJsonArray")
-    private fun List<ToolDefinition>.toJsonArray(): JsonArray = buildJsonArray {
-        forEach { tool ->
-            add(
-                buildJsonObject {
-                    put("type", "function")
-                    put(
-                        "function",
-                        buildJsonObject {
-                            put("name", tool.name)
-                            put("description", tool.description)
-                            put("parameters", tool.parameters)
-                        },
-                    )
-                }
-            )
-        }
-    }
+    )
 
     private data class MappedError(
         val kind: AssistantErrorKind,
