@@ -9,8 +9,8 @@ import com.woocommerce.android.aiassistant.tools.handlers.OrdersBulkUpdateToolHa
 import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductVariationsListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsBulkUpdateToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.ProductsGetToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.ProductsListToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
@@ -26,8 +26,8 @@ class WooCommerceToolCatalogTest {
         OrdersGetToolHandler(mock(), mock()),
         OrdersUpdateToolHandler(mock(), mock()),
         OrdersBulkUpdateToolHandler(),
-        ProductsListToolHandler(),
-        ProductsGetToolHandler(),
+        ProductsListToolHandler(mock(), mock()),
+        ProductsGetToolHandler(mock(), mock()),
         ProductsUpdateToolHandler(),
         ProductsBulkUpdateToolHandler(),
         ProductVariationsListToolHandler(),
