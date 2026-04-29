@@ -35,6 +35,7 @@ data class RemoteTapToPayLocationPermissionDenied(
 data class RemoteTapToPayReadyToPair(
     val deviceName: String,
     val fingerprintSuffix: String,
+    val siteUrl: String?,
     override val onPrimaryActionClicked: (() -> Unit),
 ) : ViewState(
     headerLabel = R.string.card_reader_mode_ready_to_pair_header,

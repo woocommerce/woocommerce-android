@@ -40,7 +40,12 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     }
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val selectedSite: SelectedSite = mock {
-        on { getOrNull() }.thenReturn(SiteModel().apply { siteId = 1L })
+        on { getOrNull() }.thenReturn(
+            SiteModel().apply {
+                siteId = 1L
+                url = "https://example.com"
+            }
+        )
     }
 
     private lateinit var store: ViewModelStore
@@ -138,6 +143,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewState.value as RemoteTapToPayReadyToPair
         assertThat(viewState.deviceName).isEqualTo("Pixel")
         assertThat(viewState.fingerprintSuffix).isEqualTo("1234")
+        assertThat(viewState.siteUrl).isEqualTo("example.com")
     }
 
     @Test

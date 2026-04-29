@@ -154,6 +154,14 @@ private fun StatefulContent(state: ViewState) {
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 )
+                state.siteUrl?.takeIf { it.isNotBlank() }?.let { url ->
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                    Text(
+                        text = stringResource(id = R.string.card_reader_mode_ready_to_pair_store, url),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
 
@@ -186,6 +194,7 @@ fun CardReaderModeReadyToPairPreview() {
             state = RemoteTapToPayReadyToPair(
                 deviceName = "Pixel 7",
                 fingerprintSuffix = "AB4F",
+                siteUrl = "example.com",
                 onPrimaryActionClicked = {},
             )
         )

@@ -1522,6 +1522,7 @@
 
     <string name="card_reader_mode_ready_to_pair_header">Ready to pair</string>
     <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS on your tablet and pick this phone.</string>
+    <string name="card_reader_mode_ready_to_pair_store">Store: %1$s</string>
     <string name="card_reader_mode_waiting_header">Paired with tablet</string>
     <string name="card_reader_mode_waiting_subtitle">Waiting for payment…</string>
     <string name="card_reader_mode_cancel">Cancel</string>

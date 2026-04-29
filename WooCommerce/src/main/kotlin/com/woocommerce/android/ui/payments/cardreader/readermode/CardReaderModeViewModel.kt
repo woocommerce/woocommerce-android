@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -94,6 +95,7 @@ class CardReaderModeViewModel @Inject constructor(
         is CardReaderRemoteSessionState.ReadyToPair -> RemoteTapToPayReadyToPair(
             deviceName = state.deviceName,
             fingerprintSuffix = state.fingerprintSuffix,
+            siteUrl = selectedSiteDisplayUrl(),
             onPrimaryActionClicked = ::exit,
         )
         is CardReaderRemoteSessionState.WaitingForPayment -> RemoteTapToPayWaitingForPayment(
@@ -109,4 +111,10 @@ class CardReaderModeViewModel @Inject constructor(
     private fun exit() {
         _events.trySend(CardReaderModeEvent.Exit)
     }
+
+    private fun selectedSiteDisplayUrl(): String? =
+        selectedSite.getOrNull()?.url
+            ?.takeIf { it.isNotBlank() }
+            ?.let(UrlUtils::removeScheme)
+            ?.trim('/')
 }
