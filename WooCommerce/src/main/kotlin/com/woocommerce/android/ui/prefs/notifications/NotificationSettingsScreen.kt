@@ -45,7 +45,8 @@ fun NotificationSettingsScreen(
         viewModel.notificationTypeItems.observeAsState().value?.let {
             SmarterNotificationSettingsScreen(
                 items = it,
-                onNotificationTypeEnabledChanged = viewModel::onNotificationTypeEnabledChanged
+                onNotificationTypeEnabledChanged = viewModel::onNotificationTypeEnabledChanged,
+                onNotificationTypeClicked = viewModel::onNotificationTypeClicked
             )
         }
     } else {
@@ -62,7 +63,8 @@ fun NotificationSettingsScreen(
 @Composable
 private fun SmarterNotificationSettingsScreen(
     items: List<NotificationTypeItem>,
-    onNotificationTypeEnabledChanged: (NotificationType, Boolean) -> Unit
+    onNotificationTypeEnabledChanged: (NotificationType, Boolean) -> Unit,
+    onNotificationTypeClicked: (NotificationType) -> Unit
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
         Column(
@@ -75,6 +77,7 @@ private fun SmarterNotificationSettingsScreen(
                 NotificationTypeRow(
                     item = item,
                     onEnabledChanged = onNotificationTypeEnabledChanged,
+                    onClick = onNotificationTypeClicked,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -122,13 +125,15 @@ private fun NotificationSettingsScreen(
 private fun NotificationTypeRow(
     item: NotificationTypeItem,
     onEnabledChanged: (NotificationType, Boolean) -> Unit,
+    onClick: (NotificationType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .padding(top = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick(item.type) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -216,7 +221,8 @@ private fun SmarterNotificationSettingsScreenPreview() {
                     isEnabled = true
                 )
             ),
-            onNotificationTypeEnabledChanged = { _, _ -> }
+            onNotificationTypeEnabledChanged = { _, _ -> },
+            onNotificationTypeClicked = {}
         )
     }
 }
