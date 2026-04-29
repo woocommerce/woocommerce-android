@@ -7,7 +7,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsOrdersToolHan
 import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.OrdersBulkUpdateToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.OrdersUpdateToolHandler
+import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductVariationsListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsGetToolHandler
