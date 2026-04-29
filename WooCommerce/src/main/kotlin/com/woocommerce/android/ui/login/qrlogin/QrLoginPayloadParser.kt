@@ -13,6 +13,10 @@ import javax.inject.Inject
  * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
  * ```
  *
+ * The same deeplink shape is also used as a "site-URL only" QR — when `token` is missing or
+ * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
+ * the site-address login screen with the URL prefilled instead of attempting an exchange.
+ *
  * Anything malformed, missing parameters, with the wrong scheme/host, or with a non-https
  * `siteUrl` returns [QrLoginPayload.Invalid]. The parser does not validate the token format
  * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
@@ -28,7 +32,7 @@ class QrLoginPayloadParser @Inject constructor() {
     fun parse(raw: String?): QrLoginPayload {
         parseWpComMagicLinkUrl(raw)?.let { return it }
         if (looksLikeInstallQr(raw)) return QrLoginPayload.InstallQrCode
-        return parseTicket(raw) ?: QrLoginPayload.Invalid
+        return parseQrLoginDeeplink(raw) ?: QrLoginPayload.Invalid
     }
 
     /**
@@ -48,11 +52,21 @@ class QrLoginPayloadParser @Inject constructor() {
         return if (matches) QrLoginPayload.WpComMagicLinkUrl(url = trimmed) else null
     }
 
-    private fun parseTicket(raw: String?): QrLoginPayload.Ticket? {
+    /**
+     * Parses the `woocommerce://qr-login?...` deeplink. Returns [QrLoginPayload.Ticket] when both
+     * `token` and `siteUrl` are present and valid, [QrLoginPayload.SiteUrl] when `siteUrl` is
+     * valid but `token` is missing or blank, and `null` (caller maps to `Invalid`) otherwise.
+     * `siteUrl` validation is identical in both branches.
+     */
+    private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
         val uri = parseDeepLink(raw) ?: return null
-        val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() } ?: return null
         val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return null
-        return QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
+        val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
+        return if (token != null) {
+            QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
+        } else {
+            QrLoginPayload.SiteUrl(siteUrl = siteUrl)
+        }
     }
 
     /**
