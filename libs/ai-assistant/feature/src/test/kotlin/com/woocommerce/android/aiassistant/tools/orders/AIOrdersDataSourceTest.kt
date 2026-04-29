@@ -9,12 +9,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -416,5 +418,61 @@ class AIOrdersDataSourceTest {
 
             assertThat(result.isFailure).isTrue
             assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+        }
+
+    @Test
+    fun `given order patch, when bulkUpdateOrders is called, then one generic batch update is sent`() =
+        runTest {
+            whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(
+                WooResult(WCOrderStore.UpdateOrdersStatusResult(updatedOrders = listOf(123L, 456L)))
+            )
+
+            val result = dataSource.bulkUpdateOrders(
+                orderIds = listOf(123L, 456L),
+                patch = AIOrdersDataSource.OrderPatch(
+                    status = "processing",
+                    customerNote = "Please call first",
+                    billingEmail = "customer@example.com",
+                )
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(123L, 456L)
+            val requestsCaptor = argumentCaptor<Map<Long, UpdateOrderRequest>>()
+            verify(orderStore).batchUpdateOrders(eq(site), requestsCaptor.capture())
+            assertThat(requestsCaptor.firstValue.keys).containsExactly(123L, 456L)
+            requestsCaptor.firstValue.values.forEach { request ->
+                assertThat(request.status?.statusKey).isEqualTo("processing")
+                assertThat(request.customerNote).isEqualTo("Please call first")
+                assertThat(request.billingEmail).isEqualTo("customer@example.com")
+            }
+        }
+
+    @Test
+    fun `given store returns partial order failures, when bulkUpdateOrders is called, then failures are exposed`() =
+        runTest {
+            val failedOrder = WCOrderStore.UpdateOrdersStatusResult.FailedOrder(
+                id = 456L,
+                errorCode = "woocommerce_rest_shop_order_invalid_id",
+                errorMessage = "Invalid ID.",
+                errorStatus = 400,
+            )
+            whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(
+                WooResult(
+                    WCOrderStore.UpdateOrdersStatusResult(
+                        updatedOrders = listOf(123L),
+                        failedOrders = listOf(failedOrder),
+                    )
+                )
+            )
+
+            val result = dataSource.bulkUpdateOrders(
+                orderIds = listOf(123L, 456L),
+                patch = AIOrdersDataSource.OrderPatch(status = "processing")
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(123L)
+            assertThat(result.getOrThrow().failedOrders).containsExactly(failedOrder)
         }
 }
