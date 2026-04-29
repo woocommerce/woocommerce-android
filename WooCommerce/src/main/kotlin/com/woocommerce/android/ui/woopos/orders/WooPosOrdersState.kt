@@ -17,13 +17,7 @@ object WooPosOrdersState {
     }
 
     @Immutable
-    sealed class OrderActionsState {
-        @Immutable
-        data object Loading : OrderActionsState()
-
-        @Immutable
-        data class Loaded(val actions: List<OrderAction>) : OrderActionsState()
-    }
+    data class OrderActionsState(val actions: List<OrderAction>)
 
     @Immutable
     sealed class OrderDetailsViewState {
