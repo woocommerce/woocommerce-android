@@ -46,9 +46,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.copyToClipboard
+import com.woocommerce.android.extensions.windowHeightSizeClass
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -128,7 +131,10 @@ fun QrLoginPrologueScreen(
 @Composable
 private fun Hero() {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    if (isLandscape) HeroLandscape() else HeroPortrait()
+    // Tablets have enough vertical room for the portrait stack in landscape too — only the
+    // compact height bucket (phones in landscape) needs the compacted hero.
+    val isCompactHeight = LocalContext.current.windowHeightSizeClass == WindowSizeClass.Compact
+    if (isLandscape && isCompactHeight) HeroLandscape() else HeroPortrait()
 }
 
 @Composable
@@ -169,57 +175,64 @@ private fun HeroPortrait() {
 
 /**
  * Landscape phones only have ~400dp of vertical space, so the portrait hero pushes the bottom
- * CTAs off-screen. Lay out QR icon on the left and text content on the right so everything
- * fits without scrolling and the URL pill is visible alongside the "On your computer, visit:"
- * label as Jorge requested.
+ * CTAs off-screen. Pair the QR icon with the title on a single row and keep the URL line and
+ * step hint horizontally centered below — everything fits without scrolling and reads as a
+ * single centered block.
  */
 @Composable
 private fun HeroLandscape() {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = dimensionResource(id = R.dimen.major_100)),
-        horizontalArrangement = Arrangement.spacedBy(
-            dimensionResource(id = R.dimen.major_150),
-            Alignment.CenterHorizontally
-        ),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        QrIconBadge()
-        Column(horizontalAlignment = Alignment.Start) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            QrIconBadge(
+                size = dimensionResource(id = R.dimen.image_major_50),
+                iconSize = dimensionResource(id = R.dimen.image_minor_80),
+            )
             Text(
                 text = stringResource(id = R.string.login_qr_prologue_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = colorResource(id = R.color.prologue_login_on_background),
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_qr_prologue_subtitle),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = colorResource(id = R.color.prologue_login_on_background_secondary)
-                )
-                UrlBadge()
-            }
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-            Text(
-                text = stringResource(id = R.string.login_qr_prologue_step_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = colorResource(id = R.color.prologue_login_on_background_tertiary)
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
             )
         }
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = colorResource(id = R.color.prologue_login_on_background_secondary)
+            )
+            UrlBadge()
+        }
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+        Text(
+            text = stringResource(id = R.string.login_qr_prologue_step_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colorResource(id = R.color.prologue_login_on_background_tertiary),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
 @Composable
-private fun QrIconBadge() {
+private fun QrIconBadge(
+    size: Dp = dimensionResource(id = R.dimen.image_major_72),
+    iconSize: Dp = dimensionResource(id = R.dimen.image_minor_100),
+) {
     Box(
         modifier = Modifier
-            .size(dimensionResource(id = R.dimen.image_major_72))
+            .size(size)
             .clip(CircleShape)
             .background(colorResource(id = R.color.prologue_login_url_badge_background)),
         contentAlignment = Alignment.Center
@@ -228,7 +241,7 @@ private fun QrIconBadge() {
             painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner),
             contentDescription = null,
             tint = colorResource(id = R.color.prologue_login_on_background),
-            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
+            modifier = Modifier.size(iconSize)
         )
     }
 }
