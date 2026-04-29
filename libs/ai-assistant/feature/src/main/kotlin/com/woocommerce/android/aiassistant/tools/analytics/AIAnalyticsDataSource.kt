@@ -8,32 +8,31 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchOrdersStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
-import java.util.UUID
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
 import javax.inject.Inject
 
 internal class AIAnalyticsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val statsStore: WCStatsStore,
+    // Do not route AI analytics through WCStatsStore: it persists stats in RevenueStatsEntity, while shared
+    // date/interval cache readers ignore rangeId/source/currency. AI-only responses could then pollute those reads.
+    private val orderStatsRestClient: OrderStatsRestClient,
 ) {
     suspend fun fetchRevenueStats(
         after: String,
         before: String,
         interval: AnalyticsInterval,
         currency: String?,
-    ): Result<AnalyticsStats> = fetchStats(rangeIdPrefix = "ai_revenue") { site, rangeId ->
-        statsStore.fetchRevenueStats(
-            FetchRevenueStatsPayload(
-                site = site,
-                granularity = interval.statsGranularity,
-                startDate = after,
-                endDate = before,
-                forced = false,
-                revenueRangeId = rangeId,
-                currency = currency,
-            )
+    ): Result<AnalyticsStats> = fetchStats { site ->
+        orderStatsRestClient.fetchRevenueStats(
+            site = site,
+            granularity = interval.statsGranularity,
+            startDate = after,
+            endDate = before,
+            perPage = PER_PAGE,
+            forceRefresh = false,
+            revenueRangeId = REVENUE_RANGE_ID,
+            currency = currency,
         )
     }
 
@@ -41,32 +40,28 @@ internal class AIAnalyticsDataSource @Inject constructor(
         after: String,
         before: String,
         interval: AnalyticsInterval,
-    ): Result<AnalyticsStats> = fetchStats(rangeIdPrefix = "ai_orders") { site, rangeId ->
-        statsStore.fetchOrdersStats(
-            FetchOrdersStatsPayload(
-                site = site,
-                granularity = interval.statsGranularity,
-                startDate = after,
-                endDate = before,
-                forced = false,
-                orderStatsRangeId = rangeId,
-            )
+    ): Result<AnalyticsStats> = fetchStats { site ->
+        orderStatsRestClient.fetchOrdersStats(
+            site = site,
+            granularity = interval.statsGranularity,
+            startDate = after,
+            endDate = before,
+            perPage = PER_PAGE,
+            forceRefresh = false,
+            orderStatsRangeId = ORDERS_RANGE_ID,
         )
     }
 
     private suspend fun fetchStats(
-        rangeIdPrefix: String,
-        fetch: suspend (SiteModel, String) -> WCStatsStore.OnWCRevenueStatsChanged,
+        fetch: suspend (SiteModel) -> FetchRevenueStatsResponsePayload,
     ): Result<AnalyticsStats> = runCatching {
         val site = selectedSite.get()
-        val rangeId = "$rangeIdPrefix:${UUID.randomUUID()}"
-        val result = fetch(site, rangeId)
+        val result = fetch(site)
         if (result.isError) {
             throw OnChangedException(requireNotNull(result.error))
         }
-        val rawStats = statsStore.getRawRevenueStatsFromRangeId(site, rangeId)
-            ?: error("Stats response missing for range $rangeId")
-        rawStats.toAnalyticsStats()
+        val stats = result.stats ?: error("Stats response missing")
+        stats.toAnalyticsStats()
     }
 
     private fun WCRevenueStatsModel.toAnalyticsStats(): AnalyticsStats {
@@ -81,4 +76,10 @@ internal class AIAnalyticsDataSource @Inject constructor(
     }
 
     private fun parseJson(value: String) = Json.parseToJsonElement(value)
+
+    private companion object {
+        private const val PER_PAGE = 100
+        private const val REVENUE_RANGE_ID = "ai_revenue"
+        private const val ORDERS_RANGE_ID = "ai_orders"
+    }
 }
