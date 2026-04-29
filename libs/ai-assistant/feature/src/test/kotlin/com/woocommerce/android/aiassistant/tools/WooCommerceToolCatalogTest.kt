@@ -2,16 +2,16 @@ package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
-import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsOrdersToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsRevenueToolHandler
+import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
+import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.CustomersListToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.OrdersBulkUpdateToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
+import com.woocommerce.android.aiassistant.tools.orders.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsUpdateToolHandler
@@ -25,14 +25,14 @@ class WooCommerceToolCatalogTest {
         OrdersListToolHandler(mock(), mock()),
         OrdersGetToolHandler(mock(), mock()),
         OrdersUpdateToolHandler(mock(), mock()),
-        OrdersBulkUpdateToolHandler(),
+        OrdersBulkUpdateToolHandler(mock(), mock()),
         ProductsListToolHandler(mock(), mock()),
         ProductsGetToolHandler(mock(), mock()),
         ProductsUpdateToolHandler(mock(), mock()),
-        ProductsBulkUpdateToolHandler(),
+        ProductsBulkUpdateToolHandler(mock(), mock()),
         ProductVariationsToolHandler(mock(), mock()),
-        AnalyticsRevenueToolHandler(),
-        AnalyticsOrdersToolHandler(),
+        AnalyticsRevenueToolHandler(mock(), mock()),
+        AnalyticsOrdersToolHandler(mock(), mock()),
         ShowCardsToolHandler(),
         CustomersListToolHandler(),
     )
