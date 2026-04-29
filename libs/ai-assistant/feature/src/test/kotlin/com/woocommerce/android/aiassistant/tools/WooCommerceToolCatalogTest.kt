@@ -6,8 +6,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsOrdersToolHan
 import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.OrdersBulkUpdateToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.OrdersGetToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.OrdersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductVariationsListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsBulkUpdateToolHandler
@@ -15,14 +13,17 @@ import com.woocommerce.android.aiassistant.tools.handlers.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
+import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
+import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.mock
 
 class WooCommerceToolCatalogTest {
 
     private val allHandlers: Set<AssistantToolHandler> = setOf(
-        OrdersListToolHandler(),
-        OrdersGetToolHandler(),
+        OrdersListToolHandler(mock(), mock()),
+        OrdersGetToolHandler(mock(), mock()),
         OrdersUpdateToolHandler(),
         OrdersBulkUpdateToolHandler(),
         ProductsListToolHandler(),
