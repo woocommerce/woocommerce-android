@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.login.qrlogin
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -33,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -120,6 +124,7 @@ fun QrLoginPrologueScreen(
 
 @Composable
 private fun Hero() {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,14 +141,35 @@ private fun Hero() {
             fontWeight = FontWeight.SemiBold
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        Text(
-            text = stringResource(id = R.string.login_qr_prologue_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
-            color = colorResource(id = R.color.prologue_login_on_background_secondary),
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
-        UrlBadge()
+        if (isLandscape) {
+            // In landscape the stacked subtitle + URL pill push the bottom CTAs off-screen.
+            // Render them side-by-side instead so the screen fits without scrolling.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(id = R.dimen.major_100),
+                    Alignment.CenterHorizontally
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login_qr_prologue_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colorResource(id = R.color.prologue_login_on_background_secondary),
+                    textAlign = TextAlign.End
+                )
+                UrlBadge()
+            }
+        } else {
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = colorResource(id = R.color.prologue_login_on_background_secondary),
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
+            UrlBadge()
+        }
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_step_hint),
