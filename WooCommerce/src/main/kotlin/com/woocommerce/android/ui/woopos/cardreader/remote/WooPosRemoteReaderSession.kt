@@ -118,10 +118,13 @@ class WooPosRemoteReaderSession @Inject constructor(
         monitorScope = scope
         scope.launch {
             watchedClient.connectionClosed.collect { isClosed ->
-                if (isClosed && client === watchedClient && _state.value is State.Connected) {
-                    logger.d("Remote reader connection closed by the phone")
-                    disconnectInternal()
-                    _state.value = State.Idle
+                if (!isClosed) return@collect
+                mutex.withLock {
+                    if (client === watchedClient && _state.value is State.Connected) {
+                        logger.d("Remote reader connection closed by the phone")
+                        disconnectInternal()
+                        _state.value = State.Idle
+                    }
                 }
             }
         }
