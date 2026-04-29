@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -10,7 +10,7 @@ class RetryPolicyTest {
     @Test
     fun `given network error before visible output, when deciding, then RetryNow is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.NETWORK, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.NETWORK, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat(decision).isInstanceOf(RetryDecision.RetryNow::class.java)
     }
@@ -18,7 +18,7 @@ class RetryPolicyTest {
     @Test
     fun `given timeout error before visible output, when deciding, then RetryNow is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.TIMEOUT, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.TIMEOUT, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat(decision).isInstanceOf(RetryDecision.RetryNow::class.java)
     }
@@ -26,7 +26,7 @@ class RetryPolicyTest {
     @Test
     fun `given rate limit error before visible output, when deciding, then RetryNow is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.RATE_LIMIT, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.RATE_LIMIT, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat(decision).isInstanceOf(RetryDecision.RetryNow::class.java)
     }
@@ -34,7 +34,7 @@ class RetryPolicyTest {
     @Test
     fun `given network error after visible output, when deciding, then ShowManualRetry is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.NETWORK, visibleOutputStarted = true, retryCount = 0)
+            LoopFailureContext(ChatStreamError.NETWORK, visibleOutputStarted = true, retryCount = 0)
         )
         assertThat(decision).isEqualTo(RetryDecision.ShowManualRetry)
     }
@@ -42,7 +42,7 @@ class RetryPolicyTest {
     @Test
     fun `given auth error before visible output, when deciding, then DoNotRetry is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.AUTH, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.AUTH, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
     }
@@ -50,7 +50,7 @@ class RetryPolicyTest {
     @Test
     fun `given unknown error before visible output, when deciding, then DoNotRetry is returned`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.UNKNOWN, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.UNKNOWN, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
     }
@@ -59,7 +59,7 @@ class RetryPolicyTest {
     fun `given network error and retry count at max, when deciding, then ShowManualRetry is returned`() {
         val decision = policy.decide(
             LoopFailureContext(
-                AssistantErrorKind.NETWORK,
+                ChatStreamError.NETWORK,
                 visibleOutputStarted = false,
                 retryCount = ConservativeRetryPolicy.MAX_AUTO_RETRIES
             )
@@ -70,7 +70,7 @@ class RetryPolicyTest {
     @Test
     fun `given RetryNow decision, when inspecting backoff, then positive backoff is set`() {
         val decision = policy.decide(
-            LoopFailureContext(AssistantErrorKind.NETWORK, visibleOutputStarted = false, retryCount = 0)
+            LoopFailureContext(ChatStreamError.NETWORK, visibleOutputStarted = false, retryCount = 0)
         )
         assertThat((decision as RetryDecision.RetryNow).backoffMs).isGreaterThan(0)
     }

@@ -2,7 +2,7 @@ package com.woocommerce.android.aiassistant.chat
 
 import com.woocommerce.android.aiassistant.chat.openai.OpenAiStreamChunk
 import com.woocommerce.android.aiassistant.chat.openai.toEvents
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.extensions.rethrow
@@ -49,7 +49,7 @@ internal class ChatStreamParser @Inject constructor(
             .getOrElse {
                 emit(
                     AssistantEvent.Failed(
-                        kind = AssistantErrorKind.INVALID_STREAM,
+                        kind = ChatStreamError.INVALID_STREAM,
                         cause = MalformedChunkException(payload, it)
                     )
                 )
@@ -61,7 +61,7 @@ internal class ChatStreamParser @Inject constructor(
             true
         }.rethrow<CancellationException, _>()
             .getOrElse {
-                emit(AssistantEvent.Failed(kind = AssistantErrorKind.INVALID_STREAM, cause = it))
+                emit(AssistantEvent.Failed(kind = ChatStreamError.INVALID_STREAM, cause = it))
                 false
             }
     }

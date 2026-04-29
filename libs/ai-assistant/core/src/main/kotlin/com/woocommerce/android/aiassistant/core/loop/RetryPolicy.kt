@@ -1,9 +1,9 @@
 package com.woocommerce.android.aiassistant.core.loop
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 
 data class LoopFailureContext(
-    val errorKind: AssistantErrorKind,
+    val errorKind: ChatStreamError,
     val visibleOutputStarted: Boolean,
     val retryCount: Int,
 )
@@ -23,9 +23,9 @@ object ConservativeRetryPolicy : RetryPolicy {
     private const val BACKOFF_MS = 500L
 
     private val retryableKinds = setOf(
-        AssistantErrorKind.NETWORK,
-        AssistantErrorKind.TIMEOUT,
-        AssistantErrorKind.RATE_LIMIT,
+        ChatStreamError.NETWORK,
+        ChatStreamError.TIMEOUT,
+        ChatStreamError.RATE_LIMIT,
     )
 
     override fun decide(failure: LoopFailureContext): RetryDecision = when {

@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -261,7 +261,7 @@ class AgenticLoopImplTest {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
                 return when (callCount) {
-                    1 -> flowOf(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                    1 -> flowOf(AssistantEvent.Failed(ChatStreamError.NETWORK))
                     else -> flowOf(AssistantEvent.TextDelta("ok"), AssistantEvent.Finish(FinishReason.STOP))
                 }
             }
@@ -281,7 +281,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
-                return flowOf(AssistantEvent.Failed(AssistantErrorKind.AUTH))
+                return flowOf(AssistantEvent.Failed(ChatStreamError.AUTH))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -300,7 +300,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
-                return flowOf(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                return flowOf(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -318,7 +318,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
                 emit(AssistantEvent.TextDelta("partial"))
-                emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                emit(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -335,7 +335,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
                 emit(AssistantEvent.TextDelta("partial"))
-                emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                emit(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)

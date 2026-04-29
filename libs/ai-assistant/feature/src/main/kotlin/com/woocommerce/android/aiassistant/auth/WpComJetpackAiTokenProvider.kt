@@ -24,7 +24,7 @@ import javax.inject.Singleton
  *    one mint, not N.
  *  - Throws [AssistantAuthException] for every recoverable failure surface
  *    (no selected site, missing/invalid token, REST error). The chat layer
- *    converts that to `AssistantErrorKind.AUTH`.
+ *    converts that to `ChatStreamError.AUTH`.
  */
 @Singleton
 internal class WpComJetpackAiTokenProvider @Inject constructor(
