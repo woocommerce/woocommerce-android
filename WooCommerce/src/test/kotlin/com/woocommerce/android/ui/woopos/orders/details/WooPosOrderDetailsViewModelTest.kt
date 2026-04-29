@@ -135,7 +135,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.details.actionsState.actions).isNotNull()
+        assertThat(loaded.details.actionsState.actions).isNotEmpty()
     }
 
     @Test
