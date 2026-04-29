@@ -36,8 +36,10 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         }
 
         val site = selectedSite.get()
-        val countryCode = wooStore.getStoreCountryCode(site)
-            ?: return Result.Failed("Store country code unavailable")
+        val countryCode = wooStore.getStoreCountryCode(site) ?: run {
+            logger.e("Remote payment aborted: store country code unavailable")
+            return Result.Failed(genericFailureMessage())
+        }
 
         val paymentInfo = PaymentInfo(
             paymentDescription = cardReaderPaymentOrderHelper.getPaymentDescription(order),

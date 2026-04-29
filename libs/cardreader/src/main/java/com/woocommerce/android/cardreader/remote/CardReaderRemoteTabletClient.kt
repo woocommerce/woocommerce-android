@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import java.io.IOException
 import java.util.UUID
 
 interface CardReaderRemoteTabletClient {
@@ -123,6 +124,9 @@ internal class DefaultCardReaderRemoteTabletClient(
         } catch (cancel: CancellationException) {
             disconnect()
             throw cancel
+        } catch (cause: IOException) {
+            disconnect()
+            ConnectOutcome.Failed(IllegalStateException(CONNECTION_LOST_MESSAGE, cause))
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
             ConnectOutcome.Failed(cause)

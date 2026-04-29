@@ -3627,6 +3627,7 @@
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
     <string name="woopos_battery_low">Card reader battery low</string>
     <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>

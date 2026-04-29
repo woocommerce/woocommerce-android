@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocation
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,6 +36,7 @@ class WooPosRemoteReaderSession @Inject constructor(
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val clientProvider: WooPosRemoteReaderClientProvider,
     private val logger: WooPosLogWrapper,
+    private val resourceProvider: ResourceProvider,
 ) {
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> = _state.asStateFlow()
@@ -108,9 +111,13 @@ class WooPosRemoteReaderSession @Inject constructor(
                     watchForRemoteClose(newClient)
                 }
             is ConnectOutcome.Rejected -> fail("${outcome.code}: ${outcome.description}")
-            is ConnectOutcome.Failed -> fail(
-                "${outcome.cause::class.java.simpleName}: ${outcome.cause.message ?: "Connection failed"}"
-            )
+            is ConnectOutcome.Failed -> {
+                logger.e(
+                    "Remote reader connect failed: ${outcome.cause::class.java.simpleName}",
+                    outcome.cause
+                )
+                fail(resourceProvider.getString(R.string.woopos_remote_reader_connect_failed_generic))
+            }
         }
     }
 
@@ -120,10 +127,13 @@ class WooPosRemoteReaderSession @Inject constructor(
         monitorScope = scope
         scope.launch {
             watchedClient.connectionClosed.collect { isClosed ->
-                if (isClosed && client === watchedClient && _state.value is State.Connected) {
-                    logger.d("Remote reader connection closed by the phone")
-                    disconnectInternal()
-                    _state.value = State.Idle
+                if (!isClosed) return@collect
+                mutex.withLock {
+                    if (client === watchedClient && _state.value is State.Connected) {
+                        logger.d("Remote reader connection closed by the phone")
+                        disconnectInternal()
+                        _state.value = State.Idle
+                    }
                 }
             }
         }

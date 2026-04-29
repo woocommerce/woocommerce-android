@@ -133,6 +133,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun collectPaymentRemote() {
+        activePaymentMode = PaymentMode.REMOTE
         if (!networkStatus.isConnected()) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
@@ -145,7 +146,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
         val order = this.order ?: return
 
         remotePaymentJob?.cancel()
-        activePaymentMode = PaymentMode.REMOTE
         remotePaymentJob = viewModelScope.launch {
             _state.value = WooPosCardPaymentState.PaymentInProgress(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
@@ -166,6 +166,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
+        activePaymentMode = PaymentMode.BLUETOOTH
         if (!networkStatus.isConnected()) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
@@ -178,7 +179,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
         if (cardReaderFacade.readerStatus.value !is Connected) return
 
         cardReaderPaymentController?.stop()
-        activePaymentMode = PaymentMode.BLUETOOTH
         cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
