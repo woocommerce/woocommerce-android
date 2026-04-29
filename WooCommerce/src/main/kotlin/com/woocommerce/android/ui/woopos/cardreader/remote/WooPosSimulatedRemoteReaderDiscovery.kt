@@ -11,7 +11,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
     private val selectedSite: SelectedSite,
 ) : WooPosPhoneDiscoverySource {
     override fun discover(): Flow<WooPosPhoneDiscoveryEvent> = flow {
-        val siteId = selectedSite.get().siteId
+        val siteId = selectedSite.get().remoteId().value
         delay(FIRST_PHONE_DELAY_MS)
         emit(
             WooPosPhoneDiscoveryEvent.Added(

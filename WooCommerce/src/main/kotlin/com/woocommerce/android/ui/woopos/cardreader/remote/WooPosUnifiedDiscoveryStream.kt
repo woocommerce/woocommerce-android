@@ -113,7 +113,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
-            val expectedSiteId = selectedSite.getOrNull()?.siteId
+            val expectedSiteId = selectedSite.getOrNull()?.remoteId()?.value
             if (phone.siteId != expectedSiteId) {
                 logger.d("Dropping NSD phone with site mismatch (got=${phone.siteId}, expected=$expectedSiteId)")
                 return@withLock

@@ -60,7 +60,7 @@ class CardReaderModeViewModel @Inject constructor(
 
     private fun startSessionIfNeeded() {
         if (sessionStarted) return
-        val siteId = selectedSite.getOrNull()?.siteId ?: return
+        val siteId = selectedSite.getOrNull()?.remoteId()?.value ?: return
         sessionStarted = true
 
         if (!cardReaderManager.initialized) {
