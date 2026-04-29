@@ -206,6 +206,53 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given revenue stats with all sales types, when screen starts, then UI model exposes all sales types`() =
+        testBlocking {
+            val revenueStats = WCRevenueStatsModel(
+                localSiteId = LocalId(1),
+                interval = "",
+                startDate = "",
+                endDate = "",
+                data = """
+                    [
+                        {
+                            "interval": "2026-04-27",
+                            "subtotals": {
+                                "orders_count": 3,
+                                "gross_sales": 45.25,
+                                "net_revenue": 30.15,
+                                "total_sales": 50.35
+                            }
+                        }
+                    ]
+                """.trimIndent(),
+                total = """
+                    {
+                        "orders_count": 6,
+                        "gross_sales": 150.25,
+                        "net_revenue": 120.15,
+                        "total_sales": 170.35
+                    }
+                """.trimIndent(),
+                rangeId = "",
+            )
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(revenueStats)))
+            }
+
+            val content = viewModel.revenueStatsState.value as DashboardStatsViewModel.RevenueStatsViewState.Content
+            val uiModel = content.revenueStats!!
+
+            Assertions.assertThat(uiModel.grossSales).isEqualTo(150.25)
+            Assertions.assertThat(uiModel.netSales).isEqualTo(120.15)
+            Assertions.assertThat(uiModel.totalSales).isEqualTo(170.35)
+            Assertions.assertThat(uiModel.intervalList.first().grossSales).isEqualTo(45.25)
+            Assertions.assertThat(uiModel.intervalList.first().netSales).isEqualTo(30.15)
+            Assertions.assertThat(uiModel.intervalList.first().sales).isEqualTo(50.35)
+        }
+
+    @Test
     fun `when stats granularity changes, then selected option is saved into prefs`() =
         testBlocking {
             setup()
