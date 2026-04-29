@@ -130,7 +130,7 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     private fun mapToConnectionLostIfIo(cause: Exception): Exception =
-        if (cause is java.io.IOException) IllegalStateException(CONNECTION_LOST_MESSAGE) else cause
+        if (cause is java.io.IOException) IllegalStateException(CONNECTION_LOST_MESSAGE, cause) else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
