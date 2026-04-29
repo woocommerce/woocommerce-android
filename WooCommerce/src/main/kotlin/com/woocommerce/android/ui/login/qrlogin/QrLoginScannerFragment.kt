@@ -47,6 +47,7 @@ class QrLoginScannerFragment : Fragment() {
     interface Listener {
         fun onQrLoginCompleted(localSiteId: Int)
         fun onQrLoginFallbackClicked()
+        fun onQrLoginSiteUrlPrefill(siteUrl: String)
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -161,6 +162,8 @@ class QrLoginScannerFragment : Fragment() {
                 is QrLoginScannerViewModel.Dispatch.LoggedIn -> handleLoggedIn(event.localSiteId)
                 is QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl ->
                     openWpComMagicLinkUrl(event.url)
+                is QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry ->
+                    routeToSiteAddressEntry(event.siteUrl)
             }
         }
     }
@@ -206,5 +209,16 @@ class QrLoginScannerFragment : Fragment() {
     private fun openWpComMagicLinkUrl(url: String) {
         scannerViewModel.stopCodesRecognition()
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
+    }
+
+    /**
+     * Hand the site URL off to the host activity, which navigates to the existing site-address
+     * login screen with the URL prefilled and validation auto-started.
+     */
+    private fun routeToSiteAddressEntry(siteUrl: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginSiteUrlPrefill(siteUrl)
     }
 }
