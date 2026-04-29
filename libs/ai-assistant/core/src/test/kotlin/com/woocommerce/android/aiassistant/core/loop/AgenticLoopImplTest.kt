@@ -245,7 +245,7 @@ class AgenticLoopImplTest {
                 }
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         loop.runTurn("conv", "go", history, context).toList()
 
