@@ -111,6 +111,19 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     ) {
         mutex.withLock {
             val fingerprint = phone.fingerprintBase64
+
+            // The phone may have re-registered with a new fingerprint+name without us
+            // receiving the Lost event for the previous one (Android NSD goodbye is
+            // unreliable). Drop any earlier entries from the same host so we don't show
+            // the same device twice.
+            val staleNames = state.phonesByFingerprint.values
+                .filter { it.host == phone.host && it.fingerprintBase64 != fingerprint }
+                .map { it.name }
+            staleNames.forEach { name ->
+                val staleFp = state.fingerprintByName.remove(name)
+                if (staleFp != null) state.phonesByFingerprint.remove(staleFp)
+            }
+
             val isUpdate = state.phonesByFingerprint.containsKey(fingerprint)
             if (isUpdate || state.phonesByFingerprint.size < MAX_DISCOVERED_PHONES) {
                 state.phonesByFingerprint[fingerprint] = phone

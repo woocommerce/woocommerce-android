@@ -27,6 +27,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 
 @Singleton
 class WooPosRemoteReaderSession @Inject constructor(
@@ -62,12 +63,16 @@ class WooPosRemoteReaderSession @Inject constructor(
         return connected
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun fetchToken(): String? {
-        val token = runCatching { cardReaderStore.fetchConnectionToken() }
-            .getOrElse {
-                fail("Failed to fetch connection token: ${it.message}")
-                return null
-            }
+        val token = try {
+            cardReaderStore.fetchConnectionToken()
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (cause: Throwable) {
+            fail("Failed to fetch connection token: ${cause.message}")
+            return null
+        }
         if (token.isBlank()) {
             fail("Empty connection token")
             return null
@@ -141,9 +146,13 @@ class WooPosRemoteReaderSession @Inject constructor(
     suspend fun sendCollectPayment(
         paymentInfo: PaymentInfo,
         timeoutMillis: Long = CardReaderRemoteTabletClient.DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
-    ): CollectPaymentOutcome =
-        client?.collectPayment(paymentInfo, timeoutMillis)
-            ?: CollectPaymentOutcome.Failed(IllegalStateException("Remote session is not connected"))
+    ): CollectPaymentOutcome {
+        val activeClient = mutex.withLock {
+            if (_state.value !is State.Connected) return@withLock null
+            client
+        } ?: return CollectPaymentOutcome.Failed(IllegalStateException("Reader not connected"))
+        return activeClient.collectPayment(paymentInfo, timeoutMillis)
+    }
 
     private fun disconnectInternal() {
         monitorScope?.cancel()

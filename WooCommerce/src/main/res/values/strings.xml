@@ -3809,6 +3809,9 @@
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
     <string name="woo_pos_payment_failed_go_back">Go back</string>
 
+    <string name="woopos_remote_payment_failed_connection_lost">Connection to the phone reader was lost. Please reconnect and try again.</string>
+    <string name="woopos_remote_payment_failed_generic">Something went wrong. Please try again.</string>
+
     <string name="woopos_card_payment_done_button">Done</string>
 
     <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>

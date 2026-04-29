@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
+import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository.LocationIdFetchingResult
@@ -20,8 +23,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import java.net.InetAddress
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosRemoteReaderSessionTest {
@@ -95,6 +102,51 @@ class WooPosRemoteReaderSessionTest {
         // THEN
         assertThat(state).isInstanceOf(WooPosRemoteReaderSession.State.Connected::class.java)
     }
+
+    @Test
+    fun `given fetchConnectionToken throws CancellationException, when connect, then exception is rethrown`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderStore.fetchConnectionToken()).thenThrow(CancellationException("cancelled"))
+            val session = createSession()
+
+            // WHEN / THEN
+            try {
+                session.connect(phone(isSimulated = false))
+                assertThat(false).withFailMessage("Expected CancellationException").isTrue()
+            } catch (e: CancellationException) {
+                assertThat(e.message).isEqualTo("cancelled")
+            }
+        }
+
+    @Test
+    fun `given session is not connected, when sendCollectPayment, then returns Failed without calling client`() =
+        runTest {
+            // GIVEN
+            val session = createSession()
+            val paymentInfo = PaymentInfo(
+                paymentDescription = "desc",
+                statementDescriptor = StatementDescriptor(null),
+                orderId = 1L,
+                amount = BigDecimal.ONE,
+                currency = "USD",
+                customerEmail = null,
+                isPluginCanSendReceipt = false,
+                customerName = null,
+                storeName = null,
+                siteUrl = null,
+                orderKey = null,
+                feeAmount = null,
+                channel = null,
+            )
+
+            // WHEN
+            val outcome = session.sendCollectPayment(paymentInfo)
+
+            // THEN
+            assertThat(outcome).isInstanceOf(CollectPaymentOutcome.Failed::class.java)
+            verify(client, never()).collectPayment(any(), any())
+        }
 
     @Test
     fun `when disconnect, then state is Idle`() = runTest {

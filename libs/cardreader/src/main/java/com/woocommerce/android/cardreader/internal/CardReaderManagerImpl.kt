@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
@@ -104,7 +105,14 @@ internal class CardReaderManagerImpl(
 
     override suspend fun disconnectReader(): Boolean {
         if (!terminal.isInitialized()) error("Terminal not initialized")
-        if (terminal.getConnectedReader() == null) return false
+        if (terminal.getConnectedReader() == null) {
+            // Don't clobber Reconnecting — that's a legit transient state where Stripe's
+            // auto-reconnect is in flight and connectedReader is null by design.
+            if (terminalListener.readerStatus.value is CardReaderStatus.Connected) {
+                terminalListener.updateReaderStatus(CardReaderStatus.NotConnected())
+            }
+            return false
+        }
         return connectionManager.disconnectReader()
     }
 

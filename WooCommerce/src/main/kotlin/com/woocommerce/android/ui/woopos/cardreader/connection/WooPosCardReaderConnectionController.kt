@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("LongParameterList")
 class WooPosCardReaderConnectionController(
@@ -285,15 +286,23 @@ class WooPosCardReaderConnectionController(
             scope.launch { remoteReaderSession.disconnect() }
         }
         enterScanningState()
-        startDiscovery()
         emitEvent(ControllerEvent.Cancelled)
     }
 
     suspend fun disconnect() {
-        appPrefsWrapper.removeLastConnectedCardReaderId()
-        appPrefsWrapper.removeLastConnectedPhoneName()
-        remoteReaderSession.disconnect()
-        cardReaderManager.disconnectReader()
+        withContext(dispatchers.io) {
+            logger.d("disconnect(): clearing prefs")
+            appPrefsWrapper.removeLastConnectedCardReaderId()
+            appPrefsWrapper.removeLastConnectedPhoneName()
+
+            logger.d("disconnect(): stopping remote session")
+            runCatching { remoteReaderSession.disconnect() }
+                .onFailure { logger.e("disconnect(): remoteReaderSession.disconnect() failed - ${it.message}") }
+
+            logger.d("disconnect(): calling cardReaderManager.disconnectReader()")
+            val result = cardReaderManager.disconnectReader()
+            logger.d("disconnect(): cardReaderManager.disconnectReader() returned $result")
+        }
     }
 
     private fun initializeCardReaderManagerIfNeeded() {
@@ -309,6 +318,16 @@ class WooPosCardReaderConnectionController(
     private fun startDiscovery() {
         discoveryJob?.cancel()
         discoveryJob = scope.launch {
+            when (cardReaderManager.readerStatus.value) {
+                is CardReaderStatus.Connected -> Unit
+                is CardReaderStatus.Reconnecting ->
+                    runCatching { cardReaderManager.cancelReconnection() }
+                        .onFailure { logger.e("startDiscovery(): cancelReconnection() failed - ${it.message}") }
+                is CardReaderStatus.Connecting,
+                is CardReaderStatus.NotConnected ->
+                    runCatching { cardReaderManager.disconnectReader() }
+                        .onFailure { logger.e("startDiscovery(): disconnectReader() failed - ${it.message}") }
+            }
             unifiedDiscoveryStream
                 .discover(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
@@ -467,6 +486,7 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Failed -> {
                 logger.e("Remote reader connection failed: ${result.message}")
                 tracker.trackConnectionFailed()
+                appPrefsWrapper.removeLastConnectedPhoneName()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
                     onRetryClicked = { onPhoneConnectClicked(phone) },
