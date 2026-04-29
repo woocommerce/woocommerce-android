@@ -128,6 +128,11 @@ fun QrLoginPrologueScreen(
 @Composable
 private fun Hero() {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    if (isLandscape) HeroLandscape() else HeroPortrait()
+}
+
+@Composable
+private fun HeroPortrait() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,35 +149,14 @@ private fun Hero() {
             fontWeight = FontWeight.SemiBold
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        if (isLandscape) {
-            // In landscape the stacked subtitle + URL pill push the bottom CTAs off-screen.
-            // Render them side-by-side instead so the screen fits without scrolling.
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    dimensionResource(id = R.dimen.major_100),
-                    Alignment.CenterHorizontally
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_qr_prologue_subtitle),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = colorResource(id = R.color.prologue_login_on_background_secondary),
-                    textAlign = TextAlign.End
-                )
-                UrlBadge()
-            }
-        } else {
-            Text(
-                text = stringResource(id = R.string.login_qr_prologue_subtitle),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colorResource(id = R.color.prologue_login_on_background_secondary),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
-            UrlBadge()
-        }
+        Text(
+            text = stringResource(id = R.string.login_qr_prologue_subtitle),
+            style = MaterialTheme.typography.bodyLarge,
+            color = colorResource(id = R.color.prologue_login_on_background_secondary),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
+        UrlBadge()
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         Text(
             text = stringResource(id = R.string.login_qr_prologue_step_hint),
@@ -180,6 +164,54 @@ private fun Hero() {
             color = colorResource(id = R.color.prologue_login_on_background_tertiary),
             textAlign = TextAlign.Center
         )
+    }
+}
+
+/**
+ * Landscape phones only have ~400dp of vertical space, so the portrait hero pushes the bottom
+ * CTAs off-screen. Lay out QR icon on the left and text content on the right so everything
+ * fits without scrolling and the URL pill is visible alongside the "On your computer, visit:"
+ * label as Jorge requested.
+ */
+@Composable
+private fun HeroLandscape() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimensionResource(id = R.dimen.major_100)),
+        horizontalArrangement = Arrangement.spacedBy(
+            dimensionResource(id = R.dimen.major_150),
+            Alignment.CenterHorizontally
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        QrIconBadge()
+        Column(horizontalAlignment = Alignment.Start) {
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = colorResource(id = R.color.prologue_login_on_background),
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login_qr_prologue_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colorResource(id = R.color.prologue_login_on_background_secondary)
+                )
+                UrlBadge()
+            }
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_step_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.prologue_login_on_background_tertiary)
+            )
+        }
     }
 }
 
