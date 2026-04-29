@@ -5,8 +5,11 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.BatteryState
@@ -27,6 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.net.InetAddress
 
 @ExperimentalCoroutinesApi
 class WooPosHomeFloatingToolbarViewModelTest {
@@ -45,6 +49,9 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val controller: WooPosCardReaderConnectionController = mock()
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
         on { create(any()) }.thenReturn(controller)
+    }
+    private val remoteReaderSession: WooPosRemoteReaderSession = mock {
+        on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
     }
 
     @Test
@@ -376,12 +383,34 @@ class WooPosHomeFloatingToolbarViewModelTest {
             .isEqualTo(BatteryState.NOMINAL)
     }
 
+    @Test
+    fun `given remote session is Connected, when initialized, then state should be Connected`() = runTest {
+        // GIVEN
+        val phone = WooPosDiscoveredReader.Phone(
+            name = "Andrey's phone",
+            host = InetAddress.getByName("127.0.0.1"),
+            port = 0,
+            fingerprintBase64 = "fp",
+        )
+        whenever(remoteReaderSession.state).thenReturn(
+            MutableStateFlow(WooPosRemoteReaderSession.State.Connected(phone, readerSerial = "serial"))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.state.value.cardReaderStatus)
+            .isInstanceOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected::class.java)
+    }
+
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
         networkStatus,
         resourceProvider,
         analyticsTracker,
+        WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         controllerFactory
     )
 }

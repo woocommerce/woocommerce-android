@@ -10,7 +10,9 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -29,11 +31,16 @@ class WooPosRemoteReaderSessionTest {
     private val cardReaderStore: CardReaderStore = mock()
     private val locationRepository: CardReaderLocationRepository = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val client: CardReaderRemoteTabletClient = mock()
+    private val client: CardReaderRemoteTabletClient = mock {
+        on { connectionClosed }.thenReturn(MutableStateFlow(false))
+    }
     private val clientProvider: WooPosRemoteReaderClientProvider = mock {
         on { create() }.thenReturn(client)
     }
     private val logger: WooPosLogWrapper = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) }.thenReturn("")
+    }
 
     @Test
     fun `given simulated reader, when connect, then state is Connected`() = runTest {
@@ -107,6 +114,7 @@ class WooPosRemoteReaderSessionTest {
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         clientProvider = clientProvider,
         logger = logger,
+        resourceProvider = resourceProvider,
     )
 
     private fun phone(isSimulated: Boolean) = WooPosDiscoveredReader.Phone(
