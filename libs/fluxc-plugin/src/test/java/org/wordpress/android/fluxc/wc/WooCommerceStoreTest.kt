@@ -298,7 +298,7 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetch analytics order date type fails, the error returned`() {
+    fun `when fetch analytics order date type fails, then the error is returned`() {
         runBlocking {
             whenever(wcrestClient.fetchAnalyticsOrderDateType(site)).thenReturn(WooPayload(error))
 
@@ -309,7 +309,7 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetch analytics order date type succeeds, the success returned`() {
+    fun `when fetch analytics order date type succeeds, then the success is returned`() {
         runBlocking {
             whenever(wcrestClient.fetchAnalyticsOrderDateType(site))
                 .thenReturn(WooPayload(WCAnalyticsOrderDateType.CREATED))
@@ -322,7 +322,7 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when update analytics order date type succeeds, the success returned`() {
+    fun `when update analytics order date type succeeds, then the success is returned`() {
         runBlocking {
             whenever(wcrestClient.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED))
                 .thenReturn(WooPayload(WCAnalyticsOrderDateType.COMPLETED))

@@ -68,7 +68,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetching analytics order date type succeeds then a success response is returned`() = testBlocking {
+    fun `when fetching analytics order date type succeeds, then a success response is returned`() = testBlocking {
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
         whenever(wooCommerceStore.fetchAnalyticsOrderDateType(defaultSiteModel))
             .thenReturn(WooResult(WCAnalyticsOrderDateType.CREATED))
@@ -79,7 +79,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetching analytics order date type fails then a failure response is returned`() = testBlocking {
+    fun `when fetching analytics order date type fails, then a failure response is returned`() = testBlocking {
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
         whenever(wooCommerceStore.fetchAnalyticsOrderDateType(defaultSiteModel))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)))
@@ -90,7 +90,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when updating analytics order date type succeeds then a success response is returned`() = testBlocking {
+    fun `when updating analytics order date type succeeds, then a success response is returned`() = testBlocking {
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
         whenever(
             wooCommerceStore.updateAnalyticsOrderDateType(defaultSiteModel, WCAnalyticsOrderDateType.COMPLETED)
@@ -102,7 +102,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when updating analytics order date type fails then a failure response is returned`() = testBlocking {
+    fun `when updating analytics order date type fails, then a failure response is returned`() = testBlocking {
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
         whenever(
             wooCommerceStore.updateAnalyticsOrderDateType(defaultSiteModel, WCAnalyticsOrderDateType.COMPLETED)
@@ -197,7 +197,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetching revenue stats succeeds then stats are read by revenue range id`() = testBlocking {
+    fun `when fetching revenue stats succeeds, then stats are read by revenue range id`() = testBlocking {
         val granularity = WCStatsStore.StatsGranularity.DAYS
         val startDate = "2024-01-25 00:00:00"
         val endDate = "2024-01-25 23:59:59"

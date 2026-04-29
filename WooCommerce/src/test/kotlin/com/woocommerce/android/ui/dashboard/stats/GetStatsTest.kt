@@ -344,7 +344,7 @@ class GetStatsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given order date type, when get stats, then fetches revenue stats with date type cache key`() =
+    fun `given order date type, when get stats, then fetches revenue stats with date type cache key`() =
         testBlocking {
             givenGetRevenueStats(Result.success(null))
 
