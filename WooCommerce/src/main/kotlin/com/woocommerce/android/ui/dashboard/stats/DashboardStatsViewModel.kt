@@ -41,7 +41,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -109,10 +108,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
-    private val _selectedRevenueStatsType = MutableStateFlow(
+    private val _selectedRevenueStatsType = MutableLiveData(
         RevenueStatsType.fromName(appPrefsWrapper.getDashboardRevenueStatsType())
     )
-    val selectedRevenueStatsType = _selectedRevenueStatsType.asStateFlow()
+    val selectedRevenueStatsType: LiveData<RevenueStatsType> = _selectedRevenueStatsType
 
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
@@ -456,8 +455,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
         TOTAL("total");
 
         companion object {
+            val DEFAULT = TOTAL
+
             fun fromName(name: String): RevenueStatsType =
-                entries.find { it.name == name } ?: TOTAL
+                entries.find { it.name == name } ?: DEFAULT
         }
     }
 

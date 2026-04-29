@@ -29,7 +29,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -65,7 +64,8 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
-    val selectedRevenueStatsType by viewModel.selectedRevenueStatsType.collectAsStateWithLifecycle()
+    val selectedRevenueStatsType by viewModel.selectedRevenueStatsType
+        .observeAsState(DashboardStatsViewModel.RevenueStatsType.DEFAULT)
 
     HandleEvents(
         event = viewModel.event,
