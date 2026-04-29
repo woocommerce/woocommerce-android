@@ -43,8 +43,8 @@ import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityStr
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.BarChartGestureListener
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsType
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
