@@ -344,6 +344,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
         return RevenueStatsUiModel(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
+            grossSales = totals?.grossSales,
+            netSales = totals?.netRevenue,
             totalSales = totals?.totalSales,
             currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
             rangeId = rangeId
@@ -355,7 +357,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
             StatsIntervalUiModel(
                 it.interval,
                 it.subtotals?.ordersCount,
-                it.subtotals?.totalSales
+                it.subtotals?.totalSales,
+                it.subtotals?.grossSales,
+                it.subtotals?.netRevenue
             )
         }
 
@@ -399,6 +403,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
         val totalOrdersCount: Int? = null,
+        val grossSales: Double? = null,
+        val netSales: Double? = null,
         val totalSales: Double? = null,
         val currencyCode: String?,
         val rangeId: String
@@ -407,7 +413,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
     data class StatsIntervalUiModel(
         val interval: String? = null,
         val ordersCount: Long? = null,
-        val sales: Double? = null
+        val sales: Double? = null,
+        val grossSales: Double? = null,
+        val netSales: Double? = null
     )
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
