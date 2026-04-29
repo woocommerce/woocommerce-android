@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefund
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
+import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
@@ -112,11 +113,11 @@ fun WooPosOrdersScreen(
         onRefresh = listViewModel::onRefresh,
         onOrderSelected = if (isPhoneLayout) {
             { orderId ->
-                listViewModel.trackOrderTapped(orderId)
+                listViewModel.onOrderSelected(orderId, WooPosScreenType.SinglePane)
                 onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId))
             }
         } else {
-            listViewModel::onOrderSelected
+            { orderId -> listViewModel.onOrderSelected(orderId, WooPosScreenType.DualPane) }
         },
         onEndOfOrdersListReached = listViewModel::onEndOfOrdersListReached,
         onPaginationErrorTryAgain = listViewModel::onPaginationErrorTryAgain,
