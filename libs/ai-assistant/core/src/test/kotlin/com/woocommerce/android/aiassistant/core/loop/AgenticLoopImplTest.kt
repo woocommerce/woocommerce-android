@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
@@ -478,5 +479,51 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+    }
+
+    @Test
+    fun `given stream fails with auth error, when running turn, then Finished carries AssistantError Auth`() = runTest {
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
+                flowOf(AssistantEvent.Failed(ChatStreamError.AUTH))
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+        assertThat(finished.error).isEqualTo(AssistantError.Auth)
+    }
+
+    @Test
+    fun `given stream fails with INVALID_STREAM after partial text, when running turn, then Finished carries UpstreamFailure`() = runTest {
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
+                emit(AssistantEvent.TextDelta("partial"))
+                emit(AssistantEvent.Failed(ChatStreamError.INVALID_STREAM))
+            }
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure)
+    }
+
+    @Test
+    fun `given stream completes successfully, when running turn, then Finished error is null`() = runTest {
+        val loop = loopWith(
+            flowOf(AssistantEvent.TextDelta("Hi"), AssistantEvent.Finish(FinishReason.STOP))
+        )
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+        assertThat(finished.error).isNull()
     }
 }

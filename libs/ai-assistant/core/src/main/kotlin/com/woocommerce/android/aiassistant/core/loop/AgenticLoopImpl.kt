@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.toAssistantError
@@ -71,7 +72,14 @@ class AgenticLoopImpl(
             newTurnMessages.add(newAssistantMsg)
 
             if (stream.finishReason == null) {
-                emit(LoopEvent.Finished(LoopOutcome.FAILED, history + newTurnMessages, retryAvailable = false))
+                emit(
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.FAILED,
+                        updatedHistory = history + newTurnMessages,
+                        retryAvailable = false,
+                        error = AssistantError.UpstreamFailure,
+                    )
+                )
                 return@flow
             }
 
@@ -143,12 +151,26 @@ class AgenticLoopImpl(
                 }
                 is RetryDecision.ShowManualRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = true))
+                    emit(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.FAILED,
+                            updatedHistory = failedHistory,
+                            retryAvailable = true,
+                            error = widenedError,
+                        )
+                    )
                     return null
                 }
                 is RetryDecision.DoNotRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = false))
+                    emit(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.FAILED,
+                            updatedHistory = failedHistory,
+                            retryAvailable = false,
+                            error = widenedError,
+                        )
+                    )
                     return null
                 }
             }
