@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.core.loop
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
@@ -130,9 +131,10 @@ class AgenticLoopImpl(
                 visibleOutputStarted = visibleOutputStarted,
             )
 
+            val widenedError = failure.kind.toAssistantError(failure.cause)
             when (
                 val decision = retryPolicy.decide(
-                    LoopFailureContext(failure.kind, visibleOutputStarted, retryCount)
+                    LoopFailureContext(widenedError, visibleOutputStarted, retryCount)
                 )
             ) {
                 is RetryDecision.RetryNow -> {
