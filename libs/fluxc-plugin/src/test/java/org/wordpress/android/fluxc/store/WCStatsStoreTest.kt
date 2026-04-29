@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
@@ -373,7 +374,8 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -395,7 +397,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -413,7 +416,8 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -435,7 +439,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -461,7 +466,8 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -482,7 +488,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -500,7 +507,8 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -521,7 +529,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -554,7 +563,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(
             FetchRevenueStatsResponsePayload(
@@ -607,7 +617,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(currentWeekPayload)
         wcStatsStore.fetchRevenueStats(
@@ -654,7 +665,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(currentMonthPayload)
         wcStatsStore.fetchRevenueStats(
@@ -701,7 +713,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(allSiteCurrentDayPayload)
         wcStatsStore.fetchRevenueStats(
@@ -741,7 +754,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
@@ -780,7 +794,8 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull()
             )
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
