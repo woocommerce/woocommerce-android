@@ -45,8 +45,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 
 @Composable
 fun WooPosOrdersLoadingScreen(
-    isPhoneLayout: Boolean = false,
     modifier: Modifier = Modifier,
+    isPhoneLayout: Boolean = false,
 ) {
     if (isPhoneLayout) {
         WooPosOrdersListLoadingPane(

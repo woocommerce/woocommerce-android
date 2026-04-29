@@ -71,7 +71,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
         )
     }
 
-    suspend fun mapOrderDetailsWithoutActions(
+    suspend fun mapOrderDetailsWithoutRefunds(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)

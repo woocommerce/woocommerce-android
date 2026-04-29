@@ -72,6 +72,7 @@ import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewMo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
+import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
@@ -121,10 +122,13 @@ fun WooPosOrdersScreen(
         scrollToTopEvent = listViewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = listViewModel::onRefresh,
-        onOrderSelected = if (isPhoneLayout && !detailViewModel.isSingleOrderMode) {
-            { orderId -> onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId)) }
+        onOrderSelected = if (isPhoneLayout) {
+            { orderId ->
+                listViewModel.onOrderSelected(orderId, WooPosScreenType.SinglePane)
+                onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId))
+            }
         } else {
-            listViewModel::onOrderSelected
+            { orderId -> listViewModel.onOrderSelected(orderId, WooPosScreenType.DualPane) }
         },
         onEndOfOrdersListReached = listViewModel::onEndOfOrdersListReached,
         onPaginationErrorTryAgain = listViewModel::onPaginationErrorTryAgain,
@@ -195,7 +199,8 @@ private fun WooPosOrdersScreen(
                 is WooPosOrdersListState.Content -> {
                     if (isPhoneLayout) {
                         OrdersListPane(
-                            state = listState.withoutSelection(),
+                            state = listState,
+                            isSelectable = false,
                             scrollToTopEvent = scrollToTopEvent,
                             onRefresh = onRefresh,
                             isRefreshing = listState.pullToRefreshState ==
@@ -415,7 +420,8 @@ private fun OrdersListPane(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSelectable: Boolean = true,
 ) {
     Column(
         modifier = modifier.statusBarsPadding()
@@ -452,6 +458,7 @@ private fun OrdersListPane(
             OrdersList(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
+                isSelectable = isSelectable,
                 scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
@@ -476,6 +483,7 @@ private fun OrdersListPane(
 private fun OrdersList(
     modifier: Modifier = Modifier,
     state: WooPosOrdersListState.Content,
+    isSelectable: Boolean = true,
     scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
@@ -487,6 +495,7 @@ private fun OrdersList(
             LoadedOrdersList(
                 modifier = modifier,
                 items = items.items,
+                isSelectable = isSelectable,
                 paginationState = state.paginationState,
                 scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
@@ -538,6 +547,7 @@ private fun OrdersList(
 private fun LoadedOrdersList(
     modifier: Modifier = Modifier,
     items: List<WooPosOrdersState.OrderItemViewState>,
+    isSelectable: Boolean = true,
     paginationState: WooPosPaginationState,
     scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
@@ -584,7 +594,7 @@ private fun LoadedOrdersList(
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
+                isSelected = isSelectable && item.isSelected,
             ) {
                 Row(
                     modifier = Modifier
@@ -685,16 +695,6 @@ private fun OrdersError(
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
-        )
-    )
-}
-
-private fun WooPosOrdersListState.Content.withoutSelection(): WooPosOrdersListState.Content {
-    val items = this.items
-    if (items !is WooPosOrdersListState.Content.Items.Loaded) return this
-    return copy(
-        items = WooPosOrdersListState.Content.Items.Loaded(
-            items.items.map { it.copy(isSelected = false) }
         )
     )
 }

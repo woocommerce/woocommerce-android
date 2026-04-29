@@ -123,7 +123,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
                 return@launch
             }
 
-            val details = orderDetailsMapper.mapOrderDetailsWithoutActions(order)
+            val details = orderDetailsMapper.mapOrderDetailsWithoutRefunds(order)
             _state.value = WooPosOrderDetailsState.Loaded(
                 details = details,
                 dialogState = WooPosOrderDetailsState.DialogState.Hidden
