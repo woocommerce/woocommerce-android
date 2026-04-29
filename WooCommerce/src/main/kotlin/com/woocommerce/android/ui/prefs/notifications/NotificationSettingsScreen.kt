@@ -21,7 +21,10 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrde
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel) {
+fun NotificationSettingsScreen(
+    viewModel: NotificationSettingsViewModel,
+    showSmarterNotifications: Boolean
+) {
     viewModel.newOrderNotificationSoundStatus.observeAsState().value?.let {
         NotificationSettingsScreen(
             orderNotificationSoundStatus = it,

@@ -206,7 +206,12 @@
     <fragment
         android:id="@+id/notificationSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
-        android:label="NotificationSettingsFragment" />
+        android:label="NotificationSettingsFragment">
+        <argument
+            android:name="showSmarterNotifications"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/pluginsFragment"
         android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
