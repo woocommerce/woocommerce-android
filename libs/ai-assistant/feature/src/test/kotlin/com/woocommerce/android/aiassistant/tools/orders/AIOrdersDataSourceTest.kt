@@ -56,7 +56,7 @@ class AIOrdersDataSourceTest {
     @Test
     fun `given no search query, when fetchOrders is called, then store is queried with null search and 20 page size`() =
         runTest {
-            val entity: OrderEntity = mock()
+            val entity = OrderEntity(localSiteId = LocalId(1), orderId = 1L)
             stubFetchOrders(WooResult(listOf(entity)))
 
             val result = dataSource.fetchOrders(search = null)
@@ -138,7 +138,7 @@ class AIOrdersDataSourceTest {
     @Test
     fun `given 20 orders returned, when fetchOrders is called, then canLoadMore is true`() =
         runTest {
-            val entities = (1..20).map { mock<OrderEntity>() }
+            val entities = (1..20).map { i -> OrderEntity(localSiteId = LocalId(1), orderId = i.toLong()) }
             stubFetchOrders(WooResult(entities))
 
             val result = dataSource.fetchOrders(search = null)
@@ -149,7 +149,7 @@ class AIOrdersDataSourceTest {
     @Test
     fun `given fewer than 20 orders returned, when fetchOrders is called, then canLoadMore is false`() =
         runTest {
-            val entities = (1..5).map { mock<OrderEntity>() }
+            val entities = (1..5).map { i -> OrderEntity(localSiteId = LocalId(1), orderId = i.toLong()) }
             stubFetchOrders(WooResult(entities))
 
             val result = dataSource.fetchOrders(search = null)
