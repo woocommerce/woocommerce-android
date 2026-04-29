@@ -271,17 +271,7 @@ private fun RevenueStatsTypeSelector(
     onTypeSelected: (DashboardStatsViewModel.RevenueStatsType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val options = listOf(
-        DashboardStatsViewModel.RevenueStatsType.TOTAL to stringResource(
-            id = R.string.dashboard_stats_revenue_type_total
-        ),
-        DashboardStatsViewModel.RevenueStatsType.GROSS to stringResource(
-            id = R.string.dashboard_stats_revenue_type_gross
-        ),
-        DashboardStatsViewModel.RevenueStatsType.NET to stringResource(
-            id = R.string.dashboard_stats_revenue_type_net
-        )
-    )
+    val options = DashboardStatsViewModel.RevenueStatsType.OPTIONS
     val segmentedButtonColors = SegmentedButtonDefaults.colors(
         activeContainerColor = colorResource(id = R.color.color_primary),
         activeContentColor = colorResource(id = R.color.woo_white),
@@ -290,7 +280,7 @@ private fun RevenueStatsTypeSelector(
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp)
     ) {
-        options.forEachIndexed { index, (type, label) ->
+        options.forEachIndexed { index, type ->
             SegmentedButton(
                 selected = selectedType == type,
                 onClick = { onTypeSelected(type) },
@@ -302,7 +292,7 @@ private fun RevenueStatsTypeSelector(
                     .height(36.dp)
             ) {
                 Text(
-                    text = label,
+                    text = stringResource(id = type.labelRes),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -449,13 +451,14 @@ class DashboardStatsViewModel @AssistedInject constructor(
         }
     }
 
-    enum class RevenueStatsType(val trackingValue: String) {
-        GROSS("gross"),
-        NET("net"),
-        TOTAL("total");
+    enum class RevenueStatsType(@StringRes val labelRes: Int, val trackingValue: String) {
+        GROSS(R.string.dashboard_stats_revenue_type_gross, "gross"),
+        NET(R.string.dashboard_stats_revenue_type_net, "net"),
+        TOTAL(R.string.dashboard_stats_revenue_type_total, "total");
 
         companion object {
             val DEFAULT = TOTAL
+            val OPTIONS = listOf(TOTAL, GROSS, NET)
 
             fun fromName(name: String): RevenueStatsType =
                 entries.find { it.name == name } ?: DEFAULT
