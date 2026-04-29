@@ -4,9 +4,11 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.siteIdHash
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -29,6 +31,7 @@ sealed class WooPosDiscoveredReader {
         val host: InetAddress,
         val port: Int,
         val fingerprintBase64: String,
+        val siteHash: String,
         val isSimulated: Boolean = false,
     ) : WooPosDiscoveredReader() {
         override val transport = WooPosDiscoveryTransport.WifiLan
@@ -52,6 +55,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     private val remoteDiscovery: WooPosRemoteReaderDiscovery,
     private val simulatedRemoteDiscovery: WooPosSimulatedRemoteReaderDiscovery,
     private val featureFlagRepository: FeatureFlagRepository,
+    private val selectedSite: SelectedSite,
     private val logger: WooPosLogWrapper,
 ) {
     fun discover(
@@ -110,6 +114,12 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
+            val expectedSiteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash)
+            if (expectedSiteHash == null || phone.siteHash != expectedSiteHash) {
+                logger.d("Dropping NSD phone with site mismatch")
+                return@withLock
+            }
+
             val fingerprint = phone.fingerprintBase64
 
             // The phone may have re-registered with a new fingerprint+name without us
