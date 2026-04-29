@@ -17,6 +17,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -32,10 +33,8 @@ class ProductsListToolHandlerTest {
         },
     )
 
-    private fun makeProduct(id: Long = 1L, status: String = "publish"): WCProductModel = mock {
-        on { remoteProductId }.thenReturn(id)
-        on { this.status }.thenReturn(status)
-    }
+    private fun makeProduct(id: Long = 1L, status: String = "publish"): WCProductModel =
+        WCProductModel(remoteId = RemoteId(id), status = status)
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "products_list", arguments = arguments)

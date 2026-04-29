@@ -12,6 +12,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -32,10 +33,8 @@ class AIProductsDataSourceTest {
         productStore = productStore,
     )
 
-    private fun makeProduct(id: Long = 1L, name: String = "Test Product"): WCProductModel = mock {
-        on { remoteProductId }.thenReturn(id)
-        on { this.name }.thenReturn(name)
-    }
+    private fun makeProduct(id: Long = 1L, name: String = "Test Product"): WCProductModel =
+        WCProductModel(remoteId = RemoteId(id), name = name)
 
     private suspend fun stubFetchProducts(result: WooResult<List<WCProductModel>>) {
         whenever(
@@ -166,7 +165,7 @@ class AIProductsDataSourceTest {
 
     @Test
     fun `given 20 products returned, when fetchProducts is called, then canLoadMore is true`() = runTest {
-        val products = (1..20).map { mock<WCProductModel>() }
+        val products = (1..20).map { WCProductModel() }
         whenever(
             productStore.fetchProducts(
                 site = any(),
@@ -186,7 +185,7 @@ class AIProductsDataSourceTest {
 
     @Test
     fun `given fewer than 20 products returned, when fetchProducts is called, then canLoadMore is false`() = runTest {
-        val products = (1..5).map { mock<WCProductModel>() }
+        val products = (1..5).map { WCProductModel() }
         stubFetchProducts(WooResult(products))
 
         val result = dataSource.fetchProducts()

@@ -70,7 +70,13 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         // Allowed `status` values for `orders_update`
         // Intentionally excludes "trash" to prevent accidental deletion of orders
         private val ALLOWED_STATUSES = setOf(
-            "pending", "processing", "on-hold", "completed", "cancelled", "refunded", "failed"
+            "pending",
+            "processing",
+            "on-hold",
+            "completed",
+            "cancelled",
+            "refunded",
+            "failed"
         )
     }
 }
