@@ -23,6 +23,7 @@ class AgenticLoopImpl(
     private val chatService: ChatService,
     private val toolRegistry: ToolRegistry,
     private val retryPolicy: RetryPolicy,
+    private val historyBudgeter: HistoryBudgeter,
     private val json: Json,
 ) : AgenticLoop {
 
@@ -36,14 +37,21 @@ class AgenticLoopImpl(
         val toolDefs = toolDescriptors.map { it.toToolDefinition() }
         val assembler = ToolCallAssembler(json)
 
-        var messages: List<AssistantMessage> = history + AssistantMessage.User(userMessage)
+        val currentUserTurn = AssistantMessage.User(userMessage)
+        val systemPrompt = history.filterIsInstance<AssistantMessage.System>().firstOrNull()
+            ?: AssistantMessage.System("")
+        val rawTranscript = history.filterNot { it is AssistantMessage.System }
+        val budgeted = historyBudgeter.build(systemPrompt, rawTranscript, currentUserTurn)
+
+        var modelMessages: List<AssistantMessage> = budgeted.messages
+        val newTurnMessages = mutableListOf<AssistantMessage>(currentUserTurn)
         var visibleOutputStarted = false
         var iteration = 0
 
         while (iteration < MAX_ITERATIONS) {
             val stream = streamWithRetry(
-                ChatRequest(messages = messages, tools = toolDefs),
-                messages,
+                ChatRequest(messages = modelMessages, tools = toolDefs),
+                history + newTurnMessages,
                 visibleOutputStarted,
             ) ?: return@flow
             visibleOutputStarted = stream.visibleOutputStarted
@@ -54,39 +62,43 @@ class AgenticLoopImpl(
                 .filterIsInstance<ToolCallAssembler.AssemblyResult.Success>()
                 .map { it.call }
 
-            messages = messages + AssistantMessage.Assistant(
+            val newAssistantMsg = AssistantMessage.Assistant(
                 content = stream.assistantText.takeIf { it.isNotEmpty() },
                 toolCalls = callsForHistory,
             )
+            modelMessages = modelMessages + newAssistantMsg
+            newTurnMessages.add(newAssistantMsg)
 
             if (stream.finishReason == null) {
-                emit(LoopEvent.Finished(LoopOutcome.FAILED, messages, retryAvailable = false))
+                emit(LoopEvent.Finished(LoopOutcome.FAILED, history + newTurnMessages, retryAvailable = false))
                 return@flow
             }
 
             val isTerminal = stream.finishReason == FinishReason.STOP ||
                 (stream.finishReason != FinishReason.TOOL_CALLS && stream.toolCallDeltas.isEmpty())
             if (isTerminal) {
-                emit(LoopEvent.Finished(LoopOutcome.COMPLETED, messages))
+                emit(LoopEvent.Finished(LoopOutcome.COMPLETED, history + newTurnMessages))
                 return@flow
             }
 
             val toolResults = executeTools(assembledResults, validCalls, toolDescriptors)
             for (result in toolResults) {
-                messages = messages + AssistantMessage.Tool(
+                val newToolMsg = AssistantMessage.Tool(
                     toolCallId = result.toolCallId,
                     content = result.toModelContent(),
                 )
+                modelMessages = modelMessages + newToolMsg
+                newTurnMessages.add(newToolMsg)
             }
             iteration++
         }
 
-        emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, messages))
+        emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, history + newTurnMessages))
     }
 
     private suspend fun FlowCollector<LoopEvent>.streamWithRetry(
         request: ChatRequest,
-        messages: List<AssistantMessage>,
+        fullHistory: List<AssistantMessage>,
         initialVisibleOutput: Boolean,
     ): StreamResult? {
         var visibleOutputStarted = initialVisibleOutput
@@ -128,12 +140,12 @@ class AgenticLoopImpl(
                     retryCount++
                 }
                 is RetryDecision.ShowManualRetry -> {
-                    val failedHistory = messagesWithPartialText(messages, assistantText.toString())
+                    val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
                     emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = true))
                     return null
                 }
                 is RetryDecision.DoNotRetry -> {
-                    val failedHistory = messagesWithPartialText(messages, assistantText.toString())
+                    val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
                     emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = false))
                     return null
                 }
