@@ -288,7 +288,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 paymentState is CardReaderPaymentState.ProcessingPayment ||
                     paymentState is CardReaderPaymentState.PaymentCapturing
             }
-            PaymentMode.REMOTE -> uiState.value is PaymentInProgress
+            PaymentMode.REMOTE -> remotePaymentJob?.isActive == true
             null -> false
         }
     }
