@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.login.qrlogin
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -200,17 +203,25 @@ private fun QrIconBadge() {
 
 @Composable
 private fun UrlBadge() {
+    val context = LocalContext.current
+    val url = stringResource(id = R.string.login_qr_prologue_url)
+    val clipboardLabel = stringResource(id = R.string.login_qr_prologue_url_clipboard_label)
+    val copiedMessage = stringResource(id = R.string.login_qr_prologue_url_copied)
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
             .background(colorResource(id = R.color.prologue_login_url_badge_background))
+            .clickable {
+                context.copyToClipboard(clipboardLabel, url)
+                Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+            }
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_125),
                 vertical = dimensionResource(id = R.dimen.major_85)
             )
     ) {
         Text(
-            text = stringResource(id = R.string.login_qr_prologue_url),
+            text = url,
             style = MaterialTheme.typography.titleLarge,
             color = colorResource(id = R.color.prologue_login_on_background),
             fontWeight = FontWeight.Bold,
