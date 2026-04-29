@@ -1,10 +1,11 @@
 package com.woocommerce.android.aiassistant.core.loop
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -245,7 +246,7 @@ class AgenticLoopImplTest {
                 }
             }
         }
-        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, json)
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
 
         loop.runTurn("conv", "go", history, context).toList()
 
@@ -261,7 +262,7 @@ class AgenticLoopImplTest {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
                 return when (callCount) {
-                    1 -> flowOf(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                    1 -> flowOf(AssistantEvent.Failed(ChatStreamError.NETWORK))
                     else -> flowOf(AssistantEvent.TextDelta("ok"), AssistantEvent.Finish(FinishReason.STOP))
                 }
             }
@@ -281,7 +282,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
-                return flowOf(AssistantEvent.Failed(AssistantErrorKind.AUTH))
+                return flowOf(AssistantEvent.Failed(ChatStreamError.AUTH))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -300,7 +301,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
                 callCount++
-                return flowOf(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                return flowOf(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -318,7 +319,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
                 emit(AssistantEvent.TextDelta("partial"))
-                emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                emit(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -335,7 +336,7 @@ class AgenticLoopImplTest {
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
                 emit(AssistantEvent.TextDelta("partial"))
-                emit(AssistantEvent.Failed(AssistantErrorKind.NETWORK))
+                emit(AssistantEvent.Failed(ChatStreamError.NETWORK))
             }
         }
         val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
@@ -478,5 +479,51 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+    }
+
+    @Test
+    fun `given stream fails with auth error, when running turn, then Finished carries AssistantError Auth`() = runTest {
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
+                flowOf(AssistantEvent.Failed(ChatStreamError.AUTH))
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+        assertThat(finished.error).isEqualTo(AssistantError.Auth)
+    }
+
+    @Test
+    fun `given stream fails with INVALID_STREAM after partial text, when running turn, then Finished carries UpstreamFailure`() = runTest {
+        val service = object : ChatService {
+            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
+                emit(AssistantEvent.TextDelta("partial"))
+                emit(AssistantEvent.Failed(ChatStreamError.INVALID_STREAM))
+            }
+        }
+        val loop = AgenticLoopImpl(service, NoOpToolRegistry(), ConservativeRetryPolicy, passThroughBudgeter(), json)
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure)
+    }
+
+    @Test
+    fun `given stream completes successfully, when running turn, then Finished error is null`() = runTest {
+        val loop = loopWith(
+            flowOf(AssistantEvent.TextDelta("Hi"), AssistantEvent.Finish(FinishReason.STOP))
+        )
+
+        val events = loop.runTurn("conv", "hi", history, context).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+        assertThat(finished.error).isNull()
     }
 }

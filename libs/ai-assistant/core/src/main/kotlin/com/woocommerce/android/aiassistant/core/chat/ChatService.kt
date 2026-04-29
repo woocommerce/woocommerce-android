@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * Implementations must:
  *  - emit [AssistantEvent]s and terminate the flow when the stream ends
- *  - normalize transport errors to [AssistantEvent.Failed] with the appropriate [AssistantErrorKind]
+ *  - normalize transport errors to [AssistantEvent.Failed] with the appropriate [ChatStreamError]
  *  - support coroutine cancellation: cancelling the collector aborts the underlying HTTP call
  */
 interface ChatService {

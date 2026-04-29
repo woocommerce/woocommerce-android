@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
@@ -13,5 +14,6 @@ sealed interface LoopEvent {
         val outcome: LoopOutcome,
         val updatedHistory: List<AssistantMessage>,
         val retryAvailable: Boolean = false,
+        val error: AssistantError? = null,
     ) : LoopEvent
 }

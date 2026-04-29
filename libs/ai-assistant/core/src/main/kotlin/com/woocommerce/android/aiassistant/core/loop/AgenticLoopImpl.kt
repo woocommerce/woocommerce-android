@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.loop
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -11,6 +12,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -70,7 +72,7 @@ class AgenticLoopImpl(
             newTurnMessages.add(newAssistantMsg)
 
             if (stream.finishReason == null) {
-                emit(LoopEvent.Finished(LoopOutcome.FAILED, history + newTurnMessages, retryAvailable = false))
+                emit(failedFinish(history + newTurnMessages, retryAvailable = false, AssistantError.UpstreamFailure))
                 return@flow
             }
 
@@ -130,9 +132,10 @@ class AgenticLoopImpl(
                 visibleOutputStarted = visibleOutputStarted,
             )
 
+            val widenedError = failure.kind.toAssistantError(failure.cause)
             when (
                 val decision = retryPolicy.decide(
-                    LoopFailureContext(failure.kind, visibleOutputStarted, retryCount)
+                    LoopFailureContext(widenedError, visibleOutputStarted, retryCount)
                 )
             ) {
                 is RetryDecision.RetryNow -> {
@@ -141,12 +144,12 @@ class AgenticLoopImpl(
                 }
                 is RetryDecision.ShowManualRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = true))
+                    emit(failedFinish(failedHistory, retryAvailable = true, widenedError))
                     return null
                 }
                 is RetryDecision.DoNotRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(LoopEvent.Finished(LoopOutcome.FAILED, failedHistory, retryAvailable = false))
+                    emit(failedFinish(failedHistory, retryAvailable = false, widenedError))
                     return null
                 }
             }
@@ -228,6 +231,12 @@ class AgenticLoopImpl(
         description = description,
         parameters = inputSchema,
     )
+
+    private fun failedFinish(
+        history: List<AssistantMessage>,
+        retryAvailable: Boolean,
+        error: AssistantError,
+    ) = LoopEvent.Finished(LoopOutcome.FAILED, history, retryAvailable = retryAvailable, error = error)
 
     companion object {
         internal const val MAX_ITERATIONS = 5
