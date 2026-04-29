@@ -33,6 +33,7 @@ internal class CardReaderRemoteNsd(
         port: Int,
         fingerprint: String,
         deviceName: String,
+        siteHash: String,
     ): CardReaderRemoteNsdRegistration =
         withContext(ioDispatcher) {
             val serviceInfo = NsdServiceInfo().apply {
@@ -42,6 +43,7 @@ internal class CardReaderRemoteNsd(
                 setAttribute(TXT_KEY_FINGERPRINT, fingerprint)
                 setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
                 setAttribute(TXT_KEY_DEVICE_NAME, deviceName)
+                setAttribute(TXT_KEY_SITE_HASH, siteHash)
             }
 
             val listener = object : NsdManager.RegistrationListener {
@@ -173,18 +175,20 @@ internal class CardReaderRemoteNsd(
 
     private fun NsdServiceInfo.toResolvedHost(): CardReaderRemoteResolvedHost? {
         val version = attributes[TXT_KEY_VERSION]?.toString(Charsets.UTF_8)
-        if (version != PROTOCOL_VERSION) {
-            Log.w(TAG, "Dropping NSD service with unsupported version: $version")
-            return null
-        }
         val fingerprint = attributes[TXT_KEY_FINGERPRINT]?.toString(Charsets.UTF_8)
-        if (fingerprint.isNullOrEmpty()) {
-            Log.w(TAG, "Dropping NSD service without fingerprint TXT record")
-            return null
-        }
         val host = firstHost()
-        if (host == null) {
-            Log.w(TAG, "Dropping NSD service without resolved host: $serviceName")
+        val siteHash = attributes[TXT_KEY_SITE_HASH]?.toString(Charsets.UTF_8)
+        val isValid = version == PROTOCOL_VERSION &&
+            !fingerprint.isNullOrEmpty() &&
+            host != null &&
+            !siteHash.isNullOrEmpty()
+        if (!isValid) {
+            Log.w(
+                TAG,
+                "Dropping NSD service $serviceName " +
+                    "(version=$version, fingerprintLen=${fingerprint?.length ?: 0}, " +
+                    "host=$host, siteHashLen=${siteHash?.length ?: 0})"
+            )
             return null
         }
         val deviceName = attributes[TXT_KEY_DEVICE_NAME]?.toString(Charsets.UTF_8)
@@ -195,6 +199,7 @@ internal class CardReaderRemoteNsd(
             fingerprintBase64 = fingerprint,
             version = version,
             deviceName = deviceName,
+            siteHash = siteHash,
         )
     }
 
@@ -219,6 +224,7 @@ internal class CardReaderRemoteNsd(
         const val TXT_KEY_FINGERPRINT = "fp"
         const val TXT_KEY_VERSION = "ver"
         const val TXT_KEY_DEVICE_NAME = "name"
+        const val TXT_KEY_SITE_HASH = "siteHash"
         const val PROTOCOL_VERSION = "1"
         private const val SERVICE_NAME_PREFIX = "woopos-remote"
         private const val SUFFIX_RANGE_EXCLUSIVE = 0x10000
@@ -243,6 +249,7 @@ internal data class CardReaderRemoteResolvedHost(
     val fingerprintBase64: String,
     val version: String,
     val deviceName: String?,
+    val siteHash: String,
 )
 
 internal sealed class CardReaderRemoteNsdEvent {

@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.util.siteIdHash
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +35,7 @@ class CardReaderModeViewModel @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -65,6 +69,7 @@ class CardReaderModeViewModel @Inject constructor(
 
     private fun startSessionIfNeeded() {
         if (sessionStarted) return
+        val siteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash) ?: return
         sessionStarted = true
 
         if (!cardReaderManager.initialized) {
@@ -83,6 +88,7 @@ class CardReaderModeViewModel @Inject constructor(
         }
         session.start(
             parentScope = viewModelScope,
+            siteHash = siteHash,
             isSimulated = isSimulated,
         )
     }
@@ -131,6 +137,7 @@ class CardReaderModeViewModel @Inject constructor(
         is CardReaderRemoteSessionState.ReadyToPair -> RemoteTapToPayReadyToPair(
             deviceName = state.deviceName,
             fingerprintSuffix = state.fingerprintSuffix,
+            siteUrl = selectedSiteDisplayUrl(),
             onPrimaryActionClicked = ::exit,
         )
         is CardReaderRemoteSessionState.WaitingForPayment -> RemoteTapToPayWaitingForPayment(
@@ -146,4 +153,10 @@ class CardReaderModeViewModel @Inject constructor(
     private fun exit() {
         _events.trySend(CardReaderModeEvent.Exit)
     }
+
+    private fun selectedSiteDisplayUrl(): String? =
+        selectedSite.getOrNull()?.url
+            ?.takeIf { it.isNotBlank() }
+            ?.let(UrlUtils::removeScheme)
+            ?.trim('/')
 }

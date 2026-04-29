@@ -26,6 +26,7 @@ data class DiscoveredRemoteReader(
     val port: Int,
     val fingerprintBase64: String,
     val deviceName: String?,
+    val siteHash: String,
 )
 
 internal class DefaultCardReaderRemoteDiscovery(
@@ -64,4 +65,5 @@ private fun CardReaderRemoteResolvedHost.toPublic() =
         port = port,
         fingerprintBase64 = fingerprintBase64,
         deviceName = deviceName,
+        siteHash = siteHash,
     )

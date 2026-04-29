@@ -12,12 +12,14 @@ class RemoteTapToPayPaymentViewStateTest {
         val state = RemoteTapToPayReadyToPair(
             deviceName = "Pixel 7",
             fingerprintSuffix = "AB4F",
+            siteUrl = "example.com",
             onPrimaryActionClicked = {}
         )
 
         // WHEN // THEN
         assertThat(state.deviceName).isEqualTo("Pixel 7")
         assertThat(state.fingerprintSuffix).isEqualTo("AB4F")
+        assertThat(state.siteUrl).isEqualTo("example.com")
         assertThat(state.primaryActionLabel).isEqualTo(R.string.card_reader_mode_cancel)
     }
 

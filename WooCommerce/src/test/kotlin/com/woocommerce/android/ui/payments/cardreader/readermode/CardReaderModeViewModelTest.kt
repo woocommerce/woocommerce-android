@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
@@ -29,6 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class CardReaderModeViewModelTest : BaseUnitTest() {
@@ -41,6 +43,14 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     }
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { getOrNull() }.thenReturn(
+            SiteModel().apply {
+                siteId = 1L
+                url = "https://example.com"
+            }
+        )
+    }
 
     private lateinit var store: ViewModelStore
     private lateinit var viewModel: CardReaderModeViewModel
@@ -56,6 +66,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                     cardReaderManager,
                     developerOptionsRepository,
                     analyticsTrackerWrapper,
+                    selectedSite,
                 ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
@@ -64,7 +75,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model initialized, then session is not started yet`() {
         // THEN
-        verify(session, never()).start(any(), any())
+        verify(session, never()).start(any(), any(), any())
     }
 
     @Test
@@ -73,7 +84,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // THEN
-        verify(session).start(any(), any())
+        verify(session).start(any(), any(), any())
     }
 
     @Test
@@ -83,7 +94,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // THEN
-        verify(session, times(1)).start(any(), any())
+        verify(session, times(1)).start(any(), any(), any())
     }
 
     @Test
@@ -94,7 +105,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionExplainer::class.java)
-        verify(session, never()).start(any(), any())
+        verify(session, never()).start(any(), any(), any())
     }
 
     @Test
@@ -105,7 +116,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionDenied::class.java)
-        verify(session, never()).start(any(), any())
+        verify(session, never()).start(any(), any(), any())
     }
 
     @Test
@@ -137,6 +148,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewState.value as RemoteTapToPayReadyToPair
         assertThat(viewState.deviceName).isEqualTo("Pixel")
         assertThat(viewState.fingerprintSuffix).isEqualTo("1234")
+        assertThat(viewState.siteUrl).isEqualTo("example.com")
     }
 
     @Test
