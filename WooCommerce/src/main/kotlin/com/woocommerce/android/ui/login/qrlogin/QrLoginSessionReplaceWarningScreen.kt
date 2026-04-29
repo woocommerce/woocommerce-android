@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,10 @@ fun QrLoginSessionReplaceWarningScreen(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    // Route system back through the same dismiss path as the Cancel button so the analytics
+    // and state reset stay symmetric — without this, system back would bypass
+    // onCancelSessionReplace and we'd lose the dismissed event.
+    BackHandler(onBack = onCancel)
     Column(
         modifier = Modifier
             .fillMaxSize()
