@@ -25,7 +25,7 @@ internal class ProductsGetToolHandler @Inject constructor(
         name = "products_get",
         description = "Fetch a single product with full detail (price, stock, categories, type). " +
             "Use when the merchant references a specific product by ID. " +
-            "For variable products use product_variations_list to inspect the variants.",
+            "For variable products use product_variations_list to inspect all variants or fetch one by variation_id.",
         inputSchema = inputSchema {
             integer("id", description = "The product ID. Required.", required = true)
         },
