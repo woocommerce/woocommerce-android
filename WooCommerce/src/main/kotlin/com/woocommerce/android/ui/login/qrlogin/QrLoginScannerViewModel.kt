@@ -79,27 +79,15 @@ class QrLoginScannerViewModel @Inject constructor(
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
-            is QrLoginPayload.Ticket -> _uiState.value = Confirming(
-                ticket = payload,
-                host = payload.siteUrl.toDisplayHost()
+            is QrLoginPayload.Ticket -> handleHandoff(
+                PendingHandoff.Ticket(ticket = payload, host = payload.siteUrl.toDisplayHost())
             )
-            is QrLoginPayload.WpComMagicLinkUrl -> {
-                // Hand the URL off to the browser; wp.com then 3xx-redirects to
-                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
-                // because the user is leaving the scanner and the outcome is no longer ours to
-                // handle. This is the happy path — we track the handoff, not a scan failure.
-                loggedIn = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
-                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
-            }
-            is QrLoginPayload.SiteUrl -> {
-                // Site-URL-only QR — no token to exchange, just route the merchant to the
-                // existing site-address login screen with the URL prefilled and validation
-                // auto-started. Same lock + happy-path tracking as the wp.com branch.
-                loggedIn = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
-                triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = payload.siteUrl))
-            }
+            is QrLoginPayload.WpComMagicLinkUrl -> handleHandoff(
+                PendingHandoff.WpComMagicLink(url = payload.url)
+            )
+            is QrLoginPayload.SiteUrl -> handleHandoff(
+                PendingHandoff.SiteUrlPrefill(siteUrl = payload.siteUrl)
+            )
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -115,6 +103,36 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorType = ErrorReason.InvalidPayload.name,
                 )
                 _uiState.value = Error(reason = ErrorReason.InvalidPayload, retryTicket = null)
+            }
+        }
+    }
+
+    private fun handleHandoff(pending: PendingHandoff) {
+        resumePending(pending)
+    }
+
+    private fun resumePending(pending: PendingHandoff) {
+        when (pending) {
+            is PendingHandoff.Ticket -> _uiState.value = Confirming(
+                ticket = pending.ticket,
+                host = pending.host
+            )
+            is PendingHandoff.WpComMagicLink -> {
+                // Hand the URL off to the browser; wp.com then 3xx-redirects to
+                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
+                // because the user is leaving the scanner and the outcome is no longer ours to
+                // handle. This is the happy path — we track the handoff, not a scan failure.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = pending.url))
+            }
+            is PendingHandoff.SiteUrlPrefill -> {
+                // Site-URL-only QR — no token to exchange, just route the merchant to the
+                // existing site-address login screen with the URL prefilled and validation
+                // auto-started. Same lock + happy-path tracking as the wp.com branch.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+                triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
             }
         }
     }
@@ -264,6 +282,18 @@ class QrLoginScannerViewModel @Inject constructor(
         data class Confirming(val ticket: QrLoginPayload.Ticket, val host: String) : UiState
         data object Authenticating : UiState
         data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
+    }
+
+    /**
+     * Captures a parsed QR payload that has been routed through [handleHandoff]. Splitting the
+     * dispatch into "build the pending action" and "resume the pending action" lets us insert
+     * additional gates (e.g. session checks) between the two halves without duplicating the
+     * per-payload branch logic.
+     */
+    sealed interface PendingHandoff {
+        data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
+        data class WpComMagicLink(val url: String) : PendingHandoff
+        data class SiteUrlPrefill(val siteUrl: String) : PendingHandoff
     }
 
     enum class ErrorReason {
