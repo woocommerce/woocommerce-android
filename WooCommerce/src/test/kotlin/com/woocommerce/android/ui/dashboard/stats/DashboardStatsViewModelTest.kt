@@ -394,9 +394,10 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `when order date type update fails, then previous selection remains and error is shown`() =
         testBlocking {
             var dismissed = false
+            val failure = Exception("network down")
             setup {
                 whenever(statsRepository.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED))
-                    .thenReturn(Result.failure(Exception()))
+                    .thenReturn(Result.failure(failure))
             }
 
             viewModel.onOrderDateTypeSelected(WCAnalyticsOrderDateType.COMPLETED) {
@@ -414,6 +415,15 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper, never()).track(
                 stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED),
                 properties = any()
+            )
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_UPDATE_FAILED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_OPTION] == WCAnalyticsOrderDateType.COMPLETED.value &&
+                        this[AnalyticsTracker.KEY_ERROR_TYPE] == failure::class.java.simpleName &&
+                        this[AnalyticsTracker.KEY_ERROR_DESC] == "network down" &&
+                        this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
             )
         }
 

@@ -252,13 +252,21 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     refreshTrigger.tryEmit(RefreshEvent(isForced = true))
                     onSuccess()
                 }
-                .onFailure {
+                .onFailure { error ->
                     _orderDateTypeState.update {
                         it.copy(
                             updatingType = null,
                             hasUpdateError = true
                         )
                     }
+                    trackEventForStatsCard(
+                        AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_UPDATE_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_OPTION to orderDateType.value,
+                            AnalyticsTracker.KEY_ERROR_TYPE to error::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_DESC to (error.message ?: "")
+                        )
+                    )
                 }
         }
     }
