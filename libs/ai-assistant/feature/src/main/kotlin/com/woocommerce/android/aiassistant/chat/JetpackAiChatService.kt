@@ -3,10 +3,10 @@ package com.woocommerce.android.aiassistant.chat
 import com.woocommerce.android.aiassistant.chat.openai.toOpenAi
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
-import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
 import com.woocommerce.android.aiassistant.di.AssistantOkHttpClient

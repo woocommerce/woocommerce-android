@@ -2,8 +2,8 @@ package com.woocommerce.android.aiassistant.chat
 
 import com.woocommerce.android.aiassistant.chat.openai.OpenAiStreamChunk
 import com.woocommerce.android.aiassistant.chat.openai.toEvents
-import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.extensions.rethrow
 import kotlinx.coroutines.CancellationException

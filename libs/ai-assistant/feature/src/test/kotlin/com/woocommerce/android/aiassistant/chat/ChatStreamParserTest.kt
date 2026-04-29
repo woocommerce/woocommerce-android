@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.chat
 
-import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.flow
