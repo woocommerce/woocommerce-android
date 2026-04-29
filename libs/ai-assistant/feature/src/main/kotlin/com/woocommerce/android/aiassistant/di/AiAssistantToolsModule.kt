@@ -8,7 +8,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.AnalyticsRevenueToolHa
 import com.woocommerce.android.aiassistant.tools.handlers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ProductsBulkUpdateToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.ProductsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
@@ -16,6 +15,7 @@ import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductsUpdateToolHandler
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
@@ -14,6 +15,19 @@ internal class AIProductsDataSource @Inject constructor(
     data class ProductsPage(
         val products: List<WCProductModel>,
         val canLoadMore: Boolean,
+    )
+
+    data class ProductUpdate(
+        val name: String? = null,
+        val regularPrice: String? = null,
+        val salePrice: String? = null,
+        val stockQuantity: Int? = null,
+        val status: String? = null,
+    )
+
+    class UnsupportedProductTypeException(productId: Long, productType: String) : IllegalArgumentException(
+        "Product $productId has type '$productType'. This tool only updates simple products. " +
+            "For variable products, update individual variations instead."
     )
 
     suspend fun fetchProducts(
@@ -62,6 +76,43 @@ internal class AIProductsDataSource @Inject constructor(
 
     suspend fun getProduct(productId: Long): Result<WCProductModel> {
         val site = selectedSite.get()
+        return getProduct(site, productId)
+    }
+
+    suspend fun updateProduct(productId: Long, update: ProductUpdate): Result<WCProductModel> {
+        val site = selectedSite.get()
+        val existingProduct = getProduct(site, productId).getOrElse {
+            return Result.failure(it)
+        }
+        if (existingProduct.type.isNotBlank() && existingProduct.type != SIMPLE_PRODUCT_TYPE) {
+            return Result.failure(UnsupportedProductTypeException(productId, existingProduct.type))
+        }
+
+        val updatedProduct = existingProduct.copy(
+            name = update.name ?: existingProduct.name,
+            regularPrice = update.regularPrice ?: existingProduct.regularPrice,
+            salePrice = update.salePrice ?: existingProduct.salePrice,
+            stockQuantity = update.stockQuantity?.toDouble() ?: existingProduct.stockQuantity,
+            manageStock = if (update.stockQuantity != null) true else existingProduct.manageStock,
+            status = update.status ?: existingProduct.status,
+        )
+        val result = productStore.batchUpdateProducts(
+            WCProductStore.BatchUpdateProductsPayload(
+                site = site,
+                updatedProducts = listOf(updatedProduct),
+            )
+        )
+
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            Result.success(
+                result.model?.firstOrNull { it.remoteProductId == productId } ?: updatedProduct
+            )
+        }
+    }
+
+    private suspend fun getProduct(site: SiteModel, productId: Long): Result<WCProductModel> {
         val cached = productStore.getProductByRemoteId(site, productId)
         if (cached != null) return Result.success(cached)
 
@@ -79,5 +130,6 @@ internal class AIProductsDataSource @Inject constructor(
     companion object {
         private const val PAGE_SIZE = 20
         private const val MAX_PAGE_SIZE = 50
+        private const val SIMPLE_PRODUCT_TYPE = "simple"
     }
 }
