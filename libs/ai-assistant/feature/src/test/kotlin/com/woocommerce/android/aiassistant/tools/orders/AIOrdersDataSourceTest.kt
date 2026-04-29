@@ -9,7 +9,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -343,20 +342,7 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
-    fun `given order is cached, when getOrder is called, then no network call is made`() =
-        runTest {
-            val entity = OrderEntity(localSiteId = LocalId(1), orderId = 123L)
-            whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(entity)
-
-            val result = dataSource.getOrder(orderId = 123L)
-
-            assertThat(result.isSuccess).isTrue
-            assertThat(result.getOrThrow()).isEqualTo(entity)
-            verify(orderStore, never()).fetchSingleOrderSync(any(), any())
-        }
-
-    @Test
-    fun `given order is not cached, when getOrder is called, then fetchSingleOrderSync is called`() =
+    fun `when getOrder is called, then fetchSingleOrderSync is called`() =
         runTest {
             val entity = OrderEntity(localSiteId = LocalId(1), orderId = 123L)
             whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(null)
