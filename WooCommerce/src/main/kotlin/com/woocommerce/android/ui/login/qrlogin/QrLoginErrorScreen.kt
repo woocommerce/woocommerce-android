@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -74,9 +74,10 @@ fun QrLoginErrorScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        WCOutlinedButton(
+        WCTextButton(
             onClick = onSecondaryClicked,
             text = stringResource(id = content.secondaryAction),
+            allCaps = false,
             modifier = Modifier.fillMaxWidth()
         )
     }

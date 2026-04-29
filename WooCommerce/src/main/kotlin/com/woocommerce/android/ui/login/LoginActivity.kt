@@ -209,7 +209,14 @@ class LoginActivity :
             savedInstanceState == null &&
                 intent?.action == Intent.ACTION_VIEW &&
                 intent.data?.authority == QR_LOGIN_AUTHORITY -> {
-                intent.data?.let { uri -> handleQrLoginUri(uri) }
+                // Gate the deep link on the same availability check as the in-app entry, so
+                // the system camera / 3rd-party scanner path cannot bypass the feature flag.
+                if (qrLoginAvailability.isAvailable()) {
+                    intent.data?.let { uri -> handleQrLoginUri(uri) }
+                } else {
+                    loginAnalyticsListener.trackLoginAccessed()
+                    showPrologue()
+                }
                 // Replace the activity intent so a process restart from recents cannot replay
                 // the single-use token. Mutating fields on the in-memory Intent is not enough —
                 // Android restores getIntent() from the originally launched intent on cold start.

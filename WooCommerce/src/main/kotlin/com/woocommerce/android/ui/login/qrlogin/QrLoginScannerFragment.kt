@@ -169,13 +169,13 @@ class QrLoginScannerFragment : Fragment() {
     }
 
     /**
-     * In camera mode, dismissing confirm just clears the overlay and the camera resumes.
-     * In deep-link mode there is no camera underneath, so the same dismissal would leave the
-     * user on a blank surface — exit the fragment instead.
+     * Cancel always exits to the previous destination (the prologue in camera mode, the launcher
+     * caller in deep-link mode). Resuming the camera underneath would re-scan the same QR if it
+     * is still framed, which loops the user back into the same confirm screen.
      */
     private fun handleCancelSite() {
         qrLoginViewModel.onCancelSite()
-        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     /**
