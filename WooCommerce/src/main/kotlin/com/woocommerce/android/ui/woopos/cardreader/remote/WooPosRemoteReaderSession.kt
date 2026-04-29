@@ -102,9 +102,13 @@ class WooPosRemoteReaderSession @Inject constructor(
                     watchForRemoteClose(newClient)
                 }
             is ConnectOutcome.Rejected -> fail("${outcome.code}: ${outcome.description}")
-            is ConnectOutcome.Failed -> fail(
-                "${outcome.cause::class.java.simpleName}: ${outcome.cause.message ?: "Connection failed"}"
-            )
+            is ConnectOutcome.Failed -> {
+                logger.e(
+                    "Remote reader connect failed: ${outcome.cause::class.java.simpleName}",
+                    outcome.cause
+                )
+                fail(outcome.cause.message ?: "Connection failed")
+            }
         }
     }
 
