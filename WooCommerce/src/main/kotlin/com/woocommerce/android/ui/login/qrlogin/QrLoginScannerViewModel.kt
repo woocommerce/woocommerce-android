@@ -92,6 +92,14 @@ class QrLoginScannerViewModel @Inject constructor(
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
             }
+            is QrLoginPayload.SiteUrl -> {
+                // Site-URL-only QR — no token to exchange, just route the merchant to the
+                // existing site-address login screen with the URL prefilled and validation
+                // auto-started. Same lock + happy-path tracking as the wp.com branch.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+                triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = payload.siteUrl))
+            }
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -242,6 +250,13 @@ class QrLoginScannerViewModel @Inject constructor(
          * 3rd-party scanner (Google Lens, etc.) takes today.
          */
         data class OpenWpComMagicLinkUrl(val url: String) : Dispatch()
+
+        /**
+         * The merchant scanned a `woocommerce://qr-login?siteUrl=…` deeplink without a token.
+         * The fragment routes the merchant to the existing site-address login screen with
+         * [siteUrl] prefilled and validation auto-started.
+         */
+        data class RouteToSiteAddressEntry(val siteUrl: String) : Dispatch()
     }
 
     sealed interface UiState {
