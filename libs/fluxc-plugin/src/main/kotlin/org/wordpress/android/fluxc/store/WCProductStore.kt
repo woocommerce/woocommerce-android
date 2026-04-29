@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.MappingRemoteException
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVariationsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -258,6 +259,26 @@ class WCProductStore @Inject internal constructor(
         val variations: List<WCProductVariationModel>,
         val canLoadMore: Boolean,
     )
+
+    data class UpdateProductRequest(
+        val name: String? = null,
+        val regularPrice: String? = null,
+        val salePrice: String? = null,
+        val stockQuantity: Int? = null,
+        val status: String? = null,
+    )
+
+    data class UpdateProductsResult(
+        val updatedProducts: List<Long> = emptyList(),
+        val failedProducts: List<FailedProduct> = emptyList(),
+    ) {
+        data class FailedProduct(
+            val id: Long,
+            val errorCode: String,
+            val errorMessage: String,
+            val errorStatus: Int,
+        )
+    }
 
     class UpdateVariationPayload(
         var site: SiteModel,
@@ -1565,6 +1586,53 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.result?.map { it.product })
                 }
             }
+        }
+
+    suspend fun batchUpdateProducts(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateProductRequest>,
+    ): WooResult<UpdateProductsResult> =
+        coroutineEngine.withDefaultContext(API, this, "batchUpdateProducts") {
+            val result = wcProductRestClient.batchUpdateProductsPatch(site, updateRequests)
+
+            if (result.isError) {
+                return@withDefaultContext WooResult(result.error)
+            }
+
+            val response = result.result ?: return@withDefaultContext WooResult(
+                WooError(INVALID_RESPONSE, UNKNOWN, "Success response with empty data")
+            )
+
+            val updatedProducts = mutableListOf<Long>()
+            val failedProducts = mutableListOf<UpdateProductsResult.FailedProduct>()
+
+            val updatedProductsWithMetaData = response.update.mapNotNull {
+                (it as? BatchProductUpdateResult.ProductResponse.Success)?.product
+            }
+            if (updatedProductsWithMetaData.isNotEmpty()) {
+                productStorageHelper.upsertProducts(updatedProductsWithMetaData)
+            }
+
+            response.update.forEach { productResponse ->
+                when (productResponse) {
+                    is BatchProductUpdateResult.ProductResponse.Success -> {
+                        updatedProducts.add(productResponse.product.product.remoteProductId)
+                    }
+
+                    is BatchProductUpdateResult.ProductResponse.Error -> {
+                        failedProducts.add(
+                            UpdateProductsResult.FailedProduct(
+                                id = productResponse.id,
+                                errorCode = productResponse.error.code,
+                                errorMessage = productResponse.error.message,
+                                errorStatus = productResponse.error.data.status
+                            )
+                        )
+                    }
+                }
+            }
+
+            WooResult(UpdateProductsResult(updatedProducts, failedProducts))
         }
 
     /**

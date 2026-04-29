@@ -364,4 +364,78 @@ class AIProductsDataSourceTest {
 
         assertThat(result.isFailure).isTrue
     }
+
+    @Test
+    fun `given product patch, when bulkUpdateProducts is called, then one direct batch update is sent`() = runTest {
+        whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+            WooResult(WCProductStore.UpdateProductsResult(updatedProducts = listOf(10L, 11L)))
+        )
+
+        val result = dataSource.bulkUpdateProducts(
+            productIds = listOf(10L, 11L),
+            update = AIProductsDataSource.ProductUpdate(
+                name = "Updated",
+                regularPrice = "12.50",
+                salePrice = "9.99",
+                stockQuantity = 5,
+                status = "publish",
+            )
+        )
+
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow().updatedIds).containsExactly(10L, 11L)
+        val requestsCaptor = argumentCaptor<Map<Long, WCProductStore.UpdateProductRequest>>()
+        verify(productStore).batchUpdateProducts(eq(site), requestsCaptor.capture())
+        assertThat(requestsCaptor.firstValue.keys).containsExactly(10L, 11L)
+        requestsCaptor.firstValue.values.forEach { request ->
+            assertThat(request.name).isEqualTo("Updated")
+            assertThat(request.regularPrice).isEqualTo("12.50")
+            assertThat(request.salePrice).isEqualTo("9.99")
+            assertThat(request.stockQuantity).isEqualTo(5)
+            assertThat(request.status).isEqualTo("publish")
+        }
+        verify(productStore, never()).fetchSingleProduct(any())
+    }
+
+    @Test
+    fun `given store returns partial product failures, when bulkUpdateProducts is called, then failures are exposed`() =
+        runTest {
+            val failedProduct = WCProductStore.UpdateProductsResult.FailedProduct(
+                id = 11L,
+                errorCode = "woocommerce_rest_product_invalid_id",
+                errorMessage = "Invalid ID.",
+                errorStatus = 400,
+            )
+            whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+                WooResult(
+                    WCProductStore.UpdateProductsResult(
+                        updatedProducts = listOf(10L),
+                        failedProducts = listOf(failedProduct),
+                    )
+                )
+            )
+
+            val result = dataSource.bulkUpdateProducts(
+                productIds = listOf(10L, 11L),
+                update = AIProductsDataSource.ProductUpdate(name = "Updated")
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(10L)
+            assertThat(result.getOrThrow().failedProducts).containsExactly(failedProduct)
+        }
+
+    @Test
+    fun `given batch update fails, when bulkUpdateProducts is called, then failure result is returned`() = runTest {
+        whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+            WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom"))
+        )
+
+        val result = dataSource.bulkUpdateProducts(
+            productIds = listOf(10L),
+            update = AIProductsDataSource.ProductUpdate(name = "Updated")
+        )
+
+        assertThat(result.isFailure).isTrue
+    }
 }

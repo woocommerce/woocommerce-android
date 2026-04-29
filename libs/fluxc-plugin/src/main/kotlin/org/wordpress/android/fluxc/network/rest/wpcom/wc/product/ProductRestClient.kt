@@ -1187,6 +1187,39 @@ class ProductRestClient @Inject constructor(
             }
         }
 
+    suspend fun batchUpdateProductsPatch(
+        site: SiteModel,
+        updateRequests: Map<Long, WCProductStore.UpdateProductRequest>,
+    ): WooPayload<BatchProductUpdateResult> {
+        val updates = updateRequests.map { (productId, request) ->
+            request.toNetworkRequest() + ("id" to productId)
+        }
+
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.products.batch.pathV3,
+            clazz = BatchProductUpdateApiResponse::class.java,
+            body = mapOf("update" to updates)
+        ).toWooPayload { response ->
+            BatchProductUpdateResult(
+                update = response.update.map { productResponse ->
+                    when (productResponse) {
+                        is BatchProductUpdateApiResponse.ProductResponse.Success ->
+                            BatchProductUpdateResult.ProductResponse.Success(
+                                productDtoMapper.mapToModel(site.localId(), productResponse.product)
+                            )
+
+                        is BatchProductUpdateApiResponse.ProductResponse.Error ->
+                            BatchProductUpdateResult.ProductResponse.Error(
+                                id = productResponse.id,
+                                error = productResponse.error,
+                            )
+                    }
+                }
+            )
+        }
+    }
+
     suspend fun replyToReview(
         site: SiteModel,
         productId: RemoteId,
@@ -2116,6 +2149,18 @@ class ProductRestClient @Inject constructor(
 
         return body
     }
+
+    private fun WCProductStore.UpdateProductRequest.toNetworkRequest(): Map<String, Any> =
+        buildMap {
+            name?.let { put("name", it) }
+            regularPrice?.let { put("regular_price", it) }
+            salePrice?.let { put("sale_price", it) }
+            stockQuantity?.let {
+                put("stock_quantity", it)
+                put("manage_stock", true)
+            }
+            status?.let { put("status", it) }
+        }
 
     private fun productTagApiResponseToProductTagModel(
         response: ProductTagApiResponse,
