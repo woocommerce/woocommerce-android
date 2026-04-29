@@ -61,10 +61,6 @@ internal class AIOrdersDataSource @Inject constructor(
 
     suspend fun getOrder(orderId: Long): Result<OrderEntity> {
         val site = selectedSite.get()
-        val cached = orderStore.getOrderByIdAndSite(orderId, site)
-        if (cached != null) {
-            return Result.success(cached)
-        }
         val result = orderStore.fetchSingleOrderSync(site, orderId)
         return if (result.isError) {
             Result.failure(OnChangedException(result.error))
