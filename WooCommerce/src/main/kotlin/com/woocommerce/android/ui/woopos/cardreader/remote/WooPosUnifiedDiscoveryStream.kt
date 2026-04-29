@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.siteIdHash
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -30,7 +31,7 @@ sealed class WooPosDiscoveredReader {
         val host: InetAddress,
         val port: Int,
         val fingerprintBase64: String,
-        val siteId: Long,
+        val siteHash: String,
         val isSimulated: Boolean = false,
     ) : WooPosDiscoveredReader() {
         override val transport = WooPosDiscoveryTransport.WifiLan
@@ -113,9 +114,9 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
-            val expectedSiteId = selectedSite.getOrNull()?.remoteId()?.value
-            if (phone.siteId != expectedSiteId) {
-                logger.d("Dropping NSD phone with site mismatch (got=${phone.siteId}, expected=$expectedSiteId)")
+            val expectedSiteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash)
+            if (expectedSiteHash == null || phone.siteHash != expectedSiteHash) {
+                logger.d("Dropping NSD phone with site mismatch")
                 return@withLock
             }
 

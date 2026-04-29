@@ -391,7 +391,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
             host = InetAddress.getByName("127.0.0.1"),
             port = 0,
             fingerprintBase64 = "fp",
-            siteId = 1L,
+            siteHash = "site-hash",
         )
         whenever(remoteReaderSession.state).thenReturn(
             MutableStateFlow(WooPosRemoteReaderSession.State.Connected(phone, readerSerial = "serial"))

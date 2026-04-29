@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.siteIdHash
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -139,12 +140,12 @@ class WooPosUnifiedDiscoveryStreamTest {
     }
 
     @Test
-    fun `given phone advertises different siteId, when discovered, then phone is not surfaced`() = runTest {
+    fun `given phone advertises different site hash, when discovered, then phone is not surfaced`() = runTest {
         // GIVEN
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
             flowOf(CardReaderDiscoveryEvents.Started)
         )
-        val mismatchedPhone = phone(name = "Pixel 7", siteId = OTHER_SITE_ID)
+        val mismatchedPhone = phone(name = "Pixel 7", siteHash = siteIdHash(OTHER_SITE_ID))
         whenever(remoteDiscovery.discover()).thenReturn(
             flowOf(WooPosPhoneDiscoveryEvent.Added(mismatchedPhone))
         )
@@ -166,12 +167,12 @@ class WooPosUnifiedDiscoveryStreamTest {
     }
 
     @Test
-    fun `given phone advertises matching siteId, when discovered, then phone is surfaced`() = runTest {
+    fun `given phone advertises matching site hash, when discovered, then phone is surfaced`() = runTest {
         // GIVEN
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
             flowOf(CardReaderDiscoveryEvents.Started)
         )
-        val matchingPhone = phone(name = "Pixel 7", siteId = TABLET_SITE_ID)
+        val matchingPhone = phone(name = "Pixel 7", siteHash = siteIdHash(TABLET_SITE_ID))
         whenever(remoteDiscovery.discover()).thenReturn(
             flowOf(WooPosPhoneDiscoveryEvent.Added(matchingPhone))
         )
@@ -194,12 +195,12 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
     }
 
-    private fun phone(name: String, siteId: Long = TABLET_SITE_ID) = WooPosDiscoveredReader.Phone(
+    private fun phone(name: String, siteHash: String = siteIdHash(TABLET_SITE_ID)) = WooPosDiscoveredReader.Phone(
         name = name,
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
         fingerprintBase64 = "AB4F",
-        siteId = siteId,
+        siteHash = siteHash,
     )
 
     private companion object {

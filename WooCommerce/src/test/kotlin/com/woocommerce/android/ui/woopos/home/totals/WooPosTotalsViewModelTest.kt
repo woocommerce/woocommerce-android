@@ -1986,7 +1986,7 @@ class WooPosTotalsViewModelTest {
             host = java.net.InetAddress.getByName("127.0.0.1"),
             port = 1234,
             fingerprintBase64 = "fp",
-            siteId = 1L,
+            siteHash = "site-hash",
             isSimulated = true,
         )
 

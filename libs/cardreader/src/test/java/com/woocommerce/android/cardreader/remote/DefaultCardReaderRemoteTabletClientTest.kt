@@ -97,7 +97,7 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
         port = 9000,
         fingerprintBase64 = "AB4F",
         deviceName = "Pixel",
-        siteId = 1L,
+        siteHash = "site-hash",
     )
 
     private fun aPaymentInfo() = PaymentInfo(
