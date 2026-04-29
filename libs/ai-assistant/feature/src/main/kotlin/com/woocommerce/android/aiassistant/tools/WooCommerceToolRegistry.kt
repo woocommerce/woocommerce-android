@@ -13,6 +13,13 @@ class WooCommerceToolRegistry @Inject constructor(
 
     private val handlersByName: Map<String, AssistantToolHandler> = handlers.associateBy { it.descriptor.name }
 
+    init {
+        val names = handlers.map { it.descriptor.name }
+        require(names.size == names.toSet().size) {
+            "Duplicate tool names: ${names.groupBy { it }.filter { it.value.size > 1 }.keys}"
+        }
+    }
+
     override fun descriptors(): List<ToolDescriptor> = handlersByName.values.map { it.descriptor }
 
     override suspend fun execute(call: ToolCall): ToolResult {
