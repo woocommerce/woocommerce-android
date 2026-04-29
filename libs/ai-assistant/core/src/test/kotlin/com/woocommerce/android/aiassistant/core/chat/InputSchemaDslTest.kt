@@ -57,6 +57,31 @@ class InputSchemaDslTest {
     }
 
     @Test
+    fun `given a required object property, when building the schema, then nested object shape is correct`() {
+        val schema = inputSchema {
+            array("ids", itemType = "integer", required = true)
+            objectProperty("patch", required = true) {
+                string("status")
+                string("customer_note")
+            }
+        }
+
+        val props = requireNotNull(schema["properties"]).jsonObject
+        val patch = requireNotNull(props["patch"]).jsonObject
+        assertThat(patch["type"]?.jsonPrimitive?.content).isEqualTo("object")
+        assertThat(patch["additionalProperties"]?.jsonPrimitive?.content).isEqualTo("false")
+
+        val patchProps = requireNotNull(patch["properties"]).jsonObject
+        assertThat(patchProps.keys).containsExactly("status", "customer_note")
+        assertThat(requireNotNull(patchProps["status"]).jsonObject["type"]?.jsonPrimitive?.content).isEqualTo("string")
+        assertThat(requireNotNull(patchProps["customer_note"]).jsonObject["type"]?.jsonPrimitive?.content)
+            .isEqualTo("string")
+
+        val required = requireNotNull(schema["required"]).jsonArray.map { it.jsonPrimitive.content }
+        assertThat(required).containsExactly("ids", "patch")
+    }
+
+    @Test
     fun `given any schema, when building the schema, then additionalProperties is false`() {
         val schema = inputSchema { string("q", description = "query") }
         assertThat(schema["additionalProperties"]?.jsonPrimitive?.content).isEqualTo("false")
