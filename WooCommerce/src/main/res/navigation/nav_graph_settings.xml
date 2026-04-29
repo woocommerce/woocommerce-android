@@ -211,7 +211,14 @@
             android:name="showSmarterNotifications"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_notificationSettingsFragment_to_newOrderNotificationSettingsFragment"
+            app:destination="@id/newOrderNotificationSettingsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/newOrderNotificationSettingsFragment"
+        android:name="com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsFragment"
+        android:label="NewOrderNotificationSettingsFragment" />
     <fragment
         android:id="@+id/pluginsFragment"
         android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
