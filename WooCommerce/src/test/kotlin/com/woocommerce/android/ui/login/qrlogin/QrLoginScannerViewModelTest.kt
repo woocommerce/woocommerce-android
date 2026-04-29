@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -33,6 +34,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private val parser: QrLoginPayloadParser = mock()
     private val authenticator: QrLoginAuthenticator = mock()
+    private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val viewModel by lazy {
@@ -40,6 +42,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             savedState = SavedStateHandle(),
             parser = parser,
             authenticator = authenticator,
+            accountRepository = accountRepository,
             analyticsTracker = analyticsTracker
         )
     }
@@ -48,6 +51,10 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     fun setUp() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(ticket)
         whenever(authenticator.authenticate(ticket)).thenReturn(Result.success(DEFAULT_SITE_ID))
+        // Default to "no active session" so existing flows behave as before; individual tests
+        // that exercise the session-replace warning override this.
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
+        whenever(accountRepository.logout()).thenReturn(true)
     }
 
     @Test
@@ -625,6 +632,195 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             verify(analyticsTracker, never()).track(eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED), any(), any(), any(), any())
             verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
         }
+
+    // region Session-replace warning (logged-in user)
+
+    @Test
+    fun `given logged in and ticket payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(viewModel.uiState.value).isEqualTo(
+                QrLoginScannerViewModel.UiState.WarningSessionReplace(
+                    QrLoginScannerViewModel.PendingHandoff.Ticket(ticket = ticket, host = "store.example")
+                )
+            )
+            verify(authenticator, never()).authenticate(any())
+        }
+
+    @Test
+    fun `given logged in and wp dot com payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(viewModel.uiState.value).isEqualTo(
+                QrLoginScannerViewModel.UiState.WarningSessionReplace(
+                    QrLoginScannerViewModel.PendingHandoff.WpComMagicLink(url = WP_COM_URL)
+                )
+            )
+            assertThat(events).isEmpty()
+        }
+
+    @Test
+    fun `given logged in and site url payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(viewModel.uiState.value).isEqualTo(
+                QrLoginScannerViewModel.UiState.WarningSessionReplace(
+                    QrLoginScannerViewModel.PendingHandoff.SiteUrlPrefill(siteUrl = SITE_URL)
+                )
+            )
+            assertThat(events).isEmpty()
+        }
+
+    @Test
+    fun `given logged in and any payload, when scan succeeds, then tracks LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+
+            viewModel.onScanResult(successScan())
+
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+        }
+
+    @Test
+    fun `given logged in and ticket via deep link, when received, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+
+            viewModel.onDeepLinkPayload(RAW_SCAN)
+
+            assertThat(viewModel.uiState.value)
+                .isInstanceOf(QrLoginScannerViewModel.UiState.WarningSessionReplace::class.java)
+        }
+
+    @Test
+    fun `given warning state, when another scan arrives, then it is ignored`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        viewModel.onScanResult(successScan(RAW_SCAN))
+
+        viewModel.onScanResult(successScan("second-raw"))
+
+        verify(parser, never()).parse("second-raw")
+    }
+
+    @Test
+    fun `given warning for ticket, when confirmed, then logs out and advances to Confirming`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        viewModel.onScanResult(successScan())
+
+        viewModel.onConfirmSessionReplace()
+
+        verify(accountRepository).logout()
+        assertThat(viewModel.uiState.value).isEqualTo(
+            QrLoginScannerViewModel.UiState.Confirming(ticket = ticket, host = "store.example")
+        )
+        verify(authenticator, never()).authenticate(any())
+    }
+
+    @Test
+    fun `given warning for wp dot com, when confirmed, then logs out and emits OpenWpComMagicLinkUrl`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            verify(accountRepository).logout()
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
+            )
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+        }
+
+    @Test
+    fun `given warning for site url, when confirmed, then logs out and emits RouteToSiteAddressEntry`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            verify(accountRepository).logout()
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry(siteUrl = SITE_URL)
+            )
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+        }
+
+    @Test
+    fun `given warning, when confirmed, then tracks LOGIN_QR_SESSION_REPLACE_CONFIRMED`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        viewModel.onScanResult(successScan())
+
+        viewModel.onConfirmSessionReplace()
+
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+    }
+
+    @Test
+    fun `given warning, when cancelled, then returns to idle without logging out`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        viewModel.onScanResult(successScan())
+
+        viewModel.onCancelSessionReplace()
+
+        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
+        verify(accountRepository, never()).logout()
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_DISMISSED)
+    }
+
+    @Test
+    fun `given not in warning state, when onConfirmSessionReplace, then nothing happens`() = testBlocking {
+        // user is not logged in, so payload goes straight to Confirming
+        viewModel.onScanResult(successScan())
+
+        viewModel.onConfirmSessionReplace()
+
+        verify(accountRepository, never()).logout()
+        verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+    }
+
+    @Test
+    fun `given logged in and ticket, when warning confirmed and site confirmed, then emits LoggedIn`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            viewModel.onConfirmSessionReplace()
+            viewModel.onConfirmSite()
+
+            assertThat(events.last())
+                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
+        }
+
+    @Test
+    fun `given logged out, when ticket payload arrives, then warning is not shown`() = testBlocking {
+        // Default mock returns isUserLoggedIn=false; verify legacy path is preserved.
+        viewModel.onScanResult(successScan())
+
+        assertThat(viewModel.uiState.value)
+            .isInstanceOf(QrLoginScannerViewModel.UiState.Confirming::class.java)
+        verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+    }
+
+    // endregion
 
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)

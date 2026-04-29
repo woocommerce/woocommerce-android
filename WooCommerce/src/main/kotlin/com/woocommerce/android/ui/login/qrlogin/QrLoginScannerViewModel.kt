@@ -6,11 +6,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Confirming
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Error
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WarningSessionReplace
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -42,6 +44,7 @@ class QrLoginScannerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val parser: QrLoginPayloadParser,
     private val authenticator: QrLoginAuthenticator,
+    private val accountRepository: AccountRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
@@ -107,8 +110,19 @@ class QrLoginScannerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Gate every QR hand-off (ticket / wp.com magic link / site-URL prefill) on the user being
+     * signed out. If a session is already active we surface a confirmation screen first; the
+     * user must opt in to replacing it before we run [AccountRepository.logout] and resume the
+     * original action.
+     */
     private fun handleHandoff(pending: PendingHandoff) {
-        resumePending(pending)
+        if (accountRepository.isUserLoggedIn()) {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+            _uiState.value = WarningSessionReplace(pending)
+        } else {
+            resumePending(pending)
+        }
     }
 
     private fun resumePending(pending: PendingHandoff) {
@@ -192,6 +206,32 @@ class QrLoginScannerViewModel @Inject constructor(
 
     fun onCancelSite() {
         if (_uiState.value is Confirming) _uiState.value = Idle
+    }
+
+    /**
+     * The merchant accepted the session-replace warning. Run the canonical logout via
+     * [AccountRepository.logout] (which handles both wp.com OAuth and per-site app-password
+     * sessions, plus prefs / analytics / Zendesk / DataStore cleanup) and then resume the
+     * original payload action exactly as if the user had been signed out from the start.
+     *
+     * We flip into [Authenticating] for the duration of the logout so the UI gives feedback
+     * while [AccountRepository.logout] talks to the server — for the Ticket path this is then
+     * overwritten by [Confirming] so the merchant still sees the host-confirmation step.
+     */
+    fun onConfirmSessionReplace() {
+        val pending = (_uiState.value as? WarningSessionReplace)?.pending ?: return
+        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+        _uiState.value = Authenticating
+        launch {
+            accountRepository.logout()
+            resumePending(pending)
+        }
+    }
+
+    fun onCancelSessionReplace() {
+        if (_uiState.value !is WarningSessionReplace) return
+        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_DISMISSED)
+        _uiState.value = Idle
     }
 
     /**
@@ -282,13 +322,13 @@ class QrLoginScannerViewModel @Inject constructor(
         data class Confirming(val ticket: QrLoginPayload.Ticket, val host: String) : UiState
         data object Authenticating : UiState
         data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
+        data class WarningSessionReplace(val pending: PendingHandoff) : UiState
     }
 
     /**
-     * Captures a parsed QR payload that has been routed through [handleHandoff]. Splitting the
-     * dispatch into "build the pending action" and "resume the pending action" lets us insert
-     * additional gates (e.g. session checks) between the two halves without duplicating the
-     * per-payload branch logic.
+     * Captures a parsed QR payload that we deferred while showing the session-replace warning.
+     * On confirm we run logout and then dispatch the matching action via [resumePending];
+     * on cancel we simply drop it and return to [UiState.Idle].
      */
     sealed interface PendingHandoff {
         data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
