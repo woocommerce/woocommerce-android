@@ -27,12 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -63,8 +63,10 @@ fun WooPosDialogWrapper(
         WooPosBreakpoint.SmallTablet,
         WooPosBreakpoint.Tablet -> widthFraction
     }
+    val density = LocalDensity.current
+    val containerHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val phoneMaxHeight = if (breakpoint == WooPosBreakpoint.Phone) {
-        (LocalConfiguration.current.screenHeightDp * PHONE_MAX_HEIGHT_FRACTION).dp
+        containerHeight * PHONE_MAX_HEIGHT_FRACTION
     } else {
         null
     }
