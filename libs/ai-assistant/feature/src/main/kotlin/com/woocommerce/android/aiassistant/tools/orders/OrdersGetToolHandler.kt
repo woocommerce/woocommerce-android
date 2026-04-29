@@ -43,7 +43,10 @@ internal class OrdersGetToolHandler @Inject constructor(
                     structured = json.encodeToJsonElement(order.toDetail()) as JsonObject,
                 )
             },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = {
+                // TODO Improve retryable detection logic to avoid unnecessary retries.
+                ToolResult.TransportError(toolCallId = call.id, retryable = true)
+            },
         )
     }
 
