@@ -74,6 +74,8 @@ internal class AIOrdersDataSource @Inject constructor(
     suspend fun updateOrderStatus(orderId: Long, newStatus: String): Result<Unit> = runCatching {
         val site = selectedSite.get()
         val statusModel = WCOrderStatusModel(statusKey = newStatus)
+        // last() handles two cases: only OptimisticUpdateResult (order not in Room, carries error)
+        // or both Optimistic + RemoteUpdateResult (normal path, remote result governs).
         val lastResult = orderStore.updateOrderStatus(orderId, site, statusModel).last()
         if (lastResult.event.isError) {
             throw OnChangedException(requireNotNull(lastResult.event.error))
