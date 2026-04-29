@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.dashboard.stats
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -287,9 +286,7 @@ private fun RevenueStatsTypeSelector(
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
                 colors = segmentedButtonColors,
                 icon = {},
-                modifier = Modifier
-                    .weight(1f)
-                    .height(36.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = stringResource(id = type.labelRes),
