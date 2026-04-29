@@ -22,17 +22,15 @@ internal class OrdersUpdateToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "orders_update",
-        description = "Update a single order. Accepts only the `status` field. " +
-            "Allowed transitions: on-hold -> processing, processing -> completed. " +
-            "Cancellation and refund flows are not supported by this tool. " +
-            "At most one write is executed per turn; additional write calls in the same turn will be " +
-            "rejected by the runtime.",
+        description = "Update an order's status. Status changes such as completed/cancelled/refunded fire " +
+            "customer emails — the merchant confirms before this dispatches. Do NOT use this to issue a " +
+            "refund — moving an order to 'refunded' only changes the status, it does not return funds.",
         inputSchema = inputSchema {
-            integer("id", description = "The order ID.", required = true)
+            integer("id", description = "The order ID. Required.", required = true)
             enum(
                 "status",
-                values = listOf("processing", "completed"),
-                description = "New status. Allowed transitions: on-hold → processing, processing → completed.",
+                values = listOf("pending", "processing", "on-hold", "completed", "cancelled", "refunded", "failed"),
+                description = "New order status.",
                 required = true,
             )
         },
@@ -43,20 +41,9 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
-
-        val currentOrder = dataSource.getOrder(args.id).getOrElse {
-            return ToolResult.TransportError(toolCallId = call.id, retryable = true)
+        if (args.status !in ALLOWED_STATUSES) {
+            return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
         }
-
-        val allowedTarget = ALLOWED_TRANSITIONS[currentOrder.status]
-        if (allowedTarget != args.status) {
-            return ToolResult.ValidationError(
-                call.id,
-                "Cannot transition from '${currentOrder.status}' to '${args.status}'. " +
-                    "Allowed transitions: on-hold → processing, processing → completed.",
-            )
-        }
-
         return dataSource.updateOrderStatus(args.id, args.status).fold(
             onSuccess = {
                 ToolResult.Success(
@@ -80,9 +67,8 @@ internal class OrdersUpdateToolHandler @Inject constructor(
     )
 
     companion object {
-        private val ALLOWED_TRANSITIONS = mapOf(
-            "on-hold" to "processing",
-            "processing" to "completed",
+        private val ALLOWED_STATUSES = setOf(
+            "pending", "processing", "on-hold", "completed", "cancelled", "refunded", "failed"
         )
     }
 }

@@ -83,7 +83,7 @@ class WooCommerceToolCatalogTest {
 
         val ordersUpdate = byName.getValue("orders_update").descriptor.description
         assertThat(ordersUpdate).contains("status")
-        assertThat(ordersUpdate).contains("on-hold")
+        assertThat(ordersUpdate).contains("refund")
 
         val ordersBulkUpdate = byName.getValue("orders_bulk_update").descriptor.description
         assertThat(ordersBulkUpdate).contains("status")

@@ -4,6 +4,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 internal class AIProductsDataSource @Inject constructor(
@@ -17,6 +18,7 @@ internal class AIProductsDataSource @Inject constructor(
 
     suspend fun fetchProducts(
         search: String? = null,
+        status: String? = null,
         page: Int = 1,
         perPage: Int = PAGE_SIZE,
     ): Result<ProductsPage> {
@@ -24,6 +26,9 @@ internal class AIProductsDataSource @Inject constructor(
         val normalisedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
         val clampedPerPage = perPage.coerceIn(1, MAX_PAGE_SIZE)
         val offset = (page - 1) * clampedPerPage
+        val filterOptions = buildMap<ProductFilterOption, String> {
+            if (status != null && status != "any") put(ProductFilterOption.STATUS, status)
+        }
 
         return if (normalisedSearch != null) {
             val result = productStore.searchProductsByNameAndSku(
@@ -31,6 +36,7 @@ internal class AIProductsDataSource @Inject constructor(
                 searchNameOrSkuQuery = normalisedSearch,
                 offset = offset,
                 pageSize = clampedPerPage,
+                filterOptions = filterOptions,
             )
             if (result.isError) {
                 Result.failure(OnChangedException(requireNotNull(result.error)))
@@ -43,6 +49,7 @@ internal class AIProductsDataSource @Inject constructor(
                 site = site,
                 offset = offset,
                 pageSize = clampedPerPage,
+                filterOptions = filterOptions,
             )
             if (result.isError) {
                 Result.failure(OnChangedException(requireNotNull(result.error)))

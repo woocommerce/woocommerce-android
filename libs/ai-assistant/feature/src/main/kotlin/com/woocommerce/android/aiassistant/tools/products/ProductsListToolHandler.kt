@@ -22,11 +22,17 @@ internal class ProductsListToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "products_list",
-        description = "List products, optionally filtered by a text search term. Use to find specific " +
-            "products, check stock, or browse by name or SKU. For aggregate sales numbers prefer " +
-            "analytics_revenue. For full product detail on a specific product use products_get with the ID.",
+        description = "List products, optionally filtered by status, or keyword search. " +
+            "For aggregate sales / top sellers prefer the analytics tools. " +
+            "For prose questions about a specific product's stock quantity, prices, etc., " +
+            "call products_get with the ID.",
         inputSchema = inputSchema {
-            string("search", description = "Free-text search across product name and SKU.")
+            string("search", description = "Free-text search across product name and content.")
+            enum(
+                "status",
+                values = listOf("any", "draft", "pending", "private", "publish"),
+                description = "Publication status; default 'any'.",
+            )
             integer("page", description = "1-based page number; default 1.")
             integer("per_page", description = "Max items; clamped 1-50, default 20.")
         },
@@ -39,6 +45,7 @@ internal class ProductsListToolHandler @Inject constructor(
         }
         return dataSource.fetchProducts(
             search = args.search,
+            status = args.status,
             page = args.page,
             perPage = args.perPage,
         ).fold(
@@ -59,6 +66,7 @@ internal class ProductsListToolHandler @Inject constructor(
     @Serializable
     private data class Args(
         val search: String? = null,
+        val status: String? = null,
         val page: Int = 1,
         @SerialName("per_page") val perPage: Int = 20,
     )

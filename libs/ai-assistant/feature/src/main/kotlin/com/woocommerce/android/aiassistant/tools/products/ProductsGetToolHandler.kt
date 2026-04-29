@@ -23,10 +23,11 @@ internal class ProductsGetToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "products_get",
-        description = "Fetch a single product with full detail (name, status, type, SKU, pricing, stock). " +
-            "Use when the merchant references a specific product by ID.",
+        description = "Fetch a single product with full detail (price, stock, categories, type). " +
+            "Use when the merchant references a specific product by ID. " +
+            "For variable products use product_variations_list to inspect the variants.",
         inputSchema = inputSchema {
-            integer("id", description = "The product ID.", required = true)
+            integer("id", description = "The product ID. Required.", required = true)
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
