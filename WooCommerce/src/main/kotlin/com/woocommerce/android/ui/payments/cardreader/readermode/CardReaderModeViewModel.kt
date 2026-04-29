@@ -77,8 +77,8 @@ class CardReaderModeViewModel @Inject constructor(
         }
         session.start(
             parentScope = viewModelScope,
-            isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             siteId = siteId,
+            isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
         )
     }
 
