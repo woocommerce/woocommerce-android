@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -122,7 +124,7 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
-    fun `when order loaded, then actions are side-loaded`() = runTest {
+    fun `when order loaded, then actions are available`() = runTest {
         // GIVEN
         val completedOrder = order(1).copy(status = Order.Status.Completed)
         doReturn(Result.success(completedOrder)).whenever(dataSource).getOrderById(1L)
@@ -222,6 +224,31 @@ class WooPosOrderDetailsViewModelTest {
         verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(1L))
         verify(ordersAnalyticsTracker).trackOrderDetailsEmailReceiptTapped()
     }
+
+    @Test
+    fun `given loaded order, when issue refund action clicked, then OpenIssueRefund navigation event emitted`() =
+        runTest {
+            // GIVEN
+            val completedOrder = order(1).copy(status = Order.Status.Completed)
+            doReturn(Result.success(completedOrder)).whenever(dataSource).getOrderById(1L)
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            coordinator.selectOrder(1L)
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosOrdersUIEvent.OrderActionClicked(OrderAction.IssueRefund(orderId = 1L))
+                )
+                advanceUntilIdle()
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
+                assertThat((event as WooPosNavigationEvent.OpenIssueRefund).orderId).isEqualTo(1L)
+            }
+        }
 
     @Test
     fun `given completed order, when loaded, then IssueRefund action available`() = runTest {

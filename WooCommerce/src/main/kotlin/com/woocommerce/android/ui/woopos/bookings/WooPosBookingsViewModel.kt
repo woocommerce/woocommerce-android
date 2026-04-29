@@ -79,7 +79,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
-    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(extraBufferCapacity = 1)
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private val _toastEvent = MutableSharedFlow<String>()

@@ -18,9 +18,9 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsVi
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -150,7 +150,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
             is OrderAction.IssueRefund -> {
-                _navigationEvent.tryEmit(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
+                viewModelScope.launch {
+                    _navigationEvent.emit(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
+                }
             }
         }
     }

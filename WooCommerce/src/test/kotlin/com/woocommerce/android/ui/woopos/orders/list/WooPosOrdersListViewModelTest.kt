@@ -318,6 +318,35 @@ class WooPosOrdersListViewModelTest {
     }
 
     @Test
+    fun `given orders loaded, when selecting order in SinglePane mode, then coordinator selection is not updated`() =
+        runTest {
+            whenever(dataSource.loadOrders()).thenReturn(
+                flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1), order(2), order(3)))) }
+            )
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val initialSelectedId = coordinator.selectedOrderId.value
+
+            // WHEN
+            viewModel.onOrderSelected(3L, WooPosScreenType.SinglePane)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(coordinator.selectedOrderId.value).isEqualTo(initialSelectedId)
+            val content = viewModel.state.value as WooPosOrdersListState.Content
+            val loadedItems = content.items as WooPosOrdersListState.Content.Items.Loaded
+            val selectedFlags = loadedItems.items.filter { it.isSelected }
+            assertThat(selectedFlags.map { it.id }).doesNotContain(3L)
+            verify(ordersAnalyticsTracker).trackOrdersListRowTapped(
+                orderId = eq(3L),
+                orderStatus = any(),
+                listPosition = eq(2),
+                createdAtMillis = any()
+            )
+        }
+
+    @Test
     fun `given order already selected, when selecting same order, then no state change`() = runTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1), order(2)))) }

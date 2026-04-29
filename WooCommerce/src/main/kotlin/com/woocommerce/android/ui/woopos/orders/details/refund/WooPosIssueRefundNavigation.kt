@@ -17,7 +17,8 @@ const val ISSUE_REFUND_DISMISSED_KEY = "issue_refund_dismissed"
 private const val ISSUE_REFUND_ORDER_ID_KEY = "orderId"
 private const val ISSUE_REFUND_DISABLE_PARTIAL_KEY = "disablePartialRefund"
 private const val ISSUE_REFUND_ROUTE =
-    "$ORDERS_ROUTE/issue_refund/{$ISSUE_REFUND_ORDER_ID_KEY}?$ISSUE_REFUND_DISABLE_PARTIAL_KEY={$ISSUE_REFUND_DISABLE_PARTIAL_KEY}"
+    "$ORDERS_ROUTE/issue_refund/{$ISSUE_REFUND_ORDER_ID_KEY}" +
+        "?$ISSUE_REFUND_DISABLE_PARTIAL_KEY={$ISSUE_REFUND_DISABLE_PARTIAL_KEY}"
 
 fun NavController.navigateToIssueRefundScreen(orderId: Long, disablePartialRefund: Boolean = false) {
     navigateOnce(
@@ -60,9 +61,9 @@ fun NavGraphBuilder.issueRefundScreen(
             )
         },
     ) { backStackEntry ->
-        val orderId = checkNotNull(backStackEntry.arguments?.getLong(ISSUE_REFUND_ORDER_ID_KEY)) {
-            "orderId argument is required for issue refund screen"
-        }
+        val orderId = requireNotNull(backStackEntry.arguments) {
+            "arguments are required for issue refund screen"
+        }.getLong(ISSUE_REFUND_ORDER_ID_KEY)
         val disablePartialRefund =
             backStackEntry.arguments?.getBoolean(ISSUE_REFUND_DISABLE_PARTIAL_KEY) ?: false
 

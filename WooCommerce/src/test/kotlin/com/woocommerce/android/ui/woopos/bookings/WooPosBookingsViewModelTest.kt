@@ -805,7 +805,9 @@ class WooPosBookingsViewModelTest {
                 // THEN
                 val event = awaitItem()
                 assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
-                assertThat((event as WooPosNavigationEvent.OpenIssueRefund).orderId).isEqualTo(10L)
+                val issueRefundEvent = event as WooPosNavigationEvent.OpenIssueRefund
+                assertThat(issueRefundEvent.orderId).isEqualTo(10L)
+                assertThat(issueRefundEvent.disablePartialRefund).isTrue()
             }
         }
 
