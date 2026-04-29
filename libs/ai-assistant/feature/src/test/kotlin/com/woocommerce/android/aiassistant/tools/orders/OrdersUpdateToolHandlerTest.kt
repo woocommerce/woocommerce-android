@@ -59,7 +59,14 @@ class OrdersUpdateToolHandlerTest {
     fun `given order fetch fails, when execute is called, then retryable TransportError is returned`() = runTest {
         whenever(dataSource.getOrder(123L)).thenReturn(Result.failure(RuntimeException("network error")))
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "processing") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "processing")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
         assertThat((result as ToolResult.TransportError).retryable).isTrue
@@ -70,7 +77,14 @@ class OrdersUpdateToolHandlerTest {
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder("on-hold")))
         whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(Result.success(Unit))
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "processing") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "processing")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val json = (result as ToolResult.Success).structured.jsonObject
@@ -84,7 +98,14 @@ class OrdersUpdateToolHandlerTest {
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder("processing")))
         whenever(dataSource.updateOrderStatus(123L, "completed")).thenReturn(Result.success(Unit))
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "completed") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "completed")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val json = (result as ToolResult.Success).structured.jsonObject
@@ -97,7 +118,14 @@ class OrdersUpdateToolHandlerTest {
         runTest {
             whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder("on-hold")))
 
-            val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "completed") }))
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("id", 123)
+                        put("status", "completed")
+                    }
+                )
+            )
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
             val error = result as ToolResult.ValidationError
@@ -109,7 +137,14 @@ class OrdersUpdateToolHandlerTest {
     fun `given completed order, when status is processing, then ValidationError is returned`() = runTest {
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder("completed")))
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "processing") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "processing")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
     }
@@ -121,7 +156,14 @@ class OrdersUpdateToolHandlerTest {
             Result.failure(RuntimeException("network error"))
         )
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "processing") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "processing")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
         assertThat((result as ToolResult.TransportError).retryable).isTrue
