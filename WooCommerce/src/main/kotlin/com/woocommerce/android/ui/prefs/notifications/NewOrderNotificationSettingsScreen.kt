@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.notifications
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -45,7 +46,10 @@ fun NewOrderNotificationSettingsScreen(
     onNotificationsEnabledChanged: (Boolean) -> Unit,
     onNotificationPreferenceChanged: (NotificationPreference) -> Unit
 ) {
-    Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = WindowInsets(0.dp)
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
