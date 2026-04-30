@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.qrlogin
 import com.woocommerce.android.network.qrlogin.QrLoginCredentials
 import com.woocommerce.android.network.qrlogin.QrLoginRestClient
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
@@ -25,7 +26,8 @@ class QrLoginAuthenticator @Inject constructor(
     private val exchangeClient: QrLoginRestClient,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val siteStore: SiteStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val accountRepository: AccountRepository
 ) {
     suspend fun authenticate(ticket: QrLoginPayload.Ticket): Result<Int> {
         val credentials = exchangeClient.exchange(ticket.siteUrl, ticket.token)
@@ -53,17 +55,22 @@ class QrLoginAuthenticator @Inject constructor(
         try {
             ensureUserEligible(site)
         } catch (ce: CancellationException) {
-            revokeApplicationPassword(site)
+            revokeAndLogOut(site)
             throw ce
         } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-            revokeApplicationPassword(site)
+            revokeAndLogOut(site)
             throw t
         }
         selectedSite.set(site)
         return site.id
     }
 
-    private suspend fun revokeApplicationPassword(site: SiteModel) {
+    /**
+     * On post-exchange QR login failure, revoke the just-minted Application Password and tear down
+     * any existing session. The app does not support multi-login, so a failed QR attempt must leave
+     * the user fully logged out rather than in a half-state.
+     */
+    private suspend fun revokeAndLogOut(site: SiteModel) {
         val result = siteStore.deleteApplicationPassword(site)
         if (result.isError) {
             WooLog.e(
@@ -72,6 +79,7 @@ class QrLoginAuthenticator @Inject constructor(
                     "${result.error?.errorCode} ${result.error?.message}"
             )
         }
+        accountRepository.logout()
     }
 
     private suspend fun fetchAndValidateSite(
