@@ -11,6 +11,8 @@ import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgete
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
+import com.woocommerce.android.aiassistant.runtime.AgenticLoopAssistantRuntime
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
@@ -49,6 +51,14 @@ internal object AiAssistantModule {
         safetyOrchestrator,
         json,
     )
+
+    @Provides
+    @Singleton
+    fun provideAssistantRuntime(
+        agenticLoop: AgenticLoop,
+        toolRegistry: ToolRegistry,
+        toolCatalogSelector: ToolCatalogSelector,
+    ): AssistantRuntime = AgenticLoopAssistantRuntime(agenticLoop, toolRegistry, toolCatalogSelector)
 
     @Provides
     @Singleton
