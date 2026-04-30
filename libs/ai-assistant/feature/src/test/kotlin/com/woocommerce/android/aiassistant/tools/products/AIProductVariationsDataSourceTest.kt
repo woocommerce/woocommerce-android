@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -122,6 +123,144 @@ class AIProductVariationsDataSourceTest {
             val result = dataSource.getVariation(productId = 100L, variationId = 10L)
 
             assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+        }
+
+    @Test
+    fun `given cached variation, when updateVariation is called, then allowed fields are copied and store is updated`() =
+        runTest {
+            val existingVariation = makeVariation(productId = 100L, variationId = 10L).copy(
+                regularPrice = "19.99",
+                salePrice = "",
+                sku = "OLD-SKU",
+                status = "publish",
+                manageStock = false,
+                stockQuantity = 0.0,
+                stockStatus = "instock",
+            )
+            whenever(productStore.getVariationByRemoteId(site, 100L, 10L))
+                .thenReturn(existingVariation)
+                .thenReturn(null)
+            whenever(productStore.updateVariation(any()))
+                .thenReturn(WCProductStore.OnVariationUpdated(remoteProductId = 100L, remoteVariationId = 10L))
+
+            val result = dataSource.updateVariation(
+                productId = 100L,
+                variationId = 10L,
+                update = AIProductVariationsDataSource.VariationUpdate(
+                    regularPrice = "29.99",
+                    salePrice = "24.99",
+                    stockQuantity = 7,
+                    stockStatus = "onbackorder",
+                    sku = "NEW-SKU",
+                    status = "private",
+                ),
+            )
+
+            assertThat(result.getOrThrow()).isEqualTo(
+                existingVariation.copy(
+                    regularPrice = "29.99",
+                    salePrice = "24.99",
+                    stockQuantity = 7.0,
+                    manageStock = true,
+                    stockStatus = "onbackorder",
+                    sku = "NEW-SKU",
+                    status = "private",
+                )
+            )
+            argumentCaptor<WCProductStore.UpdateVariationPayload>().apply {
+                verify(productStore).updateVariation(capture())
+                assertThat(firstValue.site).isEqualTo(site)
+                assertThat(firstValue.variation).isEqualTo(
+                    existingVariation.copy(
+                        regularPrice = "29.99",
+                        salePrice = "24.99",
+                        stockQuantity = 7.0,
+                        manageStock = true,
+                        stockStatus = "onbackorder",
+                        sku = "NEW-SKU",
+                        status = "private",
+                    )
+                )
+            }
+        }
+
+    @Test
+    fun `given variation is not cached, when updateVariation is called, then it fetches before updating`() = runTest {
+        val fetchedVariation = makeVariation(productId = 100L, variationId = 10L).copy(sku = "OLD-SKU")
+        whenever(productStore.getVariationByRemoteId(site, 100L, 10L))
+            .thenReturn(null)
+            .thenReturn(fetchedVariation)
+            .thenReturn(null)
+        whenever(productStore.fetchSingleVariation(site, 100L, 10L))
+            .thenReturn(WCProductStore.OnVariationChanged(remoteProductId = 100L, remoteVariationId = 10L))
+        whenever(productStore.updateVariation(any()))
+            .thenReturn(WCProductStore.OnVariationUpdated(remoteProductId = 100L, remoteVariationId = 10L))
+
+        val result = dataSource.updateVariation(
+            productId = 100L,
+            variationId = 10L,
+            update = AIProductVariationsDataSource.VariationUpdate(sku = "NEW-SKU"),
+        )
+
+        assertThat(result.getOrThrow().sku).isEqualTo("NEW-SKU")
+        verify(productStore).fetchSingleVariation(site, 100L, 10L)
+        verify(productStore).updateVariation(any())
+    }
+
+    @Test
+    fun `given variation load fails, when updateVariation is called, then store update is not called`() = runTest {
+        val errorEvent = WCProductStore.OnVariationChanged(remoteProductId = 100L, remoteVariationId = 10L).also {
+            it.error = WCProductStore.ProductError(message = "missing")
+        }
+        whenever(productStore.getVariationByRemoteId(site, 100L, 10L)).thenReturn(null)
+        whenever(productStore.fetchSingleVariation(site, 100L, 10L)).thenReturn(errorEvent)
+
+        val result = dataSource.updateVariation(
+            productId = 100L,
+            variationId = 10L,
+            update = AIProductVariationsDataSource.VariationUpdate(sku = "NEW-SKU"),
+        )
+
+        assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+        verify(productStore, never()).updateVariation(any())
+    }
+
+    @Test
+    fun `given store update fails, when updateVariation is called, then failure wraps OnChangedException`() = runTest {
+        val existingVariation = makeVariation(productId = 100L, variationId = 10L)
+        val errorEvent = WCProductStore.OnVariationUpdated(remoteProductId = 100L, remoteVariationId = 10L).also {
+            it.error = WCProductStore.ProductError(message = "update failed")
+        }
+        whenever(productStore.getVariationByRemoteId(site, 100L, 10L)).thenReturn(existingVariation)
+        whenever(productStore.updateVariation(any())).thenReturn(errorEvent)
+
+        val result = dataSource.updateVariation(
+            productId = 100L,
+            variationId = 10L,
+            update = AIProductVariationsDataSource.VariationUpdate(sku = "NEW-SKU"),
+        )
+
+        assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+    }
+
+    @Test
+    fun `given refreshed cache exists after update, when updateVariation succeeds, then refreshed variation is returned`() =
+        runTest {
+            val existingVariation = makeVariation(productId = 100L, variationId = 10L).copy(sku = "OLD-SKU")
+            val refreshedVariation = existingVariation.copy(sku = "REFRESHED-SKU")
+            whenever(productStore.getVariationByRemoteId(site, 100L, 10L))
+                .thenReturn(existingVariation)
+                .thenReturn(refreshedVariation)
+            whenever(productStore.updateVariation(any()))
+                .thenReturn(WCProductStore.OnVariationUpdated(remoteProductId = 100L, remoteVariationId = 10L))
+
+            val result = dataSource.updateVariation(
+                productId = 100L,
+                variationId = 10L,
+                update = AIProductVariationsDataSource.VariationUpdate(sku = "NEW-SKU"),
+            )
+
+            assertThat(result.getOrThrow()).isEqualTo(refreshedVariation)
         }
 
     private fun argThatPayload(

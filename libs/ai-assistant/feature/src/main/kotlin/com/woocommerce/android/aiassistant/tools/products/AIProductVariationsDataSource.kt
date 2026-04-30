@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -10,6 +11,14 @@ internal class AIProductVariationsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
 ) {
+    data class VariationUpdate(
+        val regularPrice: String? = null,
+        val salePrice: String? = null,
+        val stockQuantity: Int? = null,
+        val stockStatus: String? = null,
+        val sku: String? = null,
+        val status: String? = null,
+    )
 
     suspend fun fetchVariations(
         productId: Long,
@@ -36,6 +45,41 @@ internal class AIProductVariationsDataSource @Inject constructor(
 
     suspend fun getVariation(productId: Long, variationId: Long): Result<WCProductVariationModel> {
         val site = selectedSite.get()
+        return getVariation(site, productId, variationId)
+    }
+
+    suspend fun updateVariation(
+        productId: Long,
+        variationId: Long,
+        update: VariationUpdate,
+    ): Result<WCProductVariationModel> {
+        val site = selectedSite.get()
+        val existingVariation = getVariation(site, productId, variationId).getOrElse {
+            return Result.failure(it)
+        }
+
+        val updatedVariation = existingVariation.copy(
+            regularPrice = update.regularPrice ?: existingVariation.regularPrice,
+            salePrice = update.salePrice ?: existingVariation.salePrice,
+            stockQuantity = update.stockQuantity?.toDouble() ?: existingVariation.stockQuantity,
+            manageStock = if (update.stockQuantity != null) true else existingVariation.manageStock,
+            stockStatus = update.stockStatus ?: existingVariation.stockStatus,
+            sku = update.sku ?: existingVariation.sku,
+            status = update.status ?: existingVariation.status,
+        )
+        val event = productStore.updateVariation(WCProductStore.UpdateVariationPayload(site, updatedVariation))
+        return if (event.isError) {
+            Result.failure(OnChangedException(requireNotNull(event.error)))
+        } else {
+            Result.success(productStore.getVariationByRemoteId(site, productId, variationId) ?: updatedVariation)
+        }
+    }
+
+    private suspend fun getVariation(
+        site: SiteModel,
+        productId: Long,
+        variationId: Long,
+    ): Result<WCProductVariationModel> {
         val cached = productStore.getVariationByRemoteId(site, productId, variationId)
         if (cached != null) return Result.success(cached)
 
