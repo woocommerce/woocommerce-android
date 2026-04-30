@@ -1,9 +1,13 @@
 package com.woocommerce.android.aiassistant.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,10 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import kotlinx.serialization.json.buildJsonObject
@@ -80,30 +88,74 @@ fun AssistantChatScreen(
     onCancelWrite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MaterialTheme {
-        Surface(modifier = modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding()
-                    .background(MaterialTheme.colorScheme.surface),
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            AssistantHeader(status = state.status)
+            AssistantMessageThread(
+                messages = state.messages,
+                modifier = Modifier.weight(1f),
+            )
+            AssistantStatusPanel(
+                state = state,
+                onRetry = onRetry,
+                onConfirmWrite = onConfirmWrite,
+                onCancelWrite = onCancelWrite,
+            )
+            AssistantComposer(
+                inputText = inputText,
+                onInputTextChange = onInputTextChange,
+                isStreaming = state.isStreaming,
+                onSendMessage = onSendMessage,
+                onCancelTurn = onCancelTurn,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantHeader(status: AssistantUiStatus) {
+    val statusLabel = status.toHeaderText()
+    val statusContentDescription = stringResource(
+        R.string.assistant_chat_status_content_description,
+        statusLabel,
+    )
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.assistant_chat_title),
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Surface(
+                modifier = Modifier.semantics {
+                    contentDescription = statusContentDescription
+                },
+                shape = RoundedCornerShape(50),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             ) {
-                AssistantMessageThread(
-                    messages = state.messages,
-                    modifier = Modifier.weight(1f),
-                )
-                AssistantStatusPanel(
-                    state = state,
-                    onRetry = onRetry,
-                    onConfirmWrite = onConfirmWrite,
-                    onCancelWrite = onCancelWrite,
-                )
-                AssistantComposer(
-                    inputText = inputText,
-                    onInputTextChange = onInputTextChange,
-                    isStreaming = state.isStreaming,
-                    onSendMessage = onSendMessage,
-                    onCancelTurn = onCancelTurn,
+                Text(
+                    text = statusLabel,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
         }
@@ -127,8 +179,8 @@ private fun AssistantMessageThread(
         modifier = modifier
             .fillMaxWidth()
             .testTag(AssistantChatTestTags.THREAD),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
         items(
             items = messages,
@@ -142,33 +194,53 @@ private fun AssistantMessageThread(
 @Composable
 private fun AssistantMessageBubble(message: AssistantUiMessage) {
     val isUser = message.role == AssistantUiMessage.Role.USER
+    val messageText = message.text.ifEmpty { " " }
+    val messageContentDescription = if (isUser) {
+        stringResource(R.string.assistant_chat_message_user_content_description, messageText)
+    } else {
+        stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
+    }
     val bubbleColor = if (isUser) {
         MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.surfaceVariant
+        MaterialTheme.colorScheme.surface
     }
     val textColor = if (isUser) {
         MaterialTheme.colorScheme.onPrimary
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        MaterialTheme.colorScheme.onSurface
     }
+    val shape = RoundedCornerShape(
+        topStart = 16.dp,
+        topEnd = 16.dp,
+        bottomStart = if (isUser) 16.dp else 4.dp,
+        bottomEnd = if (isUser) 4.dp else 16.dp,
+    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .testTag(AssistantChatTestTags.message(message.id)),
+            .testTag(AssistantChatTestTags.message(message.id))
+            .semantics { contentDescription = messageContentDescription },
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
     ) {
         Box(
             modifier = Modifier
                 .widthIn(max = 360.dp)
                 .heightIn(min = 40.dp)
-                .background(bubbleColor, RoundedCornerShape(8.dp))
+                .background(bubbleColor, shape)
+                .then(
+                    if (isUser) {
+                        Modifier
+                    } else {
+                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+                    }
+                )
                 .padding(horizontal = 14.dp, vertical = 10.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
             Text(
-                text = message.text.ifEmpty { " " },
+                text = messageText,
                 color = textColor,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = if (isUser) TextAlign.End else TextAlign.Start,
@@ -220,7 +292,7 @@ private fun AssistantErrorPanel(
         )
         if (canRetry) {
             TextButton(onClick = onRetry) {
-                Text("Retry")
+                Text(stringResource(R.string.assistant_chat_retry))
             }
         }
     }
@@ -240,7 +312,7 @@ private fun AssistantConfirmationPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Confirm ${confirmation.toolCall.name}?",
+            text = stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             style = MaterialTheme.typography.titleSmall,
         )
@@ -248,10 +320,10 @@ private fun AssistantConfirmationPanel(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Button(onClick = onConfirmWrite) {
-                Text("Confirm")
+                Text(stringResource(R.string.assistant_chat_confirm))
             }
             OutlinedButton(onClick = onCancelWrite) {
-                Text("Cancel")
+                Text(stringResource(R.string.assistant_chat_cancel))
             }
         }
     }
@@ -266,63 +338,90 @@ private fun AssistantComposer(
     onCancelTurn: () -> Unit,
 ) {
     val canSend = inputText.isNotBlank() && !isStreaming
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.Bottom,
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 4.dp,
     ) {
-        OutlinedTextField(
-            value = inputText,
-            onValueChange = onInputTextChange,
-            modifier = Modifier
-                .weight(1f)
-                .testTag(AssistantChatTestTags.INPUT),
-            minLines = 1,
-            maxLines = 4,
-            placeholder = { Text("Ask about your store") },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(
-                onSend = {
-                    if (canSend) {
-                        onSendMessage()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                OutlinedTextField(
+                    value = inputText,
+                    onValueChange = onInputTextChange,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(AssistantChatTestTags.INPUT),
+                    minLines = 1,
+                    maxLines = 4,
+                    shape = RoundedCornerShape(12.dp),
+                    placeholder = { Text(stringResource(R.string.assistant_chat_placeholder)) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            if (canSend) {
+                                onSendMessage()
+                            }
+                        }
+                    ),
+                )
+                if (isStreaming) {
+                    OutlinedButton(
+                        onClick = onCancelTurn,
+                        modifier = Modifier.heightIn(min = 56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Text(stringResource(R.string.assistant_chat_stop))
+                    }
+                } else {
+                    Button(
+                        onClick = onSendMessage,
+                        enabled = canSend,
+                        modifier = Modifier.heightIn(min = 56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Text(stringResource(R.string.assistant_chat_send))
                     }
                 }
-            ),
-        )
-        if (isStreaming) {
-            OutlinedButton(onClick = onCancelTurn) {
-                Text("Stop")
-            }
-        } else {
-            Button(
-                onClick = onSendMessage,
-                enabled = canSend,
-            ) {
-                Text("Send")
             }
         }
     }
 }
 
+@Composable
+private fun AssistantUiStatus.toHeaderText(): String = when (this) {
+    AssistantUiStatus.IDLE -> stringResource(R.string.assistant_chat_status_idle)
+    AssistantUiStatus.STREAMING -> stringResource(R.string.assistant_chat_status_streaming)
+    AssistantUiStatus.AWAITING_CONFIRMATION -> stringResource(
+        R.string.assistant_chat_status_awaiting_confirmation
+    )
+    AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
+}
+
+@Composable
 private fun AssistantUiError?.toDisplayText(): String = when (this) {
-    AssistantUiError.NETWORK -> "Network error"
-    AssistantUiError.AUTH -> "Authentication error"
-    AssistantUiError.RATE_LIMIT -> "Rate limit reached"
-    AssistantUiError.TIMEOUT -> "Request timed out"
-    AssistantUiError.UPSTREAM_FAILURE -> "Assistant service error"
-    AssistantUiError.TOOL_FAILED -> "Tool failed"
-    AssistantUiError.INVALID_TOOL_CALL -> "Invalid tool call"
-    AssistantUiError.OUTCOME_UNKNOWN -> "Outcome unknown"
-    AssistantUiError.CANCELLED -> "Request cancelled"
-    AssistantUiError.CONFIRMATION_DEFERRED -> "Confirmation is not available yet"
-    AssistantUiError.MAX_ITERATIONS -> "Assistant reached its turn limit"
+    AssistantUiError.NETWORK -> stringResource(R.string.assistant_chat_error_network)
+    AssistantUiError.AUTH -> stringResource(R.string.assistant_chat_error_auth)
+    AssistantUiError.RATE_LIMIT -> stringResource(R.string.assistant_chat_error_rate_limit)
+    AssistantUiError.TIMEOUT -> stringResource(R.string.assistant_chat_error_timeout)
+    AssistantUiError.UPSTREAM_FAILURE -> stringResource(R.string.assistant_chat_error_upstream_failure)
+    AssistantUiError.TOOL_FAILED -> stringResource(R.string.assistant_chat_error_tool_failed)
+    AssistantUiError.INVALID_TOOL_CALL -> stringResource(R.string.assistant_chat_error_invalid_tool_call)
+    AssistantUiError.OUTCOME_UNKNOWN -> stringResource(R.string.assistant_chat_error_outcome_unknown)
+    AssistantUiError.CANCELLED -> stringResource(R.string.assistant_chat_error_cancelled)
+    AssistantUiError.CONFIRMATION_DEFERRED -> stringResource(R.string.assistant_chat_error_confirmation_deferred)
+    AssistantUiError.MAX_ITERATIONS -> stringResource(R.string.assistant_chat_error_max_iterations)
     AssistantUiError.UNKNOWN,
-    null -> "Something went wrong"
+    null -> stringResource(R.string.assistant_chat_error_unknown)
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 720, fontScale = 1.5f)
 @Composable
 private fun AssistantChatScreenPreview() {
     AssistantChatScreen(
