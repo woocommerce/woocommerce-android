@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -41,13 +42,17 @@ class GetStats @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
 ) {
-    suspend operator fun invoke(refresh: Boolean, selectedRange: StatsTimeRangeSelection): Flow<LoadStatsResult> {
+    suspend operator fun invoke(
+        refresh: Boolean,
+        selectedRange: StatsTimeRangeSelection,
+        orderDateType: WCAnalyticsOrderDateType? = null
+    ): Flow<LoadStatsResult> {
         val shouldRefreshRevenue =
             shouldUpdateStats(selectedRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
         val shouldRefreshVisitors =
             shouldUpdateStats(selectedRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
-            revenueStats(selectedRange, shouldRefreshRevenue),
+            revenueStats(selectedRange, shouldRefreshRevenue, orderDateType),
             visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
             if (result is RevenueStatsSuccess && shouldRefreshRevenue && result.isOutdated.not()) {
@@ -67,12 +72,13 @@ class GetStats @Inject constructor(
 
     private fun revenueStats(
         rangeSelection: StatsTimeRangeSelection,
-        forceRefresh: Boolean
+        forceRefresh: Boolean,
+        orderDateType: WCAnalyticsOrderDateType?
     ): Flow<LoadStatsResult> = flow {
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
-        )
+        ).withOrderDateType(orderDateType)
 
         statsRepository.getRevenueStatsById(revenueRangeId)
             .takeIf { it.isSuccess && it.getOrNull() != null }
@@ -94,7 +100,8 @@ class GetStats @Inject constructor(
             range = rangeSelection.currentRange,
             granularity = rangeSelection.revenueStatsGranularity,
             forced = forceRefresh,
-            revenueRangeId = revenueRangeId
+            revenueRangeId = revenueRangeId,
+            orderDateType = orderDateType
         ).let { result ->
             result.fold(
                 onSuccess = { stats ->
@@ -204,6 +211,9 @@ class GetStats @Inject constructor(
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
+
+    private fun String.withOrderDateType(orderDateType: WCAnalyticsOrderDateType?): String =
+        orderDateType?.let { "$this-${it.value}" } ?: this
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,

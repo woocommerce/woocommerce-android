@@ -19,6 +19,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -27,6 +29,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
@@ -255,7 +258,7 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
-            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any())
+            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any(), anyOrNull())
         }
 
     @Test
@@ -266,7 +269,7 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
-            verify(statsRepository).fetchRevenueStats(any(), any(), eq(false), any())
+            verify(statsRepository).fetchRevenueStats(any(), any(), eq(false), any(), anyOrNull())
         }
 
     @Test
@@ -340,8 +343,29 @@ class GetStatsTest : BaseUnitTest() {
             assertThat(result).isNotNull
         }
 
+    @Test
+    fun `given order date type, when get stats, then fetches revenue stats with date type cache key`() =
+        testBlocking {
+            givenGetRevenueStats(Result.success(null))
+
+            getStats(
+                refresh = false,
+                selectedRange = ANY_STATS_RANGE_SELECTION,
+                orderDateType = WCAnalyticsOrderDateType.COMPLETED
+            ).collect()
+
+            verify(statsRepository).getRevenueStatsById(argThat { endsWith("-date_completed") })
+            verify(statsRepository).fetchRevenueStats(
+                range = any(),
+                granularity = any(),
+                forced = eq(true),
+                revenueRangeId = argThat { endsWith("-date_completed") },
+                orderDateType = eq(WCAnalyticsOrderDateType.COMPLETED)
+            )
+        }
+
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(result)
     }
 
