@@ -9,35 +9,48 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.delay
 
+/**
+ * Number-matching approval step. Shows the 3-digit number the merchant must tap on the
+ * matching wc-admin screen for the sign-in to complete. The number is rendered prominently
+ * (large, monospaced) with the host as context and a 90-second countdown.
+ *
+ * Cancel returns to the scanner. The server keeps the session in `scanned` until its
+ * 90-second window elapses, so wc-admin's polling auto-transitions to the "denied" terminal
+ * screen — no explicit cancel call is needed.
+ */
 @Composable
-fun QrLoginConfirmSiteScreen(
+fun QrLoginNumberDisplayScreen(
     host: String,
-    onConfirm: () -> Unit,
+    realNumber: String,
+    expiresAtEpochMs: Long,
     onCancel: () -> Unit,
 ) {
     Column(
@@ -48,8 +61,6 @@ fun QrLoginConfirmSiteScreen(
             .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Hero scrolls so the Connect / Cancel buttons stay visible in landscape on phones
-        // where the static layout would otherwise push them off the bottom edge.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,23 +69,21 @@ fun QrLoginConfirmSiteScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Hero(host = host)
+            Hero(host = host, realNumber = realNumber, expiresAtEpochMs = expiresAtEpochMs)
         }
-        Buttons(onConfirm = onConfirm, onCancel = onCancel)
+        CancelButton(onCancel = onCancel)
     }
 }
 
 @Composable
-private fun Hero(host: String) {
+private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        IconBadge()
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         Text(
-            text = stringResource(id = R.string.login_qr_confirm_title),
+            text = stringResource(id = R.string.login_qr_match_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
@@ -82,16 +91,18 @@ private fun Hero(host: String) {
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         Text(
-            text = stringResource(id = R.string.login_qr_confirm_subtitle),
+            text = stringResource(id = R.string.login_qr_match_subtitle, host),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
-        HostBadge(host = host)
+        NumberTile(realNumber = realNumber)
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
+        Countdown(expiresAtEpochMs = expiresAtEpochMs)
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.login_qr_confirm_security_note),
+            text = stringResource(id = R.string.login_qr_match_security_note),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -100,37 +111,20 @@ private fun Hero(host: String) {
 }
 
 @Composable
-private fun IconBadge() {
-    Box(
-        modifier = Modifier
-            .size(dimensionResource(id = R.dimen.image_major_72))
-            .clip(CircleShape)
-            .background(colorResource(id = R.color.color_primary).copy(alpha = 0.15f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner),
-            contentDescription = null,
-            tint = colorResource(id = R.color.color_primary),
-            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
-        )
-    }
-}
-
-@Composable
-private fun HostBadge(host: String) {
+private fun NumberTile(realNumber: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_100)))
-            .background(colorResource(id = R.color.color_primary).copy(alpha = 0.12f))
+            .background(colorResource(id = R.color.color_primary).copy(alpha = TILE_BG_ALPHA))
             .padding(
-                horizontal = dimensionResource(id = R.dimen.major_150),
-                vertical = dimensionResource(id = R.dimen.major_100)
+                horizontal = dimensionResource(id = R.dimen.major_300),
+                vertical = dimensionResource(id = R.dimen.major_200)
             )
     ) {
         Text(
-            text = host,
-            style = MaterialTheme.typography.titleMedium,
+            text = realNumber,
+            style = MaterialTheme.typography.displayLarge.copy(fontFamily = FontFamily.Monospace),
+            fontSize = NUMBER_FONT_SIZE_SP.sp,
             color = colorResource(id = R.color.color_primary),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -139,38 +133,54 @@ private fun HostBadge(host: String) {
 }
 
 @Composable
-private fun Buttons(
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-) {
+private fun Countdown(expiresAtEpochMs: Long) {
+    var secondsRemaining by remember(expiresAtEpochMs) {
+        mutableLongStateOf(((expiresAtEpochMs - System.currentTimeMillis()) / MILLIS_PER_SECOND).coerceAtLeast(0L))
+    }
+    LaunchedEffect(expiresAtEpochMs) {
+        while (secondsRemaining > 0L) {
+            delay(MILLIS_PER_SECOND)
+            secondsRemaining =
+                ((expiresAtEpochMs - System.currentTimeMillis()) / MILLIS_PER_SECOND).coerceAtLeast(0L)
+        }
+    }
+    Text(
+        text = stringResource(id = R.string.login_qr_match_countdown, secondsRemaining),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun CancelButton(onCancel: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = dimensionResource(id = R.dimen.major_100)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        WCColoredButton(
-            onClick = onConfirm,
-            text = stringResource(id = R.string.login_qr_confirm_connect),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCTextButton(
             onClick = onCancel,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.login_qr_confirm_cancel))
+            Text(text = stringResource(id = R.string.login_qr_match_cancel))
         }
     }
 }
 
+private const val TILE_BG_ALPHA = 0.12f
+private const val NUMBER_FONT_SIZE_SP = 64
+private const val MILLIS_PER_SECOND = 1_000L
+
 @LightDarkThemePreviews
 @Composable
-private fun QrLoginConfirmSiteScreenPreview() {
+private fun QrLoginNumberDisplayScreenPreview() {
     WooThemeWithBackground {
-        QrLoginConfirmSiteScreen(
+        QrLoginNumberDisplayScreen(
             host = "store.example",
-            onConfirm = {},
+            realNumber = "042",
+            expiresAtEpochMs = System.currentTimeMillis() + 90_000L,
             onCancel = {}
         )
     }

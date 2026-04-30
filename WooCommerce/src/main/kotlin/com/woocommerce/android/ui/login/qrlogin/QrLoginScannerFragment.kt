@@ -96,8 +96,7 @@ class QrLoginScannerFragment : Fragment() {
                     shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                 )
             },
-            onConfirmSite = qrLoginViewModel::onConfirmSite,
-            onCancelSite = ::handleCancelSite,
+            onCancelNumberMatch = ::handleCancelNumberMatch,
             onConfirmSessionReplace = qrLoginViewModel::onConfirmSessionReplace,
             onCancelSessionReplace = ::handleCancelSessionReplace,
             onStartOver = ::handleStartOver,
@@ -171,19 +170,19 @@ class QrLoginScannerFragment : Fragment() {
     }
 
     /**
-     * Cancel always exits to the previous destination (the prologue in camera mode, the launcher
-     * caller in deep-link mode). Resuming the camera underneath would re-scan the same QR if it
-     * is still framed, which loops the user back into the same confirm screen.
+     * In camera mode, cancelling the number-match step clears the overlay and the camera
+     * resumes underneath. In deep-link mode there is no camera, so the same dismissal would
+     * leave the user on a blank surface — exit the fragment instead.
      */
-    private fun handleCancelSite() {
-        qrLoginViewModel.onCancelSite()
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+    private fun handleCancelNumberMatch() {
+        qrLoginViewModel.onCancelNumberMatch()
+        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     /**
      * In practice the warning is only reachable via deep link (the in-app scanner is gated
      * behind a logged-out [LoginActivity]), so cancelling closes [LoginActivity] and returns
-     * the merchant to whatever they were doing before tapping the QR link. Existing session
+     * the merchant to whatever they were doing before tapping the QR link. The existing session
      * is left intact.
      */
     private fun handleCancelSessionReplace() {
@@ -192,7 +191,7 @@ class QrLoginScannerFragment : Fragment() {
     }
 
     /**
-     * Same reasoning as [handleCancelSite]: error/endpoint-missing screens in deep-link mode
+     * Error/endpoint-missing screens in deep-link mode
      * have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
      * resumes underneath as soon as the overlay is cleared.
      */

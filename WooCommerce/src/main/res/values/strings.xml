@@ -228,11 +228,12 @@
     <string name="login_qr_endpoint_missing_body">Your WooCommerce plugin doesn\'t support QR login. Please update WooCommerce on your store and try again, or sign in by entering your site URL.</string>
     <string name="login_qr_endpoint_missing_enter_url">Enter site URL instead</string>
     <string name="login_qr_endpoint_missing_retry">Try scanning again</string>
-    <string name="login_qr_confirm_title">Sign in to this store?</string>
-    <string name="login_qr_confirm_subtitle">Only continue if this is your store.</string>
-    <string name="login_qr_confirm_security_note">You\'re signing in with a one-time code from this store.</string>
-    <string name="login_qr_confirm_connect">Continue</string>
-    <string name="login_qr_confirm_cancel">Cancel</string>
+    <!-- Number-matching approval step -->
+    <string name="login_qr_match_title">Confirm sign-in</string>
+    <string name="login_qr_match_subtitle">Tap this number on your computer to finish signing in to %s.</string>
+    <string name="login_qr_match_countdown" comment="%1$d is seconds remaining before the challenge expires.">Expires in %1$ds</string>
+    <string name="login_qr_match_cancel">Cancel</string>
+    <string name="login_qr_match_security_note">Both screens must show the same number for sign-in to complete.</string>
 
     <!-- Fullscreen error titles + bodies (split from snackbar copy) -->
     <string name="login_qr_scanner_error_generic_title">Couldn\'t read that code</string>
@@ -256,6 +257,14 @@
     <string name="login_qr_scanner_error_not_woo_body">This site doesn\'t have WooCommerce installed.</string>
     <string name="login_qr_scanner_error_user_role_title">Permission needed</string>
     <string name="login_qr_scanner_error_user_role_body">Your account doesn\'t have permission to use the app for this store.</string>
+    <string name="login_qr_scanner_error_match_rejected_title">Sign-in denied</string>
+    <string name="login_qr_scanner_error_match_rejected_body">For your security, this sign-in attempt was cancelled. Generate a new code in your store to try again.</string>
+    <string name="login_qr_scanner_error_match_timed_out_title">Sign-in timed out</string>
+    <string name="login_qr_scanner_error_match_timed_out_body">You didn\'t confirm in time. Generate a new code in your store and try again.</string>
+    <string name="login_qr_scanner_error_match_already_scanned_title">Code already used</string>
+    <string name="login_qr_scanner_error_match_already_scanned_body">That code has already been scanned. Generate a new one in your store.</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_title">Sign-in interrupted</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_body">Your sign-in was interrupted. Generate a new code in your store and try again.</string>
     <string name="login_qr_error_primary_retry">Try again</string>
     <string name="login_qr_error_primary_scan">Scan a new code</string>
     <string name="login_qr_session_replace_title">You\'re already signed in</string>

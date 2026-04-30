@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import com.woocommerce.android.network.qrlogin.QrLoginCredentials
-import com.woocommerce.android.network.qrlogin.QrLoginRestClient
-import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -42,19 +40,15 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         hasWooCommerce = false
     }
 
-    private val exchangeClient: QrLoginRestClient = mock()
     private val repo: WPApiSiteRepository = mock()
     private val siteStore: SiteStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val accountRepository: AccountRepository = mock()
 
-    private val authenticator =
-        QrLoginAuthenticator(exchangeClient, repo, siteStore, selectedSite, accountRepository)
+    private val authenticator = QrLoginAuthenticator(repo, siteStore, selectedSite, accountRepository)
 
     @Before
     fun setUp() = testBlocking {
-        whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.success(credentials))
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
             .thenReturn(Result.success(site))
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(true))
@@ -62,8 +56,8 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given happy path, when authenticate, then returns site id and persists credentials`() = testBlocking {
-        val result = authenticator.authenticate(ticket)
+    fun `given happy path, when completeLogin, then returns site id and persists credentials`() = testBlocking {
+        val result = authenticator.completeLogin(ticket, credentials)
 
         assertThat(result).isEqualTo(Result.success(42))
         verify(repo).saveApplicationPassword(
@@ -75,23 +69,11 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given exchange fails, when authenticate, then propagates exchange exception`() = testBlocking {
-        whenever(exchangeClient.exchange(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginExchangeException.RateLimited))
-
-        val result = authenticator.authenticate(ticket)
-
-        assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.RateLimited)
-        verify(repo, never()).saveApplicationPassword(any(), any(), any())
-        verifyNoInteractions(selectedSite)
-    }
-
-    @Test
-    fun `given site has no WooCommerce, when authenticate, then NotAWooSite and AP not saved`() = testBlocking {
+    fun `given site has no WooCommerce, when completeLogin, then NotAWooSite and AP not saved`() = testBlocking {
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
             .thenReturn(Result.success(nonWooSite))
 
-        val result = authenticator.authenticate(ticket)
+        val result = authenticator.completeLogin(ticket, credentials)
 
         assertThat(result.exceptionOrNull()).isInstanceOf(QrLoginAuthenticationException.NotAWooSite::class.java)
         verify(repo, never()).saveApplicationPassword(any(), any(), any())
@@ -99,10 +81,10 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is not eligible, when authenticate, then UserNotEligible and site not selected`() = testBlocking {
+    fun `given user is not eligible, when completeLogin, then UserNotEligible and site not selected`() = testBlocking {
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
 
-        val result = authenticator.authenticate(ticket)
+        val result = authenticator.completeLogin(ticket, credentials)
 
         assertThat(result.exceptionOrNull())
             .isInstanceOf(QrLoginAuthenticationException.UserNotEligible::class.java)
@@ -110,38 +92,36 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is not eligible, when authenticate, then saved AP is revoked and user logged out`() =
-        testBlocking {
-            whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
+    fun `given user is not eligible, when completeLogin, then saved AP is revoked`() = testBlocking {
+        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
 
-            authenticator.authenticate(ticket)
+        authenticator.completeLogin(ticket, credentials)
 
-            verify(repo).saveApplicationPassword(
-                localSiteId = site.id,
-                username = credentials.userLogin,
-                password = credentials.applicationPassword
-            )
-            verify(siteStore).deleteApplicationPassword(site)
-            verify(accountRepository).logout()
-        }
-
-    @Test
-    fun `given eligibility check fails, when authenticate, then saved AP is revoked and user logged out`() =
-        testBlocking {
-            whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(IOException("offline")))
-
-            authenticator.authenticate(ticket)
-
-            verify(siteStore).deleteApplicationPassword(site)
-            verify(accountRepository).logout()
-        }
+        verify(repo).saveApplicationPassword(
+            localSiteId = site.id,
+            username = credentials.userLogin,
+            password = credentials.applicationPassword
+        )
+        verify(siteStore).deleteApplicationPassword(site)
+        verify(accountRepository).logout()
+    }
 
     @Test
-    fun `given fetchSite fails, when authenticate, then failure propagates and AP not saved`() = testBlocking {
+    fun `given eligibility check fails, when completeLogin, then saved AP is revoked`() = testBlocking {
+        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(IOException("offline")))
+
+        authenticator.completeLogin(ticket, credentials)
+
+        verify(siteStore).deleteApplicationPassword(site)
+        verify(accountRepository).logout()
+    }
+
+    @Test
+    fun `given fetchSite fails, when completeLogin, then failure propagates and AP not saved`() = testBlocking {
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
             .thenReturn(Result.failure(IllegalStateException("nope")))
 
-        val result = authenticator.authenticate(ticket)
+        val result = authenticator.completeLogin(ticket, credentials)
 
         assertThat(result.isFailure).isTrue()
         verify(repo, never()).saveApplicationPassword(any(), any(), any())
@@ -149,14 +129,14 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given fetchSite throws CancellationException, when authenticate, then it propagates unwrapped`() =
+    fun `given fetchSite throws CancellationException, when completeLogin, then it propagates unwrapped`() =
         testBlocking {
             whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
                 .thenAnswer { throw CancellationException("cancelled") }
 
             var thrown: Throwable? = null
             try {
-                authenticator.authenticate(ticket)
+                authenticator.completeLogin(ticket, credentials)
             } catch (t: Throwable) {
                 thrown = t
             }
@@ -165,12 +145,12 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given eligibility check fails with IO error, when authenticate, then UserNotEligible carries the cause`() =
+    fun `given eligibility check fails with IO error, when completeLogin, then UserNotEligible carries the cause`() =
         testBlocking {
             val cause = IOException("offline")
             whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(cause))
 
-            val result = authenticator.authenticate(ticket)
+            val result = authenticator.completeLogin(ticket, credentials)
 
             val failure = result.exceptionOrNull()
             assertThat(failure).isInstanceOf(QrLoginAuthenticationException.UserNotEligible::class.java)
