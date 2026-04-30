@@ -123,6 +123,7 @@ class AssistantViewModelTest {
 
         val state = viewModel.uiState.value
         assertThat(state.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(state.isTurnActive).isFalse()
         assertThat(state.canRetry).isFalse()
         assertThat(state.error).isNull()
     }
@@ -143,6 +144,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.NETWORK)
         assertThat(viewModel.uiState.value.canRetry).isTrue()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
 
         viewModel.onRetry()
 
@@ -172,6 +174,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
         assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
 
     @Test
@@ -283,14 +286,14 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `when cancel is requested, then runtime is cancelled and state returns to idle`() = runTest {
+    fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
         viewModel.onCancelTurn()
         advanceUntilIdle()
 
         assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
-        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
 
     @Test
