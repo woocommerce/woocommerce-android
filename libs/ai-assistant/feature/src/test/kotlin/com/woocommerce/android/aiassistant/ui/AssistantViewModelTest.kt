@@ -342,6 +342,58 @@ class AssistantViewModelTest {
         }
 
     @Test
+    fun `given active streaming turn, when another message is sent, then second turn is ignored`() = runTest {
+        viewModel.onSendMessage("First")
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(runtime.startRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "First",
+                history = emptyList(),
+            )
+        )
+        assertThat(viewModel.uiState.value.messages.map { it.text }).containsExactly("First", "")
+    }
+
+    @Test
+    fun `given awaiting confirmation, when another message is sent, then second turn is ignored`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        advanceUntilIdle()
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(runtime.startRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "Cancel order 123",
+                history = emptyList(),
+            )
+        )
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
+        assertThat(viewModel.uiState.value.pendingConfirmation).isEqualTo(givenPendingConfirmation())
+    }
+
+    @Test
+    fun `given active streaming turn, when retry is requested, then retry is ignored`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        viewModel.onRetry()
+        advanceUntilIdle()
+
+        assertThat(runtime.retryRequests).isEmpty()
+        assertThat(runtime.startRequests).hasSize(1)
+    }
+
+    @Test
     fun `given pending confirmation, when confirm write is requested, then runtime confirm is called`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))

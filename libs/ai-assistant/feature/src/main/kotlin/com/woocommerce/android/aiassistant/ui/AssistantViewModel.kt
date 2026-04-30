@@ -39,6 +39,8 @@ class AssistantViewModel @AssistedInject constructor(
     private var lastUserMessage: String? = null
 
     fun onSendMessage(message: String) {
+        if (_uiState.value.isTurnActive) return
+
         val trimmedMessage = message.trim()
         if (trimmedMessage.isEmpty()) return
 
@@ -47,6 +49,8 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onRetry() {
+        if (_uiState.value.isTurnActive) return
+
         val message = lastUserMessage ?: return
         startTurn(message, isRetry = true)
     }

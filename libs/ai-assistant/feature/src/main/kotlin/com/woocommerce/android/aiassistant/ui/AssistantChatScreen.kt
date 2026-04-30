@@ -89,9 +89,11 @@ fun AssistantChatScreen(
         inputText = inputText,
         onInputTextChange = { inputText = it },
         onSendMessage = {
-            val message = inputText
-            inputText = ""
-            viewModel.onSendMessage(message)
+            if (!state.isTurnActive) {
+                val message = inputText
+                inputText = ""
+                viewModel.onSendMessage(message)
+            }
         },
         onCancelTurn = viewModel::onCancelTurn,
         onRetry = viewModel::onRetry,
