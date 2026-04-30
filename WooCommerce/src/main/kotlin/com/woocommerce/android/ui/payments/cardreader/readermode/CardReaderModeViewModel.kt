@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.UrlUtils
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +38,7 @@ class CardReaderModeViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -89,9 +92,15 @@ class CardReaderModeViewModel @Inject constructor(
         session.start(
             parentScope = viewModelScope,
             siteHash = siteHash,
+            deviceId = getOrCreateDeviceId(),
             isSimulated = isSimulated,
         )
     }
+
+    private fun getOrCreateDeviceId(): String =
+        appPrefsWrapper.wooPosRemoteReaderDeviceUUID.ifEmpty {
+            UUID.randomUUID().toString().also { appPrefsWrapper.wooPosRemoteReaderDeviceUUID = it }
+        }
 
     private fun trackSessionState(state: CardReaderRemoteSessionState) {
         when (state) {

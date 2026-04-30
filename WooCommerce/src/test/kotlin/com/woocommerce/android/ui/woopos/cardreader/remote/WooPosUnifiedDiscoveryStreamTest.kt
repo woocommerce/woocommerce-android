@@ -115,7 +115,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         whenever(remoteDiscovery.discover()).thenReturn(
             flowOf(
                 WooPosPhoneDiscoveryEvent.Added(phone),
-                WooPosPhoneDiscoveryEvent.Removed(phone.name),
+                WooPosPhoneDiscoveryEvent.Removed(phone.serviceName),
             )
         )
         whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
@@ -138,6 +138,41 @@ class WooPosUnifiedDiscoveryStreamTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `given phone whose display name differs from service name, when removed by service name, then phone is dropped`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+                flowOf(CardReaderDiscoveryEvents.Started)
+            )
+            val phone = phone(name = "Pixel 8", serviceName = "woopos-remote-a3f4")
+            whenever(remoteDiscovery.discover()).thenReturn(
+                flowOf(
+                    WooPosPhoneDiscoveryEvent.Added(phone),
+                    WooPosPhoneDiscoveryEvent.Removed("woopos-remote-a3f4"),
+                )
+            )
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
+            val sut = WooPosUnifiedDiscoveryStream(
+                cardReaderManager,
+                remoteDiscovery,
+                simulatedRemoteDiscovery,
+                featureFlagRepository,
+                selectedSite,
+                logger,
+            )
+
+            // WHEN / THEN
+            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+                assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+                val withPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+                assertThat(withPhone.readers).containsExactly(phone)
+                val withoutPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+                assertThat(withoutPhone.readers).isEmpty()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `given phone advertises different site hash, when discovered, then phone is not surfaced`() = runTest {
@@ -195,11 +230,19 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
     }
 
-    private fun phone(name: String, siteHash: String = siteIdHash(TABLET_SITE_ID)) = WooPosDiscoveredReader.Phone(
+    private fun phone(
+        name: String,
+        siteHash: String = siteIdHash(TABLET_SITE_ID),
+        serviceName: String = "woopos-remote-${name.hashCode().toString(16)}",
+        fingerprintBase64: String = "AB4F",
+        deviceId: String = "device-${name.hashCode().toString(16)}",
+    ) = WooPosDiscoveredReader.Phone(
+        serviceName = serviceName,
+        deviceId = deviceId,
         name = name,
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
-        fingerprintBase64 = "AB4F",
+        fingerprintBase64 = fingerprintBase64,
         siteHash = siteHash,
     )
 
