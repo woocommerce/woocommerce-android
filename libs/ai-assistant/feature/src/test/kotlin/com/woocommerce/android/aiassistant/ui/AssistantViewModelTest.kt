@@ -297,6 +297,51 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given partial assistant text, when cancel is requested, then partial text remains visible`() = runTest {
+        viewModel.onSendMessage("Summarize sales")
+        val activeBubbleId = viewModel.uiState.value.messages.last().id
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are "))
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("up today"))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages).contains(
+            AssistantUiMessage(
+                id = activeBubbleId,
+                role = AssistantUiMessage.Role.ASSISTANT,
+                text = "Sales are up today",
+            )
+        )
+    }
+
+    @Test
+    fun `given partial assistant text, when cancelled and new message is sent, then next turn history includes partial text`() =
+        runTest {
+            viewModel.onSendMessage("Summarize sales")
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today"))
+            advanceUntilIdle()
+
+            viewModel.onCancelTurn()
+            advanceUntilIdle()
+            viewModel.onSendMessage("What changed?")
+
+            assertThat(runtime.startRequests.last()).isEqualTo(
+                AssistantTurnRequest(
+                    conversationId = CONVERSATION_ID,
+                    siteId = SITE_ID,
+                    toolScope = ToolScope.GLOBAL,
+                    userMessage = "What changed?",
+                    history = listOf(
+                        AssistantMessage.User("Summarize sales"),
+                        AssistantMessage.Assistant("Sales are up today"),
+                    ),
+                )
+            )
+        }
+
+    @Test
     fun `given pending confirmation, when confirm write is requested, then runtime confirm is called`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))

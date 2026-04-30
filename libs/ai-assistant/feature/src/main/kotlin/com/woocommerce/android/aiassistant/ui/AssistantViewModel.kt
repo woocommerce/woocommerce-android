@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -51,6 +52,9 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onCancelTurn() {
+        if (!_uiState.value.isTurnActive) return
+
+        preserveCancelledTurnInHistory()
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
@@ -59,8 +63,8 @@ class AssistantViewModel @AssistedInject constructor(
         }
         _uiState.update {
             it.copy(
-                status = AssistantUiStatus.IDLE,
-                error = null,
+                status = AssistantUiStatus.ERROR,
+                error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
                 pendingConfirmation = null,
             )
@@ -181,6 +185,22 @@ class AssistantViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    private fun preserveCancelledTurnInHistory() {
+        val userMessage = lastUserMessage ?: return
+        val assistantMessageId = activeAssistantMessageId
+        val assistantText = _uiState.value.messages
+            .firstOrNull { it.id == assistantMessageId }
+            ?.text
+            .orEmpty()
+        val cancelledTurnHistory = buildList {
+            add(AssistantMessage.User(userMessage))
+            assistantText.takeIf { it.isNotEmpty() }?.let {
+                add(AssistantMessage.Assistant(content = it))
+            }
+        }
+        history = lastTurnBaseHistory + cancelledTurnHistory
     }
 
     private fun appendAssistantText(delta: String) {
