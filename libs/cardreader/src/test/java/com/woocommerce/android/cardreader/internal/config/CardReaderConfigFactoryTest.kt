@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForES
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFI
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFR
+import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForLU
@@ -69,6 +70,12 @@ class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
 
         // THEN
         assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
+    }
+
+    @Test
+    fun `given country code GB, when getCardReaderConfigFor is called, then GB card reader config returned`() {
+        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("GB"))
+            .isInstanceOf(CardReaderConfigForGB::class.java)
     }
 
     @Test

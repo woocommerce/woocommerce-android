@@ -26,6 +26,7 @@ import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -51,6 +52,8 @@ class WooPosEligibilityViewModelTest {
     init {
         whenever(mockResourceProvider.getString(any())).thenReturn("Test suggestion text")
         whenever(mockResourceProvider.getString(any(), any())).thenReturn("Test suggestion text with params")
+        whenever(mockResourceProvider.getString(any(), any(), any()))
+            .thenReturn("Test suggestion text with country and currency")
         runBlocking {
             whenever(mockStoreCountryProvider()).doReturn("United States")
             whenever(mockStoreCountryCodeProvider()).doReturn("us")
@@ -235,6 +238,48 @@ class WooPosEligibilityViewModelTest {
             assertThat(navigated).hasSize(1)
             job.cancel()
         }
+    }
+
+    @Test
+    fun `given DE store and primary expansion flag on, when ineligible due to unsupported currency, then message uses EUR`() = runTest {
+        // GIVEN
+        whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(
+            listOf("us" to "usd", "gb" to "gbp", "de" to "eur"),
+        )
+        val sut = createSut()
+        whenever(mockStoreCountryProvider()).thenReturn("Germany")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("de")
+
+        // WHEN
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockResourceProvider).getString(
+            eq(com.woocommerce.android.R.string.woopos_eligibility_reason_unsupported_currency_country_pair),
+            eq("Germany"),
+            eq("EUR"),
+        )
+    }
+
+    @Test
+    fun `given DE store and primary expansion flag off, when ineligible due to unsupported currency, then generic message used`() = runTest {
+        // GIVEN
+        whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(
+            listOf("us" to "usd", "gb" to "gbp"),
+        )
+        val sut = createSut()
+        whenever(mockStoreCountryProvider()).thenReturn("Germany")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("de")
+
+        // WHEN
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockResourceProvider).getString(
+            eq(com.woocommerce.android.R.string.woopos_eligibility_reason_unsupported_currency_generic),
+        )
     }
 
     private fun mockUriParse(): MockedStatic<Uri> {
