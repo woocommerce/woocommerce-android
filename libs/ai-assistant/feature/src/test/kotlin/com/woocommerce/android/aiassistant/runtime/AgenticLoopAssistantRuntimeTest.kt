@@ -1,5 +1,7 @@
 package com.woocommerce.android.aiassistant.runtime
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -14,23 +16,26 @@ import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
-import com.woocommerce.android.aiassistant.core.safety.ConfirmationPreview
-import com.woocommerce.android.aiassistant.core.safety.ConfirmationPreviewMessage
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
-import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewResolver
-import com.woocommerce.android.aiassistant.safety.ResolvedConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AgenticLoopAssistantRuntimeTest {
     @Test
     fun `when agentic loop finishes with max iterations, then runtime preserves outcome`() = runTest {
@@ -62,9 +67,11 @@ class AgenticLoopAssistantRuntimeTest {
             id = "confirmation-1",
             toolCallId = "call-1",
             toolName = "orders_update",
-            arguments = buildJsonObject { put("id", 123) },
+            arguments = buildJsonObject {
+                put("id", 123)
+                put("status", "processing")
+            },
             safetyLevel = ToolSafetyLevel.UNSAFE,
-            preview = ConfirmationPreview(ConfirmationPreviewMessage.Text("Update order #123")),
         )
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
@@ -79,9 +86,21 @@ class AgenticLoopAssistantRuntimeTest {
                     toolCall = ToolCall(
                         id = "call-1",
                         name = "orders_update",
-                        arguments = buildJsonObject { put("id", 123) },
+                        arguments = buildJsonObject {
+                            put("id", 123)
+                            put("status", "processing")
+                        },
                     ),
-                    preview = ResolvedConfirmationPreview("Update order #123", emptyList()),
+                    preview = RenderedConfirmationPreview(
+                        message = "Set order #123 to processing (emails the customer)",
+                        fields = listOf(
+                            RenderedConfirmationPreviewField(
+                                name = "status",
+                                label = "Status",
+                                value = "processing",
+                            )
+                        ),
+                    ),
                 )
             )
         )
@@ -129,7 +148,8 @@ class AgenticLoopAssistantRuntimeTest {
         toolRegistry = EmptyToolRegistry,
         toolCatalogSelector = PassThroughToolCatalogSelector,
         safetyOrchestrator = safetyOrchestrator,
-        confirmationPreviewResolver = FallbackConfirmationPreviewResolver,
+        confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
+        confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -178,10 +198,5 @@ class AgenticLoopAssistantRuntimeTest {
             results += result
             return resolveResult
         }
-    }
-
-    private object FallbackConfirmationPreviewResolver : ConfirmationPreviewResolver {
-        override fun resolve(preview: ConfirmationPreview): ResolvedConfirmationPreview =
-            ResolvedConfirmationPreview(preview.fallbackMessage, emptyList())
     }
 }

@@ -1,24 +1,26 @@
 package com.woocommerce.android.aiassistant.runtime
 
-import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
-import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewResolver
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class AgenticLoopAssistantRuntime @Inject constructor(
+internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val agenticLoop: AgenticLoop,
     private val toolRegistry: ToolRegistry,
     private val toolCatalogSelector: ToolCatalogSelector,
     private val safetyOrchestrator: SafetyOrchestrator,
-    private val confirmationPreviewResolver: ConfirmationPreviewResolver,
+    private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
+    private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -54,11 +56,6 @@ class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.AssistantTextDelta -> emit(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
-                is LoopEvent.BlockedBySafety -> emit(
-                    AssistantRuntimeEvent.AwaitingConfirmation(
-                        AssistantPendingConfirmation(id = event.call.id, toolCall = event.call)
-                    )
-                )
                 is LoopEvent.ConfirmationRequested -> emit(
                     AssistantRuntimeEvent.AwaitingConfirmation(event.request.toPendingConfirmation())
                 )
@@ -85,6 +82,6 @@ class AgenticLoopAssistantRuntime @Inject constructor(
             name = toolName,
             arguments = arguments,
         ),
-        preview = confirmationPreviewResolver.resolve(preview),
+        preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this)),
     )
 }
