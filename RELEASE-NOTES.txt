@@ -4,6 +4,7 @@
 
 24.7
 -----
+- [***] Performance card on My Store now lets you switch between Gross, Net and Total revenue and pick the order date type (Paid, Placed or Completed) [https://github.com/woocommerce/woocommerce-android/pull/15750]
 - [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
 - [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
 - [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
