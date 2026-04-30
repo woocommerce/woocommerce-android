@@ -7,8 +7,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
@@ -151,10 +151,13 @@ class OrdersBulkUpdateToolHandlerTest {
         val result = handler.execute(
             toolCall(
                 buildJsonObject {
-                    put("ids", buildJsonArray {
-                        add(123)
-                        add(456)
-                    })
+                    put(
+                        "ids",
+                        buildJsonArray {
+                            add(123)
+                            add(456)
+                        }
+                    )
                     put(
                         "patch",
                         buildJsonObject {

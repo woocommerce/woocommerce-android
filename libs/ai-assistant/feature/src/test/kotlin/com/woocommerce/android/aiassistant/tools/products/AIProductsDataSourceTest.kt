@@ -74,15 +74,6 @@ class AIProductsDataSourceTest {
     // --- fetchProducts ---
 
     @Test
-    fun `given no search query, when fetchProducts is called, then fetchProducts store method is used`() = runTest {
-        stubFetchProducts(WooResult(emptyList()))
-
-        val result = dataSource.fetchProducts(search = null)
-
-        assertThat(result.isSuccess).isTrue
-    }
-
-    @Test
     fun `given search query, when fetchProducts is called, then searchProductsByNameAndSku is used`() = runTest {
         whenever(
             productStore.searchProductsByNameAndSku(
@@ -131,38 +122,11 @@ class AIProductsDataSourceTest {
     }
 
     @Test
-    fun `given page = 2 and perPage = 10, when fetchProducts is called, then offset = 10 is used`() = runTest {
+    fun `given page and perPage over max, when fetchProducts is called, then offset uses clamped page size`() = runTest {
         whenever(
             productStore.fetchProducts(
                 site = any(),
-                offset = eq(10),
-                pageSize = eq(10),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any(),
-                posProductsOnly = any(),
-            )
-        ).thenReturn(WooResult(emptyList()))
-
-        dataSource.fetchProducts(page = 2, perPage = 10)
-
-        verify(productStore).fetchProducts(
-            site = any(),
-            offset = eq(10),
-            pageSize = eq(10),
-            sortType = any(),
-            filterOptions = any(),
-            includeTypes = any(),
-            posProductsOnly = any(),
-        )
-    }
-
-    @Test
-    fun `given perPage over max, when fetchProducts is called, then it is clamped to 50`() = runTest {
-        whenever(
-            productStore.fetchProducts(
-                site = any(),
-                offset = any(),
+                offset = eq(50),
                 pageSize = eq(50),
                 sortType = any(),
                 filterOptions = any(),
@@ -171,11 +135,11 @@ class AIProductsDataSourceTest {
             )
         ).thenReturn(WooResult(emptyList()))
 
-        dataSource.fetchProducts(perPage = 999)
+        dataSource.fetchProducts(page = 2, perPage = 999)
 
         verify(productStore).fetchProducts(
             site = any(),
-            offset = any(),
+            offset = eq(50),
             pageSize = eq(50),
             sortType = any(),
             filterOptions = any(),

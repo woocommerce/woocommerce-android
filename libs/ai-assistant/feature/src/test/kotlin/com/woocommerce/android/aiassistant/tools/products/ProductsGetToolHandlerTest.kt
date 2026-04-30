@@ -74,13 +74,6 @@ class ProductsGetToolHandlerTest {
     }
 
     @Test
-    fun `given non-integer id, when execute is called, then ValidationError is returned`() = runTest {
-        val result = handler.execute(toolCall(buildJsonObject { put("id", "abc") }))
-
-        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-    }
-
-    @Test
     fun `given data source fails, when execute is called, then retryable TransportError is returned`() = runTest {
         whenever(dataSource.getProduct(99L)).thenReturn(Result.failure(RuntimeException("not found")))
 

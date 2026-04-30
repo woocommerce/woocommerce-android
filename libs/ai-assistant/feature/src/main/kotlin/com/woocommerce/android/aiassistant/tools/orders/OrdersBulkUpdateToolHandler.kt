@@ -61,6 +61,7 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.UNSAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")

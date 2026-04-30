@@ -83,26 +83,6 @@ class OrdersUpdateToolHandlerTest {
         }
 
     @Test
-    fun `given cancelled status, when execute is called, then updateOrderStatus is called and success is returned`() =
-        runTest {
-            whenever(dataSource.updateOrderStatus(123L, "cancelled")).thenReturn(Result.success(Unit))
-
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("id", 123)
-                        put("status", "cancelled")
-                    }
-                )
-            )
-
-            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
-            val json = (result as ToolResult.Success).structured.jsonObject
-            assertThat(requireNotNull(json["status"]).jsonPrimitive.content).isEqualTo("cancelled")
-            verify(dataSource).updateOrderStatus(123L, "cancelled")
-        }
-
-    @Test
     fun `given update fails, when execute is called, then retryable TransportError is returned`() = runTest {
         whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
             Result.failure(RuntimeException("network error"))

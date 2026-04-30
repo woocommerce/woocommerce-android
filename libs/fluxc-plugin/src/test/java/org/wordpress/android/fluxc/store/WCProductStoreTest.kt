@@ -865,7 +865,7 @@ class WCProductStoreTest {
         }
 
     @Test
-    fun `when direct product bulk update returns mixed response, returns updated and failed products`(): Unit =
+    fun `when direct product bulk update returns mixed response, then updated and failed products are returned`(): Unit =
         runTest {
             // given
             val site = SiteModel().apply { id = 1 }
@@ -922,7 +922,7 @@ class WCProductStoreTest {
         }
 
     @Test
-    fun `when direct product bulk update succeeds, updated products are saved to database`(): Unit =
+    fun `when direct product bulk update succeeds, then updated products are saved to database`(): Unit =
         runTest {
             // given
             val site = SiteModel().apply { id = 1 }

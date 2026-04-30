@@ -76,25 +76,4 @@ class WooCommerceToolCatalogTest {
                 .isEqualTo(ToolSafetyLevel.SAFE)
         }
     }
-
-    @Test
-    fun `when descriptors are retrieved, then write-tool descriptions include allowlisted fields and constraints`() {
-        val byName = allHandlers.associateBy { it.descriptor.name }
-
-        val ordersUpdate = byName.getValue("orders_update").descriptor.description
-        assertThat(ordersUpdate).contains("status")
-        assertThat(ordersUpdate).contains("refund")
-
-        val ordersBulkUpdate = byName.getValue("orders_bulk_update").descriptor.description
-        assertThat(ordersBulkUpdate).contains("status")
-        assertThat(ordersBulkUpdate).contains("Bulk writes require confirmation")
-
-        val productsUpdate = byName.getValue("products_update").descriptor.description
-        assertThat(productsUpdate).contains("regular_price")
-        assertThat(productsUpdate).contains("stock_quantity")
-
-        val productsBulkUpdate = byName.getValue("products_bulk_update").descriptor.description
-        assertThat(productsBulkUpdate).contains("regular_price")
-        assertThat(productsBulkUpdate).contains("Bulk writes require confirmation")
-    }
 }

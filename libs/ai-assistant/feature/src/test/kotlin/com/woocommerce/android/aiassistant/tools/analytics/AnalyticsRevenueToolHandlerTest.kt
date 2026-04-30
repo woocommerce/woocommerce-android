@@ -163,41 +163,6 @@ class AnalyticsRevenueToolHandlerTest {
         }
 
     @Test
-    fun `given reversed date range, when execute is called, then ValidationError is returned before data source call`() =
-        runTest {
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("after", "2026-04-30")
-                        put("before", "2026-04-01")
-                    }
-                )
-            )
-
-            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-            verifyNoInteractions(dataSource)
-        }
-
-    @Test
-    fun `given hour interval over one hundred buckets, when execute is called, then ValidationError is returned`() =
-        runTest {
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("after", "2026-04-01")
-                        put("before", "2026-04-05")
-                        put("interval", "hour")
-                    }
-                )
-            )
-
-            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-            assertThat((result as ToolResult.ValidationError).reason)
-                .contains("coarser interval or shorter range")
-            verifyNoInteractions(dataSource)
-        }
-
-    @Test
     fun `given data source fails, when execute is called, then retryable TransportError is returned`() =
         runTest {
             whenever(

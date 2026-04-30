@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -10,10 +9,10 @@ import kotlinx.serialization.json.putJsonArray
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAdjusters
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 
 internal fun validateAnalyticsDate(value: String): Boolean = try {
     LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
@@ -82,7 +81,7 @@ private fun analyticsBucketCount(
 ): Long {
     val inclusiveDays = ChronoUnit.DAYS.between(after, before) + 1
     return when (interval) {
-        AnalyticsInterval.HOUR -> inclusiveDays * 24
+        AnalyticsInterval.HOUR -> inclusiveDays * HOURS_PER_DAY
         AnalyticsInterval.DAY -> inclusiveDays
         AnalyticsInterval.WEEK -> {
             val afterWeek = after.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -99,3 +98,4 @@ private fun analyticsBucketCount(
 }
 
 private const val MAX_ANALYTICS_INTERVALS = 100
+private const val HOURS_PER_DAY = 24

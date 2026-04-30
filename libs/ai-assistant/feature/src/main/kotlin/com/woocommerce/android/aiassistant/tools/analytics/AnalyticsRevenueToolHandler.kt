@@ -34,6 +34,7 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         val args = call.parseArgs<Args>(json).getOrElse {
             return analyticsValidationError(call.id, "Invalid arguments: ${it.message}")
