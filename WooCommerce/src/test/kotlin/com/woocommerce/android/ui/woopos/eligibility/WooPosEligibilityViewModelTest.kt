@@ -5,6 +5,7 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosSupportedCountries
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
@@ -41,6 +42,7 @@ class WooPosEligibilityViewModelTest {
     private val mockCiabSiteGateKeeper: CIABSiteGateKeeper = mock()
     private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
     private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
+    private val supportedCountries: WooPosSupportedCountries = mock()
 
     @Rule
     @JvmField
@@ -52,6 +54,7 @@ class WooPosEligibilityViewModelTest {
         runBlocking {
             whenever(mockStoreCountryProvider()).doReturn("United States")
             whenever(mockStoreCountryCodeProvider()).doReturn("us")
+            whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(listOf("us" to "usd", "gb" to "gbp"))
         }
     }
 
@@ -122,6 +125,7 @@ class WooPosEligibilityViewModelTest {
             mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
+            supportedCountries,
         )
 
         // WHEN
@@ -146,6 +150,7 @@ class WooPosEligibilityViewModelTest {
             mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
+            supportedCountries,
         )
 
         sut.initialize(reason)
@@ -175,6 +180,7 @@ class WooPosEligibilityViewModelTest {
             mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
+            supportedCountries,
         )
 
         sut.initialize(initialReason)
@@ -247,6 +253,7 @@ class WooPosEligibilityViewModelTest {
             mockCiabSiteGateKeeper,
             mockStoreCountryProvider,
             mockStoreCountryCodeProvider,
+            supportedCountries,
         )
     }
 }
