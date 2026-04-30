@@ -144,7 +144,7 @@ fun AssistantChatScreen(
             AssistantComposer(
                 inputText = inputText,
                 onInputTextChange = onInputTextChange,
-                isStreaming = state.isStreaming,
+                isTurnActive = state.isTurnActive,
                 onSendMessage = onSendMessage,
                 onCancelTurn = onCancelTurn,
             )
@@ -380,11 +380,11 @@ private fun AssistantConfirmationPanel(
 private fun AssistantComposer(
     inputText: String,
     onInputTextChange: (String) -> Unit,
-    isStreaming: Boolean,
+    isTurnActive: Boolean,
     onSendMessage: () -> Unit,
     onCancelTurn: () -> Unit,
 ) {
-    val canSend = inputText.isNotBlank() && !isStreaming
+    val canSend = inputText.isNotBlank() && !isTurnActive
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 4.dp,
@@ -414,7 +414,7 @@ private fun AssistantComposer(
                         }
                     ),
                 )
-                if (isStreaming) {
+                if (isTurnActive) {
                     OutlinedButton(
                         onClick = onCancelTurn,
                         modifier = Modifier.heightIn(min = 56.dp),

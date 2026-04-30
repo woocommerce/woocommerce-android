@@ -71,6 +71,7 @@ class AssistantViewModelTest {
 
         val state = viewModel.uiState.value
         assertThat(state.status).isEqualTo(AssistantUiStatus.STREAMING)
+        assertThat(state.isTurnActive).isTrue()
         assertThat(state.messages).containsExactly(
             AssistantUiMessage(id = "message-1", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
             AssistantUiMessage(id = "message-2", role = AssistantUiMessage.Role.ASSISTANT, text = ""),

@@ -13,6 +13,10 @@ data class AssistantUiState(
 ) {
     val isStreaming: Boolean
         get() = status == AssistantUiStatus.STREAMING
+
+    val isTurnActive: Boolean
+        get() = status == AssistantUiStatus.STREAMING ||
+            status == AssistantUiStatus.AWAITING_CONFIRMATION
 }
 
 enum class AssistantUiStatus {
