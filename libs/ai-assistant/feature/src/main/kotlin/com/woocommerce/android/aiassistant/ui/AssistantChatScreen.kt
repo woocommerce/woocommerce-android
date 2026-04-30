@@ -22,12 +22,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,11 +42,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -54,6 +61,7 @@ import kotlinx.serialization.json.put
 @Composable
 fun AssistantRoute(
     conversationId: String,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel = hiltViewModel<AssistantViewModel, AssistantViewModel.Factory> { factory ->
@@ -62,6 +70,7 @@ fun AssistantRoute(
 
     AssistantChatScreen(
         viewModel = viewModel,
+        onBack = onBack,
         modifier = modifier,
     )
 }
@@ -69,6 +78,7 @@ fun AssistantRoute(
 @Composable
 fun AssistantChatScreen(
     viewModel: AssistantViewModel,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -87,6 +97,7 @@ fun AssistantChatScreen(
         onRetry = viewModel::onRetry,
         onConfirmWrite = viewModel::onConfirmWrite,
         onCancelWrite = viewModel::onCancelWrite,
+        onBack = onBack,
         modifier = modifier,
     )
 }
@@ -101,18 +112,25 @@ fun AssistantChatScreen(
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    Scaffold(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-    ) {
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            AssistantTopAppBar(
+                status = state.status,
+                onBack = onBack,
+            )
+        },
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .imePadding(),
         ) {
-            AssistantHeader(status = state.status)
             AssistantMessageThread(
                 messages = state.messages,
                 modifier = Modifier.weight(1f),
@@ -134,46 +152,62 @@ fun AssistantChatScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AssistantHeader(status: AssistantUiStatus) {
+private fun AssistantTopAppBar(
+    status: AssistantUiStatus,
+    onBack: () -> Unit,
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(R.string.assistant_chat_title),
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_assistant_back),
+                    contentDescription = stringResource(R.string.assistant_chat_back_content_description),
+                )
+            }
+        },
+        actions = {
+            AssistantStatusLabel(status = status)
+        },
+    )
+}
+
+@Composable
+private fun AssistantStatusLabel(status: AssistantUiStatus) {
     val statusLabel = status.toHeaderText()
     val statusContentDescription = stringResource(
         R.string.assistant_chat_status_content_description,
         statusLabel,
     )
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 1.dp,
+        modifier = Modifier
+            .padding(end = 12.dp)
+            .widthIn(max = 156.dp)
+            .semantics {
+                contentDescription = statusContentDescription
+            },
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.assistant_chat_title),
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Surface(
-                modifier = Modifier.semantics {
-                    contentDescription = statusContentDescription
-                },
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            ) {
-                Text(
-                    text = statusLabel,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
-        }
+        Text(
+            text = statusLabel,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
 }
 
@@ -449,6 +483,7 @@ private fun AssistantChatScreenPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onBack = {},
     )
 }
 
@@ -478,5 +513,6 @@ private fun AssistantChatScreenConfirmationPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onBack = {},
     )
 }

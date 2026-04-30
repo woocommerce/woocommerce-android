@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.woocommerce.android.R
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AiAssistantHostFragment : BaseFragment() {
-    override fun getFragmentTitle() = getString(R.string.more_menu_button_ai_assistant)
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,7 +21,10 @@ class AiAssistantHostFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         return composeView {
-            AssistantRoute(conversationId = ASSISTANT_CONVERSATION_ID)
+            AssistantRoute(
+                conversationId = ASSISTANT_CONVERSATION_ID,
+                onBack = { findNavController().navigateUp() },
+            )
         }
     }
 

@@ -44,6 +44,7 @@
     <string name="assistant_chat_status_streaming">Working</string>
     <string name="assistant_chat_status_awaiting_confirmation">Review required</string>
     <string name="assistant_chat_status_error">Needs attention</string>
+    <string name="assistant_chat_back_content_description">Back</string>
     <string name="assistant_chat_status_content_description">Assistant status: %1$s</string>
     <string name="assistant_chat_message_user_content_description">You: %1$s</string>
     <string name="assistant_chat_message_assistant_content_description">Assistant: %1$s</string>
