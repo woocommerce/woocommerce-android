@@ -63,9 +63,9 @@ fun WooPosDialogWrapper(
         WooPosBreakpoint.SmallTablet,
         WooPosBreakpoint.Tablet -> widthFraction
     }
-    val density = LocalDensity.current
-    val containerHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val phoneMaxHeight = if (breakpoint == WooPosBreakpoint.Phone) {
+        val density = LocalDensity.current
+        val containerHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
         containerHeight * PHONE_MAX_HEIGHT_FRACTION
     } else {
         null
