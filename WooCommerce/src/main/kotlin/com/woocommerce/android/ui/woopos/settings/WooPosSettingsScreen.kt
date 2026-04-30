@@ -19,9 +19,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -106,7 +105,7 @@ private fun WooPosSettingsPhoneContent(
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    var isShowingDetail by remember { mutableStateOf(false) }
+    var isShowingDetail by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = !isShowingDetail) {
         onBackClicked()
@@ -131,11 +130,10 @@ private fun WooPosSettingsPhoneContent(
                 WooPosSettingsCategoriesPaneScreen(
                     selectedCategory = state.selectedCategory,
                     onCategorySelected = { category ->
-                        Snapshot.withMutableSnapshot {
-                            onCategorySelected(category)
-                            isShowingDetail = true
-                        }
+                        onCategorySelected(category)
+                        isShowingDetail = true
                     },
+                    isSelectable = false,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -313,6 +311,37 @@ fun WooPosSettingsScreenPreview() {
 
                 Box(modifier = Modifier.fillMaxSize())
             }
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsPhoneScreenPreview() {
+    val state = WooPosSettingsState()
+    WooPosTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceBright)
+        ) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_settings_title),
+                onBackClicked = {},
+            )
+
+            WooPosSettingsCategoriesPaneScreenContent(
+                scrollableCategories = listOf(
+                    WooPosSettingsCategory.STORE,
+                    WooPosSettingsCategory.HARDWARE,
+                    WooPosSettingsCategory.LOCAL_CATALOG,
+                ),
+                fixedCategories = listOf(WooPosSettingsCategory.HELP),
+                selectedCategory = state.selectedCategory,
+                onCategorySelected = {},
+                isSelectable = false,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }

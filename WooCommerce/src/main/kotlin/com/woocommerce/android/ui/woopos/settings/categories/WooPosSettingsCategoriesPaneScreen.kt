@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,17 +29,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
 fun WooPosSettingsCategoriesPaneScreen(
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,
+    isSelectable: Boolean = true,
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
     WooPosSettingsCategoriesPaneScreenContent(
         modifier = modifier,
@@ -48,7 +46,7 @@ fun WooPosSettingsCategoriesPaneScreen(
         fixedCategories = state.fixedCategories,
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
-        isSelectable = !isPhoneLayout,
+        isSelectable = isSelectable,
     )
 }
 
@@ -90,7 +88,9 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             )
         }
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        if (!isSelectable) {
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        }
     }
 }
 
