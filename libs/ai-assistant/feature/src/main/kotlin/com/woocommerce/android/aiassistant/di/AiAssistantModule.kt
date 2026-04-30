@@ -9,10 +9,12 @@ import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.RetryPolicy
 import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
-import com.woocommerce.android.aiassistant.runtime.AgenticLoopAssistantRuntime
-import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewResolver
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewResolverImpl
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
@@ -54,22 +56,6 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
-    fun provideAssistantRuntime(
-        agenticLoop: AgenticLoop,
-        toolRegistry: ToolRegistry,
-        toolCatalogSelector: ToolCatalogSelector,
-        safetyOrchestrator: SafetyOrchestrator,
-        confirmationPreviewResolver: ConfirmationPreviewResolver,
-    ): AssistantRuntime = AgenticLoopAssistantRuntime(
-        agenticLoop,
-        toolRegistry,
-        toolCatalogSelector,
-        safetyOrchestrator,
-        confirmationPreviewResolver,
-    )
-
-    @Provides
-    @Singleton
     fun provideToolCatalogSelector(): ToolCatalogSelector = DefaultToolCatalogSelector()
 
     @Provides
@@ -82,5 +68,17 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
-    fun provideSafetyOrchestrator(): SafetyOrchestrator = SafetyOrchestratorImpl()
+    fun provideConfirmationPreviewBuilder(): ConfirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder()
+
+    @Provides
+    @Singleton
+    fun provideConfirmationPreviewResolver(
+        resolver: WooCommerceConfirmationPreviewResolverImpl,
+    ): ConfirmationPreviewResolver = resolver
+
+    @Provides
+    @Singleton
+    fun provideSafetyOrchestrator(
+        confirmationPreviewBuilder: ConfirmationPreviewBuilder,
+    ): SafetyOrchestrator = SafetyOrchestratorImpl(confirmationPreviewBuilder)
 }
