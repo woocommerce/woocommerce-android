@@ -31,6 +31,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
@@ -55,7 +56,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
 
     private val getStats: GetStats = mock {
-        on { invoke(any(), any()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+        on { invoke(any(), any(), anyOrNull()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -129,7 +130,11 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(true)
             }
 
-            verify(getStats).invoke(refresh = ArgumentMatchers.eq(false), selectedRange = any())
+            verify(getStats).invoke(
+                refresh = ArgumentMatchers.eq(false),
+                selectedRange = any(),
+                orderDateType = anyOrNull()
+            )
         }
 
     @Test
@@ -139,7 +144,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(false)
             }
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(getStats, never()).invoke(any(), any(), anyOrNull())
         }
 
     @Test
@@ -151,7 +156,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
             viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(getStats, never()).invoke(any(), any(), anyOrNull())
         }
 
     @Test
@@ -167,7 +172,8 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
         verify(getStats, times(2)).invoke(
             refresh = ArgumentMatchers.eq(false),
-            selectedRange = getStatsArgumentCaptor.capture()
+            selectedRange = getStatsArgumentCaptor.capture(),
+            orderDateType = anyOrNull()
         )
         Assertions.assertThat(getStatsArgumentCaptor.firstValue.selectionType)
             .isEqualTo(DEFAULT_SELECTION_TYPE)
@@ -189,7 +195,8 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 refresh = eq(true),
                 selectedRange = argThat {
                     selectionType == DEFAULT_SELECTION_TYPE
-                }
+                },
+                orderDateType = anyOrNull()
             )
         }
 
@@ -197,7 +204,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given success loading revenue, when stats granularity changes, then UI is updated for new selection type`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flow { emit(GetStats.LoadStatsResult.RevenueStatsSuccess(null)) })
                 whenever(appPrefsWrapper.getActiveStoreStatsTab())
                     .doReturn(DEFAULT_SELECTION_TYPE.name)
@@ -244,7 +251,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 rangeId = "",
             )
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(revenueStats)))
             }
 
@@ -317,7 +324,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given error loading revenue, when screen starts, then UI is updated with error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsError("")))
             }
 
@@ -329,7 +336,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given stats plugin not active, when screen starts, then UI is updated with jetpack error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.PluginNotActive))
             }
 
@@ -342,7 +349,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given success loading visitor stats, when screen starts, then UI is updated with visitor stats`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap(), 0)))
             }
 
@@ -355,7 +362,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given error loading visitor stats, when screen starts, then UI is updated with error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsError))
             }
 
@@ -368,7 +375,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given jetpack CP connected, when screen starts, then show jetpack CP connected state`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
             }
 
@@ -397,7 +404,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given several outdated visitor stats is returned then refreshing indicator is called only once`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -413,7 +420,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given up to date visitor stats is returned after outdated stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -429,7 +436,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given an error is returned after outdated visitor stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -445,7 +452,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given a visitor stats unavailable is returned after outdated data then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -461,7 +468,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given several outdated revenue stats is returned then refreshing indicator is called only once`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -477,7 +484,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given up to date revenue stats is returned after outdated stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -493,7 +500,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given revenue error is returned after outdated revenue stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -509,7 +516,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given plugin not active error is returned after outdated revenue stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -524,7 +531,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     @Test
     fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack icon`() = testBlocking {
         setup {
-            whenever(getStats.invoke(any(), any()))
+            whenever(getStats.invoke(any(), any(), anyOrNull()))
                 .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
             whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
         }
