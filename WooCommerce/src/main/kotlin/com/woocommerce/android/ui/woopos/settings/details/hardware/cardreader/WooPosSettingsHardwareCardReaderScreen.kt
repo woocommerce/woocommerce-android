@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -140,19 +144,10 @@ private fun ConnectedContent(
                 modifier = Modifier
                     .padding(WooPosSpacing.Medium.value)
             ) {
-                Row {
-                    WooPosSettingsDetailsMenuItemInfo(
-                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
-                        subtitle = readerName,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    WooPosOutlinedButtonSmall(
-                        text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
-                        onClick = onDisconnectClicked
-                    )
-                }
+                WooPosSettingsDetailsMenuItemInfo(
+                    title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                    subtitle = readerName,
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
@@ -183,6 +178,19 @@ private fun ConnectedContent(
                             onClick = onUpdateClick
                         )
                     }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ReaderConnectedIndicator()
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(R.string.woopos_settings_card_reader_disconnect_button),
+                        onClick = onDisconnectClicked
+                    )
                 }
             }
         }
@@ -215,6 +223,25 @@ private fun NotConnectedContent(
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
             onClick = onDocumentationClicked
+        )
+    }
+}
+
+@Composable
+private fun ReaderConnectedIndicator() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .padding(WooPosSpacing.Small.value)
+                .size(WooPosIconSize.XSmall.value)
+                .background(color = WooPosTheme.colors.success, shape = CircleShape)
+        )
+        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+        WooPosText(
+            text = stringResource(R.string.woopos_reader_connected),
+            style = WooPosTypography.BodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
