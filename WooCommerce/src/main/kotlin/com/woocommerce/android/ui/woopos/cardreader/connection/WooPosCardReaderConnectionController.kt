@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "LargeClass")
 class WooPosCardReaderConnectionController(
     private val cardReaderManager: CardReaderManager,
     private val locationRepository: CardReaderLocationRepository,
@@ -455,7 +455,20 @@ class WooPosCardReaderConnectionController(
 
     private fun findLastKnownPhone(phones: List<WooPosDiscoveredReader.Phone>): WooPosDiscoveredReader.Phone? {
         val lastConnectedName = appPrefsWrapper.getLastConnectedPhoneName() ?: return null
-        return phones.find { it.name == lastConnectedName }
+        // The persisted identifier is Build.MODEL, which is not unique across same-model devices.
+        // If multiple discovered phones match, refuse to auto-connect and let the user pick — silently
+        // pairing to the wrong physical device is worse UX than asking once.
+        val matches = phones.filter { it.name == lastConnectedName }
+        return when (matches.size) {
+            0 -> null
+            1 -> matches.first()
+            else -> {
+                logger.d(
+                    "Multiple discovered phones match last-connected name '$lastConnectedName'; skipping auto-connect"
+                )
+                null
+            }
+        }
     }
 
     private fun continueSearching() {
