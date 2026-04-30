@@ -7,6 +7,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
+import okhttp3.CacheControl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -167,6 +168,11 @@ class QrLoginRestClient @Inject constructor(
         return Request.Builder()
             .url(statusUrl)
             .get()
+            // Force-bust any intermediary HTTP cache (OkHttp's shared cache, edge proxy,
+            // CDN). Polling responses are state-bearing — pinning the first response and
+            // serving it forever means the app sees `scanned` indefinitely even after the
+            // merchant approves on wc-admin.
+            .cacheControl(CacheControl.FORCE_NETWORK)
             .build()
     }
 
