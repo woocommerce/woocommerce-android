@@ -12,9 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 
 @Composable
 internal fun NotificationPreferenceOption(
@@ -37,9 +35,9 @@ internal fun NotificationPreferenceOption(
             enabled = enabled,
             colors = RadioButtonDefaults.colors(
                 selectedColor = MaterialTheme.colorScheme.primary,
-                unselectedColor = colorResource(id = R.color.color_on_surface_medium),
-                disabledSelectedColor = colorResource(id = R.color.color_on_surface_medium).copy(alpha = 0.38f),
-                disabledUnselectedColor = colorResource(id = R.color.color_on_surface_medium).copy(alpha = 0.38f)
+                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSelectedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
+                disabledUnselectedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
             )
         )
         Column(
@@ -50,14 +48,14 @@ internal fun NotificationPreferenceOption(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = colorResource(id = R.color.color_on_surface_high).let {
+                color = MaterialTheme.colorScheme.onSurface.let {
                     if (!enabled) it.copy(alpha = 0.38f) else it
                 }
             )
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = colorResource(id = R.color.color_on_surface_medium).let {
+                color = MaterialTheme.colorScheme.onSurfaceVariant.let {
                     if (!enabled) it.copy(alpha = 0.38f) else it
                 },
                 modifier = Modifier.padding(top = 4.dp)

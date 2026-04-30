@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
@@ -193,14 +192,14 @@ private fun ThresholdAmountField(
             modifier = Modifier.weight(1f),
             enabled = enabled,
             textStyle = MaterialTheme.typography.titleMedium.copy(
-                color = colorResource(id = R.color.color_on_surface_high).let {
+                color = MaterialTheme.colorScheme.onSurface.let {
                     if (!enabled) it.copy(alpha = 0.38f) else it
                 },
                 fontSize = 56.sp
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
-            cursorBrush = SolidColor(colorResource(id = R.color.color_on_surface_high))
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface)
         )
 
         if (currencyPosition == RIGHT || currencyPosition == RIGHT_SPACE) {
@@ -219,7 +218,7 @@ private fun CurrencySymbolText(
         text = currencySymbol,
         modifier = modifier,
         style = MaterialTheme.typography.titleMedium.copy(
-            color = colorResource(id = R.color.color_on_surface_medium).let {
+            color = MaterialTheme.colorScheme.onSurfaceVariant.let {
                 if (!enabled) it.copy(alpha = 0.38f) else it
             },
             fontSize = 56.sp

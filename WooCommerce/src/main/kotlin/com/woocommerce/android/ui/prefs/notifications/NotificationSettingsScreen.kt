@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -144,12 +143,12 @@ private fun NotificationTypeRow(
             Text(
                 text = stringResource(id = item.title),
                 style = MaterialTheme.typography.titleMedium,
-                color = colorResource(id = R.color.color_on_surface_high)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = stringResource(id = item.subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = colorResource(id = R.color.color_on_surface_medium),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)
             )
         }

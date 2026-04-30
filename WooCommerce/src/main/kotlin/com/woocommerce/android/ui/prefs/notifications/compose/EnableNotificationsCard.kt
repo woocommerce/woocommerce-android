@@ -13,9 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCSwitch
 
 @Composable
@@ -30,7 +28,7 @@ internal fun EnableNotificationsCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, colorResource(id = R.color.woo_gray_5)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         color = MaterialTheme.colorScheme.surface
     ) {
         Row(
@@ -42,12 +40,12 @@ internal fun EnableNotificationsCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = colorResource(id = R.color.color_on_surface_high)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colorResource(id = R.color.color_on_surface_medium),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
