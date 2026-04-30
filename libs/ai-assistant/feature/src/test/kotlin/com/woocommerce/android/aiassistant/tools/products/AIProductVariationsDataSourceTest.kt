@@ -137,7 +137,9 @@ class AIProductVariationsDataSourceTest {
                 stockQuantity = 0.0,
                 stockStatus = "instock",
             )
-            whenever(productStore.getVariationByRemoteId(site, 100L, 10L)).thenReturn(existingVariation).thenReturn(null)
+            whenever(productStore.getVariationByRemoteId(site, 100L, 10L))
+                .thenReturn(existingVariation)
+                .thenReturn(null)
             whenever(productStore.updateVariation(any()))
                 .thenReturn(WCProductStore.OnVariationUpdated(remoteProductId = 100L, remoteVariationId = 10L))
 
