@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettin
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -45,7 +46,8 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     fun `when view is loaded, then all orders preference is selected`() = testBlocking {
         setup()
 
-        assertThat(viewModel.viewState.value.notificationPreference).isEqualTo(NotificationPreference.AllOrders)
+        assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
+            .isEqualTo(NotificationPreference.AllOrders)
     }
 
     @Test
@@ -54,7 +56,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         viewModel.onNotificationsEnabledChanged(false)
 
-        assertThat(viewModel.viewState.value.notificationsEnabled).isFalse()
+        assertThat(viewModel.viewState.getOrAwaitValue().notificationsEnabled).isFalse()
     }
 
     @Test
@@ -63,7 +65,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         viewModel.onNotificationPreferenceChanged(NotificationPreference.HighValueOrders())
 
-        assertThat(viewModel.viewState.value.notificationPreference)
+        assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
             .isEqualTo(NotificationPreference.HighValueOrders())
     }
 
@@ -73,7 +75,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         viewModel.onNotificationPreferenceChanged(NotificationPreference.HighValueOrders(BigDecimal(750)))
 
-        assertThat(viewModel.viewState.value.notificationPreference)
+        assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
             .isEqualTo(NotificationPreference.HighValueOrders(BigDecimal(750)))
     }
 }

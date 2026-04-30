@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
@@ -29,7 +29,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
             currencyDecimalNumber = currencyFormattingParameters?.currencyDecimalNumber ?: DEFAULT_DECIMAL_NUMBER
         )
     )
-    val viewState = _viewState.asStateFlow()
+    val viewState = _viewState.asLiveData()
 
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
         _viewState.update { it.copy(notificationsEnabled = isEnabled) }
