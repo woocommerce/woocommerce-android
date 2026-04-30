@@ -35,7 +35,8 @@ fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsVi
         NewOrderNotificationSettingsScreen(
             viewState = viewState,
             onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
-            onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged
+            onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged,
+            onThresholdAmountChanged = viewModel::onThresholdAmountChanged
         )
     }
 }
@@ -44,7 +45,8 @@ fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsVi
 fun NewOrderNotificationSettingsScreen(
     viewState: ViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
-    onNotificationPreferenceChanged: (NotificationPreference) -> Unit
+    onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
+    onThresholdAmountChanged: (BigDecimal) -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -73,25 +75,22 @@ fun NewOrderNotificationSettingsScreen(
                 enabled = viewState.notificationsEnabled,
                 onClick = { onNotificationPreferenceChanged(NotificationPreference.AllOrders) }
             )
-            val highValuePreference = viewState.notificationPreference as? NotificationPreference.HighValueOrders
+            val isHighValuePreferenceSelected =
+                viewState.notificationPreference == NotificationPreference.HighValueOrders
             NotificationPreferenceOption(
                 title = stringResource(R.string.settings_notifs_new_orders_high_value_title),
                 description = stringResource(R.string.settings_notifs_new_orders_high_value_description),
-                selected = highValuePreference != null,
+                selected = isHighValuePreferenceSelected,
                 enabled = viewState.notificationsEnabled,
-                onClick = { onNotificationPreferenceChanged(NotificationPreference.HighValueOrders()) }
+                onClick = { onNotificationPreferenceChanged(NotificationPreference.HighValueOrders) }
             )
-            AnimatedVisibility(visible = highValuePreference != null) {
-                highValuePreference?.let { preference ->
-                    ThresholdAmountField(
-                        amount = preference.thresholdAmount,
-                        currencySymbol = viewState.currencySymbol,
-                        enabled = viewState.notificationsEnabled,
-                        onAmountChanged = { amount ->
-                            onNotificationPreferenceChanged(preference.copy(thresholdAmount = amount))
-                        }
-                    )
-                }
+            AnimatedVisibility(visible = isHighValuePreferenceSelected) {
+                ThresholdAmountField(
+                    amount = viewState.thresholdAmount,
+                    currencySymbol = viewState.currencySymbol,
+                    enabled = viewState.notificationsEnabled,
+                    onAmountChanged = onThresholdAmountChanged
+                )
             }
         }
     }
@@ -124,11 +123,12 @@ private fun NewOrderNotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NewOrderNotificationSettingsScreen(
             viewState = ViewState(
-                notificationPreference = NotificationPreference.HighValueOrders(),
+                notificationPreference = NotificationPreference.HighValueOrders,
                 currencySymbol = "$"
             ),
             onNotificationsEnabledChanged = {},
-            onNotificationPreferenceChanged = {}
+            onNotificationPreferenceChanged = {},
+            onThresholdAmountChanged = {}
         )
     }
 }

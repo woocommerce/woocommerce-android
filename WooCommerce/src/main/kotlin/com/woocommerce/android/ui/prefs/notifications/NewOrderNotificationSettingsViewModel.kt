@@ -32,18 +32,20 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         _viewState.update { it.copy(notificationPreference = preference) }
     }
 
+    fun onThresholdAmountChanged(amount: BigDecimal) {
+        _viewState.update { it.copy(thresholdAmount = amount) }
+    }
+
     data class ViewState(
         val notificationsEnabled: Boolean = true,
         val notificationPreference: NotificationPreference = NotificationPreference.AllOrders,
+        val thresholdAmount: BigDecimal = BigDecimal(DEFAULT_THRESHOLD_AMOUNT),
         val currencySymbol: String
     )
 
-    sealed interface NotificationPreference {
-        data object AllOrders : NotificationPreference
-
-        data class HighValueOrders(
-            val thresholdAmount: BigDecimal = BigDecimal(DEFAULT_THRESHOLD_AMOUNT)
-        ) : NotificationPreference
+    enum class NotificationPreference {
+        AllOrders,
+        HighValueOrders
     }
 
     companion object {
