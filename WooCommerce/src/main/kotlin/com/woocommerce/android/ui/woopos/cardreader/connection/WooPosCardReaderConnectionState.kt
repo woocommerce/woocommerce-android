@@ -14,9 +14,7 @@ sealed interface WooPosCardReaderConnectionState {
         val onConnectClicked: () -> Unit,
     )
 
-    data class Scanning(
-        val isRemoteTapToPaySupported: Boolean,
-    ) : WooPosCardReaderConnectionState
+    data object Scanning : WooPosCardReaderConnectionState
 
     data class RemoteTapToPayExplainer(
         val onDismissClicked: () -> Unit,

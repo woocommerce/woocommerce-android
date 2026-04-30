@@ -32,7 +32,6 @@ enum class FeatureFlag(
     BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1", localValue = false),
     LOGGED_OUT_FF_PANEL("logged_out_ff_panel", localValue = PackageUtils.isDebugBuild()),
-    REMOTE_TAP_TO_PAY("remote_tap_to_pay", localValue = PackageUtils.isDebugBuild()),
     AI_ASSISTANT("ai_assistant", localValue = PackageUtils.isDebugBuild()),
     SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
 }

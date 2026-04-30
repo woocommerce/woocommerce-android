@@ -290,7 +290,6 @@ fun WooPosCardReaderConnectionDialogContent(
                 }
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
-                        isRemoteTapToPayEnabled = currentState.isRemoteTapToPaySupported,
                         onHintClick = onHintClick,
                     )
                 }
@@ -474,10 +473,9 @@ private fun CardReaderDialogContent(
 
 @Composable
 private fun ScanningContent(
-    isRemoteTapToPayEnabled: Boolean,
     onHintClick: () -> Unit,
 ) {
-    val showHint = isRemoteTapToPayEnabled && currentWooPosBreakpoint() != WooPosBreakpoint.Phone
+    val showHint = currentWooPosBreakpoint() != WooPosBreakpoint.Phone
     when (showHint) {
         true -> Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -1020,7 +1018,7 @@ fun WooPosCardReaderConnectionDialogScanningPreview() {
     WooPosTheme {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = true),
+            state = WooPosCardReaderConnectionState.Scanning,
             onBackPressed = {},
             onDismiss = {},
         )
