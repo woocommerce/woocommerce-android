@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -25,22 +26,28 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AssistantViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var runtime: FakeAssistantRuntime
+    private lateinit var selectedSite: SelectedSite
     private lateinit var viewModel: AssistantViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         runtime = FakeAssistantRuntime()
+        selectedSite = mock {
+            on { get() } doReturn SiteModel().apply { siteId = SITE_ID }
+        }
         viewModel = AssistantViewModel(
-            runtime = runtime,
             conversationId = CONVERSATION_ID,
-            siteId = SITE_ID,
-            toolScope = ToolScope.GLOBAL,
+            runtime = runtime,
+            selectedSite = selectedSite,
             idGenerator = SequentialAssistantMessageIdGenerator(),
         )
     }

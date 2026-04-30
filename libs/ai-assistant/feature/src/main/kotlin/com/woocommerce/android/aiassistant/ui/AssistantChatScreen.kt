@@ -44,11 +44,27 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+
+@Composable
+fun AssistantRoute(
+    conversationId: String,
+    modifier: Modifier = Modifier,
+) {
+    val viewModel = hiltViewModel<AssistantViewModel, AssistantViewModel.Factory> { factory ->
+        factory.create(conversationId)
+    }
+
+    AssistantChatScreen(
+        viewModel = viewModel,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun AssistantChatScreen(
