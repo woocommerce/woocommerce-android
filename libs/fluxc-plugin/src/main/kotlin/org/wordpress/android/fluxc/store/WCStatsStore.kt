@@ -88,7 +88,7 @@ class WCStatsStore @Inject internal constructor(
         val endDate: String,
         val forced: Boolean = false,
         val revenueRangeId: String,
-        val orderDateType: WCAnalyticsOrderDateType? = null,
+        val orderDateType: WCAnalyticsOrderDateType?,
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsResponsePayload(

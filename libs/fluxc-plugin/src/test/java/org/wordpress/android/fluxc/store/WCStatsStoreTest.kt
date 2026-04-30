@@ -580,6 +580,7 @@ class WCStatsStoreTest {
                 startDate = currentDayStatsModel.startDate,
                 endDate = currentDayStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -628,6 +629,7 @@ class WCStatsStoreTest {
                 startDate = currentWeekStatsModel.startDate,
                 endDate = currentWeekStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -676,6 +678,7 @@ class WCStatsStoreTest {
                 startDate = currentMonthStatsModel.startDate,
                 endDate = currentMonthStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -724,6 +727,7 @@ class WCStatsStoreTest {
                 startDate = altSiteOrderStatsModel.startDate,
                 endDate = altSiteOrderStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -765,6 +769,7 @@ class WCStatsStoreTest {
                 startDate = altSiteOrderStatsModel.startDate,
                 endDate = altSiteOrderStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -805,6 +810,7 @@ class WCStatsStoreTest {
                 startDate = "2019-01-01",
                 endDate = "2019-01-07",
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -1206,6 +1212,7 @@ class WCStatsStoreTest {
             startDate = startDate,
             endDate = endDate,
             revenueRangeId = "$startDate$endDate",
+            orderDateType = null,
         )
     }
 
