@@ -80,13 +80,19 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     /**
-     * Tests that don't override [restClient]'s session-status mock still need it to terminate
-     * (returning Expired) so `runTest`'s post-body `advanceUntilIdle` doesn't chase the polling
-     * loop forever. Strict Mockito complains about a global setUp stub that some tests don't
-     * use, so each test opting into the default calls this helper instead.
+     * Tests that don't override [restClient]'s session-status mock still need polling to
+     * terminate so `runTest`'s post-body drain doesn't chase the loop forever, but the
+     * immediate-first-tick optimization means a single `Expired` mock would race past
+     * `WaitingForApproval` before the test can assert on it. Returning `Scanned` for the
+     * first call (loop keeps state in WaitingForApproval, then suspends on the 2-s delay)
+     * and `Expired` for subsequent calls (loop exits cleanly when `runTest` drains time)
+     * gives both the assertion window and the clean shutdown. Strict Mockito complains
+     * about a global setUp stub that some tests don't use, so each test opting into the
+     * default calls this helper instead.
      */
     private suspend fun stubPollingTerminates() {
         whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
             .thenReturn(Result.success(QrLoginSessionStatus.Expired))
     }
 
