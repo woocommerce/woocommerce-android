@@ -163,11 +163,6 @@ class WPApiSiteRepository @Inject constructor(
         dispatcher.dispatchAndAwait<SiteModel, OnSiteChanged>(SiteActionBuilder.newUpdateSiteAction(site))
     }
 
-    suspend fun deleteApplicationPassword(localSiteId: Int) {
-        val site = getSiteByLocalId(localSiteId) ?: return
-        applicationPasswordsStore.deleteCredentials(site)
-    }
-
     private fun Error.mapToException(): CookieNonceAuthenticationException {
         val networkStatusCode = extractNetworkStatusCode()
         val networkErrorMessage by lazy {
