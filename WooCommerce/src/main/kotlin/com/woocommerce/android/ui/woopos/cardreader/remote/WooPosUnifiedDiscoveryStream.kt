@@ -28,6 +28,7 @@ sealed class WooPosDiscoveredReader {
 
     data class Phone(
         val serviceName: String,
+        val deviceId: String,
         val name: String,
         val host: InetAddress,
         val port: Int,

@@ -388,6 +388,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         // GIVEN
         val phone = WooPosDiscoveredReader.Phone(
             serviceName = "woopos-remote-test",
+            deviceId = "test-device-id",
             name = "Andrey's phone",
             host = InetAddress.getByName("127.0.0.1"),
             port = 0,

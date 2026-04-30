@@ -171,6 +171,7 @@ class WooPosRemoteReaderSessionTest {
 
     private fun phone(isSimulated: Boolean) = WooPosDiscoveredReader.Phone(
         serviceName = "woopos-remote-test",
+        deviceId = "test-device-id",
         name = "Pixel",
         host = InetAddress.getLoopbackAddress(),
         port = 9000,

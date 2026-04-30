@@ -300,7 +300,7 @@ class WooPosCardReaderConnectionController(
         withContext(dispatchers.io) {
             logger.d("disconnect(): clearing prefs")
             appPrefsWrapper.removeLastConnectedCardReaderId()
-            appPrefsWrapper.removeLastConnectedPhoneName()
+            appPrefsWrapper.removeLastConnectedPhoneDeviceId()
             cardReaderTrackingInfoKeeper.setTransport(null)
 
             logger.d("disconnect(): stopping remote session")
@@ -454,21 +454,8 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun findLastKnownPhone(phones: List<WooPosDiscoveredReader.Phone>): WooPosDiscoveredReader.Phone? {
-        val lastConnectedName = appPrefsWrapper.getLastConnectedPhoneName() ?: return null
-        // The persisted identifier is Build.MODEL, which is not unique across same-model devices.
-        // If multiple discovered phones match, refuse to auto-connect and let the user pick — silently
-        // pairing to the wrong physical device is worse UX than asking once.
-        val matches = phones.filter { it.name == lastConnectedName }
-        return when (matches.size) {
-            0 -> null
-            1 -> matches.first()
-            else -> {
-                logger.d(
-                    "Multiple discovered phones match last-connected name '$lastConnectedName'; skipping auto-connect"
-                )
-                null
-            }
-        }
+        val lastDeviceId = appPrefsWrapper.getLastConnectedPhoneDeviceId() ?: return null
+        return phones.find { it.deviceId == lastDeviceId }
     }
 
     private fun continueSearching() {
@@ -510,13 +497,13 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Connected -> {
                 logger.d("Remote reader connected: ${phone.name}")
                 tracker.trackConnectionSucceeded()
-                appPrefsWrapper.setLastConnectedPhoneName(phone.name)
+                appPrefsWrapper.setLastConnectedPhoneDeviceId(phone.deviceId)
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
                 logger.e("Remote reader connection failed: ${result.message}")
                 tracker.trackConnectionFailed()
-                appPrefsWrapper.removeLastConnectedPhoneName()
+                appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
                     onRetryClicked = { onPhoneConnectClicked(phone) },

@@ -1983,6 +1983,7 @@ class WooPosTotalsViewModelTest {
     private fun simulatedRemoteReader() =
         com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader.Phone(
             serviceName = "woopos-remote-test",
+            deviceId = "test-device-id",
             name = "phone",
             host = java.net.InetAddress.getByName("127.0.0.1"),
             port = 1234,

@@ -235,8 +235,10 @@ class WooPosUnifiedDiscoveryStreamTest {
         siteHash: String = siteIdHash(TABLET_SITE_ID),
         serviceName: String = "woopos-remote-${name.hashCode().toString(16)}",
         fingerprintBase64: String = "AB4F",
+        deviceId: String = "device-${name.hashCode().toString(16)}",
     ) = WooPosDiscoveredReader.Phone(
         serviceName = serviceName,
+        deviceId = deviceId,
         name = name,
         host = InetAddress.getLoopbackAddress(),
         port = 9000,
