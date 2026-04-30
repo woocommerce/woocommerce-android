@@ -165,6 +165,36 @@ class WooPosSettingsViewModelTest {
     }
 
     @Test
+    fun `when category selected, then showingDetail becomes true`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelWithNoEvents()
+        assertThat(viewModel.state.value.showingDetail).isFalse()
+
+        // WHEN
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+
+        // THEN
+        assertThat(viewModel.state.value.showingDetail).isTrue()
+    }
+
+    @Test
+    fun `given showingDetail is true, when dismissDetail called, then showingDetail becomes false`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelWithNoEvents()
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+        assertThat(viewModel.state.value.showingDetail).isTrue()
+
+        // WHEN
+        viewModel.dismissDetail()
+
+        // THEN
+        assertThat(viewModel.state.value.showingDetail).isFalse()
+        assertThat(viewModel.state.value.selectedCategory).isEqualTo(WooPosSettingsCategory.HARDWARE)
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
+    }
+
+    @Test
     fun `given hardware overview, when navigate to barcode scanners, then canGoBack is true`() = runTest {
         // GIVEN
         val viewModel = createViewModelWithNoEvents()
@@ -286,6 +316,7 @@ class WooPosSettingsViewModelTest {
             assertThat(restoredViewModel.state.value.currentDestination)
                 .isEqualTo(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
             assertThat(restoredViewModel.state.value.canGoBack).isTrue()
+            assertThat(restoredViewModel.state.value.showingDetail).isTrue()
         }
 
     private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()): WooPosSettingsViewModel {

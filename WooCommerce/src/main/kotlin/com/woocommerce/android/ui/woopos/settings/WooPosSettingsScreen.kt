@@ -18,10 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +58,9 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
-    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val isPhoneLayout = remember(configuration) { context.isWooPosPhoneLayout() }
 
     if (isPhoneLayout) {
         WooPosSettingsPhoneContent(
@@ -68,6 +69,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
             onCategorySelected = containerViewModel::onCategorySelected,
             onNavigate = containerViewModel::navigateToDetail,
             onBack = containerViewModel::navigateBack,
+            onDismissDetail = containerViewModel::dismissDetail,
             onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
             onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
             onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
@@ -99,20 +101,19 @@ private fun WooPosSettingsPhoneContent(
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
+    onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    var isShowingDetail by rememberSaveable { mutableStateOf(false) }
-
-    BackHandler(enabled = !isShowingDetail) {
+    BackHandler(enabled = !state.showingDetail) {
         onBackClicked()
     }
 
     AnimatedContent(
-        targetState = isShowingDetail,
+        targetState = state.showingDetail,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "settings_phone_transition",
     ) { showingDetail ->
@@ -129,10 +130,7 @@ private fun WooPosSettingsPhoneContent(
 
                 WooPosSettingsCategoriesPaneScreen(
                     selectedCategory = state.selectedCategory,
-                    onCategorySelected = { category ->
-                        onCategorySelected(category)
-                        isShowingDetail = true
-                    },
+                    onCategorySelected = onCategorySelected,
                     showSelection = false,
                     modifier = Modifier
                         .fillMaxSize()
@@ -147,7 +145,7 @@ private fun WooPosSettingsPhoneContent(
                     if (state.canGoBack) {
                         onBack()
                     } else {
-                        isShowingDetail = false
+                        onDismissDetail()
                     }
                 },
                 onShowProductInfoDialog = onShowProductInfoDialog,
@@ -346,6 +344,39 @@ fun WooPosSettingsPhoneScreenPreview() {
                     .fillMaxSize()
                     .padding(bottom = WooPosSpacing.Medium.value),
             )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsPhoneDetailScreenPreview() {
+    val state = WooPosSettingsState(
+        selectedCategory = WooPosSettingsCategory.HARDWARE,
+        currentDestination = WooPosSettingsDetailDestination.Hardware.Overview,
+    )
+    WooPosTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            WooPosToolbar(
+                modifier = Modifier
+                    .padding(
+                        top = WooPosSpacing.None.value,
+                        start = WooPosSpacing.Medium.value,
+                        end = WooPosSpacing.Medium.value,
+                    ),
+                titleText = stringResource(state.currentDestination.titleRes),
+                onBackClicked = {},
+                titleStyle = WooPosTypography.Heading,
+                titleFontWeight = FontWeight.Bold,
+            )
+
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+
+            Box(modifier = Modifier.fillMaxSize())
         }
     }
 }

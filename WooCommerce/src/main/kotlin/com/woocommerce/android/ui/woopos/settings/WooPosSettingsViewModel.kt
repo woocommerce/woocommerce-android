@@ -73,8 +73,15 @@ class WooPosSettingsViewModel @Inject constructor(
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
-                currentDestination = category.rootDestination
+                currentDestination = category.rootDestination,
+                showingDetail = true,
             )
+        }
+    }
+
+    fun dismissDetail() {
+        _state.update { currentState ->
+            currentState.copy(showingDetail = false)
         }
     }
 
