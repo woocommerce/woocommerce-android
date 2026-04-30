@@ -7,10 +7,12 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
+import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.delay
@@ -26,9 +28,19 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val resourceProvider: ResourceProvider,
     private val logger: WooPosLogWrapper,
+    @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
+        val result = collectInternal(order, onCaptureStarting)
+        when (result) {
+            Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded()
+            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.message)
+        }
+        return result
+    }
+
+    private suspend fun collectInternal(order: Order, onCaptureStarting: suspend () -> Unit): Result {
         val connected = remoteReaderSession.state.value as? WooPosRemoteReaderSession.State.Connected
         if (connected?.reader?.isSimulated == true) {
             onCaptureStarting()

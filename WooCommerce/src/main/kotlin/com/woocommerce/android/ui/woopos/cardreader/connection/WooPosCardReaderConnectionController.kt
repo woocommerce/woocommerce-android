@@ -31,6 +31,8 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSes
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryEvent
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -65,6 +67,7 @@ class WooPosCardReaderConnectionController(
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
     private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
     private val remoteReaderSession: WooPosRemoteReaderSession,
+    private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
     featureFlagRepository: FeatureFlagRepository,
 ) {
     private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
@@ -94,6 +97,9 @@ class WooPosCardReaderConnectionController(
         _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
             onDismissClicked = ::hideRemoteTapToPayExplainer,
         )
+        scope.launch {
+            wooPosAnalyticsTracker.track(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown)
+        }
     }
 
     fun hideRemoteTapToPayExplainer() {
@@ -283,6 +289,7 @@ class WooPosCardReaderConnectionController(
         remoteConnectionJob?.cancel()
         selectedReader = null
         if (!wasAlreadyConnected) {
+            cardReaderTrackingInfoKeeper.setTransport(null)
             scope.launch { remoteReaderSession.disconnect() }
         }
         enterScanningState()
@@ -294,6 +301,7 @@ class WooPosCardReaderConnectionController(
             logger.d("disconnect(): clearing prefs")
             appPrefsWrapper.removeLastConnectedCardReaderId()
             appPrefsWrapper.removeLastConnectedPhoneName()
+            cardReaderTrackingInfoKeeper.setTransport(null)
 
             logger.d("disconnect(): stopping remote session")
             runCatching { remoteReaderSession.disconnect() }
@@ -382,6 +390,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
         if (lastKnownReader != null) {
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
+            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
             return
@@ -390,6 +399,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownPhone = findLastKnownPhone(phones)
         if (lastKnownPhone != null) {
             logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
+            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
             tracker.trackAutoConnectionStarted()
             onPhoneConnectClicked(lastKnownPhone)
             return
@@ -454,12 +464,14 @@ class WooPosCardReaderConnectionController(
 
     private fun onConnectToReaderClicked(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
         tracker.trackOnConnectTapped()
         connectToReader(reader)
     }
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
         tracker.trackOnConnectTapped()
         discoveryJob?.cancel()
         selectedReader = null
@@ -470,6 +482,11 @@ class WooPosCardReaderConnectionController(
             val result = remoteReaderSession.connect(phone)
             handleRemoteConnectionResult(phone, result)
         }
+    }
+
+    private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
+        WooPosDiscoveryTransport.Bluetooth -> "bluetooth"
+        WooPosDiscoveryTransport.WifiLan -> "wifi_lan"
     }
 
     private fun handleRemoteConnectionResult(
@@ -500,6 +517,7 @@ class WooPosCardReaderConnectionController(
 
     private fun connectToReader(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
         selectedReader = reader
         _state.value = WooPosCardReaderConnectionState.Connecting
 

@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.payments.cardreader.readermode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
@@ -32,6 +34,7 @@ class CardReaderModeViewModel @Inject constructor(
     private val session: CardReaderRemoteSession,
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
@@ -42,6 +45,10 @@ class CardReaderModeViewModel @Inject constructor(
     val events: Flow<CardReaderModeEvent> = _events.receiveAsFlow()
 
     private var sessionStarted = false
+    private var sessionStartedTracked = false
+    private var sessionEndedTracked = false
+    private var lastTrackedErrorMessage: String? = null
+    private var isSimulated = false
 
     fun onLocationPermissionMissing() {
         if (sessionStarted) return
@@ -72,19 +79,54 @@ class CardReaderModeViewModel @Inject constructor(
                 isDebug = BuildConfig.DEBUG,
             )
         }
+        isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
         viewModelScope.launch {
             session.state.collect { sessionState ->
+                trackSessionState(sessionState)
                 _viewState.value = mapToViewState(sessionState)
             }
         }
         session.start(
             parentScope = viewModelScope,
             siteHash = siteHash,
-            isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+            isSimulated = isSimulated,
         )
     }
 
+    private fun trackSessionState(state: CardReaderRemoteSessionState) {
+        when (state) {
+            CardReaderRemoteSessionState.Idle,
+            CardReaderRemoteSessionState.Starting -> Unit
+            is CardReaderRemoteSessionState.ReadyToPair,
+            is CardReaderRemoteSessionState.WaitingForPayment -> {
+                if (!sessionStartedTracked) {
+                    sessionStartedTracked = true
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED,
+                        mapOf("is_simulated" to isSimulated),
+                    )
+                }
+            }
+            is CardReaderRemoteSessionState.Error -> {
+                if (state.message != lastTrackedErrorMessage) {
+                    lastTrackedErrorMessage = state.message
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ERROR,
+                        mapOf("error_description" to (state.message ?: "")),
+                    )
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
+        if (sessionStartedTracked && !sessionEndedTracked) {
+            sessionEndedTracked = true
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED,
+                mapOf("reason" to "user_exit"),
+            )
+        }
         session.stop()
         super.onCleared()
     }

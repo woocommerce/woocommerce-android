@@ -558,6 +558,11 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_SUCCESS,
     CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_FAILED,
 
+    // -- Remote Tap to Pay (phone-as-reader)
+    REMOTE_TTP_PHONE_SESSION_STARTED,
+    REMOTE_TTP_PHONE_SESSION_ENDED,
+    REMOTE_TTP_PHONE_SESSION_ERROR,
+
     // -- POS Local Catalog Beta Toggle
     POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,
 
