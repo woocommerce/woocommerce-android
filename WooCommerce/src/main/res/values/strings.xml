@@ -230,7 +230,8 @@
     <string name="login_qr_endpoint_missing_retry">Try scanning again</string>
     <!-- Number-matching approval step -->
     <string name="login_qr_match_title">Confirm sign-in</string>
-    <string name="login_qr_match_subtitle">Tap this number on your computer to finish signing in to %s.</string>
+    <string name="login_qr_match_host_label">You\'re signing in to</string>
+    <string name="login_qr_match_subtitle">Tap this number on your computer to finish.</string>
     <string name="login_qr_match_countdown" comment="%1$d is seconds remaining before the challenge expires.">Expires in %1$ds</string>
     <string name="login_qr_match_cancel">Cancel</string>
     <string name="login_qr_match_security_note">Both screens must show the same number for sign-in to complete.</string>

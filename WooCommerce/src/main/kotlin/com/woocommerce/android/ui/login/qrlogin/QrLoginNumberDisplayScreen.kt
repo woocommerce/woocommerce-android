@@ -91,12 +91,26 @@ private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         Text(
-            text = stringResource(id = R.string.login_qr_match_subtitle, host),
+            text = stringResource(id = R.string.login_qr_match_host_label),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+        // Prominent host display so the merchant can spot a phishing-style mismatch
+        // (e.g. a homograph attack: `my-stōre.example` vs the punycode form
+        // `xn--my-stre-1za.example` that OkHttp's HttpUrl normalisation surfaces).
+        // The ViewModel's `toDisplayHost` already converts IDN names to ASCII, so any
+        // visual sleight-of-hand in the QR's URL surfaces here for the user to read.
+        HostBadge(host = host)
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
+        Text(
+            text = stringResource(id = R.string.login_qr_match_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         NumberTile(realNumber = realNumber)
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_125)))
         Countdown(expiresAtEpochMs = expiresAtEpochMs)
@@ -105,6 +119,27 @@ private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
             text = stringResource(id = R.string.login_qr_match_security_note),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun HostBadge(host: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_100)))
+            .background(colorResource(id = R.color.color_primary).copy(alpha = TILE_BG_ALPHA))
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_150),
+                vertical = dimensionResource(id = R.dimen.major_100)
+            )
+    ) {
+        Text(
+            text = host,
+            style = MaterialTheme.typography.titleMedium,
+            color = colorResource(id = R.color.color_primary),
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
     }
