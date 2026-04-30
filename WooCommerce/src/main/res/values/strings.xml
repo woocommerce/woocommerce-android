@@ -2267,6 +2267,7 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_push_notifications">Push notifications</string>
     <string name="settings_store_name">Store name</string>
     <string name="settings_enable_push_notifications">Enable Push Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -2274,6 +2275,12 @@
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
+    <string name="settings_notifs_new_orders">New orders</string>
+    <string name="settings_notifs_new_orders_subtitle">All orders</string>
+    <string name="settings_notifs_stock">Stock</string>
+    <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_new_reviews">New reviews</string>
+    <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>

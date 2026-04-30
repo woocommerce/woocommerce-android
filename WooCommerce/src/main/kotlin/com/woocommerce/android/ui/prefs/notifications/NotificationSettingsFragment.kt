@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
@@ -18,15 +19,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NotificationSettingsFragment : BaseFragment() {
     private val viewModel: NotificationSettingsViewModel by viewModels()
+    private val navArgs: NotificationSettingsFragmentArgs by navArgs()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    override fun getFragmentTitle() = getString(R.string.settings_notifs)
+    override fun getFragmentTitle() = getString(R.string.settings_push_notifications)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            NotificationSettingsScreen(viewModel)
+            NotificationSettingsScreen(
+                viewModel = viewModel,
+                showSmarterNotifications = navArgs.showSmarterNotifications
+            )
         }
     }
 
