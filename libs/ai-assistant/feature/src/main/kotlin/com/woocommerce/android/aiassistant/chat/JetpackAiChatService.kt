@@ -3,10 +3,10 @@ package com.woocommerce.android.aiassistant.chat
 import com.woocommerce.android.aiassistant.chat.openai.toOpenAi
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
 import com.woocommerce.android.aiassistant.di.AssistantOkHttpClient
@@ -149,31 +149,31 @@ internal class JetpackAiChatService @Inject constructor(
     private fun toAssistantException(t: Throwable?, response: Response?): MappedError {
         val code = response?.code
         val kind = when {
-            code == HTTP_UNAUTHORIZED || code == HTTP_FORBIDDEN -> AssistantErrorKind.AUTH
-            code == HTTP_REQUEST_TIMEOUT -> AssistantErrorKind.TIMEOUT
-            code == HTTP_TOO_MANY_REQUESTS -> AssistantErrorKind.RATE_LIMIT
-            code != null && code in HTTP_SERVER_ERROR_RANGE -> AssistantErrorKind.UPSTREAM_FAILURE
-            t is UnknownHostException || t is ConnectException -> AssistantErrorKind.NETWORK
-            t is SocketTimeoutException -> AssistantErrorKind.TIMEOUT
-            t is IOException -> AssistantErrorKind.NETWORK
-            else -> AssistantErrorKind.UNKNOWN
+            code == HTTP_UNAUTHORIZED || code == HTTP_FORBIDDEN -> ChatStreamError.AUTH
+            code == HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
+            code == HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
+            code != null && code in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
+            t is UnknownHostException || t is ConnectException -> ChatStreamError.NETWORK
+            t is SocketTimeoutException -> ChatStreamError.TIMEOUT
+            t is IOException -> ChatStreamError.NETWORK
+            else -> ChatStreamError.UNKNOWN
         }
         return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED)
     }
 
     private fun mapError(t: Throwable): MappedError = when (t) {
         is MappedException -> MappedError(t.kind, t.cause, t.retryableAuthFailure)
-        is AssistantAuthException -> MappedError(AssistantErrorKind.AUTH, t)
-        is UnknownHostException, is ConnectException -> MappedError(AssistantErrorKind.NETWORK, t)
-        is SocketTimeoutException -> MappedError(AssistantErrorKind.TIMEOUT, t)
-        is IOException -> MappedError(AssistantErrorKind.NETWORK, t)
-        else -> MappedError(AssistantErrorKind.UNKNOWN, t)
+        is AssistantAuthException -> MappedError(ChatStreamError.AUTH, t)
+        is UnknownHostException, is ConnectException -> MappedError(ChatStreamError.NETWORK, t)
+        is SocketTimeoutException -> MappedError(ChatStreamError.TIMEOUT, t)
+        is IOException -> MappedError(ChatStreamError.NETWORK, t)
+        else -> MappedError(ChatStreamError.UNKNOWN, t)
     }
 
     private fun buildRequestBody(request: ChatRequest): String = json.encodeToString(request.toOpenAi())
 
     private data class MappedError(
-        val kind: AssistantErrorKind,
+        val kind: ChatStreamError,
         val cause: Throwable?,
         val retryableAuthFailure: Boolean = false,
     ) {
@@ -181,7 +181,7 @@ internal class JetpackAiChatService @Inject constructor(
     }
 
     private class MappedException(
-        val kind: AssistantErrorKind,
+        val kind: ChatStreamError,
         cause: Throwable?,
         val retryableAuthFailure: Boolean,
     ) : RuntimeException(kind.name, cause)

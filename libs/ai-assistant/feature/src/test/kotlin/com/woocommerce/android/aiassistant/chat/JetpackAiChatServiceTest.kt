@@ -2,10 +2,10 @@ package com.woocommerce.android.aiassistant.chat
 
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import kotlinx.coroutines.flow.toList
@@ -135,7 +135,7 @@ class JetpackAiChatServiceTest {
 
         assertThat(events).hasSize(1)
         val failed = events.single() as AssistantEvent.Failed
-        assertThat(failed.kind).isEqualTo(AssistantErrorKind.AUTH)
+        assertThat(failed.kind).isEqualTo(ChatStreamError.AUTH)
         assertThat(tokenProvider.invalidations).isEqualTo(1)
     }
 
@@ -148,7 +148,7 @@ class JetpackAiChatServiceTest {
 
         assertThat(events).hasSize(1)
         val failed = events.single() as AssistantEvent.Failed
-        assertThat(failed.kind).isEqualTo(AssistantErrorKind.AUTH)
+        assertThat(failed.kind).isEqualTo(ChatStreamError.AUTH)
         assertThat(tokenProvider.invalidations).isZero()
         assertThat(tokenProvider.tokensProvided).containsExactly("fake-token-1")
     }
@@ -161,7 +161,7 @@ class JetpackAiChatServiceTest {
         val events = service.streamTurn(simpleRequest()).toList()
 
         val failed = events.single() as AssistantEvent.Failed
-        assertThat(failed.kind).isEqualTo(AssistantErrorKind.RATE_LIMIT)
+        assertThat(failed.kind).isEqualTo(ChatStreamError.RATE_LIMIT)
     }
 
     @Test
@@ -172,7 +172,7 @@ class JetpackAiChatServiceTest {
         val events = service.streamTurn(simpleRequest()).toList()
 
         val failed = events.single() as AssistantEvent.Failed
-        assertThat(failed.kind).isEqualTo(AssistantErrorKind.UPSTREAM_FAILURE)
+        assertThat(failed.kind).isEqualTo(ChatStreamError.UPSTREAM_FAILURE)
     }
 
     @Test
@@ -183,7 +183,7 @@ class JetpackAiChatServiceTest {
         val events = service.streamTurn(simpleRequest()).toList()
 
         val failed = events.single() as AssistantEvent.Failed
-        assertThat(failed.kind).isEqualTo(AssistantErrorKind.AUTH)
+        assertThat(failed.kind).isEqualTo(ChatStreamError.AUTH)
         assertThat(tokenProvider.provideCalls).isEqualTo(1)
     }
 

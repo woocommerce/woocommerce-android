@@ -64,7 +64,7 @@ class VariationRepository @Inject constructor(
                 result.error.message
             )
         } else {
-            canLoadMoreProductVariations = result.canLoadMore
+            canLoadMoreProductVariations = requireNotNull(result.model).canLoadMore
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_LOADED)
         }
 

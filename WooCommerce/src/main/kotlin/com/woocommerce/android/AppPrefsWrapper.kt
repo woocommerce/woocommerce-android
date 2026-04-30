@@ -230,6 +230,12 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
 
+    fun setDashboardRevenueStatsType(typeName: String) {
+        AppPrefs.setDashboardRevenueStatsType(typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = AppPrefs.getDashboardRevenueStatsType()
+
     fun setActiveTopPerformersTab(selectionName: String) {
         AppPrefs.setActiveTopPerformersTab(selectionName)
     }

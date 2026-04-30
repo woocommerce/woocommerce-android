@@ -26,7 +26,7 @@ sealed interface AssistantEvent {
 
     /** Stream failed. [cause] is preserved for telemetry but never inspected by UI code. */
     data class Failed(
-        val kind: AssistantErrorKind,
+        val kind: ChatStreamError,
         val cause: Throwable? = null,
     ) : AssistantEvent
 }
