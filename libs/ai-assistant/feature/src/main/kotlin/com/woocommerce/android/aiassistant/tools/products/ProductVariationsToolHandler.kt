@@ -65,20 +65,6 @@ internal class ProductVariationsToolHandler @Inject constructor(
     )
 
     @Serializable
-    private data class VariationDetail(
-        val id: Long,
-        @SerialName("product_id") val productId: Long,
-        val status: String,
-        val sku: String,
-        @SerialName("regular_price") val regularPrice: String,
-        @SerialName("sale_price") val salePrice: String,
-        @SerialName("on_sale") val onSale: Boolean,
-        @SerialName("manage_stock") val manageStock: Boolean,
-        @SerialName("stock_quantity") val stockQuantity: Double,
-        @SerialName("stock_status") val stockStatus: String,
-    )
-
-    @Serializable
     private data class PriceRange(
         val min: String,
         val max: String,
@@ -94,20 +80,7 @@ internal class ProductVariationsToolHandler @Inject constructor(
     )
 
     private fun WCProductVariationModel.toDetailJson(): JsonObject =
-        json.encodeToJsonElement(
-            VariationDetail(
-                id = remoteVariationId.value,
-                productId = remoteProductId.value,
-                status = status,
-                sku = sku,
-                regularPrice = regularPrice,
-                salePrice = salePrice,
-                onSale = onSale,
-                manageStock = manageStock,
-                stockQuantity = stockQuantity,
-                stockStatus = stockStatus,
-            )
-        ) as JsonObject
+        json.encodeToJsonElement(toProductVariationDetailResponse()) as JsonObject
 
     private fun List<WCProductVariationModel>.toListJson(productId: Long): JsonObject {
         val response = VariationList(
