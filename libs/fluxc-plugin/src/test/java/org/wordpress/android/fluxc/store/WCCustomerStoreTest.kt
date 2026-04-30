@@ -94,6 +94,62 @@ class WCCustomerStoreTest {
     }
 
     @Test
+    fun `fetchCustomers with success returns mapped customer models and caches them`() = runTest {
+        // given
+        val customerDto = fakeCustomerDTO(id = DEFAULT_REMOTE_CUSTOMER_ID)
+        val expectedCustomer = fakeWCCustomerModel(
+            remoteCustomerId = DEFAULT_REMOTE_CUSTOMER_ID,
+            localSiteId = DEFAULT_SITE_ID
+        )
+
+        doReturn(WooPayload(arrayOf(customerDto)))
+            .whenever(restClient)
+            .fetchCustomers(
+                site = DEFAULT_SITE_MODEL,
+                search = "jo",
+                email = "customer@example.com",
+                include = listOf(DEFAULT_REMOTE_CUSTOMER_ID),
+                orderby = "email",
+                order = "asc",
+                page = 2,
+                perPage = 50,
+            )
+
+        // when
+        val result = sut.fetchCustomers(
+            site = DEFAULT_SITE_MODEL,
+            search = "jo",
+            email = "customer@example.com",
+            include = listOf(DEFAULT_REMOTE_CUSTOMER_ID),
+            orderby = "email",
+            order = "asc",
+            page = 2,
+            perPage = 50,
+        )
+
+        // then
+        assertThat(result.isError).isFalse
+        assertThat(result.model).containsExactly(expectedCustomer)
+        assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).containsExactly(expectedCustomer)
+    }
+
+    @Test
+    fun `fetchCustomers with error returns error and does not cache`() = runTest {
+        // given
+        doReturn(WooPayload<Array<CustomerDTO>>(TEST_ERROR))
+            .whenever(restClient)
+            .fetchCustomers(DEFAULT_SITE_MODEL)
+
+        // when
+        val result = sut.fetchCustomers(DEFAULT_SITE_MODEL)
+
+        // then
+        assertThat(result.isError).isTrue
+        assertThat(result.error).isEqualTo(TEST_ERROR)
+        assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).isEmpty()
+    }
+
+    @Test
     fun `fetchCustomersFromAnalytics with error returns error and does not cache`() = test {
         // given
         whenever(
