@@ -247,7 +247,13 @@ private fun TotalsLoaded(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .then(if (isPhone) Modifier.padding(WooPosSpacing.Large.value) else Modifier)
+                .then(
+                    if (isPhone) {
+                        Modifier.padding(WooPosSpacing.Large.value)
+                    } else {
+                        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+                    }
+                )
                 .navigationBarsPadding()
                 .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )

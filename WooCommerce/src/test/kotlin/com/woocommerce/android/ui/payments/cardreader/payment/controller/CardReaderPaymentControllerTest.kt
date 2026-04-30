@@ -2666,7 +2666,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given canada and total 0,58, when flow started, then fee set to 15`() =
+    fun `given canada and total 0,58, when flow started, then fee set to 22`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
@@ -2678,12 +2678,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             controller.start()
 
             // Then
+            // 0.58 * 0.027 * 100 = 1.566 -> 2 cents, + 5 (Canada base) + 15 (Interac) = 22
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
+            assertThat(captor.firstValue.feeAmount).isEqualTo(22)
         }
 
     @Test
-    fun `given canada and total 135,6, when flow started, then fee set to 15`() =
+    fun `given canada and total 145,6, when flow started, then fee set to 413`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
@@ -2695,8 +2696,9 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             controller.start()
 
             // Then
+            // 145.6 * 0.027 * 100 = 393.12 -> 393 cents, + 5 (Canada base) + 15 (Interac) = 413
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
+            assertThat(captor.firstValue.feeAmount).isEqualTo(413)
         }
 
     @Test

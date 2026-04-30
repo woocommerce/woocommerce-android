@@ -1,0 +1,51 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    namespace = "com.woocommerce.android.aiassistant"
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+    }
+
+    lint {
+        // The lint detector expects metadata version 2.0.0 but the project uses 2.1.0
+        // This can be re-enabled once the compose lint library supports newer metadata versions
+        disable "FlowOperatorInvokedInComposition"
+    }
+}
+
+dependencies {
+    implementation(project(":libs:ai-assistant:core"))
+
+    implementation(project(":libs:commons"))
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.squareup.okhttp3)
+    implementation(libs.squareup.okhttp3.sse)
+    implementation(libs.google.dagger.hilt.android.main)
+
+    ksp(libs.google.dagger.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.squareup.okhttp3.mockwebserver)
+}

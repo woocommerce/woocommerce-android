@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderActionsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -136,7 +135,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        assertThat(loaded.details.actionsState).isInstanceOf(OrderActionsState.Loaded::class.java)
+        assertThat(loaded.details.actionsState.actions).isNotEmpty()
     }
 
     @Test
@@ -258,7 +257,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).anyMatch { it is OrderAction.IssueRefund }
     }
 
@@ -276,7 +275,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).isEmpty()
     }
 
@@ -294,7 +293,7 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
-        val actions = loaded.details.actionsState as OrderActionsState.Loaded
+        val actions = loaded.details.actionsState
         assertThat(actions.actions).anyMatch { it is OrderAction.EmailReceipt }
     }
 
@@ -379,7 +378,6 @@ class WooPosOrderDetailsViewModelTest {
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
-            orderActionsProvider = orderActionsProvider,
             bookingInfoMapper = bookingInfoMapper,
             formatPrice = formatPrice,
             coordinator = coordinator,
