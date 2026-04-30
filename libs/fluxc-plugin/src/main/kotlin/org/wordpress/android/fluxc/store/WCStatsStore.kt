@@ -88,7 +88,17 @@ class WCStatsStore @Inject internal constructor(
         val endDate: String,
         val forced: Boolean = false,
         val revenueRangeId: String,
-        val orderDateType: WCAnalyticsOrderDateType?,
+        val orderDateType: WCAnalyticsOrderDateType? = null,
+        val currency: String? = null,
+    ) : Payload<BaseNetworkError>()
+
+    class FetchOrdersStatsPayload(
+        val site: SiteModel,
+        val granularity: StatsGranularity,
+        val startDate: String,
+        val endDate: String,
+        val forced: Boolean = false,
+        val orderStatsRangeId: String,
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsResponsePayload(
@@ -412,7 +422,39 @@ class WCStatsStore @Inject internal constructor(
                 perPage = ORDER_REVENUE_QUANTITY,
                 forceRefresh = payload.forced,
                 revenueRangeId = payload.revenueRangeId,
-                orderDateType = payload.orderDateType
+                currency = payload.currency,
+                orderDateType = payload.orderDateType,
+            )
+
+            with(result) {
+                return@withDefaultContext if (isError || stats == null) {
+                    OnWCRevenueStatsChanged(granularity)
+                        .also { it.error = error }
+                } else {
+                    revenueStatsDao.insert(stats)
+                    OnWCRevenueStatsChanged(
+                        granularity,
+                        stats.startDate,
+                        stats.endDate,
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun fetchOrdersStats(payload: FetchOrdersStatsPayload): OnWCRevenueStatsChanged {
+        val startDate = payload.startDate
+        val endDate = payload.endDate
+
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchOrdersStats") {
+            val result = wcOrderStatsClient.fetchOrdersStats(
+                site = payload.site,
+                granularity = payload.granularity,
+                startDate = startDate,
+                endDate = endDate,
+                perPage = ORDER_REVENUE_QUANTITY,
+                forceRefresh = payload.forced,
+                orderStatsRangeId = payload.orderStatsRangeId,
             )
 
             with(result) {

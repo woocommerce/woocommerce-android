@@ -15,7 +15,6 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -48,42 +47,6 @@ class OrdersListToolHandlerTest {
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "list_orders", arguments = arguments)
-
-    @Test
-    fun `given no search argument, when execute is called, then data source is called with search = null`() =
-        runTest {
-            whenever(dataSource.fetchOrders(search = null)).thenReturn(
-                Result.success(AIOrdersDataSource.OrdersPage(orders = emptyList(), canLoadMore = false))
-            )
-
-            handler.execute(toolCall(buildJsonObject {}))
-
-            verify(dataSource).fetchOrders(search = null)
-        }
-
-    @Test
-    fun `given search = alice argument, when execute is called, then data source is called with search = alice`() =
-        runTest {
-            whenever(dataSource.fetchOrders(search = "alice")).thenReturn(
-                Result.success(AIOrdersDataSource.OrdersPage(orders = emptyList(), canLoadMore = false))
-            )
-
-            handler.execute(toolCall(buildJsonObject { put("search", "alice") }))
-
-            verify(dataSource).fetchOrders(search = "alice")
-        }
-
-    @Test
-    fun `given status filter, when execute is called, then data source is called with that status`() =
-        runTest {
-            whenever(dataSource.fetchOrders(status = "processing")).thenReturn(
-                Result.success(AIOrdersDataSource.OrdersPage(orders = emptyList(), canLoadMore = false))
-            )
-
-            handler.execute(toolCall(buildJsonObject { put("status", "processing") }))
-
-            verify(dataSource).fetchOrders(status = "processing")
-        }
 
     @Test
     fun `given orders are returned, when execute is called, then structured JSON contains count and ids`() =

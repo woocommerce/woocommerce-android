@@ -74,15 +74,6 @@ class AIProductsDataSourceTest {
     // --- fetchProducts ---
 
     @Test
-    fun `given no search query, when fetchProducts is called, then fetchProducts store method is used`() = runTest {
-        stubFetchProducts(WooResult(emptyList()))
-
-        val result = dataSource.fetchProducts(search = null)
-
-        assertThat(result.isSuccess).isTrue
-    }
-
-    @Test
     fun `given search query, when fetchProducts is called, then searchProductsByNameAndSku is used`() = runTest {
         whenever(
             productStore.searchProductsByNameAndSku(
@@ -131,38 +122,11 @@ class AIProductsDataSourceTest {
     }
 
     @Test
-    fun `given page = 2 and perPage = 10, when fetchProducts is called, then offset = 10 is used`() = runTest {
+    fun `given page and perPage over max, when fetchProducts is called, then offset uses clamped page size`() = runTest {
         whenever(
             productStore.fetchProducts(
                 site = any(),
-                offset = eq(10),
-                pageSize = eq(10),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any(),
-                posProductsOnly = any(),
-            )
-        ).thenReturn(WooResult(emptyList()))
-
-        dataSource.fetchProducts(page = 2, perPage = 10)
-
-        verify(productStore).fetchProducts(
-            site = any(),
-            offset = eq(10),
-            pageSize = eq(10),
-            sortType = any(),
-            filterOptions = any(),
-            includeTypes = any(),
-            posProductsOnly = any(),
-        )
-    }
-
-    @Test
-    fun `given perPage over max, when fetchProducts is called, then it is clamped to 50`() = runTest {
-        whenever(
-            productStore.fetchProducts(
-                site = any(),
-                offset = any(),
+                offset = eq(50),
                 pageSize = eq(50),
                 sortType = any(),
                 filterOptions = any(),
@@ -171,11 +135,11 @@ class AIProductsDataSourceTest {
             )
         ).thenReturn(WooResult(emptyList()))
 
-        dataSource.fetchProducts(perPage = 999)
+        dataSource.fetchProducts(page = 2, perPage = 999)
 
         verify(productStore).fetchProducts(
             site = any(),
-            offset = any(),
+            offset = eq(50),
             pageSize = eq(50),
             sortType = any(),
             filterOptions = any(),
@@ -359,6 +323,80 @@ class AIProductsDataSourceTest {
 
         val result = dataSource.updateProduct(
             productId = 10L,
+            update = AIProductsDataSource.ProductUpdate(name = "Updated")
+        )
+
+        assertThat(result.isFailure).isTrue
+    }
+
+    @Test
+    fun `given product patch, when bulkUpdateProducts is called, then one direct batch update is sent`() = runTest {
+        whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+            WooResult(WCProductStore.UpdateProductsResult(updatedProducts = listOf(10L, 11L)))
+        )
+
+        val result = dataSource.bulkUpdateProducts(
+            productIds = listOf(10L, 11L),
+            update = AIProductsDataSource.ProductUpdate(
+                name = "Updated",
+                regularPrice = "12.50",
+                salePrice = "9.99",
+                stockQuantity = 5,
+                status = "publish",
+            )
+        )
+
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow().updatedIds).containsExactly(10L, 11L)
+        val requestsCaptor = argumentCaptor<Map<Long, WCProductStore.UpdateProductRequest>>()
+        verify(productStore).batchUpdateProducts(eq(site), requestsCaptor.capture())
+        assertThat(requestsCaptor.firstValue.keys).containsExactly(10L, 11L)
+        requestsCaptor.firstValue.values.forEach { request ->
+            assertThat(request.name).isEqualTo("Updated")
+            assertThat(request.regularPrice).isEqualTo("12.50")
+            assertThat(request.salePrice).isEqualTo("9.99")
+            assertThat(request.stockQuantity).isEqualTo(5)
+            assertThat(request.status).isEqualTo("publish")
+        }
+        verify(productStore, never()).fetchSingleProduct(any())
+    }
+
+    @Test
+    fun `given store returns partial product failures, when bulkUpdateProducts is called, then failures are exposed`() =
+        runTest {
+            val failedProduct = WCProductStore.UpdateProductsResult.FailedProduct(
+                id = 11L,
+                errorCode = "woocommerce_rest_product_invalid_id",
+                errorMessage = "Invalid ID.",
+                errorStatus = 400,
+            )
+            whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+                WooResult(
+                    WCProductStore.UpdateProductsResult(
+                        updatedProducts = listOf(10L),
+                        failedProducts = listOf(failedProduct),
+                    )
+                )
+            )
+
+            val result = dataSource.bulkUpdateProducts(
+                productIds = listOf(10L, 11L),
+                update = AIProductsDataSource.ProductUpdate(name = "Updated")
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(10L)
+            assertThat(result.getOrThrow().failedProducts).containsExactly(failedProduct)
+        }
+
+    @Test
+    fun `given batch update fails, when bulkUpdateProducts is called, then failure result is returned`() = runTest {
+        whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(
+            WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom"))
+        )
+
+        val result = dataSource.bulkUpdateProducts(
+            productIds = listOf(10L),
             update = AIProductsDataSource.ProductUpdate(name = "Updated")
         )
 

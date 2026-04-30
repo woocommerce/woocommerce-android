@@ -9,12 +9,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -82,34 +84,45 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
-    fun `given a search query, when fetchOrders is called, then search term is forwarded to the store`() =
+    fun `given filters and sorting, when fetchOrders is called, then params are forwarded to the store`() =
         runTest {
             stubFetchOrders(WooResult(emptyList()))
 
-            dataSource.fetchOrders(search = "alice")
+            dataSource.fetchOrders(
+                search = " alice ",
+                status = "processing",
+                page = 2,
+                perPage = 10,
+                customer = 99L,
+                include = listOf(1L, 2L, 3L),
+                after = "2024-01-01T00:00:00",
+                before = "2024-12-31T23:59:59",
+                orderby = "modified",
+                order = "asc",
+            )
 
             verify(orderStore).fetchOrders(
                 site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
+                count = eq(10),
+                page = eq(2),
+                orderBy = eq(OrderBy.MODIFIED),
+                sortOrder = eq(SortOrder.ASCENDING),
+                statusFilter = eq("processing"),
                 searchQuery = eq("alice"),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
+                customer = eq(99L),
+                include = eq(listOf(1L, 2L, 3L)),
+                after = eq("2024-01-01T00:00:00"),
+                before = eq("2024-12-31T23:59:59"),
+                deleteOldData = eq(false),
             )
         }
 
     @Test
-    fun `given a blank search query, when fetchOrders is called, then search is normalised to null`() =
+    fun `given blank search and empty include, when fetchOrders is called, then they are normalised to null`() =
         runTest {
             stubFetchOrders(WooResult(emptyList()))
 
-            dataSource.fetchOrders(search = "   ")
+            dataSource.fetchOrders(search = "   ", include = emptyList())
 
             verify(orderStore).fetchOrders(
                 site = any(),
@@ -120,7 +133,7 @@ class AIOrdersDataSourceTest {
                 statusFilter = anyOrNull(),
                 searchQuery = eq(null),
                 customer = anyOrNull(),
-                include = anyOrNull(),
+                include = eq(null),
                 after = anyOrNull(),
                 before = anyOrNull(),
                 deleteOldData = any(),
@@ -157,190 +170,6 @@ class AIOrdersDataSourceTest {
             val result = dataSource.fetchOrders(search = null)
 
             assertThat(result.getOrThrow().canLoadMore).isFalse
-        }
-
-    @Test
-    fun `given customer filter, when fetchOrders is called, then customer is forwarded to the store`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(customer = 99L)
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = eq(99L),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given include list, when fetchOrders is called, then include is forwarded to the store`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(include = listOf(1L, 2L, 3L))
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = eq(listOf(1L, 2L, 3L)),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given after and before filters, when fetchOrders is called, then they are forwarded to the store`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(after = "2024-01-01T00:00:00", before = "2024-12-31T23:59:59")
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = eq("2024-01-01T00:00:00"),
-                before = eq("2024-12-31T23:59:59"),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given orderby = modified, when fetchOrders is called, then OrderBy MODIFIED is forwarded`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(orderby = "modified")
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = eq(OrderBy.MODIFIED),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given order = asc, when fetchOrders is called, then SortOrder ASCENDING is forwarded`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(order = "asc")
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = eq(SortOrder.ASCENDING),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given unknown orderby value, when fetchOrders is called, then OrderBy DATE is used as fallback`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(orderby = "unknown_value")
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = eq(OrderBy.DATE),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given unknown order value, when fetchOrders is called, then SortOrder DESCENDING is used as fallback`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(order = "DESC")
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = eq(SortOrder.DESCENDING),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = anyOrNull(),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
-        }
-
-    @Test
-    fun `given empty include list, when fetchOrders is called, then include is normalised to null`() =
-        runTest {
-            stubFetchOrders(WooResult(emptyList()))
-
-            dataSource.fetchOrders(include = emptyList())
-
-            verify(orderStore).fetchOrders(
-                site = any(),
-                count = any(),
-                page = any(),
-                orderBy = any(),
-                sortOrder = any(),
-                statusFilter = anyOrNull(),
-                searchQuery = anyOrNull(),
-                customer = anyOrNull(),
-                include = eq(null),
-                after = anyOrNull(),
-                before = anyOrNull(),
-                deleteOldData = any(),
-            )
         }
 
     @Test
@@ -416,5 +245,61 @@ class AIOrdersDataSourceTest {
 
             assertThat(result.isFailure).isTrue
             assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+        }
+
+    @Test
+    fun `given order patch, when bulkUpdateOrders is called, then one generic batch update is sent`() =
+        runTest {
+            whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(
+                WooResult(WCOrderStore.UpdateOrdersStatusResult(updatedOrders = listOf(123L, 456L)))
+            )
+
+            val result = dataSource.bulkUpdateOrders(
+                orderIds = listOf(123L, 456L),
+                patch = AIOrdersDataSource.OrderPatch(
+                    status = "processing",
+                    customerNote = "Please call first",
+                    billingEmail = "customer@example.com",
+                )
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(123L, 456L)
+            val requestsCaptor = argumentCaptor<Map<Long, UpdateOrderRequest>>()
+            verify(orderStore).batchUpdateOrders(eq(site), requestsCaptor.capture())
+            assertThat(requestsCaptor.firstValue.keys).containsExactly(123L, 456L)
+            requestsCaptor.firstValue.values.forEach { request ->
+                assertThat(request.status?.statusKey).isEqualTo("processing")
+                assertThat(request.customerNote).isEqualTo("Please call first")
+                assertThat(request.billingEmail).isEqualTo("customer@example.com")
+            }
+        }
+
+    @Test
+    fun `given store returns partial order failures, when bulkUpdateOrders is called, then failures are exposed`() =
+        runTest {
+            val failedOrder = WCOrderStore.UpdateOrdersStatusResult.FailedOrder(
+                id = 456L,
+                errorCode = "woocommerce_rest_shop_order_invalid_id",
+                errorMessage = "Invalid ID.",
+                errorStatus = 400,
+            )
+            whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(
+                WooResult(
+                    WCOrderStore.UpdateOrdersStatusResult(
+                        updatedOrders = listOf(123L),
+                        failedOrders = listOf(failedOrder),
+                    )
+                )
+            )
+
+            val result = dataSource.bulkUpdateOrders(
+                orderIds = listOf(123L, 456L),
+                patch = AIOrdersDataSource.OrderPatch(status = "processing")
+            )
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow().updatedIds).containsExactly(123L)
+            assertThat(result.getOrThrow().failedOrders).containsExactly(failedOrder)
         }
 }

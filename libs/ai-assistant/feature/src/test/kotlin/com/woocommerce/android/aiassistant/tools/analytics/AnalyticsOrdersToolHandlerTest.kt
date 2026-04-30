@@ -1,0 +1,231 @@
+package com.woocommerce.android.aiassistant.tools.analytics
+
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class AnalyticsOrdersToolHandlerTest {
+
+    private val dataSource: AIAnalyticsDataSource = mock()
+    private val handler = AnalyticsOrdersToolHandler(
+        dataSource = dataSource,
+        json = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = false
+            explicitNulls = false
+        },
+    )
+
+    private fun toolCall(arguments: JsonObject): ToolCall =
+        ToolCall(id = "call-1", name = "analytics_orders", arguments = arguments)
+
+    @Test
+    fun `when descriptor is inspected, then after and before are required and interval is constrained`() {
+        val schema = handler.descriptor.inputSchema
+        val properties = requireNotNull(schema["properties"]).jsonObject
+        val required = requireNotNull(schema["required"]).jsonArray.map { it.jsonPrimitive.content }
+        val intervalValues = requireNotNull(properties["interval"])
+            .jsonObject
+            .getValue("enum")
+            .jsonArray
+            .map { it.jsonPrimitive.content }
+
+        assertThat(required).containsExactly("after", "before")
+        assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
+    }
+
+    @Test
+    fun `given valid dates and week interval, when execute is called, then summary keeps totals and interval count`() =
+        runTest {
+            whenever(
+                dataSource.fetchOrdersStats(
+                    after = "2026-04-01T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.WEEK,
+                )
+            ).thenReturn(Result.success(sampleStats()))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("interval", "week")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            val structured = (result as ToolResult.Success).structured.jsonObject
+            assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
+            assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
+            assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(1)
+            assertThat(structured.getValue("totals").jsonObject.getValue("orders_count").jsonPrimitive.int)
+                .isEqualTo(42)
+        }
+
+    @Test
+    fun `given interval omitted, when execute is called, then day interval is used`() =
+        runTest {
+            whenever(
+                dataSource.fetchOrdersStats(
+                    after = "2026-04-01T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                )
+            ).thenReturn(Result.success(sampleStats()))
+
+            handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                    }
+                )
+            )
+
+            verify(dataSource).fetchOrdersStats(
+                after = "2026-04-01T00:00:00",
+                before = "2026-04-30T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+        }
+
+    @Test
+    fun `given required dates missing, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(toolCall(buildJsonObject { }))
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given invalid interval, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("interval", "quarter")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given reversed date range, when execute is called, then ValidationError is returned before data source call`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-30")
+                        put("before", "2026-04-01")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given day interval over one hundred buckets, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-01-01")
+                        put("before", "2026-04-11")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason)
+                .contains("coarser interval or shorter range")
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given week interval over one hundred calendar buckets, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-01-06")
+                        put("before", "2027-12-06")
+                        put("interval", "week")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason)
+                .contains("coarser interval or shorter range")
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given data source fails, when execute is called, then retryable TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.fetchOrdersStats(
+                    after = "2026-04-01T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                )
+            ).thenReturn(Result.failure(IllegalStateException("network error")))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
+            assertThat((result as ToolResult.TransportError).retryable).isTrue
+        }
+
+    private fun sampleStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("orders_count", 42)
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            buildJsonObject {
+                put("interval", "week-2026-15")
+                put("date_start", "2026-04-07 00:00:00")
+                put(
+                    "subtotals",
+                    buildJsonObject {
+                        put("orders_count", 12)
+                    }
+                )
+            },
+        ),
+    )
+}

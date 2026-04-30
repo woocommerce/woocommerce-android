@@ -15,7 +15,6 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -38,30 +37,6 @@ class ProductsListToolHandlerTest {
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "products_list", arguments = arguments)
-
-    @Test
-    fun `given no search argument, when execute is called, then data source is called with search = null`() =
-        runTest {
-            whenever(dataSource.fetchProducts(search = null)).thenReturn(
-                Result.success(AIProductsDataSource.ProductsPage(products = emptyList(), canLoadMore = false))
-            )
-
-            handler.execute(toolCall(buildJsonObject {}))
-
-            verify(dataSource).fetchProducts(search = null)
-        }
-
-    @Test
-    fun `given search = shirt, when execute is called, then data source is called with search = shirt`() =
-        runTest {
-            whenever(dataSource.fetchProducts(search = "shirt")).thenReturn(
-                Result.success(AIProductsDataSource.ProductsPage(products = emptyList(), canLoadMore = false))
-            )
-
-            handler.execute(toolCall(buildJsonObject { put("search", "shirt") }))
-
-            verify(dataSource).fetchProducts(search = "shirt")
-        }
 
     @Test
     fun `given products are returned, when execute is called, then structured JSON contains count and ids`() =

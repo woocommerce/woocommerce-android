@@ -25,6 +25,11 @@ internal class AIProductsDataSource @Inject constructor(
         val status: String? = null,
     )
 
+    data class BulkUpdateResult(
+        val updatedIds: List<Long>,
+        val failedProducts: List<WCProductStore.UpdateProductsResult.FailedProduct>,
+    )
+
     class UnsupportedProductTypeException(productId: Long, productType: String) : IllegalArgumentException(
         "Product $productId has type '$productType'. This tool only updates simple products. " +
             "For variable products, update individual variations instead."
@@ -108,6 +113,32 @@ internal class AIProductsDataSource @Inject constructor(
         } else {
             Result.success(
                 result.model?.firstOrNull { it.remoteProductId == productId } ?: updatedProduct
+            )
+        }
+    }
+
+    suspend fun bulkUpdateProducts(productIds: List<Long>, update: ProductUpdate): Result<BulkUpdateResult> {
+        val site = selectedSite.get()
+        val requests = productIds.associateWith {
+            WCProductStore.UpdateProductRequest(
+                name = update.name,
+                regularPrice = update.regularPrice,
+                salePrice = update.salePrice,
+                stockQuantity = update.stockQuantity,
+                status = update.status,
+            )
+        }
+        val result = productStore.batchUpdateProducts(site, requests)
+
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            val model = requireNotNull(result.model)
+            Result.success(
+                BulkUpdateResult(
+                    updatedIds = model.updatedProducts,
+                    failedProducts = model.failedProducts,
+                )
             )
         }
     }

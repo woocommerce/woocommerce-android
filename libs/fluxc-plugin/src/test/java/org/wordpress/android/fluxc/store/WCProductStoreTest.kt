@@ -38,6 +38,8 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVariationsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -860,6 +862,99 @@ class WCProductStoreTest {
             argumentCaptor.allValues.first().onEach { (existing, updated) ->
                 assertThat(existing.remoteProductId).isEqualTo(updated.remoteProductId)
             }
+        }
+
+    @Test
+    fun `when direct product bulk update returns mixed response, then updated and failed products are returned`(): Unit =
+        runTest {
+            // given
+            val site = SiteModel().apply { id = 1 }
+            val updateRequests = mapOf(
+                42L to WCProductStore.UpdateProductRequest(name = "Updated"),
+                43L to WCProductStore.UpdateProductRequest(name = "Updated"),
+            )
+            val argumentCaptor = argumentCaptor<Map<Long, WCProductStore.UpdateProductRequest>>()
+            whenever(
+                productRestClient.batchUpdateProductsPatch(
+                    eq(site),
+                    argumentCaptor.capture()
+                )
+            ).thenReturn(
+                WooPayload(
+                    BatchProductUpdateResult(
+                        update = listOf(
+                            BatchProductUpdateResult.ProductResponse.Success(
+                                ProductWithMetaData(
+                                    ProductTestUtils.generateSampleProduct(42).copy(
+                                        localSiteId = LocalId(site.id),
+                                        remoteId = RemoteId(42),
+                                        name = "Updated",
+                                    )
+                                )
+                            ),
+                            BatchProductUpdateResult.ProductResponse.Error(
+                                id = 43L,
+                                error = BatchProductUpdateApiResponse.ErrorResponse(
+                                    code = "woocommerce_rest_product_invalid_id",
+                                    message = "Invalid ID.",
+                                    data = BatchProductUpdateApiResponse.ErrorData(status = 400)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            // when
+            val result = productStore.batchUpdateProducts(site, updateRequests)
+
+            // then
+            assertThat(result.isError).isFalse()
+            assertThat(requireNotNull(result.model).updatedProducts).containsExactly(42L)
+            assertThat(requireNotNull(result.model).failedProducts).hasSize(1)
+            with(requireNotNull(result.model).failedProducts.single()) {
+                assertThat(id).isEqualTo(43L)
+                assertThat(errorCode).isEqualTo("woocommerce_rest_product_invalid_id")
+                assertThat(errorMessage).isEqualTo("Invalid ID.")
+                assertThat(errorStatus).isEqualTo(400)
+            }
+            assertThat(argumentCaptor.firstValue).isEqualTo(updateRequests)
+        }
+
+    @Test
+    fun `when direct product bulk update succeeds, then updated products are saved to database`(): Unit =
+        runTest {
+            // given
+            val site = SiteModel().apply { id = 1 }
+            val product = ProductTestUtils.generateSampleProduct(42).copy(
+                localSiteId = LocalId(site.id),
+                remoteId = RemoteId(42),
+                name = "Updated",
+            )
+            whenever(
+                productRestClient.batchUpdateProductsPatch(
+                    eq(site),
+                    any()
+                )
+            ).thenReturn(
+                WooPayload(
+                    BatchProductUpdateResult(
+                        update = listOf(
+                            BatchProductUpdateResult.ProductResponse.Success(ProductWithMetaData(product))
+                        )
+                    )
+                )
+            )
+
+            // when
+            val result = productStore.batchUpdateProducts(
+                site,
+                mapOf(42L to WCProductStore.UpdateProductRequest(name = "Updated"))
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            assertThat(productsDao.getProduct(site.id, 42L)?.name).isEqualTo("Updated")
         }
 
     @Test
