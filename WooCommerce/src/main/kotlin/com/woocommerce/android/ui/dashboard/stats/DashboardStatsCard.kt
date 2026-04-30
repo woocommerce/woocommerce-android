@@ -3,7 +3,13 @@ package com.woocommerce.android.ui.dashboard.stats
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -13,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -55,6 +63,7 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
+    val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
 
     HandleEvents(
         event = viewModel.event,
@@ -96,11 +105,13 @@ fun DashboardStatsCard(
                     revenueStatsState = revenueStatsState,
                     visitorsStatsState = visitorsStatsState,
                     lastUpdateState = lastUpdateState,
+                    selectedRevenueStatsType = selectedRevenueStatsType,
                     dateUtils = viewModel.dateUtils,
                     currencyFormatter = viewModel.currencyFormatter,
                     usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
                     onAddCustomRangeClick = viewModel::onEditCustomRangeTapped,
                     onTabSelected = viewModel::onRangeChanged,
+                    onRevenueStatsTypeSelected = viewModel::onRevenueStatsTypeSelected,
                     onChartDateSelected = viewModel::onChartDateSelected
                 )
             }
@@ -121,11 +132,13 @@ private fun DashboardStatsContent(
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
+    selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
+    onRevenueStatsTypeSelected: (DashboardStatsViewModel.RevenueStatsType) -> Unit,
     onChartDateSelected: (String?) -> Unit,
 ) {
     Column {
@@ -138,11 +151,19 @@ private fun DashboardStatsContent(
         )
 
         Divider()
+
+        RevenueStatsTypeSelector(
+            selectedType = selectedRevenueStatsType,
+            onTypeSelected = onRevenueStatsTypeSelected,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         StatsChart(
             dateRange = dateRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
             lastUpdateState = lastUpdateState,
+            selectedRevenueStatsType = selectedRevenueStatsType,
             dateUtils = dateUtils,
             currencyFormatter = currencyFormatter,
             usageTracksEventEmitter = usageTracksEventEmitter,
@@ -159,6 +180,7 @@ private fun StatsChart(
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
+    selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
@@ -207,12 +229,12 @@ private fun StatsChart(
         statsView.showLastUpdate(lastUpdateState)
     }
 
-    LaunchedEffect(revenueStatsState) {
+    LaunchedEffect(revenueStatsState, selectedRevenueStatsType) {
         when (revenueStatsState) {
             is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
                 statsView.showErrorView(false)
                 statsView.showSkeleton(false)
-                statsView.updateView(revenueStatsState.revenueStats)
+                statsView.updateView(revenueStatsState.revenueStats, selectedRevenueStatsType)
             }
 
             DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
@@ -236,6 +258,41 @@ private fun StatsChart(
     LaunchedEffect(visitorsStatsState) {
         visitorsStatsState?.let {
             statsView.showVisitorStats(it)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RevenueStatsTypeSelector(
+    selectedType: DashboardStatsViewModel.RevenueStatsType,
+    onTypeSelected: (DashboardStatsViewModel.RevenueStatsType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val options = DashboardStatsViewModel.RevenueStatsType.OPTIONS
+    val segmentedButtonColors = SegmentedButtonDefaults.colors(
+        activeContainerColor = colorResource(id = R.color.color_primary),
+        activeContentColor = colorResource(id = R.color.woo_white),
+    )
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp)
+    ) {
+        options.forEachIndexed { index, type ->
+            SegmentedButton(
+                selected = selectedType == type,
+                onClick = { onTypeSelected(type) },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                colors = segmentedButtonColors,
+                icon = {},
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(id = type.labelRes),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

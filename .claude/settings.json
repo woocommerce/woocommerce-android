@@ -22,6 +22,7 @@
       "Bash(gh api *)",
       "Bash(adb *)",
       "Bash(emulator *)",
+      "Bash(android *)",
       "mcp__mobile-mcp__mobile_click_on_screen_at_coordinates",
       "mcp__mobile-mcp__mobile_double_tap_on_screen",
       "mcp__mobile-mcp__mobile_get_orientation",

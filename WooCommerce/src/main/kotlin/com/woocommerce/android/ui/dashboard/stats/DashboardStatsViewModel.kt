@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -108,6 +110,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
+    private val _selectedRevenueStatsType = MutableLiveData(
+        RevenueStatsType.fromName(appPrefsWrapper.getDashboardRevenueStatsType())
+    )
+    val selectedRevenueStatsType: LiveData<RevenueStatsType> = _selectedRevenueStatsType
+
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
     init {
@@ -180,6 +187,20 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onChartDateSelected(date: String?) {
         selectedChartDate.value = date
+    }
+
+    fun onRevenueStatsTypeSelected(type: RevenueStatsType) {
+        if (_selectedRevenueStatsType.value == type) return
+
+        _selectedRevenueStatsType.value = type
+        appPrefsWrapper.setDashboardRevenueStatsType(type.name)
+        selectedChartDate.value = null
+        usageTracksEventEmitter.interacted()
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
+        trackEventForStatsCard(
+            AnalyticsEvent.DASHBOARD_STATS_REVENUE_TYPE_SELECTED,
+            mapOf(AnalyticsTracker.KEY_OPTION to type.trackingValue)
+        )
     }
 
     fun onRefresh() {
@@ -344,6 +365,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
         return RevenueStatsUiModel(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
+            grossSales = totals?.grossSales,
+            netSales = totals?.netRevenue,
             totalSales = totals?.totalSales,
             currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
             rangeId = rangeId
@@ -355,7 +378,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
             StatsIntervalUiModel(
                 it.interval,
                 it.subtotals?.ordersCount,
-                it.subtotals?.totalSales
+                it.subtotals?.totalSales,
+                it.subtotals?.grossSales,
+                it.subtotals?.netRevenue
             )
         }
 
@@ -399,16 +424,46 @@ class DashboardStatsViewModel @AssistedInject constructor(
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
         val totalOrdersCount: Int? = null,
+        val grossSales: Double? = null,
+        val netSales: Double? = null,
         val totalSales: Double? = null,
         val currencyCode: String?,
         val rangeId: String
-    )
+    ) {
+        fun salesFor(type: RevenueStatsType): Double? = when (type) {
+            RevenueStatsType.GROSS -> grossSales
+            RevenueStatsType.NET -> netSales
+            RevenueStatsType.TOTAL -> totalSales
+        }
+    }
 
     data class StatsIntervalUiModel(
         val interval: String? = null,
         val ordersCount: Long? = null,
-        val sales: Double? = null
-    )
+        val sales: Double? = null,
+        val grossSales: Double? = null,
+        val netSales: Double? = null
+    ) {
+        fun salesFor(type: RevenueStatsType): Double? = when (type) {
+            RevenueStatsType.GROSS -> grossSales
+            RevenueStatsType.NET -> netSales
+            RevenueStatsType.TOTAL -> sales
+        }
+    }
+
+    enum class RevenueStatsType(@StringRes val labelRes: Int, val trackingValue: String) {
+        GROSS(R.string.dashboard_stats_revenue_type_gross, "gross"),
+        NET(R.string.dashboard_stats_revenue_type_net, "net"),
+        TOTAL(R.string.dashboard_stats_revenue_type_total, "total");
+
+        companion object {
+            val DEFAULT = TOTAL
+            val OPTIONS = listOf(TOTAL, GROSS, NET)
+
+            fun fromName(name: String): RevenueStatsType =
+                entries.find { it.name == name } ?: DEFAULT
+        }
+    }
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()

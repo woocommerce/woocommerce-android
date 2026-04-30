@@ -129,6 +129,10 @@ class OrderRestClient @Inject constructor(
         createdVia: String? = null,
         searchQuery: String? = null,
         decimalPoints: Int? = null,
+        customer: Long? = null,
+        include: List<Long>? = null,
+        after: String? = null,
+        before: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -142,6 +146,10 @@ class OrderRestClient @Inject constructor(
             "created_via" to createdVia,
             "search" to searchQuery,
             "dp" to decimalPoints?.toString(),
+            "customer" to customer?.toString(),
+            "include" to include?.joinToString(","),
+            "after" to after,
+            "before" to before,
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -1288,6 +1296,7 @@ class OrderRestClient @Inject constructor(
         DATE("date"),
         ID("id"),
         INCLUDE("include"),
+        MODIFIED("modified"),
         TITLE("title"),
         SLUG("slug")
     }

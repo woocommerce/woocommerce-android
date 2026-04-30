@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.dashboard.stats
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -62,9 +64,14 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         val prefsChangesFlow = MutableStateFlow(DEFAULT_SELECTION_TYPE.name)
+        val revenueStatsType = MutableStateFlow(DashboardStatsViewModel.RevenueStatsType.TOTAL.name)
         on { observePrefs() } doAnswer { prefsChangesFlow.map { Unit } }
         on { getActiveStoreStatsTab() } doAnswer { prefsChangesFlow.value }
         on { setActiveStatsTab(any()) } doAnswer { prefsChangesFlow.value = it.getArgument(0) }
+        on { getDashboardRevenueStatsType() } doAnswer { revenueStatsType.value }
+        on { setDashboardRevenueStatsType(any()) } doAnswer {
+            revenueStatsType.value = it.getArgument(0)
+        }
     }
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -203,6 +210,97 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 .isInstanceOf(DashboardStatsViewModel.RevenueStatsViewState.Content::class.java)
             val content = viewModel.revenueStatsState.value as DashboardStatsViewModel.RevenueStatsViewState.Content
             Assertions.assertThat(content.statsRangeSelection.selectionType).isEqualTo(ANY_SELECTION_TYPE)
+        }
+
+    @Test
+    fun `given revenue stats with all sales types, when screen starts, then UI model exposes all sales types`() =
+        testBlocking {
+            val revenueStats = WCRevenueStatsModel(
+                localSiteId = LocalId(1),
+                interval = "",
+                startDate = "",
+                endDate = "",
+                data = """
+                    [
+                        {
+                            "interval": "2026-04-27",
+                            "subtotals": {
+                                "orders_count": 3,
+                                "gross_sales": 45.25,
+                                "net_revenue": 30.15,
+                                "total_sales": 50.35
+                            }
+                        }
+                    ]
+                """.trimIndent(),
+                total = """
+                    {
+                        "orders_count": 6,
+                        "gross_sales": 150.25,
+                        "net_revenue": 120.15,
+                        "total_sales": 170.35
+                    }
+                """.trimIndent(),
+                rangeId = "",
+            )
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(revenueStats)))
+            }
+
+            val content = viewModel.revenueStatsState.value as DashboardStatsViewModel.RevenueStatsViewState.Content
+            val uiModel = content.revenueStats!!
+
+            Assertions.assertThat(uiModel.grossSales).isEqualTo(150.25)
+            Assertions.assertThat(uiModel.netSales).isEqualTo(120.15)
+            Assertions.assertThat(uiModel.totalSales).isEqualTo(170.35)
+            Assertions.assertThat(uiModel.intervalList.first().grossSales).isEqualTo(45.25)
+            Assertions.assertThat(uiModel.intervalList.first().netSales).isEqualTo(30.15)
+            Assertions.assertThat(uiModel.intervalList.first().sales).isEqualTo(50.35)
+        }
+
+    @Test
+    fun `when revenue stats type changes, then selected type is updated and tracked`() =
+        testBlocking {
+            setup()
+
+            viewModel.onRevenueStatsTypeSelected(DashboardStatsViewModel.RevenueStatsType.NET)
+
+            Assertions.assertThat(viewModel.selectedRevenueStatsType.value)
+                .isEqualTo(DashboardStatsViewModel.RevenueStatsType.NET)
+            verify(appPrefsWrapper).setDashboardRevenueStatsType(DashboardStatsViewModel.RevenueStatsType.NET.name)
+            verify(usageTracksEventEmitter).interacted(any())
+            verify(parentViewModel).trackCardInteracted("performance")
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_REVENUE_TYPE_SELECTED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_OPTION] == "net" &&
+                        this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
+    fun `given saved revenue stats type, when screen starts, then selected type is restored`() =
+        testBlocking {
+            setup {
+                whenever(appPrefsWrapper.getDashboardRevenueStatsType())
+                    .thenReturn(DashboardStatsViewModel.RevenueStatsType.GROSS.name)
+            }
+
+            Assertions.assertThat(viewModel.selectedRevenueStatsType.value)
+                .isEqualTo(DashboardStatsViewModel.RevenueStatsType.GROSS)
+        }
+
+    @Test
+    fun `given invalid saved revenue stats type, when screen starts, then selected type defaults to total`() =
+        testBlocking {
+            setup {
+                whenever(appPrefsWrapper.getDashboardRevenueStatsType()).thenReturn("UNKNOWN")
+            }
+
+            Assertions.assertThat(viewModel.selectedRevenueStatsType.value)
+                .isEqualTo(DashboardStatsViewModel.RevenueStatsType.TOTAL)
         }
 
     @Test

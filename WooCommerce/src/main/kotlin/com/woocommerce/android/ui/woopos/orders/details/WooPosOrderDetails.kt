@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
@@ -60,6 +59,7 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     showOrderNumber: Boolean = true,
+    foldPrimaryAction: Boolean = false,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
@@ -87,7 +87,7 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            OrderActions(details, onUIEvent)
+            OrderActions(details, onUIEvent, foldPrimaryAction)
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -109,38 +109,26 @@ fun WooPosOrderDetails(
 @Composable
 private fun OrderActions(
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    foldPrimaryAction: Boolean = false,
 ) {
-    when (val actionsState = details.actionsState) {
-        is WooPosOrdersState.OrderActionsState.Loading -> {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .height(40.dp.toAdaptiveComponentSize())
-                    .width(WooPosComponentSize.XLarge.value)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            )
-        }
+    val actions = details.actionsState.actions
+    val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
+    val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
 
-        is WooPosOrdersState.OrderActionsState.Loaded -> {
-            val actions = actionsState.actions
-            val primaryAction = actions.firstOrNull()
-            val overflowActions = actions.drop(1)
-
-            WooPosOverflowMenu(
-                primaryAction = primaryAction?.let { action ->
-                    WooPosOverflowPrimaryAction(
-                        label = orderActionLabel(action),
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
-                    )
-                },
-                items = overflowActions.map { action ->
-                    orderActionToMenuItem(action) {
-                        onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
-                    }
-                }
+    WooPosOverflowMenu(
+        primaryAction = primaryAction?.let { action ->
+            WooPosOverflowPrimaryAction(
+                label = orderActionLabel(action),
+                onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
             )
+        },
+        items = overflowActions.map { action ->
+            orderActionToMenuItem(action) {
+                onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
+            }
         }
-    }
+    )
 }
 
 @Composable
@@ -760,7 +748,7 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+        actionsState = WooPosOrdersState.OrderActionsState(
             listOf(
                 WooPosOrdersState.OrderAction.IssueRefund(1L),
                 WooPosOrdersState.OrderAction.EmailReceipt(1L)

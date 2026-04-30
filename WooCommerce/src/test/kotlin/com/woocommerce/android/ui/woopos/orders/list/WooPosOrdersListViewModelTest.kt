@@ -274,7 +274,7 @@ class WooPosOrdersListViewModelTest {
         )
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onOrderSelected(200L)
+        viewModel.onOrderSelected(200L, WooPosScreenType.DualPane)
         advanceUntilIdle()
 
         whenever(dataSource.loadOrders()).thenReturn(
@@ -305,7 +305,7 @@ class WooPosOrdersListViewModelTest {
 
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onOrderSelected(3L)
+        viewModel.onOrderSelected(3L, WooPosScreenType.DualPane)
         advanceUntilIdle()
 
         val content = viewModel.state.value as WooPosOrdersListState.Content
@@ -327,7 +327,7 @@ class WooPosOrdersListViewModelTest {
         advanceUntilIdle()
 
         val stateBefore = viewModel.state.value
-        viewModel.onOrderSelected(1L)
+        viewModel.onOrderSelected(1L, WooPosScreenType.DualPane)
         advanceUntilIdle()
 
         assertThat(viewModel.state.value).isSameAs(stateBefore)
@@ -444,7 +444,7 @@ class WooPosOrdersListViewModelTest {
         )
         viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onOrderSelected(1L)
+        viewModel.onOrderSelected(1L, WooPosScreenType.DualPane)
         advanceUntilIdle()
         assertThat(coordinator.selectedOrderId.value).isEqualTo(1L)
 
@@ -617,7 +617,7 @@ class WooPosOrdersListViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onOrderSelected(2L)
+        viewModel.onOrderSelected(2L, WooPosScreenType.DualPane)
         advanceUntilIdle()
 
         verify(ordersAnalyticsTracker).trackOrdersListRowTapped(
