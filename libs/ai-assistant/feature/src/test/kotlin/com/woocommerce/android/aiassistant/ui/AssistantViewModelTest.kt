@@ -293,6 +293,33 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
+    }
+
+    @Test
+    fun `when runtime finishes with cancelled error, then state exposes cancelled ui error`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Hello"),
+                    AssistantMessage.Assistant("Partial"),
+                ),
+                retryAvailable = false,
+                error = AssistantError.Cancelled,
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
 

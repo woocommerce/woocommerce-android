@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.runtime
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -57,6 +58,37 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.MAX_ITERATIONS,
                 updatedHistory = updatedHistory,
+            )
+        )
+    }
+
+    @Test
+    fun `when loop fails with cancelled before stopped finish, then runtime finish includes cancelled error`() = runTest {
+        val updatedHistory = listOf(
+            AssistantMessage.User("Hello"),
+            AssistantMessage.Assistant("Partial"),
+        )
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.Failed(AssistantError.Cancelled),
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.STOPPED,
+                        updatedHistory = updatedHistory,
+                        retryAvailable = false,
+                    )
+                )
+            ),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = updatedHistory,
+                retryAvailable = false,
+                error = AssistantError.Cancelled,
             )
         )
     }

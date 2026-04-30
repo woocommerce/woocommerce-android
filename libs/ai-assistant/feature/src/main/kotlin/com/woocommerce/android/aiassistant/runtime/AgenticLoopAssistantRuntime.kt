@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.runtime
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
@@ -45,6 +46,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             siteId = request.siteId,
             catalogSnapshot = toolCatalogSelector.select(request.toolScope, toolRegistry.descriptors()),
         )
+        var pendingError: AssistantError? = null
 
         agenticLoop.runTurn(
             conversationId = request.conversationId,
@@ -59,16 +61,19 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.ConfirmationRequested -> emit(
                     AssistantRuntimeEvent.AwaitingConfirmation(event.request.toPendingConfirmation())
                 )
-                is LoopEvent.Finished -> emit(
-                    AssistantRuntimeEvent.Finished(
-                        outcome = event.outcome,
-                        updatedHistory = event.updatedHistory,
-                        retryAvailable = event.retryAvailable,
-                        error = event.error,
+                is LoopEvent.Finished -> {
+                    emit(
+                        AssistantRuntimeEvent.Finished(
+                            outcome = event.outcome,
+                            updatedHistory = event.updatedHistory,
+                            retryAvailable = event.retryAvailable,
+                            error = event.error ?: pendingError,
+                        )
                     )
-                )
+                    pendingError = null
+                }
+                is LoopEvent.Failed -> pendingError = event.error
                 is LoopEvent.ConfirmationResolved,
-                is LoopEvent.Failed,
                 is LoopEvent.ToolCallFinished,
                 is LoopEvent.ToolCallStarted -> Unit
             }

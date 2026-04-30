@@ -181,7 +181,7 @@ class AssistantViewModel @AssistedInject constructor(
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
-                        status = event.outcome.toAssistantUiStatus(),
+                        status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
                         canRetry = event.outcome == LoopOutcome.FAILED && event.retryAvailable,
                         pendingConfirmation = null,
@@ -229,12 +229,18 @@ class AssistantViewModel @AssistedInject constructor(
         LoopOutcome.MAX_ITERATIONS -> AssistantUiStatus.ERROR
     }
 
-    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? = when (outcome) {
-        LoopOutcome.COMPLETED,
-        LoopOutcome.STOPPED -> null
-        LoopOutcome.FAILED -> error?.toAssistantUiError() ?: AssistantUiError.UNKNOWN
-        LoopOutcome.MAX_ITERATIONS -> error?.toAssistantUiError() ?: AssistantUiError.MAX_ITERATIONS
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiStatus(): AssistantUiStatus = when {
+        error == AssistantError.Cancelled -> AssistantUiStatus.ERROR
+        else -> outcome.toAssistantUiStatus()
     }
+
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? =
+        error?.toAssistantUiError() ?: when (outcome) {
+            LoopOutcome.COMPLETED,
+            LoopOutcome.STOPPED -> null
+            LoopOutcome.FAILED -> AssistantUiError.UNKNOWN
+            LoopOutcome.MAX_ITERATIONS -> AssistantUiError.MAX_ITERATIONS
+        }
 
     @AssistedFactory
     interface Factory {
