@@ -4,10 +4,12 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -138,6 +140,96 @@ class WooPosSettingsViewModelTest {
         advanceUntilIdle()
         assertThat((viewModel.state.value.dialogState as WooPosSettingsDialogState.SyncErrorDialog).errorMessage)
             .isEqualTo("Error 2")
+    }
+
+    @Test
+    fun `when category selected, then selectedCategory and currentDestination update to category root`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+
+        // THEN
+        assertThat(viewModel.state.value.selectedCategory).isEqualTo(WooPosSettingsCategory.HARDWARE)
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
+        assertThat(viewModel.state.value.canGoBack).isFalse()
+    }
+
+    @Test
+    fun `given hardware overview, when navigate to barcode scanners, then canGoBack is true`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+
+        // WHEN
+        viewModel.navigateToDetail(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
+
+        // THEN
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
+        assertThat(viewModel.state.value.canGoBack).isTrue()
+    }
+
+    @Test
+    fun `given barcode scanners, when navigateBack, then return to hardware overview`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+        viewModel.navigateToDetail(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
+
+        // WHEN
+        viewModel.navigateBack()
+
+        // THEN
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
+        assertThat(viewModel.state.value.canGoBack).isFalse()
+    }
+
+    @Test
+    fun `given category root destination, when navigateBack, then state is unchanged`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+        val stateBefore = viewModel.state.value
+
+        // WHEN
+        viewModel.navigateBack()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(stateBefore)
+    }
+
+    @Test
+    fun `given multiple forward navigations, when navigateBack repeatedly, then return to root then no-op`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+        viewModel.navigateToDetail(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
+        viewModel.navigateToDetail(WooPosSettingsDetailDestination.Hardware.CardReaders)
+
+        // WHEN — first back: child -> parent
+        viewModel.navigateBack()
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
+        assertThat(viewModel.state.value.canGoBack).isFalse()
+
+        // WHEN — second back at the root is a no-op (UI hides detail; VM state unchanged)
+        viewModel.navigateBack()
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
     }
 
     private fun createViewModel(): WooPosSettingsViewModel {
