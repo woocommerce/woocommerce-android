@@ -9,6 +9,8 @@ import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.RetryPolicy
 import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
@@ -36,8 +38,16 @@ internal object AiAssistantModule {
         toolRegistry: ToolRegistry,
         retryPolicy: RetryPolicy,
         historyBudgeter: HistoryBudgeter,
+        safetyOrchestrator: SafetyOrchestrator,
         @AiAssistantJson json: Json,
-    ): AgenticLoop = AgenticLoopImpl(chatService, toolRegistry, retryPolicy, historyBudgeter, json)
+    ): AgenticLoop = AgenticLoopImpl(
+        chatService,
+        toolRegistry,
+        retryPolicy,
+        historyBudgeter,
+        safetyOrchestrator,
+        json,
+    )
 
     @Provides
     @Singleton
@@ -50,4 +60,8 @@ internal object AiAssistantModule {
     @Provides
     @Singleton
     fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+
+    @Provides
+    @Singleton
+    fun provideSafetyOrchestrator(): SafetyOrchestrator = SafetyOrchestratorImpl()
 }
