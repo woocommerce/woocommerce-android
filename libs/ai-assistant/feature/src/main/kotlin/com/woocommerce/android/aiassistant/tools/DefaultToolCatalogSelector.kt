@@ -40,6 +40,7 @@ class DefaultToolCatalogSelector : ToolCatalogSelector {
             "products_update",
             "products_bulk_update",
             "product_variations_list",
+            "product_variations_update",
             "analytics_revenue",
             "show_cards",
         )

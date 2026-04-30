@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
@@ -43,6 +44,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -51,8 +53,10 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.util.Date
@@ -65,6 +69,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
+    private val statsRepository: StatsRepository,
     private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedRangeForDashboardStats,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -115,6 +120,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
     )
     val selectedRevenueStatsType: LiveData<RevenueStatsType> = _selectedRevenueStatsType
 
+    private val _orderDateTypeState = MutableStateFlow(OrderDateTypeUiState())
+    val orderDateTypeState = _orderDateTypeState.asStateFlow()
+
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
     init {
@@ -127,6 +135,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 loadStoreStats(selectedRange, isForceRefresh)
             }
         }
+        fetchOrderDateType()
         trackLocalTimezoneDifferenceFromStore()
     }
 
@@ -203,6 +212,65 @@ class DashboardStatsViewModel @AssistedInject constructor(
         )
     }
 
+    fun onOrderDateTypeSelectorTapped() {
+        _orderDateTypeState.update { it.copy(hasUpdateError = false) }
+        usageTracksEventEmitter.interacted()
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
+        trackEventForStatsCard(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTOR_TAPPED)
+    }
+
+    fun onOrderDateTypeSelected(orderDateType: WCAnalyticsOrderDateType, onSuccess: () -> Unit) {
+        if (_orderDateTypeState.value.selectedType == orderDateType) {
+            onSuccess()
+            return
+        }
+
+        launch {
+            _orderDateTypeState.update {
+                it.copy(
+                    updatingType = orderDateType,
+                    hasUpdateError = false
+                )
+            }
+
+            statsRepository.updateAnalyticsOrderDateType(orderDateType)
+                .onSuccess { updatedType ->
+                    _orderDateTypeState.update {
+                        it.copy(
+                            selectedType = updatedType,
+                            updatingType = null,
+                            hasUpdateError = false
+                        )
+                    }
+                    selectedChartDate.value = null
+                    usageTracksEventEmitter.interacted()
+                    parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
+                    trackEventForStatsCard(
+                        AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED,
+                        mapOf(AnalyticsTracker.KEY_OPTION to updatedType.value)
+                    )
+                    refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+                    onSuccess()
+                }
+                .onFailure { error ->
+                    _orderDateTypeState.update {
+                        it.copy(
+                            updatingType = null,
+                            hasUpdateError = true
+                        )
+                    }
+                    trackEventForStatsCard(
+                        AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_UPDATE_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_OPTION to orderDateType.value,
+                            AnalyticsTracker.KEY_ERROR_TYPE to error::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_DESC to (error.message ?: "")
+                        )
+                    )
+                }
+        }
+    }
+
     fun onRefresh() {
         trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
@@ -216,7 +284,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         }
 
         trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
-        getStats(forceRefresh, selectedRange)
+        getStats(forceRefresh, selectedRange, _orderDateTypeState.value.selectedType)
             .collect {
                 when (it) {
                     is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
@@ -274,6 +342,30 @@ class DashboardStatsViewModel @AssistedInject constructor(
             }
 
         observeLastUpdate(selectedRange)
+    }
+
+    private fun fetchOrderDateType() {
+        launch {
+            _orderDateTypeState.update { it.copy(isLoading = true, hasUpdateError = false) }
+            statsRepository.fetchAnalyticsOrderDateType()
+                .onSuccess { orderDateType ->
+                    val previousType = _orderDateTypeState.value.selectedType
+                    _orderDateTypeState.update {
+                        it.copy(
+                            selectedType = orderDateType,
+                            isLoading = false,
+                            hasUpdateError = false
+                        )
+                    }
+                    if (previousType != orderDateType) {
+                        selectedChartDate.value = null
+                        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+                    }
+                }
+                .onFailure {
+                    _orderDateTypeState.update { it.copy(isLoading = false) }
+                }
+        }
     }
 
     private fun observeLastUpdate(selectedRange: StatsTimeRangeSelection) {
@@ -419,6 +511,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
         val customRange: StatsTimeRange?,
         val rangeFormatted: String,
         val selectedDateFormatted: String?
+    )
+
+    data class OrderDateTypeUiState(
+        val selectedType: WCAnalyticsOrderDateType = WCAnalyticsOrderDateType.PAID,
+        val isLoading: Boolean = false,
+        val updatingType: WCAnalyticsOrderDateType? = null,
+        val hasUpdateError: Boolean = false
     )
 
     data class RevenueStatsUiModel(

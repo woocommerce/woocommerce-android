@@ -38,6 +38,8 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVariationsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -50,6 +52,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateVariationsPayload
+import org.wordpress.android.fluxc.store.WCProductStore.FetchProductVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductReviewPayload
 import org.wordpress.android.fluxc.store.WCProductStore.IncludeType
@@ -371,6 +374,106 @@ class WCProductStoreTest {
 
         // then
         assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations + variation)
+    }
+
+    @Test
+    fun `when product variations are fetched, then fetched page is returned and saved`() = runTest {
+        val site = SiteModel().apply { id = 42 }
+        val productId = 100L
+        val staleVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+        val fetchedVariations = ProductTestUtils.generateSampleVariations(2, productId, site.id)
+        productsVariationsDao.upsertProductVariation(staleVariation)
+        whenever(
+            productRestClient.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 2,
+                offset = 0
+            )
+        ).thenReturn(WooPayload(fetchedVariations))
+
+        val result = productStore.fetchProductVariations(
+            FetchProductVariationsPayload(
+                site = site,
+                remoteProductId = productId,
+                pageSize = 2,
+                offset = 0
+            )
+        )
+
+        assertThat(result.isError).isFalse
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).canLoadMore).isTrue
+        assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+            .containsExactlyInAnyOrderElementsOf(fetchedVariations)
+    }
+
+    @Test
+    fun `given cached variations, when product variations page is fetched, then only fetched page is returned`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+            val fetchedVariations = listOf(
+                ProductTestUtils.generateSampleVariation(productId, 2L, site.id),
+                ProductTestUtils.generateSampleVariation(productId, 3L, site.id)
+            )
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 2
+                )
+            ).thenReturn(WooPayload(fetchedVariations))
+
+            val result = productStore.fetchProductVariations(
+                FetchProductVariationsPayload(
+                    site = site,
+                    remoteProductId = productId,
+                    pageSize = 2,
+                    offset = 2
+                )
+            )
+
+            assertThat(result.isError).isFalse
+            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+            assertThat(requireNotNull(result.model).canLoadMore).isTrue
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + fetchedVariations)
+        }
+
+    @Test
+    fun `when product variations sync fetch succeeds, then page and more flag are returned`() = runTest {
+        val site = SiteModel().apply { id = 42 }
+        val productId = 100L
+        val fetchedVariations = ProductTestUtils.generateSampleVariations(1, productId, site.id)
+        whenever(
+            productRestClient.fetchProductVariationsWithSyncRequest(
+                site = any(),
+                productId = any(),
+                pageSize = any(),
+                offset = any(),
+                includedVariationIds = any(),
+                searchQuery = anyOrNull(),
+                excludedVariationIds = any(),
+                filterOptions = anyOrNull(),
+                orderCurrency = anyOrNull(),
+                posProductsOnly = any()
+            )
+        ).thenReturn(WooPayload(fetchedVariations))
+
+        val result = productStore.fetchProductVariations(
+            site = site,
+            productId = productId,
+            offset = 25,
+            pageSize = 25
+        )
+
+        assertThat(result.isError).isFalse
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).canLoadMore).isFalse
     }
 
     @Test
@@ -759,6 +862,99 @@ class WCProductStoreTest {
             argumentCaptor.allValues.first().onEach { (existing, updated) ->
                 assertThat(existing.remoteProductId).isEqualTo(updated.remoteProductId)
             }
+        }
+
+    @Test
+    fun `when direct product bulk update returns mixed response, then updated and failed products are returned`(): Unit =
+        runTest {
+            // given
+            val site = SiteModel().apply { id = 1 }
+            val updateRequests = mapOf(
+                42L to WCProductStore.UpdateProductRequest(name = "Updated"),
+                43L to WCProductStore.UpdateProductRequest(name = "Updated"),
+            )
+            val argumentCaptor = argumentCaptor<Map<Long, WCProductStore.UpdateProductRequest>>()
+            whenever(
+                productRestClient.batchUpdateProductsPatch(
+                    eq(site),
+                    argumentCaptor.capture()
+                )
+            ).thenReturn(
+                WooPayload(
+                    BatchProductUpdateResult(
+                        update = listOf(
+                            BatchProductUpdateResult.ProductResponse.Success(
+                                ProductWithMetaData(
+                                    ProductTestUtils.generateSampleProduct(42).copy(
+                                        localSiteId = LocalId(site.id),
+                                        remoteId = RemoteId(42),
+                                        name = "Updated",
+                                    )
+                                )
+                            ),
+                            BatchProductUpdateResult.ProductResponse.Error(
+                                id = 43L,
+                                error = BatchProductUpdateApiResponse.ErrorResponse(
+                                    code = "woocommerce_rest_product_invalid_id",
+                                    message = "Invalid ID.",
+                                    data = BatchProductUpdateApiResponse.ErrorData(status = 400)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            // when
+            val result = productStore.batchUpdateProducts(site, updateRequests)
+
+            // then
+            assertThat(result.isError).isFalse()
+            assertThat(requireNotNull(result.model).updatedProducts).containsExactly(42L)
+            assertThat(requireNotNull(result.model).failedProducts).hasSize(1)
+            with(requireNotNull(result.model).failedProducts.single()) {
+                assertThat(id).isEqualTo(43L)
+                assertThat(errorCode).isEqualTo("woocommerce_rest_product_invalid_id")
+                assertThat(errorMessage).isEqualTo("Invalid ID.")
+                assertThat(errorStatus).isEqualTo(400)
+            }
+            assertThat(argumentCaptor.firstValue).isEqualTo(updateRequests)
+        }
+
+    @Test
+    fun `when direct product bulk update succeeds, then updated products are saved to database`(): Unit =
+        runTest {
+            // given
+            val site = SiteModel().apply { id = 1 }
+            val product = ProductTestUtils.generateSampleProduct(42).copy(
+                localSiteId = LocalId(site.id),
+                remoteId = RemoteId(42),
+                name = "Updated",
+            )
+            whenever(
+                productRestClient.batchUpdateProductsPatch(
+                    eq(site),
+                    any()
+                )
+            ).thenReturn(
+                WooPayload(
+                    BatchProductUpdateResult(
+                        update = listOf(
+                            BatchProductUpdateResult.ProductResponse.Success(ProductWithMetaData(product))
+                        )
+                    )
+                )
+            )
+
+            // when
+            val result = productStore.batchUpdateProducts(
+                site,
+                mapOf(42L to WCProductStore.UpdateProductRequest(name = "Updated"))
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            assertThat(productsDao.getProduct(site.id, 42L)?.name).isEqualTo("Updated")
         }
 
     @Test

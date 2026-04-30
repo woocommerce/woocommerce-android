@@ -48,6 +48,7 @@
 /reports/customers
 
 /reports/orders/totals/
+/reports/orders/stats/
 /reports/products/totals/
 /reports/revenue/stats/
 

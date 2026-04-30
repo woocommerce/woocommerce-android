@@ -375,6 +375,7 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             ).thenReturn(
@@ -398,6 +399,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
             val siteDate = dateArgument.firstValue
@@ -417,6 +419,7 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             ).thenReturn(
@@ -440,6 +443,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
             val siteDate = dateArgument.firstValue
@@ -467,6 +471,7 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             ).thenReturn(
@@ -489,6 +494,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
             val siteDate = dateArgument.firstValue
@@ -508,6 +514,7 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             ).thenReturn(
@@ -530,6 +537,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
             val siteDate = dateArgument.firstValue
@@ -564,6 +572,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(
@@ -619,6 +628,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(currentWeekPayload)
@@ -668,6 +678,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(currentMonthPayload)
@@ -717,6 +728,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(allSiteCurrentDayPayload)
@@ -759,6 +771,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(nonExistentPayload)
@@ -800,6 +813,7 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
+                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(nonExistentPayload)

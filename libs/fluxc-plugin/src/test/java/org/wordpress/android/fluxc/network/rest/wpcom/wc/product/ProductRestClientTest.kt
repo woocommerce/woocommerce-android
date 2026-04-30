@@ -110,6 +110,70 @@ class ProductRestClientTest {
     }
 
     @Test
+    fun `when direct product batch patch is requested, then requested patch is sent for every id`() = runTest {
+        // given
+        val bodyCaptor = argumentCaptor<Map<String, Any>> { }
+        whenever(
+            wooNetwork.executePostGsonRequest(
+                any(), any(), eq(BatchProductUpdateApiResponse::class.java), any()
+            )
+        ) doReturn WPAPIResponse.Success(BatchProductUpdateApiResponse(emptyList()), emptyList())
+
+        // when
+        sut.batchUpdateProductsPatch(
+            site = site,
+            updateRequests = mapOf(
+                42L to WCProductStore.UpdateProductRequest(
+                    name = "Updated",
+                    regularPrice = "12.50",
+                    salePrice = "10.00",
+                    stockQuantity = 5,
+                    status = "publish",
+                ),
+                43L to WCProductStore.UpdateProductRequest(
+                    name = "Updated",
+                    regularPrice = "12.50",
+                    salePrice = "10.00",
+                    stockQuantity = 5,
+                    status = "publish",
+                ),
+            )
+        )
+
+        // then
+        verify(wooNetwork).executePostGsonRequest(
+            site = eq(site),
+            path = eq(WOOCOMMERCE.products.batch.pathV3),
+            clazz = eq(BatchProductUpdateApiResponse::class.java),
+            body = bodyCaptor.capture()
+        )
+        assertThat(bodyCaptor.firstValue).isEqualTo(
+            mapOf(
+                "update" to listOf(
+                    mapOf(
+                        "id" to 42L,
+                        "name" to "Updated",
+                        "regular_price" to "12.50",
+                        "sale_price" to "10.00",
+                        "stock_quantity" to 5,
+                        "manage_stock" to true,
+                        "status" to "publish",
+                    ),
+                    mapOf(
+                        "id" to 43L,
+                        "name" to "Updated",
+                        "regular_price" to "12.50",
+                        "sale_price" to "10.00",
+                        "stock_quantity" to 5,
+                        "manage_stock" to true,
+                        "status" to "publish",
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
     fun `when fetch products called with exact sku search, then correct params is used for network call`() {
         runTest {
             whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))

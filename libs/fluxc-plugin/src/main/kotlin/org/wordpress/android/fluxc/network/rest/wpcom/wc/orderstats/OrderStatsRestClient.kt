@@ -65,6 +65,7 @@ class OrderStatsRestClient @Inject constructor(
      * @param[perPage] the number of items to return in a paginated response
      * @param[forceRefresh] a boolean value indicating whether we should avoid cached data
      * @param[revenueRangeId] a unique id for this request. We will use this id to save the response in the local db.
+     * @param[currency] the currency to use when fetching revenue stats.
      * @param[orderDateType] the order date field to use when grouping revenue stats.
      *
      * Possible non-generic errors:
@@ -79,6 +80,7 @@ class OrderStatsRestClient @Inject constructor(
         perPage: Int,
         forceRefresh: Boolean = false,
         revenueRangeId: String,
+        currency: String? = null,
         orderDateType: WCAnalyticsOrderDateType? = null,
     ): FetchRevenueStatsResponsePayload {
         val url = WOOCOMMERCE.reports.revenue.stats.pathV4Analytics
@@ -89,6 +91,8 @@ class OrderStatsRestClient @Inject constructor(
             put("per_page", perPage.toString())
             put("order", "asc")
             put("force_cache_refresh", forceRefresh.toString())
+            put("_fields", "totals,intervals")
+            currency?.let { put("currency", it) }
             orderDateType?.let { put("date_type", it.value) }
         }
 
@@ -112,6 +116,71 @@ class OrderStatsRestClient @Inject constructor(
                         startDate = startDate,
                         endDate = endDate,
                         rangeId = revenueRangeId,
+                    )
+
+                    FetchRevenueStatsResponsePayload(site, granularity, model)
+                } ?: FetchRevenueStatsResponsePayload(
+                    OrderStatsError(
+                        type = OrderStatsErrorType.GENERIC_ERROR,
+                        message = "Success response with empty data"
+                    ),
+                    site,
+                    granularity
+                )
+            }
+
+            is WPAPIResponse.Error -> {
+                val orderError = response.error.toOrderError()
+                FetchRevenueStatsResponsePayload(orderError, site, granularity)
+            }
+        }
+    }
+
+    /**
+     * Makes a GET call to `/wc-analytics/reports/orders/stats`, retrieving order analytics for the given
+     * WooCommerce [SiteModel].
+     */
+    @Suppress("LongParameterList")
+    suspend fun fetchOrdersStats(
+        site: SiteModel,
+        granularity: StatsGranularity,
+        startDate: String,
+        endDate: String,
+        perPage: Int,
+        forceRefresh: Boolean = false,
+        orderStatsRangeId: String,
+    ): FetchRevenueStatsResponsePayload {
+        val url = WOOCOMMERCE.reports.orders.stats.pathV4Analytics
+        val params = mapOf(
+            "interval" to OrderStatsApiUnit.fromStatsGranularity(granularity).toString(),
+            "after" to startDate,
+            "before" to endDate,
+            "per_page" to perPage.toString(),
+            "order" to "asc",
+            "force_cache_refresh" to forceRefresh.toString(),
+            "_fields" to "totals,intervals",
+        )
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = params,
+            clazz = RevenueStatsApiResponse::class.java,
+            enableCaching = true,
+            forced = forceRefresh
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                response.data?.let {
+                    val model = WCRevenueStatsModel(
+                        localSiteId = site.localId(),
+                        interval = granularity.toString(),
+                        data = it.intervals.toString(),
+                        total = it.totals.toString(),
+                        startDate = startDate,
+                        endDate = endDate,
+                        rangeId = orderStatsRangeId,
                     )
 
                     FetchRevenueStatsResponsePayload(site, granularity, model)

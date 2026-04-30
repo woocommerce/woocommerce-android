@@ -2,6 +2,9 @@ package com.woocommerce.android.aiassistant.tools.orders
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.flow.last
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -15,6 +18,17 @@ internal class AIOrdersDataSource @Inject constructor(
     data class OrdersPage(
         val orders: List<OrderEntity>,
         val canLoadMore: Boolean,
+    )
+
+    data class OrderPatch(
+        val status: String? = null,
+        val customerNote: String? = null,
+        val billingEmail: String? = null,
+    )
+
+    data class BulkUpdateResult(
+        val updatedIds: List<Long>,
+        val failedOrders: List<WCOrderStore.UpdateOrdersStatusResult.FailedOrder>,
     )
 
     suspend fun fetchOrders(
@@ -66,6 +80,41 @@ internal class AIOrdersDataSource @Inject constructor(
             Result.failure(OnChangedException(result.error))
         } else {
             Result.success(requireNotNull(result.model))
+        }
+    }
+
+    suspend fun updateOrderStatus(orderId: Long, newStatus: String): Result<Unit> = runCatching {
+        val site = selectedSite.get()
+        val statusModel = WCOrderStatusModel(statusKey = newStatus)
+        // last() handles two cases: only OptimisticUpdateResult (order not in Room, carries error)
+        // or both Optimistic + RemoteUpdateResult (normal path, remote result governs).
+        val lastResult = orderStore.updateOrderStatus(orderId, site, statusModel).last()
+        if (lastResult.event.isError) {
+            throw OnChangedException(requireNotNull(lastResult.event.error))
+        }
+    }
+
+    suspend fun bulkUpdateOrders(orderIds: List<Long>, patch: OrderPatch): Result<BulkUpdateResult> {
+        val site = selectedSite.get()
+        val requests = orderIds.associateWith {
+            UpdateOrderRequest(
+                status = patch.status?.let { status -> WCOrderStatusModel(statusKey = status) },
+                customerNote = patch.customerNote,
+                billingEmail = patch.billingEmail,
+                decimalPlaces = null,
+            )
+        }
+        val result = orderStore.batchUpdateOrders(site, requests)
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            val model = requireNotNull(result.model)
+            Result.success(
+                BulkUpdateResult(
+                    updatedIds = model.updatedOrders,
+                    failedOrders = model.failedOrders,
+                )
+            )
         }
     }
 

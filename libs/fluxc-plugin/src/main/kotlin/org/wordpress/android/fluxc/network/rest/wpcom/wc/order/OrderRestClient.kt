@@ -1080,9 +1080,20 @@ class OrderRestClient @Inject constructor(
         site: SiteModel,
         orderIds: List<Long>,
         newStatus: String
+    ): BulkUpdateOrderStatusResponsePayload =
+        batchUpdateOrders(
+            site = site,
+            updateRequests = orderIds.associateWith {
+                UpdateOrderRequest(status = WCOrderStatusModel(statusKey = newStatus), decimalPlaces = null)
+            }
+        )
+
+    suspend fun batchUpdateOrders(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateOrderRequest>
     ): BulkUpdateOrderStatusResponsePayload {
         // Check batch update limit
-        if (orderIds.size > BATCH_UPDATE_LIMIT) {
+        if (updateRequests.size > BATCH_UPDATE_LIMIT) {
             return BulkUpdateOrderStatusResponsePayload(
                 error = OrderError(
                     type = OrderErrorType.BULK_UPDATE_LIMIT_EXCEEDED,
@@ -1092,18 +1103,15 @@ class OrderRestClient @Inject constructor(
         }
 
         val url = WOOCOMMERCE.orders.batch.pathV3
-        val updateRequests = orderIds.map { orderId ->
-            mapOf(
-                "id" to orderId,
-                "status" to newStatus
-            )
+        val updates = updateRequests.map { (orderId, request) ->
+            request.toNetworkRequest() + ("id" to orderId)
         }
 
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
             clazz = BatchOrderApiResponse::class.java,
-            body = mapOf("update" to updateRequests)
+            body = mapOf("update" to updates)
         )
 
         return when (response) {
@@ -1130,6 +1138,7 @@ class OrderRestClient @Inject constructor(
             lineItems?.let { put("line_items", it) }
             shippingAddress?.toDto()?.let { put("shipping", it) }
             billingAddress?.toDto()?.let { put("billing", it) }
+            billingEmail?.let { put("billing", mapOf("email" to it)) }
             feeLines?.let { put("fee_lines", it) }
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }

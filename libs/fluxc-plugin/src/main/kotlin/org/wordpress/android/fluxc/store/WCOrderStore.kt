@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -1124,34 +1125,45 @@ class WCOrderStore @Inject internal constructor(
         newStatus: WCOrderStatusModel
     ): WooResult<UpdateOrdersStatusResult> {
         val result = wcOrderRestClient.batchUpdateOrdersStatus(site, orderIds, newStatus.statusKey)
+        return result.toUpdateOrdersStatusResult()
+    }
 
-        return if (!result.isError) {
-            val orders = result.response
-            val updatedOrders = mutableListOf<Long>()
-            val failedOrders = mutableListOf<FailedOrder>()
+    @Suppress("NestedBlockDepth")
+    suspend fun batchUpdateOrders(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateOrderRequest>
+    ): WooResult<UpdateOrdersStatusResult> {
+        val result = wcOrderRestClient.batchUpdateOrders(site, updateRequests)
+        return result.toUpdateOrdersStatusResult()
+    }
 
-            orders.forEach { response ->
-                when (response) {
-                    is BatchOrderApiResponse.OrderResponse.Success -> {
-                        response.order.id?.let { updatedOrders.add(it) }
-                    }
+    private fun BulkUpdateOrderStatusResponsePayload.toUpdateOrdersStatusResult(): WooResult<UpdateOrdersStatusResult> {
+        if (isError) {
+            return WooResult(WooError(API_ERROR, SERVER_ERROR, error.message))
+        }
 
-                    is BatchOrderApiResponse.OrderResponse.Error -> {
-                        failedOrders.add(
-                            FailedOrder(
-                                id = response.id,
-                                errorCode = response.error.code,
-                                errorMessage = response.error.message,
-                                errorStatus = response.error.data.status
-                            )
+        val updatedOrders = mutableListOf<Long>()
+        val failedOrders = mutableListOf<FailedOrder>()
+
+        response.forEach { orderResponse ->
+            when (orderResponse) {
+                is BatchOrderApiResponse.OrderResponse.Success -> {
+                    orderResponse.order.id?.let { updatedOrders.add(it) }
+                }
+
+                is BatchOrderApiResponse.OrderResponse.Error -> {
+                    failedOrders.add(
+                        FailedOrder(
+                            id = orderResponse.id,
+                            errorCode = orderResponse.error.code,
+                            errorMessage = orderResponse.error.message,
+                            errorStatus = orderResponse.error.data.status
                         )
-                    }
+                    )
                 }
             }
-
-            WooResult(UpdateOrdersStatusResult(updatedOrders, failedOrders))
-        } else {
-            WooResult(WooError(API_ERROR, SERVER_ERROR, result.error.message))
         }
+
+        return WooResult(UpdateOrdersStatusResult(updatedOrders, failedOrders))
     }
 }
