@@ -12,6 +12,7 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Locale
 import javax.inject.Inject
 
 class WooPosTabShouldBeVisible @Inject constructor(
@@ -76,5 +77,5 @@ class WooPosTabShouldBeVisible @Inject constructor(
     }
 
     private suspend fun isCountrySupported(countryCode: String): Boolean =
-        supportedCountries.supportedCountries().contains(countryCode.lowercase())
+        supportedCountries.supportedCountries().contains(countryCode.lowercase(Locale.ROOT))
 }

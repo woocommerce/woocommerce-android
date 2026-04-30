@@ -5,6 +5,7 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import java.util.Locale
 import javax.inject.Inject
 
 class CardReaderCountryConfigProvider @Inject constructor(
@@ -15,7 +16,7 @@ class CardReaderCountryConfigProvider @Inject constructor(
         val raw = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         if (raw is CardReaderConfigForUnsupportedCountry) return raw
 
-        val normalised = countryCode?.uppercase()
+        val normalised = countryCode?.uppercase(Locale.ROOT)
         return when (normalised) {
             in PRIMARY_EXPANSION_COUNTRIES ->
                 if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)) {
