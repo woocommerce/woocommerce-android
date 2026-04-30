@@ -2284,6 +2284,7 @@
     <string name="settings_notifs_new_orders_all_description">Ping for every order, regardless of value.</string>
     <string name="settings_notifs_new_orders_high_value_title">Only high-value orders</string>
     <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your threshold.</string>
+    <string name="settings_notifs_new_orders_threshold">Threshold (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_new_reviews">New reviews</string>

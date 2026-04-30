@@ -7,8 +7,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -18,15 +16,10 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val currencyParameters = parameterRepository.getParameters()
-    private val currencyFormattingParameters = currencyParameters.currencyFormattingParameters
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            currencySymbol = currencyParameters.currencySymbol.orEmpty(),
-            currencyPosition = currencyFormattingParameters?.currencyPosition ?: LEFT,
-            currencyDecimalSeparator = currencyFormattingParameters?.currencyDecimalSeparator ?: ".",
-            currencyThousandSeparator = currencyFormattingParameters?.currencyThousandSeparator ?: ",",
-            currencyDecimalNumber = currencyFormattingParameters?.currencyDecimalNumber ?: DEFAULT_DECIMAL_NUMBER
+            currencySymbol = currencyParameters.currencySymbol.orEmpty()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -42,11 +35,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     data class ViewState(
         val notificationsEnabled: Boolean = true,
         val notificationPreference: NotificationPreference = NotificationPreference.AllOrders,
-        val currencySymbol: String,
-        val currencyPosition: CurrencyPosition,
-        val currencyDecimalSeparator: String,
-        val currencyThousandSeparator: String,
-        val currencyDecimalNumber: Int
+        val currencySymbol: String
     )
 
     sealed interface NotificationPreference {
@@ -58,7 +47,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     }
 
     companion object {
-        private const val DEFAULT_DECIMAL_NUMBER = 2
         private const val DEFAULT_THRESHOLD_AMOUNT = 100
     }
 }
