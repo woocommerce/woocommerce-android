@@ -519,6 +519,7 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuItemButton.State.Loading
         }.toMutableMap().apply {
             this[MoreMenuItemButton.Type.Bookings] = MoreMenuItemButton.State.Hidden
+            this[MoreMenuItemButton.Type.AiAssistant] = MoreMenuItemButton.State.Hidden
         }
 
         return listOf(
