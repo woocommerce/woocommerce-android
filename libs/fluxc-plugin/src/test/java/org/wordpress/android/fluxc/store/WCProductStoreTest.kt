@@ -50,6 +50,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateVariationsPayload
+import org.wordpress.android.fluxc.store.WCProductStore.FetchProductVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductReviewPayload
 import org.wordpress.android.fluxc.store.WCProductStore.IncludeType
@@ -371,6 +372,106 @@ class WCProductStoreTest {
 
         // then
         assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations + variation)
+    }
+
+    @Test
+    fun `when product variations are fetched, then fetched page is returned and saved`() = runTest {
+        val site = SiteModel().apply { id = 42 }
+        val productId = 100L
+        val staleVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+        val fetchedVariations = ProductTestUtils.generateSampleVariations(2, productId, site.id)
+        productsVariationsDao.upsertProductVariation(staleVariation)
+        whenever(
+            productRestClient.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 2,
+                offset = 0
+            )
+        ).thenReturn(WooPayload(fetchedVariations))
+
+        val result = productStore.fetchProductVariations(
+            FetchProductVariationsPayload(
+                site = site,
+                remoteProductId = productId,
+                pageSize = 2,
+                offset = 0
+            )
+        )
+
+        assertThat(result.isError).isFalse
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).canLoadMore).isTrue
+        assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+            .containsExactlyInAnyOrderElementsOf(fetchedVariations)
+    }
+
+    @Test
+    fun `given cached variations, when product variations page is fetched, then only fetched page is returned`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+            val fetchedVariations = listOf(
+                ProductTestUtils.generateSampleVariation(productId, 2L, site.id),
+                ProductTestUtils.generateSampleVariation(productId, 3L, site.id)
+            )
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 2
+                )
+            ).thenReturn(WooPayload(fetchedVariations))
+
+            val result = productStore.fetchProductVariations(
+                FetchProductVariationsPayload(
+                    site = site,
+                    remoteProductId = productId,
+                    pageSize = 2,
+                    offset = 2
+                )
+            )
+
+            assertThat(result.isError).isFalse
+            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+            assertThat(requireNotNull(result.model).canLoadMore).isTrue
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + fetchedVariations)
+        }
+
+    @Test
+    fun `when product variations sync fetch succeeds, then page and more flag are returned`() = runTest {
+        val site = SiteModel().apply { id = 42 }
+        val productId = 100L
+        val fetchedVariations = ProductTestUtils.generateSampleVariations(1, productId, site.id)
+        whenever(
+            productRestClient.fetchProductVariationsWithSyncRequest(
+                site = any(),
+                productId = any(),
+                pageSize = any(),
+                offset = any(),
+                includedVariationIds = any(),
+                searchQuery = anyOrNull(),
+                excludedVariationIds = any(),
+                filterOptions = anyOrNull(),
+                orderCurrency = anyOrNull(),
+                posProductsOnly = any()
+            )
+        ).thenReturn(WooPayload(fetchedVariations))
+
+        val result = productStore.fetchProductVariations(
+            site = site,
+            productId = productId,
+            offset = 25,
+            pageSize = 25
+        )
+
+        assertThat(result.isError).isFalse
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).canLoadMore).isFalse
     }
 
     @Test

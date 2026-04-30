@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -35,6 +36,26 @@ class AIProductsDataSourceTest {
 
     private fun makeProduct(id: Long = 1L, name: String = "Test Product"): WCProductModel =
         WCProductModel(remoteId = RemoteId(id), name = name)
+
+    private fun makeStoredProduct(
+        id: Long = 1L,
+        name: String = "Test Product",
+        type: String = "simple",
+        regularPrice: String = "10.00",
+        salePrice: String = "",
+        manageStock: Boolean = false,
+        stockQuantity: Double = 0.0,
+        status: String = "publish",
+    ) = WCProductModel(
+        remoteId = RemoteId(id),
+        name = name,
+        type = type,
+        regularPrice = regularPrice,
+        salePrice = salePrice,
+        manageStock = manageStock,
+        stockQuantity = stockQuantity,
+        status = status,
+    )
 
     private suspend fun stubFetchProducts(result: WooResult<List<WCProductModel>>) {
         whenever(
@@ -238,6 +259,108 @@ class AIProductsDataSourceTest {
         whenever(productStore.fetchSingleProduct(any())).thenReturn(errorEvent)
 
         val result = dataSource.getProduct(productId = 10L)
+
+        assertThat(result.isFailure).isTrue
+    }
+
+    // --- updateProduct ---
+
+    @Test
+    fun `given simple product, when updateProduct is called, then provided fields are applied to batch payload`() =
+        runTest {
+            val product = makeStoredProduct(
+                id = 10L,
+                name = "Original",
+                regularPrice = "9.00",
+                salePrice = "5.00",
+                manageStock = false,
+                stockQuantity = 1.0,
+                status = "publish",
+            )
+            whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(product)
+            whenever(productStore.batchUpdateProducts(any())).thenReturn(
+                WooResult(
+                    listOf(
+                        product.copy(
+                            name = "Updated",
+                            regularPrice = "12.50",
+                            stockQuantity = 4.0,
+                            manageStock = true,
+                            status = "draft",
+                        )
+                    )
+                )
+            )
+
+            val result = dataSource.updateProduct(
+                productId = 10L,
+                update = AIProductsDataSource.ProductUpdate(
+                    name = "Updated",
+                    regularPrice = "12.50",
+                    stockQuantity = 4,
+                    status = "draft",
+                )
+            )
+
+            assertThat(result.isSuccess).isTrue
+            val payloadCaptor = argumentCaptor<WCProductStore.BatchUpdateProductsPayload>()
+            verify(productStore).batchUpdateProducts(payloadCaptor.capture())
+            val updatedProduct = payloadCaptor.firstValue.updatedProducts.single()
+            assertThat(payloadCaptor.firstValue.site).isEqualTo(site)
+            assertThat(updatedProduct.name).isEqualTo("Updated")
+            assertThat(updatedProduct.regularPrice).isEqualTo("12.50")
+            assertThat(updatedProduct.salePrice).isEqualTo("5.00")
+            assertThat(updatedProduct.stockQuantity).isEqualTo(4.0)
+            assertThat(updatedProduct.manageStock).isTrue
+            assertThat(updatedProduct.status).isEqualTo("draft")
+        }
+
+    @Test
+    fun `given product is not cached, when updateProduct is called, then product is fetched before update`() = runTest {
+        val product = makeStoredProduct(id = 10L)
+        whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(null).thenReturn(product)
+        whenever(productStore.fetchSingleProduct(any())).thenReturn(
+            WCProductStore.OnProductChanged(remoteProductId = 10L)
+        )
+        whenever(productStore.batchUpdateProducts(any())).thenReturn(WooResult(listOf(product.copy(name = "Updated"))))
+
+        val result = dataSource.updateProduct(
+            productId = 10L,
+            update = AIProductsDataSource.ProductUpdate(name = "Updated")
+        )
+
+        assertThat(result.isSuccess).isTrue
+        verify(productStore).fetchSingleProduct(any())
+        verify(productStore).batchUpdateProducts(any())
+    }
+
+    @Test
+    fun `given variable product, when updateProduct is called, then batch update is not called`() = runTest {
+        val product = makeStoredProduct(id = 10L, type = "variable")
+        whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(product)
+
+        val result = dataSource.updateProduct(
+            productId = 10L,
+            update = AIProductsDataSource.ProductUpdate(name = "Updated")
+        )
+
+        assertThat(result.exceptionOrNull())
+            .isInstanceOf(AIProductsDataSource.UnsupportedProductTypeException::class.java)
+        verify(productStore, never()).batchUpdateProducts(any())
+    }
+
+    @Test
+    fun `given batch update fails, when updateProduct is called, then failure result is returned`() = runTest {
+        val product = makeStoredProduct(id = 10L)
+        whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(product)
+        whenever(productStore.batchUpdateProducts(any())).thenReturn(
+            WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom"))
+        )
+
+        val result = dataSource.updateProduct(
+            productId = 10L,
+            update = AIProductsDataSource.ProductUpdate(name = "Updated")
+        )
 
         assertThat(result.isFailure).isTrue
     }
