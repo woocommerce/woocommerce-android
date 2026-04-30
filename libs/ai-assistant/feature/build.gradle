@@ -56,6 +56,13 @@ dependencies {
     implementation(libs.squareup.okhttp3)
     implementation(libs.squareup.okhttp3.sse)
     implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.main)
+    implementation(libs.androidx.compose.material.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling.main)
 
     ksp(libs.google.dagger.hilt.compiler)
 
