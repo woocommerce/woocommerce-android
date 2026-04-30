@@ -324,6 +324,29 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `when runtime finishes cancelled failed retryable, then retry is not exposed`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Hello"),
+                    AssistantMessage.Assistant("Partial"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Cancelled,
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
+    }
+
+    @Test
     fun `given partial assistant text, when cancel is requested, then partial text remains visible`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id

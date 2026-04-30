@@ -183,7 +183,7 @@ class AssistantViewModel @AssistedInject constructor(
                     it.copy(
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
-                        canRetry = event.outcome == LoopOutcome.FAILED && event.retryAvailable,
+                        canRetry = event.canRetry(),
                         pendingConfirmation = null,
                     )
                 }
@@ -241,6 +241,11 @@ class AssistantViewModel @AssistedInject constructor(
             LoopOutcome.FAILED -> AssistantUiError.UNKNOWN
             LoopOutcome.MAX_ITERATIONS -> AssistantUiError.MAX_ITERATIONS
         }
+
+    private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
+        error != AssistantError.Cancelled &&
+            outcome == LoopOutcome.FAILED &&
+            retryAvailable
 
     @AssistedFactory
     interface Factory {
