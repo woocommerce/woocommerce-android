@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -417,10 +418,14 @@ private fun AssistantComposer(
                     ),
                 )
                 if (isTurnActive) {
-                    OutlinedButton(
+                    Button(
                         onClick = onCancelTurn,
                         modifier = Modifier.heightIn(min = 56.dp),
                         shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
                     ) {
                         Text(stringResource(R.string.assistant_chat_stop))
                     }
