@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -138,6 +139,88 @@ class WooPosSettingsViewModelTest {
         advanceUntilIdle()
         assertThat((viewModel.state.value.dialogState as WooPosSettingsDialogState.SyncErrorDialog).errorMessage)
             .isEqualTo("Error 2")
+    }
+
+    @Test
+    fun `given default state, when onCategorySelected is called, then isDetailVisible stays false`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(flowOf())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onCategorySelected(WooPosSettingsCategory.HARDWARE)
+
+        // THEN
+        assertThat(viewModel.state.value.isDetailVisible).isFalse()
+        assertThat(viewModel.state.value.canGoBack).isFalse()
+        assertThat(viewModel.state.value.selectedCategory).isEqualTo(WooPosSettingsCategory.HARDWARE)
+    }
+
+    @Test
+    fun `when onCategorySelectedFromPhoneList is called, then isDetailVisible is true and canGoBack is true`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(flowOf())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onCategorySelectedFromPhoneList(WooPosSettingsCategory.HARDWARE)
+
+        // THEN
+        assertThat(viewModel.state.value.isDetailVisible).isTrue()
+        assertThat(viewModel.state.value.canGoBack).isTrue()
+        assertThat(viewModel.state.value.selectedCategory).isEqualTo(WooPosSettingsCategory.HARDWARE)
+    }
+
+    @Test
+    fun `given phone detail visible at root destination, when navigateBack is called, then isDetailVisible is reset`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(flowOf())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelectedFromPhoneList(WooPosSettingsCategory.HARDWARE)
+
+        // WHEN
+        viewModel.navigateBack()
+
+        // THEN
+        assertThat(viewModel.state.value.isDetailVisible).isFalse()
+        assertThat(viewModel.state.value.canGoBack).isFalse()
+    }
+
+    @Test
+    fun `given phone detail at child destination, when navigateBack is called, then walks up the destination tree`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(flowOf())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onCategorySelectedFromPhoneList(WooPosSettingsCategory.HARDWARE)
+        viewModel.navigateToDetail(WooPosSettingsDetailDestination.Hardware.CardReaders)
+
+        // WHEN
+        viewModel.navigateBack()
+
+        // THEN
+        assertThat(viewModel.state.value.currentDestination)
+            .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
+        assertThat(viewModel.state.value.isDetailVisible).isTrue()
+        assertThat(viewModel.state.value.canGoBack).isTrue()
+    }
+
+    @Test
+    fun `given default state on tablet, when navigateBack is called at root, then state is unchanged`() = runTest {
+        // GIVEN
+        whenever(childToParentEventReceiver.events).thenReturn(flowOf())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        val before = viewModel.state.value
+
+        // WHEN
+        viewModel.navigateBack()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(before)
     }
 
     private fun createViewModel(): WooPosSettingsViewModel {

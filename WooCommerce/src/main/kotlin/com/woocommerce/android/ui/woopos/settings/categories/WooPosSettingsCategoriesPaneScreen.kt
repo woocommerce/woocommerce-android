@@ -15,9 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -40,7 +42,9 @@ fun WooPosSettingsCategoriesPaneScreen(
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val isPhoneLayout = remember(context, configuration) { context.isWooPosPhoneLayout() }
 
     WooPosSettingsCategoriesPaneScreenContent(
         modifier = modifier,
@@ -49,6 +53,7 @@ fun WooPosSettingsCategoriesPaneScreen(
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
         isSelectable = !isPhoneLayout,
+        showBottomSpacer = isPhoneLayout,
     )
 }
 
@@ -60,6 +65,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     isSelectable: Boolean = true,
+    showBottomSpacer: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -90,7 +96,9 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             )
         }
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        if (showBottomSpacer) {
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        }
     }
 }
 
