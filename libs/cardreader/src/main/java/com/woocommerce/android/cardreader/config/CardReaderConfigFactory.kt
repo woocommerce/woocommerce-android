@@ -7,6 +7,19 @@ class CardReaderConfigFactory {
             "US", "PR" -> CardReaderConfigForUSA
             "CA" -> CardReaderConfigForCanada
             "GB" -> CardReaderConfigForGB
+            "FR" -> CardReaderConfigForFR
+            "DE" -> CardReaderConfigForDE
+            "IE" -> CardReaderConfigForIE
+            "NL" -> CardReaderConfigForNL
+            "SG" -> CardReaderConfigForSG
+            "NZ" -> CardReaderConfigForNZ
+            "AT" -> CardReaderConfigForAT
+            "BE" -> CardReaderConfigForBE
+            "FI" -> CardReaderConfigForFI
+            "IT" -> CardReaderConfigForIT
+            "LU" -> CardReaderConfigForLU
+            "PT" -> CardReaderConfigForPT
+            "ES" -> CardReaderConfigForES
             else -> CardReaderConfigForUnsupportedCountry
         }
     }
