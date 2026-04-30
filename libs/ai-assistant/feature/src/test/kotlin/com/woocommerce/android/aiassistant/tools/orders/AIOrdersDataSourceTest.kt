@@ -1,7 +1,9 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -365,5 +367,54 @@ class AIOrdersDataSourceTest {
             val result = dataSource.getOrder(orderId = 123L)
 
             assertThat(result.isFailure).isTrue
+        }
+
+    @Test
+    fun `given remote update succeeds, when updateOrderStatus is called, then success result is returned`() =
+        runTest {
+            val successFlow = flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()),
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(WCOrderStore.OnOrderChanged()),
+            )
+            whenever(orderStore.updateOrderStatus(eq(123L), eq(site), any())).thenReturn(successFlow)
+
+            val result = dataSource.updateOrderStatus(orderId = 123L, newStatus = "processing")
+
+            assertThat(result.isSuccess).isTrue
+        }
+
+    @Test
+    fun `given remote update fails, when updateOrderStatus is called, then failure result is returned`() =
+        runTest {
+            val errorEvent = WCOrderStore.OnOrderChanged(
+                orderError = WCOrderStore.OrderError(message = "update failed")
+            )
+            val errorFlow = flowOf(
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(errorEvent),
+            )
+            whenever(orderStore.updateOrderStatus(eq(123L), eq(site), any())).thenReturn(errorFlow)
+
+            val result = dataSource.updateOrderStatus(orderId = 123L, newStatus = "processing")
+
+            assertThat(result.isFailure).isTrue
+            assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
+        }
+
+    @Test
+    fun `given only an optimistic error is emitted with no remote result, when updateOrderStatus is called, then failure result is returned`() =
+        runTest {
+            val notFoundFlow = flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(
+                    WCOrderStore.OnOrderChanged(
+                        orderError = WCOrderStore.OrderError(message = "Order not found")
+                    )
+                )
+            )
+            whenever(orderStore.updateOrderStatus(eq(123L), eq(site), any())).thenReturn(notFoundFlow)
+
+            val result = dataSource.updateOrderStatus(orderId = 123L, newStatus = "processing")
+
+            assertThat(result.isFailure).isTrue
+            assertThat(result.exceptionOrNull()).isInstanceOf(OnChangedException::class.java)
         }
 }

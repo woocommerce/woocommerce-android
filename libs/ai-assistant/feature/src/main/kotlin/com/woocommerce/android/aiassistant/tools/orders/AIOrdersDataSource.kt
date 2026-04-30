@@ -2,6 +2,8 @@ package com.woocommerce.android.aiassistant.tools.orders
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.flow.last
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -66,6 +68,17 @@ internal class AIOrdersDataSource @Inject constructor(
             Result.failure(OnChangedException(result.error))
         } else {
             Result.success(requireNotNull(result.model))
+        }
+    }
+
+    suspend fun updateOrderStatus(orderId: Long, newStatus: String): Result<Unit> = runCatching {
+        val site = selectedSite.get()
+        val statusModel = WCOrderStatusModel(statusKey = newStatus)
+        // last() handles two cases: only OptimisticUpdateResult (order not in Room, carries error)
+        // or both Optimistic + RemoteUpdateResult (normal path, remote result governs).
+        val lastResult = orderStore.updateOrderStatus(orderId, site, statusModel).last()
+        if (lastResult.event.isError) {
+            throw OnChangedException(requireNotNull(lastResult.event.error))
         }
     }
 
