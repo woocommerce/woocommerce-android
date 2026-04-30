@@ -2254,6 +2254,7 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_push_notifications">Push notifications</string>
     <string name="settings_store_name">Store name</string>
     <string name="settings_enable_push_notifications">Enable Push Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>

@@ -24,7 +24,7 @@ class NotificationSettingsFragment : BaseFragment() {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    override fun getFragmentTitle() = getString(R.string.settings_notifs)
+    override fun getFragmentTitle() = getString(R.string.settings_push_notifications)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
