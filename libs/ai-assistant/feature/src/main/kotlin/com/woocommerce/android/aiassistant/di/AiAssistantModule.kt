@@ -58,7 +58,15 @@ internal object AiAssistantModule {
         agenticLoop: AgenticLoop,
         toolRegistry: ToolRegistry,
         toolCatalogSelector: ToolCatalogSelector,
-    ): AssistantRuntime = AgenticLoopAssistantRuntime(agenticLoop, toolRegistry, toolCatalogSelector)
+        safetyOrchestrator: SafetyOrchestrator,
+        confirmationPreviewResolver: ConfirmationPreviewResolver,
+    ): AssistantRuntime = AgenticLoopAssistantRuntime(
+        agenticLoop,
+        toolRegistry,
+        toolCatalogSelector,
+        safetyOrchestrator,
+        confirmationPreviewResolver,
+    )
 
     @Provides
     @Singleton

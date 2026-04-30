@@ -296,8 +296,45 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
+        assertThat(viewModel.uiState.value.error).isNull()
+        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+    }
+
+    @Test
+    fun `given confirmed write, when assistant text resumes, then existing assistant bubble grows`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        val activeBubbleId = viewModel.uiState.value.messages.last().id
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        advanceUntilIdle()
+
+        viewModel.onConfirmWrite()
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Order updated"))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+            AssistantUiMessage(
+                id = activeBubbleId,
+                role = AssistantUiMessage.Role.ASSISTANT,
+                text = "Order updated",
+            )
+        )
+    }
+
+    @Test
+    fun `given pending confirmation, when confirm is deferred, then state exposes error`() = runTest {
+        runtime.confirmationResult = AssistantRuntimeConfirmationResult.Deferred
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        advanceUntilIdle()
+
+        viewModel.onConfirmWrite()
+        advanceUntilIdle()
+
+        assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
+        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
     }
 
     @Test
@@ -329,6 +366,7 @@ class AssistantViewModelTest {
         val cancelledConversationIds = mutableListOf<String>()
         val confirmedConfirmationIds = mutableListOf<String>()
         val cancelledConfirmationIds = mutableListOf<String>()
+        var confirmationResult: AssistantRuntimeConfirmationResult = AssistantRuntimeConfirmationResult.Accepted
 
         private val events = MutableSharedFlow<AssistantRuntimeEvent>(extraBufferCapacity = 10)
 
@@ -348,7 +386,7 @@ class AssistantViewModelTest {
 
         override suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult {
             confirmedConfirmationIds += confirmationId
-            return AssistantRuntimeConfirmationResult.Deferred
+            return confirmationResult
         }
 
         override suspend fun cancelWrite(confirmationId: String) {

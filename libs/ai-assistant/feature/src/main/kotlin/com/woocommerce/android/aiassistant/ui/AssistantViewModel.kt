@@ -66,6 +66,16 @@ class AssistantViewModel(
         val confirmationId = _uiState.value.pendingConfirmation?.id ?: return
         viewModelScope.launch {
             when (runtime.confirmWrite(confirmationId)) {
+                AssistantRuntimeConfirmationResult.Accepted -> {
+                    _uiState.update {
+                        it.copy(
+                            status = AssistantUiStatus.STREAMING,
+                            error = null,
+                            canRetry = false,
+                            pendingConfirmation = null,
+                        )
+                    }
+                }
                 AssistantRuntimeConfirmationResult.Deferred -> {
                     activeAssistantMessageId = null
                     _uiState.update {
@@ -144,7 +154,6 @@ class AssistantViewModel(
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
-                activeAssistantMessageId = null
                 _uiState.update {
                     it.copy(
                         status = AssistantUiStatus.AWAITING_CONFIRMATION,

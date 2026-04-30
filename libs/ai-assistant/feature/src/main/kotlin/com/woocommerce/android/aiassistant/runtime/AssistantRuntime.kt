@@ -5,6 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import com.woocommerce.android.aiassistant.safety.ResolvedConfirmationPreview
 import kotlinx.coroutines.flow.Flow
 
 interface AssistantRuntime {
@@ -45,8 +46,10 @@ sealed interface AssistantRuntimeEvent {
 data class AssistantPendingConfirmation(
     val id: String,
     val toolCall: ToolCall,
+    val preview: ResolvedConfirmationPreview? = null,
 )
 
 sealed interface AssistantRuntimeConfirmationResult {
+    data object Accepted : AssistantRuntimeConfirmationResult
     data object Deferred : AssistantRuntimeConfirmationResult
 }

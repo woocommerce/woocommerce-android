@@ -308,7 +308,8 @@ private fun AssistantConfirmationPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
+            text = confirmation.preview?.message
+                ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             style = MaterialTheme.typography.titleSmall,
         )
