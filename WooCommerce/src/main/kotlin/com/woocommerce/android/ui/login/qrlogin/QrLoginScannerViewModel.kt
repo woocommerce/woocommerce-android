@@ -212,7 +212,6 @@ class QrLoginScannerViewModel @Inject constructor(
                 }
                 if (_uiState.value !is WaitingForApproval) return@launch
 
-                WooLog.d(WooLog.T.LOGIN, "QR login poll: tick")
                 val callResult = restClient.checkSessionStatus(ticket.siteUrl, sessionId)
                 // Guard after the await: cancel/start-over may have flipped state away from
                 // WaitingForApproval while the call was in flight. If so, drop the response

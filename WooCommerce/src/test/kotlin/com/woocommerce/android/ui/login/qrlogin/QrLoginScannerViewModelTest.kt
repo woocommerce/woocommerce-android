@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -810,10 +809,6 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
 
-    @Suppress("unused")
-    private fun siteError(type: org.wordpress.android.fluxc.store.SiteStore.SiteErrorType): OnChangedException =
-        OnChangedException(org.wordpress.android.fluxc.store.SiteStore.SiteError(type, "boom"))
-
     private companion object {
         const val RAW_SCAN = "raw"
         const val DEFAULT_SITE_ID = 42
@@ -821,6 +816,5 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
         const val SITE_URL = "https://store.example.com"
         const val POLL_TICK_MS = 2_000L
-        const val MAX_CONSECUTIVE_POLL_ERRORS = 4
     }
 }

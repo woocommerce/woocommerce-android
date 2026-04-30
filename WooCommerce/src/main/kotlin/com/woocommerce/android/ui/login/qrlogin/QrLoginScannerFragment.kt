@@ -191,8 +191,8 @@ class QrLoginScannerFragment : Fragment() {
     }
 
     /**
-     * Error/endpoint-missing screens in deep-link mode
-     * have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
+     * Same reasoning as [handleCancelNumberMatch]: error/endpoint-missing screens in deep-link
+     * mode have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
      * resumes underneath as soon as the overlay is cleared.
      */
     private fun handleStartOver() {
