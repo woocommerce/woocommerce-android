@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 /**
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class QrLoginAuthenticator @Inject constructor(
     private val exchangeClient: QrLoginRestClient,
     private val wpApiSiteRepository: WPApiSiteRepository,
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite
 ) {
     suspend fun authenticate(ticket: QrLoginPayload.Ticket): Result<Int> {
@@ -51,14 +53,25 @@ class QrLoginAuthenticator @Inject constructor(
         try {
             ensureUserEligible(site)
         } catch (ce: CancellationException) {
-            wpApiSiteRepository.deleteApplicationPassword(site.id)
+            revokeApplicationPassword(site)
             throw ce
         } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-            wpApiSiteRepository.deleteApplicationPassword(site.id)
+            revokeApplicationPassword(site)
             throw t
         }
         selectedSite.set(site)
         return site.id
+    }
+
+    private suspend fun revokeApplicationPassword(site: SiteModel) {
+        val result = siteStore.deleteApplicationPassword(site)
+        if (result.isError) {
+            WooLog.e(
+                WooLog.T.LOGIN,
+                "QR login: failed to revoke application password server-side: " +
+                    "${result.error?.errorCode} ${result.error?.message}"
+            )
+        }
     }
 
     private suspend fun fetchAndValidateSite(

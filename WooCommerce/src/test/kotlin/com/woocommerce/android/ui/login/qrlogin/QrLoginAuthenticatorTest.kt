@@ -19,6 +19,8 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.io.IOException
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginAuthenticatorTest : BaseUnitTest() {
@@ -41,9 +43,10 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
     private val exchangeClient: QrLoginRestClient = mock()
     private val repo: WPApiSiteRepository = mock()
+    private val siteStore: SiteStore = mock()
     private val selectedSite: SelectedSite = mock()
 
-    private val authenticator = QrLoginAuthenticator(exchangeClient, repo, selectedSite)
+    private val authenticator = QrLoginAuthenticator(exchangeClient, repo, siteStore, selectedSite)
 
     @Before
     fun setUp() = testBlocking {
@@ -52,6 +55,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
         whenever(repo.fetchSite(ticket.siteUrl, credentials.userLogin, credentials.applicationPassword))
             .thenReturn(Result.success(site))
         whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(true))
+        whenever(siteStore.deleteApplicationPassword(site)).thenReturn(OnApplicationPasswordDeleted(site))
     }
 
     @Test
@@ -113,7 +117,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
             username = credentials.userLogin,
             password = credentials.applicationPassword
         )
-        verify(repo).deleteApplicationPassword(site.id)
+        verify(siteStore).deleteApplicationPassword(site)
     }
 
     @Test
@@ -122,7 +126,7 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
 
         authenticator.authenticate(ticket)
 
-        verify(repo).deleteApplicationPassword(site.id)
+        verify(siteStore).deleteApplicationPassword(site)
     }
 
     @Test
