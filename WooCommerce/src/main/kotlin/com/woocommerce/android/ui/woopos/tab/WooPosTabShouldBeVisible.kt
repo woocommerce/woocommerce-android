@@ -21,6 +21,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureFlagRepository: FeatureFlagRepository,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val supportedCountries: WooPosSupportedCountries,
     private val wooPosLog: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(forceRefresh: Boolean = false): Result<Boolean> = withContext(Dispatchers.IO) {
@@ -74,9 +75,6 @@ class WooPosTabShouldBeVisible @Inject constructor(
         return@withContext Result.success(isSupported)
     }
 
-    private fun isCountrySupported(countryCode: String) = SUPPORTED_COUNTRIES.contains(countryCode.lowercase())
-
-    private companion object {
-        private val SUPPORTED_COUNTRIES = listOf("us", "gb")
-    }
+    private suspend fun isCountrySupported(countryCode: String): Boolean =
+        supportedCountries.supportedCountries().contains(countryCode.lowercase())
 }

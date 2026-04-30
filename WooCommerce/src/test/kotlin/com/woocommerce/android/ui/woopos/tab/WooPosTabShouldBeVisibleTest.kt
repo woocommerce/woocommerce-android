@@ -37,6 +37,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
     }
+    private val supportedCountries: WooPosSupportedCountries = mock()
 
     private lateinit var sut: WooPosTabShouldBeVisible
     private lateinit var siteModel: SiteModel
@@ -49,6 +50,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(true)
         whenever(featureFlagRepository.awaitRemoteFlagsLoaded()).thenReturn(Unit)
         whenever(appPrefs.isPOSTabVisibleForSite(any())).thenReturn(false)
+        whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb"))
         val siteSettings = buildSiteSettings()
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
 
@@ -59,6 +61,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
             wooCommerceStore = wooCommerceStore,
             featureFlagRepository = featureFlagRepository,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
+            supportedCountries = supportedCountries,
             wooPosLog = mock()
         )
     }
@@ -191,10 +194,45 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         verify(appPrefs).clearPOSTabVisibilityForSite(siteModel.id)
     }
 
-    private fun buildSiteSettings(countryCode: String = "us") =
+    @Test
+    fun `given primary expansion country DE and primary flag on, when invoked, then return success true`() = testBlocking {
+        whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb", "de"))
+        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
+
+        val r = sut(forceRefresh = true)
+        assertTrue(r.isSuccess)
+        assertTrue(r.getOrThrow())
+    }
+
+    @Test
+    fun `given primary expansion country DE and primary flag off, when invoked, then return success false`() = testBlocking {
+        whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb"))
+        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
+
+        val r = sut(forceRefresh = true)
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
+    }
+
+    @Test
+    fun `given AU country with both flags on, when invoked, then return success false`() = testBlocking {
+        whenever(supportedCountries.supportedCountries())
+            .thenReturn(listOf("us", "gb", "fr", "de", "ie", "nl", "sg", "nz", "at", "be", "fi", "it", "lu", "pt", "es"))
+        val siteSettings = buildSiteSettings(countryCode = "AU", currencyCode = "AUD")
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
+
+        val r = sut(forceRefresh = true)
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
+    }
+
+    private fun buildSiteSettings(countryCode: String = "us", currencyCode: String = "USD") =
         WCSettingsTestUtils.generateSettings(
             siteId = LocalOrRemoteId.LocalId(1)
         ).copy(
-            countryCode = countryCode
+            countryCode = countryCode,
+            currencyCode = currencyCode
         )
 }
