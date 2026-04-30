@@ -94,7 +94,7 @@ class WCCustomerStoreTest {
     }
 
     @Test
-    fun `fetchCustomers with success returns mapped customer models and caches them`() = runTest {
+    fun `when customers are fetched successfully, then mapped customer models are cached`() = runTest {
         // given
         val customerDto = fakeCustomerDTO(id = DEFAULT_REMOTE_CUSTOMER_ID)
         val expectedCustomer = fakeWCCustomerModel(
@@ -134,7 +134,7 @@ class WCCustomerStoreTest {
     }
 
     @Test
-    fun `fetchCustomers with error returns error and does not cache`() = runTest {
+    fun `when customer fetch fails, then error is returned and customers are not cached`() = runTest {
         // given
         doReturn(WooPayload<Array<CustomerDTO>>(TEST_ERROR))
             .whenever(restClient)
