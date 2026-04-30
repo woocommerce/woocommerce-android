@@ -35,7 +35,7 @@ fun WooPosSettingsCategoriesPaneScreen(
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,
-    isSelectable: Boolean = true,
+    showSelection: Boolean = true,
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -46,7 +46,7 @@ fun WooPosSettingsCategoriesPaneScreen(
         fixedCategories = state.fixedCategories,
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
-        isSelectable = isSelectable,
+        showSelection = showSelection,
     )
 }
 
@@ -57,7 +57,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
     fixedCategories: List<WooPosSettingsCategory>,
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
-    isSelectable: Boolean = true,
+    showSelection: Boolean = true,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -71,7 +71,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             scrollableCategories.forEach { item ->
                 CategoryItem(
                     item = item,
-                    isSelected = isSelectable && item == selectedCategory,
+                    isSelected = showSelection && item == selectedCategory,
                     onClick = {
                         onCategorySelected(item)
                     },
@@ -86,10 +86,6 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
                 item = item,
                 onClick = { onCategorySelected(item) }
             )
-        }
-
-        if (!isSelectable) {
-            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
         }
     }
 }

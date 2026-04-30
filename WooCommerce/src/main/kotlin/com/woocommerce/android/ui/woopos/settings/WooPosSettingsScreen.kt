@@ -133,8 +133,10 @@ private fun WooPosSettingsPhoneContent(
                         onCategorySelected(category)
                         isShowingDetail = true
                     },
-                    isSelectable = false,
-                    modifier = Modifier.fillMaxSize()
+                    showSelection = false,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = WooPosSpacing.Medium.value)
                 )
             }
         } else {
@@ -154,7 +156,7 @@ private fun WooPosSettingsPhoneContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
-                alwaysShowBackButton = true,
+                showBackOnRoot = true,
             )
         }
     }
@@ -257,6 +259,14 @@ private fun SettingsDialogs(
     }
 }
 
+private val previewScrollableCategories = listOf(
+    WooPosSettingsCategory.STORE,
+    WooPosSettingsCategory.HARDWARE,
+    WooPosSettingsCategory.LOCAL_CATALOG,
+)
+
+private val previewFixedCategories = listOf(WooPosSettingsCategory.HELP)
+
 @WooPosPreview
 @Composable
 fun WooPosSettingsScreenPreview() {
@@ -276,12 +286,8 @@ fun WooPosSettingsScreenPreview() {
                 )
 
                 WooPosSettingsCategoriesPaneScreenContent(
-                    scrollableCategories = listOf(
-                        WooPosSettingsCategory.STORE,
-                        WooPosSettingsCategory.HARDWARE,
-                        WooPosSettingsCategory.LOCAL_CATALOG,
-                    ),
-                    fixedCategories = listOf(WooPosSettingsCategory.HELP),
+                    scrollableCategories = previewScrollableCategories,
+                    fixedCategories = previewFixedCategories,
                     selectedCategory = state.selectedCategory,
                     onCategorySelected = {},
                     modifier = Modifier.fillMaxSize()
@@ -331,16 +337,14 @@ fun WooPosSettingsPhoneScreenPreview() {
             )
 
             WooPosSettingsCategoriesPaneScreenContent(
-                scrollableCategories = listOf(
-                    WooPosSettingsCategory.STORE,
-                    WooPosSettingsCategory.HARDWARE,
-                    WooPosSettingsCategory.LOCAL_CATALOG,
-                ),
-                fixedCategories = listOf(WooPosSettingsCategory.HELP),
+                scrollableCategories = previewScrollableCategories,
+                fixedCategories = previewFixedCategories,
                 selectedCategory = state.selectedCategory,
                 onCategorySelected = {},
-                isSelectable = false,
-                modifier = Modifier.fillMaxSize(),
+                showSelection = false,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = WooPosSpacing.Medium.value),
             )
         }
     }

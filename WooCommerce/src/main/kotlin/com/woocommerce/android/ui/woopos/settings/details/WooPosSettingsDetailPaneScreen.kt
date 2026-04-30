@@ -38,10 +38,10 @@ fun WooPosSettingsDetailPaneScreen(
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
-    alwaysShowBackButton: Boolean = false,
+    showBackOnRoot: Boolean = false,
 ) {
     val currentDestination = state.currentDestination
-    val showBack = state.canGoBack || alwaysShowBackButton
+    val showBack = state.canGoBack || showBackOnRoot
 
     BackHandler(enabled = showBack) {
         onBack()
