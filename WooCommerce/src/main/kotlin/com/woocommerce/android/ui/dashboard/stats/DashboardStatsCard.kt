@@ -86,8 +86,7 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
-    val selectedRevenueStatsType by viewModel.selectedRevenueStatsType
-        .observeAsState(DashboardStatsViewModel.RevenueStatsType.DEFAULT)
+    val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
     val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
     var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
 

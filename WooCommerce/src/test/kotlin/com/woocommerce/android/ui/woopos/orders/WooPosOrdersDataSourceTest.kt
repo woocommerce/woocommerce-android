@@ -76,6 +76,10 @@ class WooPosOrdersDataSourceTest {
                 createdVia = any(),
                 searchQuery = anyOrNull(),
                 decimalPoints = anyInt(),
+                customer = anyOrNull(),
+                include = anyOrNull(),
+                after = anyOrNull(),
+                before = anyOrNull(),
             )
         ).thenReturn(payload)
 
@@ -104,6 +108,10 @@ class WooPosOrdersDataSourceTest {
             createdVia = any(),
             searchQuery = anyOrNull(),
             decimalPoints = anyInt(),
+            customer = anyOrNull(),
+            include = anyOrNull(),
+            after = anyOrNull(),
+            before = anyOrNull(),
         )
     }
 
@@ -131,6 +139,10 @@ class WooPosOrdersDataSourceTest {
                 createdVia = any(),
                 searchQuery = anyOrNull(),
                 decimalPoints = anyInt(),
+                customer = anyOrNull(),
+                include = anyOrNull(),
+                after = anyOrNull(),
+                before = anyOrNull(),
             )
         ).thenReturn(payload)
 
@@ -158,6 +170,10 @@ class WooPosOrdersDataSourceTest {
             createdVia = any(),
             searchQuery = anyOrNull(),
             decimalPoints = anyInt(),
+            customer = anyOrNull(),
+            include = anyOrNull(),
+            after = anyOrNull(),
+            before = anyOrNull(),
         )
     }
 
@@ -180,6 +196,10 @@ class WooPosOrdersDataSourceTest {
                 createdVia = any(),
                 searchQuery = anyOrNull(),
                 decimalPoints = anyInt(),
+                customer = anyOrNull(),
+                include = anyOrNull(),
+                after = anyOrNull(),
+                before = anyOrNull(),
             )
         ).thenReturn(payload)
 
@@ -203,6 +223,10 @@ class WooPosOrdersDataSourceTest {
             createdVia = any(),
             searchQuery = anyOrNull(),
             decimalPoints = anyInt(),
+            customer = anyOrNull(),
+            include = anyOrNull(),
+            after = anyOrNull(),
+            before = anyOrNull(),
         )
     }
 
@@ -338,8 +362,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e1 to emptyList(), e2 to emptyList()),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(payload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(1), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(payload)
 
         val emissions = sut.loadOrders().toList(mutableListOf())
         val remote = emissions.last() as LoadOrdersResult.SuccessRemote
@@ -356,8 +385,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(firstPayload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(1), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(firstPayload)
         sut.loadOrders().toList(mutableListOf())
         assertThat(sut.hasMorePages).isTrue
 
@@ -371,8 +405,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
             canLoadMore = false
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(page2Payload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(2), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(page2Payload)
 
         val result = sut.loadMore()
         assertThat(result.isSuccess).isTrue
@@ -390,8 +429,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(firstPayload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(1), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(firstPayload)
         sut.loadOrders().toList(mutableListOf())
 
         val e3 = OrderEntity(LocalOrRemoteId.LocalId(1), 3L)
@@ -405,8 +449,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
             canLoadMore = false
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(page2Payload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(2), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(page2Payload)
 
         // WHEN
         sut.loadMore()
@@ -425,8 +474,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), eq(query), eq(8)))
-            .thenReturn(firstPayload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(1), any(), any(),
+                anyOrNull(), any(), eq(query), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(firstPayload)
         sut.searchOrders(query)
 
         val e1 = OrderEntity(LocalOrRemoteId.LocalId(1), 9L)
@@ -436,8 +490,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e1 to emptyList()),
             canLoadMore = false
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), eq(query), eq(8)))
-            .thenReturn(page2Payload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(2), any(), any(),
+                anyOrNull(), any(), eq(query), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(page2Payload)
 
         // WHEN
         sut.loadMore(query)
@@ -455,8 +514,13 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(firstPayload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(1), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(firstPayload)
         sut.loadOrders().toList(mutableListOf())
         assertThat(sut.hasMorePages).isTrue
 
@@ -468,8 +532,13 @@ class WooPosOrdersDataSourceTest {
             site = siteModel,
             error = error
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
-            .thenReturn(errorPayload)
+        whenever(
+            orderRestClient.fetchOrders(
+                any(), any(), eq(2), any(), any(),
+                anyOrNull(), any(), isNull(), eq(8),
+                anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(),
+            )
+        ).thenReturn(errorPayload)
 
         val result = sut.loadMore()
         assertThat(result.isFailure).isTrue
