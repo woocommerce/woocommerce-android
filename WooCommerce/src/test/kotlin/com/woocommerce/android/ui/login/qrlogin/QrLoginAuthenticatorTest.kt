@@ -4,6 +4,7 @@ import com.woocommerce.android.network.qrlogin.QrLoginCredentials
 import com.woocommerce.android.network.qrlogin.QrLoginRestClient
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CancellationException
@@ -45,8 +46,10 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     private val repo: WPApiSiteRepository = mock()
     private val siteStore: SiteStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val accountRepository: AccountRepository = mock()
 
-    private val authenticator = QrLoginAuthenticator(exchangeClient, repo, siteStore, selectedSite)
+    private val authenticator =
+        QrLoginAuthenticator(exchangeClient, repo, siteStore, selectedSite, accountRepository)
 
     @Before
     fun setUp() = testBlocking {
@@ -107,27 +110,31 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is not eligible, when authenticate, then saved AP is revoked`() = testBlocking {
-        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
+    fun `given user is not eligible, when authenticate, then saved AP is revoked and user logged out`() =
+        testBlocking {
+            whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
 
-        authenticator.authenticate(ticket)
+            authenticator.authenticate(ticket)
 
-        verify(repo).saveApplicationPassword(
-            localSiteId = site.id,
-            username = credentials.userLogin,
-            password = credentials.applicationPassword
-        )
-        verify(siteStore).deleteApplicationPassword(site)
-    }
+            verify(repo).saveApplicationPassword(
+                localSiteId = site.id,
+                username = credentials.userLogin,
+                password = credentials.applicationPassword
+            )
+            verify(siteStore).deleteApplicationPassword(site)
+            verify(accountRepository).logout()
+        }
 
     @Test
-    fun `given eligibility check fails, when authenticate, then saved AP is revoked`() = testBlocking {
-        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(IOException("offline")))
+    fun `given eligibility check fails, when authenticate, then saved AP is revoked and user logged out`() =
+        testBlocking {
+            whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.failure(IOException("offline")))
 
-        authenticator.authenticate(ticket)
+            authenticator.authenticate(ticket)
 
-        verify(siteStore).deleteApplicationPassword(site)
-    }
+            verify(siteStore).deleteApplicationPassword(site)
+            verify(accountRepository).logout()
+        }
 
     @Test
     fun `given fetchSite fails, when authenticate, then failure propagates and AP not saved`() = testBlocking {
