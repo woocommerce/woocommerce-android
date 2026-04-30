@@ -348,6 +348,9 @@
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue_type_gross">Gross</string>
+    <string name="dashboard_stats_revenue_type_net">Net</string>
+    <string name="dashboard_stats_revenue_type_total">Total</string>
     <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
