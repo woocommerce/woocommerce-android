@@ -156,19 +156,8 @@ class AIProductVariationsDataSourceTest {
                 ),
             )
 
-            assertThat(result.getOrThrow()).isEqualTo(existingVariation.copy(
-                regularPrice = "29.99",
-                salePrice = "24.99",
-                stockQuantity = 7.0,
-                manageStock = true,
-                stockStatus = "onbackorder",
-                sku = "NEW-SKU",
-                status = "private",
-            ))
-            argumentCaptor<WCProductStore.UpdateVariationPayload>().apply {
-                verify(productStore).updateVariation(capture())
-                assertThat(firstValue.site).isEqualTo(site)
-                assertThat(firstValue.variation).isEqualTo(existingVariation.copy(
+            assertThat(result.getOrThrow()).isEqualTo(
+                existingVariation.copy(
                     regularPrice = "29.99",
                     salePrice = "24.99",
                     stockQuantity = 7.0,
@@ -176,7 +165,22 @@ class AIProductVariationsDataSourceTest {
                     stockStatus = "onbackorder",
                     sku = "NEW-SKU",
                     status = "private",
-                ))
+                )
+            )
+            argumentCaptor<WCProductStore.UpdateVariationPayload>().apply {
+                verify(productStore).updateVariation(capture())
+                assertThat(firstValue.site).isEqualTo(site)
+                assertThat(firstValue.variation).isEqualTo(
+                    existingVariation.copy(
+                        regularPrice = "29.99",
+                        salePrice = "24.99",
+                        stockQuantity = 7.0,
+                        manageStock = true,
+                        stockStatus = "onbackorder",
+                        sku = "NEW-SKU",
+                        status = "private",
+                    )
+                )
             }
         }
 

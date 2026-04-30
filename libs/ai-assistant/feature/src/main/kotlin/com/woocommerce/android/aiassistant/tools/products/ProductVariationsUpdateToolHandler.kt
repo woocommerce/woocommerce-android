@@ -50,14 +50,8 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
-        if (!args.hasUpdates()) {
-            return ToolResult.ValidationError(call.id, "At least one variation field must be provided.")
-        }
-        if (args.stockStatus != null && args.stockStatus !in ALLOWED_STOCK_STATUSES) {
-            return ToolResult.ValidationError(call.id, "'${args.stockStatus}' is not an allowed stock_status.")
-        }
-        if (args.status != null && args.status !in ALLOWED_STATUSES) {
-            return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
+        args.validationError()?.let {
+            return ToolResult.ValidationError(call.id, it)
         }
 
         return dataSource.updateVariation(
@@ -102,6 +96,15 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
                 stockStatus != null ||
                 sku != null ||
                 status != null
+
+        fun validationError(): String? =
+            when {
+                !hasUpdates() -> "At least one variation field must be provided."
+                stockStatus != null && stockStatus !in ALLOWED_STOCK_STATUSES ->
+                    "'$stockStatus' is not an allowed stock_status."
+                status != null && status !in ALLOWED_STATUSES -> "'$status' is not an allowed status."
+                else -> null
+            }
     }
 
     private companion object {
