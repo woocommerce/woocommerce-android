@@ -5,7 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.tools.WooCommerceToolRegistry
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsRevenueToolHandler
-import com.woocommerce.android.aiassistant.tools.handlers.CustomersListToolHandler
+import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
