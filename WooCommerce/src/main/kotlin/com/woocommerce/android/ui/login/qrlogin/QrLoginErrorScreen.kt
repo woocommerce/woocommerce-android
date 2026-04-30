@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -43,7 +43,13 @@ fun QrLoginErrorScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .systemBarsPadding()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_150),
+                // Generous bottom padding so any trailing copy ("Any troubles signing in?
+                // Check out the FAQ." or similar fallback link) doesn't visually crowd
+                // the primary CTA above it.
+                vertical = dimensionResource(id = R.dimen.major_200),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -67,17 +73,20 @@ fun QrLoginErrorScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_250)))
         WCColoredButton(
             onClick = onPrimaryClicked,
             text = stringResource(id = content.primaryAction),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        WCTextButton(
+        // 24dp (was 12dp) so the outlined secondary button doesn't visually touch the
+        // primary "Try again" button above it, and so any trailing FAQ / fallback copy
+        // (rendered by parent surfaces below this column) sits comfortably away from
+        // the CTA stack.
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
+        WCOutlinedButton(
             onClick = onSecondaryClicked,
             text = stringResource(id = content.secondaryAction),
-            allCaps = false,
             modifier = Modifier.fillMaxWidth()
         )
     }

@@ -198,12 +198,21 @@ class QrLoginScannerViewModel @Inject constructor(
 
     private fun startPolling(ticket: QrLoginPayload.Ticket, sessionId: String) {
         pollJob?.cancel()
+        WooLog.d(WooLog.T.LOGIN, "QR login poll: starting")
         pollJob = launch {
             var consecutiveErrors = 0
+            // Fire one poll immediately on entry — no point waiting two seconds for the first
+            // tick when the server-side state may already have advanced by the time we arrive.
+            var firstTick = true
             while (_uiState.value is WaitingForApproval) {
-                delay(POLL_INTERVAL_MS)
+                if (firstTick) {
+                    firstTick = false
+                } else {
+                    delay(POLL_INTERVAL_MS)
+                }
                 if (_uiState.value !is WaitingForApproval) return@launch
 
+                WooLog.d(WooLog.T.LOGIN, "QR login poll: tick")
                 val callResult = restClient.checkSessionStatus(ticket.siteUrl, sessionId)
                 // Guard after the await: cancel/start-over may have flipped state away from
                 // WaitingForApproval while the call was in flight. If so, drop the response
@@ -213,10 +222,15 @@ class QrLoginScannerViewModel @Inject constructor(
                 callResult.fold(
                     onSuccess = { status ->
                         consecutiveErrors = 0
+                        WooLog.d(WooLog.T.LOGIN, "QR login poll: response=$status")
                         if (handleStatus(ticket, status)) return@launch
                     },
                     onFailure = { failure ->
                         consecutiveErrors++
+                        WooLog.w(
+                            WooLog.T.LOGIN,
+                            "QR login poll: failed (consecutive=$consecutiveErrors): $failure"
+                        )
                         if (failure is QrLoginSessionStatusException.RateLimited ||
                             failure is QrLoginSessionStatusException.EndpointMissing ||
                             consecutiveErrors >= MAX_CONSECUTIVE_POLL_ERRORS
@@ -232,11 +246,10 @@ class QrLoginScannerViewModel @Inject constructor(
                             )
                             return@launch
                         }
-                        // Transient — log and let the next tick try again.
-                        WooLog.w(WooLog.T.LOGIN, "QR login session-status poll failed (transient): $failure")
                     }
                 )
             }
+            WooLog.d(WooLog.T.LOGIN, "QR login poll: loop exited (state=${_uiState.value::class.simpleName})")
         }
     }
 
