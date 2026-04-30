@@ -13,8 +13,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
-import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -586,7 +586,7 @@ class AgenticLoopImplTest {
     }
 
     @Test
-    fun `given safe tool succeeds before unsafe tool is cancelled, then completed tool history is preserved`() = runTest {
+    fun `given safe tool succeeds before unsafe tool, when unsafe is cancelled, then history is preserved`() = runTest {
         val unsafeDescriptor = ToolDescriptor(
             name = "orders_update",
             description = "Updates an order",

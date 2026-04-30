@@ -83,6 +83,24 @@ class SafetyOrchestratorImplTest {
     }
 
     @Test
+    fun `given request is confirmed before await starts, when awaited, then confirmed result is returned`() = runTest {
+        val orchestrator = orchestrator()
+        val decision = orchestrator.evaluate(
+            toolCall(name = "orders_update"),
+            descriptor("orders_update", ToolSafetyLevel.UNSAFE),
+        ) as SafetyDecision.RequireConfirmation
+
+        val resolved = orchestrator.confirm(decision.request.id)
+        val result = orchestrator.awaitResult(decision.request.id)
+
+        assertThat(resolved).isTrue
+        assertThat(result).isEqualTo(
+            ConfirmationResult(decision.request.id, ConfirmationDecision.CONFIRMED),
+        )
+        assertThat(orchestrator.confirm(decision.request.id)).isFalse
+    }
+
+    @Test
     fun `given unknown request id, when resolved, then no pending request resumes`() = runTest {
         val orchestrator = orchestrator()
 

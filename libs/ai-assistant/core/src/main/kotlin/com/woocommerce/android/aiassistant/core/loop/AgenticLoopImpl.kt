@@ -90,19 +90,7 @@ class AgenticLoopImpl(
 
             val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors)
             if (toolExecution is ToolExecutionOutcome.Cancelled) {
-                val completedCalls = toolExecution.completed.map { it.historyToolCall }
-                val cancelledAssistantMessage = AssistantMessage.Assistant(
-                    content = stream.assistantText.takeIf { it.isNotEmpty() },
-                    toolCalls = completedCalls,
-                )
-                if (cancelledAssistantMessage.content != null || completedCalls.isNotEmpty()) {
-                    newTurnMessages.add(cancelledAssistantMessage)
-                }
-                toolExecution.completed.forEach { completed ->
-                    newTurnMessages.add(completed.toToolMessage())
-                }
-                emit(LoopEvent.Failed(AssistantError.Cancelled))
-                emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
+                emitCancelledToolExecution(toolExecution, stream.assistantText, history, newTurnMessages)
                 return@flow
             }
 
@@ -193,21 +181,10 @@ class AgenticLoopImpl(
         }
         for (call in validCalls) {
             val descriptor = toolDescriptors.find { it.name == call.name }
-            val result = when {
-                descriptor == null ->
-                    ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
-                else -> when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
-                    SafetyDecision.Execute -> executeApprovedTool(call)
-                    is SafetyDecision.RequireConfirmation -> {
-                        emit(LoopEvent.ConfirmationRequested(decision.request))
-                        val confirmationResult = safetyOrchestrator.awaitResult(decision.request.id)
-                        emit(LoopEvent.ConfirmationResolved(confirmationResult))
-                        when (confirmationResult.decision) {
-                            ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
-                            ConfirmationDecision.CANCELLED -> return ToolExecutionOutcome.Cancelled(completedTools)
-                        }
-                    }
-                }
+            val result = if (descriptor == null) {
+                ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
+            } else {
+                executeConfirmedTool(call, descriptor) ?: return ToolExecutionOutcome.Cancelled(completedTools)
             }
             completedTools += CompletedToolCall(call, result)
             emit(LoopEvent.ToolCallFinished(result))
@@ -215,9 +192,46 @@ class AgenticLoopImpl(
         return ToolExecutionOutcome.Completed(completedTools)
     }
 
+    private suspend fun FlowCollector<LoopEvent>.executeConfirmedTool(
+        call: ToolCall,
+        descriptor: ToolDescriptor,
+    ): ToolResult? = when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
+        SafetyDecision.Execute -> executeApprovedTool(call)
+        is SafetyDecision.RequireConfirmation -> {
+            emit(LoopEvent.ConfirmationRequested(decision.request))
+            val confirmationResult = safetyOrchestrator.awaitResult(decision.request.id)
+            emit(LoopEvent.ConfirmationResolved(confirmationResult))
+            when (confirmationResult.decision) {
+                ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
+                ConfirmationDecision.CANCELLED -> null
+            }
+        }
+    }
+
     private suspend fun FlowCollector<LoopEvent>.executeApprovedTool(call: ToolCall): ToolResult {
         emit(LoopEvent.ToolCallStarted(call))
         return toolRegistry.execute(call)
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.emitCancelledToolExecution(
+        outcome: ToolExecutionOutcome.Cancelled,
+        assistantText: String,
+        history: List<AssistantMessage>,
+        newTurnMessages: MutableList<AssistantMessage>,
+    ) {
+        val completedCalls = outcome.completed.map { it.historyToolCall }
+        val cancelledAssistantMessage = AssistantMessage.Assistant(
+            content = assistantText.takeIf { it.isNotEmpty() },
+            toolCalls = completedCalls,
+        )
+        if (cancelledAssistantMessage.content != null || completedCalls.isNotEmpty()) {
+            newTurnMessages.add(cancelledAssistantMessage)
+        }
+        outcome.completed.forEach { completed ->
+            newTurnMessages.add(completed.toToolMessage())
+        }
+        emit(LoopEvent.Failed(AssistantError.Cancelled))
+        emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
     }
 
     private data class StreamResult(

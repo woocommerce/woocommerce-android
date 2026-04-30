@@ -17,6 +17,7 @@
     <string name="ai_assistant_confirmation_generic_tool_call">Review %1$s</string>
     <string name="ai_assistant_confirmation_change_summary_empty">edit fields</string>
     <string name="ai_assistant_confirmation_change_summary_status">status -&gt; %1$s</string>
+    <string name="ai_assistant_confirmation_change_summary_status_emails_customer">status -&gt; %1$s (emails the customer)</string>
     <string name="ai_assistant_confirmation_change_summary_status_emails_customers">status -&gt; %1$s (emails customers)</string>
     <string name="ai_assistant_confirmation_change_summary_regular_price">price -&gt; %1$s</string>
     <string name="ai_assistant_confirmation_change_summary_sale_price">sale -&gt; %1$s</string>

@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
-import javax.inject.Inject
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -15,6 +14,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
+import javax.inject.Inject
 
 internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
     fun build(request: ConfirmationRequest): ConfirmationPreview = build(request.toolName, request.arguments)
@@ -91,7 +91,13 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         val summary = fields.toChangeSummary(
             statusEmailImpact = patch.stringValue("status")
                 ?.takeIf { it in CUSTOMER_NOTIFYING_STATUSES }
-                ?.let { R.string.ai_assistant_confirmation_change_summary_status_emails_customers },
+                ?.let {
+                    if (ids.size == 1) {
+                        R.string.ai_assistant_confirmation_change_summary_status_emails_customer
+                    } else {
+                        R.string.ai_assistant_confirmation_change_summary_status_emails_customers
+                    }
+                },
         )
         return ConfirmationPreview(
             message = quantity(

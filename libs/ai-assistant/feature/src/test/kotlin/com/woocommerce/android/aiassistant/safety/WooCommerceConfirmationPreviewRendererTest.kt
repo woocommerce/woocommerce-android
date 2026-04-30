@@ -64,7 +64,7 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.message).isEqualTo("Update 1 order: status -> completed (emails customers)")
+        assertThat(rendered.message).isEqualTo("Update 1 order: status -> completed (emails the customer)")
     }
 
     @Test

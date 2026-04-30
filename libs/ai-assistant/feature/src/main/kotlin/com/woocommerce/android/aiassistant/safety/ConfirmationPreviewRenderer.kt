@@ -17,6 +17,7 @@ internal class ConfirmationPreviewRenderer(
             },
         )
 
+    @Suppress("SpreadOperator")
     private fun render(text: ConfirmationPreviewText): String = when (text) {
         is ConfirmationPreviewText.Raw -> text.value
         is ConfirmationPreviewText.Resource -> {

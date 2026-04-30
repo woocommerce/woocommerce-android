@@ -118,6 +118,32 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
+    fun `given one order bulk status update emails customer, when preview is built, then singular impact is used`() {
+        val call = toolCall(
+            name = "orders_bulk_update",
+            arguments = buildJsonObject {
+                put("ids", JsonArray(listOf(JsonPrimitive(42))))
+                put("patch", buildJsonObject { put("status", "completed") })
+            },
+        )
+
+        val preview = builder.build(call)
+
+        val summary = string(
+            R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
+            raw("completed"),
+        )
+        assertThat(preview.message).isEqualTo(
+            quantity(
+                quantity = 1,
+                singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
+                multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
+                summary,
+            )
+        )
+    }
+
+    @Test
     fun `given product price and stock update, when preview is built, then exact changes are included`() {
         val call = toolCall(
             name = "products_update",
@@ -227,6 +253,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `given product variation update, when preview is built, then product and variation ids are included`() {
         val call = toolCall(
             name = "product_variations_update",

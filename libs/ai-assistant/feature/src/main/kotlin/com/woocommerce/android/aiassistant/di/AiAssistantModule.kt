@@ -33,6 +33,7 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
+    @Suppress("LongParameterList")
     fun provideAgenticLoop(
         chatService: ChatService,
         toolRegistry: ToolRegistry,

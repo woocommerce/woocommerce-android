@@ -3,15 +3,14 @@ package com.woocommerce.android.aiassistant.core.safety
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import kotlinx.coroutines.CompletableDeferred
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlinx.coroutines.CompletableDeferred
 
 class SafetyOrchestratorImpl(
     private val requestIdFactory: () -> String = { UUID.randomUUID().toString() },
 ) : SafetyOrchestrator {
     private val pending = ConcurrentHashMap<String, CompletableDeferred<ConfirmationResult>>()
-    private val resolvedBeforeAwait = ConcurrentHashMap<String, ConfirmationResult>()
 
     override suspend fun evaluate(
         call: ToolCall,
@@ -33,21 +32,18 @@ class SafetyOrchestratorImpl(
     }
 
     override suspend fun awaitResult(requestId: String): ConfirmationResult {
-        resolvedBeforeAwait.remove(requestId)?.let { return it }
         val deferred = pending[requestId]
             ?: return ConfirmationResult(requestId, ConfirmationDecision.CANCELLED)
 
         return try {
             deferred.await()
         } finally {
-            pending.remove(requestId)
-            resolvedBeforeAwait.remove(requestId)
+            pending.remove(requestId, deferred)
         }
     }
 
     override fun resolve(result: ConfirmationResult): Boolean {
-        val deferred = pending.remove(result.requestId) ?: return false
-        resolvedBeforeAwait[result.requestId] = result
+        val deferred = pending[result.requestId] ?: return false
         return deferred.complete(result)
     }
 }
