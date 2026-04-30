@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
@@ -104,6 +105,7 @@ class AssistantViewModelTest {
 
         runtime.emit(
             AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Hello"),
                     AssistantMessage.Assistant("Hi there"),
@@ -123,6 +125,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Hello")
         runtime.emit(
             AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Hello")),
                 retryAvailable = true,
                 error = AssistantError.Network,
@@ -142,9 +145,115 @@ class AssistantViewModelTest {
                 siteId = SITE_ID,
                 toolScope = ToolScope.GLOBAL,
                 userMessage = "Hello",
-                history = listOf(AssistantMessage.User("Hello")),
+                history = emptyList(),
             )
         )
+    }
+
+    @Test
+    fun `when turn reaches max iterations, then state exposes an error`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.MAX_ITERATIONS,
+                updatedHistory = listOf(AssistantMessage.User("Hello")),
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+    }
+
+    @Test
+    fun `given prior history, when failed turn is retried, then retry uses pre-turn history`() = runTest {
+        val priorHistory = listOf(
+            AssistantMessage.User("Previous question"),
+            AssistantMessage.Assistant("Previous answer"),
+        )
+        viewModel.onSendMessage("Previous question")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = priorHistory,
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onSendMessage("Current question")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = priorHistory + listOf(
+                    AssistantMessage.User("Current question"),
+                    AssistantMessage.Assistant("Partial answer"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onRetry()
+
+        assertThat(runtime.retryRequests.last()).isEqualTo(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "Current question",
+                history = priorHistory,
+            )
+        )
+    }
+
+    @Test
+    fun `given retry fails, when retried again, then retry still uses original pre-turn history`() = runTest {
+        val priorHistory = listOf(
+            AssistantMessage.User("Previous question"),
+            AssistantMessage.Assistant("Previous answer"),
+        )
+        viewModel.onSendMessage("Previous question")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = priorHistory,
+            )
+        )
+        advanceUntilIdle()
+        viewModel.onSendMessage("Current question")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = priorHistory + listOf(
+                    AssistantMessage.User("Current question"),
+                    AssistantMessage.Assistant("First failure"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onRetry()
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = priorHistory + listOf(
+                    AssistantMessage.User("Current question"),
+                    AssistantMessage.Assistant("Second failure"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+        viewModel.onRetry()
+
+        assertThat(runtime.retryRequests).hasSize(2)
+        assertThat(runtime.retryRequests.map { it.history }).containsOnly(priorHistory)
     }
 
     @Test

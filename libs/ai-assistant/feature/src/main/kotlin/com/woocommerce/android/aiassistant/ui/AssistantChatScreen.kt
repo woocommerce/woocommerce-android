@@ -317,6 +317,7 @@ private fun AssistantUiError?.toDisplayText(): String = when (this) {
     AssistantUiError.OUTCOME_UNKNOWN -> "Outcome unknown"
     AssistantUiError.CANCELLED -> "Request cancelled"
     AssistantUiError.CONFIRMATION_DEFERRED -> "Confirmation is not available yet"
+    AssistantUiError.MAX_ITERATIONS -> "Assistant reached its turn limit"
     AssistantUiError.UNKNOWN,
     null -> "Something went wrong"
 }

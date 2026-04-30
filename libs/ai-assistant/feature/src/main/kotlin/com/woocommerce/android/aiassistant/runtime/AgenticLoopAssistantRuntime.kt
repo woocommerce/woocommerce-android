@@ -53,6 +53,7 @@ class AgenticLoopAssistantRuntime @Inject constructor(
                     }
                     is LoopEvent.Finished -> emit(
                         AssistantRuntimeEvent.Finished(
+                            outcome = event.outcome,
                             updatedHistory = event.updatedHistory,
                             retryAvailable = event.retryAvailable,
                             error = event.error,

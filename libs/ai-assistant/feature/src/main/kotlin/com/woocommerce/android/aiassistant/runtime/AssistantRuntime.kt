@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.runtime
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +35,7 @@ sealed interface AssistantRuntimeEvent {
     ) : AssistantRuntimeEvent
 
     data class Finished(
+        val outcome: LoopOutcome,
         val updatedHistory: List<AssistantMessage>,
         val retryAvailable: Boolean = false,
         val error: AssistantError? = null,

@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
@@ -28,6 +29,7 @@ class AssistantViewModel(
     private var turnJob: Job? = null
     private var activeAssistantMessageId: String? = null
     private var history: List<AssistantMessage> = emptyList()
+    private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
     private var lastUserMessage: String? = null
 
     fun onSendMessage(message: String) {
@@ -96,6 +98,9 @@ class AssistantViewModel(
 
     private fun startTurn(message: String, isRetry: Boolean) {
         turnJob?.cancel()
+        if (!isRetry) {
+            lastTurnBaseHistory = history
+        }
 
         _uiState.update { state ->
             val userMessage = if (isRetry) {
@@ -127,7 +132,7 @@ class AssistantViewModel(
             siteId = siteId,
             toolScope = toolScope,
             userMessage = message,
-            history = history,
+            history = lastTurnBaseHistory,
         )
         val events = if (isRetry) runtime.retryTurn(request) else runtime.startTurn(request)
         turnJob = viewModelScope.launch {
@@ -154,9 +159,9 @@ class AssistantViewModel(
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
-                        status = if (event.error == null) AssistantUiStatus.IDLE else AssistantUiStatus.ERROR,
-                        error = event.error?.toAssistantUiError(),
-                        canRetry = event.retryAvailable,
+                        status = event.outcome.toAssistantUiStatus(),
+                        error = event.toAssistantUiError(),
+                        canRetry = event.outcome == LoopOutcome.FAILED && event.retryAvailable,
                         pendingConfirmation = null,
                     )
                 }
@@ -177,5 +182,19 @@ class AssistantViewModel(
                 }
             )
         }
+    }
+
+    private fun LoopOutcome.toAssistantUiStatus(): AssistantUiStatus = when (this) {
+        LoopOutcome.COMPLETED,
+        LoopOutcome.STOPPED -> AssistantUiStatus.IDLE
+        LoopOutcome.FAILED,
+        LoopOutcome.MAX_ITERATIONS -> AssistantUiStatus.ERROR
+    }
+
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? = when (outcome) {
+        LoopOutcome.COMPLETED,
+        LoopOutcome.STOPPED -> null
+        LoopOutcome.FAILED -> error?.toAssistantUiError() ?: AssistantUiError.UNKNOWN
+        LoopOutcome.MAX_ITERATIONS -> error?.toAssistantUiError() ?: AssistantUiError.MAX_ITERATIONS
     }
 }

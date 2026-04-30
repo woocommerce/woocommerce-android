@@ -44,6 +44,7 @@ enum class AssistantUiError {
     OUTCOME_UNKNOWN,
     CANCELLED,
     CONFIRMATION_DEFERRED,
+    MAX_ITERATIONS,
     UNKNOWN,
 }
 
