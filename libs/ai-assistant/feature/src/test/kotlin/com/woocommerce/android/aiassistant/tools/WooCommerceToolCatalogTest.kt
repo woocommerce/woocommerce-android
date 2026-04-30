@@ -11,6 +11,7 @@ import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductVariationsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
@@ -31,6 +32,7 @@ class WooCommerceToolCatalogTest {
         ProductsUpdateToolHandler(mock(), mock()),
         ProductsBulkUpdateToolHandler(mock(), mock()),
         ProductVariationsToolHandler(mock(), mock()),
+        ProductVariationsUpdateToolHandler(mock(), mock()),
         AnalyticsRevenueToolHandler(mock(), mock()),
         AnalyticsOrdersToolHandler(mock(), mock()),
         ShowCardsToolHandler(),
@@ -38,7 +40,7 @@ class WooCommerceToolCatalogTest {
     )
 
     @Test
-    fun `when all stub handlers are aggregated, then 13 expected tool names are present`() {
+    fun `when all stub handlers are aggregated, then 14 expected tool names are present`() {
         val names = allHandlers.map { it.descriptor.name }
 
         assertThat(names).containsExactlyInAnyOrder(
@@ -51,6 +53,7 @@ class WooCommerceToolCatalogTest {
             "products_update",
             "products_bulk_update",
             "product_variations_list",
+            "product_variations_update",
             "analytics_revenue",
             "analytics_orders",
             "show_cards",
@@ -61,7 +64,13 @@ class WooCommerceToolCatalogTest {
     @Test
     fun `when descriptors are inspected, then write tools are UNSAFE and read tools are SAFE`() {
         val byName = allHandlers.associateBy { it.descriptor.name }
-        val writeToolNames = setOf("orders_update", "orders_bulk_update", "products_update", "products_bulk_update")
+        val writeToolNames = setOf(
+            "orders_update",
+            "orders_bulk_update",
+            "products_update",
+            "products_bulk_update",
+            "product_variations_update",
+        )
 
         writeToolNames.forEach { name ->
             assertThat(byName.getValue(name).descriptor.safetyLevel)

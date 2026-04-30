@@ -12,6 +12,7 @@ import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsToolHandler
+import com.woocommerce.android.aiassistant.tools.products.ProductVariationsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
@@ -65,6 +66,10 @@ internal abstract class AiAssistantToolsModule {
     @Binds
     @IntoSet
     abstract fun bindProductVariationsListHandler(impl: ProductVariationsToolHandler): AssistantToolHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindProductVariationsUpdateHandler(impl: ProductVariationsUpdateToolHandler): AssistantToolHandler
 
     @Binds
     @IntoSet
