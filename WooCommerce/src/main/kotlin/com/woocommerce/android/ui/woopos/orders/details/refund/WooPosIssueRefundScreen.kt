@@ -84,7 +84,7 @@ fun WooPosIssueRefundScreen(
         }
 
     LaunchedEffect(Unit) {
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
     }
 
     refundReasonUpdate?.let { reason ->
@@ -95,7 +95,7 @@ fun WooPosIssueRefundScreen(
 
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             onNavigationEvent(
                 WooPosNavigationEvent.GoBackWithResult(
                     key = ISSUE_REFUND_DISMISSED_KEY,
