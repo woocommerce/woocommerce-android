@@ -71,16 +71,6 @@ private fun SmarterNotificationSettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = stringResource(R.string.settings_notifs_notification_types),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp
-                )
-            )
             items.forEach { item ->
                 NotificationTypeRow(
                     item = item,
