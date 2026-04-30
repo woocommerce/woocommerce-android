@@ -219,7 +219,9 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     @Test
     fun `given AU country with both flags on, when invoked, then return success false`() = testBlocking {
         whenever(supportedCountries.supportedCountries())
-            .thenReturn(listOf("us", "gb", "fr", "de", "ie", "nl", "sg", "nz", "at", "be", "fi", "it", "lu", "pt", "es"))
+            .thenReturn(
+                listOf("us", "gb", "fr", "de", "ie", "nl", "sg", "nz", "at", "be", "fi", "it", "lu", "pt", "es")
+            )
         val siteSettings = buildSiteSettings(countryCode = "AU", currencyCode = "AUD")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
 

@@ -54,7 +54,9 @@ class WooPosEligibilityViewModelTest {
         runBlocking {
             whenever(mockStoreCountryProvider()).doReturn("United States")
             whenever(mockStoreCountryCodeProvider()).doReturn("us")
-            whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(listOf("us" to "usd", "gb" to "gbp"))
+            whenever(
+                supportedCountries.supportedCountryCurrencyPairs()
+            ).thenReturn(listOf("us" to "usd", "gb" to "gbp"))
         }
     }
 

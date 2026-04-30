@@ -37,9 +37,14 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
 
         assertThat(sut.supportedCountryCurrencyPairs())
             .containsExactlyInAnyOrder(
-                "us" to "usd", "gb" to "gbp",
-                "fr" to "eur", "de" to "eur", "ie" to "eur", "nl" to "eur",
-                "sg" to "sgd", "nz" to "nzd",
+                "us" to "usd",
+                "gb" to "gbp",
+                "fr" to "eur",
+                "de" to "eur",
+                "ie" to "eur",
+                "nl" to "eur",
+                "sg" to "sgd",
+                "nz" to "nzd",
             )
     }
 

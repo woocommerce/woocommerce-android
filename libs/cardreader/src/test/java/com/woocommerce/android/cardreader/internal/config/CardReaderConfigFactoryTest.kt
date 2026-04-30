@@ -8,7 +8,6 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForES
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFI
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFR
-import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForLU

@@ -18,11 +18,17 @@ class CardReaderCountryConfigProvider @Inject constructor(
         val normalised = countryCode?.uppercase()
         return when (normalised) {
             in PRIMARY_EXPANSION_COUNTRIES ->
-                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)) raw
-                else CardReaderConfigForUnsupportedCountry
+                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)) {
+                    raw
+                } else {
+                    CardReaderConfigForUnsupportedCountry
+                }
             in EU_EXTENDED_COUNTRIES ->
-                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)) raw
-                else CardReaderConfigForUnsupportedCountry
+                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)) {
+                    raw
+                } else {
+                    CardReaderConfigForUnsupportedCountry
+                }
             else -> raw
         }
     }
