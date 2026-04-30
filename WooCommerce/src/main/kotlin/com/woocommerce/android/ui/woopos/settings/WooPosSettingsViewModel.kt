@@ -72,11 +72,6 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun onCategorySelectedFromPhoneList(category: WooPosSettingsCategory) {
-        onCategorySelected(category)
-        _state.update { currentState -> currentState.copy(isDetailVisible = true) }
-    }
-
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
@@ -98,10 +93,10 @@ class WooPosSettingsViewModel @Inject constructor(
     fun navigateBack() {
         _state.update { currentState ->
             val parentDestination = currentState.currentDestination.parentDestination
-            when {
-                parentDestination != null -> currentState.copy(currentDestination = parentDestination)
-                currentState.isDetailVisible -> currentState.copy(isDetailVisible = false)
-                else -> currentState
+            if (parentDestination != null) {
+                currentState.copy(currentDestination = parentDestination)
+            } else {
+                currentState
             }
         }
     }

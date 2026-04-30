@@ -9,11 +9,10 @@ import kotlinx.parcelize.Parcelize
 data class WooPosSettingsState(
     val selectedCategory: WooPosSettingsCategory = WooPosSettingsCategory.STORE,
     val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination,
-    val dialogState: WooPosSettingsDialogState = WooPosSettingsDialogState.Hidden,
-    val isDetailVisible: Boolean = false,
+    val dialogState: WooPosSettingsDialogState = WooPosSettingsDialogState.Hidden
 ) {
     val canGoBack: Boolean
-        get() = currentDestination.parentDestination != null || isDetailVisible
+        get() = currentDestination.parentDestination != null
 }
 
 sealed class WooPosSettingsDetailDestination {
