@@ -16,26 +16,31 @@ class CardReaderCountryConfigProvider @Inject constructor(
         val raw = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         if (raw is CardReaderConfigForUnsupportedCountry) return raw
 
-        val normalised = countryCode?.uppercase(Locale.ROOT)
-        return when (normalised) {
-            in PRIMARY_EXPANSION_COUNTRIES ->
-                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)) {
-                    raw
-                } else {
-                    CardReaderConfigForUnsupportedCountry
-                }
-            in EU_EXTENDED_COUNTRIES ->
-                if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)) {
-                    raw
-                } else {
-                    CardReaderConfigForUnsupportedCountry
-                }
-            else -> raw
+        val gatingFlag = countryCode?.uppercase(Locale.ROOT)?.let(EXPANSION_COUNTRY_FEATURE_FLAGS::get)
+            ?: return raw
+
+        return if (featureFlagRepository.isEnabled(gatingFlag)) {
+            raw
+        } else {
+            CardReaderConfigForUnsupportedCountry
         }
     }
 
     private companion object {
-        val PRIMARY_EXPANSION_COUNTRIES = setOf("FR", "DE", "IE", "NL", "SG", "NZ")
-        val EU_EXTENDED_COUNTRIES = setOf("AT", "BE", "FI", "IT", "LU", "PT", "ES")
+        val EXPANSION_COUNTRY_FEATURE_FLAGS = mapOf(
+            "FR" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "DE" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "IE" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "NL" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "SG" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "NZ" to FeatureFlag.IPP_COUNTRY_EXPANSION,
+            "AT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "BE" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "FI" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "IT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "LU" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "PT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "ES" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+        )
     }
 }
