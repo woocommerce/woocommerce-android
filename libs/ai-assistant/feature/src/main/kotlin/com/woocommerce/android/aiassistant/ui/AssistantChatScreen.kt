@@ -37,7 +37,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -176,9 +175,7 @@ private fun AssistantMessageThread(
 
     LazyColumn(
         state = listState,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(AssistantChatTestTags.THREAD),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
@@ -220,7 +217,6 @@ private fun AssistantMessageBubble(message: AssistantUiMessage) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .testTag(AssistantChatTestTags.message(message.id))
             .semantics { contentDescription = messageContentDescription },
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
     ) {
@@ -353,9 +349,7 @@ private fun AssistantComposer(
                 OutlinedTextField(
                     value = inputText,
                     onValueChange = onInputTextChange,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag(AssistantChatTestTags.INPUT),
+                    modifier = Modifier.weight(1f),
                     minLines = 1,
                     maxLines = 4,
                     shape = RoundedCornerShape(12.dp),
