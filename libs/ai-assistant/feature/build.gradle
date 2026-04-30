@@ -68,4 +68,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugRuntimeOnly(libs.androidx.compose.ui.test.manifest)
 }
