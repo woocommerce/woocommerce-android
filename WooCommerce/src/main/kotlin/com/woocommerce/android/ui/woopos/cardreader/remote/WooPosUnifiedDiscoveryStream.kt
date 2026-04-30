@@ -27,6 +27,7 @@ sealed class WooPosDiscoveredReader {
     }
 
     data class Phone(
+        val serviceName: String,
         val name: String,
         val host: InetAddress,
         val port: Int,
@@ -126,18 +127,18 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
             // receiving the Lost event for the previous one (Android NSD goodbye is
             // unreliable). Drop any earlier entries from the same host so we don't show
             // the same device twice.
-            val staleNames = state.phonesByFingerprint.values
+            val staleServiceNames = state.phonesByFingerprint.values
                 .filter { it.host == phone.host && it.fingerprintBase64 != fingerprint }
-                .map { it.name }
-            staleNames.forEach { name ->
-                val staleFp = state.fingerprintByName.remove(name)
+                .map { it.serviceName }
+            staleServiceNames.forEach { serviceName ->
+                val staleFp = state.fingerprintByServiceName.remove(serviceName)
                 if (staleFp != null) state.phonesByFingerprint.remove(staleFp)
             }
 
             val isUpdate = state.phonesByFingerprint.containsKey(fingerprint)
             if (isUpdate || state.phonesByFingerprint.size < MAX_DISCOVERED_PHONES) {
                 state.phonesByFingerprint[fingerprint] = phone
-                state.fingerprintByName[phone.name] = fingerprint
+                state.fingerprintByServiceName[phone.serviceName] = fingerprint
                 send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
             }
         }
@@ -149,7 +150,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         serviceName: String,
     ) {
         mutex.withLock {
-            val fingerprint = state.fingerprintByName.remove(serviceName) ?: return@withLock
+            val fingerprint = state.fingerprintByServiceName.remove(serviceName) ?: return@withLock
             state.phonesByFingerprint.remove(fingerprint)
             send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
         }
@@ -158,7 +159,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     private class DiscoveryState {
         var bluetoothReaders: List<CardReader> = emptyList()
         val phonesByFingerprint: LinkedHashMap<String, WooPosDiscoveredReader.Phone> = linkedMapOf()
-        val fingerprintByName: MutableMap<String, String> = mutableMapOf()
+        val fingerprintByServiceName: MutableMap<String, String> = mutableMapOf()
 
         fun snapshot(): List<WooPosDiscoveredReader> =
             bluetoothReaders.map(WooPosDiscoveredReader::Bluetooth) + phonesByFingerprint.values

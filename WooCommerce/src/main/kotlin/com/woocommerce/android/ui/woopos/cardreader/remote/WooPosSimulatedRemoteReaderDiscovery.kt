@@ -17,6 +17,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
         emit(
             WooPosPhoneDiscoveryEvent.Added(
                 WooPosDiscoveredReader.Phone(
+                    serviceName = "woopos-remote-sim1",
                     name = "Simulated Pixel 7",
                     host = InetAddress.getByName("127.0.0.1"),
                     port = 9000,
@@ -30,6 +31,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
         emit(
             WooPosPhoneDiscoveryEvent.Added(
                 WooPosDiscoveredReader.Phone(
+                    serviceName = "woopos-remote-sim2",
                     name = "Simulated Galaxy S24",
                     host = InetAddress.getByName("127.0.0.2"),
                     port = 9001,

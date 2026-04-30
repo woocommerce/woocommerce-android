@@ -728,6 +728,7 @@ class WooPosCardPaymentViewModelTest {
 
     private fun simulatedRemoteReader() =
         WooPosDiscoveredReader.Phone(
+            serviceName = "woopos-remote-test",
             name = "phone",
             host = InetAddress.getByName("127.0.0.1"),
             port = 1234,

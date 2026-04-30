@@ -387,6 +387,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     fun `given remote session is Connected, when initialized, then state should be Connected`() = runTest {
         // GIVEN
         val phone = WooPosDiscoveredReader.Phone(
+            serviceName = "woopos-remote-test",
             name = "Andrey's phone",
             host = InetAddress.getByName("127.0.0.1"),
             port = 0,
