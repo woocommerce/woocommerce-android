@@ -75,6 +75,7 @@ import java.math.BigDecimal
 fun WooPosIssueRefundScreen(
     orderId: Long,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    modifier: Modifier = Modifier,
     refundReasonUpdate: String? = null,
     disablePartialRefund: Boolean = false,
 ) {
@@ -118,7 +119,7 @@ fun WooPosIssueRefundScreen(
         currentState.step == WooPosRefundState.Content.RefundStep.Processing
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
             .statusBarsPadding()
@@ -218,11 +219,12 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String {
 private fun RefundScreenHeader(
     title: String,
     onCloseClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     closeButtonEnabled: Boolean = true,
 ) {
     val closeContentDescription = stringResource(R.string.close)
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(WooPosComponentSize.XSmall.value),
     ) {
@@ -266,10 +268,11 @@ private fun RefundScreenButtons(
     onDismiss: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    modifier: Modifier = Modifier,
     disablePartialRefund: Boolean = false,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         when (state) {
@@ -401,9 +404,11 @@ private fun ContentStateHandler(
     orderId: Long,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
     disablePartialRefund: Boolean = false,
 ) {
     AnimatedContent(
+        modifier = modifier,
         targetState = state.step,
         contentKey = { step ->
             when (step) {
@@ -460,9 +465,9 @@ private fun ContentStateHandler(
 }
 
 @Composable
-private fun ShimmerItemRow() {
+private fun ShimmerItemRow(modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.XSmall.value),
         verticalAlignment = Alignment.CenterVertically,
@@ -499,6 +504,7 @@ private fun ShimmerItemRow() {
 @Composable
 private fun ErrorContent(
     errorState: WooPosRefundState.Error,
+    modifier: Modifier = Modifier,
 ) {
     val title = when (errorState.errorType) {
         WooPosRefundState.Error.ErrorType.Loading ->
@@ -508,7 +514,7 @@ private fun ErrorContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -541,9 +547,9 @@ private fun ErrorContent(
 }
 
 @Composable
-private fun NoItemsContent() {
+private fun NoItemsContent(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -559,9 +565,10 @@ private fun NoItemsContent() {
 @Composable
 private fun RefundSuccessContent(
     state: WooPosRefundState.RefundSuccess,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -609,12 +616,13 @@ private fun RefundSuccessContent(
 private fun SelectItemsContent(
     state: WooPosRefundState,
     onEvent: (WooPosRefundUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
     disableItemSelection: Boolean = false,
 ) {
     val contentState = state as? WooPosRefundState.Content
     val isLoading = state is WooPosRefundState.Loading
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         if (!isLoading) {
             ItemsHeaderRow(
                 allItemsSelected = contentState?.allItemsSelected ?: false,
@@ -669,11 +677,12 @@ private fun ItemsHeaderRow(
     allItemsSelected: Boolean,
     selectedCount: Int,
     onSelectAllToggled: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
     val selectAllContentDescription = stringResource(R.string.order_refunds_items_select_all)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.Medium.value)
             .then(
@@ -727,10 +736,11 @@ private fun RefundableItemRow(
     item: WooPosRefundableItem,
     isSelected: Boolean,
     onItemClick: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.XSmall.value)
             .then(
@@ -796,9 +806,10 @@ private fun RefundableItemRow(
 private fun ReviewRefundContent(
     state: WooPosRefundState.Content,
     onEditReason: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
         Column(
@@ -888,10 +899,11 @@ private fun ReviewRefundContent(
 private fun ReviewSummaryRow(
     label: String,
     value: String,
-    isTotal: Boolean
+    isTotal: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -922,9 +934,10 @@ private fun Divider(modifier: Modifier = Modifier) {
 @Composable
 private fun ConfirmRefundContent(
     state: WooPosRefundState.Content,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
