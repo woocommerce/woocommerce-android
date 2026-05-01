@@ -92,11 +92,7 @@ class AgenticLoopImpl(
             val completedTools = (toolExecution as ToolExecutionOutcome.Completed).completed
             modelMessages = modelMessages + newAssistantMsg
             newTurnMessages.add(newAssistantMsg)
-            for (completed in completedTools) {
-                val newToolMsg = completed.toToolMessage()
-                modelMessages = modelMessages + newToolMsg
-                newTurnMessages.add(newToolMsg)
-            }
+            modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
             completedTools.firstOutcomeUnknownError()?.let { error ->
                 emit(LoopEvent.Failed(error))
                 emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
@@ -277,6 +273,20 @@ class AgenticLoopImpl(
         }
         emit(LoopEvent.Failed(AssistantError.Cancelled))
         emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
+    }
+
+    private fun appendCompletedToolMessages(
+        modelMessages: List<AssistantMessage>,
+        newTurnMessages: MutableList<AssistantMessage>,
+        completedTools: List<CompletedToolCall>,
+    ): List<AssistantMessage> {
+        var updatedModelMessages = modelMessages
+        completedTools.forEach { completed ->
+            val newToolMsg = completed.toToolMessage()
+            updatedModelMessages = updatedModelMessages + newToolMsg
+            newTurnMessages.add(newToolMsg)
+        }
+        return updatedModelMessages
     }
 
     private data class StreamResult(
