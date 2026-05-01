@@ -11,11 +11,16 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolve
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -78,6 +83,22 @@ class ShowCardsToolHandlerTest {
         val summary = firstResolvedSummary(result)
 
         assertThat(summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
+    }
+
+    @Test
+    fun `structured excludes render payload descriptions html images metadata and raw json`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(leakyProductCard(id = "456")),
+            referencesJson = """[{ "family": "product", "id": "456" }]"""
+        )
+
+        val structuredText = assertSuccess(result).structured.toString()
+
+        assertThat(structuredText).doesNotContain("Long description")
+        assertThat(structuredText).doesNotContain("<p>Private</p>")
+        assertThat(structuredText).doesNotContain("image.png")
+        assertThat(structuredText).doesNotContain("metadata")
+        assertThat(structuredText).doesNotContain("raw")
     }
 
     private fun handlerWith(resolver: ShowCardsResolver) =
@@ -154,6 +175,42 @@ class ShowCardsToolHandlerTest {
                 family = "product",
                 id = id,
                 title = "Socks",
+            )
+        )
+    }
+
+    private fun leakyProductCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Product, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = buildJsonObject {
+                put("id", id)
+                put("name", "Socks")
+                put("sku", "woo-socks")
+                put("price", "9.99")
+                put("stock_status", "instock")
+                put("description", "Long description")
+                put("html", "<p>Private</p>")
+                put("images", buildJsonArray { add("https://example.com/image.png") })
+                putJsonObject("metadata") {
+                    put("private", "value")
+                }
+                putJsonObject("raw") {
+                    put("entity", "json")
+                }
+            },
+            card = ShowCardPayload(
+                family = "product",
+                id = id,
+                title = "Socks",
+                attributes = mapOf(
+                    "description" to "Long description",
+                    "html" to "<p>Private</p>",
+                    "image" to "https://example.com/image.png",
+                    "metadata" to "private",
+                    "raw" to "entity",
+                ),
             )
         )
     }

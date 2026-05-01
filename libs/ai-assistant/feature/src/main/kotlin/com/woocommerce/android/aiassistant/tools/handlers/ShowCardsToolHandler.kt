@@ -21,6 +21,7 @@ import javax.inject.Inject
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -129,7 +130,7 @@ class ShowCardsToolHandler internal constructor(
         ResolvedRef(
             family = ref.family.serializedName,
             id = ref.id,
-            summary = summary,
+            summary = summary.filterAllowedKeysFor(ref.family),
         )
 
     private fun ShowCardsResolution.Missing.toMissingRef(): MissingRef =
@@ -139,7 +140,18 @@ class ShowCardsToolHandler internal constructor(
             reason = reason,
         )
 
+    private fun JsonObject.filterAllowedKeysFor(family: ShowCardFamily): JsonObject {
+        val allowedKeys = when (family) {
+            ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
+            ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
+        }
+        return JsonObject(filterKeys { it in allowedKeys })
+    }
+
     private companion object {
+        val ORDER_SUMMARY_KEYS = setOf("id", "number", "status", "total", "currency", "date_created")
+        val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
+
         val json = Json {
             explicitNulls = false
         }
