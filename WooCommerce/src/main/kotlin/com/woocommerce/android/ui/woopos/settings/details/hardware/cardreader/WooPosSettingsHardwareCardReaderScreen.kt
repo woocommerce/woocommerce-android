@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -230,17 +231,17 @@ private fun NotConnectedContent(
 @Composable
 private fun ReaderConnectedIndicator() {
     Row(verticalAlignment = Alignment.CenterVertically) {
+        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         Box(
             modifier = Modifier
-                .padding(WooPosSpacing.Small.value)
-                .size(WooPosIconSize.XSmall.value)
+                .size(14.dp)
                 .background(color = WooPosTheme.colors.success, shape = CircleShape)
         )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
         WooPosText(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
             text = stringResource(R.string.woopos_reader_connected),
             style = WooPosTypography.BodyMedium,
-            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
