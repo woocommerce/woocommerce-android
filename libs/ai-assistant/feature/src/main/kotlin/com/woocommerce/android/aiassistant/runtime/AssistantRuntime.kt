@@ -15,9 +15,7 @@ interface AssistantRuntime {
 
     suspend fun cancelTurn(conversationId: String)
 
-    suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult
-
-    suspend fun cancelWrite(confirmationId: String)
+    suspend fun resolveConfirmation(result: ConfirmationResult): AssistantRuntimeConfirmationDispatchResult
 }
 
 data class AssistantTurnRequest(
@@ -47,7 +45,7 @@ sealed interface AssistantRuntimeEvent {
     ) : AssistantRuntimeEvent
 }
 
-sealed interface AssistantRuntimeConfirmationResult {
-    data object Accepted : AssistantRuntimeConfirmationResult
-    data object Deferred : AssistantRuntimeConfirmationResult
+sealed interface AssistantRuntimeConfirmationDispatchResult {
+    data object Accepted : AssistantRuntimeConfirmationDispatchResult
+    data object Deferred : AssistantRuntimeConfirmationDispatchResult
 }

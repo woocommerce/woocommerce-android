@@ -170,37 +170,38 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `when write is confirmed, then runtime resolves safety confirmation`() = runTest {
+    fun `when confirmation is resolved, then runtime forwards the core confirmation result to safety orchestrator`() =
+        runTest {
         val safetyOrchestrator = FakeSafetyOrchestrator()
         val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
+        val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
 
-        val result = runtime.confirmWrite("confirmation-1")
+        val dispatchResult = runtime.resolveConfirmation(result)
 
-        assertThat(result).isEqualTo(AssistantRuntimeConfirmationResult.Accepted)
-        assertThat(safetyOrchestrator.results).containsExactly(
-            ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
-        )
+        assertThat(dispatchResult).isEqualTo(AssistantRuntimeConfirmationDispatchResult.Accepted)
+        assertThat(safetyOrchestrator.results).containsExactly(result)
     }
 
     @Test
     fun `when confirmation is missing, then runtime reports deferred confirmation`() = runTest {
         val runtime = runtime(safetyOrchestrator = FakeSafetyOrchestrator(resolveResult = false))
+        val result = ConfirmationResult("missing", ConfirmationDecision.CONFIRMED)
 
-        val result = runtime.confirmWrite("missing")
+        val dispatchResult = runtime.resolveConfirmation(result)
 
-        assertThat(result).isEqualTo(AssistantRuntimeConfirmationResult.Deferred)
+        assertThat(dispatchResult).isEqualTo(AssistantRuntimeConfirmationDispatchResult.Deferred)
     }
 
     @Test
-    fun `when write is cancelled, then runtime cancels safety confirmation`() = runTest {
+    fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
+        runTest {
         val safetyOrchestrator = FakeSafetyOrchestrator()
         val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
+        val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
 
-        runtime.cancelWrite("confirmation-1")
+        runtime.resolveConfirmation(result)
 
-        assertThat(safetyOrchestrator.results).containsExactly(
-            ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
-        )
+        assertThat(safetyOrchestrator.results).containsExactly(result)
     }
 
     private fun runtime(

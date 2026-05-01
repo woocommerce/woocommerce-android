@@ -7,8 +7,9 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
-import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.tools.SelectedSite
@@ -79,8 +80,12 @@ class AssistantViewModel @AssistedInject constructor(
     fun onConfirmWrite() {
         val confirmationId = _uiState.value.activeConfirmationId ?: return
         viewModelScope.launch {
-            when (runtime.confirmWrite(confirmationId)) {
-                AssistantRuntimeConfirmationResult.Accepted -> {
+            when (
+                runtime.resolveConfirmation(
+                    ConfirmationResult(confirmationId, ConfirmationDecision.CONFIRMED)
+                )
+            ) {
+                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
                     _uiState.update {
                         it.copy(
                             status = AssistantUiStatus.STREAMING,
@@ -90,7 +95,7 @@ class AssistantViewModel @AssistedInject constructor(
                         )
                     }
                 }
-                AssistantRuntimeConfirmationResult.Deferred -> {
+                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
                     activeAssistantMessageId = null
                     _uiState.update {
                         it.copy(
@@ -108,14 +113,32 @@ class AssistantViewModel @AssistedInject constructor(
     fun onCancelWrite() {
         val confirmationId = _uiState.value.activeConfirmationId ?: return
         viewModelScope.launch {
-            runtime.cancelWrite(confirmationId)
-            _uiState.update {
-                it.copy(
-                    status = AssistantUiStatus.IDLE,
-                    error = null,
-                    canRetry = false,
-                    activeConfirmationId = null,
+            when (
+                runtime.resolveConfirmation(
+                    ConfirmationResult(confirmationId, ConfirmationDecision.CANCELLED)
                 )
+            ) {
+                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
+                    _uiState.update {
+                        it.copy(
+                            status = AssistantUiStatus.IDLE,
+                            error = null,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
+                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
+                    activeAssistantMessageId = null
+                    _uiState.update {
+                        it.copy(
+                            status = AssistantUiStatus.ERROR,
+                            error = AssistantUiError.CONFIRMATION_DEFERRED,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
             }
         }
     }

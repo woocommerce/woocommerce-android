@@ -9,7 +9,7 @@ import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
-import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.tools.SelectedSite
@@ -683,7 +683,9 @@ class AssistantViewModelTest {
         viewModel.onConfirmWrite()
         advanceUntilIdle()
 
-        assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
+        assertThat(runtime.results).containsExactly(
+            ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+        )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
         assertThat(viewModel.uiState.value.error).isNull()
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
@@ -772,7 +774,7 @@ class AssistantViewModelTest {
 
     @Test
     fun `given pending confirmation, when confirm is deferred, then state exposes error`() = runTest {
-        runtime.confirmationResult = AssistantRuntimeConfirmationResult.Deferred
+        runtime.confirmationResult = AssistantRuntimeConfirmationDispatchResult.Deferred
         viewModel.onSendMessage("Cancel order 123")
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
@@ -780,7 +782,9 @@ class AssistantViewModelTest {
         viewModel.onConfirmWrite()
         advanceUntilIdle()
 
-        assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
+        assertThat(runtime.results).containsExactly(
+            ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+        )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
@@ -799,7 +803,9 @@ class AssistantViewModelTest {
         viewModel.onCancelWrite()
         advanceUntilIdle()
 
-        assertThat(runtime.cancelledConfirmationIds).containsExactly("confirmation-1")
+        assertThat(runtime.results).containsExactly(
+            ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+        )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }
@@ -818,9 +824,9 @@ class AssistantViewModelTest {
         val startRequests = mutableListOf<AssistantTurnRequest>()
         val retryRequests = mutableListOf<AssistantTurnRequest>()
         val cancelledConversationIds = mutableListOf<String>()
-        val confirmedConfirmationIds = mutableListOf<String>()
-        val cancelledConfirmationIds = mutableListOf<String>()
-        var confirmationResult: AssistantRuntimeConfirmationResult = AssistantRuntimeConfirmationResult.Accepted
+        val results = mutableListOf<ConfirmationResult>()
+        var confirmationResult: AssistantRuntimeConfirmationDispatchResult =
+            AssistantRuntimeConfirmationDispatchResult.Accepted
 
         private val events = MutableSharedFlow<AssistantRuntimeEvent>(extraBufferCapacity = 10)
 
@@ -838,13 +844,11 @@ class AssistantViewModelTest {
             cancelledConversationIds += conversationId
         }
 
-        override suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult {
-            confirmedConfirmationIds += confirmationId
+        override suspend fun resolveConfirmation(
+            result: ConfirmationResult,
+        ): AssistantRuntimeConfirmationDispatchResult {
+            results += result
             return confirmationResult
-        }
-
-        override suspend fun cancelWrite(confirmationId: String) {
-            cancelledConfirmationIds += confirmationId
         }
 
         suspend fun emit(event: AssistantRuntimeEvent) {

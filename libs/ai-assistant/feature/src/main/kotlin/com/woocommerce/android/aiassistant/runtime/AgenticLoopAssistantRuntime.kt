@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
@@ -35,16 +36,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
 
     override suspend fun cancelTurn(conversationId: String) = Unit
 
-    override suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult =
-        if (safetyOrchestrator.confirm(confirmationId)) {
-            AssistantRuntimeConfirmationResult.Accepted
+    override suspend fun resolveConfirmation(
+        result: ConfirmationResult,
+    ): AssistantRuntimeConfirmationDispatchResult =
+        if (safetyOrchestrator.resolve(result)) {
+            AssistantRuntimeConfirmationDispatchResult.Accepted
         } else {
-            AssistantRuntimeConfirmationResult.Deferred
+            AssistantRuntimeConfirmationDispatchResult.Deferred
         }
-
-    override suspend fun cancelWrite(confirmationId: String) {
-        safetyOrchestrator.cancel(confirmationId)
-    }
 
     private fun runTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = flow {
         val context = SessionContext(
