@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -124,7 +125,8 @@ private fun NewOrderNotificationSettingsScreenPreview() {
         NewOrderNotificationSettingsScreen(
             viewState = ViewState(
                 notificationPreference = NotificationPreference.HighValueOrders,
-                currencySymbol = "$"
+                currencySymbol = "$",
+                newOrderNotificationSoundStatus = NewOrderNotificationSoundStatus.SOUND_MODIFIED
             ),
             onNotificationsEnabledChanged = {},
             onNotificationPreferenceChanged = {},

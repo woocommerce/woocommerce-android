@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,13 +15,15 @@ import javax.inject.Inject
 @HiltViewModel
 class NewOrderNotificationSettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository,
+    private val notificationChannelsHandler: NotificationChannelsHandler
 ) : ScopedViewModel(savedStateHandle) {
     private val currencyParameters = parameterRepository.getParameters()
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            currencySymbol = currencyParameters.currencySymbol.orEmpty()
+            currencySymbol = currencyParameters.currencySymbol.orEmpty(),
+            newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -40,7 +44,8 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         val notificationsEnabled: Boolean = true,
         val notificationPreference: NotificationPreference = NotificationPreference.AllOrders,
         val thresholdAmount: BigDecimal = BigDecimal(DEFAULT_THRESHOLD_AMOUNT),
-        val currencySymbol: String
+        val currencySymbol: String,
+        val newOrderNotificationSoundStatus: NewOrderNotificationSoundStatus
     )
 
     enum class NotificationPreference {

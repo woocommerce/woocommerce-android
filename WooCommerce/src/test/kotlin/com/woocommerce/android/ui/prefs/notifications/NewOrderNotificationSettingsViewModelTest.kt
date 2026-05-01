@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.NotificationPreference
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -16,9 +17,10 @@ import java.math.BigDecimal
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
+    private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private lateinit var viewModel: NewOrderNotificationSettingsViewModel
 
-    private fun setup() {
+    private fun setup(prepareMocks: () -> Unit = {}) {
         whenever(parameterRepository.getParameters()).thenReturn(
             SiteParameters(
                 currencyCode = "USD",
@@ -29,9 +31,13 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
                 gmtOffset = 0f
             )
         )
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NotificationChannelsHandler.NewOrderNotificationSoundStatus.DEFAULT)
+        prepareMocks()
         viewModel = NewOrderNotificationSettingsViewModel(
             savedStateHandle = SavedStateHandle(),
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            notificationChannelsHandler = notificationChannelsHandler
         )
     }
 
@@ -70,5 +76,16 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewState.getOrAwaitValue().thresholdAmount)
             .isEqualTo(BigDecimal(750))
+    }
+
+    @Test
+    fun `given cha ching sound is modified, when view is loaded, then expose modified state`() = testBlocking {
+        val status = NotificationChannelsHandler.NewOrderNotificationSoundStatus.SOUND_MODIFIED
+        setup {
+            whenever(notificationChannelsHandler.checkNewOrderNotificationSound()).thenReturn(status)
+        }
+
+        assertThat(viewModel.viewState.getOrAwaitValue().newOrderNotificationSoundStatus)
+            .isEqualTo(status)
     }
 }
