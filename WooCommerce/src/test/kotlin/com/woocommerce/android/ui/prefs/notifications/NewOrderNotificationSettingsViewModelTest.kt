@@ -88,4 +88,19 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewState.getOrAwaitValue().newOrderNotificationSoundStatus)
             .isEqualTo(status)
     }
+
+    @Test
+    fun `when notification settings are refreshed, then update cha ching sound state`() = testBlocking {
+        setup {
+            whenever(notificationChannelsHandler.checkNewOrderNotificationSound()).thenReturn(
+                NotificationChannelsHandler.NewOrderNotificationSoundStatus.DEFAULT,
+                NotificationChannelsHandler.NewOrderNotificationSoundStatus.DISABLED
+            )
+        }
+
+        viewModel.refreshNotificationSettings()
+
+        assertThat(viewModel.viewState.getOrAwaitValue().newOrderNotificationSoundStatus)
+            .isEqualTo(NotificationChannelsHandler.NewOrderNotificationSoundStatus.DISABLED)
+    }
 }

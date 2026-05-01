@@ -40,6 +40,12 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         _viewState.update { it.copy(thresholdAmount = amount) }
     }
 
+    fun refreshNotificationSettings() {
+        _viewState.update {
+            it.copy(newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound())
+        }
+    }
+
     data class ViewState(
         val notificationsEnabled: Boolean = true,
         val notificationPreference: NotificationPreference = NotificationPreference.AllOrders,
