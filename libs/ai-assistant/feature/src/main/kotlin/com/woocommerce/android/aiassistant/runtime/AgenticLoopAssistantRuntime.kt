@@ -11,6 +11,8 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -59,7 +61,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
                 is LoopEvent.ConfirmationRequested -> emit(
-                    AssistantRuntimeEvent.AwaitingConfirmation(event.request.toPendingConfirmation())
+                    AssistantRuntimeEvent.AwaitingConfirmation(event.request.toConfirmationCard())
                 )
                 is LoopEvent.Finished -> {
                     emit(
@@ -80,13 +82,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         }
     }
 
-    private fun ConfirmationRequest.toPendingConfirmation() = AssistantPendingConfirmation(
-        id = id,
+    private fun ConfirmationRequest.toConfirmationCard() = AssistantConfirmationCard(
+        confirmationId = id,
         toolCall = ToolCall(
             id = toolCallId,
             name = toolName,
             arguments = arguments,
         ),
+        state = AssistantConfirmationCardState.PENDING,
         preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this)),
     )
 }

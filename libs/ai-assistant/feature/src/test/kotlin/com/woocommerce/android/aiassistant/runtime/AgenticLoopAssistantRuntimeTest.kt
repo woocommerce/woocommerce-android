@@ -25,6 +25,8 @@ import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -94,7 +96,7 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `when loop requests confirmation, then runtime emits pending confirmation`() = runTest {
+    fun `when loop requests confirmation, then runtime emits inline confirmation card data`() = runTest {
         val request = ConfirmationRequest(
             id = "confirmation-1",
             toolCallId = "call-1",
@@ -113,8 +115,8 @@ class AgenticLoopAssistantRuntimeTest {
 
         assertThat(events).containsExactly(
             AssistantRuntimeEvent.AwaitingConfirmation(
-                AssistantPendingConfirmation(
-                    id = "confirmation-1",
+                AssistantConfirmationCard(
+                    confirmationId = "confirmation-1",
                     toolCall = ToolCall(
                         id = "call-1",
                         name = "orders_update",
@@ -123,6 +125,7 @@ class AgenticLoopAssistantRuntimeTest {
                             put("status", "processing")
                         },
                     ),
+                    state = AssistantConfirmationCardState.PENDING,
                     preview = RenderedConfirmationPreview(
                         message = "Set order #123 to processing (emails the customer)",
                         fields = listOf(

@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -137,13 +136,11 @@ fun AssistantChatScreen(
             AssistantMessageThread(
                 messages = state.messages,
                 onRetry = onRetry,
-                modifier = Modifier.weight(1f),
-            )
-            AssistantStatusPanel(
-                state = state,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
+                modifier = Modifier.weight(1f),
             )
+            AssistantStatusPanel(state = state)
             AssistantComposer(
                 inputText = inputText,
                 onInputTextChange = onInputTextChange,
@@ -218,10 +215,12 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
 private fun AssistantMessageThread(
     messages: List<AssistantUiMessage>,
     onRetry: () -> Unit,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
-    LaunchedEffect(messages.size, messages.lastOrNull()?.text) {
+    LaunchedEffect(messages.size, messages.lastOrNull()?.segments) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.lastIndex)
         }
@@ -240,6 +239,8 @@ private fun AssistantMessageThread(
             AssistantMessageBubble(
                 message = message,
                 onRetry = onRetry,
+                onConfirmWrite = onConfirmWrite,
+                onCancelWrite = onCancelWrite,
             )
         }
     }
@@ -249,6 +250,8 @@ private fun AssistantMessageThread(
 private fun AssistantMessageBubble(
     message: AssistantUiMessage,
     onRetry: () -> Unit,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
@@ -298,13 +301,24 @@ private fun AssistantMessageBubble(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (message.text.isNotEmpty()) {
-                    Text(
-                        text = message.text,
-                        color = textColor,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
-                    )
+                message.segments.forEach { segment ->
+                    when (segment) {
+                        is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
+                            confirmation = segment.model,
+                            onConfirmWrite = onConfirmWrite,
+                            onCancelWrite = onCancelWrite,
+                        )
+                        is AssistantUiSegment.Text -> {
+                            if (segment.text.isNotEmpty()) {
+                                Text(
+                                    text = segment.text,
+                                    color = textColor,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = if (isUser) TextAlign.End else TextAlign.Start,
+                                )
+                            }
+                        }
+                    }
                 }
                 message.error?.let { error ->
                     AssistantInlineError(
@@ -312,7 +326,7 @@ private fun AssistantMessageBubble(
                         onRetry = onRetry,
                     )
                 }
-                if (message.text.isEmpty() && message.error == null) {
+                if (message.segments.all { it is AssistantUiSegment.Text && it.text.isEmpty() } && message.error == null) {
                     Text(
                         text = " ",
                         color = textColor,
@@ -348,17 +362,9 @@ private fun AssistantInlineError(
 @Composable
 private fun AssistantStatusPanel(
     state: AssistantUiState,
-    onConfirmWrite: () -> Unit,
-    onCancelWrite: () -> Unit,
 ) {
     when (state.status) {
-        AssistantUiStatus.AWAITING_CONFIRMATION -> state.pendingConfirmation?.let {
-            AssistantConfirmationPanel(
-                confirmation = it,
-                onConfirmWrite = onConfirmWrite,
-                onCancelWrite = onCancelWrite,
-            )
-        }
+        AssistantUiStatus.AWAITING_CONFIRMATION -> Unit
         AssistantUiStatus.ERROR -> {
             if (state.shouldShowFallbackError) {
                 AssistantFallbackErrorPanel(error = state.error)
@@ -388,8 +394,8 @@ private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
 }
 
 @Composable
-private fun AssistantConfirmationPanel(
-    confirmation: AssistantPendingConfirmation,
+private fun AssistantConfirmationCardSegment(
+    confirmation: AssistantConfirmationCard,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
 ) {
@@ -524,17 +530,27 @@ private fun AssistantChatScreenConfirmationPreview() {
         state = AssistantUiState(
             messages = listOf(
                 AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Cancel order 123"),
-                AssistantUiMessage("preview-2", AssistantUiMessage.Role.ASSISTANT, "I need confirmation first."),
-            ),
-            status = AssistantUiStatus.AWAITING_CONFIRMATION,
-            pendingConfirmation = AssistantPendingConfirmation(
-                id = "confirmation-preview",
-                toolCall = ToolCall(
-                    id = "call-preview",
-                    name = "orders_update",
-                    arguments = buildJsonObject { put("id", 123) },
+                AssistantUiMessage(
+                    id = "preview-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text("I need confirmation first."),
+                        AssistantUiSegment.ConfirmationCard(
+                            AssistantConfirmationCard(
+                                confirmationId = "confirmation-preview",
+                                toolCall = ToolCall(
+                                    id = "call-preview",
+                                    name = "orders_update",
+                                    arguments = buildJsonObject { put("id", 123) },
+                                ),
+                                state = AssistantConfirmationCardState.PENDING,
+                            )
+                        ),
+                    ),
                 ),
             ),
+            status = AssistantUiStatus.AWAITING_CONFIRMATION,
+            activeConfirmationId = "confirmation-preview",
         ),
         inputText = "",
         onInputTextChange = {},

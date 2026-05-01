@@ -70,13 +70,13 @@ class AssistantViewModel @AssistedInject constructor(
                 status = AssistantUiStatus.ERROR,
                 error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
-                pendingConfirmation = null,
+                activeConfirmationId = null,
             )
         }
     }
 
     fun onConfirmWrite() {
-        val confirmationId = _uiState.value.pendingConfirmation?.id ?: return
+        val confirmationId = _uiState.value.activeConfirmationId ?: return
         viewModelScope.launch {
             when (runtime.confirmWrite(confirmationId)) {
                 AssistantRuntimeConfirmationResult.Accepted -> {
@@ -85,7 +85,7 @@ class AssistantViewModel @AssistedInject constructor(
                             status = AssistantUiStatus.STREAMING,
                             error = null,
                             canRetry = false,
-                            pendingConfirmation = null,
+                            activeConfirmationId = null,
                         )
                     }
                 }
@@ -96,7 +96,7 @@ class AssistantViewModel @AssistedInject constructor(
                             status = AssistantUiStatus.ERROR,
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
-                            pendingConfirmation = null,
+                            activeConfirmationId = null,
                         )
                     }
                 }
@@ -105,7 +105,7 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onCancelWrite() {
-        val confirmationId = _uiState.value.pendingConfirmation?.id ?: return
+        val confirmationId = _uiState.value.activeConfirmationId ?: return
         viewModelScope.launch {
             runtime.cancelWrite(confirmationId)
             _uiState.update {
@@ -113,7 +113,7 @@ class AssistantViewModel @AssistedInject constructor(
                     status = AssistantUiStatus.IDLE,
                     error = null,
                     canRetry = false,
-                    pendingConfirmation = null,
+                    activeConfirmationId = null,
                 )
             }
         }
@@ -146,7 +146,7 @@ class AssistantViewModel @AssistedInject constructor(
                 status = AssistantUiStatus.STREAMING,
                 error = null,
                 canRetry = false,
-                pendingConfirmation = null,
+                activeConfirmationId = null,
             )
         }
 
@@ -169,10 +169,15 @@ class AssistantViewModel @AssistedInject constructor(
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
                 _uiState.update {
                     it.copy(
+                        messages = it.messages.withConfirmationCard(
+                            activeMessageId = activeAssistantMessageId,
+                            confirmation = event.confirmation,
+                            nextId = idGenerator::nextId,
+                        ),
                         status = AssistantUiStatus.AWAITING_CONFIRMATION,
                         error = null,
                         canRetry = false,
-                        pendingConfirmation = event.confirmation,
+                        activeConfirmationId = event.confirmation.confirmationId,
                     )
                 }
             }
@@ -193,7 +198,7 @@ class AssistantViewModel @AssistedInject constructor(
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
                         canRetry = canRetry,
-                        pendingConfirmation = null,
+                        activeConfirmationId = null,
                     )
                 }
             }
@@ -222,7 +227,7 @@ class AssistantViewModel @AssistedInject constructor(
             state.copy(
                 messages = state.messages.map { message ->
                     if (message.id == messageId) {
-                        message.copy(text = message.text + delta)
+                        message.appendText(delta)
                     } else {
                         message
                     }
@@ -283,7 +288,7 @@ class AssistantViewModel @AssistedInject constructor(
             return this + AssistantUiMessage(
                 id = nextId(),
                 role = AssistantUiMessage.Role.ASSISTANT,
-                text = "",
+                segments = listOf(AssistantUiSegment.Text("")),
                 error = messageError,
             )
         }
@@ -295,6 +300,54 @@ class AssistantViewModel @AssistedInject constructor(
                 message
             }
         }
+    }
+
+    private fun List<AssistantUiMessage>.withConfirmationCard(
+        activeMessageId: String?,
+        confirmation: AssistantConfirmationCard,
+        nextId: () -> String,
+    ): List<AssistantUiMessage> {
+        val targetId = activeMessageId
+        if (targetId == null) {
+            return this + AssistantUiMessage(
+                id = nextId(),
+                role = AssistantUiMessage.Role.ASSISTANT,
+                segments = listOf(
+                    AssistantUiSegment.Text(""),
+                    AssistantUiSegment.ConfirmationCard(confirmation),
+                ),
+            )
+        }
+
+        return map { message ->
+            if (message.id == targetId) {
+                message.appendConfirmationCard(confirmation)
+            } else {
+                message
+            }
+        }
+    }
+
+    private fun AssistantUiMessage.appendText(delta: String): AssistantUiMessage {
+        val firstTextIndex = segments.indexOfFirst { it is AssistantUiSegment.Text }
+        if (firstTextIndex == -1) {
+            return copy(segments = listOf(AssistantUiSegment.Text(delta)) + segments)
+        }
+
+        val updatedSegments = segments.toMutableList()
+        val currentText = updatedSegments[firstTextIndex] as AssistantUiSegment.Text
+        updatedSegments[firstTextIndex] = currentText.copy(text = currentText.text + delta)
+        return copy(segments = updatedSegments)
+    }
+
+    private fun AssistantUiMessage.appendConfirmationCard(
+        confirmation: AssistantConfirmationCard,
+    ): AssistantUiMessage {
+        val updatedSegments = segments.filterNot {
+            it is AssistantUiSegment.ConfirmationCard &&
+                it.model.confirmationId == confirmation.confirmationId
+        } + AssistantUiSegment.ConfirmationCard(confirmation)
+        return copy(segments = updatedSegments)
     }
 
     @AssistedFactory

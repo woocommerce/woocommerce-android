@@ -3,14 +3,15 @@ package com.woocommerce.android.aiassistant.ui
 import androidx.annotation.StringRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
-import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 
 data class AssistantUiState(
     val messages: List<AssistantUiMessage> = emptyList(),
     val status: AssistantUiStatus = AssistantUiStatus.IDLE,
     val error: AssistantUiError? = null,
     val canRetry: Boolean = false,
-    val pendingConfirmation: AssistantPendingConfirmation? = null,
+    val activeConfirmationId: String? = null,
     val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
@@ -36,13 +37,47 @@ enum class AssistantUiStatus {
 data class AssistantUiMessage(
     val id: String,
     val role: Role,
-    val text: String,
+    val segments: List<AssistantUiSegment>,
     val error: AssistantMessageError? = null,
 ) {
+    constructor(
+        id: String,
+        role: Role,
+        text: String,
+        error: AssistantMessageError? = null,
+    ) : this(
+        id = id,
+        role = role,
+        segments = listOf(AssistantUiSegment.Text(text)),
+        error = error,
+    )
+
+    val text: String
+        get() = segments.filterIsInstance<AssistantUiSegment.Text>().joinToString(separator = "") { it.text }
+
     enum class Role {
         USER,
         ASSISTANT,
     }
+}
+
+sealed interface AssistantUiSegment {
+    data class Text(val text: String) : AssistantUiSegment
+
+    data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
+}
+
+data class AssistantConfirmationCard(
+    val confirmationId: String,
+    val toolCall: ToolCall,
+    val state: AssistantConfirmationCardState,
+    val preview: RenderedConfirmationPreview? = null,
+)
+
+enum class AssistantConfirmationCardState {
+    PENDING,
+    CONFIRMED,
+    CANCELLED,
 }
 
 data class AssistantMessageError(

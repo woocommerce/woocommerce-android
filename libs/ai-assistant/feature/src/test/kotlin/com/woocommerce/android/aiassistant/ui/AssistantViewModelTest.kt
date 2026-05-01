@@ -6,7 +6,6 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
-import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
@@ -62,7 +61,7 @@ class AssistantViewModelTest {
     fun `when initialized, then state is idle`() {
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
         assertThat(viewModel.uiState.value.messages).isEmpty()
-        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
         assertThat(viewModel.uiState.value.error).isNull()
     }
 
@@ -488,22 +487,27 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `when runtime awaits confirmation, then state exposes pending confirmation`() = runTest {
+    fun `when runtime awaits confirmation, then assistant message gains inline confirmation segment`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
-        val confirmation = AssistantPendingConfirmation(
-            id = "confirmation-1",
+        val confirmation = AssistantConfirmationCard(
+            confirmationId = "confirmation-1",
             toolCall = ToolCall(
                 id = "call-1",
                 name = "orders_update",
                 arguments = buildJsonObject { put("id", 123) },
             ),
+            state = AssistantConfirmationCardState.PENDING,
         )
 
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(confirmation))
         advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
-        assertThat(viewModel.uiState.value.pendingConfirmation).isEqualTo(confirmation)
+        assertThat(viewModel.uiState.value.activeConfirmationId).isEqualTo("confirmation-1")
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+            AssistantUiSegment.ConfirmationCard(confirmation),
+        )
     }
 
     @Test
@@ -521,7 +525,7 @@ class AssistantViewModelTest {
             .isEqualTo(R.string.assistant_chat_error_cancelled)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
-        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
 
@@ -638,7 +642,7 @@ class AssistantViewModelTest {
     @Test
     fun `given awaiting confirmation, when another message is sent, then second turn is ignored`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onSendMessage("Second")
@@ -654,7 +658,7 @@ class AssistantViewModelTest {
             )
         )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
-        assertThat(viewModel.uiState.value.pendingConfirmation).isEqualTo(givenPendingConfirmation())
+        assertThat(viewModel.uiState.value.activeConfirmationId).isEqualTo("confirmation-1")
     }
 
     @Test
@@ -671,7 +675,7 @@ class AssistantViewModelTest {
     @Test
     fun `given pending confirmation, when confirm write is requested, then runtime confirm is called`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onConfirmWrite()
@@ -680,14 +684,14 @@ class AssistantViewModelTest {
         assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
         assertThat(viewModel.uiState.value.error).isNull()
-        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }
 
     @Test
     fun `given confirmed write, when assistant text resumes, then existing assistant bubble grows`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onConfirmWrite()
@@ -698,7 +702,10 @@ class AssistantViewModelTest {
             AssistantUiMessage(
                 id = activeBubbleId,
                 role = AssistantUiMessage.Role.ASSISTANT,
-                text = "Order updated",
+                segments = listOf(
+                    AssistantUiSegment.Text("Order updated"),
+                    AssistantUiSegment.ConfirmationCard(givenConfirmationCard()),
+                ),
             )
         )
     }
@@ -707,7 +714,7 @@ class AssistantViewModelTest {
     fun `given pending confirmation, when confirm is deferred, then state exposes error`() = runTest {
         runtime.confirmationResult = AssistantRuntimeConfirmationResult.Deferred
         viewModel.onSendMessage("Cancel order 123")
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onConfirmWrite()
@@ -720,13 +727,13 @@ class AssistantViewModelTest {
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
-        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }
 
     @Test
     fun `given pending confirmation, when cancel write is requested, then runtime cancel write is called`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onCancelWrite()
@@ -734,16 +741,17 @@ class AssistantViewModelTest {
 
         assertThat(runtime.cancelledConfirmationIds).containsExactly("confirmation-1")
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
-        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }
 
-    private fun givenPendingConfirmation() = AssistantPendingConfirmation(
-        id = "confirmation-1",
+    private fun givenConfirmationCard() = AssistantConfirmationCard(
+        confirmationId = "confirmation-1",
         toolCall = ToolCall(
             id = "call-1",
             name = "orders_update",
             arguments = buildJsonObject { put("id", 123) },
         ),
+        state = AssistantConfirmationCardState.PENDING,
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {
