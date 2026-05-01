@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -57,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -433,65 +437,91 @@ private fun AssistantConfirmationCardSegment(
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
 ) {
-    Column(
+    val colors = confirmation.state.confirmationCardColors()
+    val shape = RoundedCornerShape(12.dp)
+
+    Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .fillMaxWidth(),
+        shape = shape,
+        color = colors.container,
+        border = BorderStroke(1.dp, colors.border),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Icon(
-                painter = painterResource(confirmation.state.iconRes()),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-            Text(
-                text = stringResource(confirmation.state.eyebrowRes()),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
-        Text(
-            text = confirmation.preview?.summary
-                ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            style = MaterialTheme.typography.titleSmall,
-        )
-        confirmation.preview?.rows?.forEach { row ->
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = row.label,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    style = MaterialTheme.typography.labelMedium,
+                Icon(
+                    painter = painterResource(confirmation.state.iconRes()),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = colors.accent,
                 )
-                row.beforeValue?.let { beforeValue ->
-                    ConfirmationDiffLine(
-                        prefix = stringResource(R.string.assistant_confirmation_now),
-                        value = beforeValue,
-                        strikethrough = true,
-                    )
-                }
-                ConfirmationDiffLine(
-                    prefix = stringResource(R.string.assistant_confirmation_after),
-                    value = row.afterValue,
+                Text(
+                    text = stringResource(confirmation.state.eyebrowRes()),
+                    color = colors.accent,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
-        }
-        if (confirmation.state == AssistantConfirmationCardState.PENDING) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Button(onClick = onConfirmWrite) {
-                    Text(stringResource(R.string.assistant_chat_confirm))
-                }
-                OutlinedButton(onClick = onCancelWrite) {
-                    Text(stringResource(R.string.assistant_chat_cancel))
+            Text(
+                text = confirmation.preview?.summary
+                    ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
+                color = colors.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            confirmation.preview?.rows?.forEach { row ->
+                ConfirmationDiffRow(
+                    row = row,
+                    colors = colors,
+                )
+            }
+            if (confirmation.state == AssistantConfirmationCardState.PENDING) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = onCancelWrite,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, colors.border),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.title),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.assistant_chat_cancel),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Button(
+                        onClick = onConfirmWrite,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.assistant_chat_confirm),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
             }
         }
@@ -499,28 +529,110 @@ private fun AssistantConfirmationCardSegment(
 }
 
 @Composable
+private fun ConfirmationDiffRow(
+    row: RenderedConfirmationPreviewField,
+    colors: AssistantConfirmationCardColors,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
+            .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text = row.label,
+            color = colors.label,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
+        row.beforeValue?.let { beforeValue ->
+            ConfirmationDiffLine(
+                prefix = stringResource(R.string.assistant_confirmation_now),
+                value = beforeValue,
+                colors = colors,
+                strikethrough = true,
+            )
+        }
+        ConfirmationDiffLine(
+            prefix = stringResource(R.string.assistant_confirmation_after),
+            value = row.afterValue,
+            colors = colors,
+        )
+    }
+}
+
+@Composable
 private fun ConfirmationDiffLine(
     prefix: String,
     value: String,
+    colors: AssistantConfirmationCardColors,
     strikethrough: Boolean = false,
 ) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = prefix,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.widthIn(min = 40.dp),
+            color = colors.label,
             style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
         )
         Text(
             text = value,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.weight(1f),
+            color = if (strikethrough) colors.label else colors.value,
             style = MaterialTheme.typography.bodySmall,
+            fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
             textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
         )
     }
 }
+
+@Composable
+private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantConfirmationCardColors {
+    val colorScheme = MaterialTheme.colorScheme
+
+    return when (this) {
+        AssistantConfirmationCardState.PENDING -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerHigh,
+            border = colorScheme.primary.copy(alpha = 0.28f),
+            accent = colorScheme.primary,
+            title = colorScheme.onSurface,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurface,
+        )
+        AssistantConfirmationCardState.CONFIRMED -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerHigh,
+            border = colorScheme.outlineVariant,
+            accent = colorScheme.primary,
+            title = colorScheme.onSurface,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurface,
+        )
+        AssistantConfirmationCardState.CANCELLED -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerLow,
+            border = colorScheme.outlineVariant,
+            accent = colorScheme.onSurfaceVariant,
+            title = colorScheme.onSurfaceVariant,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+private data class AssistantConfirmationCardColors(
+    val container: Color,
+    val border: Color,
+    val accent: Color,
+    val title: Color,
+    val label: Color,
+    val value: Color,
+)
 
 @Composable
 private fun AssistantComposer(
@@ -622,26 +734,29 @@ private fun AssistantChatScreenPreview() {
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 720, fontScale = 1.5f)
 @Composable
 private fun AssistantChatScreenConfirmationPreview() {
     AssistantChatScreen(
         state = AssistantUiState(
             messages = listOf(
-                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Cancel order 123"),
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Mark order 3479 as completed"),
                 AssistantUiMessage(
                     id = "preview-2",
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
-                        AssistantUiSegment.Text("I need confirmation first."),
+                        AssistantUiSegment.Text("I'll mark order #3479 as completed."),
                         AssistantUiSegment.ConfirmationCard(
                             AssistantConfirmationCard(
                                 confirmationId = "confirmation-preview",
                                 toolCall = ToolCall(
                                     id = "call-preview",
                                     name = "orders_update",
-                                    arguments = buildJsonObject { put("id", 123) },
+                                    arguments = buildJsonObject { put("id", 3479) },
                                 ),
                                 state = AssistantConfirmationCardState.PENDING,
+                                preview = sampleConfirmationPreview(),
                             )
                         ),
                     ),
@@ -660,3 +775,15 @@ private fun AssistantChatScreenConfirmationPreview() {
         onBack = {},
     )
 }
+
+private fun sampleConfirmationPreview() = RenderedConfirmationPreview(
+    message = "Update order #3479",
+    fields = listOf(
+        RenderedConfirmationPreviewField(
+            name = "status",
+            label = "Status",
+            beforeValue = "Processing",
+            value = "Completed",
+        )
+    ),
+)
