@@ -9,6 +9,11 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.tools.SelectedSite
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,12 +21,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AssistantViewModel(
+@HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
+class AssistantViewModel @AssistedInject constructor(
+    @Assisted private val conversationId: String,
     private val runtime: AssistantRuntime,
-    private val conversationId: String,
-    private val siteId: Long,
-    private val toolScope: ToolScope,
-    private val idGenerator: AssistantMessageIdGenerator = UuidAssistantMessageIdGenerator,
+    private val selectedSite: SelectedSite,
+    private val idGenerator: AssistantMessageIdGenerator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
     val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
@@ -139,8 +144,8 @@ class AssistantViewModel(
 
         val request = AssistantTurnRequest(
             conversationId = conversationId,
-            siteId = siteId,
-            toolScope = toolScope,
+            siteId = selectedSite.get().siteId,
+            toolScope = ToolScope.GLOBAL,
             userMessage = message,
             history = lastTurnBaseHistory,
         )
@@ -205,5 +210,10 @@ class AssistantViewModel(
         LoopOutcome.STOPPED -> null
         LoopOutcome.FAILED -> error?.toAssistantUiError() ?: AssistantUiError.UNKNOWN
         LoopOutcome.MAX_ITERATIONS -> error?.toAssistantUiError() ?: AssistantUiError.MAX_ITERATIONS
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(conversationId: String): AssistantViewModel
     }
 }

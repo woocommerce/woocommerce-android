@@ -12,6 +12,8 @@ import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
+import com.woocommerce.android.aiassistant.ui.AssistantMessageIdGenerator
+import com.woocommerce.android.aiassistant.ui.UuidAssistantMessageIdGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +30,7 @@ internal object AiAssistantModule {
     fun provideAiAssistantJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = false
-        explicitNulls = true
+        explicitNulls = false
     }
 
     @Provides
@@ -65,4 +67,7 @@ internal object AiAssistantModule {
     @Provides
     @Singleton
     fun provideSafetyOrchestrator(): SafetyOrchestrator = SafetyOrchestratorImpl()
+
+    @Provides
+    fun provideAssistantMessageIdGenerator(): AssistantMessageIdGenerator = UuidAssistantMessageIdGenerator
 }

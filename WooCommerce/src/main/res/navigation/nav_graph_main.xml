@@ -329,7 +329,14 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_moreMenu_to_aiAssistantHostFragment"
+            app:destination="@id/aiAssistantHostFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/aiAssistantHostFragment"
+        android:name="com.woocommerce.android.ui.aiassistant.AiAssistantHostFragment"
+        android:label="fragment_ai_assistant" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
