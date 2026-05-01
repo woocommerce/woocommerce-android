@@ -16,7 +16,9 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -506,6 +508,57 @@ class AgenticLoopImplTest {
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
         job.cancel()
+    }
+
+    @Test
+    fun `given flow is cancelled after confirmation request, when await is skipped, then pending request is removed`() = runTest {
+        val unsafeDescriptor = ToolDescriptor(
+            name = "orders_update",
+            description = "Updates an order",
+            inputSchema = buildJsonObject { },
+            safetyLevel = ToolSafetyLevel.UNSAFE,
+        )
+        var registryExecuted = false
+        val registry = object : ToolRegistry {
+            override fun descriptors() = listOf(unsafeDescriptor)
+            override suspend fun execute(call: ToolCall): ToolResult {
+                registryExecuted = true
+                return ToolResult.Success(call.id, buildJsonObject { put("ok", true) })
+            }
+        }
+        val safetyOrchestrator = SafetyOrchestratorImpl()
+        val loop = loopWith(
+            flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_1",
+                        name = "orders_update",
+                        argumentsDelta = """{"id":42,"status":"processing"}""",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            },
+            registry = registry,
+            safetyOrchestrator = safetyOrchestrator,
+        )
+        val events = mutableListOf<LoopEvent>()
+
+        val job = launch {
+            loop.runTurn("conv", "go", history, contextWithTools(unsafeDescriptor)).collect { event ->
+                events += event
+                if (event is LoopEvent.ConfirmationRequested) {
+                    cancel()
+                }
+            }
+        }
+
+        advanceUntilIdle()
+
+        val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+        assertThat(job.isCancelled).isTrue
+        assertThat(registryExecuted).isFalse
+        assertThat(safetyOrchestrator.confirm(request.id)).isFalse
     }
 
     @Test

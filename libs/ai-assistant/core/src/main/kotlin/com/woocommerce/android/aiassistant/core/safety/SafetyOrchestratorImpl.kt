@@ -46,4 +46,9 @@ class SafetyOrchestratorImpl(
         val deferred = pending[result.requestId] ?: return false
         return deferred.complete(result)
     }
+
+    override fun cancelPending(requestId: String): Boolean {
+        val deferred = pending.remove(requestId) ?: return false
+        return deferred.complete(ConfirmationResult(requestId, ConfirmationDecision.CANCELLED))
+    }
 }
