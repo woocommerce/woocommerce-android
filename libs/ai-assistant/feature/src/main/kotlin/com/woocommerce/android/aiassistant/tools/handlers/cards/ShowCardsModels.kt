@@ -53,6 +53,7 @@ internal data class OrderSummary(
     val total: String? = null,
     val currency: String? = null,
     @SerialName("date_created") val dateCreated: String? = null,
+    @SerialName("customer_name") val customerName: String? = null,
 )
 
 @Serializable
@@ -131,6 +132,7 @@ internal sealed interface ShowCardDetails {
         val total: String? = null,
         val currency: String? = null,
         @SerialName("date_created") val dateCreated: String? = null,
+        @SerialName("customer_name") val customerName: String? = null,
     ) : ShowCardDetails
 
     @Serializable

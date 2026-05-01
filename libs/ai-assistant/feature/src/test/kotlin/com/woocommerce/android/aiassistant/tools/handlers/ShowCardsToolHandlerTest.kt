@@ -84,7 +84,15 @@ class ShowCardsToolHandlerTest {
 
         val summary = firstResolvedSummary(result)
 
-        assertThat(summary.keys).containsExactly("id", "number", "status", "total", "currency", "date_created")
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "number",
+            "status",
+            "total",
+            "currency",
+            "date_created",
+            "customer_name",
+        )
     }
 
     @Test
@@ -384,6 +392,7 @@ class ShowCardsToolHandlerTest {
                     total = "12.34",
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
+                    customerName = "Jane Doe",
                 )
             ).jsonObject,
             card = ShowCardPayload(
