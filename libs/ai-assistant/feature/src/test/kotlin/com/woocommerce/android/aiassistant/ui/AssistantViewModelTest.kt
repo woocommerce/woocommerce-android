@@ -692,13 +692,19 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given confirmed write, when assistant text resumes, then existing assistant bubble grows`() = runTest {
+    fun `given confirmed write, when assistant text resumes, then text is appended after confirmation card`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("I'll update that order."))
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
 
         viewModel.onConfirmWrite()
+        runtime.emit(
+            AssistantRuntimeEvent.ConfirmationResolved(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+            )
+        )
         runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Order updated"))
         advanceUntilIdle()
 
@@ -707,8 +713,11 @@ class AssistantViewModelTest {
                 id = activeBubbleId,
                 role = AssistantUiMessage.Role.ASSISTANT,
                 segments = listOf(
+                    AssistantUiSegment.Text("I'll update that order."),
+                    AssistantUiSegment.ConfirmationCard(
+                        givenConfirmationCard().copy(state = AssistantConfirmationCardState.CONFIRMED)
+                    ),
                     AssistantUiSegment.Text("Order updated"),
-                    AssistantUiSegment.ConfirmationCard(givenConfirmationCard()),
                 ),
             )
         )

@@ -370,14 +370,13 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     private fun AssistantUiMessage.appendText(delta: String): AssistantUiMessage {
-        val firstTextIndex = segments.indexOfFirst { it is AssistantUiSegment.Text }
-        if (firstTextIndex == -1) {
-            return copy(segments = listOf(AssistantUiSegment.Text(delta)) + segments)
+        val lastSegment = segments.lastOrNull()
+        if (lastSegment !is AssistantUiSegment.Text) {
+            return copy(segments = segments + AssistantUiSegment.Text(delta))
         }
 
         val updatedSegments = segments.toMutableList()
-        val currentText = updatedSegments[firstTextIndex] as AssistantUiSegment.Text
-        updatedSegments[firstTextIndex] = currentText.copy(text = currentText.text + delta)
+        updatedSegments[updatedSegments.lastIndex] = lastSegment.copy(text = lastSegment.text + delta)
         return copy(segments = updatedSegments)
     }
 
