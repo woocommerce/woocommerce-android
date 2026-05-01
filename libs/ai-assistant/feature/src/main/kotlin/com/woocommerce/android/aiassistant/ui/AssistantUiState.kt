@@ -30,12 +30,18 @@ data class AssistantUiMessage(
     val id: String,
     val role: Role,
     val text: String,
+    val error: AssistantMessageError? = null,
 ) {
     enum class Role {
         USER,
         ASSISTANT,
     }
 }
+
+data class AssistantMessageError(
+    val error: AssistantError,
+    val canRetry: Boolean,
+)
 
 enum class AssistantUiError {
     NETWORK,
@@ -65,4 +71,11 @@ fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
     is AssistantError.OutcomeUnknown -> AssistantUiError.OUTCOME_UNKNOWN
     AssistantError.Cancelled -> AssistantUiError.CANCELLED
     is AssistantError.Unknown -> AssistantUiError.UNKNOWN
+}
+
+internal fun AssistantError.supportsRetryAction(): Boolean = when (this) {
+    AssistantError.Network,
+    AssistantError.Timeout,
+    AssistantError.RateLimit -> true
+    else -> false
 }

@@ -177,13 +177,22 @@ class AssistantViewModel @AssistedInject constructor(
                 }
             }
             is AssistantRuntimeEvent.Finished -> {
+                val activeMessageId = activeAssistantMessageId
+                val normalizedError = event.normalizedAssistantError()
+                val canRetry = event.canRetry()
                 activeAssistantMessageId = null
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
+                        messages = it.messages.withAssistantError(
+                            activeMessageId = activeMessageId,
+                            error = normalizedError,
+                            canRetry = canRetry,
+                            nextId = idGenerator::nextId,
+                        ),
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
-                        canRetry = event.canRetry(),
+                        canRetry = canRetry,
                         pendingConfirmation = null,
                     )
                 }
@@ -242,10 +251,41 @@ class AssistantViewModel @AssistedInject constructor(
             LoopOutcome.MAX_ITERATIONS -> AssistantUiError.MAX_ITERATIONS
         }
 
+    private fun AssistantRuntimeEvent.Finished.normalizedAssistantError(): AssistantError? =
+        error ?: if (outcome == LoopOutcome.FAILED) AssistantError.Unknown() else null
+
     private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
         error != AssistantError.Cancelled &&
             outcome == LoopOutcome.FAILED &&
             retryAvailable
+
+    private fun List<AssistantUiMessage>.withAssistantError(
+        activeMessageId: String?,
+        error: AssistantError?,
+        canRetry: Boolean,
+        nextId: () -> String,
+    ): List<AssistantUiMessage> {
+        if (error == null) return this
+
+        val messageError = AssistantMessageError(error = error, canRetry = canRetry)
+        val targetId = activeMessageId
+        if (targetId == null) {
+            return this + AssistantUiMessage(
+                id = nextId(),
+                role = AssistantUiMessage.Role.ASSISTANT,
+                text = "",
+                error = messageError,
+            )
+        }
+
+        return map { message ->
+            if (message.id == targetId) {
+                message.copy(error = messageError)
+            } else {
+                message
+            }
+        }
+    }
 
     @AssistedFactory
     interface Factory {

@@ -54,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import kotlinx.serialization.json.buildJsonObject
@@ -136,11 +137,11 @@ fun AssistantChatScreen(
         ) {
             AssistantMessageThread(
                 messages = state.messages,
+                onRetry = onRetry,
                 modifier = Modifier.weight(1f),
             )
             AssistantStatusPanel(
                 state = state,
-                onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
             )
@@ -217,6 +218,7 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
 @Composable
 private fun AssistantMessageThread(
     messages: List<AssistantUiMessage>,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -236,13 +238,19 @@ private fun AssistantMessageThread(
             items = messages,
             key = { it.id },
         ) { message ->
-            AssistantMessageBubble(message = message)
+            AssistantMessageBubble(
+                message = message,
+                onRetry = onRetry,
+            )
         }
     }
 }
 
 @Composable
-private fun AssistantMessageBubble(message: AssistantUiMessage) {
+private fun AssistantMessageBubble(
+    message: AssistantUiMessage,
+    onRetry: () -> Unit,
+) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
     val messageContentDescription = if (isUser) {
@@ -288,12 +296,52 @@ private fun AssistantMessageBubble(message: AssistantUiMessage) {
                 .padding(horizontal = 14.dp, vertical = 10.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
-            Text(
-                text = messageText,
-                color = textColor,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = if (isUser) TextAlign.End else TextAlign.Start,
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (message.text.isNotEmpty()) {
+                    Text(
+                        text = message.text,
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
+                    )
+                }
+                message.error?.let { error ->
+                    AssistantInlineError(
+                        error = error,
+                        onRetry = onRetry,
+                    )
+                }
+                if (message.text.isEmpty() && message.error == null) {
+                    Text(
+                        text = " ",
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AssistantInlineError(
+    error: AssistantMessageError,
+    onRetry: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = error.error.toDisplayText(),
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (error.canRetry) {
+            TextButton(onClick = onRetry) {
+                Text(stringResource(R.string.assistant_chat_retry))
+            }
         }
     }
 }
@@ -301,12 +349,10 @@ private fun AssistantMessageBubble(message: AssistantUiMessage) {
 @Composable
 private fun AssistantStatusPanel(
     state: AssistantUiState,
-    onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
 ) {
     when (state.status) {
-        AssistantUiStatus.ERROR -> AssistantErrorPanel(state.error, state.canRetry, onRetry)
         AssistantUiStatus.AWAITING_CONFIRMATION -> state.pendingConfirmation?.let {
             AssistantConfirmationPanel(
                 confirmation = it,
@@ -315,35 +361,8 @@ private fun AssistantStatusPanel(
             )
         }
         AssistantUiStatus.IDLE,
-        AssistantUiStatus.STREAMING -> Unit
-    }
-}
-
-@Composable
-private fun AssistantErrorPanel(
-    error: AssistantUiError?,
-    canRetry: Boolean,
-    onRetry: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = error.toDisplayText(),
-            color = MaterialTheme.colorScheme.onErrorContainer,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
-        )
-        if (canRetry) {
-            TextButton(onClick = onRetry) {
-                Text(stringResource(R.string.assistant_chat_retry))
-            }
-        }
+        AssistantUiStatus.STREAMING,
+        AssistantUiStatus.ERROR -> Unit
     }
 }
 
@@ -470,6 +489,9 @@ private fun AssistantUiError?.toDisplayText(): String = when (this) {
     AssistantUiError.UNKNOWN,
     null -> stringResource(R.string.assistant_chat_error_unknown)
 }
+
+@Composable
+private fun AssistantError.toDisplayText(): String = toAssistantUiError().toDisplayText()
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)

@@ -160,6 +160,50 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given network failure with retry available, when turn fails, then active assistant message exposes retry`() =
+        runTest {
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = true,
+                    error = AssistantError.Network,
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isTrue()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.Network,
+                        canRetry = true,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).containsExactly(
+                AssistantTurnRequest(
+                    conversationId = CONVERSATION_ID,
+                    siteId = SITE_ID,
+                    toolScope = ToolScope.GLOBAL,
+                    userMessage = "Hello",
+                    history = emptyList(),
+                )
+            )
+        }
+
+    @Test
     fun `when turn reaches max iterations, then state exposes an error`() = runTest {
         viewModel.onSendMessage("Hello")
 
