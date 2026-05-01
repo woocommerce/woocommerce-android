@@ -955,7 +955,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.retryAvailable).isFalse()
         assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure)
     }
 

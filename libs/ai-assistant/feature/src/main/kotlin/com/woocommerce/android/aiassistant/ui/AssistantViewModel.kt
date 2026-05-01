@@ -255,9 +255,9 @@ class AssistantViewModel @AssistedInject constructor(
         error ?: if (outcome == LoopOutcome.FAILED) AssistantError.Unknown() else null
 
     private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
-        error != AssistantError.Cancelled &&
-            outcome == LoopOutcome.FAILED &&
-            retryAvailable
+        outcome == LoopOutcome.FAILED &&
+            retryAvailable &&
+            error?.supportsRetryAction() == true
 
     private fun List<AssistantUiMessage>.withAssistantError(
         activeMessageId: String?,

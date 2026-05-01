@@ -243,6 +243,42 @@ class AssistantViewModelTest {
         }
 
     @Test
+    fun `given upstream failure marked retryable by runtime, when turn fails, then retry is not exposed`() =
+        runTest {
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = true,
+                    error = AssistantError.UpstreamFailure,
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isFalse()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.UpstreamFailure,
+                        canRetry = false,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).isEmpty()
+        }
+
+    @Test
     fun `when turn reaches max iterations, then state exposes an error`() = runTest {
         viewModel.onSendMessage("Hello")
 
