@@ -65,6 +65,16 @@ internal class ShowCardsReferenceValidator {
                 return@forEachIndexed
             }
 
+            if (validRefs.size >= MAX_SHOW_CARDS_REFS) {
+                rejectedRefs += RejectedRef(
+                    index = index,
+                    family = family.serializedName,
+                    id = id,
+                    reason = ShowCardsRejectionReason.OverLimit,
+                )
+                return@forEachIndexed
+            }
+
             validRefs += ValidatedRef(index = index, family = family, id = id)
         }
 

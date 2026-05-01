@@ -159,6 +159,23 @@ class ShowCardsToolHandlerTest {
         assertThat(resolvedFamilies(result)).containsExactly("order", "product")
     }
 
+    @Test
+    fun `refs after max ten are rejected as over limit and not rendered`() = runTest {
+        val refs = (1..11).joinToString(separator = ",") { index ->
+            """{ "family": "order", "id": "$index" }"""
+        }
+
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(*(1..10).map { orderCard(id = it.toString()) }.toTypedArray()),
+            referencesJson = "[$refs]"
+        )
+
+        assertThat(validated(result)).isEqualTo(10)
+        assertThat(rendered(result)).isEqualTo(10)
+        assertThat(rejectedReasons(result).last()).isEqualTo("over_limit")
+        assertThat(resolvedIds(result)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+    }
+
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
 
@@ -200,10 +217,18 @@ class ShowCardsToolHandlerTest {
     private fun validated(result: ToolResult): Int =
         assertSuccess(result).structured.jsonObject.getValue("validated").jsonPrimitive.int
 
+    private fun rendered(result: ToolResult): Int =
+        assertSuccess(result).structured.jsonObject.getValue("rendered").jsonPrimitive.int
+
     private fun resolvedFamilies(result: ToolResult): List<String> =
         assertSuccess(result).structured.jsonObject
             .getValue("resolved_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("family").jsonPrimitive.content }
+
+    private fun resolvedIds(result: ToolResult): List<String> =
+        assertSuccess(result).structured.jsonObject
+            .getValue("resolved_refs").jsonArray
+            .map { ref -> ref.jsonObject.getValue("id").jsonPrimitive.content }
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)
