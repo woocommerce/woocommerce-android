@@ -83,6 +83,16 @@ internal class AIOrdersDataSource @Inject constructor(
         }
     }
 
+    suspend fun getOrders(orderIds: List<Long>): Result<List<OrderEntity>> {
+        val ids = orderIds.distinct()
+        if (ids.isEmpty()) return Result.success(emptyList())
+
+        return fetchOrders(
+            include = ids,
+            perPage = ids.size,
+        ).map { page -> page.orders }
+    }
+
     suspend fun updateOrderStatus(orderId: Long, newStatus: String): Result<Unit> = runCatching {
         val site = selectedSite.get()
         val statusModel = WCOrderStatusModel(statusKey = newStatus)

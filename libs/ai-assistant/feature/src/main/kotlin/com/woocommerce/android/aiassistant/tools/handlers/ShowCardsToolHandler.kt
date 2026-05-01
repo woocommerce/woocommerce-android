@@ -5,6 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
@@ -31,12 +32,25 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import javax.inject.Inject
 
-class ShowCardsToolHandler internal constructor(
+internal class ShowCardsToolHandler internal constructor(
     private val resolver: ShowCardsResolver,
+    private val json: Json,
 ) : AssistantToolHandler {
     private val referenceValidator = ShowCardsReferenceValidator()
 
-    @Inject constructor() : this(DefaultShowCardsResolver())
+    @Inject constructor(
+        resolver: DefaultShowCardsResolver,
+        @AiAssistantJson json: Json,
+    ) : this(resolver as ShowCardsResolver, json)
+
+    internal constructor(resolver: ShowCardsResolver) : this(
+        resolver = resolver,
+        json = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = false
+            explicitNulls = false
+        },
+    )
 
     override val descriptor = ToolDescriptor(
         name = "show_cards",
@@ -148,9 +162,5 @@ class ShowCardsToolHandler internal constructor(
     private companion object {
         val ORDER_SUMMARY_KEYS = setOf("id", "number", "status", "total", "currency", "date_created")
         val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
-
-        val json = Json {
-            explicitNulls = false
-        }
     }
 }

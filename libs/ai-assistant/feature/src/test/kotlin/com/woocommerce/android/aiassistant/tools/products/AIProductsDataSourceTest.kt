@@ -227,6 +227,59 @@ class AIProductsDataSourceTest {
         assertThat(result.isFailure).isTrue
     }
 
+    @Test
+    fun `given product ids, when getProducts is called, then products are fetched once with include ids`() =
+        runTest {
+            val first = makeProduct(id = 10L, name = "First")
+            val second = makeProduct(id = 11L, name = "Second")
+            whenever(
+                productStore.fetchProducts(
+                    site = any(),
+                    offset = eq(0),
+                    pageSize = eq(2),
+                    sortType = any(),
+                    includedProductIds = eq(listOf(10L, 11L)),
+                    excludedProductIds = any(),
+                    filterOptions = any(),
+                    includeTypes = any(),
+                    forceRefresh = eq(false),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                )
+            ).thenReturn(WooResult(true))
+            whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(first)
+            whenever(productStore.getProductByRemoteId(site, 11L)).thenReturn(second)
+
+            val result = dataSource.getProducts(productIds = listOf(10L, 11L))
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow()).containsExactly(first, second)
+        }
+
+    @Test
+    fun `given included product fetch fails, when getProducts is called, then failure result is returned`() =
+        runTest {
+            whenever(
+                productStore.fetchProducts(
+                    site = any(),
+                    offset = any(),
+                    pageSize = any(),
+                    sortType = any(),
+                    includedProductIds = any(),
+                    excludedProductIds = any(),
+                    filterOptions = any(),
+                    includeTypes = any(),
+                    forceRefresh = any(),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                )
+            ).thenReturn(WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom")))
+
+            val result = dataSource.getProducts(productIds = listOf(10L))
+
+            assertThat(result.isFailure).isTrue
+        }
+
     // --- updateProduct ---
 
     @Test

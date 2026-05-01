@@ -84,6 +84,25 @@ internal class AIProductsDataSource @Inject constructor(
         return getProduct(site, productId)
     }
 
+    suspend fun getProducts(productIds: List<Long>): Result<List<WCProductModel>> {
+        val ids = productIds.distinct()
+        if (ids.isEmpty()) return Result.success(emptyList())
+
+        val site = selectedSite.get()
+        val result = productStore.fetchProducts(
+            site = site,
+            offset = 0,
+            pageSize = ids.size,
+            includedProductIds = ids,
+            forceRefresh = false,
+        )
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            Result.success(ids.mapNotNull { id -> productStore.getProductByRemoteId(site, id) })
+        }
+    }
+
     suspend fun updateProduct(productId: Long, update: ProductUpdate): Result<WCProductModel> {
         val site = selectedSite.get()
         val existingProduct = getProduct(site, productId).getOrElse {

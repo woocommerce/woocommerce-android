@@ -199,6 +199,35 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
+    fun `given order ids, when getOrders is called, then orders are fetched once with include ids`() =
+        runTest {
+            val orders = listOf(
+                OrderEntity(localSiteId = LocalId(1), orderId = 123L),
+                OrderEntity(localSiteId = LocalId(1), orderId = 456L),
+            )
+            stubFetchOrders(WooResult(orders))
+
+            val result = dataSource.getOrders(orderIds = listOf(123L, 456L))
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow()).containsExactlyElementsOf(orders)
+            verify(orderStore).fetchOrders(
+                site = any(),
+                count = eq(2),
+                page = eq(1),
+                orderBy = eq(OrderBy.DATE),
+                sortOrder = eq(SortOrder.DESCENDING),
+                statusFilter = anyOrNull(),
+                searchQuery = anyOrNull(),
+                customer = anyOrNull(),
+                include = eq(listOf(123L, 456L)),
+                after = anyOrNull(),
+                before = anyOrNull(),
+                deleteOldData = eq(false),
+            )
+        }
+
+    @Test
     fun `given remote update succeeds, when updateOrderStatus is called, then success result is returned`() =
         runTest {
             val successFlow = flowOf(
