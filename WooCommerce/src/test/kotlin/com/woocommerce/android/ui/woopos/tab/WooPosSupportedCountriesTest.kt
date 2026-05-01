@@ -28,7 +28,12 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
     @Test
     fun `given both flags off, when supportedCountryCurrencyPairs called, then base pairs only returned`() = testBlocking {
         assertThat(sut.supportedCountryCurrencyPairs())
-            .containsExactlyInAnyOrder("us" to "usd", "gb" to "gbp")
+            .containsExactlyInAnyOrder("us" to "usd", "pr" to "usd", "gb" to "gbp")
+    }
+
+    @Test
+    fun `given both flags off, when supportedCountryCurrencyPairs called, then PR is included alongside US`() = testBlocking {
+        assertThat(sut.supportedCountryCurrencyPairs()).contains("pr" to "usd")
     }
 
     @Test
@@ -38,6 +43,7 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
         assertThat(sut.supportedCountryCurrencyPairs())
             .containsExactlyInAnyOrder(
                 "us" to "usd",
+                "pr" to "usd",
                 "gb" to "gbp",
                 "fr" to "eur",
                 "de" to "eur",
@@ -54,19 +60,19 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
 
         assertThat(sut.supportedCountryCurrencyPairs())
             .containsExactlyInAnyOrder(
-                "us" to "usd", "gb" to "gbp",
+                "us" to "usd", "pr" to "usd", "gb" to "gbp",
                 "at" to "eur", "be" to "eur", "fi" to "eur", "it" to "eur",
                 "lu" to "eur", "pt" to "eur", "es" to "eur",
             )
     }
 
     @Test
-    fun `given both flags on, when supportedCountryCurrencyPairs called, then all 15 pairs returned and AU absent`() = testBlocking {
+    fun `given both flags on, when supportedCountryCurrencyPairs called, then all 16 pairs returned and AU absent`() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
         val pairs = sut.supportedCountryCurrencyPairs()
-        assertThat(pairs).hasSize(15)
+        assertThat(pairs).hasSize(16)
         assertThat(pairs.map { it.first }).doesNotContain("au")
     }
 
@@ -77,7 +83,7 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
 
         assertThat(sut.supportedCountries())
             .containsExactlyInAnyOrder(
-                "us", "gb",
+                "us", "pr", "gb",
                 "fr", "de", "ie", "nl", "sg", "nz",
                 "at", "be", "fi", "it", "lu", "pt", "es",
             )

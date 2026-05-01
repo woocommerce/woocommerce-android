@@ -25,7 +25,7 @@ class WooPosSupportedCountries @Inject constructor(
     suspend fun supportedCountries(): List<String> = supportedCountryCurrencyPairs().map { it.first }
 
     private companion object {
-        val BASE_PAIRS = listOf("us" to "usd", "gb" to "gbp")
+        val BASE_PAIRS = listOf("us" to "usd", "pr" to "usd", "gb" to "gbp")
         val PRIMARY_EXPANSION_PAIRS = listOf(
             "fr" to "eur",
             "de" to "eur",
