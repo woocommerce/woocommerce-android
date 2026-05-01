@@ -1,0 +1,2 @@
+24.6:
+Woo POS ile satış yapmak her zamankinden daha kolay! İlk katalog kurulumu sırasında senkronizasyon ilerlemesini görün, doğrudan POS ayarlarından makbuz bilgilerini düzenleyin ve daha temiz bir yenileme işlemenin keyfini çıkarın. Bu sürüm ayrıca bir başlangıç çökmesini düzeltir, ürün varyasyonları olan mağazalardaki POS senkronizasyon sorunlarını çözer ve Gönderim Etiketi adres doğrulamasını iyileştirir.

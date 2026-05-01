@@ -1,0 +1,2 @@
+24,6:
+¡Vender con Woo POS es más fácil que nunca! Consulta el progreso de la sincronización durante la configuración inicial del catálogo, edita la información de los recibos directamente desde los ajustes del punto de venta y disfruta de una gestión más limpia de las actualizaciones. Esta versión también corrige un fallo de inicio, resuelve problemas de sincronización del punto de venta en tiendas con variaciones de productos y mejora la validación de la dirección de la etiqueta de envío.

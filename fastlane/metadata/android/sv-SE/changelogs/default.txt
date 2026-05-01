@@ -1,0 +1,2 @@
+24.6:
+Att sälja med Woo POS är smidigare än någonsin! Se synkroniseringsförloppet under den initiala katalogkonfigurationen, redigera kvittoinformation direkt från POS-inställningarna och njut av renare uppdateringshantering. Den här versionen åtgärdar också en startkrasch, löser POS-synkroniseringsproblem i butiker med produktvariationer och förbättrar adressvalideringen för fraktetiketter.

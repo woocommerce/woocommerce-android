@@ -1,0 +1,2 @@
+24.6:
+Berjualan dengan Woo POS kini makin mudah! Lihat progres sinkronisasi selama penyiapan katalog awal, edit info tanda terima langsung dari pengaturan POS, dan nikmati penanganan refresh yang lebih lancar. Rilis ini juga memperbaiki crash startup, mengatasi masalah sinkronisasi POS di toko-toko dengan variasi produk, dan menyempurnakan validasi alamat Label Pengiriman.
