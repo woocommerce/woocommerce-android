@@ -70,7 +70,7 @@ class OpenAiMappingTest {
         assertThat(systemMessage.getValue("role").jsonPrimitive.content).isEqualTo("system")
         assertThat(userMessage.getValue("role").jsonPrimitive.content).isEqualTo("user")
         assertThat(assistantMessage.getValue("role").jsonPrimitive.content).isEqualTo("assistant")
-        assertThat(assistantMessage).doesNotContainKey("content")
+        assertThat(assistantMessage.getValue("content").jsonPrimitive.content).isEmpty()
         assertThat(
             assistantMessage.getValue("tool_calls").jsonArray.single().jsonObject
                 .getValue("function").jsonObject
