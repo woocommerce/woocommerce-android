@@ -29,9 +29,11 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -73,6 +75,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -159,6 +162,10 @@ class WooPosTotalsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
+        on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
+    }
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -1942,6 +1949,101 @@ class WooPosTotalsViewModelTest {
             )
         }
 
+    @Test
+    fun `given TTP available, when checkout shown, then state isTapToPayAvailable is true`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayAvailable).isTrue()
+    }
+
+    @Test
+    fun `given TTP unavailable, when checkout shown, then state isTapToPayAvailable is false`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.invoke()).thenReturn(false)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayAvailable).isFalse()
+    }
+
+    @Test
+    fun `when OnTapToPayClicked, then track entry-point analytics and do not navigate`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+        clearInvocations(childrenToParentEventSender)
+        clearInvocations(analyticsTracker)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `when OnAllPaymentMethodsVisibilityChanged true, then dialog flag flips to visible`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isAllPaymentMethodsDialogVisible).isTrue()
+    }
+
+    @Test
+    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+    }
+
+    @Test
+    fun `given TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
+        // GIVEN
+        val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker).trackTapToPayNotAvailableReason(notAvailable, "woo_pos_checkout")
+    }
+
+    @Test
+    fun `given TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
@@ -2093,5 +2195,8 @@ class WooPosTotalsViewModelTest {
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
+        isTapToPayAvailable = isTapToPayAvailable,
+        tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
+        paymentsFlowTracker = tracker,
     )
 }

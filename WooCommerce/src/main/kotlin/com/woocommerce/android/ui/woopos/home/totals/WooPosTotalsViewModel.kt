@@ -15,7 +15,10 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
@@ -67,12 +70,16 @@ class WooPosTotalsViewModel @Inject constructor(
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
+    private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val KEY_STATE = "woo_pos_totals_data_state"
+        private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
         private val InitialState = WooPosTotalsViewState.Loading
     }
 
@@ -110,6 +117,9 @@ class WooPosTotalsViewModel @Inject constructor(
     init {
         listenUpEvents()
         observeCardReaderStatus()
+        (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
+            paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
+        }
     }
 
     private fun observeCardReaderStatus() {
@@ -171,6 +181,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
+            WooPosTotalsUIEvent.OnTapToPayClicked,
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
+
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
             WooPosTotalsUIEvent.RetryFailedTransactionClicked -> handleRetryFailedTransactionClicked()
@@ -207,6 +220,20 @@ class WooPosTotalsViewModel @Inject constructor(
         childrenToParentEventSender.sendToParent(
             ToCashPayment(dataState.value.orderId)
         )
+    }
+
+    private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
+        when (event) {
+            WooPosTotalsUIEvent.OnTapToPayClicked -> viewModelScope.launch {
+                totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
+                wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
+            }
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> {
+                val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+                uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
+            }
+            else -> Unit
+        }
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
@@ -723,6 +750,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 orderTotalText = priceFormat(totalAmount),
             ),
             readerStatus = readerStatus,
+            isTapToPayAvailable = isTapToPayAvailable(),
         )
     }
 
