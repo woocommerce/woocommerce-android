@@ -22,6 +22,9 @@ data class AssistantUiState(
         get() = status == AssistantUiStatus.STREAMING ||
             status == AssistantUiStatus.AWAITING_CONFIRMATION
 
+    val shouldShowStopControl: Boolean
+        get() = status == AssistantUiStatus.STREAMING
+
     val shouldShowFallbackError: Boolean
         get() = status == AssistantUiStatus.ERROR &&
             error != null &&

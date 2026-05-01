@@ -146,6 +146,7 @@ fun AssistantChatScreen(
                 inputText = inputText,
                 onInputTextChange = onInputTextChange,
                 isTurnActive = state.isTurnActive,
+                shouldShowStopControl = state.shouldShowStopControl,
                 onSendMessage = onSendMessage,
                 onCancelTurn = onCancelTurn,
             )
@@ -494,6 +495,7 @@ private fun AssistantComposer(
     inputText: String,
     onInputTextChange: (String) -> Unit,
     isTurnActive: Boolean,
+    shouldShowStopControl: Boolean,
     onSendMessage: () -> Unit,
     onCancelTurn: () -> Unit,
 ) {
@@ -527,7 +529,7 @@ private fun AssistantComposer(
                         }
                     ),
                 )
-                if (isTurnActive) {
+                if (shouldShowStopControl) {
                     Button(
                         onClick = onCancelTurn,
                         modifier = Modifier.heightIn(min = 56.dp),

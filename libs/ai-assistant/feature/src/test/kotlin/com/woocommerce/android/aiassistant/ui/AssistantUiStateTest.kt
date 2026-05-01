@@ -131,6 +131,20 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `when turn is streaming, then stop control is visible`() {
+        val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
+
+        assertThat(state.shouldShowStopControl).isTrue()
+    }
+
+    @Test
+    fun `when turn is awaiting confirmation, then stop control is hidden`() {
+        val state = AssistantUiState(status = AssistantUiStatus.AWAITING_CONFIRMATION)
+
+        assertThat(state.shouldShowStopControl).isFalse()
+    }
+
+    @Test
     fun `when status is idle, then turn is not active`() {
         val state = AssistantUiState(status = AssistantUiStatus.IDLE)
 
