@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-06 20:55:40+0000
+Translation-Revision-Date: 2026-04-21 09:57:41+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">שינוי חבר צוות</string>
+    <string name="booking_reschedule_screen_title">קביעת תאריך אחר להזמנה</string>
+    <string name="booking_details_reschedule_button">קביעת תאריך אחר</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">אני מסכים &lt;a href=\"fedex-tos\"&gt;לתנאי השירות של FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">כדי לרכוש תוויות משלוח של FedEx, יש להסכים לתנאים הבאים:</string>
+    <string name="wpp_shipping_fedex_tos_title">תנאי השימוש של FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">לא הצלחנו לטעון את תעריפי המשלוח. יש להוסיף שם פרטי ושם משפחה לכתובת היעד ולנסות שוב.</string>
+    <string name="woopos_settings_receipt_edit_button">עריכת פרטי הקבלה</string>
+    <string name="woopos_home_syncing_catalog_progress">⁦%1$d⁩ מתוך ⁦%2$d⁩ פריטים</string>
+    <string name="woopos_home_syncing_catalog_preparing">מכין את הקטלוג…</string>
+    <string name="product_type_bookable_service_desc">שירות שלקוחות יכולים להזמין באינטרנט</string>
+    <string name="product_type_bookable_service_title">שירות</string>
+    <string name="settings_troubleshoot_connection">פתרון בעיות בחיבור</string>
+    <string name="connectivity_tool_copy">העתקה</string>
+    <string name="connectivity_tool_technical_details_copied">הפרטים הטכניים הועתקו ללוח שלך.</string>
+    <string name="connectivity_tool_technical_details_title">פרטים טכניים</string>
+    <string name="connectivity_tool_view_technical_details">הצגת פרטים טכניים</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">מביא מוצרים בחנות שלך</string>
+    <string name="user_role_access_error_fetch_failed">לא הצלחנו לאמת את התפקיד שלך בחנות זו. יש לנסות שוב. אם הבעיה נמשכת, יש לפנות לתמיכה.</string>
     <string name="woopos_eligibility_learn_more_label">למידע נוסף</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. &lt;b&gt;יש לשדרג לתוכנית Pro&lt;/b&gt; כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. יש לשדרג לתוכנית Pro כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
@@ -30,7 +49,6 @@ Language: he_IL
     <string name="woo_push_notifications_introduction_connected_body">רק עוד שלב אחד, ותהיה לך אפשרות לקבל הודעות על הזמנות חדשות, ביקורות ועוד.</string>
     <string name="woo_push_notifications_introduction_connected_title">לקבל הודעות דחיפה עבור החנות שלך</string>
     <string name="my_store_widget_push_notifications_description">אפשר להפעיל הודעות דחיפה כדי לעקוב אחר הזמנות וביקורות חדשות.</string>
-    <string name="dashboard_stats_net_sales">סכום מכירות נטו</string>
     <string name="woopos_search_products_and_variations">לחפש מוצרים ואפשרויות</string>
     <string name="woopos_bookings_details_customer_guest_badge">אורח</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">יש לעדכן את התוסף</string>
@@ -1203,10 +1221,6 @@ Language: he_IL
     <string name="delete_product_category_failed">שגיאה במחיקת הקטגוריה</string>
     <string name="delete_product_category_success">קטגוריית המוצר נמחקה</string>
     <string name="update_product_category_success">קטגוריית המוצר עודכנה</string>
-    <string name="domain_picker_suggestions_error">לא ניתן לטעון את ההצעות לדומיינים</string>
-    <string name="domain_picker_suggestions_title">הצעות</string>
-    <string name="domain_picker_hint">יש להקליד דומיין</string>
-    <string name="domain_picker_title">לבחור דומיין</string>
     <string name="analytics_section_see_all">להציג את כל הנתונים האנליטיים של החנות</string>
     <string name="my_store_custom_range_granularity_year">שנתית</string>
     <string name="my_store_custom_range_granularity_month">חודשית</string>
@@ -1973,7 +1987,6 @@ Language: he_IL
     <string name="store_onboarding_launch_store_back_to_store_button">חזרה אל \'החנות שלי\'</string>
     <string name="store_onboarding_launch_store_share_url_button">כתובת URL לשיתוף</string>
     <string name="store_onboarding_launch_store_button">לפרסם את החנות שלי</string>
-    <string name="domains_search_domains">לחפש דומיינים</string>
     <string name="login_site_credentials_http_error">הכניסה נכשלה עם קוד סטטוס ⁦%1$s⁩</string>
     <string name="login_site_credentials_custom_admin_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL למנהל המערכת של החנות שלך</string>
     <string name="login_site_credentials_custom_login_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL לכניסה לחנות שלך</string>
@@ -2018,41 +2031,12 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_try_payment">לנסות גביית תשלום</string>
     <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="domain_registration_generic_error">אירעה שגיאה במהלך ההרשמה של הדומיין</string>
-    <string name="domain_registration_state_picker_dialog_title">בחירת מדינה</string>
-    <string name="domain_registration_country_picker_dialog_title">בחירת ארץ</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">רושם את שם הדומיין…</string>
-    <string name="domain_contact_information_register_domain_button">רישום דומיין</string>
-    <string name="domain_contact_information_postal_code_hint">מיקוד</string>
-    <string name="domain_contact_information_state_not_available_hint">מדינה (לא זמין)</string>
-    <string name="domain_contact_information_state_hint">מדינה</string>
-    <string name="domain_contact_information_city_hint">עיר</string>
-    <string name="domain_contact_information_address_hint_two">שורת כתובת שנייה</string>
-    <string name="domain_contact_information_address_hint">כתובת</string>
-    <string name="domain_contact_information_country_hint">ארץ</string>
-    <string name="domain_contact_information_country_code_hint">קידומת טלפון בינלאומית</string>
-    <string name="domain_contact_information_phone_number_hint">טלפון</string>
-    <string name="domain_contact_information_organization_hint">ארגון (אופציונלי)</string>
-    <string name="domain_contact_information_description">לנוחותך, מילאנו מראש את הפרטים שלך ב-WordPress.com\n מידע ליצירת קשר. יש לבדוק את הפרטים ולוודא שהמידע נכון לדומיין שבו ברצונך להשתמש.</string>
-    <string name="domain_contact_information_title">פרטי יצירת קשר עם הדומיין</string>
-    <string name="domain_privacy_option_off_title">רישום ציבורי</string>
-    <string name="domain_privacy_option_on_title">הירשמות באופן פרטי עם הגנת פרטיות</string>
-    <string name="domain_registration_contact_form_input_error">יש להזין נתונים תקפים עבור %s</string>
-    <string name="domain_registration_privacy_protection_tos">רישום לדומיין מהווה הסכמה מצדך &lt;a href=\'\'&gt;לתנאים ולהתניות שלנו&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">בעלי דומיינים מחויבים לשתף את פרטי הקשר שלהם בבסיס נתונים ציבורי של כל הדומיינים.\n בזכות הגנת פרטיות, אנחנו מפרסמים את הפרטים שלנו ולא את שלך ומעבירים אליך באופן פרטי כל התקשרות שתהיה.</string>
-    <string name="domain_registration_privacy_protection_title">הגנת פרטיות</string>
-    <string name="domains_access_error_title">הגישה להגדרות הדומיין מותרת רק למנהלי המערכת של החנות</string>
     <string name="login_jetpack_installation_continue_magic_link">או להמשיך להשתמש בקישור הישיר</string>
     <string name="login_jetpack_installation_enter_wpcom_password">עליך להזין את הסיסמה לחשבון שלך ב-WordPress.com כדי להתקין את Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">עליך להזין את הסיסמה לחשבון שלך ב-WordPress.com כדי לחבר את Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">עליך להתחבר עם החשבון שלך ב-WordPress.com כדי להתקין את Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">עליך להתחבר עם החשבון שלך ב-WordPress.com כדי לחבר את Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">הגדרות הדומיין נמצאות במקטע \'הגדרות\' &gt; \'דומיינים\'</string>
-    <string name="domains_purchase_successful_delay_notice">כתובת האתר שלך הוגדרה. יידרשו עד 30 דקות להתחלת הפעילות של הדומיין.</string>
-    <string name="domains_purchase_successful_heading">ברכותינו על הרכישה החדשה שלך</string>
-    <string name="domains_free_with_credits">ניתן בחינם לשנה הראשונה</string>
     <string name="settings_confirm_logout_site_credentials">ביקשת להתנתק מהחשבון - האם ההחלטה סופית?</string>
-    <string name="domains_generic_error_title">אין אפשרות לטעון את הדומיינים של האתר</string>
     <string name="store_onboarding_completed_tasks_status">הושלמו ⁦%1$d⁩/%2$d</string>
     <string name="store_onboarding_task_launch_store_description">להשיק את האתר שלך לעולם מתי שנוח לך!</string>
     <string name="store_onboarding_task_launch_store_title">להשיק את החנות שלך</string>
@@ -2063,19 +2047,6 @@ Language: he_IL
     <string name="card_reader_payment_failed_device_is_not_supported">המכשיר שלך לא נתמך. יש לפנות לתמיכה לפרטים נוספים</string>
     <string name="card_reader_payment_failed_nfc_disabled">האפליקציה לא הצליחה להפעיל את קורא הכרטיסים מאחר ששבב ה-NFC מושבת</string>
     <string name="card_reader_payment_failed_canceled">העסקה בוטלה</string>
-    <string name="domains_redirect_notice">הדומיין שנרכש ינתב את המשתמשים אל</string>
-    <string name="domains_select_domain">לבחור דומיין</string>
-    <string name="domains_add_domain_button_title">להוסיף דומיין</string>
-    <string name="domains_your_domains">הדומיינים באתר שלך</string>
-    <string name="domains_primary_address">הכתובת הראשית של האתר</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;למידע נוסף&lt;/u&gt;&lt;/a&gt; על דומיינים ואיך לבצע פעולות שקשורות לדומיינים.</string>
-    <string name="domains_search_for_domain_button_title">לחפש דומיין</string>
-    <string name="domains_purchase_redirect_notice">הדומיין שנרכש ינתב את המשתמשים אל הכתובת הראשית שלך.</string>
-    <string name="domains_claim_your_free_domain_link">לקבל בעלות על דומיין</string>
-    <string name="domains_claim_your_free_domain_description">אנחנו מעניקים לך רישום דומיין בחינם לשנה עם התוכנית שלך.</string>
-    <string name="domains_claim_your_free_domain_title">לקבל דומיין בחינם</string>
-    <string name="domains_your_free_store_address">הכתובת של החנות החינמית שלך</string>
-    <string name="domains">דומיינים</string>
     <string name="feedback_banner_ipp_cta_button">כדאי לשלוח משוב</string>
     <string name="feedback_banner_ipp_message_beginner">באפשרותך לדרג את החוויה הראשונה שלך עם \'תשלומים באופן אישי\'.</string>
     <string name="feedback_banner_ipp_title_beginner">מרוצה מהשירות של \'תשלומים באופן אישי\'?</string>
@@ -2094,7 +2065,6 @@ Language: he_IL
     <string name="analytics_session_card_title">הפעלות</string>
     <string name="analytics_session_no_data">אין הפעלות בתקופה זאת</string>
     <string name="date_compared_to">להשוות עם</string>
-    <string name="domain">דומיין</string>
     <string name="login_application_passwords_help">מהן \'סיסמאות אפליקציה\'?</string>
     <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
     <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
@@ -2110,7 +2080,6 @@ Language: he_IL
     <string name="product_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
     <string name="variations_bulk_creation_no_candidates_message">כל הסוגים כבר נוצרו.</string>
     <string name="variations_bulk_creation_no_candidates_title">אין סוגים שניתן ליצור</string>
-    <string name="domain_picker_empty_suggestions">אין דומיינים זמינים לחיפוש זה</string>
     <string name="variations_bulk_creation_progress_title">יוצר סוגים</string>
     <string name="variations_bulk_creation_confirmation_message">פעולה זו תיצור סוג חדש עבור כל שילוב אפשרי של מאפייני הסוג (עד ⁦%1$d⁩ סוגים).</string>
     <string name="variations_bulk_creation_confirmation_title">האם ליצור את כל הסוגים?</string>
@@ -2167,7 +2136,6 @@ Language: he_IL
     <string name="update_simulated_reader">לעדכן את הסימולציה של קורא הכרטיסים</string>
     <string name="login_jetpack_connect">לחבר את Jetpack</string>
     <string name="login_jetpack_installation_screen_title">לחבר את החנות</string>
-    <string name="domain_picker_subtitle">כאן ימצאו אותך באינטרנט. אל דאגה, אפשר לשנות את ההגדרות מאוחר יותר.</string>
     <string name="analytics_visitors_subtitle">מבקרים</string>
     <string name="or_use_password_below_qr_code_scan_option">לחלופין, ניתן להתחבר באמצעות סיסמה</string>
     <string name="simulated_reader_toast">הסימולציה של קורא הכרטיסים הושבתה</string>

@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-06 20:57:39+0000
+Translation-Revision-Date: 2026-04-20 17:55:48+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">تغيير عضو الفريق</string>
+    <string name="booking_reschedule_screen_title">إعادة جدولة الحجز</string>
+    <string name="booking_details_reschedule_button">إعادة الجدولة</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">أوافق على &lt;a href=\"fedex-tos\"&gt;شروط خدمة FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">لشراء بطاقات الشحن من FedEx، يلزم الموافقة على الشروط التالية:</string>
+    <string name="wpp_shipping_fedex_tos_title">شروط خدمة FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">تعذّر تحميل أسعار الشحن. يُرجى إضافة الاسم الأول واسم العائلة إلى عنوان الوجهة ثم المحاولة مرة أخرى.</string>
+    <string name="woopos_settings_receipt_edit_button">تحرير معلومات الإيصال</string>
+    <string name="woopos_home_syncing_catalog_progress">⁦%1$d⁩ من ⁦%2$d⁩ العناصر</string>
+    <string name="woopos_home_syncing_catalog_preparing">جارٍ إعداد الكتالوج…</string>
+    <string name="product_type_bookable_service_desc">خدمة يمكن للعملاء حجزها عبر الإنترنت</string>
+    <string name="product_type_bookable_service_title">الخدمة</string>
+    <string name="settings_troubleshoot_connection">حل مشكلات الاتصال</string>
+    <string name="connectivity_tool_copy">نسخ</string>
+    <string name="connectivity_tool_technical_details_copied">نُسخت التفاصيل الفنية إلى الحافظة.</string>
+    <string name="connectivity_tool_technical_details_title">التفاصيل الفنية</string>
+    <string name="connectivity_tool_view_technical_details">عرض التفاصيل الفنية</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">جارٍ جلب منتجات متجرك</string>
+    <string name="user_role_access_error_fetch_failed">تعذّر التحقق من دورك في هذا المتجر. يُرجى المحاولة مرة أخرى. يُرجى التواصل مع الدعم إذا استمرت هذه المشكلة.</string>
     <string name="woopos_eligibility_learn_more_label">التعرُّف على المزيد</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. &lt;b&gt;قم بالترقية إلى الخطة الاحترافية&lt;/b&gt; للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. قم بالترقية إلى الخطة الاحترافية للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
@@ -30,7 +49,6 @@ Language: ar
     <string name="woo_push_notifications_introduction_connected_body">إنك على بعد خطوة واحدة من تلقي تنبيهات الطلبات والمراجعات الجديدة والمزيد.</string>
     <string name="woo_push_notifications_introduction_connected_title">تلقي تنبيهات الدفع الخاصة بمتجرك</string>
     <string name="my_store_widget_push_notifications_description">يمكنك تفعيل التنبيهات الدفع للاطلاع على الطلبات والتقييمات الجديدة.</string>
-    <string name="dashboard_stats_net_sales">صافي المبيعات</string>
     <string name="woopos_search_products_and_variations">البحث عن المنتجات والأنواع</string>
     <string name="woopos_bookings_details_customer_guest_badge">ضيف</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">تحديث الإضافة</string>
@@ -1203,10 +1221,6 @@ Language: ar
     <string name="delete_product_category_failed">خطأ في أثناء حذف التصنيف</string>
     <string name="delete_product_category_success">تم حذف تصنيف المنتج</string>
     <string name="update_product_category_success">تم تحديث تصنيف المنتج</string>
-    <string name="domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
-    <string name="domain_picker_suggestions_title">اقتراحات</string>
-    <string name="domain_picker_hint">كتابة نطاق</string>
-    <string name="domain_picker_title">اختيار نطاق</string>
     <string name="my_store_custom_range_granularity_year">سنويًا</string>
     <string name="my_store_custom_range_granularity_month">شهريًا</string>
     <string name="my_store_custom_range_granularity_week">أسبوعيًا</string>
@@ -1671,8 +1685,8 @@ Language: ar
     <string name="store_onboarding_task_name_store_title">تسمية متجرك</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">تمكين ميزة NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">طرود توفير الكميات الصغيرة (لا بد من وضع علامات عليها)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">طرود محدودة الكمية منقولة برًا - الأيروسولات، ومطهرات الرذاذ، والطلاء بالرش، ورذاذ الشعر، والبروبان، والبيوتان، ومنتجات التنظيف، وغير ذلك - العطور، وطلاء الأظافر، ومزيل طلاء الأظافر، والمذيبات، ومعقم اليدين، والكحول المحمر، ومنتجات الإيثانول القاعدية، وغير ذلك - مواد سطحية أخرى محدودة الكمية (مستحضرات التجميل، ومنتجات التنظيف، والطلاءات، وغير ذلك)</string>
     <string name="shipping_label_hazmat_option_lighters">طرود الولاعات - ولاعات معتمدة</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">طرود محدودة الكمية منقولة برًا - الأيروسولات، ومطهرات الرذاذ، والطلاء بالرش، ورذاذ الشعر، والبروبان، والبيوتان، ومنتجات التنظيف، وغير ذلك - العطور، وطلاء الأظافر، ومزيل طلاء الأظافر، والمذيبات، ومعقم اليدين، والكحول المحمر، ومنتجات الإيثانول القاعدية، وغير ذلك - مواد سطحية أخرى محدودة الكمية (مستحضرات التجميل، ومنتجات التنظيف، والطلاءات، وغير ذلك)</string>
     <string name="shipping_label_hazmat_option_id8000">طرود السلع الاستهلاكية ID8000 - السلع الاستهلاكية المؤهلة للنقل جوًا ID8000 (الأيروسولات غير القابلة للاشتعال، والسوائل القابلة للاشتعال، والمواد السامة، والمواد الخطرة المتنوعة)</string>
     <string name="shipping_label_hazmat_option_ground_only">المواد الخطرة المنقولة برًا فقط (بالنسبة إلى العناصر غير المدرجة، لكنها مقتصرة على العناصر السطحية فقط)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">طرود توفير الكميات المستثناة (مثل: الكميات الصغيرة من السوائل القابلة للاشتعال، والمواد المسببة للتآكل أو السامة أو الخطرة بيئيًا - لا بد من وضع علامة عليها)</string>
@@ -1971,7 +1985,6 @@ Language: ar
     <string name="store_onboarding_launch_store_back_to_store_button">العودة إلى متجري</string>
     <string name="store_onboarding_launch_store_share_url_button">مشاركة عنوان URL</string>
     <string name="store_onboarding_launch_store_button">نشر متجري</string>
-    <string name="domains_search_domains">البحث في النطاقات</string>
     <string name="upgrades_upgradeable_caption">أنت في الإصدار التجريبي المجاني الذي تبلغ مدته ⁦%1$d⁩. سينتهي الإصدار التجريبي المجاني في ⁦%2$s⁩. يمكنك الترقية لفتح ميزات جديدة والاستمرار في تشغيل متجرك.</string>
     <string name="free_trial_days_left">مازال %1$s⁩ أيام في إصدارك التجريبي.</string>
     <string name="login_site_credentials_http_error">فشل تسجيل الدخول باستخدام رمز الحالة ⁦%1$s⁩</string>
@@ -2016,43 +2029,14 @@ Language: ar
     <string name="jetpack_benefits_fetching_status">إحضار حالة Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">حدث خطأ. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">جاري تسجيل اسم النطاق…</string>
-    <string name="domain_registration_country_picker_dialog_title">تحديد الدولة</string>
-    <string name="domain_registration_state_picker_dialog_title">تحديد الولاية</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
-    <string name="domain_registration_generic_error">حدث خطأ في أثناء تسجيل النطاق</string>
-    <string name="domain_contact_information_phone_number_hint">الهاتف</string>
-    <string name="domain_contact_information_country_code_hint">رمز الدولة</string>
-    <string name="domain_contact_information_country_hint">الدولة</string>
-    <string name="domain_contact_information_address_hint">العنوان</string>
-    <string name="domain_contact_information_address_hint_two">العنوان 2</string>
-    <string name="domain_contact_information_city_hint">المدينة</string>
-    <string name="domain_contact_information_state_hint">الولاية</string>
-    <string name="domain_contact_information_state_not_available_hint">الحالة (غير متوفرة)</string>
-    <string name="domain_contact_information_postal_code_hint">الرمز البريدي</string>
-    <string name="domain_contact_information_register_domain_button">تسجيل اسم نطاق</string>
-    <string name="domain_contact_information_description">قمنا بتعبئة معلومات جهات الاتصال الخاصة بك مسبقًا على حسابك في WordPress.com من أجل راحتك.\n        يرجى المراجعة للتأكد من صحة المعلومات التي ترغب في استخدامها لهذا النطاق.</string>
-    <string name="domain_contact_information_organization_hint">المؤسسة (اختياري)</string>
-    <string name="domain_registration_privacy_protection_description">يتعين على مالكي النطاق مشاركة معلومات الاتصال في قاعدة بيانات عامة لجميع النطاقات.\n        مع ميزة حماية الخصوصية، ننشر معلوماتنا الخاصة بدلاً من معلوماتك، وإعادة توجيه أي اتصال إليك بشكل سري.</string>
-    <string name="domain_registration_contact_form_input_error">الرجاء إدخال عنوان %s صالح</string>
-    <string name="domain_privacy_option_on_title">التسجيل بشكل خاص مع ميزة الحماية من الخصوصية</string>
-    <string name="domain_privacy_option_off_title">التسجيل بشكل علني</string>
-    <string name="domain_contact_information_title">معلومات الاتصال الخاصة بالنطاق</string>
-    <string name="domain_registration_privacy_protection_tos">يعني تسجيل هذا النطاق أنك توافق على &lt;a href=\'\'&gt;شروط الخدمة التي نُقرها&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_title">حماية الخصوصية</string>
-    <string name="domains_access_error_title">لا يمكن لمسؤولي المتجر سوى الوصول إلى إعدادات النطاق</string>
     <string name="login_jetpack_installation_continue_magic_link">أو الاستمرار في استخدام Magic Link</string>
     <string name="login_jetpack_installation_enter_wpcom_password">إدخال كلمة مرور حسابك على ووردبريس.كوم لتثبيت Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">تسجيل الدخول باستخدام حسابك على ووردبريس.كوم لتثبيت Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">تسجيل الدخول باستخدام حسابك على ووردبريس.كوم للاتصال Jetpack.</string>
     <string name="login_jetpack_connection_enter_wpcom_password">إدخال كلمة مرور حسابك على ووردبريس.كوم للاتصال بـ Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">يمكنك العثور على إعدادات النطاق ضمن الإعدادات &gt; النطاقات</string>
-    <string name="domains_purchase_successful_delay_notice">يجري إعداد عنوان موقعك. قد يستغرق الأمر ما يصل إلى 30 دقيقة لكي يبدأ نطاقك بالعمل.</string>
-    <string name="domains_purchase_successful_heading">تهانينا على إتمام عملية الشراء الخاصة بك</string>
-    <string name="domains_free_with_credits">مجاني للسنة الأولى</string>
     <string name="settings_confirm_logout_site_credentials">هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟</string>
-    <string name="domains_generic_error_title">يتعذر تحميل نطاقات المواقع</string>
     <string name="store_onboarding_completed_tasks_status">تم إكمال ⁦%1$d⁩/%2$d</string>
     <string name="store_onboarding_task_launch_store_description">انشر موقعك أمام العالم في أي وقت تريده!</string>
     <string name="store_onboarding_task_launch_store_title">بدء متجرك</string>
@@ -2063,19 +2047,6 @@ Language: ar
     <string name="card_reader_payment_failed_device_is_not_supported">جهازك غير مدعوم. يرجى الاتصال بالدعم للحصول على مزيد من التفاصيل</string>
     <string name="card_reader_payment_failed_nfc_disabled">يتعذر على التطبيق تمكين قارئ البطاقات؛ لأن رقاقة NFC معطّلة</string>
     <string name="card_reader_payment_failed_canceled">تم إلغاء المعاملة</string>
-    <string name="domains_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى</string>
-    <string name="domains_select_domain">تحديد نطاق</string>
-    <string name="domains_add_domain_button_title">إضافة نطاق</string>
-    <string name="domains_your_domains">نطاقات موقعك</string>
-    <string name="domains_primary_address">عنوان الموقع الأساسي</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;تعرّف إلى المزيد&lt;/u&gt;&lt;/a&gt; عن النطاقات وكيفية اتخاذ إجراءات مرتبطة بالنطاق.</string>
-    <string name="domains_search_for_domain_button_title">البحث عن نطاق</string>
-    <string name="domains_purchase_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى عنوان الأساسي.</string>
-    <string name="domains_claim_your_free_domain_link">المطالبة بالنطاق</string>
-    <string name="domains_claim_your_free_domain_description">لديك تسجيل نطاق مجاني مدته عام واحد ضمن خطتك.</string>
-    <string name="domains_claim_your_free_domain_title">طالب بنطاقك المجاني</string>
-    <string name="domains_your_free_store_address">عنوان متجرك المجاني</string>
-    <string name="domains">النطاقات</string>
     <string name="feedback_banner_ipp_cta_button">مشاركة الملاحظات.</string>
     <string name="feedback_banner_ipp_message_beginner">قيِّم تجربتك الأولى مع ميزة المدفوعات الشخصية.</string>
     <string name="feedback_banner_ipp_title_beginner">هل تستمتع بميزة المدفوعات الشخصية لديك؟</string>
@@ -2093,7 +2064,6 @@ Language: ar
     <string name="analytics_session_card_title">الجلسات</string>
     <string name="analytics_session_no_data">ليست هناك جلسات لهذه الفترة</string>
     <string name="date_compared_to">تمت المقارنة مع</string>
-    <string name="domain">نطاق</string>
     <string name="card_reader_type_selection_bluetooth_reader">قارئ البلوتوث</string>
     <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
@@ -2120,7 +2090,6 @@ Language: ar
     <string name="variation_add_new">إضافة تباين جديد</string>
     <string name="variation_list_add">إضافة نوع</string>
     <string name="variation_add_all">إنشاء كل التباينات</string>
-    <string name="domain_picker_empty_suggestions">لا توجد نطاقات متوفرة لهذا البحث</string>
     <string name="login_jetpack_installation_exit_without_connection">الإنهاء من دون اتصال</string>
     <string name="login_jetpack_installation_continue_connection">استمرار الاتصال</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">حاول الاتصال مجددًا للوصول إلى متجرك.</string>
@@ -2168,7 +2137,6 @@ Language: ar
     <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
     <string name="analytics_visitors_subtitle">الزائرون</string>
-    <string name="domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييره لاحقًا.</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
     <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>

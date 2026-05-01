@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 11:57:54+0000
+Translation-Revision-Date: 2026-04-21 13:58:13+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">變更團隊成員</string>
+    <string name="booking_reschedule_screen_title">重新安排預訂</string>
+    <string name="booking_details_reschedule_button">重新排程</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">我同意 &lt;a href=\"fedex-tos\"&gt;FedEx 服務條款&lt;/a&gt;。</string>
+    <string name="wpp_shipping_fedex_tos_description">若要購買 FedEx 貨運標籤，請務必同意下列條款：</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx 服務條款</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">我們無法載入運費。 請將名字和姓氏新增至目的地地址，然後再試一次。</string>
+    <string name="woopos_settings_receipt_edit_button">編輯收據資訊</string>
+    <string name="woopos_home_syncing_catalog_progress">第 %1$d 個項目，共 %2$d 個項目</string>
+    <string name="woopos_home_syncing_catalog_preparing">正在準備目錄…</string>
+    <string name="product_type_bookable_service_desc">顧客可以線上預訂的服務</string>
+    <string name="product_type_bookable_service_title">服務</string>
+    <string name="settings_troubleshoot_connection">對連線問題進行疑難排解</string>
+    <string name="connectivity_tool_copy">複製</string>
+    <string name="connectivity_tool_technical_details_copied">技術詳細資料已複製到剪貼簿。</string>
+    <string name="connectivity_tool_technical_details_title">技術詳細資料</string>
+    <string name="connectivity_tool_view_technical_details">檢視技術詳細資料</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">正在擷取商店中的商品</string>
+    <string name="user_role_access_error_fetch_failed">我們無法驗證你在此商店中的角色。 請再試一次。 如果問題持續發生，請聯絡支援團隊。</string>
     <string name="woopos_eligibility_learn_more_label">深入了解</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">當面付款，每筆交易只要 2.70% + 0.10 美元。 &lt;b&gt;升級至專業版&lt;/b&gt;，即可存取手機的感應支付功能，以及我們的完整銷售點系統，包括即時庫存與訂單同步處理。</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">當面付款，每筆交易只要 2.70% + 0.10 美元。 升級至專業版，即可存取手機的感應支付功能，以及我們的完整銷售點系統，包括即時庫存與訂單同步處理。</string>
@@ -30,7 +49,6 @@ Language: zh_TW
     <string name="woo_push_notifications_introduction_connected_body">只要再完成一個步驟，就能開始接收新訂單和評論等功能的通知。</string>
     <string name="woo_push_notifications_introduction_connected_title">取得商店的推播通知</string>
     <string name="my_store_widget_push_notifications_description">啟用推播通知，隨時掌握新訂單和評論。</string>
-    <string name="dashboard_stats_net_sales">淨銷售額</string>
     <string name="woopos_search_products_and_variations">搜尋產品和款式</string>
     <string name="woopos_bookings_details_customer_guest_badge">訪客</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">更新外掛程式</string>
@@ -1203,10 +1221,6 @@ Language: zh_TW
     <string name="delete_product_category_failed">刪除類別時發生錯誤</string>
     <string name="delete_product_category_success">商品類別已刪除</string>
     <string name="update_product_category_success">商品類別已更新</string>
-    <string name="domain_picker_suggestions_error">無法載入網域建議</string>
-    <string name="domain_picker_suggestions_title">建議</string>
-    <string name="domain_picker_hint">輸入網域</string>
-    <string name="domain_picker_title">選擇網域</string>
     <string name="analytics_section_see_all">檢視所有商店分析資料</string>
     <string name="my_store_custom_range_granularity_year">每年</string>
     <string name="my_store_custom_range_granularity_month">每月</string>
@@ -1973,7 +1987,6 @@ Language: zh_TW
     <string name="store_onboarding_launch_store_back_to_store_button">返回我的商店</string>
     <string name="store_onboarding_launch_store_share_url_button">分享 URL</string>
     <string name="store_onboarding_launch_store_button">發表我的商店</string>
-    <string name="domains_search_domains">搜尋網域</string>
     <string name="login_site_credentials_http_error">登入失敗，狀態代碼為 %1$s</string>
     <string name="login_site_credentials_custom_admin_url">無法登入，因為我們無法識別你商店的管理 URL。</string>
     <string name="login_site_credentials_custom_login_url">無法登入，因為我們無法識別你商店的登入 URL。</string>
@@ -2018,41 +2031,12 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
-    <string name="domain_registration_generic_error">註冊網域時發生錯誤</string>
-    <string name="domain_registration_state_picker_dialog_title">選取州/省</string>
-    <string name="domain_registration_country_picker_dialog_title">選取國家</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">正在註冊網域名稱…</string>
-    <string name="domain_contact_information_register_domain_button">註冊網域</string>
-    <string name="domain_contact_information_postal_code_hint">郵遞區號</string>
-    <string name="domain_contact_information_state_not_available_hint">州 (無法使用)</string>
-    <string name="domain_contact_information_state_hint">州</string>
-    <string name="domain_contact_information_city_hint">城市</string>
-    <string name="domain_contact_information_address_hint_two">地址 (二)</string>
-    <string name="domain_contact_information_address_hint">地址</string>
-    <string name="domain_contact_information_country_hint">國家/地區</string>
-    <string name="domain_contact_information_country_code_hint">國家代碼</string>
-    <string name="domain_contact_information_phone_number_hint">電話</string>
-    <string name="domain_contact_information_organization_hint">組織 (選填)</string>
-    <string name="domain_contact_information_description">為了方便起見，我們已預先填入你的 WordPress.com\n聯絡資訊。請檢視各項資訊，以確認這是你想要用於此網域的正確資訊。</string>
-    <string name="domain_contact_information_title">網域聯絡人資訊</string>
-    <string name="domain_privacy_option_off_title">公開註冊</string>
-    <string name="domain_privacy_option_on_title">透過隱私權保護私密註冊</string>
-    <string name="domain_registration_contact_form_input_error">請輸入有效的 %s</string>
-    <string name="domain_registration_privacy_protection_tos">註冊此網域，即表示你同意我們的&lt;a href=\'\'&gt;條款與條件&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">網域擁有者必須在所有網域的公共資料庫中分享自己的聯絡資訊。\n基於隱私權保護，我們只會發佈自己的資訊而非你的資訊，並會將所有通訊內容私密轉寄給你。</string>
-    <string name="domain_registration_privacy_protection_title">隱私權保護</string>
-    <string name="domains_access_error_title">只有商店管理員可以存取網域設定</string>
     <string name="login_jetpack_installation_continue_magic_link">或使用 Magic Link 繼續操作</string>
     <string name="login_jetpack_installation_enter_wpcom_password">請輸入 WordPress.com 帳號的密碼以安裝 Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">請輸入 WordPress.com 帳號的密碼以連結至 Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">請使用 WordPress.com 帳號登入以安裝 Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">請使用 WordPress.com 帳號登入以連結至 Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">你可以在「設定」&gt;「網域」中查看網域設定</string>
-    <string name="domains_purchase_successful_delay_notice">你的網站位址正在設定中。 你的網域最多可能需要 30 分鐘才能開始運作。</string>
-    <string name="domains_purchase_successful_heading">恭喜你購買完成</string>
-    <string name="domains_free_with_credits">第一年免費</string>
     <string name="settings_confirm_logout_site_credentials">確定要登出帳號嗎？</string>
-    <string name="domains_generic_error_title">無法載入網站網域</string>
     <string name="store_onboarding_completed_tasks_status">已完成 %1$d/%2$d</string>
     <string name="store_onboarding_task_launch_store_description">隨時都能將你的網站發佈到全世界！</string>
     <string name="store_onboarding_task_launch_store_title">推出你的商店</string>
@@ -2063,19 +2047,6 @@ Language: zh_TW
     <string name="card_reader_payment_failed_device_is_not_supported">你的裝置不受支援。 如需詳細資訊，請聯絡支援團隊</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC 晶片已停用，導致應用程式無法啟用讀卡機</string>
     <string name="card_reader_payment_failed_canceled">交易已取消</string>
-    <string name="domains_redirect_notice">購買的網域會將使用者重新導向至</string>
-    <string name="domains_select_domain">選取網域</string>
-    <string name="domains_add_domain_button_title">新增網域</string>
-    <string name="domains_your_domains">你的網站網域</string>
-    <string name="domains_primary_address">網站主要位址</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;關於網域的資訊，以及如何採取網域相關操作。</string>
-    <string name="domains_search_for_domain_button_title">搜尋網域</string>
-    <string name="domains_purchase_redirect_notice">購買的網域會將使用者重新導向至你的主要位址。</string>
-    <string name="domains_claim_your_free_domain_link">取得網域</string>
-    <string name="domains_claim_your_free_domain_description">你的方案已包含一年免費網域註冊。</string>
-    <string name="domains_claim_your_free_domain_title">索取你的免費網域</string>
-    <string name="domains_your_free_store_address">你的免費商店位址</string>
-    <string name="domains">網域</string>
     <string name="feedback_banner_ipp_cta_button">分享意見回饋</string>
     <string name="feedback_banner_ipp_message_beginner">為你初次使用親自收款功能的體驗評分。</string>
     <string name="feedback_banner_ipp_title_beginner">喜歡親自收款功能嗎？</string>
@@ -2094,7 +2065,6 @@ Language: zh_TW
     <string name="analytics_session_card_title">帳號登入狀態</string>
     <string name="analytics_session_no_data">此段期間沒有工作階段</string>
     <string name="date_compared_to">比較</string>
-    <string name="domain">網域</string>
     <string name="login_application_passwords_help">什麼是應用程式密碼？</string>
     <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
     <string name="login_open_installation_page">開啟安裝頁面</string>
@@ -2110,7 +2080,6 @@ Language: zh_TW
     <string name="product_bulk_update_regular_price">更新原價</string>
     <string name="variations_bulk_creation_no_candidates_message">已產生所有款式。</string>
     <string name="variations_bulk_creation_no_candidates_title">沒有可產生的款式</string>
-    <string name="domain_picker_empty_suggestions">此搜尋字詞查無網域</string>
     <string name="variations_bulk_creation_progress_title">正在產生款式</string>
     <string name="variations_bulk_creation_confirmation_message">這將為每個可能的款式屬性組合建立新的款式 (%1$d 個款式)。</string>
     <string name="variations_bulk_creation_confirmation_title">要產生所有款式嗎？</string>
@@ -2167,7 +2136,6 @@ Language: zh_TW
     <string name="update_simulated_reader">更新模擬讀卡機</string>
     <string name="login_jetpack_connect">連結 Jetpack</string>
     <string name="login_jetpack_installation_screen_title">連結商店</string>
-    <string name="domain_picker_subtitle">這是人們在網際網路上找到你的地方。 不用擔心，之後還能修改。</string>
     <string name="analytics_visitors_subtitle">訪客數</string>
     <string name="or_use_password_below_qr_code_scan_option">或使用密碼登入</string>
     <string name="simulated_reader_toast">模擬讀卡機已停用</string>

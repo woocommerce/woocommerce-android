@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 15:55:43+0000
+Translation-Revision-Date: 2026-04-21 11:54:22+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Changer de membre d’équipe</string>
+    <string name="booking_reschedule_screen_title">Reprogrammer la réservation</string>
+    <string name="booking_details_reschedule_button">Reprogrammer</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">J’accepte les &lt;a href=\"fedex-tos\"&gt;conditions d’utilisation de FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">Pour acheter des étiquettes d’expédition FedEx, vous devez accepter les conditions suivantes :</string>
+    <string name="wpp_shipping_fedex_tos_title">Conditions d’utilisation de FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Impossible de charger les frais de livraison. Veuillez ajouter un nom et un prénom à l’adresse de destination et réessayer.</string>
+    <string name="woopos_settings_receipt_edit_button">Modifier les informations du reçu</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d élément(s) sur %2$d</string>
+    <string name="woopos_home_syncing_catalog_preparing">Préparation du catalogue…</string>
+    <string name="product_type_bookable_service_desc">Un service que les clients peuvent réserver en ligne</string>
+    <string name="product_type_bookable_service_title">Service</string>
+    <string name="settings_troubleshoot_connection">Dépannage de la connexion</string>
+    <string name="connectivity_tool_copy">Copier</string>
+    <string name="connectivity_tool_technical_details_copied">Les détails techniques ont été copiés dans votre presse-papier.</string>
+    <string name="connectivity_tool_technical_details_title">Détails techniques</string>
+    <string name="connectivity_tool_view_technical_details">Voir les détails techniques</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Récupération des produits de votre boutique</string>
+    <string name="user_role_access_error_fetch_failed">Nous n’avons pas pu vérifier votre rôle dans cette boutique. Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
     <string name="woopos_eligibility_learn_more_label">Lire la suite</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Acceptez les paiements en personne pour seulement 2,70 % + 0,10 $ par transaction. &lt;b&gt;Passez à la version Pro&lt;/b&gt; pour accéder au paiement sans contact sur votre téléphone et à notre système de point de vente complet avec synchronisation des stocks et des commandes en temps réel.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Acceptez les paiements en personne pour seulement 2,70 % + 0,10 $ par transaction. Passez à la version Pro pour accéder au paiement sans contact sur votre téléphone et à notre système de point de vente complet avec synchronisation des stocks et des commandes en temps réel.</string>
@@ -30,7 +49,6 @@ Language: fr
     <string name="woo_push_notifications_introduction_connected_body">Plus qu’une étape pour recevoir des notifications concernant les nouvelles commandes, les avis et plus encore.</string>
     <string name="woo_push_notifications_introduction_connected_title">Recevoir des notifications push au sujet de votre boutique</string>
     <string name="my_store_widget_push_notifications_description">Activez les notifications push pour rester au fait des nouvelles commandes et des avis.</string>
-    <string name="dashboard_stats_net_sales">Ventes nettes</string>
     <string name="woopos_search_products_and_variations">Rechercher des produits et des variantes</string>
     <string name="woopos_bookings_details_customer_guest_badge">Invité</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Mettre à jour l’extension</string>
@@ -1203,10 +1221,6 @@ Language: fr
     <string name="delete_product_category_failed">Erreur lors de la suppression de la catégorie</string>
     <string name="delete_product_category_success">Catégorie de produit supprimée</string>
     <string name="update_product_category_success">Catégorie de produit mise à jour</string>
-    <string name="domain_picker_suggestions_error">Impossible de charger les suggestions de domaine</string>
-    <string name="domain_picker_suggestions_title">Suggestions</string>
-    <string name="domain_picker_hint">Entrer un domaine</string>
-    <string name="domain_picker_title">Choisir un domaine</string>
     <string name="analytics_section_see_all">Voir toutes les statistiques de la boutique</string>
     <string name="my_store_custom_range_granularity_year">Annuel</string>
     <string name="my_store_custom_range_granularity_month">Mensuel</string>
@@ -1973,7 +1987,6 @@ Language: fr
     <string name="store_onboarding_launch_store_back_to_store_button">Retour à ma boutique</string>
     <string name="store_onboarding_launch_store_share_url_button">URL de partage</string>
     <string name="store_onboarding_launch_store_button">Publier ma boutique</string>
-    <string name="domains_search_domains">Rechercher des domaines</string>
     <string name="login_site_credentials_http_error">La connexion a échoué avec le code d’état %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Impossible de se connecter, car nous ne pouvons pas identifier l’URL d’administration de votre boutique.</string>
     <string name="login_site_credentials_custom_login_url">Impossible de se connecter, car nous ne pouvons pas identifier l’URL de connexion de votre boutique.</string>
@@ -2018,41 +2031,12 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_try_payment">Essayer d’effectuer un paiement</string>
     <string name="card_reader_tap_to_pay_explanation_title">Percevoir des paiements par carte\navec votre téléphone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Appuyer pour payer</string>
-    <string name="domain_registration_generic_error">Une erreur s’est produite lors de l’enregistrement du domaine</string>
-    <string name="domain_registration_state_picker_dialog_title">Sélectionner un État</string>
-    <string name="domain_registration_country_picker_dialog_title">Choisir le pays</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Enregistrement du nom de domaine…</string>
-    <string name="domain_contact_information_register_domain_button">Enregistrer un domaine</string>
-    <string name="domain_contact_information_postal_code_hint">Code postal</string>
-    <string name="domain_contact_information_state_not_available_hint">État (non disponible)</string>
-    <string name="domain_contact_information_state_hint">État</string>
-    <string name="domain_contact_information_city_hint">Ville</string>
-    <string name="domain_contact_information_address_hint_two">Adresse 2</string>
-    <string name="domain_contact_information_address_hint">Adresse</string>
-    <string name="domain_contact_information_country_hint">Pays</string>
-    <string name="domain_contact_information_country_code_hint">Code pays</string>
-    <string name="domain_contact_information_phone_number_hint">Téléphone</string>
-    <string name="domain_contact_information_organization_hint">Organisation (facultatif)</string>
-    <string name="domain_contact_information_description">Pour vous faciliter la tâche, nous avons prérempli vos coordonnées\n WordPress.com. Veuillez vérifier qu\'elles correspondent bien aux informations que vous voulez utiliser pour ce domaine.</string>
-    <string name="domain_contact_information_title">Coordonnées du domaine</string>
-    <string name="domain_privacy_option_off_title">S\'inscrire publiquement</string>
-    <string name="domain_privacy_option_on_title">S\'inscrire en privé avec protection de la vie privée</string>
-    <string name="domain_registration_contact_form_input_error">Veuillez saisir un(e) %s valide</string>
-    <string name="domain_registration_privacy_protection_tos">En enregistrant ce domaine, vous acceptez nos &lt;a href=\'\'&gt;conditions générales&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">Les propriétaires de domaines sont tenus de partager leurs informations de contact dans une base de données publique de domaines.\n Grâce à la fonction de protection de la vie privée, nous publions nos propres informations à la place des vôtres et vous transmettons les communications en privé.</string>
-    <string name="domain_registration_privacy_protection_title">Protection de la vie privée</string>
-    <string name="domains_access_error_title">Seuls les administrateurs de la boutique peuvent accéder aux paramètres du domaine</string>
     <string name="login_jetpack_installation_continue_magic_link">Ou continuer d’utiliser un lien magique</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Saisir le mot de passe de votre compte WordPress.com pour installer Jepack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Saisir le mot de passe de votre compte WordPress.com pour connecter Jepack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Se connecter avec votre compte WordPress.com pour installer Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Se connecter avec votre compte WordPress.com pour connecter Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Vous trouverez les réglages du domaine dans Réglages -&gt; Domaines</string>
-    <string name="domains_purchase_successful_delay_notice">L’adresse de votre site est en cours de configuration. Un délai de 30 minutes peut être nécessaire pour que votre domaine soit opérationnel.</string>
-    <string name="domains_purchase_successful_heading">Félicitations pour votre achat</string>
-    <string name="domains_free_with_credits">Gratuit la première année </string>
     <string name="settings_confirm_logout_site_credentials">Voulez-vous vraiment vous déconnecter de votre compte ?</string>
-    <string name="domains_generic_error_title">Impossible de charger les domaines de site</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d terminé</string>
     <string name="store_onboarding_task_launch_store_description">Publiez votre site dans le monde entier quand vous le souhaitez !</string>
     <string name="store_onboarding_task_launch_store_title">Lancez votre boutique</string>
@@ -2063,19 +2047,6 @@ Language: fr
     <string name="card_reader_payment_failed_device_is_not_supported">Votre appareil n’est pas pris en charge. Pour plus d’informations, veuillez contacter l’assistance</string>
     <string name="card_reader_payment_failed_nfc_disabled">L’application n’a pas pu activer le lecteur de cartes, car la carte à puce NFC est désactivée</string>
     <string name="card_reader_payment_failed_canceled">La transaction a été annulée</string>
-    <string name="domains_redirect_notice">Le domaine acheté redirigera les utilisateurs vers</string>
-    <string name="domains_select_domain">Sélectionner un domaine</string>
-    <string name="domains_add_domain_button_title">Ajouter un domaine</string>
-    <string name="domains_your_domains">Domaines de votre site</string>
-    <string name="domains_primary_address">Adresse du site principal</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;En savoir plus&lt;/u&gt;&lt;/a&gt; à propos des domaines et sur la possibilité d’effectuer des actions liées au domaine.</string>
-    <string name="domains_search_for_domain_button_title">Rechercher un domaine</string>
-    <string name="domains_purchase_redirect_notice">Le domaine acheté redirigera les utilisateurs vers votre adresse principale.</string>
-    <string name="domains_claim_your_free_domain_link">Demander un domaine</string>
-    <string name="domains_claim_your_free_domain_description">Avec votre plan, vous disposez gratuitement d’un enregistrement de domaine d’un an.</string>
-    <string name="domains_claim_your_free_domain_title">Demander votre domaine gratuit</string>
-    <string name="domains_your_free_store_address">Votre adresse gratuite de la boutique</string>
-    <string name="domains">Domaines</string>
     <string name="feedback_banner_ipp_cta_button">Partager des commentaires</string>
     <string name="feedback_banner_ipp_message_beginner">Évaluez votre première expérience de paiement en personne.</string>
     <string name="feedback_banner_ipp_title_beginner">Votre paiement en personne s’est-il bien passé ?</string>
@@ -2094,7 +2065,6 @@ Language: fr
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_session_no_data">Aucune session au cours de cette période</string>
     <string name="date_compared_to">Par rapport à</string>
-    <string name="domain">Domaine</string>
     <string name="login_application_passwords_help">Que sont les mots de passe d\'applications ?</string>
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
@@ -2110,7 +2080,6 @@ Language: fr
     <string name="product_bulk_update_regular_price">Mettre à jour le tarif standard</string>
     <string name="variations_bulk_creation_no_candidates_message">Toutes les variantes ont déjà été créées.</string>
     <string name="variations_bulk_creation_no_candidates_title">Aucune variante à créer</string>
-    <string name="domain_picker_empty_suggestions">Aucun domaine disponible pour cette recherche</string>
     <string name="variations_bulk_creation_progress_title">Génération des variantes</string>
     <string name="variations_bulk_creation_confirmation_message">Cette opération créera une nouvelle variante pour chaque combinaison possible d’attributs de variantes (%1$d variantes).</string>
     <string name="variations_bulk_creation_confirmation_title">Générer toutes les variantes ?</string>
@@ -2167,7 +2136,6 @@ Language: fr
     <string name="update_simulated_reader">Mettre à jour le simulateur de lecteur de carte</string>
     <string name="login_jetpack_connect">Connecter Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Associer la boutique</string>
-    <string name="domain_picker_subtitle">C’est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement.</string>
     <string name="analytics_visitors_subtitle">Visiteurs</string>
     <string name="or_use_password_below_qr_code_scan_option">Ou connectez-vous avec un mot de passe</string>
     <string name="simulated_reader_toast">Le simulateur de lecteur de carte a été désactivé</string>

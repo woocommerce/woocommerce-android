@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 09:55:30+0000
+Translation-Revision-Date: 2026-04-21 09:58:19+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Ubah anggota tim</string>
+    <string name="booking_reschedule_screen_title">Jadwalkan ulang pemesanan</string>
+    <string name="booking_details_reschedule_button">Jadwalkan Ulang</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">Saya menyetujui &lt;a href=\"fedex-tos\"&gt;Ketentuan Layanan FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">Untuk membeli label pengiriman FedEx, Anda perlu menyetujui persyaratan berikut:</string>
+    <string name="wpp_shipping_fedex_tos_title">Ketentuan Layanan FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Kami tidak dapat memuat tarif pengiriman. Tambahkan nama depan dan belakang ke alamat tujuan, lalu coba lagi.</string>
+    <string name="woopos_settings_receipt_edit_button">Edit informasi tanda terima</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d dari %2$d item</string>
+    <string name="woopos_home_syncing_catalog_preparing">Menyiapkan katalog…</string>
+    <string name="product_type_bookable_service_desc">Layanan yang dapat dipesan secara online oleh pelanggan</string>
+    <string name="product_type_bookable_service_title">Layanan</string>
+    <string name="settings_troubleshoot_connection">Memecahkan Masalah Koneksi</string>
+    <string name="connectivity_tool_copy">Salin</string>
+    <string name="connectivity_tool_technical_details_copied">Detail teknis telah disalin ke clipboard Anda.</string>
+    <string name="connectivity_tool_technical_details_title">Detail teknis</string>
+    <string name="connectivity_tool_view_technical_details">Lihat detail teknis</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Mengambil produk di toko Anda</string>
+    <string name="user_role_access_error_fetch_failed">Kami tidak dapat memastikan peran Anda di toko ini. Coba lagi. Jika masalah berlanjut, hubungi dukungan.</string>
     <string name="woopos_eligibility_learn_more_label">Baca Selengkapnya</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. &lt;b&gt;Upgrade ke paket Pro&lt;/b&gt; guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. Upgrade ke paket Pro guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
@@ -30,7 +49,6 @@ Language: id
     <string name="woo_push_notifications_introduction_connected_body">Satu langkah lagi untuk mendapatkan pemberitahuan pesanan baru, ulasan, dan lainnya.</string>
     <string name="woo_push_notifications_introduction_connected_title">Dapatkan pemberitahuan push untuk toko Anda</string>
     <string name="my_store_widget_push_notifications_description">Aktifkan pemberitahuan push agar tetap mengetahui pesanan dan ulasan baru.</string>
-    <string name="dashboard_stats_net_sales">Penjualan Bersih</string>
     <string name="woopos_search_products_and_variations">Cari produk dan variasi</string>
     <string name="woopos_bookings_details_customer_guest_badge">Tamu</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Perbarui plugin</string>
@@ -1203,10 +1221,6 @@ Language: id
     <string name="delete_product_category_failed">Error saat menghapus kategori</string>
     <string name="delete_product_category_success">Kategori produk dihapus</string>
     <string name="update_product_category_success">Kategori produk diperbarui</string>
-    <string name="domain_picker_suggestions_error">Saran domain tidak dapat dimuat</string>
-    <string name="domain_picker_suggestions_title">Saran</string>
-    <string name="domain_picker_hint">Ketik domain</string>
-    <string name="domain_picker_title">Pilih domain</string>
     <string name="my_store_custom_range_granularity_year">Tahunan</string>
     <string name="my_store_custom_range_granularity_month">Bulanan</string>
     <string name="my_store_custom_range_granularity_week">Mingguan</string>
@@ -1344,7 +1358,6 @@ Language: id
     <string name="blaze_campaign_edit_ad_change_image_button">Ganti gambar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Terapkan</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
     <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
@@ -1352,6 +1365,7 @@ Language: id
     <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
     <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Tanggal mulai</string>
@@ -1671,8 +1685,8 @@ Language: id
     <string name="store_onboarding_task_name_store_title">Beri nama untuk toko Anda</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktifkan NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Paket Pengadaan Kuantitas Kecil (wajib ditandai)</string>
-    <string name="shipping_label_hazmat_option_lighters">Paket Pemantik Api - Pemantik Api Resmi</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Paket Jalur Darat Kuantitas Terbatas - Aerosol, disinfektan semprot, cat semprot, hair spray, propana, butana, produk-produk kebersihan, dll. - Parfum, cat kuku, pembersih cat kuku, pelarut, penyanitasi tangan, alkohol medis, produk-produk berbahan dasar etanol, dll. - Bahan-bahan jalur darat kuantitas terbatas lainnya (kosmetik, produk-produk kebersihan, cat, dll.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Paket Pemantik Api - Pemantik Api Resmi</string>
     <string name="shipping_label_hazmat_option_id8000">Paket Barang Konsumen ID8000 - Barang Konsumen ID8000 yang Memenuhi Syarat Jalur Udara (Aerosol yang tidak mudah terbakar, Cairan yang mudah terbakar, Zat Beracun, Aneka bahan berbahaya)</string>
     <string name="shipping_label_hazmat_option_ground_only">Bahan-Bahan Berbahaya Khusus Jalur Darat (Untuk item yang tidak masuk dalam daftar, tetapi terbatas hanya untuk jalur darat)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Paket Pengadaan Kuantitas Pengecualian (mis. cairan mudah terbakar, bahan-bahan berbahaya bagi lingkungan, beracun, atau korosif dalam volume kecil - wajib ditandai)</string>
@@ -1965,7 +1979,6 @@ Language: id
     <string name="store_onboarding_launch_store_back_to_store_button">Kembali ke Toko Saya</string>
     <string name="store_onboarding_launch_store_share_url_button">Bagikan URL</string>
     <string name="store_onboarding_launch_store_button">Publikasikan toko saya</string>
-    <string name="domains_search_domains">Cari domain</string>
     <string name="upgrades_non_upgradeable_caption">Sekarang Anda menjadi pelanggan %1$s! Anda memiliki akses ke semua fitur kami hingga %2$s. </string>
     <string name="upgrades_trial_ended_caption">Masa percobaan gratis Anda telah berakhir, menyisakan akses fitur secara terbatas. Berlangganan %1$s sekarang.</string>
     <string name="free_trial_trial_ended">Masa percobaan berakhir</string>
@@ -2016,43 +2029,14 @@ Language: id
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ada yang salah! Silakan coba lagi nanti.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Uji coba pembayaran</string>
     <string name="jetpack_benefits_modal_login">Login untuk Melanjutkan</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Mendaftarkan nama domain…</string>
-    <string name="domain_registration_country_picker_dialog_title">Pilih Negara</string>
-    <string name="domain_registration_state_picker_dialog_title">Pilih Provinsi</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
-    <string name="domain_registration_generic_error">Terjadi error saat registrasi domain</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
-    <string name="domain_contact_information_phone_number_hint">Telepon</string>
-    <string name="domain_contact_information_country_code_hint">Kode negara</string>
-    <string name="domain_contact_information_country_hint">Negara</string>
-    <string name="domain_contact_information_address_hint">Alamat</string>
-    <string name="domain_contact_information_address_hint_two">Alamat 2</string>
-    <string name="domain_contact_information_city_hint">Kota</string>
-    <string name="domain_contact_information_state_hint">Provinsi</string>
-    <string name="domain_contact_information_state_not_available_hint">Negara Bagian (Tidak Tersedia)</string>
-    <string name="domain_contact_information_postal_code_hint">Kode pos</string>
-    <string name="domain_contact_information_register_domain_button">Daftarkan Domain</string>
-    <string name="domain_contact_information_description">Demi kenyamanan Anda, kami telah mengisi informasi kontak WordPress.com Anda\n terlebih dahulu. Harap tinjau kembali untuk memastikan informasi yang ingin Anda gunakan untuk domain ini sudah benar.</string>
-    <string name="domain_contact_information_organization_hint">Organisasi (opsional)</string>
-    <string name="domain_registration_privacy_protection_description">Pemilik domain harus berbagi informasi kontak di database publik semua domain.\n Dengan Perlindungan Privasi, kami memublikasikan informasi kami sendiri, bukan informasi Anda, dan meneruskan segala komunikasi kepada Anda secara pribadi.</string>
-    <string name="domain_registration_contact_form_input_error">Masukkan %s yang valid</string>
-    <string name="domain_privacy_option_on_title">Daftarkan secara pribadi dengan Perlindungan Privasi</string>
-    <string name="domain_privacy_option_off_title">Daftarkan secara publik</string>
-    <string name="domain_contact_information_title">Informasi kontak domain</string>
-    <string name="domain_registration_privacy_protection_tos">Dengan mendaftarkan domain ini, Anda menyetujui &lt;a href=\'\'&gt;syarat dan ketentuan&lt;/a&gt; kami</string>
-    <string name="domain_registration_privacy_protection_title">Perlindungan Privasi</string>
-    <string name="domains_access_error_title">Pengaturan domain hanya bisa diakses oleh administrator toko</string>
     <string name="login_jetpack_installation_continue_magic_link">Atau lanjut dengan Tautan Ajaib</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Masukkan kata sandi akun WordPress.com Anda untuk memasang Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Login dengan akun WordPress.com Anda untuk memasang Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Login dengan akun WordPress.com Anda untuk menghubungkan Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Masukkan kata sandi akun WordPress.com Anda untuk menghubungkan Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Pengaturan domain bisa ditemukan di Pengaturan -&gt; Domain</string>
-    <string name="domains_purchase_successful_delay_notice">Alamat situs Anda sedang diatur. Perlu waktu hingga 30 menit bagi domain Anda untuk mulai berfungsi.</string>
-    <string name="domains_purchase_successful_heading">Selamat atas pembelian Anda</string>
-    <string name="domains_free_with_credits">Gratis untuk tahun pertama</string>
     <string name="settings_confirm_logout_site_credentials">Apakah Anda yakin ingin keluar dari akun Anda?</string>
-    <string name="domains_generic_error_title">Tidak dapat memuat domain situs</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d selesai</string>
     <string name="store_onboarding_task_launch_store_title">Luncurkan toko Anda</string>
     <string name="store_onboarding_task_add_product_description">Mulai berjualan dengan menambahkan produk atau layanan ke toko Anda.</string>
@@ -2063,19 +2047,6 @@ Language: id
     <string name="card_reader_payment_failed_device_is_not_supported">Perangkat Anda tidak didukung. Hubungi dukungan untuk informasi selengkapnya</string>
     <string name="card_reader_payment_failed_nfc_disabled">Aplikasi tidak dapat mengaktifkan pembaca kartu karena cip NFC dinonaktifkan</string>
     <string name="card_reader_payment_failed_canceled">Transaksi dibatalkan</string>
-    <string name="domains_redirect_notice">Domain yang dibeli akan mengalihkan pengguna ke</string>
-    <string name="domains_select_domain">Pilih domain</string>
-    <string name="domains_add_domain_button_title">Tambah domain</string>
-    <string name="domains_your_domains">Domain situs Anda</string>
-    <string name="domains_primary_address">Alamat situs utama</string>
-    <string name="domains_search_for_domain_button_title">Cari domain</string>
-    <string name="domains_purchase_redirect_notice">Domain yang dibeli akan mengalihkan pengguna ke alamat utama Anda.</string>
-    <string name="domains_claim_your_free_domain_link">Klaim Domain</string>
-    <string name="domains_claim_your_free_domain_title">Klaim domain gratis Anda</string>
-    <string name="domains_your_free_store_address">Alamat toko gratis Anda</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt; tentang domain dan cara bertindak terkait domain.</string>
-    <string name="domains_claim_your_free_domain_description">Anda memiliki registrasi domain gratis selama satu tahun bersama paket Anda.</string>
-    <string name="domains">Domain</string>
     <string name="feedback_banner_ipp_cta_button">Bagikan masukan</string>
     <string name="feedback_banner_ipp_message_beginner">Beri rating pengalaman pembayaran langsung pertama Anda.</string>
     <string name="feedback_banner_ipp_title_beginner">Suka pembayaran langsung Anda?</string>
@@ -2093,7 +2064,6 @@ Language: id
     <string name="analytics_session_card_title">Sesi</string>
     <string name="analytics_session_no_data">Tidak ada sesi dalam periode ini</string>
     <string name="date_compared_to">Bandingkan dengan</string>
-    <string name="domain">Domain</string>
     <string name="card_reader_type_selection_bluetooth_reader">Pembaca Kartu</string>
     <string name="login_application_passwords_help">Apa itu Kata Sandi Aplikasi?</string>
     <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
@@ -2120,7 +2090,6 @@ Language: id
     <string name="variation_add_new">Tambah variasi baru</string>
     <string name="variation_list_add">Tambah variasi</string>
     <string name="variation_add_all">Buat semua variasi</string>
-    <string name="domain_picker_empty_suggestions">Tidak ada domain tersedia untuk pencarian ini</string>
     <string name="login_jetpack_installation_exit_without_connection">Keluar Tanpa Menyambungkan</string>
     <string name="login_jetpack_installation_continue_connection">Lanjutkan penyambungan</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Coba sambungkan lagi untuk mengakses toko Anda.</string>
@@ -2168,7 +2137,6 @@ Language: id
     <string name="login_jetpack_connect">Sambungkan ke Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
     <string name="analytics_visitors_subtitle">Pengunjung</string>
-    <string name="domain_picker_subtitle">Inilah tempat orang-orang dapat menemukan Anda di Internet. Jangan khawatir! Anda dapat mengubahnya kembali.</string>
     <string name="simulated_reader_toast">Pembaca Kartu Simulasi telah dinonaktifkan</string>
     <string name="variations_bulk_update_stock_quantity_success">Jumlah stok diperbarui</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Jumlah stok saat ini adalah gabungan</string>

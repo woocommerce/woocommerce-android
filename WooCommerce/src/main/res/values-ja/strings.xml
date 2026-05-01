@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 09:54:55+0000
+Translation-Revision-Date: 2026-04-21 09:59:02+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">チームメンバーを変更</string>
+    <string name="booking_reschedule_screen_title">予約を変更</string>
+    <string name="booking_details_reschedule_button">予約変更</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">&lt;a href=\"fedex-tos\"&gt;FedEx 利用規約&lt;/a&gt;に同意します。</string>
+    <string name="wpp_shipping_fedex_tos_description">FedEx の配送ラベルを購入するには、以下の条件に同意する必要があります。</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx 利用規約</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">配送料金を読み込めませんでした。 配送先の住所に姓と名を追加して、もう一度お試しください。</string>
+    <string name="woopos_settings_receipt_edit_button">領収書情報を編集</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d/%2$dのアイテム</string>
+    <string name="woopos_home_syncing_catalog_preparing">カタログを準備中…</string>
+    <string name="product_type_bookable_service_desc">顧客がオンラインで予約できるサービス</string>
+    <string name="product_type_bookable_service_title">サービス</string>
+    <string name="settings_troubleshoot_connection">接続をトラブルシューティング</string>
+    <string name="connectivity_tool_copy">コピー</string>
+    <string name="connectivity_tool_technical_details_copied">技術詳細がクリップボードにコピーされました。</string>
+    <string name="connectivity_tool_technical_details_title">技術詳細</string>
+    <string name="connectivity_tool_view_technical_details">技術詳細を表示</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">ストアで商品を取得しています</string>
+    <string name="user_role_access_error_fetch_failed">このストアでの権限グループを認証できませんでした。 もう一度お試しください。 問題が解決しない場合は、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_learn_more_label">さらに詳しく</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 &lt;b&gt;Pro にアップグレード&lt;/b&gt;すると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 Pro にアップグレードすると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
@@ -30,7 +49,6 @@ Language: ja_JP
     <string name="woo_push_notifications_introduction_connected_body">新規注文やレビューなどの通知を受け取るまで、あと一歩です。</string>
     <string name="woo_push_notifications_introduction_connected_title">ストアのプッシュ通知を取得</string>
     <string name="my_store_widget_push_notifications_description">プッシュ通知を有効にすると、新規注文やレビューを常に把握できます。</string>
-    <string name="dashboard_stats_net_sales">純売上高</string>
     <string name="woopos_search_products_and_variations">商品とバリエーションを検索…</string>
     <string name="woopos_bookings_details_customer_guest_badge">ゲスト</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">プラグインを更新</string>
@@ -1203,10 +1221,6 @@ Language: ja_JP
     <string name="delete_product_category_failed">カテゴリーの削除中にエラーが発生しました</string>
     <string name="delete_product_category_success">商品カテゴリーを削除しました</string>
     <string name="update_product_category_success">商品カテゴリーを更新しました</string>
-    <string name="domain_picker_suggestions_error">ドメインの提案を読み込めません</string>
-    <string name="domain_picker_suggestions_title">提案</string>
-    <string name="domain_picker_hint">ドメインを入力</string>
-    <string name="domain_picker_title">ドメインを選択</string>
     <string name="analytics_section_see_all">すべてのストアアナリティクスを表示</string>
     <string name="my_store_custom_range_granularity_year">毎年</string>
     <string name="my_store_custom_range_granularity_month">毎月</string>
@@ -1973,7 +1987,6 @@ Language: ja_JP
     <string name="store_onboarding_launch_store_back_to_store_button">ストアに戻る</string>
     <string name="store_onboarding_launch_store_share_url_button">共有 URL</string>
     <string name="store_onboarding_launch_store_button">ストアを公開</string>
-    <string name="domains_search_domains">ドメインを検索</string>
     <string name="login_site_credentials_http_error">ステータスコード%1$sのためログインに失敗しました</string>
     <string name="login_site_credentials_custom_admin_url">ストアの管理 URL を識別できないためログインできません</string>
     <string name="login_site_credentials_custom_login_url">ストアのログイン URL を識別できないためログインできません</string>
@@ -2018,41 +2031,12 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="domain_registration_generic_error">ドメイン登録中にエラーが発生しました</string>
-    <string name="domain_registration_state_picker_dialog_title">都道府県を選択</string>
-    <string name="domain_registration_country_picker_dialog_title">国を選択</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">ドメイン名を登録しています…</string>
-    <string name="domain_contact_information_register_domain_button">ドメインを登録</string>
-    <string name="domain_contact_information_postal_code_hint">郵便番号</string>
-    <string name="domain_contact_information_state_not_available_hint">状態 (使用不可)</string>
-    <string name="domain_contact_information_state_hint">都道府県</string>
-    <string name="domain_contact_information_city_hint">市区町村</string>
-    <string name="domain_contact_information_address_hint_two">住所2</string>
-    <string name="domain_contact_information_address_hint">住所</string>
-    <string name="domain_contact_information_country_hint">国</string>
-    <string name="domain_contact_information_country_code_hint">国コード</string>
-    <string name="domain_contact_information_phone_number_hint">電話</string>
-    <string name="domain_contact_information_organization_hint">組織 (任意)</string>
-    <string name="domain_contact_information_description">WordPress.com 連絡先情報にはデータが事前に\n入力されています。このドメインに使用する情報として正しいことをご確認ください。</string>
-    <string name="domain_contact_information_title">ドメインの連絡先情報</string>
-    <string name="domain_privacy_option_off_title">公開として登録</string>
-    <string name="domain_privacy_option_on_title">プライバシー保護付きで非公開として登録</string>
-    <string name="domain_registration_contact_form_input_error">有効な%sを入力してください</string>
-    <string name="domain_registration_privacy_protection_tos">このドメインを登録することで、当社の&lt;a href=\'\'&gt;利用規約&lt;/a&gt;に合意したことになります</string>
-    <string name="domain_registration_privacy_protection_description">ドメイン所有者は、すべてのドメインのパブリックデータベースで連絡先情報を共有する必要があります。\nプライバシー保護として、お客様に関する情報の代わりに弊社に関する情報を公開し、お客様には個別でコミュニケーションを転送します。</string>
-    <string name="domain_registration_privacy_protection_title">プライバシー保護</string>
-    <string name="domains_access_error_title">ストア管理者のみがドメイン設定にアクセスできます</string>
     <string name="login_jetpack_installation_continue_magic_link">またはマジックリンクを使用して続行します</string>
     <string name="login_jetpack_installation_enter_wpcom_password">WordPress.com アカウントのパスワードを入力して Jetpack をインストールする</string>
     <string name="login_jetpack_connection_enter_wpcom_password">WordPress.com アカウントのパスワードを入力して Jetpack に連携する</string>
     <string name="login_jetpack_installation_enter_wpcom_email">WordPress.com アカウントでログインして Jetpack をインストールする</string>
     <string name="login_jetpack_connection_enter_wpcom_email">WordPress.com アカウントでログインして Jetpack を連携する</string>
-    <string name="domains_purchase_successful_settings_notice">「設定」-&gt;「ドメイン」にドメイン設定があります。</string>
-    <string name="domains_purchase_successful_delay_notice">サイトアドレスをセットアップしています。 ドメインが使用可能になるまでに最大で30分かかる場合があります。</string>
-    <string name="domains_purchase_successful_heading">購入完了です</string>
-    <string name="domains_free_with_credits">1年目は無料</string>
     <string name="settings_confirm_logout_site_credentials">アカウントからログアウトしてもよろしいですか ?</string>
-    <string name="domains_generic_error_title">サイトドメインを読み込めません</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 完了</string>
     <string name="store_onboarding_task_launch_store_description">いつでも好きなときに、自分のサイトを世界中に公開できます。</string>
     <string name="store_onboarding_task_launch_store_title">ストアを立ち上げる</string>
@@ -2063,19 +2047,6 @@ Language: ja_JP
     <string name="card_reader_payment_failed_device_is_not_supported">お使いの端末はサポートされていません。 詳細についてはサポートにお問い合わせください。</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC チップが無効になっているため、アプリでカードリーダーを有効化できませんでした</string>
     <string name="card_reader_payment_failed_canceled">取引はキャンセルされました</string>
-    <string name="domains_redirect_notice">購入したドメインにアクセスするとこちらに転送されます:</string>
-    <string name="domains_select_domain">ドメインを選択</string>
-    <string name="domains_add_domain_button_title">ドメインを追加</string>
-    <string name="domains_your_domains">あなたのサイトドメイン</string>
-    <string name="domains_primary_address">主要サイトのアドレス</string>
-    <string name="domains_learn_more">ドメインやドメインに関連する対処方法についての&lt;a href=\'\'&gt;&lt;u&gt;詳細はこちら&lt;/u&gt;&lt;/a&gt;をご覧ください。</string>
-    <string name="domains_search_for_domain_button_title">ドメインを検索</string>
-    <string name="domains_purchase_redirect_notice">購入したドメインにアクセスするとメインアドレスに転送されます。</string>
-    <string name="domains_claim_your_free_domain_link">ドメインを取得する</string>
-    <string name="domains_claim_your_free_domain_description">このプランには、1年間の無料ドメイン登録が含まれています。</string>
-    <string name="domains_claim_your_free_domain_title">無料ドメインを取得</string>
-    <string name="domains_your_free_store_address">無料ストアのアドレス</string>
-    <string name="domains">ドメイン</string>
     <string name="feedback_banner_ipp_cta_button">フィードバックを共有</string>
     <string name="feedback_banner_ipp_message_beginner">初めてのオフラインでの支払い体験を評価してください。</string>
     <string name="feedback_banner_ipp_title_beginner">オフラインでの支払いはいかがですか ?</string>
@@ -2094,7 +2065,6 @@ Language: ja_JP
     <string name="analytics_session_card_title">セッション</string>
     <string name="analytics_session_no_data">この期間にはセッションがありません</string>
     <string name="date_compared_to">次との比較:</string>
-    <string name="domain">ドメイン</string>
     <string name="login_application_passwords_help">アプリケーションパスワードとは</string>
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
@@ -2110,7 +2080,6 @@ Language: ja_JP
     <string name="product_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_creation_no_candidates_message">すべてのバリエーションはすでに生成されています。</string>
     <string name="variations_bulk_creation_no_candidates_title">生成するバリエーションはありません</string>
-    <string name="domain_picker_empty_suggestions">この検索で利用できるドメインがありません</string>
     <string name="variations_bulk_creation_progress_title">バリエーションを生成しています</string>
     <string name="variations_bulk_creation_confirmation_message">この操作を行うと、可能な限りすべてのバリエーション属性の組み合わせ (%1$d件のバリエーション) につきひとつの新しいバリエーションが作成されます。</string>
     <string name="variations_bulk_creation_confirmation_title">すべてのバリエーションを生成しますか ?</string>
@@ -2167,7 +2136,6 @@ Language: ja_JP
     <string name="update_simulated_reader">シミュレートされたカードリーダーを更新</string>
     <string name="login_jetpack_connect">Jetpack を連携</string>
     <string name="login_jetpack_installation_screen_title">ストアを連携</string>
-    <string name="domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
     <string name="analytics_visitors_subtitle">訪問者</string>
     <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
     <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
