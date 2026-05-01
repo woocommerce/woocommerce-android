@@ -1,1 +1,8 @@
-Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.
+- [***] Performance card on My Store now lets you switch between Gross, Net and Total revenue and pick the order date type (Paid, Placed or Completed) [https://github.com/woocommerce/woocommerce-android/pull/15750]
+- [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
+- [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
+- [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
+- [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
+- [*] Replaced the POS Orders "Learn more" empty-state button with a "Refresh" action and updated the empty-state copy [https://github.com/woocommerce/woocommerce-android/pull/15694]
+- [*] Fixed product images failing to load when the Photon service is unavailable [https://github.com/woocommerce/woocommerce-android/pull/15646]
+- [***] Fixed bug where POS navigation was reset to home on config change [https://github.com/woocommerce/woocommerce-android/pull/15793]
