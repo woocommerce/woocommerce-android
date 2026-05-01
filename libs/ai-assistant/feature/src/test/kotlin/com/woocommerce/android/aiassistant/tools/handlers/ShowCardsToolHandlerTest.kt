@@ -101,6 +101,18 @@ class ShowCardsToolHandlerTest {
         assertThat(structuredText).doesNotContain("raw")
     }
 
+    @Test
+    fun `success uiStructured contains cards for resolved refs`() = runTest {
+        val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
+
+        val uiStructured = assertSuccess(result).uiStructured!!.jsonObject
+        val cards = uiStructured.getValue("cards").jsonArray
+
+        assertThat(cards).hasSize(1)
+        assertThat(cards.first().jsonObject["family"]?.jsonPrimitive?.content).isEqualTo("order")
+        assertThat(cards.first().jsonObject["id"]?.jsonPrimitive?.content).isEqualTo("123")
+    }
+
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
 
