@@ -25,6 +25,13 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
+        assertThat(preview.summary).isEqualTo(
+            string(
+                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                raw("42"),
+                raw("processing"),
+            )
+        )
         assertThat(preview.message).isEqualTo(
             string(
                 R.string.ai_assistant_confirmation_order_set_status_emails_customer,
@@ -96,6 +103,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
+        assertThat(preview.isBulk).isTrue()
         val summary = string(
             R.string.ai_assistant_confirmation_change_summary_status_emails_customers,
             raw("completed"),

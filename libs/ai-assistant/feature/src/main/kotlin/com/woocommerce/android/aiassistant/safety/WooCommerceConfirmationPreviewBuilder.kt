@@ -100,13 +100,14 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                 },
         )
         return ConfirmationPreview(
-            message = quantity(
+            summary = quantity(
                 quantity = ids.size,
                 singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
                 multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
                 summary,
             ),
-            fields = fields,
+            rows = fields,
+            isBulk = true,
         )
     }
 
@@ -131,13 +132,14 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_products_bulk_update_generic))
         val fields = productFields(patch)
         return ConfirmationPreview(
-            message = quantity(
+            summary = quantity(
                 quantity = ids.size,
                 singular = R.string.ai_assistant_confirmation_products_bulk_update_summary_single,
                 multiple = R.string.ai_assistant_confirmation_products_bulk_update_summary_multiple,
                 fields.toChangeSummary(),
             ),
-            fields = fields,
+            rows = fields,
+            isBulk = true,
         )
     }
 

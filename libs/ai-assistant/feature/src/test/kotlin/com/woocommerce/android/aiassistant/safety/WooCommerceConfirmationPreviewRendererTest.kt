@@ -34,6 +34,13 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
+        assertThat(rendered.summary).isEqualTo(
+            context.getString(
+                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                "42",
+                "processing",
+            )
+        )
         assertThat(rendered.message).isEqualTo(
             context.getString(
                 R.string.ai_assistant_confirmation_order_set_status_emails_customer,
@@ -48,6 +55,31 @@ class WooCommerceConfirmationPreviewRendererTest {
                 value = "processing",
             )
         )
+    }
+
+    @Test
+    fun `given order status update, when preview is rendered, then summary and rows are exposed for inline cards`() {
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "processing")
+                },
+            )
+        )
+
+        val rendered = renderer.render(preview)
+
+        assertThat(rendered.summary).isEqualTo("Set order #42 to processing (emails the customer)")
+        assertThat(rendered.rows).containsExactly(
+            RenderedConfirmationDiffRow(
+                name = "status",
+                label = context.getString(R.string.ai_assistant_confirmation_field_status),
+                value = "processing",
+            )
+        )
+        assertThat(rendered.isBulk).isFalse()
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.ui
 
 import androidx.annotation.StringRes
+import androidx.annotation.DrawableRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
@@ -78,6 +79,20 @@ enum class AssistantConfirmationCardState {
     PENDING,
     CONFIRMED,
     CANCELLED,
+}
+
+@StringRes
+internal fun AssistantConfirmationCardState.eyebrowRes(): Int = when (this) {
+    AssistantConfirmationCardState.PENDING -> R.string.assistant_confirmation_eyebrow_pending
+    AssistantConfirmationCardState.CONFIRMED -> R.string.assistant_confirmation_eyebrow_confirmed
+    AssistantConfirmationCardState.CANCELLED -> R.string.assistant_confirmation_eyebrow_cancelled
+}
+
+@DrawableRes
+internal fun AssistantConfirmationCardState.iconRes(): Int = when (this) {
+    AssistantConfirmationCardState.PENDING -> R.drawable.ic_assistant_confirmation_pending
+    AssistantConfirmationCardState.CONFIRMED -> R.drawable.ic_assistant_confirmation_confirmed
+    AssistantConfirmationCardState.CANCELLED -> R.drawable.ic_assistant_confirmation_cancelled
 }
 
 data class AssistantMessageError(

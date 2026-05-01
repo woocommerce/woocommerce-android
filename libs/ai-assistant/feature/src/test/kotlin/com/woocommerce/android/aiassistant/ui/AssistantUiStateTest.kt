@@ -143,4 +143,20 @@ class AssistantUiStateTest {
 
         assertThat(state.isTurnActive).isFalse()
     }
+
+    @Test
+    fun `given confirmation card state, when resolving chrome resources, then eyebrow and icon are mapped`() {
+        assertThat(AssistantConfirmationCardState.PENDING.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_pending)
+        assertThat(AssistantConfirmationCardState.PENDING.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_pending)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_confirmed)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_confirmed)
+        assertThat(AssistantConfirmationCardState.CANCELLED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_cancelled)
+        assertThat(AssistantConfirmationCardState.CANCELLED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_cancelled)
+    }
 }

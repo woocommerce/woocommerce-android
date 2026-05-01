@@ -406,20 +406,37 @@ private fun AssistantConfirmationCardSegment(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(confirmation.state.iconRes()),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+            Text(
+                text = stringResource(confirmation.state.eyebrowRes()),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
         Text(
-            text = confirmation.preview?.message
+            text = confirmation.preview?.summary
                 ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             style = MaterialTheme.typography.titleSmall,
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Button(onClick = onConfirmWrite) {
-                Text(stringResource(R.string.assistant_chat_confirm))
-            }
-            OutlinedButton(onClick = onCancelWrite) {
-                Text(stringResource(R.string.assistant_chat_cancel))
+        if (confirmation.state == AssistantConfirmationCardState.PENDING) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(onClick = onConfirmWrite) {
+                    Text(stringResource(R.string.assistant_chat_confirm))
+                }
+                OutlinedButton(onClick = onCancelWrite) {
+                    Text(stringResource(R.string.assistant_chat_cancel))
+                }
             }
         }
     }

@@ -3,15 +3,32 @@ package com.woocommerce.android.aiassistant.safety
 import androidx.annotation.StringRes
 
 internal data class ConfirmationPreview(
-    val message: ConfirmationPreviewText,
-    val fields: List<ConfirmationPreviewField> = emptyList(),
-)
+    val summary: ConfirmationPreviewText,
+    val rows: List<ConfirmationPreviewRow> = emptyList(),
+    val isBulk: Boolean = false,
+) {
+    constructor(
+        message: ConfirmationPreviewText,
+        fields: List<ConfirmationPreviewField> = emptyList(),
+    ) : this(
+        summary = message,
+        rows = fields,
+    )
 
-internal data class ConfirmationPreviewField(
+    val message: ConfirmationPreviewText
+        get() = summary
+
+    val fields: List<ConfirmationPreviewField>
+        get() = rows
+}
+
+internal data class ConfirmationPreviewRow(
     val name: String,
     val label: ConfirmationPreviewText,
     val value: ConfirmationPreviewText,
 )
+
+internal typealias ConfirmationPreviewField = ConfirmationPreviewRow
 
 internal sealed interface ConfirmationPreviewText {
     data class Raw(
