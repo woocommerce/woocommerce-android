@@ -98,6 +98,10 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(WooPosAnalyticsEvent.Event.CheckoutCashPaymentTapped)
     }
 
+    suspend fun trackTapToPayEntryPointTapped() {
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+    }
+
     suspend fun trackCheckoutOutdatedItemDetectedScreenShown() {
         val syncStrategy = productsDataSource.getCurrentSyncStrategy()
         analyticsTracker.track(
