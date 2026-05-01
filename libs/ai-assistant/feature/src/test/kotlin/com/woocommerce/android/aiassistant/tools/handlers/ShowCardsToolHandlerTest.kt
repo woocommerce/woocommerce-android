@@ -111,7 +111,7 @@ class ShowCardsToolHandlerTest {
     fun `given resolved ref, when executed, then uiStructured contains cards`() = runTest {
         val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
 
-        val uiStructured = assertSuccess(result).uiStructured!!.jsonObject
+        val uiStructured = requireNotNull(assertSuccess(result).uiStructured).jsonObject
         val cards = uiStructured.getValue("cards").jsonArray
 
         assertThat(cards).hasSize(1)
@@ -284,7 +284,7 @@ class ShowCardsToolHandlerTest {
             .map { ref -> ref.jsonObject.getValue("id").jsonPrimitive.content }
 
     private fun uiCards(result: ToolResult) =
-        assertSuccess(result).uiStructured!!.jsonObject.getValue("cards").jsonArray
+        requireNotNull(assertSuccess(result).uiStructured).jsonObject.getValue("cards").jsonArray
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)

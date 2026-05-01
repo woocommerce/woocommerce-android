@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCardsResolver
+import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
@@ -46,7 +47,7 @@ class ShowCardsToolHandler internal constructor(
             putJsonObject("properties") {
                 putJsonObject("references") {
                     put("type", "array")
-                    put("maxItems", 10)
+                    put("maxItems", MAX_SHOW_CARDS_REFS)
                     putJsonObject("items") {
                         put("type", "object")
                         put("additionalProperties", false)

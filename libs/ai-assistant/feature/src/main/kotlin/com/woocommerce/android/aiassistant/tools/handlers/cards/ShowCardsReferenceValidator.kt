@@ -62,7 +62,7 @@ internal class ShowCardsReferenceValidator {
         (get(key) as? JsonPrimitive)?.contentOrNull
 
     private fun JsonPrimitive.stringContentOrNull(): String? =
-        contentOrNull?.takeIf { toString().startsWith("\"") }
+        contentOrNull?.takeIf { isString }
 
     private fun String.isValidShowCardsId(): Boolean = isNotBlank()
 
