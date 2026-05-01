@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.dagger.hilt)
@@ -19,6 +20,10 @@ android {
     compileOptions {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     lint {
@@ -40,12 +45,21 @@ dependencies {
     implementation(project(":libs:fluxc-plugin"))
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.squareup.okhttp3)
     implementation(libs.squareup.okhttp3.sse)
     implementation(libs.google.dagger.hilt.android.main)
 
     ksp(libs.google.dagger.hilt.compiler)
+
+    debugImplementation(libs.androidx.compose.ui.tooling.main)
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)

@@ -271,57 +271,15 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
-        val summary = listOf(
-            string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("19.99")),
-            string(
-                R.string.ai_assistant_confirmation_change_summary_sale_price,
-                string(R.string.ai_assistant_confirmation_field_value_off),
-            ),
-            string(R.string.ai_assistant_confirmation_change_summary_stock_quantity, raw("3")),
-            string(R.string.ai_assistant_confirmation_change_summary_stock_status, raw("instock")),
-            string(R.string.ai_assistant_confirmation_change_summary_status, raw("publish")),
-            string(R.string.ai_assistant_confirmation_change_summary_sku, raw("VAR-8")),
-        ).toLocalizedList()
         assertThat(preview.message).isEqualTo(
             string(
                 R.string.ai_assistant_confirmation_product_variation_update_summary,
                 raw("8"),
                 raw("7"),
-                summary,
+                expectedProductVariationSummary(),
             )
         )
-        assertThat(preview.fields).containsExactly(
-            ConfirmationPreviewField(
-                name = "regular_price",
-                value = raw("19.99"),
-                label = label(R.string.ai_assistant_confirmation_field_regular_price),
-            ),
-            ConfirmationPreviewField(
-                name = "sale_price",
-                value = string(R.string.ai_assistant_confirmation_field_value_off),
-                label = label(R.string.ai_assistant_confirmation_field_sale_price),
-            ),
-            ConfirmationPreviewField(
-                name = "stock_quantity",
-                value = raw("3"),
-                label = label(R.string.ai_assistant_confirmation_field_stock_quantity),
-            ),
-            ConfirmationPreviewField(
-                name = "stock_status",
-                value = raw("instock"),
-                label = label(R.string.ai_assistant_confirmation_field_stock_status),
-            ),
-            ConfirmationPreviewField(
-                name = "status",
-                value = raw("publish"),
-                label = label(R.string.ai_assistant_confirmation_field_status),
-            ),
-            ConfirmationPreviewField(
-                name = "sku",
-                value = raw("VAR-8"),
-                label = label(R.string.ai_assistant_confirmation_field_sku),
-            ),
-        )
+        assertThat(preview.fields).containsExactlyElementsOf(expectedProductVariationFields())
     }
 
     @Test
@@ -547,6 +505,51 @@ class WooCommerceConfirmationPreviewBuilderTest {
         multiple: Int,
         vararg args: ConfirmationPreviewText,
     ) = ConfirmationPreviewText.Quantity(quantity, singular, multiple, args.toList())
+
+    private fun expectedProductVariationSummary() = listOf(
+        string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("19.99")),
+        string(
+            R.string.ai_assistant_confirmation_change_summary_sale_price,
+            string(R.string.ai_assistant_confirmation_field_value_off),
+        ),
+        string(R.string.ai_assistant_confirmation_change_summary_stock_quantity, raw("3")),
+        string(R.string.ai_assistant_confirmation_change_summary_stock_status, raw("instock")),
+        string(R.string.ai_assistant_confirmation_change_summary_status, raw("publish")),
+        string(R.string.ai_assistant_confirmation_change_summary_sku, raw("VAR-8")),
+    ).toLocalizedList()
+
+    private fun expectedProductVariationFields() = listOf(
+        ConfirmationPreviewField(
+            name = "regular_price",
+            value = raw("19.99"),
+            label = label(R.string.ai_assistant_confirmation_field_regular_price),
+        ),
+        ConfirmationPreviewField(
+            name = "sale_price",
+            value = string(R.string.ai_assistant_confirmation_field_value_off),
+            label = label(R.string.ai_assistant_confirmation_field_sale_price),
+        ),
+        ConfirmationPreviewField(
+            name = "stock_quantity",
+            value = raw("3"),
+            label = label(R.string.ai_assistant_confirmation_field_stock_quantity),
+        ),
+        ConfirmationPreviewField(
+            name = "stock_status",
+            value = raw("instock"),
+            label = label(R.string.ai_assistant_confirmation_field_stock_status),
+        ),
+        ConfirmationPreviewField(
+            name = "status",
+            value = raw("publish"),
+            label = label(R.string.ai_assistant_confirmation_field_status),
+        ),
+        ConfirmationPreviewField(
+            name = "sku",
+            value = raw("VAR-8"),
+            label = label(R.string.ai_assistant_confirmation_field_sku),
+        ),
+    )
 
     private fun List<ConfirmationPreviewText>.toLocalizedList(): ConfirmationPreviewText =
         reduce { left, right ->

@@ -1,9 +1,11 @@
 package com.woocommerce.android.aiassistant.safety
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-internal class ConfirmationPreviewRenderer(
-    private val context: Context,
+internal class ConfirmationPreviewRenderer @Inject constructor(
+    @ApplicationContext private val context: Context,
 ) {
     fun render(preview: ConfirmationPreview): RenderedConfirmationPreview =
         RenderedConfirmationPreview(
@@ -32,12 +34,12 @@ internal class ConfirmationPreviewRenderer(
     }
 }
 
-internal data class RenderedConfirmationPreview(
+data class RenderedConfirmationPreview(
     val message: String,
     val fields: List<RenderedConfirmationPreviewField>,
 )
 
-internal data class RenderedConfirmationPreviewField(
+data class RenderedConfirmationPreviewField(
     val name: String,
     val label: String,
     val value: String,

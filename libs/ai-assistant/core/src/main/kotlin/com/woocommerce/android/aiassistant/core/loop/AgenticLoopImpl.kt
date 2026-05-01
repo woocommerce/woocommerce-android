@@ -39,18 +39,12 @@ class AgenticLoopImpl(
         history: List<AssistantMessage>,
         context: SessionContext,
     ): Flow<LoopEvent> = flow {
+        val initialTurn = buildInitialTurn(userMessage, history)
+        val assembler = ToolCallAssembler(json)
         val toolDescriptors = context.catalogSnapshot.tools
         val toolDefs = toolDescriptors.map { it.toToolDefinition() }
-        val assembler = ToolCallAssembler(json)
-
-        val currentUserTurn = AssistantMessage.User(userMessage)
-        val systemPrompt = history.filterIsInstance<AssistantMessage.System>().firstOrNull()
-            ?: AssistantMessage.System("")
-        val rawTranscript = history.filterNot { it is AssistantMessage.System }
-        val budgeted = historyBudgeter.build(systemPrompt, rawTranscript, currentUserTurn)
-
-        var modelMessages: List<AssistantMessage> = budgeted.messages
-        val newTurnMessages = mutableListOf<AssistantMessage>(currentUserTurn)
+        val newTurnMessages = mutableListOf<AssistantMessage>(initialTurn.currentUserTurn)
+        var modelMessages: List<AssistantMessage> = initialTurn.modelMessages
         var visibleOutputStarted = false
         var iteration = 0
 
@@ -106,6 +100,19 @@ class AgenticLoopImpl(
         }
 
         emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, history + newTurnMessages))
+    }
+
+    private fun buildInitialTurn(
+        userMessage: String,
+        history: List<AssistantMessage>,
+    ): InitialTurnState {
+        val currentUserTurn = AssistantMessage.User(userMessage)
+        val systemPrompt = history.filterIsInstance<AssistantMessage.System>().firstOrNull()
+            ?: AssistantMessage.System("")
+        val rawTranscript = history.filterNot { it is AssistantMessage.System }
+        val budgeted = historyBudgeter.build(systemPrompt, rawTranscript, currentUserTurn)
+
+        return InitialTurnState(currentUserTurn, budgeted.messages)
     }
 
     private suspend fun FlowCollector<LoopEvent>.streamWithRetry(
@@ -181,35 +188,43 @@ class AgenticLoopImpl(
         }
         for (call in validCalls) {
             val descriptor = toolDescriptors.find { it.name == call.name }
-            val result = if (descriptor == null) {
-                ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
-            } else {
-                executeConfirmedTool(call, descriptor) ?: return ToolExecutionOutcome.Cancelled(completedTools)
-            }
+            val result = executeToolIfAllowed(call, descriptor)
+                ?: return ToolExecutionOutcome.Cancelled(completedTools)
             completedTools += CompletedToolCall(call, result)
             emit(LoopEvent.ToolCallFinished(result))
         }
         return ToolExecutionOutcome.Completed(completedTools)
     }
 
-    private suspend fun FlowCollector<LoopEvent>.executeConfirmedTool(
+    private suspend fun FlowCollector<LoopEvent>.executeToolIfAllowed(
         call: ToolCall,
-        descriptor: ToolDescriptor,
-    ): ToolResult? = when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
-        SafetyDecision.Execute -> executeApprovedTool(call)
-        is SafetyDecision.RequireConfirmation -> {
-            val requestId = decision.request.id
-            try {
-                emit(LoopEvent.ConfirmationRequested(decision.request))
-                val confirmationResult = safetyOrchestrator.awaitResult(requestId)
-                emit(LoopEvent.ConfirmationResolved(confirmationResult))
-                when (confirmationResult.decision) {
-                    ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
-                    ConfirmationDecision.CANCELLED -> null
-                }
-            } finally {
-                safetyOrchestrator.cancelPending(requestId)
+        descriptor: ToolDescriptor?,
+    ): ToolResult? {
+        if (descriptor == null) {
+            return ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
+        }
+
+        return when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
+            SafetyDecision.Execute -> executeApprovedTool(call)
+            is SafetyDecision.RequireConfirmation -> executeAfterConfirmation(call, decision)
+        }
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.executeAfterConfirmation(
+        call: ToolCall,
+        decision: SafetyDecision.RequireConfirmation,
+    ): ToolResult? {
+        val requestId = decision.request.id
+        return try {
+            emit(LoopEvent.ConfirmationRequested(decision.request))
+            val confirmationResult = safetyOrchestrator.awaitResult(requestId)
+            emit(LoopEvent.ConfirmationResolved(confirmationResult))
+            when (confirmationResult.decision) {
+                ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
+                ConfirmationDecision.CANCELLED -> null
             }
+        } finally {
+            safetyOrchestrator.cancelPending(requestId)
         }
     }
 
@@ -244,6 +259,11 @@ class AgenticLoopImpl(
         val assistantText: String,
         val finishReason: FinishReason?,
         val visibleOutputStarted: Boolean,
+    )
+
+    private data class InitialTurnState(
+        val currentUserTurn: AssistantMessage.User,
+        val modelMessages: List<AssistantMessage>,
     )
 
     private sealed interface ToolExecutionOutcome {
