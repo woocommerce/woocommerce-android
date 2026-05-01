@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.ui
 
-import androidx.annotation.StringRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall

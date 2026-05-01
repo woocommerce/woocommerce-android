@@ -211,66 +211,108 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         includeStockStatus: Boolean,
         includeSku: Boolean,
     ): List<ConfirmationPreviewField> = buildList {
+        addOptionalNameField(arguments, snapshot, includeName)
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "regular_price",
+            label = R.string.ai_assistant_confirmation_field_regular_price,
+        )
+        addOptionalSalePriceField(arguments, snapshot)
+        addOptionalStockQuantityField(arguments, snapshot)
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "stock_status",
+            label = R.string.ai_assistant_confirmation_field_stock_status,
+            include = includeStockStatus,
+        )
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "status",
+            label = R.string.ai_assistant_confirmation_field_status,
+        )
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "sku",
+            label = R.string.ai_assistant_confirmation_field_sku,
+            include = includeSku,
+        )
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalNameField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+        includeName: Boolean,
+    ) {
         arguments.stringValue("name")
             ?.takeIf { includeName }
-            ?.let {
-                add(textField("name", it, R.string.ai_assistant_confirmation_field_name, snapshot?.currentValues?.get("name")))
-            }
-        arguments.stringValue("regular_price")
-            ?.let {
+            ?.let { name ->
                 add(
                     textField(
-                        "regular_price",
-                        it,
-                        R.string.ai_assistant_confirmation_field_regular_price,
-                        snapshot?.currentValues?.get("regular_price"),
+                        name = "name",
+                        value = name,
+                        label = R.string.ai_assistant_confirmation_field_name,
+                        beforeValue = snapshot?.currentValues?.get("name"),
                     )
                 )
             }
-        arguments.stringValue("sale_price")
-            ?.let {
-                val value = it.takeIf { price -> price.isNotEmpty() }?.let(::raw)
-                    ?: string(R.string.ai_assistant_confirmation_field_value_off)
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalSalePriceField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ) {
+        arguments.stringValue("sale_price")?.let { salePrice ->
+            val value = salePrice.takeIf { it.isNotEmpty() }?.let(::raw)
+                ?: string(R.string.ai_assistant_confirmation_field_value_off)
+            add(
+                messageField(
+                    name = "sale_price",
+                    value = value,
+                    label = R.string.ai_assistant_confirmation_field_sale_price,
+                    beforeValue = snapshot?.currentValues?.get("sale_price")?.let(::salePriceValue),
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalStockQuantityField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ) {
+        arguments.intValue("stock_quantity")?.let { stockQuantity ->
+            add(
+                textField(
+                    name = "stock_quantity",
+                    value = stockQuantity.toString(),
+                    label = R.string.ai_assistant_confirmation_field_stock_quantity,
+                    beforeValue = snapshot?.currentValues?.get("stock_quantity"),
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalTextField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+        key: String,
+        label: Int,
+        include: Boolean = true,
+    ) {
+        arguments.stringValue(key)
+            ?.takeIf { include }
+            ?.let { value ->
                 add(
-                    messageField(
-                        name = "sale_price",
+                    textField(
+                        name = key,
                         value = value,
-                        label = R.string.ai_assistant_confirmation_field_sale_price,
-                        beforeValue = snapshot?.currentValues?.get("sale_price")?.let(::salePriceValue),
+                        label = label,
+                        beforeValue = snapshot?.currentValues?.get(key),
                     )
                 )
-            }
-        arguments.intValue("stock_quantity")
-            ?.let {
-                add(
-                    textField(
-                        name = "stock_quantity",
-                        value = it.toString(),
-                        label = R.string.ai_assistant_confirmation_field_stock_quantity,
-                        beforeValue = snapshot?.currentValues?.get("stock_quantity"),
-                    )
-                )
-            }
-        arguments.stringValue("stock_status")
-            ?.takeIf { includeStockStatus }
-            ?.let {
-                add(
-                    textField(
-                        "stock_status",
-                        it,
-                        R.string.ai_assistant_confirmation_field_stock_status,
-                        snapshot?.currentValues?.get("stock_status"),
-                    )
-                )
-            }
-        arguments.stringValue("status")
-            ?.let {
-                add(textField("status", it, R.string.ai_assistant_confirmation_field_status, snapshot?.currentValues?.get("status")))
-            }
-        arguments.stringValue("sku")
-            ?.takeIf { includeSku }
-            ?.let {
-                add(textField("sku", it, R.string.ai_assistant_confirmation_field_sku, snapshot?.currentValues?.get("sku")))
             }
     }
 

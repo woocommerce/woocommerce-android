@@ -43,13 +43,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -303,32 +304,20 @@ private fun AssistantMessageBubble(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                message.segments.forEach { segment ->
-                    when (segment) {
-                        is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
-                            confirmation = segment.model,
-                            onConfirmWrite = onConfirmWrite,
-                            onCancelWrite = onCancelWrite,
-                        )
-                        is AssistantUiSegment.Text -> {
-                            if (segment.text.isNotEmpty()) {
-                                Text(
-                                    text = segment.text,
-                                    color = textColor,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = if (isUser) TextAlign.End else TextAlign.Start,
-                                )
-                            }
-                        }
-                    }
-                }
+                AssistantMessageSegments(
+                    message = message,
+                    textColor = textColor,
+                    isUser = isUser,
+                    onConfirmWrite = onConfirmWrite,
+                    onCancelWrite = onCancelWrite,
+                )
                 message.error?.let { error ->
                     AssistantInlineError(
                         error = error,
                         onRetry = onRetry,
                     )
                 }
-                if (message.segments.all { it is AssistantUiSegment.Text && it.text.isEmpty() } && message.error == null) {
+                if (message.shouldShowEmptyPlaceholder()) {
                     Text(
                         text = " ",
                         color = textColor,
@@ -338,6 +327,46 @@ private fun AssistantMessageBubble(
             }
         }
     }
+}
+
+@Composable
+private fun AssistantMessageSegments(
+    message: AssistantUiMessage,
+    textColor: Color,
+    isUser: Boolean,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
+) {
+    message.segments.forEach { segment ->
+        when (segment) {
+            is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
+                confirmation = segment.model,
+                onConfirmWrite = onConfirmWrite,
+                onCancelWrite = onCancelWrite,
+            )
+            is AssistantUiSegment.Text -> AssistantMessageTextSegment(
+                text = segment.text,
+                textColor = textColor,
+                isUser = isUser,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantMessageTextSegment(
+    text: String,
+    textColor: Color,
+    isUser: Boolean,
+) {
+    if (text.isEmpty()) return
+
+    Text(
+        text = text,
+        color = textColor,
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
+    )
 }
 
 @Composable
@@ -360,6 +389,9 @@ private fun AssistantInlineError(
         }
     }
 }
+
+private fun AssistantUiMessage.shouldShowEmptyPlaceholder(): Boolean =
+    segments.all { it is AssistantUiSegment.Text && it.text.isEmpty() } && error == null
 
 @Composable
 private fun AssistantStatusPanel(

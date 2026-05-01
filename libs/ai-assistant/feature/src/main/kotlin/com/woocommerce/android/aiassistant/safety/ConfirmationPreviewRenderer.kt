@@ -59,8 +59,7 @@ data class RenderedConfirmationDiffRow(
     val label: String,
     val value: String,
     val beforeValue: String? = null,
-)
-{
+) {
     val afterValue: String
         get() = value
 }

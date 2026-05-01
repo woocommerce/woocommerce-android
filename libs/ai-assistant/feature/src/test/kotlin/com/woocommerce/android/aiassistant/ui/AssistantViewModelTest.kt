@@ -800,21 +800,21 @@ class AssistantViewModelTest {
     @Test
     fun `given pending confirmation, when cancel write is requested, then runtime cancel is dispatched without ending turn`() =
         runTest {
-        viewModel.onSendMessage("Cancel order 123")
-        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
-        advanceUntilIdle()
+            viewModel.onSendMessage("Cancel order 123")
+            runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+            advanceUntilIdle()
 
-        viewModel.onCancelWrite()
-        advanceUntilIdle()
+            viewModel.onCancelWrite()
+            advanceUntilIdle()
 
-        assertThat(runtime.results).containsExactly(
-            ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
-        )
-        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
-        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
-        assertThat(viewModel.uiState.value.error).isNull()
-        assertThat(viewModel.uiState.value.isTurnActive).isTrue()
-    }
+            assertThat(runtime.results).containsExactly(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            )
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
+            assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
+            assertThat(viewModel.uiState.value.error).isNull()
+            assertThat(viewModel.uiState.value.isTurnActive).isTrue()
+        }
 
     @Test
     fun `given pending confirmation, when conversation cancel is requested, then confirmation is cancelled and transcript stays active until finish`() =

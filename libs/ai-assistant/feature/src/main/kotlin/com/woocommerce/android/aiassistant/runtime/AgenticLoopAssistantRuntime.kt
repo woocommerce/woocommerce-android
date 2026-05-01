@@ -7,13 +7,13 @@ import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
-import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import kotlinx.coroutines.flow.Flow
@@ -91,15 +91,16 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         }
     }
 
-    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?) =
-        AssistantConfirmationCard(
-        confirmationId = id,
-        toolCall = ToolCall(
-            id = toolCallId,
-            name = toolName,
-            arguments = arguments,
-        ),
-        state = AssistantConfirmationCardState.PENDING,
-        preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
-    )
+    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
+        return AssistantConfirmationCard(
+            confirmationId = id,
+            toolCall = ToolCall(
+                id = toolCallId,
+                name = toolName,
+                arguments = arguments,
+            ),
+            state = AssistantConfirmationCardState.PENDING,
+            preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
+        )
+    }
 }

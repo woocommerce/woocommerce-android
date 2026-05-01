@@ -21,12 +21,12 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
+import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
@@ -205,15 +205,15 @@ class AgenticLoopAssistantRuntimeTest {
     @Test
     fun `when confirmation is resolved, then runtime forwards the core confirmation result to safety orchestrator`() =
         runTest {
-        val safetyOrchestrator = FakeSafetyOrchestrator()
-        val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
-        val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+            val safetyOrchestrator = FakeSafetyOrchestrator()
+            val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
+            val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
 
-        val dispatchResult = runtime.resolveConfirmation(result)
+            val dispatchResult = runtime.resolveConfirmation(result)
 
-        assertThat(dispatchResult).isEqualTo(AssistantRuntimeConfirmationDispatchResult.Accepted)
-        assertThat(safetyOrchestrator.results).containsExactly(result)
-    }
+            assertThat(dispatchResult).isEqualTo(AssistantRuntimeConfirmationDispatchResult.Accepted)
+            assertThat(safetyOrchestrator.results).containsExactly(result)
+        }
 
     @Test
     fun `when confirmation is missing, then runtime reports deferred confirmation`() = runTest {
@@ -228,14 +228,14 @@ class AgenticLoopAssistantRuntimeTest {
     @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
-        val safetyOrchestrator = FakeSafetyOrchestrator()
-        val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
-        val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            val safetyOrchestrator = FakeSafetyOrchestrator()
+            val runtime = runtime(safetyOrchestrator = safetyOrchestrator)
+            val result = ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
 
-        runtime.resolveConfirmation(result)
+            runtime.resolveConfirmation(result)
 
-        assertThat(safetyOrchestrator.results).containsExactly(result)
-    }
+            assertThat(safetyOrchestrator.results).containsExactly(result)
+        }
 
     private fun runtime(
         agenticLoop: AgenticLoop = FakeAgenticLoop(events = emptyList()),
