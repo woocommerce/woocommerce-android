@@ -610,6 +610,59 @@ class AgenticLoopImplTest {
     }
 
     @Test
+    fun `given confirmed unsafe tool returns transport error, when running turn, then outcome unknown fails without retry`() =
+        runTest {
+            val unsafeDescriptor = ToolDescriptor(
+                name = "orders_update",
+                description = "Updates an order",
+                inputSchema = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val registry = object : ToolRegistry {
+                override fun descriptors() = listOf(unsafeDescriptor)
+
+                override suspend fun execute(call: ToolCall): ToolResult =
+                    ToolResult.TransportError(toolCallId = call.id, retryable = true)
+            }
+            val safetyOrchestrator = SafetyOrchestratorImpl()
+            val loop = loopWith(
+                flow {
+                    emit(
+                        AssistantEvent.ToolCallDelta(
+                            index = 0,
+                            id = "call_1",
+                            name = "orders_update",
+                            argumentsDelta = """{"id":42,"status":"processing"}""",
+                        )
+                    )
+                    emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                },
+                registry = registry,
+                safetyOrchestrator = safetyOrchestrator,
+            )
+            val events = mutableListOf<LoopEvent>()
+
+            val job = launch {
+                loop.runTurn("conv", "update order", history, contextWithTools(unsafeDescriptor)).toList(events)
+            }
+
+            runCurrent()
+            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+            safetyOrchestrator.confirm(request.id)
+            advanceUntilIdle()
+
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.error).isEqualTo(AssistantError.OutcomeUnknown(toolName = "orders_update"))
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result)
+                .isEqualTo(ToolResult.TransportError(toolCallId = "call_1", retryable = true))
+            assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single().toolCallId)
+                .isEqualTo("call_1")
+            job.cancel()
+        }
+
+    @Test
     fun `given UNSAFE tool is cancelled, when loop awaits confirmation, then cancelled error is emitted and history is clean`() = runTest {
         val unsafeDescriptor = ToolDescriptor(
             name = "orders_update",

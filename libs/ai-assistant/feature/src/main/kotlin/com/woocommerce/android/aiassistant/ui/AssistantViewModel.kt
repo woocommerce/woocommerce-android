@@ -49,7 +49,7 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onRetry() {
-        if (_uiState.value.isTurnActive) return
+        if (_uiState.value.isTurnActive || !_uiState.value.canRetry) return
 
         val message = lastUserMessage ?: return
         startTurn(message, isRetry = true)

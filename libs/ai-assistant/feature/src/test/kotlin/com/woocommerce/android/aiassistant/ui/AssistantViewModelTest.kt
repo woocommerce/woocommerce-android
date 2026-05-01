@@ -204,6 +204,45 @@ class AssistantViewModelTest {
         }
 
     @Test
+    fun `given outcome unknown failure, when turn fails, then verify message has no retry action`() =
+        runTest {
+            viewModel.onSendMessage("Update order 42")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Update order 42"),
+                        AssistantMessage.Assistant("I'll update that order."),
+                    ),
+                    retryAvailable = false,
+                    error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isFalse()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                        canRetry = false,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).isEmpty()
+        }
+
+    @Test
     fun `when turn reaches max iterations, then state exposes an error`() = runTest {
         viewModel.onSendMessage("Hello")
 

@@ -62,7 +62,7 @@
     <string name="assistant_chat_error_upstream_failure">Assistant service error</string>
     <string name="assistant_chat_error_tool_failed">Tool failed</string>
     <string name="assistant_chat_error_invalid_tool_call">Invalid tool call</string>
-    <string name="assistant_chat_error_outcome_unknown">Outcome unknown</string>
+    <string name="assistant_chat_error_outcome_unknown">I\'m not sure whether that change was applied. Please verify in your store before trying anything else.</string>
     <string name="assistant_chat_error_cancelled">Request cancelled</string>
     <string name="assistant_chat_error_confirmation_deferred">Confirmation is not available yet</string>
     <string name="assistant_chat_error_max_iterations">Assistant reached its turn limit</string>
