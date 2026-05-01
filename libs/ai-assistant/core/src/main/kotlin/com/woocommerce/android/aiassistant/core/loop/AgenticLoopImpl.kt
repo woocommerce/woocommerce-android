@@ -271,7 +271,6 @@ class AgenticLoopImpl(
         outcome.completed.forEach { completed ->
             newTurnMessages.add(completed.toToolMessage())
         }
-        emit(LoopEvent.Failed(AssistantError.Cancelled))
         emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
     }
 

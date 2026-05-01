@@ -170,6 +170,39 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `when loop stops cleanly after confirmation cancel, then runtime finish has no cancelled error`() = runTest {
+        val updatedHistory = listOf(
+            AssistantMessage.User("Cancel order 123"),
+            AssistantMessage.Assistant("I can do that"),
+        )
+        val resolved = ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ConfirmationResolved(resolved),
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.STOPPED,
+                        updatedHistory = updatedHistory,
+                        retryAvailable = false,
+                    )
+                )
+            ),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.ConfirmationResolved(resolved),
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = updatedHistory,
+                retryAvailable = false,
+                error = null,
+            )
+        )
+    }
+
+    @Test
     fun `when confirmation is resolved, then runtime forwards the core confirmation result to safety orchestrator`() =
         runTest {
         val safetyOrchestrator = FakeSafetyOrchestrator()

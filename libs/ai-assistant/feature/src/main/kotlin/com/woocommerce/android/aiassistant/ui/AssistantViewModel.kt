@@ -121,7 +121,6 @@ class AssistantViewModel @AssistedInject constructor(
                 AssistantRuntimeConfirmationDispatchResult.Accepted -> {
                     _uiState.update {
                         it.copy(
-                            status = AssistantUiStatus.IDLE,
                             error = null,
                             canRetry = false,
                             activeConfirmationId = null,

@@ -765,6 +765,9 @@ class AssistantViewModelTest {
         )
         advanceUntilIdle()
 
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(viewModel.uiState.value.error).isNull()
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isFalse()
         assertThat(viewModel.uiState.value.messages.last().segments).contains(
             AssistantUiSegment.ConfirmationCard(
                 givenConfirmationCard().copy(state = AssistantConfirmationCardState.CANCELLED)
@@ -795,7 +798,8 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given pending confirmation, when cancel write is requested, then runtime cancel write is called`() = runTest {
+    fun `given pending confirmation, when cancel write is requested, then runtime cancel is dispatched without ending turn`() =
+        runTest {
         viewModel.onSendMessage("Cancel order 123")
         runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
         advanceUntilIdle()
@@ -806,8 +810,10 @@ class AssistantViewModelTest {
         assertThat(runtime.results).containsExactly(
             ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
         )
-        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
+        assertThat(viewModel.uiState.value.error).isNull()
+        assertThat(viewModel.uiState.value.isTurnActive).isTrue()
     }
 
     private fun givenConfirmationCard() = AssistantConfirmationCard(

@@ -663,7 +663,8 @@ class AgenticLoopImplTest {
         }
 
     @Test
-    fun `given UNSAFE tool is cancelled, when loop awaits confirmation, then cancelled error is emitted and history is clean`() = runTest {
+    fun `given UNSAFE tool is cancelled, when loop awaits confirmation, then turn stops cleanly and history is clean`() =
+        runTest {
         val unsafeDescriptor = ToolDescriptor(
             name = "orders_update",
             description = "Updates an order",
@@ -724,8 +725,7 @@ class AgenticLoopImplTest {
 
         assertThat(events.filterIsInstance<LoopEvent.ConfirmationResolved>().single().result.decision)
             .isEqualTo(ConfirmationDecision.CANCELLED)
-        assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
-            .isEqualTo(AssistantError.Cancelled)
+        assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
         assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>()).isEmpty()
         assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
         assertThat(registryExecuted).isFalse
@@ -733,6 +733,7 @@ class AgenticLoopImplTest {
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
         assertThat(finished.retryAvailable).isFalse
+        assertThat(finished.error).isNull()
         assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
         val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
         assertThat(assistantMessages.flatMap { it.toolCalls }).isEmpty()
@@ -740,7 +741,8 @@ class AgenticLoopImplTest {
     }
 
     @Test
-    fun `given safe tool succeeds before unsafe tool, when unsafe is cancelled, then history is preserved`() = runTest {
+    fun `given safe tool succeeds before unsafe tool, when unsafe is cancelled, then history is preserved cleanly`() =
+        runTest {
         val unsafeDescriptor = ToolDescriptor(
             name = "orders_update",
             description = "Updates an order",
@@ -809,11 +811,11 @@ class AgenticLoopImplTest {
             .containsExactly("safe_1")
         assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result.toolCallId })
             .containsExactly("safe_1")
-        assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
-            .isEqualTo(AssistantError.Cancelled)
+        assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
         assertThat(finished.retryAvailable).isFalse
+        assertThat(finished.error).isNull()
         assertThat(secondModelTurnRequested).isFalse
 
         val assistantToolCalls = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
