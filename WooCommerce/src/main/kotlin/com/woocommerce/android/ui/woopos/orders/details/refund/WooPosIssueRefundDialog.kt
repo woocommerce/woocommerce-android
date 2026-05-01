@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -72,7 +73,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
 
-private fun refundFadeTransition(): ContentTransform =
+private fun <S> AnimatedContentTransitionScope<S>.refundFadeTransition(): ContentTransform =
     fadeIn(
         animationSpec = tween(
             durationMillis = 250,
