@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -84,22 +85,63 @@ internal class AIProductsDataSource @Inject constructor(
         return getProduct(site, productId)
     }
 
-    suspend fun getProducts(productIds: List<Long>): Result<List<WCProductModel>> {
+    suspend fun getProducts(productIds: List<Long>): Result<CachedLookupResult<WCProductModel>> {
         val ids = productIds.distinct()
-        if (ids.isEmpty()) return Result.success(emptyList())
+        if (ids.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = emptyList(),
+                    cacheHitCount = 0,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
 
         val site = selectedSite.get()
+        val cachedProducts = productStore.getProductsByRemoteIds(site, ids)
+        val cachedIds = cachedProducts.map { it.remoteProductId }.toSet()
+        val idsToFetch = ids.filterNot { it in cachedIds }
+        if (idsToFetch.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = cachedProducts,
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
+
         val result = productStore.fetchProducts(
             site = site,
             offset = 0,
-            pageSize = ids.size,
-            includedProductIds = ids,
+            pageSize = idsToFetch.size,
+            includedProductIds = idsToFetch,
             forceRefresh = false,
         )
         return if (result.isError) {
-            Result.failure(OnChangedException(requireNotNull(result.error)))
+            Result.success(
+                CachedLookupResult(
+                    items = cachedProducts,
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = idsToFetch.size,
+                    fetchAttempted = true,
+                    fetchFailed = true,
+                )
+            )
         } else {
-            Result.success(ids.mapNotNull { id -> productStore.getProductByRemoteId(site, id) })
+            Result.success(
+                CachedLookupResult(
+                    items = productStore.getProductsByRemoteIds(site, ids),
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = idsToFetch.size,
+                    fetchAttempted = true,
+                    fetchFailed = false,
+                )
+            )
         }
     }
 

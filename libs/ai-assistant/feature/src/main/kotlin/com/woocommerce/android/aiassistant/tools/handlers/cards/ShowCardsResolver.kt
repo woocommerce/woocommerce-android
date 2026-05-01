@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.serialization.json.Json
@@ -53,10 +54,10 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val ids = refs.map { it.id.toLong() }
         return ordersDataSource.getOrders(ids).fold(
             onSuccess = { orders ->
-                val ordersById = orders.associateBy { it.orderId }
+                val ordersById = orders.items.associateBy { it.orderId }
                 refs.associateWith { ref ->
                     ordersById[ref.id.toLong()]?.toResolved(ref)
-                        ?: ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.NotFound)
+                        ?: ShowCardsResolution.Missing(ref, orders.missingReason())
                 }
             },
             onFailure = {
@@ -71,10 +72,10 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val ids = refs.map { it.id.toLong() }
         return productsDataSource.getProducts(ids).fold(
             onSuccess = { products ->
-                val productsById = products.associateBy { it.remoteProductId }
+                val productsById = products.items.associateBy { it.remoteProductId }
                 refs.associateWith { ref ->
                     productsById[ref.id.toLong()]?.toResolved(ref)
-                        ?: ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.NotFound)
+                        ?: ShowCardsResolution.Missing(ref, products.missingReason())
                 }
             },
             onFailure = {
@@ -149,3 +150,6 @@ private fun listOfNotBlank(vararg values: String): List<String> =
 
 private fun mapOfNotBlank(vararg pairs: Pair<String, String>): Map<String, String> =
     pairs.filter { (_, value) -> value.isNotBlank() }.toMap()
+
+private fun CachedLookupResult<*>.missingReason(): ShowCardsRejectionReason =
+    if (fetchFailed) ShowCardsRejectionReason.FetchFailed else ShowCardsRejectionReason.NotFound

@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
@@ -35,8 +36,10 @@ class ShowCardsResolverTest {
         val orderOne = order(id = 1L, number = "1001")
         val orderTwo = order(id = 2L, number = "1002")
         val product = product(id = 3L, name = "Socks")
-        whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(Result.success(listOf(orderTwo, orderOne)))
-        whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(listOf(product)))
+        whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(
+            Result.success(orderLookup(orderTwo, orderOne))
+        )
+        whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
 
         val result = resolver.resolve(
             listOf(
@@ -60,7 +63,7 @@ class ShowCardsResolverTest {
 
     @Test
     fun `given missing order, when resolved, then missing ref is not found`() = runTest {
-        whenever(ordersDataSource.getOrders(listOf(99L))).thenReturn(Result.success(emptyList()))
+        whenever(ordersDataSource.getOrders(listOf(99L))).thenReturn(Result.success(orderLookup()))
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.Order, "99")))
 
@@ -71,7 +74,9 @@ class ShowCardsResolverTest {
     @Test
     fun `given order fetch fails and product succeeds, when resolved, then product still resolves`() = runTest {
         whenever(ordersDataSource.getOrders(listOf(1L))).thenReturn(Result.failure(IllegalStateException("boom")))
-        whenever(productsDataSource.getProducts(listOf(2L))).thenReturn(Result.success(listOf(product(id = 2L))))
+        whenever(productsDataSource.getProducts(listOf(2L))).thenReturn(
+            Result.success(productLookup(product(id = 2L)))
+        )
 
         val result = resolver.resolve(
             listOf(
@@ -88,8 +93,10 @@ class ShowCardsResolverTest {
 
     @Test
     fun `given resolved entities, when resolved, then summaries and cards use compact app-owned fields`() = runTest {
-        whenever(ordersDataSource.getOrders(listOf(1L))).thenReturn(Result.success(listOf(order(id = 1L))))
-        whenever(productsDataSource.getProducts(listOf(2L))).thenReturn(Result.success(listOf(product(id = 2L))))
+        whenever(ordersDataSource.getOrders(listOf(1L))).thenReturn(Result.success(orderLookup(order(id = 1L))))
+        whenever(productsDataSource.getProducts(listOf(2L))).thenReturn(
+            Result.success(productLookup(product(id = 2L)))
+        )
 
         val result = resolver.resolve(
             listOf(
@@ -115,7 +122,78 @@ class ShowCardsResolverTest {
         assertThat(result[1].card.id).isEqualTo("2")
     }
 
+    @Test
+    fun `given cached order and failed fetch for missing order, when resolved, then cached order is returned`() =
+        runTest {
+            whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(
+                Result.success(
+                    CachedLookupResult(
+                        items = listOf(order(id = 1L)),
+                        cacheHitCount = 1,
+                        cacheMissCount = 1,
+                        fetchAttempted = true,
+                        fetchFailed = true,
+                    )
+                )
+            )
+
+            val result = resolver.resolve(
+                listOf(
+                    ref(ShowCardFamily.Order, "1"),
+                    ref(ShowCardFamily.Order, "2"),
+                )
+            )
+
+            assertThat(result[0]).isInstanceOf(ShowCardsResolution.Resolved::class.java)
+            val missing = result[1] as ShowCardsResolution.Missing
+            assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+        }
+
+    @Test
+    fun `given fetch succeeds but product id is absent, when resolved, then missing product is not found`() = runTest {
+        whenever(productsDataSource.getProducts(listOf(10L, 11L))).thenReturn(
+            Result.success(
+                CachedLookupResult(
+                    items = listOf(product(id = 10L)),
+                    cacheHitCount = 0,
+                    cacheMissCount = 2,
+                    fetchAttempted = true,
+                    fetchFailed = false,
+                )
+            )
+        )
+
+        val result = resolver.resolve(
+            listOf(
+                ref(ShowCardFamily.Product, "10"),
+                ref(ShowCardFamily.Product, "11"),
+            )
+        )
+
+        assertThat(result[0]).isInstanceOf(ShowCardsResolution.Resolved::class.java)
+        val missing = result[1] as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.NotFound)
+    }
+
     private fun ref(family: ShowCardFamily, id: String) = ValidatedRef(index = 0, family = family, id = id)
+
+    private fun orderLookup(vararg orders: OrderEntity): CachedLookupResult<OrderEntity> =
+        CachedLookupResult(
+            items = orders.toList(),
+            cacheHitCount = 0,
+            cacheMissCount = orders.size,
+            fetchAttempted = true,
+            fetchFailed = false,
+        )
+
+    private fun productLookup(vararg products: WCProductModel): CachedLookupResult<WCProductModel> =
+        CachedLookupResult(
+            items = products.toList(),
+            cacheHitCount = 0,
+            cacheMissCount = products.size,
+            fetchAttempted = true,
+            fetchFailed = false,
+        )
 
     private fun order(
         id: Long,

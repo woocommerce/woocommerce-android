@@ -12,6 +12,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -205,12 +206,16 @@ class AIOrdersDataSourceTest {
                 OrderEntity(localSiteId = LocalId(1), orderId = 123L),
                 OrderEntity(localSiteId = LocalId(1), orderId = 456L),
             )
+            whenever(orderStore.getOrdersByIdsAndSite(listOf(123L, 456L), site)).thenReturn(emptyList())
             stubFetchOrders(WooResult(orders))
 
-            val result = dataSource.getOrders(orderIds = listOf(123L, 456L))
+            val result = dataSource.getOrders(orderIds = listOf(123L, 456L)).getOrThrow()
 
-            assertThat(result.isSuccess).isTrue
-            assertThat(result.getOrThrow()).containsExactlyElementsOf(orders)
+            assertThat(result.items).containsExactlyElementsOf(orders)
+            assertThat(result.cacheHitCount).isEqualTo(0)
+            assertThat(result.cacheMissCount).isEqualTo(2)
+            assertThat(result.fetchAttempted).isTrue
+            assertThat(result.fetchFailed).isFalse
             verify(orderStore).fetchOrders(
                 site = any(),
                 count = eq(2),
@@ -221,6 +226,67 @@ class AIOrdersDataSourceTest {
                 searchQuery = anyOrNull(),
                 customer = anyOrNull(),
                 include = eq(listOf(123L, 456L)),
+                after = anyOrNull(),
+                before = anyOrNull(),
+                deleteOldData = eq(false),
+            )
+        }
+
+    @Test
+    fun `given all requested orders are cached, when getOrders is called, then no fetch is made`() = runTest {
+        val orders = listOf(
+            OrderEntity(localSiteId = LocalId(1), orderId = 123L),
+            OrderEntity(localSiteId = LocalId(1), orderId = 456L),
+        )
+        whenever(orderStore.getOrdersByIdsAndSite(listOf(123L, 456L), site)).thenReturn(orders)
+
+        val result = dataSource.getOrders(orderIds = listOf(123L, 456L)).getOrThrow()
+
+        assertThat(result.items).containsExactlyElementsOf(orders)
+        assertThat(result.cacheHitCount).isEqualTo(2)
+        assertThat(result.cacheMissCount).isEqualTo(0)
+        assertThat(result.fetchAttempted).isFalse
+        assertThat(result.fetchFailed).isFalse
+        verify(orderStore, never()).fetchOrders(
+            site = any(),
+            count = any(),
+            page = any(),
+            orderBy = any(),
+            sortOrder = any(),
+            statusFilter = anyOrNull(),
+            searchQuery = anyOrNull(),
+            customer = anyOrNull(),
+            include = anyOrNull(),
+            after = anyOrNull(),
+            before = anyOrNull(),
+            deleteOldData = any(),
+        )
+    }
+
+    @Test
+    fun `given some requested orders are cached and fetch fails, when getOrders is called, then cached orders are returned`() =
+        runTest {
+            val cachedOrder = OrderEntity(localSiteId = LocalId(1), orderId = 123L)
+            whenever(orderStore.getOrdersByIdsAndSite(listOf(123L, 456L), site)).thenReturn(listOf(cachedOrder))
+            stubFetchOrders(WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom")))
+
+            val result = dataSource.getOrders(orderIds = listOf(123L, 456L)).getOrThrow()
+
+            assertThat(result.items).containsExactly(cachedOrder)
+            assertThat(result.cacheHitCount).isEqualTo(1)
+            assertThat(result.cacheMissCount).isEqualTo(1)
+            assertThat(result.fetchAttempted).isTrue
+            assertThat(result.fetchFailed).isTrue
+            verify(orderStore).fetchOrders(
+                site = any(),
+                count = eq(1),
+                page = eq(1),
+                orderBy = eq(OrderBy.DATE),
+                sortOrder = eq(SortOrder.DESCENDING),
+                statusFilter = anyOrNull(),
+                searchQuery = anyOrNull(),
+                customer = anyOrNull(),
+                include = eq(listOf(456L)),
                 after = anyOrNull(),
                 before = anyOrNull(),
                 deleteOldData = eq(false),

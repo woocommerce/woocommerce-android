@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.last
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -83,14 +84,61 @@ internal class AIOrdersDataSource @Inject constructor(
         }
     }
 
-    suspend fun getOrders(orderIds: List<Long>): Result<List<OrderEntity>> {
+    suspend fun getOrders(orderIds: List<Long>): Result<CachedLookupResult<OrderEntity>> {
         val ids = orderIds.distinct()
-        if (ids.isEmpty()) return Result.success(emptyList())
+        if (ids.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = emptyList(),
+                    cacheHitCount = 0,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
 
-        return fetchOrders(
-            include = ids,
-            perPage = ids.size,
-        ).map { page -> page.orders }
+        val site = selectedSite.get()
+        val cachedOrders = orderStore.getOrdersByIdsAndSite(ids, site)
+        val cachedIds = cachedOrders.map { it.orderId }.toSet()
+        val idsToFetch = ids.filterNot { it in cachedIds }
+        if (idsToFetch.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = cachedOrders,
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
+
+        val fetched = fetchOrders(include = idsToFetch, perPage = idsToFetch.size)
+        return fetched.fold(
+            onSuccess = { page ->
+                Result.success(
+                    CachedLookupResult(
+                        items = cachedOrders + page.orders,
+                        cacheHitCount = cachedIds.size,
+                        cacheMissCount = idsToFetch.size,
+                        fetchAttempted = true,
+                        fetchFailed = false,
+                    )
+                )
+            },
+            onFailure = {
+                Result.success(
+                    CachedLookupResult(
+                        items = cachedOrders,
+                        cacheHitCount = cachedIds.size,
+                        cacheMissCount = idsToFetch.size,
+                        fetchAttempted = true,
+                        fetchFailed = true,
+                    )
+                )
+            },
+        )
     }
 
     suspend fun updateOrderStatus(orderId: Long, newStatus: String): Result<Unit> = runCatching {
