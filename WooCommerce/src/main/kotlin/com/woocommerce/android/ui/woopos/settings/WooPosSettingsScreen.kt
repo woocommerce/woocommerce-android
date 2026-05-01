@@ -108,8 +108,12 @@ private fun WooPosSettingsPhoneContent(
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    BackHandler(enabled = !state.showingDetail) {
-        onBackClicked()
+    BackHandler {
+        when {
+            !state.showingDetail -> onBackClicked()
+            state.canGoBack -> onBack()
+            else -> onDismissDetail()
+        }
     }
 
     AnimatedContent(
@@ -155,6 +159,7 @@ private fun WooPosSettingsPhoneContent(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
                 showBackOnRoot = true,
+                registerBackHandler = false,
             )
         }
     }

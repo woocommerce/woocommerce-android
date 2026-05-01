@@ -39,11 +39,12 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
     showBackOnRoot: Boolean = false,
+    registerBackHandler: Boolean = true,
 ) {
     val currentDestination = state.currentDestination
     val showBack = state.canGoBack || showBackOnRoot
 
-    BackHandler(enabled = showBack) {
+    BackHandler(enabled = registerBackHandler && showBack) {
         onBack()
     }
 
