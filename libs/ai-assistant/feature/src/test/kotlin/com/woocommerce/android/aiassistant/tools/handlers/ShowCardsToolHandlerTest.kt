@@ -113,6 +113,34 @@ class ShowCardsToolHandlerTest {
         assertThat(cards.first().jsonObject["id"]?.jsonPrimitive?.content).isEqualTo("123")
     }
 
+    @Test
+    fun `invalid refs are rejected with lower snake case reasons`() = runTest {
+        val result = executeShowCards(
+            handler = handler,
+            argumentsJson = """
+            {
+              "references": [
+                null,
+                { "id": "1" },
+                { "family": "customer", "id": "1" },
+                { "family": "order" },
+                { "family": "product", "id": "" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        val reasons = rejectedReasons(result)
+
+        assertThat(reasons).containsExactly(
+            "malformed_ref",
+            "missing_family",
+            "unsupported_family",
+            "missing_id",
+            "invalid_id"
+        )
+    }
+
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
 
@@ -145,6 +173,11 @@ class ShowCardsToolHandlerTest {
             .getValue("resolved_refs").jsonArray
             .first().jsonObject
             .getValue("summary").jsonObject
+
+    private fun rejectedReasons(result: ToolResult): List<String> =
+        assertSuccess(result).structured.jsonObject
+            .getValue("rejected_refs").jsonArray
+            .map { ref -> ref.jsonObject.getValue("reason").jsonPrimitive.content }
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)

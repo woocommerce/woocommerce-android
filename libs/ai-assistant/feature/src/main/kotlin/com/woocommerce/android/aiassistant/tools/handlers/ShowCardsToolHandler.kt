@@ -12,22 +12,19 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolution
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import javax.inject.Inject
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
@@ -35,6 +32,7 @@ import kotlinx.serialization.json.putJsonObject
 class ShowCardsToolHandler internal constructor(
     private val resolver: ShowCardsResolver,
 ) : AssistantToolHandler {
+    private val referenceValidator = ShowCardsReferenceValidator()
 
     @Inject constructor() : this(DefaultShowCardsResolver())
 
@@ -86,7 +84,8 @@ class ShowCardsToolHandler internal constructor(
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${exception.message}")
         }
 
-        val validRefs = parseValidRefs(arguments.references)
+        val validation = referenceValidator.validate(arguments.references)
+        val validRefs = validation.validRefs
         val resolutions = runCatching { resolver.resolve(validRefs) }
             .getOrElse {
                 validRefs.map { ref ->
@@ -98,12 +97,12 @@ class ShowCardsToolHandler internal constructor(
             }
         val resolvedCards = resolutions.filterIsInstance<ShowCardsResolution.Resolved>()
         val structured = ShowCardsStructured(
-            requested = arguments.references.size,
+            requested = validation.requested,
             validated = validRefs.size,
             rendered = resolvedCards.size,
             resolvedRefs = resolvedCards.map { it.toResolvedRef() },
             missingRefs = resolutions.filterIsInstance<ShowCardsResolution.Missing>().map { it.toMissingRef() },
-            rejectedRefs = emptyList(),
+            rejectedRefs = validation.rejectedRefs,
         )
 
         return ToolResult.Success(
@@ -114,17 +113,6 @@ class ShowCardsToolHandler internal constructor(
             ),
         )
     }
-
-    private fun parseValidRefs(references: List<JsonElement>): List<ValidatedRef> =
-        references.mapIndexedNotNull { index, reference ->
-            val ref = reference.jsonObject
-            val family = ref["family"]?.jsonPrimitive?.content?.let(ShowCardFamily::from)
-                ?: return@mapIndexedNotNull null
-            val id = ref["id"]?.jsonPrimitive?.content?.takeIf { it.isNotBlank() }
-                ?: return@mapIndexedNotNull null
-
-            ValidatedRef(index = index, family = family, id = id)
-        }
 
     private fun ShowCardsResolution.Resolved.toResolvedRef(): ResolvedRef =
         ResolvedRef(
