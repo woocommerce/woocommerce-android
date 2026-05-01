@@ -334,7 +334,7 @@ private fun AssistantInlineError(
     ) {
         Text(
             text = stringResource(error.error.toMessageRes()),
-            color = MaterialTheme.colorScheme.onErrorContainer,
+            color = MaterialTheme.colorScheme.assistantInlineErrorTextColor(),
             style = MaterialTheme.typography.bodyMedium,
         )
         if (error.canRetry) {

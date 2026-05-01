@@ -1,11 +1,25 @@
 package com.woocommerce.android.aiassistant.ui
 
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class AssistantUiStateTest {
+    @Test
+    fun `given inline error is on assistant bubble, when resolving text color, then use error color`() {
+        val colorScheme = lightColorScheme(
+            error = Color.Red,
+            onErrorContainer = Color.White,
+            surface = Color.White,
+        )
+
+        assertThat(colorScheme.assistantInlineErrorTextColor()).isEqualTo(Color.Red)
+        assertThat(colorScheme.assistantInlineErrorTextColor()).isNotEqualTo(colorScheme.onErrorContainer)
+    }
+
     @Test
     fun `given transient assistant errors, when checking retry action support, then retry is supported`() {
         val retryableErrors = listOf(
