@@ -34,8 +34,10 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -595,6 +597,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(beforeState)
+        verifyBlocking(bookingsRepository, never()) { fetchBooking(any()) }
     }
 
     @Test
@@ -812,7 +815,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given non-Content state, when IssueRefund action clicked, then state remains unchanged`() =
+    fun `given non-Content state, when IssueRefund action clicked, then no navigation event emitted`() =
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
@@ -828,17 +831,20 @@ class WooPosBookingsViewModelTest {
             advanceUntilIdle()
             val beforeState = viewModel.state.value
 
-            // WHEN
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                    )
                 )
-            )
-            advanceUntilIdle()
+                advanceUntilIdle()
 
-            // THEN
-            assertThat(viewModel.state.value).isEqualTo(beforeState)
-            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+                // THEN
+                expectNoEvents()
+                assertThat(viewModel.state.value).isEqualTo(beforeState)
+                assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+            }
         }
 
     @Test

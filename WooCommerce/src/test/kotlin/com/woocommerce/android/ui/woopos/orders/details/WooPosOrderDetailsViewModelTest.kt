@@ -34,6 +34,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.util.DateTimeUtils
@@ -246,7 +247,9 @@ class WooPosOrderDetailsViewModelTest {
                 // THEN
                 val event = awaitItem()
                 assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
-                assertThat((event as WooPosNavigationEvent.OpenIssueRefund).orderId).isEqualTo(1L)
+                val openIssueRefund = event as WooPosNavigationEvent.OpenIssueRefund
+                assertThat(openIssueRefund.orderId).isEqualTo(1L)
+                assertThat(openIssueRefund.disablePartialRefund).isFalse()
             }
         }
 
@@ -319,6 +322,20 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         verify(dataSource).refreshOrderById(1L)
+    }
+
+    @Test
+    fun `given state is not Loaded, when back from issue refund, then order is not refreshed`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onBackFromIssueRefund()
+        advanceUntilIdle()
+
+        // THEN
+        verify(dataSource, never()).refreshOrderById(any())
     }
 
     @Test

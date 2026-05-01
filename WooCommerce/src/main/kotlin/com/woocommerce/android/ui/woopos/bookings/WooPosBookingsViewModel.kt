@@ -547,6 +547,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 emitNav(WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId))
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
+                if (_state.value !is WooPosBookingsState.Content) return
                 viewModelScope.launch {
                     analyticsTracker.trackIssueRefundTapped()
                     _navigationEvent.emit(
