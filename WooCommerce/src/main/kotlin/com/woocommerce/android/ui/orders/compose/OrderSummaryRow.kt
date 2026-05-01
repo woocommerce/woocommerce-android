@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.compose
 
-import androidx.annotation.ColorRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,16 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTag
-
-data class OrderSummaryRowModel(
-    val number: String,
-    val date: String,
-    val customerName: String,
-    val status: String,
-    @ColorRes val statusColor: Int,
-    val totalPrice: String,
-    val isPosOrder: Boolean = false,
-)
 
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
