@@ -410,6 +410,54 @@ class AgenticLoopImplTest {
     }
 
     @Test
+    fun `given stream cancellation before visible output, when running turn, then stopped cancelled finish is emitted without retry`() =
+        runTest {
+            val loop = loopWith(
+                flowOf(AssistantEvent.Failed(ChatStreamError.CANCELLED))
+            )
+
+            val events = loop.runTurn("conv", "hi", history, context).toList()
+
+            assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
+                .isEqualTo(AssistantError.Cancelled)
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
+            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
+            assertThat(finished.updatedHistory).containsExactly(
+                AssistantMessage.System("You are a helpful assistant."),
+                AssistantMessage.User("hi"),
+            )
+        }
+
+    @Test
+    fun `given stream emits partial text then cancellation, when running turn, then partial text is preserved and finish is stopped without retry`() =
+        runTest {
+            val loop = loopWith(
+                flow {
+                    emit(AssistantEvent.TextDelta("partial"))
+                    emit(AssistantEvent.Failed(ChatStreamError.CANCELLED))
+                }
+            )
+
+            val events = loop.runTurn("conv", "hi", history, context).toList()
+
+            assertThat(events.filterIsInstance<LoopEvent.AssistantTextDelta>().single().text)
+                .isEqualTo("partial")
+            assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
+                .isEqualTo(AssistantError.Cancelled)
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
+            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
+            assertThat(finished.updatedHistory).containsExactly(
+                AssistantMessage.System("You are a helpful assistant."),
+                AssistantMessage.User("hi"),
+                AssistantMessage.Assistant(content = "partial", toolCalls = emptyList()),
+            )
+        }
+
+    @Test
     fun `given stub SAFE tool, when loop runs one tool call then STOP, then completes with tool result in history`() = runTest {
         val echoResult = buildJsonObject { put("echoed", "hello") }
         val registry = stubRegistry(result = ToolResult.Success("call_1", echoResult))

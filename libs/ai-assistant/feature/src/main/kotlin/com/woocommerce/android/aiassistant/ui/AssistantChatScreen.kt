@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -89,9 +90,11 @@ fun AssistantChatScreen(
         inputText = inputText,
         onInputTextChange = { inputText = it },
         onSendMessage = {
-            val message = inputText
-            inputText = ""
-            viewModel.onSendMessage(message)
+            if (!state.isTurnActive) {
+                val message = inputText
+                inputText = ""
+                viewModel.onSendMessage(message)
+            }
         },
         onCancelTurn = viewModel::onCancelTurn,
         onRetry = viewModel::onRetry,
@@ -144,7 +147,7 @@ fun AssistantChatScreen(
             AssistantComposer(
                 inputText = inputText,
                 onInputTextChange = onInputTextChange,
-                isStreaming = state.isStreaming,
+                isTurnActive = state.isTurnActive,
                 onSendMessage = onSendMessage,
                 onCancelTurn = onCancelTurn,
             )
@@ -380,11 +383,11 @@ private fun AssistantConfirmationPanel(
 private fun AssistantComposer(
     inputText: String,
     onInputTextChange: (String) -> Unit,
-    isStreaming: Boolean,
+    isTurnActive: Boolean,
     onSendMessage: () -> Unit,
     onCancelTurn: () -> Unit,
 ) {
-    val canSend = inputText.isNotBlank() && !isStreaming
+    val canSend = inputText.isNotBlank() && !isTurnActive
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 4.dp,
@@ -414,11 +417,15 @@ private fun AssistantComposer(
                         }
                     ),
                 )
-                if (isStreaming) {
-                    OutlinedButton(
+                if (isTurnActive) {
+                    Button(
                         onClick = onCancelTurn,
                         modifier = Modifier.heightIn(min = 56.dp),
                         shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
                     ) {
                         Text(stringResource(R.string.assistant_chat_stop))
                     }

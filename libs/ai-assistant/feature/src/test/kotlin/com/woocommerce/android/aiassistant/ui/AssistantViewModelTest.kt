@@ -71,6 +71,7 @@ class AssistantViewModelTest {
 
         val state = viewModel.uiState.value
         assertThat(state.status).isEqualTo(AssistantUiStatus.STREAMING)
+        assertThat(state.isTurnActive).isTrue()
         assertThat(state.messages).containsExactly(
             AssistantUiMessage(id = "message-1", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
             AssistantUiMessage(id = "message-2", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
@@ -122,6 +123,7 @@ class AssistantViewModelTest {
 
         val state = viewModel.uiState.value
         assertThat(state.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(state.isTurnActive).isFalse()
         assertThat(state.canRetry).isFalse()
         assertThat(state.error).isNull()
     }
@@ -142,6 +144,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.NETWORK)
         assertThat(viewModel.uiState.value.canRetry).isTrue()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
 
         viewModel.onRetry()
 
@@ -171,6 +174,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
         assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
 
     @Test
@@ -282,14 +286,161 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `when cancel is requested, then runtime is cancelled and state returns to idle`() = runTest {
+    fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
         viewModel.onCancelTurn()
         advanceUntilIdle()
 
         assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
-        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
+    }
+
+    @Test
+    fun `when runtime finishes with cancelled error, then state exposes cancelled ui error`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Hello"),
+                    AssistantMessage.Assistant("Partial"),
+                ),
+                retryAvailable = false,
+                error = AssistantError.Cancelled,
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
+    }
+
+    @Test
+    fun `when runtime finishes cancelled failed retryable, then retry is not exposed`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Hello"),
+                    AssistantMessage.Assistant("Partial"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Cancelled,
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
+        assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.isTurnActive).isFalse()
+    }
+
+    @Test
+    fun `given partial assistant text, when cancel is requested, then partial text remains visible`() = runTest {
+        viewModel.onSendMessage("Summarize sales")
+        val activeBubbleId = viewModel.uiState.value.messages.last().id
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are "))
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("up today"))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages).contains(
+            AssistantUiMessage(
+                id = activeBubbleId,
+                role = AssistantUiMessage.Role.ASSISTANT,
+                text = "Sales are up today",
+            )
+        )
+    }
+
+    @Test
+    fun `given partial assistant text, when cancelled and new message is sent, then next turn history includes partial text`() =
+        runTest {
+            viewModel.onSendMessage("Summarize sales")
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today"))
+            advanceUntilIdle()
+
+            viewModel.onCancelTurn()
+            advanceUntilIdle()
+            viewModel.onSendMessage("What changed?")
+
+            assertThat(runtime.startRequests.last()).isEqualTo(
+                AssistantTurnRequest(
+                    conversationId = CONVERSATION_ID,
+                    siteId = SITE_ID,
+                    toolScope = ToolScope.GLOBAL,
+                    userMessage = "What changed?",
+                    history = listOf(
+                        AssistantMessage.User("Summarize sales"),
+                        AssistantMessage.Assistant("Sales are up today"),
+                    ),
+                )
+            )
+        }
+
+    @Test
+    fun `given active streaming turn, when another message is sent, then second turn is ignored`() = runTest {
+        viewModel.onSendMessage("First")
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(runtime.startRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "First",
+                history = emptyList(),
+            )
+        )
+        assertThat(viewModel.uiState.value.messages.map { it.text }).containsExactly("First", "")
+    }
+
+    @Test
+    fun `given awaiting confirmation, when another message is sent, then second turn is ignored`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenPendingConfirmation()))
+        advanceUntilIdle()
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(runtime.startRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "Cancel order 123",
+                history = emptyList(),
+            )
+        )
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
+        assertThat(viewModel.uiState.value.pendingConfirmation).isEqualTo(givenPendingConfirmation())
+    }
+
+    @Test
+    fun `given active streaming turn, when retry is requested, then retry is ignored`() = runTest {
+        viewModel.onSendMessage("Hello")
+
+        viewModel.onRetry()
+        advanceUntilIdle()
+
+        assertThat(runtime.retryRequests).isEmpty()
+        assertThat(runtime.startRequests).hasSize(1)
     }
 
     @Test

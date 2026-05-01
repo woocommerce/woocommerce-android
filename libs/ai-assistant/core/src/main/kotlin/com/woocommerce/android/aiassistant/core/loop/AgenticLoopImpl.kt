@@ -150,6 +150,10 @@ class AgenticLoopImpl(
             )
 
             val widenedError = failure.kind.toAssistantError(failure.cause)
+            if (widenedError == AssistantError.Cancelled) {
+                emitStoppedCancellation(fullHistory, assistantText.toString())
+                return null
+            }
             when (
                 val decision = retryPolicy.decide(
                     LoopFailureContext(widenedError, visibleOutputStarted, retryCount)
@@ -171,6 +175,21 @@ class AgenticLoopImpl(
                 }
             }
         }
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.emitStoppedCancellation(
+        fullHistory: List<AssistantMessage>,
+        assistantText: String,
+    ) {
+        emit(LoopEvent.Failed(AssistantError.Cancelled))
+        emit(
+            LoopEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = messagesWithPartialText(fullHistory, assistantText),
+                retryAvailable = false,
+                error = AssistantError.Cancelled,
+            )
+        )
     }
 
     private suspend fun FlowCollector<LoopEvent>.executeTools(

@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -38,6 +39,8 @@ class AssistantViewModel @AssistedInject constructor(
     private var lastUserMessage: String? = null
 
     fun onSendMessage(message: String) {
+        if (_uiState.value.isTurnActive) return
+
         val trimmedMessage = message.trim()
         if (trimmedMessage.isEmpty()) return
 
@@ -46,11 +49,16 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onRetry() {
+        if (_uiState.value.isTurnActive) return
+
         val message = lastUserMessage ?: return
         startTurn(message, isRetry = true)
     }
 
     fun onCancelTurn() {
+        if (!_uiState.value.isTurnActive) return
+
+        preserveCancelledTurnInHistory()
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
@@ -59,8 +67,8 @@ class AssistantViewModel @AssistedInject constructor(
         }
         _uiState.update {
             it.copy(
-                status = AssistantUiStatus.IDLE,
-                error = null,
+                status = AssistantUiStatus.ERROR,
+                error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
                 pendingConfirmation = null,
             )
@@ -173,14 +181,30 @@ class AssistantViewModel @AssistedInject constructor(
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
-                        status = event.outcome.toAssistantUiStatus(),
+                        status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
-                        canRetry = event.outcome == LoopOutcome.FAILED && event.retryAvailable,
+                        canRetry = event.canRetry(),
                         pendingConfirmation = null,
                     )
                 }
             }
         }
+    }
+
+    private fun preserveCancelledTurnInHistory() {
+        val userMessage = lastUserMessage ?: return
+        val assistantMessageId = activeAssistantMessageId
+        val assistantText = _uiState.value.messages
+            .firstOrNull { it.id == assistantMessageId }
+            ?.text
+            .orEmpty()
+        val cancelledTurnHistory = buildList {
+            add(AssistantMessage.User(userMessage))
+            assistantText.takeIf { it.isNotEmpty() }?.let {
+                add(AssistantMessage.Assistant(content = it))
+            }
+        }
+        history = lastTurnBaseHistory + cancelledTurnHistory
     }
 
     private fun appendAssistantText(delta: String) {
@@ -205,12 +229,23 @@ class AssistantViewModel @AssistedInject constructor(
         LoopOutcome.MAX_ITERATIONS -> AssistantUiStatus.ERROR
     }
 
-    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? = when (outcome) {
-        LoopOutcome.COMPLETED,
-        LoopOutcome.STOPPED -> null
-        LoopOutcome.FAILED -> error?.toAssistantUiError() ?: AssistantUiError.UNKNOWN
-        LoopOutcome.MAX_ITERATIONS -> error?.toAssistantUiError() ?: AssistantUiError.MAX_ITERATIONS
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiStatus(): AssistantUiStatus = when {
+        error == AssistantError.Cancelled -> AssistantUiStatus.ERROR
+        else -> outcome.toAssistantUiStatus()
     }
+
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? =
+        error?.toAssistantUiError() ?: when (outcome) {
+            LoopOutcome.COMPLETED,
+            LoopOutcome.STOPPED -> null
+            LoopOutcome.FAILED -> AssistantUiError.UNKNOWN
+            LoopOutcome.MAX_ITERATIONS -> AssistantUiError.MAX_ITERATIONS
+        }
+
+    private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
+        error != AssistantError.Cancelled &&
+            outcome == LoopOutcome.FAILED &&
+            retryAvailable
 
     @AssistedFactory
     interface Factory {
