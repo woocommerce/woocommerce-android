@@ -136,11 +136,11 @@ fun AssistantChatScreen(
         ) {
             AssistantMessageThread(
                 messages = state.messages,
+                onRetry = onRetry,
                 modifier = Modifier.weight(1f),
             )
             AssistantStatusPanel(
                 state = state,
-                onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
             )
@@ -217,6 +217,7 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
 @Composable
 private fun AssistantMessageThread(
     messages: List<AssistantUiMessage>,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -236,13 +237,19 @@ private fun AssistantMessageThread(
             items = messages,
             key = { it.id },
         ) { message ->
-            AssistantMessageBubble(message = message)
+            AssistantMessageBubble(
+                message = message,
+                onRetry = onRetry,
+            )
         }
     }
 }
 
 @Composable
-private fun AssistantMessageBubble(message: AssistantUiMessage) {
+private fun AssistantMessageBubble(
+    message: AssistantUiMessage,
+    onRetry: () -> Unit,
+) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
     val messageContentDescription = if (isUser) {
@@ -288,12 +295,52 @@ private fun AssistantMessageBubble(message: AssistantUiMessage) {
                 .padding(horizontal = 14.dp, vertical = 10.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
-            Text(
-                text = messageText,
-                color = textColor,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = if (isUser) TextAlign.End else TextAlign.Start,
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (message.text.isNotEmpty()) {
+                    Text(
+                        text = message.text,
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
+                    )
+                }
+                message.error?.let { error ->
+                    AssistantInlineError(
+                        error = error,
+                        onRetry = onRetry,
+                    )
+                }
+                if (message.text.isEmpty() && message.error == null) {
+                    Text(
+                        text = " ",
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AssistantInlineError(
+    error: AssistantMessageError,
+    onRetry: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = stringResource(error.error.toMessageRes()),
+            color = MaterialTheme.colorScheme.assistantInlineErrorTextColor(),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (error.canRetry) {
+            TextButton(onClick = onRetry) {
+                Text(stringResource(R.string.assistant_chat_retry))
+            }
         }
     }
 }
@@ -301,12 +348,10 @@ private fun AssistantMessageBubble(message: AssistantUiMessage) {
 @Composable
 private fun AssistantStatusPanel(
     state: AssistantUiState,
-    onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
 ) {
     when (state.status) {
-        AssistantUiStatus.ERROR -> AssistantErrorPanel(state.error, state.canRetry, onRetry)
         AssistantUiStatus.AWAITING_CONFIRMATION -> state.pendingConfirmation?.let {
             AssistantConfirmationPanel(
                 confirmation = it,
@@ -314,36 +359,31 @@ private fun AssistantStatusPanel(
                 onCancelWrite = onCancelWrite,
             )
         }
+        AssistantUiStatus.ERROR -> {
+            if (state.shouldShowFallbackError) {
+                AssistantFallbackErrorPanel(error = state.error)
+            }
+        }
         AssistantUiStatus.IDLE,
         AssistantUiStatus.STREAMING -> Unit
     }
 }
 
 @Composable
-private fun AssistantErrorPanel(
-    error: AssistantUiError?,
-    canRetry: Boolean,
-    onRetry: () -> Unit,
-) {
+private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
+    if (error == null) return
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(16.dp),
     ) {
         Text(
-            text = error.toDisplayText(),
+            text = stringResource(error.toMessageRes()),
             color = MaterialTheme.colorScheme.onErrorContainer,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
         )
-        if (canRetry) {
-            TextButton(onClick = onRetry) {
-                Text(stringResource(R.string.assistant_chat_retry))
-            }
-        }
     }
 }
 
@@ -452,23 +492,6 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
         R.string.assistant_chat_status_awaiting_confirmation
     )
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
-}
-
-@Composable
-private fun AssistantUiError?.toDisplayText(): String = when (this) {
-    AssistantUiError.NETWORK -> stringResource(R.string.assistant_chat_error_network)
-    AssistantUiError.AUTH -> stringResource(R.string.assistant_chat_error_auth)
-    AssistantUiError.RATE_LIMIT -> stringResource(R.string.assistant_chat_error_rate_limit)
-    AssistantUiError.TIMEOUT -> stringResource(R.string.assistant_chat_error_timeout)
-    AssistantUiError.UPSTREAM_FAILURE -> stringResource(R.string.assistant_chat_error_upstream_failure)
-    AssistantUiError.TOOL_FAILED -> stringResource(R.string.assistant_chat_error_tool_failed)
-    AssistantUiError.INVALID_TOOL_CALL -> stringResource(R.string.assistant_chat_error_invalid_tool_call)
-    AssistantUiError.OUTCOME_UNKNOWN -> stringResource(R.string.assistant_chat_error_outcome_unknown)
-    AssistantUiError.CANCELLED -> stringResource(R.string.assistant_chat_error_cancelled)
-    AssistantUiError.CONFIRMATION_DEFERRED -> stringResource(R.string.assistant_chat_error_confirmation_deferred)
-    AssistantUiError.MAX_ITERATIONS -> stringResource(R.string.assistant_chat_error_max_iterations)
-    AssistantUiError.UNKNOWN,
-    null -> stringResource(R.string.assistant_chat_error_unknown)
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)

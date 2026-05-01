@@ -11,6 +11,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
@@ -91,10 +92,11 @@ class AgenticLoopImpl(
             val completedTools = (toolExecution as ToolExecutionOutcome.Completed).completed
             modelMessages = modelMessages + newAssistantMsg
             newTurnMessages.add(newAssistantMsg)
-            for (completed in completedTools) {
-                val newToolMsg = completed.toToolMessage()
-                modelMessages = modelMessages + newToolMsg
-                newTurnMessages.add(newToolMsg)
+            modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
+            completedTools.firstOutcomeUnknownError()?.let { error ->
+                emit(LoopEvent.Failed(error))
+                emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
+                return@flow
             }
             iteration++
         }
@@ -201,7 +203,7 @@ class AgenticLoopImpl(
         for (r in assembledResults) {
             if (r is ToolCallAssembler.AssemblyResult.MalformedArguments) {
                 val result = ToolResult.ValidationError(r.callId, "Malformed arguments for ${r.toolName}")
-                completedTools += CompletedToolCall(r.toHistoryToolCall(), result)
+                completedTools += CompletedToolCall(r.toHistoryToolCall(), result, ToolSafetyLevel.SAFE)
                 emit(LoopEvent.ToolCallFinished(result))
             }
         }
@@ -209,7 +211,7 @@ class AgenticLoopImpl(
             val descriptor = toolDescriptors.find { it.name == call.name }
             val result = executeToolIfAllowed(call, descriptor)
                 ?: return ToolExecutionOutcome.Cancelled(completedTools)
-            completedTools += CompletedToolCall(call, result)
+            completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
             emit(LoopEvent.ToolCallFinished(result))
         }
         return ToolExecutionOutcome.Completed(completedTools)
@@ -273,6 +275,20 @@ class AgenticLoopImpl(
         emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
     }
 
+    private fun appendCompletedToolMessages(
+        modelMessages: List<AssistantMessage>,
+        newTurnMessages: MutableList<AssistantMessage>,
+        completedTools: List<CompletedToolCall>,
+    ): List<AssistantMessage> {
+        var updatedModelMessages = modelMessages
+        completedTools.forEach { completed ->
+            val newToolMsg = completed.toToolMessage()
+            updatedModelMessages = updatedModelMessages + newToolMsg
+            newTurnMessages.add(newToolMsg)
+        }
+        return updatedModelMessages
+    }
+
     private data class StreamResult(
         val toolCallDeltas: List<AssistantEvent.ToolCallDelta>,
         val assistantText: String,
@@ -293,7 +309,19 @@ class AgenticLoopImpl(
     private data class CompletedToolCall(
         val historyToolCall: ToolCall,
         val result: ToolResult,
+        val safetyLevel: ToolSafetyLevel,
     )
+
+    private fun List<CompletedToolCall>.firstOutcomeUnknownError(): AssistantError.OutcomeUnknown? =
+        firstNotNullOfOrNull { completed ->
+            val isUnknownWriteOutcome = completed.safetyLevel == ToolSafetyLevel.UNSAFE &&
+                completed.result is ToolResult.TransportError
+            if (isUnknownWriteOutcome) {
+                AssistantError.OutcomeUnknown(toolName = completed.historyToolCall.name)
+            } else {
+                null
+            }
+        }
 
     private fun messagesWithPartialText(
         messages: List<AssistantMessage>,
