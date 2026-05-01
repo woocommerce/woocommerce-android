@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -37,7 +39,8 @@ fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsVi
             viewState = viewState,
             onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
             onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged,
-            onThresholdAmountChanged = viewModel::onThresholdAmountChanged
+            onThresholdAmountChanged = viewModel::onThresholdAmountChanged,
+            onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
         )
     }
 }
@@ -47,7 +50,8 @@ fun NewOrderNotificationSettingsScreen(
     viewState: ViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
     onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
-    onThresholdAmountChanged: (BigDecimal) -> Unit
+    onThresholdAmountChanged: (BigDecimal) -> Unit,
+    onEnableChaChingSoundClicked: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -65,6 +69,22 @@ fun NewOrderNotificationSettingsScreen(
                 isEnabled = viewState.notificationsEnabled,
                 onEnabledChanged = onNotificationsEnabledChanged
             )
+            AnimatedVisibility(
+                visible = viewState.newOrderNotificationSoundStatus != NewOrderNotificationSoundStatus.DEFAULT
+            ) {
+                val subtitle = if (
+                    viewState.newOrderNotificationSoundStatus == NewOrderNotificationSoundStatus.DISABLED
+                ) {
+                    R.string.settings_notifs_enable_chaching_sound_description
+                } else {
+                    R.string.settings_notifs_restore_chaching_sound_description
+                }
+                NotificationSettingsAction(
+                    title = stringResource(R.string.settings_notifs_enable_chaching_sound),
+                    subtitle = stringResource(subtitle),
+                    onClick = onEnableChaChingSoundClicked
+                )
+            }
             SettingsSectionHeader(
                 text = stringResource(R.string.settings_notifs_notify_me_for),
                 modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp)
@@ -118,6 +138,30 @@ private fun ThresholdAmountField(
 }
 
 @Composable
+private fun NotificationSettingsAction(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewOrderNotificationSettingsScreenPreview() {
@@ -130,7 +174,8 @@ private fun NewOrderNotificationSettingsScreenPreview() {
             ),
             onNotificationsEnabledChanged = {},
             onNotificationPreferenceChanged = {},
-            onThresholdAmountChanged = {}
+            onThresholdAmountChanged = {},
+            onEnableChaChingSoundClicked = {}
         )
     }
 }
