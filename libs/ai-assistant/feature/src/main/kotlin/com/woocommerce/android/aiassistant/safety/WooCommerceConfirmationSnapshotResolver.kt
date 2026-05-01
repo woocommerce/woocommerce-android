@@ -26,7 +26,7 @@ internal open class WooCommerceConfirmationSnapshotResolver @Inject constructor(
             ?.let { order ->
                 ConfirmationSnapshot(
                     currentValues = mapOf(
-                        "status" to order.status,
+                        "status" to order.status.normalizedOrderStatus(),
                     )
                 )
             }
@@ -38,7 +38,7 @@ internal open class WooCommerceConfirmationSnapshotResolver @Inject constructor(
                         put("name", product.name)
                         put("regular_price", product.regularPrice)
                         put("sale_price", product.salePrice)
-                        put("stock_quantity", product.stockQuantity.toInt().toString())
+                        put("stock_quantity", product.stockQuantity.formatStockQuantity())
                         put("status", product.status)
                     }
                 )
@@ -54,7 +54,7 @@ internal open class WooCommerceConfirmationSnapshotResolver @Inject constructor(
                         currentValues = buildMap {
                             put("regular_price", variation.regularPrice)
                             put("sale_price", variation.salePrice)
-                            put("stock_quantity", variation.stockQuantity.toInt().toString())
+                            put("stock_quantity", variation.stockQuantity.formatStockQuantity())
                             put("stock_status", variation.stockStatus)
                             put("sku", variation.sku)
                             put("status", variation.status)
@@ -70,6 +70,11 @@ internal open class WooCommerceConfirmationSnapshotResolver @Inject constructor(
         this[name]?.asJsonPrimitiveOrNull()?.longOrNull
 
     private fun JsonElement.asJsonPrimitiveOrNull(): JsonPrimitive? = runCatching { jsonPrimitive }.getOrNull()
+
+    private fun Double.formatStockQuantity(): String =
+        if (rem(1.0) == 0.0) toLong().toString() else toString()
+
+    private fun String.normalizedOrderStatus(): String = removePrefix("wc-")
 
     private companion object {
         const val ORDERS_UPDATE = "orders_update"

@@ -35,7 +35,7 @@ class WooCommerceConfirmationSnapshotResolverTest {
 
     @Test
     fun `given order update, when resolving snapshot, then current order fields are returned`() = runTest {
-        val order = OrderEntity(localSiteId = LocalId(1), orderId = 42L, status = "pending")
+        val order = OrderEntity(localSiteId = LocalId(1), orderId = 42L, status = "wc-pending")
         val request = confirmationRequest(
             toolName = "orders_update",
             arguments = buildJsonObject {
@@ -63,7 +63,7 @@ class WooCommerceConfirmationSnapshotResolverTest {
             remoteId = RemoteId(7L),
             regularPrice = "19.99",
             salePrice = "",
-            stockQuantity = 5.0,
+            stockQuantity = 5.5,
             status = "publish",
             name = "Current name",
         )
@@ -87,6 +87,7 @@ class WooCommerceConfirmationSnapshotResolverTest {
 
         assertThat(requireNotNull(snapshot).currentValues).containsEntry("regular_price", "19.99")
         assertThat(requireNotNull(snapshot).currentValues).containsEntry("name", "Current name")
+        assertThat(requireNotNull(snapshot).currentValues).containsEntry("stock_quantity", "5.5")
     }
 
     @Test
@@ -97,7 +98,7 @@ class WooCommerceConfirmationSnapshotResolverTest {
             sku = "VAR-7",
             regularPrice = "19.99",
             salePrice = "",
-            stockQuantity = 3.0,
+            stockQuantity = 3.5,
             stockStatus = "instock",
             status = "publish",
         )
@@ -121,6 +122,7 @@ class WooCommerceConfirmationSnapshotResolverTest {
         )
 
         assertThat(requireNotNull(snapshot).currentValues).containsEntry("sku", "VAR-7")
+        assertThat(requireNotNull(snapshot).currentValues).containsEntry("stock_quantity", "3.5")
         assertThat(requireNotNull(snapshot).currentValues).containsEntry("stock_status", "instock")
     }
 
