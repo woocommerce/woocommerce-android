@@ -141,6 +141,24 @@ class ShowCardsToolHandlerTest {
         )
     }
 
+    @Test
+    fun `duplicate refs are rejected after the first seen family id pair`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(orderCard(id = "123"), productCard(id = "123")),
+            referencesJson = """
+                [
+                  { "family": "order", "id": "123" },
+                  { "family": "order", "id": "123" },
+                  { "family": "product", "id": "123" }
+                ]
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(2)
+        assertThat(rejectedReasons(result)).containsExactly("duplicate_ref")
+        assertThat(resolvedFamilies(result)).containsExactly("order", "product")
+    }
+
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
 
@@ -178,6 +196,14 @@ class ShowCardsToolHandlerTest {
         assertSuccess(result).structured.jsonObject
             .getValue("rejected_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("reason").jsonPrimitive.content }
+
+    private fun validated(result: ToolResult): Int =
+        assertSuccess(result).structured.jsonObject.getValue("validated").jsonPrimitive.int
+
+    private fun resolvedFamilies(result: ToolResult): List<String> =
+        assertSuccess(result).structured.jsonObject
+            .getValue("resolved_refs").jsonArray
+            .map { ref -> ref.jsonObject.getValue("family").jsonPrimitive.content }
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)

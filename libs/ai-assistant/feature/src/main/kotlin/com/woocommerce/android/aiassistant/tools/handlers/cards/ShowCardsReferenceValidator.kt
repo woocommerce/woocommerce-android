@@ -9,6 +9,7 @@ internal class ShowCardsReferenceValidator {
     fun validate(references: List<JsonElement>): ShowCardsValidationResult {
         val validRefs = mutableListOf<ValidatedRef>()
         val rejectedRefs = mutableListOf<RejectedRef>()
+        val seen = linkedSetOf<Pair<ShowCardFamily, String>>()
 
         references.forEachIndexed { index, reference ->
             val ref = reference as? JsonObject
@@ -50,6 +51,16 @@ internal class ShowCardsReferenceValidator {
                     family = family.serializedName,
                     id = id,
                     reason = ShowCardsRejectionReason.InvalidId,
+                )
+                return@forEachIndexed
+            }
+
+            if (!seen.add(family to id)) {
+                rejectedRefs += RejectedRef(
+                    index = index,
+                    family = family.serializedName,
+                    id = id,
+                    reason = ShowCardsRejectionReason.DuplicateRef,
                 )
                 return@forEachIndexed
             }
