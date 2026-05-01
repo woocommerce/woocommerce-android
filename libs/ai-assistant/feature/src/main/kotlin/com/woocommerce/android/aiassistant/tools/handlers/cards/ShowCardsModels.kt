@@ -81,15 +81,32 @@ internal data class RejectedRef(
 
 @Serializable
 internal enum class ShowCardsRejectionReason {
-    @SerialName("malformed_ref") MalformedRef,
-    @SerialName("missing_family") MissingFamily,
-    @SerialName("unsupported_family") UnsupportedFamily,
-    @SerialName("missing_id") MissingId,
-    @SerialName("invalid_id") InvalidId,
-    @SerialName("duplicate_ref") DuplicateRef,
-    @SerialName("over_limit") OverLimit,
-    @SerialName("fetch_failed") FetchFailed,
-    @SerialName("not_found") NotFound
+    @SerialName("malformed_ref")
+    MalformedRef,
+
+    @SerialName("missing_family")
+    MissingFamily,
+
+    @SerialName("unsupported_family")
+    UnsupportedFamily,
+
+    @SerialName("missing_id")
+    MissingId,
+
+    @SerialName("invalid_id")
+    InvalidId,
+
+    @SerialName("duplicate_ref")
+    DuplicateRef,
+
+    @SerialName("over_limit")
+    OverLimit,
+
+    @SerialName("fetch_failed")
+    FetchFailed,
+
+    @SerialName("not_found")
+    NotFound
 }
 
 @Serializable

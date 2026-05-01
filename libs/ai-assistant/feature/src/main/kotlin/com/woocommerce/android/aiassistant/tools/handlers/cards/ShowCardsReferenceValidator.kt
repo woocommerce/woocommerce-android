@@ -7,88 +7,86 @@ import kotlinx.serialization.json.contentOrNull
 
 internal class ShowCardsReferenceValidator {
     fun validate(references: List<JsonElement>): ShowCardsValidationResult {
-        val validRefs = mutableListOf<ValidatedRef>()
-        val rejectedRefs = mutableListOf<RejectedRef>()
-        val seen = linkedSetOf<Pair<ShowCardFamily, String>>()
+        val state = ValidationState()
 
         references.forEachIndexed { index, reference ->
-            val ref = reference as? JsonObject
-            if (ref == null) {
-                rejectedRefs += RejectedRef(index = index, reason = ShowCardsRejectionReason.MalformedRef)
-                return@forEachIndexed
-            }
-
-            val rawFamily = ref.stringOrNull("family")
-            if (rawFamily == null) {
-                rejectedRefs += RejectedRef(index = index, id = ref.stringOrNull("id"), reason = ShowCardsRejectionReason.MissingFamily)
-                return@forEachIndexed
-            }
-
-            val family = ShowCardFamily.from(rawFamily)
-            if (family == null) {
-                rejectedRefs += RejectedRef(
-                    index = index,
-                    family = rawFamily,
-                    id = ref.stringOrNull("id"),
-                    reason = ShowCardsRejectionReason.UnsupportedFamily,
-                )
-                return@forEachIndexed
-            }
-
-            val id = ref.stringOrNull("id")
-            if (id == null) {
-                rejectedRefs += RejectedRef(
-                    index = index,
-                    family = family.serializedName,
-                    reason = ShowCardsRejectionReason.MissingId,
-                )
-                return@forEachIndexed
-            }
-
-            if (!id.isValidShowCardsId()) {
-                rejectedRefs += RejectedRef(
-                    index = index,
-                    family = family.serializedName,
-                    id = id,
-                    reason = ShowCardsRejectionReason.InvalidId,
-                )
-                return@forEachIndexed
-            }
-
-            if (!seen.add(family to id)) {
-                rejectedRefs += RejectedRef(
-                    index = index,
-                    family = family.serializedName,
-                    id = id,
-                    reason = ShowCardsRejectionReason.DuplicateRef,
-                )
-                return@forEachIndexed
-            }
-
-            if (validRefs.size >= MAX_SHOW_CARDS_REFS) {
-                rejectedRefs += RejectedRef(
-                    index = index,
-                    family = family.serializedName,
-                    id = id,
-                    reason = ShowCardsRejectionReason.OverLimit,
-                )
-                return@forEachIndexed
-            }
-
-            validRefs += ValidatedRef(index = index, family = family, id = id)
+            validateReference(index, reference, state)
         }
 
         return ShowCardsValidationResult(
             requested = references.size,
-            validRefs = validRefs,
-            rejectedRefs = rejectedRefs,
+            validRefs = state.validRefs,
+            rejectedRefs = state.rejectedRefs,
         )
+    }
+
+    private fun validateReference(index: Int, reference: JsonElement, state: ValidationState) {
+        val ref = reference as? JsonObject
+            ?: return state.reject(index = index, reason = ShowCardsRejectionReason.MalformedRef)
+
+        val rawFamily = ref.stringOrNull("family")
+            ?: return state.reject(
+                index = index,
+                id = ref.stringOrNull("id"),
+                reason = ShowCardsRejectionReason.MissingFamily,
+            )
+
+        val family = ShowCardFamily.from(rawFamily)
+            ?: return state.reject(
+                index = index,
+                family = rawFamily,
+                id = ref.stringOrNull("id"),
+                reason = ShowCardsRejectionReason.UnsupportedFamily,
+            )
+
+        val id = ref.stringOrNull("id")
+            ?: return state.reject(
+                index = index,
+                family = family.serializedName,
+                reason = ShowCardsRejectionReason.MissingId,
+            )
+
+        when {
+            !id.isValidShowCardsId() -> state.rejectInvalidId(index, family, id)
+            !state.seen.add(family to id) -> state.rejectDuplicate(index, family, id)
+            state.validRefs.size >= MAX_SHOW_CARDS_REFS -> state.rejectOverLimit(index, family, id)
+            else -> state.validRefs += ValidatedRef(index = index, family = family, id = id)
+        }
     }
 
     private fun JsonObject.stringOrNull(key: String): String? =
         (get(key) as? JsonPrimitive)?.contentOrNull
 
     private fun String.isValidShowCardsId(): Boolean = isNotBlank()
+
+    private fun ValidationState.rejectInvalidId(index: Int, family: ShowCardFamily, id: String) =
+        reject(index, family.serializedName, id, ShowCardsRejectionReason.InvalidId)
+
+    private fun ValidationState.rejectDuplicate(index: Int, family: ShowCardFamily, id: String) =
+        reject(index, family.serializedName, id, ShowCardsRejectionReason.DuplicateRef)
+
+    private fun ValidationState.rejectOverLimit(index: Int, family: ShowCardFamily, id: String) =
+        reject(index, family.serializedName, id, ShowCardsRejectionReason.OverLimit)
+
+    private class ValidationState {
+        val validRefs = mutableListOf<ValidatedRef>()
+        val rejectedRefs = mutableListOf<RejectedRef>()
+        val seen = linkedSetOf<Pair<ShowCardFamily, String>>()
+
+        fun reject(
+            index: Int,
+            family: String? = null,
+            id: String? = null,
+            reason: ShowCardsRejectionReason,
+        ) {
+            rejectedRefs += RejectedRef(
+                index = index,
+                family = family,
+                id = id,
+                reason = reason,
+            )
+        }
+    }
 }
 
 internal data class ShowCardsValidationResult(

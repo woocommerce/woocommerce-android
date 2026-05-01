@@ -6,18 +6,16 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCardsResolver
-import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolution
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
-import javax.inject.Inject
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -28,6 +26,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import javax.inject.Inject
 
 class ShowCardsToolHandler internal constructor(
     private val resolver: ShowCardsResolver,
@@ -45,7 +44,7 @@ class ShowCardsToolHandler internal constructor(
             putJsonObject("properties") {
                 putJsonObject("references") {
                     put("type", "array")
-                    put("maxItems", MAX_SHOW_CARDS_REFS)
+                    put("maxItems", 10)
                     putJsonObject("items") {
                         put("type", "object")
                         put("additionalProperties", false)

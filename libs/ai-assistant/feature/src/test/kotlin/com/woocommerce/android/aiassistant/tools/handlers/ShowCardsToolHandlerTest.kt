@@ -30,7 +30,7 @@ class ShowCardsToolHandlerTest {
     private val handler = ShowCardsToolHandler()
 
     @Test
-    fun `show cards descriptor accepts references with Android v1 order and product families`() {
+    fun `when descriptor is inspected, then show cards accepts Android v1 order and product references`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
@@ -44,12 +44,12 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `show_cards is classified safe`() {
+    fun `when descriptor is inspected, then show_cards is safe`() {
         assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.SAFE)
     }
 
     @Test
-    fun `success structured contains compact result counts and ref lists`() = runTest {
+    fun `given resolved ref, when executed, then structured contains compact result counts and ref lists`() = runTest {
         val result = executeShowCards(
             handler = handlerWith(FakeResolver.resolving(orderCard(id = "123"))),
             argumentsJson = """{"references":[{"family":"order","id":"123"}]}"""
@@ -71,7 +71,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `resolved order summary contains only allowlisted fields`() = runTest {
+    fun `given resolved order, when executed, then summary contains only allowlisted fields`() = runTest {
         val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
 
         val summary = firstResolvedSummary(result)
@@ -80,7 +80,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `resolved product summary contains only allowlisted fields`() = runTest {
+    fun `given resolved product, when executed, then summary contains only allowlisted fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(productCard(id = "456")),
             referencesJson = """[{ "family": "product", "id": "456" }]"""
@@ -92,7 +92,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `structured excludes render payload descriptions html images metadata and raw json`() = runTest {
+    fun `given resolver returns render payload extras, when executed, then structured excludes private fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(leakyProductCard(id = "456")),
             referencesJson = """[{ "family": "product", "id": "456" }]"""
@@ -108,7 +108,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `success uiStructured contains cards for resolved refs`() = runTest {
+    fun `given resolved ref, when executed, then uiStructured contains cards`() = runTest {
         val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
 
         val uiStructured = assertSuccess(result).uiStructured!!.jsonObject
@@ -120,7 +120,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `invalid refs are rejected with lower snake case reasons`() = runTest {
+    fun `given invalid refs, when executed, then rejected refs use lower snake case reasons`() = runTest {
         val result = executeShowCards(
             handler = handler,
             argumentsJson = """
@@ -148,7 +148,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `duplicate refs are rejected after the first seen family id pair`() = runTest {
+    fun `given duplicate refs, when executed, then duplicates after first family id pair are rejected`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(orderCard(id = "123"), productCard(id = "123")),
             referencesJson = """
@@ -166,7 +166,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `refs after max ten are rejected as over limit and not rendered`() = runTest {
+    fun `given more than ten refs, when executed, then refs after max ten are rejected and not rendered`() = runTest {
         val refs = (1..11).joinToString(separator = ",") { index ->
             """{ "family": "order", "id": "$index" }"""
         }
