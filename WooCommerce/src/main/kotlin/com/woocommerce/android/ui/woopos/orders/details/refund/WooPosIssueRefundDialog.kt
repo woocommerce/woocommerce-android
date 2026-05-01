@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -70,6 +71,20 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
+
+private fun refundFadeTransition(): ContentTransform =
+    fadeIn(
+        animationSpec = tween(
+            durationMillis = 250,
+            delayMillis = 200,
+            easing = FastOutSlowInEasing
+        )
+    ) togetherWith fadeOut(
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = FastOutSlowInEasing
+        )
+    ) using null
 
 @Composable
 fun WooPosIssueRefundScreen(
@@ -144,20 +159,7 @@ fun WooPosIssueRefundScreen(
                 targetState = state,
                 contentKey = { it::class },
                 modifier = Modifier.weight(1f),
-                transitionSpec = {
-                    fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 250,
-                            delayMillis = 200,
-                            easing = FastOutSlowInEasing
-                        )
-                    ) togetherWith fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 200,
-                            easing = FastOutSlowInEasing
-                        )
-                    ) using null
-                },
+                transitionSpec = { refundFadeTransition() },
                 label = "refund_state_transition",
             ) { animatedState ->
                 when (animatedState) {
@@ -417,20 +419,7 @@ private fun ContentStateHandler(
                 else -> step
             }
         },
-        transitionSpec = {
-            fadeIn(
-                animationSpec = tween(
-                    durationMillis = 250,
-                    delayMillis = 200,
-                    easing = FastOutSlowInEasing
-                )
-            ) togetherWith fadeOut(
-                animationSpec = tween(
-                    durationMillis = 200,
-                    easing = FastOutSlowInEasing
-                )
-            ) using null
-        },
+        transitionSpec = { refundFadeTransition() },
         label = "refund_step_transition",
     ) { step ->
         when (step) {
