@@ -19,6 +19,11 @@ data class AssistantUiState(
     val isTurnActive: Boolean
         get() = status == AssistantUiStatus.STREAMING ||
             status == AssistantUiStatus.AWAITING_CONFIRMATION
+
+    val shouldShowFallbackError: Boolean
+        get() = status == AssistantUiStatus.ERROR &&
+            error != null &&
+            messages.lastOrNull()?.error == null
 }
 
 enum class AssistantUiStatus {
@@ -94,4 +99,20 @@ internal fun AssistantError.toMessageRes(): Int = when (this) {
     is AssistantError.OutcomeUnknown -> R.string.assistant_chat_error_outcome_unknown
     AssistantError.Cancelled -> R.string.assistant_chat_error_cancelled
     is AssistantError.Unknown -> R.string.assistant_chat_error_unknown
+}
+
+@StringRes
+internal fun AssistantUiError.toMessageRes(): Int = when (this) {
+    AssistantUiError.NETWORK -> R.string.assistant_chat_error_network
+    AssistantUiError.AUTH -> R.string.assistant_chat_error_auth
+    AssistantUiError.RATE_LIMIT -> R.string.assistant_chat_error_rate_limit
+    AssistantUiError.TIMEOUT -> R.string.assistant_chat_error_timeout
+    AssistantUiError.UPSTREAM_FAILURE -> R.string.assistant_chat_error_upstream_failure
+    AssistantUiError.TOOL_FAILED -> R.string.assistant_chat_error_tool_failed
+    AssistantUiError.INVALID_TOOL_CALL -> R.string.assistant_chat_error_invalid_tool_call
+    AssistantUiError.OUTCOME_UNKNOWN -> R.string.assistant_chat_error_outcome_unknown
+    AssistantUiError.CANCELLED -> R.string.assistant_chat_error_cancelled
+    AssistantUiError.CONFIRMATION_DEFERRED -> R.string.assistant_chat_error_confirmation_deferred
+    AssistantUiError.MAX_ITERATIONS -> R.string.assistant_chat_error_max_iterations
+    AssistantUiError.UNKNOWN -> R.string.assistant_chat_error_unknown
 }

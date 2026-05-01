@@ -359,9 +359,31 @@ private fun AssistantStatusPanel(
                 onCancelWrite = onCancelWrite,
             )
         }
+        AssistantUiStatus.ERROR -> {
+            if (state.shouldShowFallbackError) {
+                AssistantFallbackErrorPanel(error = state.error)
+            }
+        }
         AssistantUiStatus.IDLE,
-        AssistantUiStatus.STREAMING,
-        AssistantUiStatus.ERROR -> Unit
+        AssistantUiStatus.STREAMING -> Unit
+    }
+}
+
+@Composable
+private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
+    if (error == null) return
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(16.dp),
+    ) {
+        Text(
+            text = stringResource(error.toMessageRes()),
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 

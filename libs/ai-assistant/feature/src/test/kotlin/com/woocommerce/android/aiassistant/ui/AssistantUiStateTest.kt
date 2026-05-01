@@ -48,6 +48,61 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given error state with no inline message error, when checking fallback, then fallback is visible`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.ERROR,
+            error = AssistantUiError.MAX_ITERATIONS,
+            messages = listOf(
+                AssistantUiMessage(
+                    id = "message-1",
+                    role = AssistantUiMessage.Role.USER,
+                    text = "Hello",
+                ),
+                AssistantUiMessage(
+                    id = "message-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                ),
+            ),
+        )
+
+        assertThat(state.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(state.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+    }
+
+    @Test
+    fun `given error state with inline message error, when checking fallback, then fallback is hidden`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.ERROR,
+            error = AssistantUiError.NETWORK,
+            messages = listOf(
+                AssistantUiMessage(
+                    id = "message-1",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.Network,
+                        canRetry = true,
+                    ),
+                ),
+            ),
+        )
+
+        assertThat(state.shouldShowFallbackError).isFalse()
+    }
+
+    @Test
+    fun `given ui errors, when mapping to message resources, then fallback copy resources are returned`() {
+        assertThat(AssistantUiError.CONFIRMATION_DEFERRED.toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+        assertThat(AssistantUiError.MAX_ITERATIONS.toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+        assertThat(AssistantUiError.CANCELLED.toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_cancelled)
+    }
+
+    @Test
     fun `when status is streaming, then turn is active`() {
         val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
 

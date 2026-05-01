@@ -142,7 +142,7 @@ class AssistantViewModel @AssistedInject constructor(
                 )
             }
             state.copy(
-                messages = state.messages + turnMessages,
+                messages = state.messages.withoutRetryActions() + turnMessages,
                 status = AssistantUiStatus.STREAMING,
                 error = null,
                 canRetry = false,
@@ -258,6 +258,16 @@ class AssistantViewModel @AssistedInject constructor(
         outcome == LoopOutcome.FAILED &&
             retryAvailable &&
             error?.supportsRetryAction() == true
+
+    private fun List<AssistantUiMessage>.withoutRetryActions(): List<AssistantUiMessage> =
+        map { message ->
+            val error = message.error
+            if (error?.canRetry == true) {
+                message.copy(error = error.copy(canRetry = false))
+            } else {
+                message
+            }
+        }
 
     private fun List<AssistantUiMessage>.withAssistantError(
         activeMessageId: String?,

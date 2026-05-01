@@ -325,6 +325,10 @@ class AssistantViewModelTest {
 
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
@@ -419,6 +423,71 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given retryable failed turn, when a new turn starts, then previous retry action is disabled`() = runTest {
+        viewModel.onSendMessage("First")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("First")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+        assertThat(viewModel.uiState.value.messages.last().error?.canRetry).isTrue()
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.first { it.text.isEmpty() }.error?.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(runtime.retryRequests).isEmpty()
+    }
+
+    @Test
+    fun `given two retryable failed turns, when retry is requested, then latest failed turn is retried`() = runTest {
+        viewModel.onSendMessage("First")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("First")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onSendMessage("Second")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("First"),
+                    AssistantMessage.User("Second"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Timeout,
+            )
+        )
+        advanceUntilIdle()
+
+        val messageErrors = viewModel.uiState.value.messages.mapNotNull { it.error }
+        assertThat(messageErrors.map { it.canRetry }).containsExactly(false, true)
+
+        viewModel.onRetry()
+
+        assertThat(runtime.retryRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "Second",
+                history = listOf(AssistantMessage.User("First")),
+            )
+        )
+    }
+
+    @Test
     fun `when runtime awaits confirmation, then state exposes pending confirmation`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         val confirmation = AssistantPendingConfirmation(
@@ -447,6 +516,10 @@ class AssistantViewModelTest {
         assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_cancelled)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
@@ -643,6 +716,10 @@ class AssistantViewModelTest {
         assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
     }
 
