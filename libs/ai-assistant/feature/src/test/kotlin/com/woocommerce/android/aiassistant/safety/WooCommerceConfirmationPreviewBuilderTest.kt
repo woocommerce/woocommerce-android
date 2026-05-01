@@ -291,6 +291,89 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
+    fun `given order update and current snapshot, when preview is built, then before and after values are included`() {
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "processing")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf(
+                    "status" to "pending",
+                )
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "status",
+                label = label(R.string.ai_assistant_confirmation_field_status),
+                value = raw("processing"),
+                beforeValue = raw("pending"),
+            )
+        )
+        assertThat(preview.isBulk).isFalse()
+    }
+
+    @Test
+    fun `given product update and current snapshot, when preview is built, then before and after values are included`() {
+        val preview = builder.build(
+            toolCall(
+                name = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("regular_price", "24.99")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf(
+                    "regular_price" to "19.99",
+                )
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "regular_price",
+                label = label(R.string.ai_assistant_confirmation_field_regular_price),
+                value = raw("24.99"),
+                beforeValue = raw("19.99"),
+            )
+        )
+    }
+
+    @Test
+    fun `given variation update and current snapshot, when preview is built, then before and after values are included`() {
+        val preview = builder.build(
+            toolCall(
+                name = "product_variations_update",
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("sku", "VAR-8")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf(
+                    "sku" to "VAR-7",
+                )
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "sku",
+                label = label(R.string.ai_assistant_confirmation_field_sku),
+                value = raw("VAR-8"),
+                beforeValue = raw("VAR-7"),
+            )
+        )
+    }
+
+    @Test
     fun `given unknown tool, when preview is built, then raw arguments are omitted`() {
         val call = toolCall(
             name = "custom_tool",
@@ -487,6 +570,27 @@ class WooCommerceConfirmationPreviewBuilderTest {
             )
         )
         assertThat(productPreview.fields).isEmpty()
+    }
+
+    @Test
+    fun `given bulk update with a single id, when preview is built, then before values stay absent`() {
+        val preview = builder.build(
+            toolCall(
+                name = "products_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(7))))
+                    put(
+                        "patch",
+                        buildJsonObject {
+                            put("status", "draft")
+                        },
+                    )
+                },
+            )
+        )
+
+        assertThat(preview.isBulk).isTrue()
+        assertThat(preview.rows.single().beforeValue).isNull()
     }
 
     private fun toolCall(

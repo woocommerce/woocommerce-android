@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -427,6 +428,28 @@ private fun AssistantConfirmationCardSegment(
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             style = MaterialTheme.typography.titleSmall,
         )
+        confirmation.preview?.rows?.forEach { row ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = row.label,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                row.beforeValue?.let { beforeValue ->
+                    ConfirmationDiffLine(
+                        prefix = stringResource(R.string.assistant_confirmation_now),
+                        value = beforeValue,
+                        strikethrough = true,
+                    )
+                }
+                ConfirmationDiffLine(
+                    prefix = stringResource(R.string.assistant_confirmation_after),
+                    value = row.afterValue,
+                )
+            }
+        }
         if (confirmation.state == AssistantConfirmationCardState.PENDING) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -439,6 +462,30 @@ private fun AssistantConfirmationCardSegment(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ConfirmationDiffLine(
+    prefix: String,
+    value: String,
+    strikethrough: Boolean = false,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = prefix,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Text(
+            text = value,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.bodySmall,
+            textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
+        )
     }
 }
 

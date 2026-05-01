@@ -9,7 +9,9 @@ import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
@@ -24,6 +26,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val safetyOrchestrator: SafetyOrchestrator,
     private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
+    private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -60,9 +63,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.AssistantTextDelta -> emit(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
-                is LoopEvent.ConfirmationRequested -> emit(
-                    AssistantRuntimeEvent.AwaitingConfirmation(event.request.toConfirmationCard())
-                )
+                is LoopEvent.ConfirmationRequested -> {
+                    val snapshot = confirmationSnapshotResolver.resolve(event.request)
+                    emit(
+                        AssistantRuntimeEvent.AwaitingConfirmation(
+                            event.request.toConfirmationCard(snapshot)
+                        )
+                    )
+                }
                 is LoopEvent.Finished -> {
                     emit(
                         AssistantRuntimeEvent.Finished(
@@ -82,7 +90,8 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         }
     }
 
-    private fun ConfirmationRequest.toConfirmationCard() = AssistantConfirmationCard(
+    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?) =
+        AssistantConfirmationCard(
         confirmationId = id,
         toolCall = ToolCall(
             id = toolCallId,
@@ -90,6 +99,6 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             arguments = arguments,
         ),
         state = AssistantConfirmationCardState.PENDING,
-        preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this)),
+        preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
     )
 }

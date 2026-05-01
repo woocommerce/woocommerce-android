@@ -174,6 +174,19 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
+    fun `given order is cached, when getOrder is called, then fetchSingleOrderSync is not called`() =
+        runTest {
+            val entity = OrderEntity(localSiteId = LocalId(1), orderId = 123L, status = "pending")
+            whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(entity)
+
+            val result = dataSource.getOrder(orderId = 123L)
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow()).isEqualTo(entity)
+            verify(orderStore, org.mockito.kotlin.never()).fetchSingleOrderSync(site, 123L)
+        }
+
+    @Test
     fun `when getOrder is called, then fetchSingleOrderSync is called`() =
         runTest {
             val entity = OrderEntity(localSiteId = LocalId(1), orderId = 123L)

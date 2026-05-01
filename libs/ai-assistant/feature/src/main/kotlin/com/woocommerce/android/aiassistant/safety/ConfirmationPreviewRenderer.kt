@@ -9,12 +9,13 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
 ) {
     fun render(preview: ConfirmationPreview): RenderedConfirmationPreview =
         RenderedConfirmationPreview(
-            summary = render(preview.summary),
-            rows = preview.rows.map {
+            message = render(preview.summary),
+            fields = preview.rows.map {
                 RenderedConfirmationDiffRow(
                     name = it.name,
                     label = render(it.label),
                     value = render(it.value),
+                    beforeValue = it.beforeValue?.let(::render),
                 )
             },
             isBulk = preview.isBulk,
@@ -36,30 +37,32 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
 }
 
 data class RenderedConfirmationPreview(
-    val summary: String,
-    val rows: List<RenderedConfirmationDiffRow>,
+    val message: String,
+    val fields: List<RenderedConfirmationDiffRow>,
     val isBulk: Boolean,
 ) {
-    constructor(
-        message: String,
-        fields: List<RenderedConfirmationPreviewField>,
-    ) : this(
-        summary = message,
-        rows = fields,
+    constructor(message: String, fields: List<RenderedConfirmationPreviewField>) : this(
+        message = message,
+        fields = fields,
         isBulk = false,
     )
 
-    val message: String
-        get() = summary
+    val summary: String
+        get() = message
 
-    val fields: List<RenderedConfirmationPreviewField>
-        get() = rows
+    val rows: List<RenderedConfirmationPreviewField>
+        get() = fields
 }
 
 data class RenderedConfirmationDiffRow(
     val name: String,
     val label: String,
     val value: String,
+    val beforeValue: String? = null,
 )
+{
+    val afterValue: String
+        get() = value
+}
 
 typealias RenderedConfirmationPreviewField = RenderedConfirmationDiffRow

@@ -21,10 +21,15 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +41,7 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -107,8 +113,14 @@ class AgenticLoopAssistantRuntimeTest {
             },
             safetyLevel = ToolSafetyLevel.UNSAFE,
         )
+        val snapshot = ConfirmationSnapshot(
+            currentValues = mapOf(
+                "status" to "pending",
+            )
+        )
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
+            snapshotResolver = FakeSnapshotResolver(snapshot),
         )
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
@@ -133,8 +145,10 @@ class AgenticLoopAssistantRuntimeTest {
                                 name = "status",
                                 label = "Status",
                                 value = "processing",
+                                beforeValue = "pending",
                             )
                         ),
+                        isBulk = false,
                     ),
                 )
             )
@@ -178,6 +192,7 @@ class AgenticLoopAssistantRuntimeTest {
     private fun runtime(
         agenticLoop: AgenticLoop = FakeAgenticLoop(events = emptyList()),
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
+        snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
         toolRegistry = EmptyToolRegistry,
@@ -185,6 +200,7 @@ class AgenticLoopAssistantRuntimeTest {
         safetyOrchestrator = safetyOrchestrator,
         confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
+        confirmationSnapshotResolver = snapshotResolver,
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -235,5 +251,15 @@ class AgenticLoopAssistantRuntimeTest {
         }
 
         override fun cancelPending(requestId: String): Boolean = false
+    }
+
+    private class FakeSnapshotResolver(
+        private val snapshot: ConfirmationSnapshot? = null,
+    ) : WooCommerceConfirmationSnapshotResolver(
+        ordersDataSource = mock<AIOrdersDataSource>(),
+        productsDataSource = mock<AIProductsDataSource>(),
+        variationsDataSource = mock<AIProductVariationsDataSource>(),
+    ) {
+        override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
     }
 }

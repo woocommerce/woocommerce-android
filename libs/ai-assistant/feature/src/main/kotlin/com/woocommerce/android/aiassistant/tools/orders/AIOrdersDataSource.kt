@@ -76,6 +76,7 @@ internal class AIOrdersDataSource @Inject constructor(
 
     suspend fun getOrder(orderId: Long): Result<OrderEntity> {
         val site = selectedSite.get()
+        orderStore.getOrderByIdAndSite(orderId, site)?.let { return Result.success(it) }
         val result = orderStore.fetchSingleOrderSync(site, orderId)
         return if (result.isError) {
             Result.failure(OnChangedException(result.error))
