@@ -30,7 +30,7 @@ internal object AiAssistantModule {
     fun provideAiAssistantJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = false
-        explicitNulls = true
+        explicitNulls = false
     }
 
     @Provides
