@@ -59,6 +59,10 @@ class AssistantViewModel @AssistedInject constructor(
 
     fun onCancelTurn() {
         if (!_uiState.value.isTurnActive) return
+        if (_uiState.value.activeConfirmationId != null) {
+            cancelOpenConfirmationSegments()
+            return
+        }
 
         preserveCancelledTurnInHistory()
         turnJob?.cancel()
@@ -111,35 +115,7 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     fun onCancelWrite() {
-        val confirmationId = _uiState.value.activeConfirmationId ?: return
-        viewModelScope.launch {
-            when (
-                runtime.resolveConfirmation(
-                    ConfirmationResult(confirmationId, ConfirmationDecision.CANCELLED)
-                )
-            ) {
-                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
-                    _uiState.update {
-                        it.copy(
-                            error = null,
-                            canRetry = false,
-                            activeConfirmationId = null,
-                        )
-                    }
-                }
-                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
-                    activeAssistantMessageId = null
-                    _uiState.update {
-                        it.copy(
-                            status = AssistantUiStatus.ERROR,
-                            error = AssistantUiError.CONFIRMATION_DEFERRED,
-                            canRetry = false,
-                            activeConfirmationId = null,
-                        )
-                    }
-                }
-            }
-        }
+        cancelOpenConfirmationSegments()
     }
 
     private fun startTurn(message: String, isRetry: Boolean) {
@@ -252,6 +228,38 @@ class AssistantViewModel @AssistedInject constructor(
             }
         }
         history = lastTurnBaseHistory + cancelledTurnHistory
+    }
+
+    private fun cancelOpenConfirmationSegments() {
+        val confirmationId = _uiState.value.activeConfirmationId ?: return
+        viewModelScope.launch {
+            when (
+                runtime.resolveConfirmation(
+                    ConfirmationResult(confirmationId, ConfirmationDecision.CANCELLED)
+                )
+            ) {
+                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
+                    _uiState.update {
+                        it.copy(
+                            error = null,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
+                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
+                    activeAssistantMessageId = null
+                    _uiState.update {
+                        it.copy(
+                            status = AssistantUiStatus.ERROR,
+                            error = AssistantUiError.CONFIRMATION_DEFERRED,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun appendAssistantText(delta: String) {

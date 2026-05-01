@@ -816,6 +816,48 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.isTurnActive).isTrue()
     }
 
+    @Test
+    fun `given pending confirmation, when conversation cancel is requested, then confirmation is cancelled and transcript stays active until finish`() =
+        runTest {
+            viewModel.onSendMessage("Cancel order 123")
+            runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+            advanceUntilIdle()
+
+            viewModel.onCancelTurn()
+            advanceUntilIdle()
+
+            assertThat(runtime.results).containsExactly(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            )
+            assertThat(runtime.cancelledConversationIds).isEmpty()
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
+            assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
+            assertThat(viewModel.uiState.value.error).isNull()
+
+            runtime.emit(
+                AssistantRuntimeEvent.ConfirmationResolved(
+                    ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+                )
+            )
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.STOPPED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Cancel order 123"),
+                    ),
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+            assertThat(viewModel.uiState.value.error).isNull()
+            assertThat(viewModel.uiState.value.messages.last().segments).contains(
+                AssistantUiSegment.ConfirmationCard(
+                    givenConfirmationCard().copy(state = AssistantConfirmationCardState.CANCELLED)
+                )
+            )
+        }
+
     private fun givenConfirmationCard() = AssistantConfirmationCard(
         confirmationId = "confirmation-1",
         toolCall = ToolCall(
