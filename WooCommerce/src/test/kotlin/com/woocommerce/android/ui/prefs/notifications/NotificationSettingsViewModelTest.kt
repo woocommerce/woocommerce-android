@@ -80,11 +80,11 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when manage notifications is clicked, then open device settings`() = testBlocking {
+    fun `when device notification settings action is clicked, then open device settings`() = testBlocking {
         setup()
 
         val event = viewModel.event.runAndCaptureValues {
-            viewModel.onManageNotificationsClicked()
+            viewModel.onDeviceNotificationSettingsClicked()
         }.last()
 
         assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenDeviceNotificationSettings::class.java)

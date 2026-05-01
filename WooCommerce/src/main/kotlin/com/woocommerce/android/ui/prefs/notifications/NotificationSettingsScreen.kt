@@ -52,7 +52,7 @@ fun NotificationSettingsScreen(
         viewModel.newOrderNotificationSoundStatus.observeAsState().value?.let {
             NotificationSettingsScreen(
                 orderNotificationSoundStatus = it,
-                onManageNotificationsClicked = viewModel::onManageNotificationsClicked,
+                onDeviceNotificationSettingsClicked = viewModel::onDeviceNotificationSettingsClicked,
                 onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
             )
         }
@@ -87,7 +87,7 @@ private fun SmarterNotificationSettingsScreen(
 @Composable
 private fun NotificationSettingsScreen(
     orderNotificationSoundStatus: NewOrderNotificationSoundStatus,
-    onManageNotificationsClicked: () -> Unit,
+    onDeviceNotificationSettingsClicked: () -> Unit,
     onEnableChaChingSoundClicked: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -100,7 +100,7 @@ private fun NotificationSettingsScreen(
             NotificationSettingsItem(
                 title = stringResource(id = R.string.settings_notifs_device),
                 subtitle = stringResource(id = R.string.settings_notifs_device_detail),
-                onClick = onManageNotificationsClicked,
+                onClick = onDeviceNotificationSettingsClicked,
                 modifier = Modifier.fillMaxWidth()
             )
             AnimatedVisibility(visible = orderNotificationSoundStatus.requiresAttention) {
@@ -233,7 +233,7 @@ private fun NotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NotificationSettingsScreen(
             orderNotificationSoundStatus = NewOrderNotificationSoundStatus.DISABLED,
-            onManageNotificationsClicked = {},
+            onDeviceNotificationSettingsClicked = {},
             onEnableChaChingSoundClicked = {}
         )
     }

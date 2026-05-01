@@ -71,7 +71,7 @@ class NotificationSettingsViewModel @Inject constructor(
         }
     }
 
-    fun onManageNotificationsClicked() {
+    fun onDeviceNotificationSettingsClicked() {
         triggerEvent(OpenDeviceNotificationSettings)
     }
 
