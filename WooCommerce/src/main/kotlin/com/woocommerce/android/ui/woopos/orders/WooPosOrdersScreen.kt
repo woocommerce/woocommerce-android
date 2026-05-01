@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -66,9 +67,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
+import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
@@ -86,8 +89,7 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    navigatedFromEmailReceiptSent: Boolean,
-    issueRefundDismissed: Boolean,
+    backStackEntry: NavBackStackEntry,
 ) {
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
@@ -96,15 +98,25 @@ fun WooPosOrdersScreen(
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
 
-    LaunchedEffect(navigatedFromEmailReceiptSent) {
-        if (navigatedFromEmailReceiptSent) {
+    val emailReceiptSent = backStackEntry.savedStateHandle
+        .getStateFlow(EMAIL_RECEIPT_SENT, false)
+        .collectAsState()
+
+    LaunchedEffect(emailReceiptSent.value) {
+        if (emailReceiptSent.value) {
             detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
+            backStackEntry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
         }
     }
 
-    LaunchedEffect(issueRefundDismissed) {
-        if (issueRefundDismissed) {
+    val issueRefundDismissed = backStackEntry.savedStateHandle
+        .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(issueRefundDismissed.value) {
+        if (issueRefundDismissed.value) {
             detailViewModel.onBackFromIssueRefund()
+            backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
         }
     }
 
