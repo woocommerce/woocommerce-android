@@ -46,6 +46,25 @@ internal data class ResolvedRef(
 )
 
 @Serializable
+internal data class OrderSummary(
+    val id: String,
+    val number: String? = null,
+    val status: String? = null,
+    val total: String? = null,
+    val currency: String? = null,
+    @SerialName("date_created") val dateCreated: String? = null,
+)
+
+@Serializable
+internal data class ProductSummary(
+    val id: String,
+    val name: String? = null,
+    val sku: String? = null,
+    val price: String? = null,
+    @SerialName("stock_status") val stockStatus: String? = null,
+)
+
+@Serializable
 internal data class MissingRef(
     val family: String,
     val id: String,

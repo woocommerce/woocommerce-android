@@ -2,6 +2,8 @@ package com.woocommerce.android.aiassistant.tools.handlers
 
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolution
@@ -9,11 +11,11 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolve
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -57,6 +59,27 @@ class ShowCardsToolHandlerTest {
         assertThat(structured["rendered"]?.jsonPrimitive?.int).isEqualTo(1)
     }
 
+    @Test
+    fun `resolved order summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly("id", "number", "status", "total", "currency", "date_created")
+    }
+
+    @Test
+    fun `resolved product summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(productCard(id = "456")),
+            referencesJson = """[{ "family": "product", "id": "456" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
+    }
+
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
 
@@ -71,23 +94,66 @@ class ShowCardsToolHandlerTest {
         )
     )
 
+    private suspend fun callShowCards(
+        resolver: FakeResolver,
+        referencesJson: String = """[{ "family": "order", "id": "123" }]""",
+    ): ToolResult = executeShowCards(
+        handler = handlerWith(resolver),
+        argumentsJson = """{ "references": $referencesJson }""",
+    )
+
     private fun assertSuccess(result: ToolResult): ToolResult.Success {
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         return result as ToolResult.Success
     }
+
+    private fun firstResolvedSummary(result: ToolResult) =
+        assertSuccess(result).structured.jsonObject
+            .getValue("resolved_refs").jsonArray
+            .first().jsonObject
+            .getValue("summary").jsonObject
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)
 
         return ShowCardsResolution.Resolved(
             ref = ref,
-            summary = buildJsonObject {
-                put("id", id)
-            },
+            summary = json.encodeToJsonElement(
+                OrderSummary(
+                    id = id,
+                    number = "#$id",
+                    status = "processing",
+                    total = "12.34",
+                    currency = "USD",
+                    dateCreated = "2026-05-01T10:00:00Z",
+                )
+            ).jsonObject,
             card = ShowCardPayload(
                 family = "order",
                 id = id,
                 title = "#$id",
+            )
+        )
+    }
+
+    private fun productCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Product, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = json.encodeToJsonElement(
+                ProductSummary(
+                    id = id,
+                    name = "Socks",
+                    sku = "woo-socks",
+                    price = "9.99",
+                    stockStatus = "instock",
+                )
+            ).jsonObject,
+            card = ShowCardPayload(
+                family = "product",
+                id = id,
+                title = "Socks",
             )
         )
     }
