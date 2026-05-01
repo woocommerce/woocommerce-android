@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.tools.handlers
 
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
@@ -40,6 +41,11 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("id")
         assertThat(descriptor.inputSchema.toString()).contains("order")
         assertThat(descriptor.inputSchema.toString()).contains("product")
+    }
+
+    @Test
+    fun `show_cards is classified safe`() {
+        assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.SAFE)
     }
 
     @Test
