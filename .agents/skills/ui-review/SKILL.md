@@ -297,7 +297,11 @@ Before finishing:
 
 1. Delete temporary preview source files
 2. Copy the screenshots needed by the report into `WooCommerce/build/reports/ui-review/assets`
-3. Delete `WooCommerce/src/screenshotTestVanillaDebug`
+3. Delete only generated reference screenshots for `UiReviewTemp` under the screenshot reference
+   source set for the variant that was run, for example `WooCommerce/src/screenshotTest<Variant>/**`;
+   do not delete the source-set directory or any non-`UiReviewTemp` files
 4. Delete `WooCommerce/build/outputs/screenshotTest-results`
 5. Delete `WooCommerce/build/reports/screenshotTest`
-6. Delete tool-generated screenshot test reports under `WooCommerce/build/reports/tests` for this run
+6. Delete only the report and test-result directories for the screenshot task that was run, for example
+   `WooCommerce/build/reports/tests/<screenshotTaskName>` and
+   `WooCommerce/build/test-results/<screenshotTaskName>` if they were created by this run
