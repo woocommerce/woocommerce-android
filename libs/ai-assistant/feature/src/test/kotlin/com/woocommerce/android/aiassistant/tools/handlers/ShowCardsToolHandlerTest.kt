@@ -148,6 +148,24 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
+    fun `given non string present ids, when executed, then ids are invalid`() = runTest {
+        val result = executeShowCards(
+            handler = handler,
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "order", "id": 123 },
+                { "family": "product", "id": true },
+                { "family": "order", "id": null }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
     fun `given duplicate refs, when executed, then duplicates after first family id pair are rejected`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(orderCard(id = "123"), productCard(id = "123")),
@@ -180,6 +198,30 @@ class ShowCardsToolHandlerTest {
         assertThat(rendered(result)).isEqualTo(10)
         assertThat(rejectedReasons(result).last()).isEqualTo("over_limit")
         assertThat(resolvedIds(result)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+    }
+
+    @Test
+    fun `given resolver throws, when executed, then valid refs are missing with fetch failed`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(ThrowingResolver),
+            argumentsJson = """{"references":[{"family":"order","id":"123"}]}"""
+        )
+
+        assertThat(missingReasons(result)).containsExactly("fetch_failed")
+        assertThat(rendered(result)).isEqualTo(0)
+        assertThat(uiCards(result)).isEmpty()
+    }
+
+    @Test
+    fun `given default resolver, when executed, then valid refs are missing with not found and no cards`() = runTest {
+        val result = executeShowCards(
+            handler = ShowCardsToolHandler(),
+            argumentsJson = """{"references":[{"family":"order","id":"123"}]}"""
+        )
+
+        assertThat(missingReasons(result)).containsExactly("not_found")
+        assertThat(rendered(result)).isEqualTo(0)
+        assertThat(uiCards(result)).isEmpty()
     }
 
     private fun handlerWith(resolver: ShowCardsResolver) =
@@ -220,6 +262,11 @@ class ShowCardsToolHandlerTest {
             .getValue("rejected_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("reason").jsonPrimitive.content }
 
+    private fun missingReasons(result: ToolResult): List<String> =
+        assertSuccess(result).structured.jsonObject
+            .getValue("missing_refs").jsonArray
+            .map { ref -> ref.jsonObject.getValue("reason").jsonPrimitive.content }
+
     private fun validated(result: ToolResult): Int =
         assertSuccess(result).structured.jsonObject.getValue("validated").jsonPrimitive.int
 
@@ -235,6 +282,9 @@ class ShowCardsToolHandlerTest {
         assertSuccess(result).structured.jsonObject
             .getValue("resolved_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("id").jsonPrimitive.content }
+
+    private fun uiCards(result: ToolResult) =
+        assertSuccess(result).uiStructured!!.jsonObject.getValue("cards").jsonArray
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)
@@ -327,5 +377,10 @@ class ShowCardsToolHandlerTest {
             fun resolving(vararg resolutions: ShowCardsResolution): FakeResolver =
                 FakeResolver(resolutions.toList())
         }
+    }
+
+    private object ThrowingResolver : ShowCardsResolver {
+        override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> =
+            error("Resolver failed")
     }
 }

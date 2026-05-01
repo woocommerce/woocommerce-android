@@ -16,6 +16,8 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -85,15 +87,7 @@ class ShowCardsToolHandler internal constructor(
 
         val validation = referenceValidator.validate(arguments.references)
         val validRefs = validation.validRefs
-        val resolutions = runCatching { resolver.resolve(validRefs) }
-            .getOrElse {
-                validRefs.map { ref ->
-                    ShowCardsResolution.Missing(
-                        ref = ref,
-                        reason = ShowCardsRejectionReason.FetchFailed,
-                    )
-                }
-            }
+        val resolutions = resolveRefs(validRefs)
         val resolvedCards = resolutions.filterIsInstance<ShowCardsResolution.Resolved>()
         val structured = ShowCardsStructured(
             requested = validation.requested,
@@ -112,6 +106,21 @@ class ShowCardsToolHandler internal constructor(
             ),
         )
     }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    private suspend fun resolveRefs(validRefs: List<ValidatedRef>) =
+        try {
+            resolver.resolve(validRefs)
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            validRefs.map { ref ->
+                ShowCardsResolution.Missing(
+                    ref = ref,
+                    reason = ShowCardsRejectionReason.FetchFailed,
+                )
+            }
+        }
 
     private fun ShowCardsResolution.Resolved.toResolvedRef(): ResolvedRef =
         ResolvedRef(
