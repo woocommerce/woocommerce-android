@@ -198,5 +198,7 @@ class AgenticLoopAssistantRuntimeTest {
             results += result
             return resolveResult
         }
+
+        override fun cancelPending(requestId: String): Boolean = false
     }
 }

@@ -214,12 +214,17 @@ class AgenticLoopImpl(
         call: ToolCall,
         decision: SafetyDecision.RequireConfirmation,
     ): ToolResult? {
-        emit(LoopEvent.ConfirmationRequested(decision.request))
-        val confirmationResult = safetyOrchestrator.awaitResult(decision.request.id)
-        emit(LoopEvent.ConfirmationResolved(confirmationResult))
-        return when (confirmationResult.decision) {
-            ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
-            ConfirmationDecision.CANCELLED -> null
+        val requestId = decision.request.id
+        return try {
+            emit(LoopEvent.ConfirmationRequested(decision.request))
+            val confirmationResult = safetyOrchestrator.awaitResult(requestId)
+            emit(LoopEvent.ConfirmationResolved(confirmationResult))
+            when (confirmationResult.decision) {
+                ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
+                ConfirmationDecision.CANCELLED -> null
+            }
+        } finally {
+            safetyOrchestrator.cancelPending(requestId)
         }
     }
 

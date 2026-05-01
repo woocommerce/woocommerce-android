@@ -13,6 +13,8 @@ interface SafetyOrchestrator {
 
     fun resolve(result: ConfirmationResult): Boolean
 
+    fun cancelPending(requestId: String): Boolean
+
     fun confirm(requestId: String): Boolean =
         resolve(ConfirmationResult(requestId, ConfirmationDecision.CONFIRMED))
 

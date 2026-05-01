@@ -101,6 +101,24 @@ class SafetyOrchestratorImplTest {
     }
 
     @Test
+    fun `given pending request without awaiter, when pending is cancelled, then request is removed`() = runTest {
+        val orchestrator = orchestrator()
+        val decision = orchestrator.evaluate(
+            toolCall(name = "orders_update"),
+            descriptor("orders_update", ToolSafetyLevel.UNSAFE),
+        ) as SafetyDecision.RequireConfirmation
+
+        val cancelled = orchestrator.cancelPending(decision.request.id)
+        val result = orchestrator.awaitResult(decision.request.id)
+
+        assertThat(cancelled).isTrue
+        assertThat(result).isEqualTo(
+            ConfirmationResult(decision.request.id, ConfirmationDecision.CANCELLED),
+        )
+        assertThat(orchestrator.confirm(decision.request.id)).isFalse
+    }
+
+    @Test
     fun `given unknown request id, when resolved, then no pending request resumes`() = runTest {
         val orchestrator = orchestrator()
 
