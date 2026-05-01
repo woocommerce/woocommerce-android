@@ -1,0 +1,2 @@
+24.6:
+Verkopen met Woo POS gaat soepeler dan ooit! Bekijk de voortgang van de synchronisatie tijdens de eerste configuratie van de catalogus, bewerk de betalingsbewijsgegevens rechtstreeks vanuit de POS-instellingen en geniet van een betere verwerking van vernieuwingen. Deze release lost ook een crash bij opstarten op, lost problemen met POS-synchronisatie op voor winkels met productvariaties en verbetert de validatie van verzendlabels.
