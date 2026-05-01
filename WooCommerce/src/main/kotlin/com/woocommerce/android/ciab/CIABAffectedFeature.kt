@@ -13,5 +13,8 @@ enum class CIABAffectedFeature {
     ProductsStockDashboardCard,
     Onboarding,
     OrderStatusEditing,
-    POS
+    Plugins,
+    POS,
+    BookableServiceCreation,
+    Inbox
 }

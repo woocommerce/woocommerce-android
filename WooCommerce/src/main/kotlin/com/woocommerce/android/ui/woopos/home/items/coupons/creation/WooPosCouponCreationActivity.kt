@@ -2,23 +2,19 @@ package com.woocommerce.android.ui.woopos.home.items.coupons.creation
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
-import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
+import com.woocommerce.android.ui.woopos.util.ext.setupWooPosTopAndBottomInsets
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,8 +22,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos_coupon_creation) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupTopAndBottomInsets()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        applyFixForStatusBarColor()
+        setupWooPosTopAndBottomInsets(R.id.snack_root)
+        lockWooPosOrientation()
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_coupon_creation_nav_host_fragment
@@ -35,30 +32,6 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
         setupNavGraph(navHostFragment)
         observeResult(navHostFragment)
-    }
-
-    private fun setupTopAndBottomInsets() {
-        applyFixForStatusBarColor()
-        val rootView = findViewById<View>(R.id.snack_root)
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            insets.toWindowInsets()?.let { windowInsets ->
-                val insetsCompat = WindowInsetsCompat.toWindowInsetsCompat(windowInsets, view)
-                val isGestureNavigation = insetsCompat.isGestureNavigation(this)
-
-                val topPadding = insetsCompat.getInsets(WindowInsetsCompat.Type.statusBars()).top
-                val bottomPadding = if (isGestureNavigation) {
-                    0
-                } else {
-                    insetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-                }
-                view.updatePadding(
-                    top = topPadding,
-                    bottom = bottomPadding
-                )
-            }
-
-            insets
-        }
     }
 
     private fun applyFixForStatusBarColor() {

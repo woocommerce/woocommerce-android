@@ -144,13 +144,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             } doReturn MutableLiveData(HashMap())
         }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.getEmptyOrder(Date(), Date())))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.getEmptyOrder(Date(), Date())))
         }
         createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn defaultOrderItem
-            onBlocking { invoke(456, null) } doReturn createOrderItem(456)
-            onBlocking { invoke(789, null) } doReturn createOrderItem(789)
-            onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
+            on { invoke(123, null) } doReturn defaultOrderItem
+            on { invoke(456, null) } doReturn createOrderItem(456)
+            on { invoke(789, null) } doReturn createOrderItem(789)
+            on { invoke(1, 2) } doReturn createOrderItem(1, 2)
             ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
         parameterRepository = mock {
@@ -165,7 +165,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
         }
         orderCreateEditRepository = mock {
-            onBlocking {
+            on {
                 createOrUpdateOrder(defaultOrderValue, source = OrderCreationSource.STORE_MANAGEMENT)
             } doReturn Result.success(defaultOrderValue)
         }
@@ -174,7 +174,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         @Suppress("UNCHECKED_CAST")
         orderCreationProductMapper = mock {
-            onBlocking { toOrderProducts(any(), any()) } doAnswer { invocationOnMock ->
+            on { toOrderProducts(any(), any()) } doAnswer { invocationOnMock ->
                 val args = invocationOnMock.arguments
                 (args.first() as? List<Order.Item>)?.let { list ->
                     if (list.isEmpty()) {
@@ -197,7 +197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         selectedSite = mock()
         taxRateToAddress = mock()
         getAutoTaxRateSetting = mock {
-            onBlocking { invoke() } doReturn null
+            on { invoke() } doReturn null
         }
         getTaxRatePercentageValueText = mock()
         getTaxRateLabel = mock()
@@ -205,7 +205,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         mapFeeLineToCustomAmountUiModel = mock()
         totalsHelper = mock()
         getShippingMethodsWithOtherValue = mock {
-            onBlocking { invoke() } doReturn flowOf(
+            on { invoke() } doReturn flowOf(
                 listOf(
                     ShippingMethod(
                         id = "other",
@@ -215,7 +215,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
         feedbackRepository = mock {
-            onBlocking {
+            on {
                 getFeatureFeedbackSetting(eq(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES))
             } doReturn FeatureFeedbackSettings(
                 feature = FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
@@ -517,7 +517,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         val throwable = WooException(error = wooError)
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable))
+            on { invoke(any(), any()) } doReturn flowOf(Failed(throwable))
         }
 
         createSut()

@@ -40,6 +40,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.automattic.eventhorizon.MainTabBookingsReselectEvent
+import com.automattic.eventhorizon.MainTabBookingsSelectEvent
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -50,6 +52,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
@@ -200,6 +203,9 @@ class MainActivity :
     @Inject
     lateinit var bookingsTabController: BookingsTabController
 
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
@@ -314,7 +320,9 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        super.onCreate(savedInstanceState)
+        // Drop stale main-flow state when no site is selected so login can take over cleanly.
+        val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
+        super.onCreate(bundle)
         setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
@@ -760,10 +768,17 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECT
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
+            BOOKINGS -> {
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsSelectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
+                null
+            }
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        stat?.let { AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString)) }
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -786,7 +801,14 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
-            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECT
+            BOOKINGS -> {
+                analyticsTrackerWrapper.track(
+                    MainTabBookingsReselectEvent(
+                        horizontalSizeClass = deviceTypeToAnalyticsString
+                    )
+                )
+                null
+            }
         }
         stat?.let {
             AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -1012,7 +1034,6 @@ class MainActivity :
         intent.data = null
         showOrderDetail(
             orderId = event.uniqueId,
-            remoteNoteId = event.remoteNoteId,
             launchedFromNotification = true
         )
     }
@@ -1226,7 +1247,6 @@ class MainActivity :
     override fun showOrderDetail(
         orderId: Long,
         navHostFragment: NavHostFragment?,
-        remoteNoteId: Long,
         launchedFromNotification: Boolean,
         startPaymentsFlow: Boolean,
     ) {
@@ -1238,15 +1258,13 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            arrayOf(orderId).toLongArray(),
-            remoteNoteId
+            longArrayOf(orderId)
         )
         navHostFragment?.navController?.let { navController ->
             val bundle = OrderDetailFragmentArgs(
-                orderId,
-                longArrayOf(orderId),
-                remoteNoteId,
-                startPaymentsFlow
+                orderId = orderId,
+                allOrderIds = longArrayOf(orderId),
+                startPaymentFlow = startPaymentsFlow
             ).toBundle()
             navController.navigate(
                 R.id.orderDetailFragment,
@@ -1262,7 +1280,6 @@ class MainActivity :
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
         allOrderIds: List<Long>,
-        remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
@@ -1270,8 +1287,7 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            allOrderIds.toLongArray(),
-            remoteNoteId
+            allOrderIds.toLongArray()
         )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(

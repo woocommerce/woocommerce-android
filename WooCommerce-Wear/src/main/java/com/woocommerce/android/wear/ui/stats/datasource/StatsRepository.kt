@@ -64,7 +64,8 @@ class StatsRepository @Inject constructor(
                 granularity = StatsGranularity.DAYS,
                 startDate = todayRange.start.formatToYYYYmmDDhhmmss(),
                 endDate = todayRange.end.formatToYYYYmmDDhhmmss(),
-                revenueRangeId = StatsTimeRange(todayRange.start, todayRange.end).toRevenueRangeId("Wear")
+                revenueRangeId = StatsTimeRange(todayRange.start, todayRange.end).toRevenueRangeId("Wear"),
+                orderDateType = null
             )
         )
 

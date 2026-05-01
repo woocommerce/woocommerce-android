@@ -19,6 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderUpdateDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -59,7 +61,8 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
         onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
         onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-        onDismissDialog = containerViewModel::hideDialog
+        onDismissDialog = containerViewModel::hideDialog,
+        onNavigationEvent = onNavigationEvent
     )
 }
 
@@ -73,7 +76,8 @@ private fun WooPosSettingsContent(
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
-    onDismissDialog: () -> Unit
+    onDismissDialog: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxSize()
@@ -101,6 +105,7 @@ private fun WooPosSettingsContent(
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
+            onNavigationEvent = onNavigationEvent,
             modifier = Modifier
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surface)
@@ -124,6 +129,20 @@ private fun WooPosSettingsContent(
         onRetry = onRetrySync,
         onDismissRequest = onDismissDialog
     )
+
+    if (dialogState is WooPosSettingsDialogState.CardReaderConnectionDialog) {
+        WooPosCardReaderConnectionDialog(
+            onDismiss = onDismissDialog,
+            onConnectionSuccess = onDismissDialog
+        )
+    }
+
+    if (dialogState is WooPosSettingsDialogState.CardReaderUpdateDialog) {
+        WooPosCardReaderUpdateDialog(
+            onDismiss = onDismissDialog,
+            onUpdateComplete = onDismissDialog
+        )
+    }
 }
 
 @WooPosPreview

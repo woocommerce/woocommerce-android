@@ -1,15 +1,21 @@
 package com.woocommerce.android.ui.woopos
 
 import android.content.Context
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.WooPosScreenSizeUtils
 import com.woocommerce.android.ui.woopos.util.ext.getScreenHeightDp
 import com.woocommerce.android.ui.woopos.util.ext.getScreenWidthDp
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
 class WooPosIsScreenSizeAllowed @Inject constructor(
     private val context: Context,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLog: WooPosLogWrapper,
 ) {
     operator fun invoke(): Boolean {
@@ -19,20 +25,21 @@ class WooPosIsScreenSizeAllowed @Inject constructor(
         val shortSize = min(screenWidthDp, screenHeightDp)
         val longSize = max(screenWidthDp, screenHeightDp)
 
-        val isAllowed = shortSize >= MIN_SCREEN_SHORT_SIZE_DP && longSize >= MIN_SCREEN_LONG_SIZE_DP
-        return isAllowed.also {
-            if (!isAllowed) {
-                wooPosLog.i(
-                    "POS Not allowed reason: Screen size is not allowed. " +
-                        "Short size: $shortSize, Long size: $longSize, " +
-                        "Minimum short size: $MIN_SCREEN_SHORT_SIZE_DP, Minimum long size: $MIN_SCREEN_LONG_SIZE_DP"
-                )
-            }
-        }
+        if (WooPosScreenSizeUtils.isTabletSize(shortSize.dp, longSize.dp)) return true
+
+        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_PHONE)) return true
+
+        wooPosLog.i(
+            "POS Not allowed reason: Screen size is not allowed. " +
+                "Short size: $shortSize, Long size: $longSize, " +
+                "Minimum short size: ${WooPosScreenSizeUtils.MIN_TABLET_SHORT_SIZE_DP}, " +
+                "Minimum long size: ${WooPosScreenSizeUtils.MIN_TABLET_LONG_SIZE_DP}"
+        )
+        return false
     }
 
-    private companion object {
-        const val MIN_SCREEN_SHORT_SIZE_DP = 674
-        const val MIN_SCREEN_LONG_SIZE_DP = 800
+    companion object {
+        fun isTabletSize(shortSize: Dp, longSize: Dp): Boolean =
+            WooPosScreenSizeUtils.isTabletSize(shortSize, longSize)
     }
 }

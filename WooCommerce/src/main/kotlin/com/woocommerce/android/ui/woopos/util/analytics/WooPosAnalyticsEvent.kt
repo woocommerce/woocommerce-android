@@ -646,6 +646,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "get_support_tapped"
         }
 
+        data object EditReceiptTapped : Event() {
+            override val name: String = "edit_receipt_tapped"
+        }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
@@ -1215,6 +1219,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object CardReaderLocationMissingTapped : PaymentFlowTrackerEvent() {
             override val name: String = "card_reader_location_missing_tapped"
+        }
+
+        data object CardReaderLocationPermissionPreAlertShown : PaymentFlowTrackerEvent() {
+            override val name: String = "card_reader_location_permission_pre_alert_shown"
+        }
+
+        data object CardReaderLocationPermissionRequiredShown : PaymentFlowTrackerEvent() {
+            override val name: String = "card_reader_location_permission_required_shown"
         }
 
         data object CardReaderLocationSuccess : PaymentFlowTrackerEvent() {

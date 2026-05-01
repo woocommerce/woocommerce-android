@@ -153,7 +153,6 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.CouponsRemoved,
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.OrderCreated,
-                    ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.RemoveCouponsClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
@@ -162,8 +161,10 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
-                    is ParentToChildrenEvent.ProductsRemoved,
-                    is ParentToChildrenEvent.SettingsEvent -> Unit
+                    is ParentToChildrenEvent.ProductsRemoved -> Unit
+
+                    ParentToChildrenEvent.RefreshProductList,
+                    is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> refreshBannerState()
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
 

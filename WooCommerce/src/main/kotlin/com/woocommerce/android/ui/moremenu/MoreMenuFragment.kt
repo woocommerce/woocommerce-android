@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptions
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAiAssistantEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewBookingsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
@@ -112,6 +113,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewCouponsEvent -> navigateToCoupons()
                 is ViewCustomersEvent -> navigateToCustomers()
                 is ViewPayments -> navigateToPayments()
+                is ViewAiAssistantEvent -> navigateToAiAssistant()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
                 is MultiLiveEvent.Event.LaunchUrlInChromeTab ->
@@ -144,6 +146,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToPayments() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub())
+        )
+    }
+
+    private fun navigateToAiAssistant() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToAiAssistantHostFragment()
         )
     }
 

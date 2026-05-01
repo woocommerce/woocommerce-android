@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.developer
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.util.FeatureFlag
@@ -15,8 +16,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DevFeatureFlagsViewModel @Inject constructor(
-    private val featureFlagRepository: FeatureFlagRepository
+    private val featureFlagRepository: FeatureFlagRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val skipRemoteLoad: Boolean = savedStateHandle[SKIP_REMOTE_LOAD_KEY] ?: false
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -25,9 +29,15 @@ class DevFeatureFlagsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            featureFlagRepository.awaitRemoteFlagsLoaded()
+            if (!skipRemoteLoad) {
+                featureFlagRepository.awaitRemoteFlagsLoaded()
+            }
             loadFlagStates()
         }
+    }
+
+    companion object {
+        const val SKIP_REMOTE_LOAD_KEY = "skip_remote_load"
     }
 
     private fun loadFlagStates() {

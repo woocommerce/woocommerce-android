@@ -130,6 +130,7 @@ class ProductReviewsFragment :
             }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
+            new.isUnreadFilterVisible.takeIfNotEqualTo(old?.isUnreadFilterVisible) { showUnreadFilter(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -173,16 +174,22 @@ class ProductReviewsFragment :
     private fun showEmptyView(show: Boolean) {
         if (show) {
             if (binding.unreadFilterSwitch.isChecked) {
-                binding.unreadReviewsFilterLayout.show()
                 binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
             } else {
                 binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
                     ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
                 }
-                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
             binding.emptyView.hide()
+        }
+    }
+
+    private fun showUnreadFilter(show: Boolean) {
+        if (show) {
+            binding.unreadReviewsFilterLayout.show()
+        } else {
+            binding.unreadReviewsFilterLayout.hide()
         }
     }
 

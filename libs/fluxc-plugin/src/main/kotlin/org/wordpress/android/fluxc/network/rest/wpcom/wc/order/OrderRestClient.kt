@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -35,6 +36,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingRe
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderFulfillmentsResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsResponsePayload
@@ -127,6 +129,10 @@ class OrderRestClient @Inject constructor(
         createdVia: String? = null,
         searchQuery: String? = null,
         decimalPoints: Int? = null,
+        customer: Long? = null,
+        include: List<Long>? = null,
+        after: String? = null,
+        before: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -140,6 +146,10 @@ class OrderRestClient @Inject constructor(
             "created_via" to createdVia,
             "search" to searchQuery,
             "dp" to decimalPoints?.toString(),
+            "customer" to customer?.toString(),
+            "include" to include?.joinToString(","),
+            "after" to after,
+            "before" to before,
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -677,6 +687,33 @@ class OrderRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchOrderFulfillments(
+        site: SiteModel,
+        orderId: Long
+    ): FetchOrderFulfillmentsResponsePayload {
+        val url = WOOCOMMERCE.orders.id(orderId).fulfillments.pathV3
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<OrderFulfillmentApiResponse>::class.java
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                val fulfillments = response.data?.map {
+                    orderFulfillmentResponseToModel(it, site.localId(), orderId)
+                }.orEmpty()
+                FetchOrderFulfillmentsResponsePayload(site, orderId, fulfillments)
+            }
+
+            is WPAPIResponse.Error -> {
+                val orderError = wpAPINetworkErrorToOrderError(response.error)
+                FetchOrderFulfillmentsResponsePayload(orderError, site, orderId)
+            }
+        }
+    }
+
     /**
      * Posts a new Order Shipment Tracking record to the API for an order.
      *
@@ -1043,9 +1080,20 @@ class OrderRestClient @Inject constructor(
         site: SiteModel,
         orderIds: List<Long>,
         newStatus: String
+    ): BulkUpdateOrderStatusResponsePayload =
+        batchUpdateOrders(
+            site = site,
+            updateRequests = orderIds.associateWith {
+                UpdateOrderRequest(status = WCOrderStatusModel(statusKey = newStatus), decimalPlaces = null)
+            }
+        )
+
+    suspend fun batchUpdateOrders(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateOrderRequest>
     ): BulkUpdateOrderStatusResponsePayload {
         // Check batch update limit
-        if (orderIds.size > BATCH_UPDATE_LIMIT) {
+        if (updateRequests.size > BATCH_UPDATE_LIMIT) {
             return BulkUpdateOrderStatusResponsePayload(
                 error = OrderError(
                     type = OrderErrorType.BULK_UPDATE_LIMIT_EXCEEDED,
@@ -1055,18 +1103,15 @@ class OrderRestClient @Inject constructor(
         }
 
         val url = WOOCOMMERCE.orders.batch.pathV3
-        val updateRequests = orderIds.map { orderId ->
-            mapOf(
-                "id" to orderId,
-                "status" to newStatus
-            )
+        val updates = updateRequests.map { (orderId, request) ->
+            request.toNetworkRequest() + ("id" to orderId)
         }
 
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
             clazz = BatchOrderApiResponse::class.java,
-            body = mapOf("update" to updateRequests)
+            body = mapOf("update" to updates)
         )
 
         return when (response) {
@@ -1093,6 +1138,7 @@ class OrderRestClient @Inject constructor(
             lineItems?.let { put("line_items", it) }
             shippingAddress?.toDto()?.let { put("shipping", it) }
             billingAddress?.toDto()?.let { put("billing", it) }
+            billingEmail?.let { put("billing", mapOf("email" to it)) }
             feeLines?.let { put("fee_lines", it) }
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }
@@ -1144,6 +1190,31 @@ class OrderRestClient @Inject constructor(
             trackingProvider = response.tracking_provider ?: "",
             trackingLink = response.tracking_link ?: "",
             dateShipped = response.date_shipped ?: ""
+        )
+    }
+
+    private fun orderFulfillmentResponseToModel(
+        response: OrderFulfillmentApiResponse,
+        siteId: LocalId,
+        orderId: Long
+    ): WCOrderFulfillmentModel {
+        val metaData = response.metaData
+            ?.takeIf { element -> element.isJsonArray }
+            ?.asJsonArray
+            ?.mapNotNull { metaElement -> WCMetaData.fromJson(metaElement) }
+            .orEmpty()
+
+        return WCOrderFulfillmentModel(
+            localSiteId = siteId,
+            orderId = RemoteId(orderId),
+            fulfillmentId = response.id ?: 0L,
+            status = response.status,
+            isFulfilled = response.isFulfilled ?: false,
+            dateUpdated = response.dateUpdated,
+            dateFulfilled = metaData.firstOrNull { it.key == DATE_FULFILLED_META_KEY }?.valueAsString,
+            trackingNumber = metaData.firstOrNull { it.key == TRACKING_NUMBER_META_KEY }?.valueAsString,
+            shipmentProvider = metaData.firstOrNull { it.key == SHIPMENT_PROVIDER_META_KEY }?.valueAsString,
+            trackingUrl = metaData.firstOrNull { it.key == TRACKING_URL_META_KEY }?.valueAsString
         )
     }
 
@@ -1217,6 +1288,11 @@ class OrderRestClient @Inject constructor(
             "tracking_provider"
         ).joinToString(separator = ",")
 
+        private const val DATE_FULFILLED_META_KEY = "_date_fulfilled"
+        private const val TRACKING_NUMBER_META_KEY = "_tracking_number"
+        private const val SHIPMENT_PROVIDER_META_KEY = "_shipment_provider"
+        private const val TRACKING_URL_META_KEY = "_tracking_url"
+
         private const val BATCH_UPDATE_LIMIT = 100
     }
 
@@ -1229,6 +1305,7 @@ class OrderRestClient @Inject constructor(
         DATE("date"),
         ID("id"),
         INCLUDE("include"),
+        MODIFIED("modified"),
         TITLE("title"),
         SLUG("slug")
     }

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 14:56:21+0000
+Translation-Revision-Date: 2026-04-07 11:57:43+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">了解更多</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">现场收款每笔交易仅需 2.70% + 0.10 美元手续费。 &lt;b&gt;升级至专业版&lt;/b&gt;，即可在手机上使用轻触支付功能，并使用我们完整的销售点系统，实现实时库存与订单同步。</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">现场收款每笔交易仅需 2.70% + 0.10 美元手续费。 升级至专业版，即可在手机上使用轻触支付功能，并使用我们完整的销售点系统，实现实时库存与订单同步。</string>
+    <string name="woopos_eligibility_ciab_title">需订阅专业版套餐</string>
+    <string name="ciab_order_status_open">打开</string>
+    <string name="booking_payment_status_authorization_voided">授权已失效</string>
+    <string name="booking_payment_status_authorized">已授权</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">无法购买配送标签。 请填写始发地址。</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">始发地址缺失或无效</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">授权已失效</string>
+    <string name="woopos_bookings_payment_status_authorized">已授权</string>
+    <string name="woopos_orders_details_refund_details_background">退款详情对话框背景</string>
+    <string name="woopos_orders_details_refund_total">退款总计</string>
+    <string name="woopos_orders_details_refund_tax">税费</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">商品小计（%d 件商品）</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">商品小计（%d 件商品）</string>
+    <string name="woopos_orders_details_refund_view_details">查看详情</string>
+    <string name="woopos_orders_details_refund_label_numbered">退款 %1$d#</string>
+    <string name="woopos_orders_details_refunded_products_title">退款产品</string>
+    <string name="woopos_home_syncing_catalog_subtitle">您可以离开，同步操作将在后台继续进行。</string>
+    <string name="woopos_home_syncing_catalog_hint">目录同步可能需要几分钟的时间。</string>
+    <string name="woo_push_notifications_introduction_connected_body">您只需再完成一步，即可接收新订单、评论等通知。</string>
+    <string name="woo_push_notifications_introduction_connected_title">获取您商店的推送通知</string>
+    <string name="my_store_widget_push_notifications_description">启用推送通知，随时掌握新订单和评论动态。</string>
+    <string name="dashboard_stats_net_sales">净销售额</string>
     <string name="woopos_search_products_and_variations">搜索产品和变体</string>
     <string name="woopos_bookings_details_customer_guest_badge">访客</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">更新插件</string>
@@ -132,7 +157,6 @@ Language: zh_CN
     <string name="restart">重新启动</string>
     <string name="dev_feature_flags">功能标志</string>
     <string name="settings_enable_push_notifications">启用推送通知</string>
-    <string name="my_store_widget_push_notifications_description">将您的商店关联到 WordPress.com，以便接收关于新订单和评论的提醒。</string>
     <string name="my_store_widget_push_notifications_menu_title">启用推送通知</string>
     <string name="my_store_widget_push_notifications_title">不错过任何新订单</string>
     <string name="woo_pos_promo_title">WooCommerce 销售点</string>
@@ -242,7 +266,7 @@ Language: zh_CN
     <string name="woopos_search_orders">搜索订单</string>
     <string name="woopos_orders_details_totals_card_content_description">订单总额明细</string>
     <string name="woopos_orders_details_products_list_content_description">订单产品列表</string>
-    <string name="woopos_orders_details_net_payment_label">净付款</string>
+    <string name="woopos_orders_details_net_payment_label">净额总计</string>
     <string name="woopos_orders_details_refunded_label">已退款</string>
     <string name="woopos_orders_details_total_paid_label">实收总额</string>
     <string name="woopos_orders_details_total_label">总计</string>
@@ -272,7 +296,6 @@ Language: zh_CN
     <string name="woopos_home_sync_failed_message">我们无法同步您的产品目录。 请检查您的互联网连接，然后重试。</string>
     <string name="woopos_home_sync_failed_title">无法同步</string>
     <string name="woopos_home_syncing_catalog_exit_button">退出 POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">同步将在后台继续进行。</string>
     <string name="woopos_home_syncing_catalog_title">正在同步目录</string>
     <string name="booking_note_discard_changes_discard">放弃更改</string>
     <string name="booking_note_discard_changes_message">是否确定要放弃这些更改？</string>
@@ -489,8 +512,6 @@ Language: zh_CN
     <string name="woopos_scanning_setup_device_selection_title">设置条形码扫描仪</string>
     <string name="woopos_scanning_setup_barcode_content_description">条形码</string>
     <string name="woopos_scanning_setup_dialog_content_description">扫描仪设置对话框</string>
-    <string name="woopos_eligibility_screen_UK_country_name">英国</string>
-    <string name="woopos_eligibility_screen_US_country_name">美国</string>
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
@@ -3767,7 +3788,6 @@ Language: zh_CN
     <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
     <string name="dashboard_stats_error_content_description">错误图片</string>
     <string name="dashboard_stats_error">抓取数据时出错</string>
-    <string name="dashboard_stats_revenue">收益</string>
     <string name="dashboard_stats_orders">订单</string>
     <string name="dashboard_stats_visitors">访客</string>
     <string name="login_avatar_content_description">您的个人资料照片</string>

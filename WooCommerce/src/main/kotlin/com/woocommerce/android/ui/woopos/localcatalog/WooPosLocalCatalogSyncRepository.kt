@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -29,6 +30,8 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val connectionTypeProvider: WooPosConnectionTypeProvider,
 ) {
+    val syncState: StateFlow<WooPosFileBasedSyncAction.SyncState?> = posFileBasedSyncAction.syncState
+
     companion object {
         const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = Int.MAX_VALUE
@@ -137,7 +140,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 syncType = syncType,
                 errorContext = "WooPosLocalCatalogSyncRepository",
                 errorType = errorType,
-                errorDescription = result.error,
+                errorDescription = result.error.ifBlank { "Unknown error (${result::class.simpleName})" },
                 lastGenerationState = result.lastGenerationState,
                 pollAttempts = result.pollAttempts
             )

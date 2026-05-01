@@ -121,6 +121,7 @@ fun BookingDetailsScreen(
                                     BookingDetailsContent(
                                         booking = viewState.bookingUiState,
                                         onCancelBooking = viewState.bookingUiState.onCancelBooking,
+                                        onRescheduleBooking = viewState.bookingUiState.onRescheduleBooking,
                                     )
                                 }
                             }
@@ -137,6 +138,7 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
+    onRescheduleBooking: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -148,6 +150,7 @@ private fun BookingDetailsContent(
         model = booking.bookingsAppointmentDetails,
         onCancelBooking = onCancelBooking,
         onAttendanceToggle = booking.onAttendanceToggle,
+        onRescheduleBooking = onRescheduleBooking,
         modifier = Modifier.fillMaxWidth()
     )
     BookingCustomerDetails(

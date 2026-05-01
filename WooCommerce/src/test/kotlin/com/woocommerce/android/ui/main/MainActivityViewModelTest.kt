@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
@@ -81,6 +83,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
         siteId = TEST_REMOTE_SITE_ID_1
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
@@ -111,6 +115,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
+    private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper = mock()
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
@@ -166,8 +171,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
             notificationMessageHandler
         )
 
-        doReturn(siteModel).whenever(siteStore).getSiteBySiteId(any())
-        doReturn(siteModel).whenever(selectedSite).get()
+        lenient().doReturn(siteModel).whenever(siteStore).getSiteBySiteId(any())
+        lenient().doReturn(siteModel).whenever(selectedSite).get()
     }
 
     @Test
@@ -192,33 +197,10 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
+        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
-        assertThat(event).isEqualTo(
-            ViewOrderDetail(
-                testOrderNotification.uniqueId,
-                testOrderNotification.remoteNoteId
-            )
-        )
-    }
-
-    @Test
-    fun `when a new order notification for non existent site is clicked, then the my store tab is opened`() {
-        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
-
-        val localPushId = 1000
-        var event: ViewOrderList? = null
-        viewModel.event.observeForever {
-            if (it is ViewOrderList) event = it
-        }
-
-        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
-
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
-        assertThat(event).isEqualTo(ViewOrderList)
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testOrderNotification))
+        assertThat(event).isEqualTo(ViewOrderDetail(testOrderNotification.uniqueId))
     }
 
     @Test
@@ -232,9 +214,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
-            .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
+            .markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testReviewNotification))
         assertThat(event).isEqualTo(ViewReviewDetail(testReviewNotification.uniqueId))
     }
 
@@ -573,9 +555,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.onPushNotificationTapped(localPushId, testBlazeNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
-            .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
+            .markNotificationTapped(eq(localPushId))
         verify(notificationMessageHandler, atLeastOnce())
-            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testBlazeNotification))
         assertThat(event).isEqualTo(
             ViewBlazeCampaignDetail(
                 testBlazeNotification.uniqueId.toString()
@@ -604,11 +586,71 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given an App Passwords site, when order notification for a different remote site is tapped, then open order detail without switching sites`() {
+        // GIVEN
+        val appPasswordsSite = applicationPasswordsSite()
+        lenient().doReturn(appPasswordsSite).whenever(selectedSite).get()
+        val orderNotification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
+
+        // WHEN
+        viewModel.onPushNotificationTapped(1000, orderNotification)
+
+        // THEN
+        verify(selectedSite, never()).set(any())
+        assertThat(viewModel.event.value).isEqualTo(ViewOrderDetail(orderNotification.uniqueId))
+    }
+
+    @Test
     fun `when notifications permission bar allow tapped, then track allow tapped event`() {
         viewModel.onNotificationsPermissionBarAllowButtonTapped()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
     }
+
+    @Test
+    fun `when notifications permission bar dismiss tapped, then dismiss state is stored through prefs`() {
+        viewModel.onNotificationsPermissionBarDismissButtonTapped()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
+        verify(prefs).setWasNotificationsPermissionBarDismissed(true)
+        assertThat(viewModel.isNotificationsPermissionCardVisible.value).isFalse()
+    }
+
+    @Test
+    fun `given Android 13 app passwords site without notifications permission, when checking notifications permission, then show permission card`() =
+        testBlocking {
+            // GIVEN
+            whenever(systemVersionUtilsWrapper.isAtLeastT()).thenReturn(true)
+            whenever(prefs.getWasNotificationsPermissionBarDismissed()).thenReturn(false)
+            lenient().doReturn(applicationPasswordsSite()).whenever(selectedSite).get()
+            createViewModel()
+            viewModel.isNotificationsPermissionCardVisible.observeForever {}
+
+            // WHEN
+            viewModel.checkForNotificationsPermission(hasNotificationsPermission = false)
+
+            // THEN
+            assertThat(viewModel.isNotificationsPermissionCardVisible.value).isTrue()
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_SHOWN)
+        }
+
+    @Test
+    fun `given Android 13 Jetpack connection package site without notifications permission, when checking notifications permission, then show permission card`() =
+        testBlocking {
+            // GIVEN
+            whenever(systemVersionUtilsWrapper.isAtLeastT()).thenReturn(true)
+            whenever(prefs.getWasNotificationsPermissionBarDismissed()).thenReturn(false)
+            lenient().doReturn(jetpackConnectionPackageSite()).whenever(selectedSite).get()
+            createViewModel()
+            viewModel.isNotificationsPermissionCardVisible.observeForever {}
+
+            // WHEN
+            viewModel.checkForNotificationsPermission(hasNotificationsPermission = false)
+
+            // THEN
+            assertThat(viewModel.isNotificationsPermissionCardVisible.value).isTrue()
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_SHOWN)
+        }
 
     @Test
     fun `when OS alert allowed, then track allowed event`() {
@@ -637,13 +679,28 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 analyticsTrackerWrapper = analyticsTrackerWrapper,
                 resolveAppLink = resolveAppLink,
                 privacyRepository = mock(),
+                systemVersionUtilsWrapper = systemVersionUtilsWrapper,
                 moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
-                    onBlocking { invoke(any()) } doReturn emptyFlow()
+                    on { invoke(any()) } doReturn emptyFlow()
                 },
                 ageEligibilityChecker = ageEligibilityChecker,
             )
         )
+    }
+
+    private fun applicationPasswordsSite() = SiteModel().apply {
+        siteId = TEST_REMOTE_SITE_ID_1
+        origin = SiteModel.ORIGIN_XMLRPC
+        setIsJetpackConnected(false)
+        setIsJetpackCPConnected(false)
+    }
+
+    private fun jetpackConnectionPackageSite() = SiteModel().apply {
+        siteId = TEST_REMOTE_SITE_ID_1
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(false)
+        setIsJetpackCPConnected(true)
     }
 }

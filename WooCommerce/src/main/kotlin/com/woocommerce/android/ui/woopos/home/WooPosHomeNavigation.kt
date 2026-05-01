@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -12,9 +13,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.woocommerce.android.ui.woopos.eligibility.WooPosEligibilityScreen
+import com.woocommerce.android.ui.woopos.home.phone.WooPosHomePhoneScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 const val HOME_ROUTE = "home"
 const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"
@@ -83,10 +86,17 @@ fun NavGraphBuilder.homeScreen(
             savedStateHandle[HOME_PAYMENT_COMPLETED_VIA_CASH_KEY] = false
         }
 
-        WooPosHomeScreen(
-            isPaymentCompletedViaCash = isPaymentCompletedViaCash,
-            viewModel = homeViewModel,
-        )
+        if (LocalContext.current.isWooPosPhoneLayout()) {
+            WooPosHomePhoneScreen(
+                isPaymentCompletedViaCash = isPaymentCompletedViaCash,
+                viewModel = homeViewModel,
+            )
+        } else {
+            WooPosHomeScreen(
+                isPaymentCompletedViaCash = isPaymentCompletedViaCash,
+                viewModel = homeViewModel,
+            )
+        }
     }
 }
 

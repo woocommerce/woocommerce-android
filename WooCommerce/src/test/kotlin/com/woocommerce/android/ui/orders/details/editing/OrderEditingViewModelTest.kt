@@ -28,7 +28,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        onBlocking { getOrderById(any()) } doReturn testOrder
+        on { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -49,7 +49,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should replicate billing to shipping when toggle is activated`() =
         testBlocking {
             orderEditingRepository.stub {
-                onBlocking {
+                on {
                     updateBothOrderAddresses(any(), any(), any())
                 } doReturn flowOf()
             }
@@ -72,7 +72,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should replicate shipping to billing when toggle is activated`() =
         testBlocking {
             orderEditingRepository.stub {
-                onBlocking {
+                on {
                     updateBothOrderAddresses(any(), any(), any())
                 } doReturn flowOf()
             }
@@ -141,11 +141,11 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             )
 
             orderDetailRepository.stub {
-                onBlocking { getOrderById(any()) } doReturn originalOrder
+                on { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {
-                onBlocking {
+                on {
                     updateBothOrderAddresses(any(), any(), any())
                 } doReturn flowOf()
             }
@@ -234,7 +234,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit success event if update was successful`() {
         var eventWasCalled = false
         orderEditingRepository.stub {
-            onBlocking {
+            on {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(
@@ -259,7 +259,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Test
     fun `should emit generic error event for errors other than empty billing mail error`() {
         orderEditingRepository.stub {
-            onBlocking {
+            on {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 WCOrderStore.UpdateOrderResult.RemoteUpdateResult(
@@ -283,7 +283,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Test
     fun `should emit empty mail failure if store returns empty billing mail error`() {
         orderEditingRepository.stub {
-            onBlocking {
+            on {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 WCOrderStore.UpdateOrderResult.RemoteUpdateResult(

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.sentry)
     alias(libs.plugins.androidx.navigation.safeargs)
@@ -266,6 +267,7 @@ dependencies {
     }
 
     implementation(libs.automattic.encryptedlogging)
+    implementation(libs.automattic.eventhorizon)
     implementation(libs.automattic.tracks.experimentation)
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
@@ -275,6 +277,8 @@ dependencies {
 
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
+    implementation(project(":libs:ai-assistant:feature"))
+    implementation(project(":libs:ai-assistant:core"))
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"

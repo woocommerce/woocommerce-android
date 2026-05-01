@@ -17,7 +17,8 @@ data class BookingResourceEntity(
     val phoneNumber: String?,
     val imageId: Long,
     val imageUrl: String?,
-    val description: String?
+    val description: String?,
+    val productBookingIds: List<Long>? = null,
 ) {
     companion object // Used for creating extension properties for BookingResourceEntity
 }

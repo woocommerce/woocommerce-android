@@ -66,7 +66,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                onBlocking { updateTracksSetting(true) } doReturn Result.success(Unit)
+                on { updateTracksSetting(true) } doReturn Result.success(Unit)
             }
             init()
 
@@ -85,7 +85,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
+                on { updateTracksSetting(true) } doReturn Result.failure(Exception())
             }
             init()
 
@@ -104,7 +104,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                onBlocking { updateAccountSettings() } doReturn Result.failure(Exception())
+                on { updateAccountSettings() } doReturn Result.failure(Exception())
             }
 
             // when
@@ -141,7 +141,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
+                on { updateTracksSetting(true) } doReturn Result.failure(Exception())
             }
             init()
 

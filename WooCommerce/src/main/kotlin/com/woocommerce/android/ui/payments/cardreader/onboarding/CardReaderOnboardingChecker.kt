@@ -107,9 +107,8 @@ class CardReaderOnboardingChecker @Inject constructor(
                         state.preferredPlugin,
                         version
                     )
+                    paymentsFlowTracker.trackOnboardingState(state)
                 }
-        }.also {
-            paymentsFlowTracker.trackOnboardingState(it)
         }
     }
 

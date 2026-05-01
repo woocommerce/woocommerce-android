@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -83,7 +84,7 @@ fun WooPosBookingsDateSelector(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
                     contentDescription = stringResource(R.string.woopos_bookings_date_selector_previous_day),
                     tint = contentColor,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(WooPosIconSize.Small.value),
                 )
             }
         }
@@ -106,7 +107,7 @@ fun WooPosBookingsDateSelector(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_date_range_24dp),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(WooPosIconSize.XSmall.value),
                             tint = contentColor,
                         )
                         Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
@@ -146,7 +147,7 @@ fun WooPosBookingsDateSelector(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                     contentDescription = stringResource(R.string.woopos_bookings_date_selector_next_day),
                     tint = contentColor,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(WooPosIconSize.Small.value),
                 )
             }
         }
@@ -181,6 +182,8 @@ private fun DatePickerPopup(
     }
 }
 
+// Material3 DatePicker requires a minimum width of 360dp; do not scale down.
+@Suppress("WooPosDesignSystemComponentSizeUsageRule")
 @Composable
 private fun DatePickerContent(datePickerState: DatePickerState) {
     val colors = DatePickerDefaults.colors(

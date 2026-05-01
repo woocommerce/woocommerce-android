@@ -156,6 +156,44 @@ class WooPosPerformInstantCatalogFullSyncTest {
     }
 
     @Test
+    fun `given one time worker is stopped mid sync, when invoke called, then returns failure`() = runTest {
+        // GIVEN
+        val workInfo = mock<WorkInfo>()
+        whenever(workInfo.state).thenReturn(WorkInfo.State.ENQUEUED)
+        val workInfoFlow = MutableStateFlow<WorkInfo?>(workInfo)
+        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(true))
+        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(false))
+        whenever(syncScheduler.observeOneTimeWorkInfo()).thenReturn(workInfoFlow)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()?.message)
+            .isEqualTo("Background sync worker was stopped: ENQUEUED")
+    }
+
+    @Test
+    fun `given periodic worker is stopped mid sync, when invoke called, then returns failure`() = runTest {
+        // GIVEN
+        val workInfo = mock<WorkInfo>()
+        whenever(workInfo.state).thenReturn(WorkInfo.State.BLOCKED)
+        val workInfoFlow = MutableStateFlow<WorkInfo?>(workInfo)
+        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(false))
+        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(true))
+        whenever(syncScheduler.observePeriodicWorkInfo()).thenReturn(workInfoFlow)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()?.message)
+            .isEqualTo("Background sync worker was stopped: BLOCKED")
+    }
+
+    @Test
     fun `given worker succeeds but no timestamp found, when invoke called, then returns failure`() = runTest {
         // GIVEN
         val workInfo = mock<WorkInfo>()

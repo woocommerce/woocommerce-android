@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -41,12 +42,14 @@ class WPComLoginPasswordViewModel @Inject constructor(
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val registerDevice: RegisterDevice
 ) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackAccountRepository,
-    analyticsTrackerWrapper
+    analyticsTrackerWrapper,
+    registerDevice
 ) {
     companion object {
         private const val RESET_PASSWORD_URL = "https://wordpress.com/wp-login.php?action=lostpassword"

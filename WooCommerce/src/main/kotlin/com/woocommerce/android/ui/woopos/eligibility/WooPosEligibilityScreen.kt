@@ -2,11 +2,10 @@ package com.woocommerce.android.ui.woopos.eligibility
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -32,15 +31,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.wooPosFullScreenActionButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
-
-private const val CONTENT_WIDTH_FRACTION = 0.6f
-private const val BUTTON_WIDTH_FRACTION = 0.5f
 
 @Composable
 fun WooPosEligibilityScreen(
@@ -105,83 +103,90 @@ fun WooPosEligibilityScreen(
         is WooPosEligibilityRetryState.Loading -> retryState.suggestionText
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WooPosSpacing.Large.value),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(WooPosSpacing.Large.value)
     ) {
-        Image(
-            imageVector = WooPosIcons.ErrorX,
-            contentDescription = null
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                imageVector = WooPosIcons.ErrorX,
+                contentDescription = null
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        WooPosText(
-            text = title,
-            style = WooPosTypography.Heading,
-            textAlign = TextAlign.Center
-        )
+            WooPosText(
+                text = title,
+                style = WooPosTypography.Heading,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosText(
-            text = suggestionText,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION)
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
-        val buttonModifier = Modifier
-            .fillMaxWidth(BUTTON_WIDTH_FRACTION)
-
-        when (retryState) {
-            is WooPosEligibilityRetryState.RetryableIneligible -> {
-                WooPosButton(
-                    text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
-                    onClick = onRetry,
-                    state = WooPosButtonState.ENABLED,
-                    modifier = buttonModifier,
-                )
-            }
-
-            is WooPosEligibilityRetryState.Loading -> {
-                WooPosButton(
-                    text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
-                    onClick = onRetry,
-                    state = WooPosButtonState.LOADING,
-                    modifier = buttonModifier,
-                )
-            }
-
-            is WooPosEligibilityRetryState.CiabPlanUpgradeRequired -> {
-                WooPosButton(
-                    text = stringResource(id = R.string.woopos_eligibility_learn_more_label),
-                    onClick = {
-                        onLearnMoreTapped()
-                        onNavigationEvent(
-                            WooPosNavigationEvent.OpenWebView(
-                                url = retryState.learnMoreUrl.toString()
-                            )
-                        )
-                    },
-                    state = WooPosButtonState.ENABLED,
-                    modifier = buttonModifier,
-                )
-            }
+            WooPosText(
+                text = suggestionText,
+                style = WooPosTypography.BodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.adaptiveContentWidth()
+            )
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosOutlinedButton(
-            text = stringResource(id = R.string.woopos_eligibility_exit_pos_label),
-            modifier = buttonModifier,
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = WooPosSpacing.Large.value),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
+            val buttonModifier = Modifier.wooPosFullScreenActionButton()
+
+            when (retryState) {
+                is WooPosEligibilityRetryState.RetryableIneligible -> {
+                    WooPosButton(
+                        text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
+                        onClick = onRetry,
+                        state = WooPosButtonState.ENABLED,
+                        modifier = buttonModifier,
+                    )
+                }
+
+                is WooPosEligibilityRetryState.Loading -> {
+                    WooPosButton(
+                        text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
+                        onClick = onRetry,
+                        state = WooPosButtonState.LOADING,
+                        modifier = buttonModifier,
+                    )
+                }
+
+                is WooPosEligibilityRetryState.CiabPlanUpgradeRequired -> {
+                    WooPosButton(
+                        text = stringResource(id = R.string.woopos_eligibility_learn_more_label),
+                        onClick = {
+                            onLearnMoreTapped()
+                            onNavigationEvent(
+                                WooPosNavigationEvent.OpenWebView(
+                                    url = retryState.learnMoreUrl.toString()
+                                )
+                            )
+                        },
+                        state = WooPosButtonState.ENABLED,
+                        modifier = buttonModifier,
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButton(
+                text = stringResource(id = R.string.woopos_eligibility_exit_pos_label),
+                modifier = buttonModifier,
+            ) {
+                onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
+            }
         }
     }
 }

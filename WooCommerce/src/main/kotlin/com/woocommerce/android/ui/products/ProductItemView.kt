@@ -13,11 +13,11 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 /**
@@ -85,9 +85,8 @@ class ProductItemView @JvmOverloads constructor(
             }
             else -> {
                 size = imageSize
-                val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
                 Glide.with(context)
-                    .load(photonUrl)
+                    .loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(binding.productImage)

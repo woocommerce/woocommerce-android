@@ -5,7 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -22,8 +22,8 @@ class WooPosCartItemsUpdater @Inject constructor(
 ) {
     suspend operator fun invoke(
         itemsInCart: List<WooPosCartItemViewState>,
-        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
-        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
+        updatedProducts: List<WooPosOrderCreatedData.ProductInfo>,
+        updatedCoupons: List<WooPosOrderCreatedData.CouponInfo>,
     ): CartItemsUpdaterResult {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
@@ -59,7 +59,7 @@ class WooPosCartItemsUpdater @Inject constructor(
     private suspend fun processProduct(
         item: WooPosCartItemViewState.Product,
         availableProductsMap: MutableMap<String, Int>,
-        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+        updatedProducts: List<WooPosOrderCreatedData.ProductInfo>
     ): ProductProcessResult {
         val productKey = getProductKey(item)
         val availableQuantity = availableProductsMap[productKey] ?: 0
@@ -100,7 +100,7 @@ class WooPosCartItemsUpdater @Inject constructor(
     }
 
     private suspend fun updateCouponsWithFormattedDiscount(
-        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
+        updatedCoupons: List<WooPosOrderCreatedData.CouponInfo>,
         item: WooPosCartItemViewState.Coupon,
     ) = updatedCoupons.find { it.code == item.name }?.let {
         item.copy(validationState = CouponValidationState.Valid("-${formatPrice(it.discountAmount)}"))
@@ -112,7 +112,7 @@ class WooPosCartItemsUpdater @Inject constructor(
 
     private suspend fun updateProductInCache(
         updatedItem: WooPosCartItemViewState.Product,
-        updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
+        updatedProduct: WooPosOrderCreatedData.ProductInfo
     ) {
         // TBD Local Catalog The app should update cache based on the data coming from backend not from the view layer
         productsCache.getProductById(updatedItem.id)?.let { product ->
@@ -176,17 +176,17 @@ class WooPosCartItemsUpdater @Inject constructor(
 
     private fun findMatchingProduct(
         item: WooPosCartItemViewState.Product,
-        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
-    ): ParentToChildrenEvent.OrderCreated.ProductInfo? {
+        updatedProducts: List<WooPosOrderCreatedData.ProductInfo>
+    ): WooPosOrderCreatedData.ProductInfo? {
         return when (item) {
             is WooPosCartItemViewState.Product.Simple ->
                 updatedProducts.find {
-                    it is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple && it.id == item.id
+                    it is WooPosOrderCreatedData.ProductInfo.Simple && it.id == item.id
                 }
 
             is WooPosCartItemViewState.Product.Variation ->
                 updatedProducts.find { product ->
-                    product is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation &&
+                    product is WooPosOrderCreatedData.ProductInfo.Variation &&
                         product.id == item.id &&
                         product.variationId == item.variationId
                 }
@@ -194,14 +194,14 @@ class WooPosCartItemsUpdater @Inject constructor(
     }
 
     private fun createAvailableProductsMap(
-        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+        updatedProducts: List<WooPosOrderCreatedData.ProductInfo>
     ): MutableMap<String, Int> {
         val productMap = mutableMapOf<String, Int>()
 
         updatedProducts.forEach { product ->
             val key = when (product) {
-                is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple -> "simple_${product.id}"
-                is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation ->
+                is WooPosOrderCreatedData.ProductInfo.Simple -> "simple_${product.id}"
+                is WooPosOrderCreatedData.ProductInfo.Variation ->
                     "variation_${product.id}_${product.variationId}"
             }
             val currentQuantity = productMap[key] ?: 0
@@ -213,11 +213,11 @@ class WooPosCartItemsUpdater @Inject constructor(
 
     private suspend fun updateProductWithNewInfo(
         item: WooPosCartItemViewState.Product,
-        updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
+        updatedProduct: WooPosOrderCreatedData.ProductInfo
     ): WooPosCartItemViewState.Product {
         return when (item) {
             is WooPosCartItemViewState.Product.Simple -> {
-                if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple) {
+                if (updatedProduct is WooPosOrderCreatedData.ProductInfo.Simple) {
                     item.copy(
                         name = updatedProduct.name,
                         price = formatPrice(updatedProduct.subtotalPricePerItem()),
@@ -228,7 +228,7 @@ class WooPosCartItemsUpdater @Inject constructor(
             }
 
             is WooPosCartItemViewState.Product.Variation -> {
-                if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation) {
+                if (updatedProduct is WooPosOrderCreatedData.ProductInfo.Variation) {
                     item.copy(
                         name = updatedProduct.name,
                         price = formatPrice(updatedProduct.subtotalPricePerItem())
@@ -249,7 +249,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         }
     }
 
-    private fun ParentToChildrenEvent.OrderCreated.ProductInfo.subtotalPricePerItem() =
+    private fun WooPosOrderCreatedData.ProductInfo.subtotalPricePerItem() =
         basePrice.div(quantity.toBigDecimal())
 
     data class CartItemsUpdaterResult(

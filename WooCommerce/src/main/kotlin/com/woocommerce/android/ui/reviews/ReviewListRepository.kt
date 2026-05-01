@@ -13,6 +13,7 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -46,7 +47,8 @@ class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus
 ) {
     companion object {
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
@@ -84,14 +86,17 @@ class ReviewListRepository @Inject constructor(
     ): Flow<FetchReviewsResult> =
         channelFlow {
             if (!isFetchingProductReviews) {
+                val notificationsSupported = supportsReviewsReadStatus()
                 coroutineScope {
-                    launch {
-                        val fetchNotificationsResult = fetchNotifications()
-                        send(
-                            FetchReviewsResult.NotificationsFetched(
-                                if (fetchNotificationsResult.isSuccess) SUCCESS else ERROR
+                    if (notificationsSupported) {
+                        launch {
+                            val fetchNotificationsResult = fetchNotifications()
+                            send(
+                                FetchReviewsResult.NotificationsFetched(
+                                    if (fetchNotificationsResult.isSuccess) SUCCESS else ERROR
+                                )
                             )
-                        )
+                        }
                     }
 
                     launch {
@@ -122,6 +127,8 @@ class ReviewListRepository @Inject constructor(
     suspend fun fetchMostRecentReviews(
         status: ProductReviewStatus
     ): Result<Unit> = coroutineScope {
+        val notificationsSupported = supportsReviewsReadStatus()
+
         val reviewsTask = async {
             val payload = WCProductStore.FetchProductReviewsPayload(
                 site = selectedSite.get(),
@@ -140,14 +147,16 @@ class ReviewListRepository @Inject constructor(
             }
         }
 
-        val notificationsTask = async {
-            fetchNotifications()
+        val notificationsTask = if (notificationsSupported) {
+            async { fetchNotifications() }
+        } else {
+            null
         }
 
         reviewsTask.await()
             .onFailure { return@coroutineScope Result.failure(it) }
-        notificationsTask.await()
-            .onFailure { return@coroutineScope Result.failure(it) }
+        notificationsTask?.await()
+            ?.onFailure { return@coroutineScope Result.failure(it) }
 
         Result.success(Unit)
     }
@@ -160,6 +169,7 @@ class ReviewListRepository @Inject constructor(
      * @return the result of the action as a [RequestResult]
      */
     suspend fun markAllProductReviewsAsRead(): RequestResult {
+        if (!supportsReviewsReadStatus()) return NO_ACTION_NEEDED
         return if (getHasUnreadCachedProductReviews()) {
             val unreadProductReviews = wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
@@ -235,6 +245,7 @@ class ReviewListRepository @Inject constructor(
      * @return true if unread product reviews exist in db, else false
      */
     suspend fun getHasUnreadCachedProductReviews(): Boolean {
+        if (!supportsReviewsReadStatus()) return false
         return coroutineScope {
             wpComPushNotificationStore.hasUnreadNotificationsForSite(
                 site = selectedSite.get(),
@@ -250,6 +261,10 @@ class ReviewListRepository @Inject constructor(
      * If [productId] is provided, then only unread notifications for that product will be fetched.
      */
     suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean, productId: Long? = null): RequestResult {
+        if (!supportsReviewsReadStatus()) {
+            unreadProductReviewIds = emptyList()
+            return NO_ACTION_NEEDED
+        }
         unreadProductReviewIds = wpComPushNotificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -420,6 +435,7 @@ class ReviewListRepository @Inject constructor(
      * [org.wordpress.android.fluxc.model.notification.NotificationModel.read] by [ProductReview.remoteId].
      */
     private suspend fun getReviewNotifReadValueByRemoteIdMap(): Map<Long, Boolean> {
+        if (!supportsReviewsReadStatus()) return emptyMap()
         return withContext(Dispatchers.IO) {
             wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),

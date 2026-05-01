@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 16:56:35+0000
+Translation-Revision-Date: 2026-04-07 15:57:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Scopri di più</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accetta pagamenti di persona a soli 2,70% + $ 0,10 per transazione. &lt;b&gt;Passa a Pro&lt;/b&gt; per accedere al tap-to-pay sul tuo telefono e al nostro sistema completo di punti vendita con inventario in tempo reale e sincronizzazione degli ordini.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accetta pagamenti di persona a soli 2,70% + $ 0,10 per transazione. Passa a Pro per accedere al tap-to-pay sul tuo telefono e al nostro sistema completo di punti vendita con inventario in tempo reale e sincronizzazione degli ordini.</string>
+    <string name="woopos_eligibility_ciab_title">Piano Pro richiesto.</string>
+    <string name="ciab_order_status_open">Aperto</string>
+    <string name="booking_payment_status_authorization_voided">Autorizzazione annullata</string>
+    <string name="booking_payment_status_authorized">Autorizzato</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Impossibile acquistare l\'etichetta di spedizione. Completa l\'indirizzo di origine.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Indirizzo di origine mancante o non valido</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Autorizzazione annullata</string>
+    <string name="woopos_bookings_payment_status_authorized">Autorizzato</string>
+    <string name="woopos_orders_details_refund_details_background">Sfondo della finestra di dialogo dei dettagli del rimborso</string>
+    <string name="woopos_orders_details_refund_total">Rimborso totale</string>
+    <string name="woopos_orders_details_refund_tax">Imposta</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Subtotale elementi (%d elementi)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Subtotale elementi (%d elemento)</string>
+    <string name="woopos_orders_details_refund_view_details">Visualizza i dettagli</string>
+    <string name="woopos_orders_details_refund_label_numbered">Rimborso n. %1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Prodotti rimborsati</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Puoi abbandonare questa pagina: la sincronizzazione continuerà in background.</string>
+    <string name="woopos_home_syncing_catalog_hint">La sincronizzazione del catalogo potrebbe richiedere alcuni minuti.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Sei a un passo dal ricevere notifiche per nuovi ordini, recensioni e altro ancora.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Ricevi notifiche push per il tuo negozio</string>
+    <string name="my_store_widget_push_notifications_description">Abilita le notifiche push per non perdere nuovi ordini e recensioni.</string>
+    <string name="dashboard_stats_net_sales">Vendite nette</string>
     <string name="woopos_search_products_and_variations">Cerca prodotti e varianti</string>
     <string name="woopos_bookings_details_customer_guest_badge">Ospite</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Aggiorna plugin</string>
@@ -132,7 +157,6 @@ Language: it
     <string name="restart">Riavvia</string>
     <string name="dev_feature_flags">Flag funzionalità</string>
     <string name="settings_enable_push_notifications">Attiva notifiche push</string>
-    <string name="my_store_widget_push_notifications_description">Connetti il tuo negozio a WordPress.com per ricevere avvisi di nuovi ordini e recensioni.</string>
     <string name="my_store_widget_push_notifications_menu_title">Attiva notifiche push</string>
     <string name="my_store_widget_push_notifications_title">Non perderti mai un nuovo ordine</string>
     <string name="woo_pos_promo_title">Punto vendita di WooCommerce</string>
@@ -242,7 +266,7 @@ Language: it
     <string name="woopos_search_orders">Cerca ordini</string>
     <string name="woopos_orders_details_totals_card_content_description">Riepilogo dell\'ordine</string>
     <string name="woopos_orders_details_products_list_content_description">Elenco prodotti ordinati</string>
-    <string name="woopos_orders_details_net_payment_label">Pagamento netto</string>
+    <string name="woopos_orders_details_net_payment_label">Totale netto</string>
     <string name="woopos_orders_details_refunded_label">Rimborsato</string>
     <string name="woopos_orders_details_total_paid_label">Totale pagato</string>
     <string name="woopos_orders_details_total_label">Totale</string>
@@ -272,7 +296,6 @@ Language: it
     <string name="woopos_home_sync_failed_message">Impossibile sincronizzare il catalogo dei prodotti. Controlla la connessione a Internet e riprova.</string>
     <string name="woopos_home_sync_failed_title">Impossibile sincronizzare</string>
     <string name="woopos_home_syncing_catalog_exit_button">Esci da POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">La sincronizzazione continuerà in background.</string>
     <string name="woopos_home_syncing_catalog_title">Sincronizzazione del catalogo</string>
     <string name="booking_note_discard_changes_discard">Annulla le modifiche</string>
     <string name="booking_note_discard_changes_message">Desideri eliminare queste modifiche?</string>
@@ -489,8 +512,6 @@ Language: it
     <string name="woopos_scanning_setup_device_selection_title">Configura uno scanner di codici a barre</string>
     <string name="woopos_scanning_setup_barcode_content_description">Codice a barre</string>
     <string name="woopos_scanning_setup_dialog_content_description">Finestra di dialogo di configurazione dello scanner</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Nel Regno Unito</string>
-    <string name="woopos_eligibility_screen_US_country_name">Negli Stati Uniti</string>
     <string name="woopos_eligibility_screen_unable_to_load">Impossibile caricare</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Il sistema POS non è disponibile per la valuta del tuo negozio. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Il sistema POS non è disponibile per la valuta del tuo negozio. %1$s, l\'unica valuta al momento supportata è %2$s. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
@@ -3767,7 +3788,6 @@ Language: it
     <string name="dashboard_top_performers_empty">Nessuna attività per questo periodo</string>
     <string name="dashboard_stats_error_content_description">Immagine dell\'errore</string>
     <string name="dashboard_stats_error">Errore durante recupero dati</string>
-    <string name="dashboard_stats_revenue">Fatturato</string>
     <string name="dashboard_stats_orders">Ordini</string>
     <string name="dashboard_stats_visitors">Visitatori</string>
     <string name="login_avatar_content_description">Foto del profilo</string>

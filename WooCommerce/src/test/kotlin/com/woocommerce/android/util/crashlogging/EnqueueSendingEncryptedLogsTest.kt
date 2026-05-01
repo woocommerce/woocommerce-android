@@ -27,7 +27,7 @@ class EnqueueSendingEncryptedLogsTest : BaseUnitTest() {
     private val tempFile = File("temp")
 
     private val encryptedLogsFileProvider: EncryptedLogsFileProvider = mock {
-        onBlocking { provide() } doReturn tempFile
+        on { provide() } doReturn tempFile
     }
 
     @Before

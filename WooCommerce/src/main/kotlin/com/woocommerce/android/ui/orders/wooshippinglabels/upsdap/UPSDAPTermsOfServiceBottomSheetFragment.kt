@@ -19,10 +19,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
-    companion object {
-        const val TOS_ACCEPTED_NOTICE_KEY = "tos_accepted_notice_key"
-    }
-
     private val viewModel: UPSDAPTermsOfServiceViewModel by viewModels()
     private val snackbarHostState = SnackbarHostState()
 
@@ -58,5 +54,9 @@ class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val TOS_ACCEPTED_NOTICE_KEY = "tos_accepted_notice_key"
     }
 }

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 10:35:12+0000
+Translation-Revision-Date: 2026-04-07 09:54:55+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">さらに詳しく</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 &lt;b&gt;Pro にアップグレード&lt;/b&gt;すると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 Pro にアップグレードすると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_ciab_title">Pro プランが必要です</string>
+    <string name="ciab_order_status_open">開く</string>
+    <string name="booking_payment_status_authorization_voided">認証が無効化されました</string>
+    <string name="booking_payment_status_authorized">認証済み</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">配送ラベルを購入できません。 配送元住所を入力してください。</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">配送元住所がないか、無効です</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">認証が無効化されました</string>
+    <string name="woopos_bookings_payment_status_authorized">認証済み</string>
+    <string name="woopos_orders_details_refund_details_background">返金詳細ダイアログの背景</string>
+    <string name="woopos_orders_details_refund_total">払戻総額</string>
+    <string name="woopos_orders_details_refund_tax">税</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">商品小計 (%d個)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">商品小計 (%d個)</string>
+    <string name="woopos_orders_details_refund_view_details">詳細を表示</string>
+    <string name="woopos_orders_details_refund_label_numbered">返金 #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">返金済み商品</string>
+    <string name="woopos_home_syncing_catalog_subtitle">ここを離れても同期はバックグラウンドで続行されます。</string>
+    <string name="woopos_home_syncing_catalog_hint">カタログの同期には数分かかる場合があります。</string>
+    <string name="woo_push_notifications_introduction_connected_body">新規注文やレビューなどの通知を受け取るまで、あと一歩です。</string>
+    <string name="woo_push_notifications_introduction_connected_title">ストアのプッシュ通知を取得</string>
+    <string name="my_store_widget_push_notifications_description">プッシュ通知を有効にすると、新規注文やレビューを常に把握できます。</string>
+    <string name="dashboard_stats_net_sales">純売上高</string>
     <string name="woopos_search_products_and_variations">商品とバリエーションを検索…</string>
     <string name="woopos_bookings_details_customer_guest_badge">ゲスト</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">プラグインを更新</string>
@@ -132,7 +157,6 @@ Language: ja_JP
     <string name="restart">再開</string>
     <string name="dev_feature_flags">機能フラグ</string>
     <string name="settings_enable_push_notifications">プッシュ通知を有効化</string>
-    <string name="my_store_widget_push_notifications_description">ストアを WordPress.com に連携して、新規注文やレビューに関するアラートを受け取ります。</string>
     <string name="my_store_widget_push_notifications_menu_title">プッシュ通知を有効化</string>
     <string name="my_store_widget_push_notifications_title">新規注文を見逃さない</string>
     <string name="woo_pos_promo_title">WooCommerce の POS</string>
@@ -242,7 +266,7 @@ Language: ja_JP
     <string name="woopos_search_orders">注文を検索</string>
     <string name="woopos_orders_details_totals_card_content_description">注文合計の内訳</string>
     <string name="woopos_orders_details_products_list_content_description">注文商品リスト</string>
-    <string name="woopos_orders_details_net_payment_label">支払額 (正味)</string>
+    <string name="woopos_orders_details_net_payment_label">純合計</string>
     <string name="woopos_orders_details_refunded_label">返金済み</string>
     <string name="woopos_orders_details_total_paid_label">支払い合計</string>
     <string name="woopos_orders_details_total_label">合計</string>
@@ -272,7 +296,6 @@ Language: ja_JP
     <string name="woopos_home_sync_failed_message">商品カタログを同期できません。 インターネット接続を確認し、もう一度お試しください。</string>
     <string name="woopos_home_sync_failed_title">同期できません</string>
     <string name="woopos_home_syncing_catalog_exit_button">POS を終了</string>
-    <string name="woopos_home_syncing_catalog_subtitle">同期はバックグラウンドで続行されます。</string>
     <string name="woopos_home_syncing_catalog_title">カタログを同期中</string>
     <string name="booking_note_discard_changes_discard">変更を破棄</string>
     <string name="booking_note_discard_changes_message">この変更を破棄してもよいですか ?</string>
@@ -489,8 +512,6 @@ Language: ja_JP
     <string name="woopos_scanning_setup_device_selection_title">バーコードスキャナーを設定</string>
     <string name="woopos_scanning_setup_barcode_content_description">バーコード</string>
     <string name="woopos_scanning_setup_dialog_content_description">スキャナー設定ダイアログ</string>
-    <string name="woopos_eligibility_screen_UK_country_name">イギリス</string>
-    <string name="woopos_eligibility_screen_US_country_name">米国</string>
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
@@ -3767,7 +3788,6 @@ Language: ja_JP
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
-    <string name="dashboard_stats_revenue">収益</string>
     <string name="dashboard_stats_orders">注文</string>
     <string name="dashboard_stats_visitors">訪問者</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>

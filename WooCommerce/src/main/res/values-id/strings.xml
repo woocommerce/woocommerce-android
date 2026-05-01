@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 09:58:55+0000
+Translation-Revision-Date: 2026-04-07 09:55:30+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Baca Selengkapnya</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. &lt;b&gt;Upgrade ke paket Pro&lt;/b&gt; guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. Upgrade ke paket Pro guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
+    <string name="woopos_eligibility_ciab_title">Paket Pro diperlukan</string>
+    <string name="ciab_order_status_open">Buka</string>
+    <string name="booking_payment_status_authorization_voided">Otorisasi Dibatalkan</string>
+    <string name="booking_payment_status_authorized">Diotorisasi</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Tidak dapat membeli label pengiriman. Silakan lengkapi alamat asal.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Alamat asal tidak ditemukan atau tidak valid</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Otorisasi Dibatalkan</string>
+    <string name="woopos_bookings_payment_status_authorized">Diotorisasi</string>
+    <string name="woopos_orders_details_refund_details_background">Latar belakang dialog rincian pengembalian dana</string>
+    <string name="woopos_orders_details_refund_total">Total pengembalian dana</string>
+    <string name="woopos_orders_details_refund_tax">Pajak</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Subtotal item (%d item)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Subtotal item (%d item)</string>
+    <string name="woopos_orders_details_refund_view_details">Lihat rincian </string>
+    <string name="woopos_orders_details_refund_label_numbered">Pengembalian Dana #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Produk yang Dikembalikan Dananya</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Anda boleh keluar, proses sinkronisasi akan tetap berjalan di latar belakang.</string>
+    <string name="woopos_home_syncing_catalog_hint">Sinkronisasi katalog mungkin memakan waktu beberapa menit.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Satu langkah lagi untuk mendapatkan pemberitahuan pesanan baru, ulasan, dan lainnya.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Dapatkan pemberitahuan push untuk toko Anda</string>
+    <string name="my_store_widget_push_notifications_description">Aktifkan pemberitahuan push agar tetap mengetahui pesanan dan ulasan baru.</string>
+    <string name="dashboard_stats_net_sales">Penjualan Bersih</string>
     <string name="woopos_search_products_and_variations">Cari produk dan variasi</string>
     <string name="woopos_bookings_details_customer_guest_badge">Tamu</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Perbarui plugin</string>
@@ -134,7 +159,6 @@ Language: id
     <string name="woopos_wc_version_sunset_banner_title">Segera perbarui WooCommerce</string>
     <string name="settings_enable_push_notifications">Aktifkan Pemberitahuan Push</string>
     <string name="my_store_widget_push_notifications_menu_title">Aktifkan pemberitahuan push</string>
-    <string name="my_store_widget_push_notifications_description">Hubungkan toko Anda ke WordPress.com untuk mendapatkan notifikasi pesanan dan ulasan baru.</string>
     <string name="woo_pos_promo_title">Point of Sale dari WooCommerce</string>
     <string name="woopos_orders_refund_reason_save">Simpan</string>
     <string name="woopos_orders_refund_reason_add">Tambah</string>
@@ -242,7 +266,7 @@ Language: id
     <string name="woopos_search_orders">Cari pesanan</string>
     <string name="woopos_orders_details_totals_card_content_description">Rincian total pesanan</string>
     <string name="woopos_orders_details_products_list_content_description">Daftar produk pesanan</string>
-    <string name="woopos_orders_details_net_payment_label">Pembayaran Bersih</string>
+    <string name="woopos_orders_details_net_payment_label">Total Bersih</string>
     <string name="woopos_orders_details_refunded_label">Dana dikembalikan</string>
     <string name="woopos_orders_details_total_paid_label">Jumlah yang telah dibayarkan</string>
     <string name="woopos_orders_details_total_label">Total</string>
@@ -272,7 +296,6 @@ Language: id
     <string name="woopos_home_sync_failed_message">Kami tidak dapat menyinkronkan katalog produk Anda. Harap periksa koneksi internet Anda lalu coba lagi.</string>
     <string name="woopos_home_sync_failed_title">Tidak dapat menyinkronkan</string>
     <string name="woopos_home_syncing_catalog_exit_button">Keluar dari POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Sinkronisasi akan dilanjutkan di latar belakang.</string>
     <string name="woopos_home_syncing_catalog_title">Menyinkronkan katalog</string>
     <string name="booking_note_discard_changes_discard">Abaikan perubahan</string>
     <string name="booking_note_discard_changes_message">Anda yakin ingin mengabaikan perubahan ini?</string>
@@ -489,8 +512,6 @@ Language: id
     <string name="woopos_scanning_setup_device_selection_title">Menyiapkan pemindai barcode</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Dialog penyiapan pemindai</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Britania Raya</string>
-    <string name="woopos_eligibility_screen_US_country_name">Amerika Serikat</string>
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
@@ -3774,7 +3795,6 @@ Language: id
     <string name="orderlist_error_fetch_generic">Error saat mengambil pesanan</string>
     <string name="dashboard_stats_error_content_description">Gambar error</string>
     <string name="dashboard_stats_error">Error saat mengambil data</string>
-    <string name="dashboard_stats_revenue">Pendapatan</string>
     <string name="dashboard_stats_orders">Pesanan</string>
     <string name="dashboard_stats_visitors">Pengunjung</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>

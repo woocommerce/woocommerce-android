@@ -55,10 +55,10 @@ class WooPosVariationsViewModelTest {
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
-        onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("$0.00")
-        onBlocking { invoke(null) }.thenReturn("$0.00")
+        on { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
+        on { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+        on { invoke(BigDecimal("0.00")) }.thenReturn("$0.00")
+        on { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val mapper: WooPosVariationMapper = mock {

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -624,6 +625,31 @@ class WooPosSyncActionTest {
         assertThat(result).isInstanceOf(WooPosSyncResult.Failed.CatalogTooLarge::class.java)
     }
 
+    @Test(expected = CancellationException::class)
+    fun `when fetch is cancelled, then CancellationException propagates`() = runTest {
+        // GIVEN
+        givenProductFetchThrowsCancellation()
+        mockFetchVariationsSuccess(pages = listOf(0), serverDate = "2024-01-01T12:00:00Z")
+
+        // WHEN
+        sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN — expected CancellationException
+    }
+
+    @Test(expected = CancellationException::class)
+    fun `when transaction is cancelled, then CancellationException propagates`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+        givenTransactionThrowsCancellation()
+
+        // WHEN
+        sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN — expected CancellationException
+    }
+
     // === EDGE CASE TESTS ===
 
     @Test
@@ -1018,6 +1044,19 @@ class WooPosSyncActionTest {
         ).thenReturn(KotlinResult.failure(Exception(errorMessage ?: "Generic error")))
     }
 
+    private fun givenProductFetchThrowsCancellation() = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                any(),
+                anyOrNull(),
+                eq(1),
+                any(),
+                eq(null)
+            )
+        ).thenReturn(KotlinResult.failure(CancellationException("Worker cancelled")))
+    }
+
     private fun givenProductCatalogTooLarge(totalPages: Int) = runBlocking {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(1), any(), eq(null))
@@ -1106,6 +1145,13 @@ class WooPosSyncActionTest {
         whenever(
             posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
         ).thenReturn(KotlinResult.failure(Exception(errorMessage)))
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun givenTransactionThrowsCancellation() = runBlocking {
+        whenever(
+            posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
+        ).thenAnswer { throw CancellationException("Worker cancelled") }
     }
 
     private fun generateProducts(count: Int): List<WooPosProductEntity> {

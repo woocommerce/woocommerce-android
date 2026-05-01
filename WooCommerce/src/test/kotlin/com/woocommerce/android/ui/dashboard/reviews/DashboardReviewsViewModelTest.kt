@@ -42,8 +42,8 @@ class DashboardReviewsViewModelTest : BaseUnitTest() {
     }
 
     private val reviewListRepository: ReviewListRepository = mock {
-        onBlocking { getCachedProductReviews(anyOrNull()) } doReturn sampleReviews
-        onBlocking { fetchMostRecentReviews(any()) } doReturn Result.success(Unit)
+        on { getCachedProductReviews(anyOrNull()) } doReturn sampleReviews
+        on { fetchMostRecentReviews(any()) } doReturn Result.success(Unit)
     }
     private val reviewModerationHandler: ReviewModerationHandler = mock {
         on { pendingModerationStatus } doReturn flowOf(emptyList())

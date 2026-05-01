@@ -46,7 +46,7 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: DashboardTransactionLauncher = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
     private val dashboardRepository: DashboardRepository = mock {
         on { widgets } doReturn flowOf(
@@ -65,7 +65,7 @@ class DashboardViewModelTest : BaseUnitTest() {
         on { observe(any()) } doReturn flowOf(Status.REGISTERED_WPCOM_ONLY)
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
-        onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
+        on { userFeedbackIsDueObservable } doReturn flowOf(false)
     }
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
         on { invoke() } doReturn flowOf(false)

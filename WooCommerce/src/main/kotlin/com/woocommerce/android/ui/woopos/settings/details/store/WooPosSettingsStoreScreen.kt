@@ -11,30 +11,63 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun WooPosSettingsStoreScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosSettingsStoreViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.onScreenResumed()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.openEditReceiptEvent.collectLatest { target ->
+            onNavigationEvent(
+                WooPosNavigationEvent.OpenWebView(
+                    url = target.url,
+                    title = ""
+                )
+            )
+        }
+    }
+
     WooPosSettingsStoreScreen(
         state = state,
+        onEditReceiptClicked = viewModel::onEditReceiptClicked,
         modifier = modifier
     )
 }
@@ -42,6 +75,7 @@ fun WooPosSettingsStoreScreen(
 @Composable
 private fun WooPosSettingsStoreScreen(
     state: WooPosSettingsStoreState,
+    onEditReceiptClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -72,7 +106,10 @@ private fun WooPosSettingsStoreScreen(
 
             is WooPosSettingsStoreState.ReceiptState.Success -> {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                ReceiptInformationSection(receiptState.receiptInfo)
+                ReceiptInformationSection(
+                    receiptInfo = receiptState.receiptInfo,
+                    onEditClicked = onEditReceiptClicked
+                )
             }
         }
     }
@@ -155,7 +192,10 @@ private fun ReceiptLoadingSection() {
 }
 
 @Composable
-private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.ReceiptInfo) {
+private fun ReceiptInformationSection(
+    receiptInfo: WooPosSettingsStoreState.ReceiptInfo,
+    onEditClicked: () -> Unit
+) {
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,6 +239,14 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
             WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_refund_policy_label),
                 subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButtonSmall(
+                text = stringResource(R.string.woopos_settings_receipt_edit_button),
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onEditClicked
             )
         }
     }

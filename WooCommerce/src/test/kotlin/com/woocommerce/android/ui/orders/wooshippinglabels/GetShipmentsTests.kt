@@ -30,8 +30,8 @@ import kotlin.test.assertNotNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetShipmentsTests : BaseUnitTest() {
     private val wooShippingLabelRepository: WooShippingLabelRepository = mock {
-        onBlocking { getLabels(any()) } doReturn emptyList()
-        onBlocking { getShipments(any()) } doReturn emptyMap()
+        on { getLabels(any()) } doReturn emptyList()
+        on { getShipments(any()) } doReturn emptyMap()
     }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()

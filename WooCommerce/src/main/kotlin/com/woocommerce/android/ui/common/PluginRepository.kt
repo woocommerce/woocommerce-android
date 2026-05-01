@@ -128,20 +128,21 @@ class PluginRepository @Inject constructor(
             }
         }.catch { cause ->
             if (cause !is OnChangedException) throw cause
-            if (cause.error is InstallSitePluginError) {
+            val error = cause.error
+            if (error is InstallSitePluginError) {
                 emit(
                     PluginInstallFailed(
                         errorDescription = cause.message ?: GENERIC_ERROR,
-                        errorType = cause.error.type.name,
-                        errorCode = cause.error.errorCode
+                        errorType = error.type.name,
+                        errorCode = error.errorCode
                     )
                 )
-            } else if (cause.error is ConfigureSitePluginError) {
+            } else if (error is ConfigureSitePluginError) {
                 emit(
                     PluginActivationFailed(
                         errorDescription = cause.message ?: GENERIC_ERROR,
-                        errorType = cause.error.type.name,
-                        errorCode = cause.error.errorCode
+                        errorType = error.type.name,
+                        errorCode = error.errorCode
                     )
                 )
             }

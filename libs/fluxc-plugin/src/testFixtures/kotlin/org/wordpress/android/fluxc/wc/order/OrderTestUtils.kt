@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -100,6 +101,30 @@ object OrderTestUtils {
             dateShipped = "2019-01-01"
         )
     }
+
+    fun generateOrderFulfillment(
+        siteId: Int,
+        orderId: Long,
+        fulfillmentId: Long = 42L,
+        status: String = "fulfilled",
+        isFulfilled: Boolean = true,
+        dateUpdated: String? = "2026-03-18 21:00:00",
+        dateFulfilled: String? = "2026-03-18 14:30:00",
+        trackingNumber: String? = "1Z999AA10123456784",
+        shipmentProvider: String? = "ups",
+        trackingUrl: String? = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+    ) = WCOrderFulfillmentModel(
+        localSiteId = LocalId(siteId),
+        orderId = RemoteId(orderId),
+        fulfillmentId = fulfillmentId,
+        status = status,
+        isFulfilled = isFulfilled,
+        dateUpdated = dateUpdated,
+        dateFulfilled = dateFulfilled,
+        trackingNumber = trackingNumber,
+        shipmentProvider = shipmentProvider,
+        trackingUrl = trackingUrl
+    )
 
     fun getOrderShipmentProvidersFromJson(json: String, siteId: Int): List<WCOrderShipmentProviderModel> {
         val providers = mutableListOf<WCOrderShipmentProviderModel>()

@@ -43,6 +43,12 @@ class WooPosSettingsViewModel @Inject constructor(
                     is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog -> {
                         showSyncErrorDialog(event.errorMessage)
                     }
+                    is ChildToParentEvent.SettingsEvent.ShowCardReaderConnectionDialog -> {
+                        showCardReaderConnectionDialog()
+                    }
+                    is ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog -> {
+                        showCardReaderUpdateDialog()
+                    }
                     else -> Unit
                 }
             }
@@ -113,6 +119,18 @@ class WooPosSettingsViewModel @Inject constructor(
     fun showSyncErrorDialog(errorMessage: String) {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosSettingsDialogState.SyncErrorDialog(errorMessage))
+        }
+    }
+
+    fun showCardReaderConnectionDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.CardReaderConnectionDialog)
+        }
+    }
+
+    fun showCardReaderUpdateDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.CardReaderUpdateDialog)
         }
     }
 

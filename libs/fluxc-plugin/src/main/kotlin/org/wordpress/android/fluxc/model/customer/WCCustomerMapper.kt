@@ -37,15 +37,15 @@ class WCCustomerMapper @Inject constructor() {
             billingPhone = dto.billing?.phone ?: "",
             billingPostcode = dto.billing?.postcode ?: "",
             billingState = dto.billing?.state ?: "",
-            shippingAddress1 = dto.billing?.address1 ?: "",
-            shippingAddress2 = dto.billing?.address2 ?: "",
-            shippingCity = dto.billing?.city ?: "",
-            shippingCompany = dto.billing?.company ?: "",
-            shippingCountry = dto.billing?.country ?: "",
-            shippingFirstName = dto.billing?.firstName ?: "",
-            shippingLastName = dto.billing?.lastName ?: "",
-            shippingPostcode = dto.billing?.postcode ?: "",
-            shippingState = dto.billing?.state ?: ""
+            shippingAddress1 = dto.shipping?.address1 ?: "",
+            shippingAddress2 = dto.shipping?.address2 ?: "",
+            shippingCity = dto.shipping?.city ?: "",
+            shippingCompany = dto.shipping?.company ?: "",
+            shippingCountry = dto.shipping?.country ?: "",
+            shippingFirstName = dto.shipping?.firstName ?: "",
+            shippingLastName = dto.shipping?.lastName ?: "",
+            shippingPostcode = dto.shipping?.postcode ?: "",
+            shippingState = dto.shipping?.state ?: ""
         )
     }
 
@@ -64,15 +64,15 @@ class WCCustomerMapper @Inject constructor() {
             phone = model.billingPhone
         )
         val shipping = CustomerDTO.Shipping(
-            firstName = model.billingFirstName,
-            lastName = model.billingLastName,
-            company = model.billingCompany,
-            address1 = model.billingAddress1,
-            address2 = model.billingAddress2,
-            city = model.billingCity,
-            state = model.billingState,
-            postcode = model.billingPostcode,
-            country = model.billingCountry
+            firstName = model.shippingFirstName,
+            lastName = model.shippingLastName,
+            company = model.shippingCompany,
+            address1 = model.shippingAddress1,
+            address2 = model.shippingAddress2,
+            city = model.shippingCity,
+            state = model.shippingState,
+            postcode = model.shippingPostcode,
+            country = model.shippingCountry
         )
         return CustomerDTO(
             email = model.email,

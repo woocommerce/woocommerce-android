@@ -358,7 +358,7 @@ class SitePickerViewModel @Inject constructor(
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
-                    it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+                    it.isWPCom || it.isCommerceGarden -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
                     else -> AccountMismatchPrimaryButton.CONNECT_JETPACK
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
@@ -530,28 +530,33 @@ class SitePickerViewModel @Inject constructor(
                 siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
                 siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                     experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                    selectedSite.set(siteVerificationModel.siteModel)
                     trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                    userEligibilityFetcher.fetchUserInfo().fold(
+                    userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
                         onSuccess = {
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-
+                            selectedSite.set(siteVerificationModel.siteModel)
                             trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                             appPrefsWrapper.removeLoginSiteAddress()
-                            registerDevice(RegisterDevice.Mode.IF_NEEDED)
+                            val registerDeviceTrigger = if (navArgs.openedFromLogin) {
+                                RegisterDevice.Trigger.LOGIN_SUCCESS
+                            } else {
+                                RegisterDevice.Trigger.SITE_SWITCH
+                            }
+                            registerDevice.kickoff(registerDeviceTrigger)
+
+                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                         },
                         onFailure = {
-                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
                         }
                     )
                 }
 
                 else -> {
-                    sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                     _isWooUpgradeDialogVisible.value = true
                 }
             }
+            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
         }
     }
 

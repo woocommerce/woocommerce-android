@@ -170,6 +170,7 @@ fun ShippingLineEditCard(
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
                 contentDescription = null,
+                tint = MaterialTheme.colors.primary,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(start = 16.dp)

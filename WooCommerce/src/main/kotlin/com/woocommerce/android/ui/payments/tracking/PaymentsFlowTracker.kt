@@ -277,13 +277,6 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED)
     }
 
-    fun trackSoftwareUpdateUnknownStatus() {
-        track(
-            eventProvider.CARD_READER_SOFTWARE_UPDATE_FAILED,
-            errorDescription = "Unknown software update status"
-        )
-    }
-
     fun trackSoftwareUpdateSucceeded(requiredUpdate: Boolean) {
         trackSoftwareUpdateEvent(eventProvider.CARD_READER_SOFTWARE_UPDATE_SUCCESS, requiredUpdate)
     }
@@ -339,6 +332,14 @@ class PaymentsFlowTracker @Inject constructor(
 
     fun trackMissingLocationTapped() {
         track(eventProvider.CARD_READER_LOCATION_MISSING_TAPPED)
+    }
+
+    fun trackLocationPermissionPreAlertShown() {
+        track(eventProvider.CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN)
+    }
+
+    fun trackLocationPermissionRequiredShown() {
+        track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
     }
 
     fun trackConnectionFailed() {

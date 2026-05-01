@@ -66,6 +66,12 @@ class BookingDetailsFragment : BaseFragment() {
                             .actionBookingDetailsFragmentToBookingNoteFragment(event.bookingId)
                     )
                 }
+                is BookingDetailsViewModel.NavigateToRescheduleBooking -> {
+                    findNavController().navigateSafely(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToBookingRescheduleFragment(event.bookingId)
+                    )
+                }
                 is BookingDetailsViewModel.NavigateToOrder -> {
                     requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
                         NavGraphMainDirections.actionGlobalOrderDetailFragment(

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -72,7 +71,7 @@ class UserEligibilityErrorViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    triggerEvent(ShowSnackbar(string.user_role_access_error_fetch_failed))
                 }
             )
 

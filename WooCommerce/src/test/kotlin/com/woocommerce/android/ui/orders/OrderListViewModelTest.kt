@@ -96,8 +96,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderListRepository: OrderListRepository = mock {
-        onBlocking { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
-        onBlocking { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
+        on { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
+        on { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
     }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()

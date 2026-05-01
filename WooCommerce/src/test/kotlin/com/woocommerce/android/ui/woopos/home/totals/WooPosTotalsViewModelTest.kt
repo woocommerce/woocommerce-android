@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentStateAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiStringParser
@@ -242,14 +241,14 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
         }
 
         // WHEN
@@ -307,14 +306,14 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+                on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+                on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+                on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
             }
 
             // WHEN
@@ -393,7 +392,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(Exception(errorMessage))
             )
         }
@@ -431,7 +430,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(Exception(errorMessage))
             )
         }
@@ -442,10 +441,10 @@ class WooPosTotalsViewModelTest {
 
         val savedState = createMockSavedStateHandle()
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
         }
 
         val viewModel = createViewModel(
@@ -507,13 +506,13 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
 
         // WHEN
@@ -543,7 +542,7 @@ class WooPosTotalsViewModelTest {
         }
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.failure(
                     WooException(
                         WooError(
@@ -631,14 +630,14 @@ class WooPosTotalsViewModelTest {
         }
         val order = createNonEmptyOrder(listOf(1L))
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.success(order)
             )
         }
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
 
         // WHEN
@@ -704,7 +703,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given reader not connected, when checkout clicked and error CTA clicked, then should try connecting to reader`() =
+    fun `given reader not connected, when checkout clicked and error CTA clicked, then should send show connection dialog event`() =
         runTest {
             // GIVEN
             val readerStatus: StateFlow<CardReaderStatus> =
@@ -717,7 +716,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
 
             // THEN
-            verify(cardReaderFacade).connectToReader()
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
         }
 
     @Test
@@ -778,13 +777,13 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
             // WHEN
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
             advanceUntilIdle()
 
             // THEN
@@ -811,7 +810,7 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -845,7 +844,7 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -864,7 +863,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given order draft created and reader connected, when payment is processed, should show processing state`() =
+    fun `given order draft created and reader connected, when payment is processed, then should show checkout with ready for payment`() =
         runTest {
             // GIVEN
             givenCardReaderConnectedAndNetworkAvailable()
@@ -873,22 +872,20 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
             // WHEN
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             advanceUntilIdle()
 
             // THEN
-            val processingState = vm.state.value as WooPosTotalsViewState.PaymentInProgress
-            assertThat(processingState).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
-            with(processingState) {
-                assertThat(title).isEqualTo("Processing payment")
-                assertThat(subtitle).isEqualTo("Please wait…")
-            }
+            val checkoutState = vm.state.value as WooPosTotalsViewState.Checkout
+            assertThat(checkoutState.readerStatus).isInstanceOf(
+                WooPosTotalsViewState.ReaderStatus.ReadyForPayment::class.java
+            )
         }
 
     @Test
@@ -918,11 +915,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             val failedPaymentRetryAction: () -> Unit = mock()
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, failedPaymentRetryAction
@@ -959,11 +956,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
                 errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
             )
@@ -1001,11 +998,11 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
             errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
         )
@@ -1040,11 +1037,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, {}
             )
@@ -1181,12 +1178,12 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("0.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("0.00$")
+                on { invoke(BigDecimal("0.00")) }.thenReturn("0.00$")
             }
 
             // WHEN
@@ -1240,14 +1237,14 @@ class WooPosTotalsViewModelTest {
                 productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
+                on { createOrderFromCartItems(itemClickedData) }.thenReturn(
                     Result.success(order)
                 )
             }
             val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+                on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+                on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+                on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
             }
 
             // WHEN
@@ -1263,7 +1260,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given payment processing state, when OnBackClicked, then should ignore OnBackClicked`() = runTest {
+    fun `given payment in progress state with capturing payment, when OnBackClicked, then should ignore OnBackClicked`() = runTest {
         // GIVEN
         givenCardReaderConnectedAndNetworkAvailable()
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
@@ -1271,13 +1268,13 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
         // WHEN
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
         advanceUntilIdle()
 
         vm.onUIEvent(OnBackClicked)
@@ -1297,7 +1294,7 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -1315,7 +1312,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given payment collecting state, when OnBackClicked, then should not ignore OnBackClicked`() = runTest {
+    fun `given payment processing state, when OnBackClicked, then should not ignore OnBackClicked`() = runTest {
         // GIVEN
         givenCardReaderConnectedAndNetworkAvailable()
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
@@ -1323,7 +1320,7 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -1348,13 +1345,13 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
         // WHEN
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
             errorType = PaymentFlowError.NoNetwork, {}
         )
@@ -1394,7 +1391,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.first().code).isEqualTo("TEST")
+            assertThat(childToParentEvent.data.updatedCoupons.first().code).isEqualTo("TEST")
         }
 
     @Test
@@ -1420,7 +1417,7 @@ class WooPosTotalsViewModelTest {
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
             val childToParentEvent = eventCaptor.firstValue
-            assertThat(childToParentEvent.updatedCoupons.size).isEqualTo(1)
+            assertThat(childToParentEvent.data.updatedCoupons.size).isEqualTo(1)
         }
 
     @Test
@@ -1457,7 +1454,7 @@ class WooPosTotalsViewModelTest {
         }
         val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+            on { createOrderFromCartItems(any()) }.thenReturn(
                 Result.failure(WooException(wooError))
             )
         }
@@ -1481,7 +1478,7 @@ class WooPosTotalsViewModelTest {
         }
         val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+            on { createOrderFromCartItems(any()) }.thenReturn(
                 Result.failure(WooException(wooError))
             )
         }
@@ -1508,7 +1505,7 @@ class WooPosTotalsViewModelTest {
                 variationId = 101L
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1541,7 +1538,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError(variationId = 101L)
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1572,7 +1569,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1605,7 +1602,7 @@ class WooPosTotalsViewModelTest {
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1664,11 +1661,11 @@ class WooPosTotalsViewModelTest {
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
         }
 
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(any()) }.thenReturn("$10.00")
+            on { invoke(any()) }.thenReturn("$10.00")
         }
 
         // WHEN
@@ -1696,7 +1693,7 @@ class WooPosTotalsViewModelTest {
             }
 
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(itemClickedData) }.doSuspendableAnswer {
+                on { createOrderFromCartItems(itemClickedData) }.doSuspendableAnswer {
                     delay(2000)
                     Result.success(createNonEmptyOrder())
                 }
@@ -1731,7 +1728,7 @@ class WooPosTotalsViewModelTest {
 
             val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
             }
 
             // WHEN
@@ -1764,7 +1761,7 @@ class WooPosTotalsViewModelTest {
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
         }
         val viewModel = createViewModel(
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
@@ -1796,7 +1793,7 @@ class WooPosTotalsViewModelTest {
         }
         val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
         }
 
         val viewModel = createViewModel(
@@ -1830,7 +1827,7 @@ class WooPosTotalsViewModelTest {
                 variationId = variationId
             )
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
                 )
             }
@@ -1871,8 +1868,8 @@ class WooPosTotalsViewModelTest {
 
             val order = createNonEmptyOrder(productIds = listOf(1L)) // Missing product 999L
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
-                onBlocking { getOrderById(any()) }.thenReturn(order)
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { getOrderById(any()) }.thenReturn(order)
             }
 
             val viewModel = createViewModel(
@@ -1923,8 +1920,8 @@ class WooPosTotalsViewModelTest {
             )
 
             val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
-                onBlocking { getOrderById(any()) }.thenReturn(order)
+                on { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+                on { getOrderById(any()) }.thenReturn(order)
             }
 
             val viewModel = createViewModel(
@@ -2049,15 +2046,15 @@ class WooPosTotalsViewModelTest {
             couponLines = couponLines,
         )
         val totalsRepository: WooPosTotalsRepository = mock {
-            onBlocking {
+            on {
                 createOrderFromCartItems(itemClickedData)
             }.thenReturn(Result.success(order))
         }
         val priceFormat: WooPosFormatPrice = mock {
-            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
-            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            on { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
+            on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
@@ -2093,10 +2090,6 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = WooPosAnalyticsTrackingDataKeeper(),
             productsDataSource = productsDataSource,
-            paymentStateTracker = WooPosPaymentStateAnalyticsTracker(
-                analyticsTracker = analyticsTracker,
-                analyticsData = WooPosAnalyticsTrackingDataKeeper(),
-            ),
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,

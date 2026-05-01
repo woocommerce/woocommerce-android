@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShip
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.NoAvailableRatesException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
@@ -709,20 +710,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                             set(index, result)
                         }
+                        selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply {
+                            set(index, null)
+                        }
                         trackShippingRatesLoading(isSuccess = true)
                     },
                     onFailure = { exception ->
-                        val errorMessage = if (exception is NoAvailableRatesException) {
-                            exception.messageResId
-                        } else {
-                            R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
+                        val errorMessage = when (exception) {
+                            is NoAvailableRatesException -> exception.messageResId
+                            is InvalidDestinationNameRateException ->
+                                R.string.woo_shipping_labels_package_creation_shipping_rates_destination_name_error
+                            else -> R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
                         }
 
                         updateState(ShippingRatesState.Error(errorMessage))
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
-                selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }
     }
@@ -936,7 +940,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onUPSTermsAccepted() {
+    fun onCarrierTermsAccepted() {
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
@@ -1075,7 +1079,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         )
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
-                triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
+                triggerEvent(
+                    NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
+                )
+            }
+
+            is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
+                triggerEvent(NavigateToFedExTermsOfService)
             }
 
             is WooException if exception.error.message?.contains("phone", ignoreCase = true) == true -> {
@@ -1458,6 +1468,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
     data object NavigateToPaymentMethodEdit : Event()
     data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
+    data object NavigateToFedExTermsOfService : Event()
 
     object OpenLearnMoreScreen : Event()
 
@@ -1489,6 +1500,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         @VisibleForTesting
         const val UPSDAP_MISSING_TOS_ERROR_CODE = "missing_upsdap_terms_of_service_acceptance"
+
+        @VisibleForTesting
+        const val FEDEX_MISSING_TOS_ERROR_CODE = "missing_fedex_terms_of_service_acceptance"
     }
 }
 

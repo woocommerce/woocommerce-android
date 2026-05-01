@@ -13,6 +13,9 @@ data class WooPosHomeState(
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
         @Parcelize
+        data object Products : ScreenPositionState()
+
+        @Parcelize
         data object Cart : ScreenPositionState()
 
         @Parcelize
@@ -44,5 +47,8 @@ data class WooPosHomeState(
             @IgnoredOnParcel
             val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
         }
+
+        @Parcelize
+        data object CardReaderConnectionDialog : DialogState()
     }
 }

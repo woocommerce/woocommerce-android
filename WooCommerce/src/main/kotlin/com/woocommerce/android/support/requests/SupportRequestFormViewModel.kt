@@ -68,23 +68,31 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
+    @Suppress("LongParameterList")
     fun onUserIdentitySet(
         context: Context,
         helpOrigin: HelpOrigin,
         extraTags: List<String>,
+        diagnosticLog: String?,
         selectedEmail: String,
         selectedName: String
     ) {
         zendeskSettings.supportEmail = selectedEmail
         zendeskSettings.supportName = selectedName
         tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
+        submitSupportRequest(
+            context = context,
+            helpOrigin = helpOrigin,
+            extraTags = extraTags,
+            diagnosticLog = diagnosticLog
+        )
     }
 
     fun submitSupportRequest(
         context: Context,
         helpOrigin: HelpOrigin,
-        extraTags: List<String>
+        extraTags: List<String>,
+        diagnosticLog: String? = null
     ) {
         val ticketType = viewState.value.ticketType ?: return
 
@@ -98,7 +106,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 viewState.value.subject,
                 viewState.value.message,
                 extraTags,
-                viewState.value.siteAddress
+                viewState.value.siteAddress,
+                diagnosticLog
             ).collect { it.handleCreateRequestResult() }
         }
     }

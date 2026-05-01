@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:layout_marginBottom="@dimen/minor_100"
-    android:layout_marginStart="@dimen/major_75"
-    android:layout_marginEnd="@dimen/major_75">
+    android:layout_marginBottom="@dimen/minor_100">
 
     <include
         android:id="@+id/custom_amount_layout"

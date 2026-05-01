@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponentDetailsBinding
+import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.ui.base.BaseFragment
@@ -21,7 +22,6 @@ import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.PhotonUtils
 
 @AndroidEntryPoint
 class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_details) {
@@ -125,8 +125,7 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
             }
             else -> {
                 val imageSize = resources.getDimensionPixelSize(R.dimen.image_major_120)
-                val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                Glide.with(requireContext()).load(photonUrl)
+                Glide.with(requireContext()).loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
                     .transform(CenterCrop()).placeholder(R.drawable.ic_product)
                     .into(binding.componentImage)
             }

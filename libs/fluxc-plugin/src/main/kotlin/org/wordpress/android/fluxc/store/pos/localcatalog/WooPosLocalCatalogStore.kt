@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store.pos.localcatalog
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -246,7 +247,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         block: suspend () -> T
     ): Result<T> =
         coroutineEngine.withDefaultContext(API, this, "executeInTransaction") {
-            runCatching {
+            runCatchingCancellable {
                 database.executeInTransaction(block)
             }
         }
@@ -330,7 +331,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
-        runCatching { posProductDao.upsertProducts(products) }
+        runCatchingCancellable { posProductDao.upsertProducts(products) }
 
     suspend fun storeCatalogData(
         localSiteId: LocalOrRemoteId.LocalId,
@@ -356,13 +357,13 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun deleteAllProducts(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posProductDao.deleteAllProductsForSite(siteId) }
+        runCatchingCancellable { posProductDao.deleteAllProductsForSite(siteId) }
 
     suspend fun deleteProducts(
         siteId: LocalOrRemoteId.LocalId,
         productIds: List<LocalOrRemoteId.RemoteId>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 posProductDao.deleteProducts(siteId, productIds)
                 posVariationsDao.deleteVariationsForProducts(siteId, productIds)
@@ -373,7 +374,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
     ): Result<Unit> =
-        runCatching {
+        runCatchingCancellable {
             database.executeInTransaction {
                 val variationIds = variations.map { it.second }
                 posVariationsDao.deleteVariationsByIds(siteId, variationIds)
@@ -381,12 +382,12 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
-        runCatching { posVariationsDao.upsertVariations(variations) }
+        runCatchingCancellable { posVariationsDao.upsertVariations(variations) }
 
     suspend fun deleteAllVariations(
         siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posVariationsDao.deleteAllVariationsForSite(siteId) }
+        runCatchingCancellable { posVariationsDao.deleteAllVariationsForSite(siteId) }
 
     /**
      * Observes all variations for a given product from the local database.
@@ -600,4 +601,10 @@ class WooPosLocalCatalogStore @Inject constructor(
             )
         }
     }
+
+    private inline fun <T> runCatchingCancellable(block: () -> T): Result<T> =
+        runCatching(block).also { result ->
+            val error = result.exceptionOrNull()
+            if (error is CancellationException) throw error
+        }
 }

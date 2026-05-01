@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 11:00:14+0000
+Translation-Revision-Date: 2026-04-07 13:56:05+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">Подробнее</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. &lt;b&gt;Перейдите на Pro&lt;/b&gt;, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. Перейдите на Pro, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
+    <string name="woopos_eligibility_ciab_title">Требуется тарифный план Pro</string>
+    <string name="ciab_order_status_open">Открыть</string>
+    <string name="booking_payment_status_authorization_voided">Авторизация аннулирована</string>
+    <string name="booking_payment_status_authorized">Авторизовано</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Не удалось приобрести транспортную этикетку. Укажите адрес отправителя.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Адрес отправителя отсутствует или недействителен</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Авторизация аннулирована</string>
+    <string name="woopos_bookings_payment_status_authorized">Авторизовано</string>
+    <string name="woopos_orders_details_refund_details_background">Фон диалогового окна сведений о возврате</string>
+    <string name="woopos_orders_details_refund_total">Всего возвращено</string>
+    <string name="woopos_orders_details_refund_tax">Налог</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Подытог по товарам (%d тов.)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Подытог по товарам (%d товар)</string>
+    <string name="woopos_orders_details_refund_view_details">Подробности</string>
+    <string name="woopos_orders_details_refund_label_numbered">Возврат № %1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Продукты, по которым возвращены средства</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Вы можете покинуть эту страницу, поскольку синхронизация будет продолжаться в фоновом режиме.</string>
+    <string name="woopos_home_syncing_catalog_hint">Синхронизация каталога может занять несколько минут.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Вы в одном шаге от получения уведомлений о новых заказах, отзывах и многом другом.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Получайте push-уведомления для своего магазина</string>
+    <string name="my_store_widget_push_notifications_description">Включите push-уведомления, чтобы следить за новыми заказами и отзывами.</string>
+    <string name="dashboard_stats_net_sales">Чистая выручка</string>
     <string name="woopos_search_products_and_variations">Поиск товаров и вариантов</string>
     <string name="woopos_bookings_details_customer_guest_badge">Гость</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Обновить плагин</string>
@@ -134,7 +159,6 @@ Language: ru
     <string name="settings_enable_push_notifications">Отправлять push-уведомления</string>
     <string name="my_store_widget_push_notifications_menu_title">Отправлять push-уведомления</string>
     <string name="my_store_widget_push_notifications_title">Узнавайте обо всех заказах</string>
-    <string name="my_store_widget_push_notifications_description">Подключите свой магазин к WordPress.com, чтобы получать уведомления о новых заказах и отзывах.</string>
     <string name="woo_pos_promo_title">Point of Sale от WooCommerce</string>
     <string name="woopos_orders_refund_reason_save">Сохранить</string>
     <string name="woopos_orders_refund_reason_add">Добавить</string>
@@ -242,7 +266,7 @@ Language: ru
     <string name="woopos_search_orders">Поиск по заказам</string>
     <string name="woopos_orders_details_totals_card_content_description">Разбивка итоговой суммы заказа</string>
     <string name="woopos_orders_details_products_list_content_description">Список товаров в заказе</string>
-    <string name="woopos_orders_details_net_payment_label">Платёж нетто</string>
+    <string name="woopos_orders_details_net_payment_label">Всего нетто</string>
     <string name="woopos_orders_details_refunded_label">Возвращённые средства</string>
     <string name="woopos_orders_details_total_paid_label">Общая сумма платежа</string>
     <string name="woopos_orders_details_total_label">Итого</string>
@@ -272,7 +296,6 @@ Language: ru
     <string name="woopos_home_sync_failed_message">Не удалось синхронизировать каталог товаров. Проверьте подключение к Интернету и повторите попытку.</string>
     <string name="woopos_home_sync_failed_title">Не удалось синхронизировать</string>
     <string name="woopos_home_syncing_catalog_exit_button">Выйти из режима POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Синхронизация будет продолжена в фоновом режиме.</string>
     <string name="woopos_home_syncing_catalog_title">Синхронизация каталога</string>
     <string name="booking_note_discard_changes_discard">Отменить изменения</string>
     <string name="booking_note_discard_changes_message">Вы действительно хотите отменить эти изменения?</string>
@@ -489,8 +512,6 @@ Language: ru
     <string name="woopos_scanning_setup_device_selection_title">Настройка сканера штрихкодов</string>
     <string name="woopos_scanning_setup_barcode_content_description">Штрихкод</string>
     <string name="woopos_scanning_setup_dialog_content_description">Диалог настройки сканера</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Великобритания</string>
-    <string name="woopos_eligibility_screen_US_country_name">Соединённые Штаты</string>
     <string name="woopos_eligibility_screen_unable_to_load">Не удалось загрузить</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS не поддерживает валюту вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
@@ -3773,7 +3794,6 @@ Language: ru
     <string name="orderlist_error_fetch_generic">Ошибка при загрузке заказов</string>
     <string name="dashboard_stats_error_content_description">Изображение ошибки</string>
     <string name="dashboard_stats_error">Ошибка при получении данных</string>
-    <string name="dashboard_stats_revenue">Доход</string>
     <string name="dashboard_stats_orders">Заказы</string>
     <string name="dashboard_stats_visitors">Посетители</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-10 09:56:45+0000
+Translation-Revision-Date: 2026-04-07 09:54:55+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_learn_more_label">더 알아보기</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">거래당 단 2.70% + $0.10로 대면 결제를 수락하세요. &lt;b&gt;Pro로 업그레이드&lt;/b&gt;하여 실시간 재고 및 주문 동기화를 통해 스마트폰과 전체 POS(판매 지점) 시스템의 눌러서 결제 기능을 이용하세요.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">거래당 단 2.70% + $0.10로 대면 결제를 수락하세요. Pro로 업그레이드하여 실시간 재고 및 주문 동기화를 통해 스마트폰과 전체 POS(판매 지점) 시스템의 눌러서 결제 기능을 이용하세요.</string>
+    <string name="woopos_eligibility_ciab_title">Pro 요금제 필수</string>
+    <string name="ciab_order_status_open">열기</string>
+    <string name="booking_payment_status_authorization_voided">인증 무효화됨</string>
+    <string name="booking_payment_status_authorized">인증됨</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">배송 레이블을 구매할 수 없습니다. 출발지 주소를 작성하세요.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">출발지 주소 누락 또는 유효하지 않음</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">인증 무효화됨</string>
+    <string name="woopos_bookings_payment_status_authorized">인증됨</string>
+    <string name="woopos_orders_details_refund_details_background">환불 상세 정보 대화 상자 배경</string>
+    <string name="woopos_orders_details_refund_total">환불 합계</string>
+    <string name="woopos_orders_details_refund_tax">세금</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">아이템 소계(%d개 아이템)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">아이템 소계(%d개 아이템)</string>
+    <string name="woopos_orders_details_refund_view_details">상세 정보 보기</string>
+    <string name="woopos_orders_details_refund_label_numbered">환불 #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">환불된 제품</string>
+    <string name="woopos_home_syncing_catalog_subtitle">이 페이지에서 나가셔도 되며 배경에서 가져오기가 계속됩니다.</string>
+    <string name="woopos_home_syncing_catalog_hint">카탈로그 동기화는 몇 분 정도 걸릴 수 있습니다.</string>
+    <string name="woo_push_notifications_introduction_connected_body">한 단계만 거치면 새 주문, 리뷰 등에 대한 알림을 받을 수 있습니다.</string>
+    <string name="woo_push_notifications_introduction_connected_title">스토어에 대한 푸시 알림 받기</string>
+    <string name="my_store_widget_push_notifications_description">푸시 알림을 활성화하여 새 주문과 리뷰를 확인하세요.</string>
+    <string name="dashboard_stats_net_sales">순매출액</string>
     <string name="woopos_search_products_and_variations">상품 및 변형 검색</string>
     <string name="woopos_bookings_details_customer_guest_badge">비회원</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">플러그인 업데이트</string>
@@ -132,7 +157,6 @@ Language: ko_KR
     <string name="restart">재시작</string>
     <string name="dev_feature_flags">기능 플래그</string>
     <string name="settings_enable_push_notifications">푸시 알림 활성화</string>
-    <string name="my_store_widget_push_notifications_description">스토어를 워드프레스닷컴에 연결하고 새 주문과 리뷰에 대한 알림을 받으세요.</string>
     <string name="my_store_widget_push_notifications_menu_title">푸시 알림 활성화</string>
     <string name="my_store_widget_push_notifications_title">새 주문을 놓치지 마세요</string>
     <string name="woo_pos_promo_title">우커머스 판매 지점</string>
@@ -242,7 +266,7 @@ Language: ko_KR
     <string name="woopos_search_orders">주문 검색</string>
     <string name="woopos_orders_details_totals_card_content_description">주문 합계 명세</string>
     <string name="woopos_orders_details_products_list_content_description">주문 상품 목록</string>
-    <string name="woopos_orders_details_net_payment_label">순 결제</string>
+    <string name="woopos_orders_details_net_payment_label">총 순매출</string>
     <string name="woopos_orders_details_refunded_label">환불됨</string>
     <string name="woopos_orders_details_total_paid_label">총 결제 금액</string>
     <string name="woopos_orders_details_total_label">합계</string>
@@ -272,7 +296,6 @@ Language: ko_KR
     <string name="woopos_home_sync_failed_message">상품 카탈로그를 동기화할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.</string>
     <string name="woopos_home_sync_failed_title">동기화할 수 없음</string>
     <string name="woopos_home_syncing_catalog_exit_button">POS 종료</string>
-    <string name="woopos_home_syncing_catalog_subtitle">백그라운드에서 동기화가 계속 진행됩니다.</string>
     <string name="woopos_home_syncing_catalog_title">카탈로그 동기화 중</string>
     <string name="booking_note_discard_changes_discard">변경 사항 취소</string>
     <string name="booking_note_discard_changes_message">이 변경 사항을 취소하시겠습니까?</string>
@@ -489,8 +512,6 @@ Language: ko_KR
     <string name="woopos_scanning_setup_device_selection_title">바코드 스캐너 설정</string>
     <string name="woopos_scanning_setup_barcode_content_description">바코드</string>
     <string name="woopos_scanning_setup_dialog_content_description">스캐너 설정 대화 상자</string>
-    <string name="woopos_eligibility_screen_UK_country_name">영국</string>
-    <string name="woopos_eligibility_screen_US_country_name">미국</string>
     <string name="woopos_eligibility_screen_unable_to_load">로드할 수 없음</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. %1$s에서는 현재 %2$s만 지원됩니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
@@ -3767,7 +3788,6 @@ Language: ko_KR
     <string name="dashboard_top_performers_empty">이 기간에 활동이 없음</string>
     <string name="dashboard_stats_error_content_description">오류 이미지</string>
     <string name="dashboard_stats_error">데이터를 가져오는 중 오류 발생</string>
-    <string name="dashboard_stats_revenue">수입</string>
     <string name="dashboard_stats_orders">주문</string>
     <string name="dashboard_stats_visitors">방문자</string>
     <string name="login_avatar_content_description">프로필 사진</string>
