@@ -26,6 +26,10 @@ android {
         // This can be re-enabled once the compose lint library supports newer metadata versions
         disable "FlowOperatorInvokedInComposition"
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -45,7 +49,9 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
+    testImplementation(libs.androidx.test.main.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
 }

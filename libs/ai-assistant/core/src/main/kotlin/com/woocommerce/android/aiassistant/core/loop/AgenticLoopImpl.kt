@@ -11,8 +11,11 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
-import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.toAssistantError
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
+import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -26,6 +29,7 @@ class AgenticLoopImpl(
     private val toolRegistry: ToolRegistry,
     private val retryPolicy: RetryPolicy,
     private val historyBudgeter: HistoryBudgeter,
+    private val safetyOrchestrator: SafetyOrchestrator = SafetyOrchestratorImpl(),
     private val json: Json,
 ) : AgenticLoop {
 
@@ -68,10 +72,9 @@ class AgenticLoopImpl(
                 content = stream.assistantText.takeIf { it.isNotEmpty() },
                 toolCalls = callsForHistory,
             )
-            modelMessages = modelMessages + newAssistantMsg
-            newTurnMessages.add(newAssistantMsg)
 
             if (stream.finishReason == null) {
+                newTurnMessages.add(newAssistantMsg)
                 emit(failedFinish(history + newTurnMessages, retryAvailable = false, AssistantError.UpstreamFailure))
                 return@flow
             }
@@ -79,16 +82,23 @@ class AgenticLoopImpl(
             val isTerminal = stream.finishReason == FinishReason.STOP ||
                 (stream.finishReason != FinishReason.TOOL_CALLS && stream.toolCallDeltas.isEmpty())
             if (isTerminal) {
+                modelMessages = modelMessages + newAssistantMsg
+                newTurnMessages.add(newAssistantMsg)
                 emit(LoopEvent.Finished(LoopOutcome.COMPLETED, history + newTurnMessages))
                 return@flow
             }
 
-            val toolResults = executeTools(assembledResults, validCalls, toolDescriptors)
-            for (result in toolResults) {
-                val newToolMsg = AssistantMessage.Tool(
-                    toolCallId = result.toolCallId,
-                    content = result.toModelContent(),
-                )
+            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors)
+            if (toolExecution is ToolExecutionOutcome.Cancelled) {
+                emitCancelledToolExecution(toolExecution, stream.assistantText, history, newTurnMessages)
+                return@flow
+            }
+
+            val completedTools = (toolExecution as ToolExecutionOutcome.Completed).completed
+            modelMessages = modelMessages + newAssistantMsg
+            newTurnMessages.add(newAssistantMsg)
+            for (completed in completedTools) {
+                val newToolMsg = completed.toToolMessage()
                 modelMessages = modelMessages + newToolMsg
                 newTurnMessages.add(newToolMsg)
             }
@@ -160,33 +170,73 @@ class AgenticLoopImpl(
         assembledResults: List<ToolCallAssembler.AssemblyResult>,
         validCalls: List<ToolCall>,
         toolDescriptors: List<ToolDescriptor>,
-    ): List<ToolResult> {
-        val toolResults = mutableListOf<ToolResult>()
+    ): ToolExecutionOutcome {
+        val completedTools = mutableListOf<CompletedToolCall>()
         for (r in assembledResults) {
             if (r is ToolCallAssembler.AssemblyResult.MalformedArguments) {
                 val result = ToolResult.ValidationError(r.callId, "Malformed arguments for ${r.toolName}")
-                toolResults += result
+                completedTools += CompletedToolCall(r.toHistoryToolCall(), result)
                 emit(LoopEvent.ToolCallFinished(result))
             }
         }
         for (call in validCalls) {
-            emit(LoopEvent.ToolCallStarted(call))
             val descriptor = toolDescriptors.find { it.name == call.name }
-            val result = when {
-                descriptor == null ->
-                    ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
-                descriptor.safetyLevel == ToolSafetyLevel.UNSAFE -> {
-                    emit(LoopEvent.BlockedBySafety(call))
-                    ToolResult.RejectedBySafety(call.id)
-                }
-                else -> toolRegistry.execute(call)
+            val result = if (descriptor == null) {
+                ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
+            } else {
+                executeConfirmedTool(call, descriptor) ?: return ToolExecutionOutcome.Cancelled(completedTools)
             }
-            toolResults += result
-            if (result !is ToolResult.RejectedBySafety) {
-                emit(LoopEvent.ToolCallFinished(result))
+            completedTools += CompletedToolCall(call, result)
+            emit(LoopEvent.ToolCallFinished(result))
+        }
+        return ToolExecutionOutcome.Completed(completedTools)
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.executeConfirmedTool(
+        call: ToolCall,
+        descriptor: ToolDescriptor,
+    ): ToolResult? = when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
+        SafetyDecision.Execute -> executeApprovedTool(call)
+        is SafetyDecision.RequireConfirmation -> {
+            val requestId = decision.request.id
+            try {
+                emit(LoopEvent.ConfirmationRequested(decision.request))
+                val confirmationResult = safetyOrchestrator.awaitResult(requestId)
+                emit(LoopEvent.ConfirmationResolved(confirmationResult))
+                when (confirmationResult.decision) {
+                    ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
+                    ConfirmationDecision.CANCELLED -> null
+                }
+            } finally {
+                safetyOrchestrator.cancelPending(requestId)
             }
         }
-        return toolResults
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.executeApprovedTool(call: ToolCall): ToolResult {
+        emit(LoopEvent.ToolCallStarted(call))
+        return toolRegistry.execute(call)
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.emitCancelledToolExecution(
+        outcome: ToolExecutionOutcome.Cancelled,
+        assistantText: String,
+        history: List<AssistantMessage>,
+        newTurnMessages: MutableList<AssistantMessage>,
+    ) {
+        val completedCalls = outcome.completed.map { it.historyToolCall }
+        val cancelledAssistantMessage = AssistantMessage.Assistant(
+            content = assistantText.takeIf { it.isNotEmpty() },
+            toolCalls = completedCalls,
+        )
+        if (cancelledAssistantMessage.content != null || completedCalls.isNotEmpty()) {
+            newTurnMessages.add(cancelledAssistantMessage)
+        }
+        outcome.completed.forEach { completed ->
+            newTurnMessages.add(completed.toToolMessage())
+        }
+        emit(LoopEvent.Failed(AssistantError.Cancelled))
+        emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
     }
 
     private data class StreamResult(
@@ -194,6 +244,16 @@ class AgenticLoopImpl(
         val assistantText: String,
         val finishReason: FinishReason?,
         val visibleOutputStarted: Boolean,
+    )
+
+    private sealed interface ToolExecutionOutcome {
+        data class Completed(val completed: List<CompletedToolCall>) : ToolExecutionOutcome
+        data class Cancelled(val completed: List<CompletedToolCall>) : ToolExecutionOutcome
+    }
+
+    private data class CompletedToolCall(
+        val historyToolCall: ToolCall,
+        val result: ToolResult,
     )
 
     private fun messagesWithPartialText(
@@ -211,6 +271,11 @@ class AgenticLoopImpl(
         is ToolResult.RejectedBySafety -> errorJson("Action was not approved")
         is ToolResult.TransportError -> errorJson("Tool execution failed")
     }
+
+    private fun CompletedToolCall.toToolMessage() = AssistantMessage.Tool(
+        toolCallId = result.toolCallId,
+        content = result.toModelContent(),
+    )
 
     private fun ToolCallAssembler.AssemblyResult.toHistoryToolCall(): ToolCall = when (this) {
         is ToolCallAssembler.AssemblyResult.Success -> call
