@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
+import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,12 +27,16 @@ class NotificationSettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val showTestNotification: ShowTestNotification,
+    private val wooNotificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _newOrderNotificationSoundStatus = MutableStateFlow(
         notificationChannelsHandler.checkNewOrderNotificationSound()
     )
     val newOrderNotificationSoundStatus = _newOrderNotificationSoundStatus.asLiveData()
+
+    private val _isAppNotificationsEnabled = MutableStateFlow(wooNotificationBuilder.isNotificationsEnabled())
+    val isAppNotificationsEnabled = _isAppNotificationsEnabled.asLiveData()
 
     private val _notificationTypeItems = MutableStateFlow(
         listOf(
@@ -73,6 +78,10 @@ class NotificationSettingsViewModel @Inject constructor(
 
     fun onDeviceNotificationSettingsClicked() {
         triggerEvent(OpenDeviceNotificationSettings)
+    }
+
+    fun refreshNotificationSettings() {
+        _isAppNotificationsEnabled.value = wooNotificationBuilder.isNotificationsEnabled()
     }
 
     fun onEnableChaChingSoundClicked() {
