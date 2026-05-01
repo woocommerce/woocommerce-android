@@ -2,7 +2,6 @@ import io.sentry.android.gradle.extensions.InstrumentationFeature
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
@@ -15,6 +14,15 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
+}
+
+def isComposeScreenshotTestsEnabled = providers
+        .gradleProperty("android.experimental.enableScreenshotTest")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+if (isComposeScreenshotTestsEnabled) {
+    apply plugin: libs.plugins.compose.screenshot.get().pluginId
 }
 
 fladle {
@@ -79,7 +87,10 @@ def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properti
 
 android {
     namespace = "com.woocommerce.android"
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    if (isComposeScreenshotTestsEnabled) {
+        experimentalProperties["android.experimental.enableScreenshotTest"] = true
+    }
 
     compileSdk = gradle.ext.compileSdkVersion
 
@@ -218,8 +229,10 @@ android {
 }
 
 dependencies {
-    screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
-    screenshotTestImplementation(libs.google.screenshot.validation.api)
+    if (isComposeScreenshotTestsEnabled) {
+        screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
+        screenshotTestImplementation(libs.google.screenshot.validation.api)
+    }
 
     implementation(libs.wordpress.libaddressinput.common) {
         exclude group: "org.json", module: "json"

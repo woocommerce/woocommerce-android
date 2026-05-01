@@ -186,7 +186,7 @@ Use stable names:
 Generate screenshots with:
 
 ```bash
-./gradlew --no-configuration-cache :WooCommerce:updateVanillaDebugScreenshotTest
+./gradlew --no-configuration-cache -Pandroid.experimental.enableScreenshotTest=true :WooCommerce:updateVanillaDebugScreenshotTest
 ```
 
 Do not run this in the background.
