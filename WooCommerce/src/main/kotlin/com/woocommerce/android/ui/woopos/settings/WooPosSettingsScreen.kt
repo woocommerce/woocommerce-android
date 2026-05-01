@@ -18,9 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,9 +56,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val isPhoneLayout = remember(configuration) { context.isWooPosPhoneLayout() }
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
     if (isPhoneLayout) {
         WooPosSettingsPhoneContent(
@@ -108,12 +104,12 @@ private fun WooPosSettingsPhoneContent(
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
+    val handleDetailBack: () -> Unit = {
+        if (state.canGoBack) onBack() else onDismissDetail()
+    }
+
     BackHandler {
-        when {
-            !state.showingDetail -> onBackClicked()
-            state.canGoBack -> onBack()
-            else -> onDismissDetail()
-        }
+        if (state.showingDetail) handleDetailBack() else onBackClicked()
     }
 
     AnimatedContent(
@@ -145,13 +141,7 @@ private fun WooPosSettingsPhoneContent(
             WooPosSettingsDetailPaneScreen(
                 state = state,
                 onNavigate = onNavigate,
-                onBack = {
-                    if (state.canGoBack) {
-                        onBack()
-                    } else {
-                        onDismissDetail()
-                    }
-                },
+                onBack = handleDetailBack,
                 onShowProductInfoDialog = onShowProductInfoDialog,
                 onShowScanningSetupDialog = onShowScanningSetupDialog,
                 onNavigationEvent = onNavigationEvent,
