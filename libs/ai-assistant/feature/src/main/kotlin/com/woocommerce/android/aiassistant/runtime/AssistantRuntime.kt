@@ -4,6 +4,7 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import kotlinx.coroutines.flow.Flow
 
@@ -32,6 +33,10 @@ sealed interface AssistantRuntimeEvent {
 
     data class AwaitingConfirmation(
         val confirmation: AssistantConfirmationCard,
+    ) : AssistantRuntimeEvent
+
+    data class ConfirmationResolved(
+        val result: ConfirmationResult,
     ) : AssistantRuntimeEvent
 
     data class Finished(

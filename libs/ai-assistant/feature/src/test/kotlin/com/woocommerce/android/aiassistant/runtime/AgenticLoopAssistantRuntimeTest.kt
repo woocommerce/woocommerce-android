@@ -156,6 +156,20 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `when loop resolves confirmation, then runtime forwards the resolution event`() = runTest {
+        val resolved = ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationResolved(resolved))),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.ConfirmationResolved(resolved)
+        )
+    }
+
+    @Test
     fun `when write is confirmed, then runtime resolves safety confirmation`() = runTest {
         val safetyOrchestrator = FakeSafetyOrchestrator()
         val runtime = runtime(safetyOrchestrator = safetyOrchestrator)

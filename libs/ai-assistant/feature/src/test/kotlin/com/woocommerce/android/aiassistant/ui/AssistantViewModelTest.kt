@@ -6,6 +6,8 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
@@ -706,6 +708,64 @@ class AssistantViewModelTest {
                     AssistantUiSegment.Text("Order updated"),
                     AssistantUiSegment.ConfirmationCard(givenConfirmationCard()),
                 ),
+            )
+        )
+    }
+
+    @Test
+    fun `given confirmed confirmation resolves, when turn later finishes, then confirmed card stays in transcript`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+        advanceUntilIdle()
+
+        viewModel.onConfirmWrite()
+        runtime.emit(
+            AssistantRuntimeEvent.ConfirmationResolved(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CONFIRMED)
+            )
+        )
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Cancel order 123"),
+                    AssistantMessage.Assistant("Done"),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).contains(
+            AssistantUiSegment.ConfirmationCard(
+                givenConfirmationCard().copy(state = AssistantConfirmationCardState.CONFIRMED)
+            )
+        )
+    }
+
+    @Test
+    fun `given cancelled confirmation resolves, when turn stops, then cancelled card stays in transcript`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+        advanceUntilIdle()
+
+        runtime.emit(
+            AssistantRuntimeEvent.ConfirmationResolved(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            )
+        )
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Cancel order 123"),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).contains(
+            AssistantUiSegment.ConfirmationCard(
+                givenConfirmationCard().copy(state = AssistantConfirmationCardState.CANCELLED)
             )
         )
     }

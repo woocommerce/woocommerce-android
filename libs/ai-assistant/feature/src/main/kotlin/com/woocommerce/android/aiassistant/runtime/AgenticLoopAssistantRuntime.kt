@@ -83,7 +83,9 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     pendingError = null
                 }
                 is LoopEvent.Failed -> pendingError = event.error
-                is LoopEvent.ConfirmationResolved,
+                is LoopEvent.ConfirmationResolved -> emit(
+                    AssistantRuntimeEvent.ConfirmationResolved(event.result)
+                )
                 is LoopEvent.ToolCallFinished,
                 is LoopEvent.ToolCallStarted -> Unit
             }

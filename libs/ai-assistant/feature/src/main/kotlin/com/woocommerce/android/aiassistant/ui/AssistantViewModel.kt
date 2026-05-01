@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
@@ -181,6 +182,16 @@ class AssistantViewModel @AssistedInject constructor(
                     )
                 }
             }
+            is AssistantRuntimeEvent.ConfirmationResolved -> {
+                _uiState.update { state ->
+                    state.copy(
+                        messages = state.messages.withUpdatedConfirmationCard(
+                            confirmationId = event.result.requestId,
+                            state = event.result.decision.toCardState(),
+                        )
+                    )
+                }
+            }
             is AssistantRuntimeEvent.Finished -> {
                 val activeMessageId = activeAssistantMessageId
                 val normalizedError = event.normalizedAssistantError()
@@ -348,6 +359,28 @@ class AssistantViewModel @AssistedInject constructor(
                 it.model.confirmationId == confirmation.confirmationId
         } + AssistantUiSegment.ConfirmationCard(confirmation)
         return copy(segments = updatedSegments)
+    }
+
+    private fun List<AssistantUiMessage>.withUpdatedConfirmationCard(
+        confirmationId: String,
+        state: AssistantConfirmationCardState,
+    ): List<AssistantUiMessage> = map { message ->
+        message.copy(
+            segments = message.segments.map { segment ->
+                if (segment is AssistantUiSegment.ConfirmationCard &&
+                    segment.model.confirmationId == confirmationId
+                ) {
+                    segment.copy(model = segment.model.copy(state = state))
+                } else {
+                    segment
+                }
+            }
+        )
+    }
+
+    private fun ConfirmationDecision.toCardState(): AssistantConfirmationCardState = when (this) {
+        ConfirmationDecision.CONFIRMED -> AssistantConfirmationCardState.CONFIRMED
+        ConfirmationDecision.CANCELLED -> AssistantConfirmationCardState.CANCELLED
     }
 
     @AssistedFactory
