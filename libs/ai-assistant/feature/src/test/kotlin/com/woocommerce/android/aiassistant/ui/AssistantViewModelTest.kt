@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui
 
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
@@ -276,6 +277,38 @@ class AssistantViewModelTest {
             viewModel.onRetry()
 
             assertThat(runtime.retryRequests).isEmpty()
+        }
+
+    @Test
+    fun `given unknown error with raw cause, when turn fails, then normalized error metadata drives the transcript`() =
+        runTest {
+            val rawCause = IllegalStateException("raw upstream token abc123")
+            val normalizedError = AssistantError.Unknown(cause = rawCause)
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = false,
+                    error = normalizedError,
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = normalizedError,
+                        canRetry = false,
+                    ),
+                )
+            )
+            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.assistant_chat_error_unknown)
         }
 
     @Test

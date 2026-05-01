@@ -54,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
-import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
 import kotlinx.serialization.json.buildJsonObject
@@ -334,7 +333,7 @@ private fun AssistantInlineError(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.error.toDisplayText(),
+            text = stringResource(error.error.toMessageRes()),
             color = MaterialTheme.colorScheme.onErrorContainer,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -472,26 +471,6 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
     )
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
 }
-
-@Composable
-private fun AssistantUiError?.toDisplayText(): String = when (this) {
-    AssistantUiError.NETWORK -> stringResource(R.string.assistant_chat_error_network)
-    AssistantUiError.AUTH -> stringResource(R.string.assistant_chat_error_auth)
-    AssistantUiError.RATE_LIMIT -> stringResource(R.string.assistant_chat_error_rate_limit)
-    AssistantUiError.TIMEOUT -> stringResource(R.string.assistant_chat_error_timeout)
-    AssistantUiError.UPSTREAM_FAILURE -> stringResource(R.string.assistant_chat_error_upstream_failure)
-    AssistantUiError.TOOL_FAILED -> stringResource(R.string.assistant_chat_error_tool_failed)
-    AssistantUiError.INVALID_TOOL_CALL -> stringResource(R.string.assistant_chat_error_invalid_tool_call)
-    AssistantUiError.OUTCOME_UNKNOWN -> stringResource(R.string.assistant_chat_error_outcome_unknown)
-    AssistantUiError.CANCELLED -> stringResource(R.string.assistant_chat_error_cancelled)
-    AssistantUiError.CONFIRMATION_DEFERRED -> stringResource(R.string.assistant_chat_error_confirmation_deferred)
-    AssistantUiError.MAX_ITERATIONS -> stringResource(R.string.assistant_chat_error_max_iterations)
-    AssistantUiError.UNKNOWN,
-    null -> stringResource(R.string.assistant_chat_error_unknown)
-}
-
-@Composable
-private fun AssistantError.toDisplayText(): String = toAssistantUiError().toDisplayText()
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
