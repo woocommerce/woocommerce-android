@@ -1,2 +1,0 @@
-24.6:
-Der Verkauf mit Woo POS ist reibungsloser denn je! Sieh dir den Synchronisierungsfortschritt während der anfänglichen Katalogeinrichtung an, bearbeite Beleginformationen direkt in den POS-Einstellungen und profitiere von einer besseren Aktualisierung. In dieser Version wurde auch ein Absturz beim Programmstart behoben, ebenso wie Probleme mit der POS-Synchronisierung in Shops mit Produktvarianten. Zudem wurde die Validierung der Versandetikettenadresse verbessert.
