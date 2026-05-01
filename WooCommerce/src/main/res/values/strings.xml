@@ -3753,6 +3753,7 @@
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_take_cash_payment_label">Cash payment</string>
+    <string name="woopos_payment_method_card_reader_label">Card reader</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">Edit order</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">Remove coupons</string>
