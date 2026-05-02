@@ -4,6 +4,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -173,4 +174,41 @@ class AssistantUiStateTest {
         assertThat(AssistantConfirmationCardState.CANCELLED.iconRes())
             .isEqualTo(R.drawable.ic_assistant_confirmation_cancelled)
     }
+
+    @Test
+    fun `given assistant card, when card segment is created, then card is preserved`() {
+        val card = orderCard()
+
+        val segment: AssistantUiSegment = AssistantUiSegment.Card(card)
+
+        assertThat(segment).isEqualTo(AssistantUiSegment.Card(card))
+    }
+
+    @Test
+    fun `given assistant message, when text and card segments are used, then segment order is preserved`() {
+        val card = orderCard()
+
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(
+                AssistantUiSegment.Text("Here is the order."),
+                AssistantUiSegment.Card(card),
+            ),
+        )
+
+        assertThat(message.segments).containsExactly(
+            AssistantUiSegment.Text("Here is the order."),
+            AssistantUiSegment.Card(card),
+        )
+    }
+
+    private fun orderCard() = AssistantCard.Order(
+        remoteOrderId = 123L,
+        number = "#1001",
+        status = "processing",
+        total = "12.34 USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
+    )
 }

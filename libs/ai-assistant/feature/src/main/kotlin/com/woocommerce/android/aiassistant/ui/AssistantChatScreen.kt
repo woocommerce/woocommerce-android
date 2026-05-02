@@ -348,6 +348,7 @@ private fun AssistantMessageSegments(
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
             )
+            is AssistantUiSegment.Card -> Unit
             is AssistantUiSegment.Text -> AssistantMessageTextSegment(
                 text = segment.text,
                 textColor = textColor,
