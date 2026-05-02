@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -24,6 +25,10 @@ class AiAssistantHostFragment : BaseFragment() {
             AssistantRoute(
                 conversationId = ASSISTANT_CONVERSATION_ID,
                 onBack = { findNavController().navigateUp() },
+                assistantCardRenderer = WooAssistantCardRenderer(),
+                onCardAction = { action ->
+                    findNavController().navigateSafely(action.toNavDirections())
+                },
             )
         }
     }
