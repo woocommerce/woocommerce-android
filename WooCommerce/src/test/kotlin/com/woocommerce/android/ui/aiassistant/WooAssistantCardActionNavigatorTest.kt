@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.aiassistant
 
-import com.woocommerce.android.R
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import org.assertj.core.api.Assertions.assertThat
