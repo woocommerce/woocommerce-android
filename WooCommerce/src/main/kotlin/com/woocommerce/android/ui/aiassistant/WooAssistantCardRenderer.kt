@@ -37,7 +37,6 @@ internal fun AssistantCard.Order.toOrderSummaryRowModel() = OrderSummaryRowModel
     statusColor = status.toOrderStatusColor(),
     totalPrice = total,
     isPosOrder = false,
-    layoutMode = OrderSummaryRowModel.LayoutMode.COMPACT,
 )
 
 @ColorRes

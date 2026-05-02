@@ -10,10 +10,4 @@ data class OrderSummaryRowModel(
     @ColorRes val statusColor: Int,
     val totalPrice: String,
     val isPosOrder: Boolean = false,
-    val layoutMode: LayoutMode = LayoutMode.DASHBOARD,
-) {
-    enum class LayoutMode {
-        DASHBOARD,
-        COMPACT,
-    }
-}
+)

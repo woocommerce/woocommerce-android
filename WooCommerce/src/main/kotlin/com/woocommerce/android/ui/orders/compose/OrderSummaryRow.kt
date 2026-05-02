@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,100 +20,83 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTag
 
-@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 fun OrderSummaryRow(
     order: OrderSummaryRowModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val rowModifier = modifier
-        .fillMaxWidth()
-        .focusable(true)
-        .clickable(onClick = onClick)
-        .padding(16.dp)
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .focusable(true)
+            .clickable(onClick = onClick)
+    ) {
+        val contentModifier = Modifier
+            .fillMaxWidth()
+            .padding(ROW_PADDING)
+        val contentWidth = maxWidth - ROW_PADDING * 2
 
-    when (order.layoutMode) {
-        OrderSummaryRowModel.LayoutMode.DASHBOARD -> DashboardOrderSummaryRow(
-            order = order,
-            modifier = rowModifier,
-        )
-        OrderSummaryRowModel.LayoutMode.COMPACT -> CompactOrderSummaryRow(
-            order = order,
-            modifier = rowModifier,
-        )
+        if (contentWidth < COMPACT_CONTENT_WIDTH_THRESHOLD) {
+            CompactOrderSummaryRow(
+                order = order,
+                modifier = contentModifier,
+            )
+        } else {
+            DashboardOrderSummaryRow(
+                order = order,
+                modifier = contentModifier,
+            )
+        }
     }
 }
 
-@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 private fun DashboardOrderSummaryRow(
     order: OrderSummaryRowModel,
     modifier: Modifier = Modifier,
 ) {
-    ConstraintLayout(
-        modifier = modifier
-    ) {
-        val (number, date, name, statusRow, total) = createRefs()
+    Box(modifier = modifier) {
+        Column(modifier = Modifier.align(Alignment.TopStart)) {
+            Row {
+                Text(
+                    text = order.number,
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                )
 
-        Text(
-            text = order.number,
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier.constrainAs(number) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
+                Text(
+                    text = order.date,
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                    modifier = Modifier.padding(start = 16.dp)
+                )
             }
-        )
 
-        Text(
-            text = order.date,
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .constrainAs(date) {
-                    top.linkTo(parent.top)
-                    start.linkTo(number.end)
-                }
-        )
-
-        Text(
-            text = order.customerName,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .constrainAs(name) {
-                    top.linkTo(number.bottom)
-                    start.linkTo(parent.start)
-                }
-        )
-
-        Row(
-            modifier = Modifier
-                .constrainAs(statusRow) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                },
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            OrderStatusTags(order = order)
+            Text(
+                text = order.customerName,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
-        Text(
-            text = order.totalPrice,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .constrainAs(total) {
-                    top.linkTo(statusRow.bottom)
-                    end.linkTo(parent.end)
-                }
-        )
+        Column(
+            modifier = Modifier.align(Alignment.TopEnd),
+            horizontalAlignment = Alignment.End,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OrderStatusTags(order = order)
+            }
+
+            Text(
+                text = order.totalPrice,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
@@ -181,3 +166,6 @@ private fun OrderStatusTags(order: OrderSummaryRowModel) {
         )
     }
 }
+
+private val ROW_PADDING = 16.dp
+private val COMPACT_CONTENT_WIDTH_THRESHOLD = 320.dp
