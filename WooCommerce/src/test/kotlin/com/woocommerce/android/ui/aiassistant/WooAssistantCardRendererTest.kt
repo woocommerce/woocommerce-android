@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.aiassistant
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -18,6 +19,7 @@ class WooAssistantCardRendererTest {
         assertThat(model.statusColor).isEqualTo(R.color.tag_bg_processing)
         assertThat(model.totalPrice).isEqualTo("12.34 USD")
         assertThat(model.isPosOrder).isFalse()
+        assertThat(model.layoutMode).isEqualTo(OrderSummaryRowModel.LayoutMode.COMPACT)
     }
 
     @Test
