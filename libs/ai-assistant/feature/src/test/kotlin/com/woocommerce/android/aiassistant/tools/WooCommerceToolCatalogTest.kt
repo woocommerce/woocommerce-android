@@ -36,7 +36,7 @@ class WooCommerceToolCatalogTest {
         ProductVariationsUpdateToolHandler(mock(), mock()),
         AnalyticsRevenueToolHandler(mock(), mock()),
         AnalyticsOrdersToolHandler(mock(), mock()),
-        ShowCardsToolHandler(),
+        ShowCardsToolHandler(mock()),
         CustomersListToolHandler(mock()),
     )
 

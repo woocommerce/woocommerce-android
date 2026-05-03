@@ -389,6 +389,98 @@ class AIProductsDataSourceTest {
             assertThat(result.getOrThrow().failedProducts).containsExactly(failedProduct)
         }
 
+    // --- getProducts (cache-first batch) ---
+
+    @Test
+    fun `given all requested products are cached, when getProducts is called, then no fetch is made`() = runTest {
+        val products = listOf(makeProduct(id = 10L), makeProduct(id = 11L))
+        whenever(productStore.getProductsByRemoteIds(site, listOf(10L, 11L))).thenReturn(products)
+
+        val result = dataSource.getProducts(productIds = listOf(10L, 11L)).getOrThrow()
+
+        assertThat(result.items).containsExactlyElementsOf(products)
+        assertThat(result.cacheHitCount).isEqualTo(2)
+        assertThat(result.cacheMissCount).isEqualTo(0)
+        assertThat(result.fetchAttempted).isFalse
+        assertThat(result.fetchFailed).isFalse
+        verify(productStore, never()).fetchProducts(
+            site = any(),
+            offset = any(),
+            pageSize = any(),
+            sortType = any(),
+            includedProductIds = any(),
+            excludedProductIds = any(),
+            filterOptions = any(),
+            includeTypes = any(),
+            forceRefresh = any(),
+            orderCurrency = anyOrNull(),
+            posProductsOnly = any(),
+        )
+    }
+
+    @Test
+    fun `given some products are cached and fetch fails, when getProducts is called, then cached products are returned`() =
+        runTest {
+            val cached = makeProduct(id = 10L)
+            whenever(productStore.getProductsByRemoteIds(site, listOf(10L, 11L))).thenReturn(listOf(cached))
+            whenever(
+                productStore.fetchProducts(
+                    site = any(),
+                    offset = any(),
+                    pageSize = any(),
+                    sortType = any(),
+                    includedProductIds = any(),
+                    excludedProductIds = any(),
+                    filterOptions = any(),
+                    includeTypes = any(),
+                    forceRefresh = any(),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                )
+            ).thenReturn(WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom")))
+
+            val result = dataSource.getProducts(productIds = listOf(10L, 11L)).getOrThrow()
+
+            assertThat(result.items).containsExactly(cached)
+            assertThat(result.cacheHitCount).isEqualTo(1)
+            assertThat(result.cacheMissCount).isEqualTo(1)
+            assertThat(result.fetchAttempted).isTrue
+            assertThat(result.fetchFailed).isTrue
+        }
+
+    @Test
+    fun `given some products are cached and fetch succeeds, when getProducts is called, then all products are returned`() =
+        runTest {
+            val cached = makeProduct(id = 10L)
+            val fetched = makeProduct(id = 11L)
+            whenever(productStore.getProductsByRemoteIds(site, listOf(10L, 11L)))
+                .thenReturn(listOf(cached))
+                .thenReturn(listOf(cached, fetched))
+            whenever(
+                productStore.fetchProducts(
+                    site = any(),
+                    offset = eq(0),
+                    pageSize = eq(1),
+                    sortType = any(),
+                    includedProductIds = eq(listOf(11L)),
+                    excludedProductIds = any(),
+                    filterOptions = any(),
+                    includeTypes = any(),
+                    forceRefresh = eq(false),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                )
+            ).thenReturn(WooResult(true))
+
+            val result = dataSource.getProducts(productIds = listOf(10L, 11L)).getOrThrow()
+
+            assertThat(result.items).containsExactly(cached, fetched)
+            assertThat(result.cacheHitCount).isEqualTo(1)
+            assertThat(result.cacheMissCount).isEqualTo(1)
+            assertThat(result.fetchAttempted).isTrue
+            assertThat(result.fetchFailed).isFalse
+        }
+
     @Test
     fun `given batch update fails, when bulkUpdateProducts is called, then failure result is returned`() = runTest {
         whenever(productStore.batchUpdateProducts(eq(site), any())).thenReturn(

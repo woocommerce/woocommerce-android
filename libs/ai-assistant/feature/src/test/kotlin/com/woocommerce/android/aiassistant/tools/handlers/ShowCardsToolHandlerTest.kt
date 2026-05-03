@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolution
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
@@ -27,7 +28,7 @@ import org.junit.Test
 
 class ShowCardsToolHandlerTest {
     private val json = Json
-    private val handler = ShowCardsToolHandler()
+    private val handler = handlerWith(FakeResolver.empty())
 
     @Test
     fun `when descriptor is inspected, then show cards accepts Android v1 order and product references`() {
@@ -166,6 +167,25 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
+    fun `given non numeric string ids, when executed, then ids are invalid and not resolved`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(FakeResolver.empty()),
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "order", "id": "abc" },
+                { "family": "product", "id": "12x" },
+                { "family": "order", "id": "0" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
     fun `given duplicate refs, when executed, then duplicates after first family id pair are rejected`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(orderCard(id = "123"), productCard(id = "123")),
@@ -213,16 +233,30 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given default resolver, when executed, then valid refs are missing with not found and no cards`() = runTest {
-        val result = executeShowCards(
-            handler = ShowCardsToolHandler(),
-            argumentsJson = """{"references":[{"family":"order","id":"123"}]}"""
-        )
+    fun `given one resolved and one missing ref, when executed, then structured and ui cards preserve partial success`() =
+        runTest {
+            val result = callShowCards(
+                resolver = FakeResolver(
+                    listOf(
+                        orderCard(id = "123"),
+                        ShowCardsResolution.Missing(
+                            ref = ValidatedRef(index = 1, family = ShowCardFamily.Product, id = "456"),
+                            reason = ShowCardsRejectionReason.NotFound,
+                        ),
+                    )
+                ),
+                referencesJson = """
+                    [
+                      { "family": "order", "id": "123" },
+                      { "family": "product", "id": "456" }
+                    ]
+                """.trimIndent(),
+            )
 
-        assertThat(missingReasons(result)).containsExactly("not_found")
-        assertThat(rendered(result)).isEqualTo(0)
-        assertThat(uiCards(result)).isEmpty()
-    }
+            assertThat(rendered(result)).isEqualTo(1)
+            assertThat(missingReasons(result)).containsExactly("not_found")
+            assertThat(uiCards(result)).hasSize(1)
+        }
 
     private fun handlerWith(resolver: ShowCardsResolver) =
         ShowCardsToolHandler(resolver)
@@ -370,10 +404,14 @@ class ShowCardsToolHandlerTest {
     private class FakeResolver(
         private val resolutions: List<ShowCardsResolution>,
     ) : ShowCardsResolver {
-        override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> =
-            refs.map { ref -> resolutions.first { it.ref.family == ref.family && it.ref.id == ref.id } }
+        override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> {
+            if (refs.isEmpty()) return emptyList()
+            return refs.map { ref -> resolutions.first { it.ref.family == ref.family && it.ref.id == ref.id } }
+        }
 
         companion object {
+            fun empty(): FakeResolver = FakeResolver(emptyList())
+
             fun resolving(vararg resolutions: ShowCardsResolution): FakeResolver =
                 FakeResolver(resolutions.toList())
         }
