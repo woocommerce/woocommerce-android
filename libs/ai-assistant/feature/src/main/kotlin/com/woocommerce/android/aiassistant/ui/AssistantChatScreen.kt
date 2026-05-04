@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -288,6 +289,7 @@ private fun AssistantMessageBubble(
         message = message,
         showTypingIndicator = showTypingIndicator,
     )
+    val showBubbleChrome = !message.isStandaloneToolActivity()
 
     Row(
         modifier = Modifier
@@ -298,16 +300,27 @@ private fun AssistantMessageBubble(
         Box(
             modifier = Modifier
                 .widthIn(max = 360.dp)
-                .heightIn(min = 40.dp)
-                .background(chrome.bubbleColor, chrome.shape)
                 .then(
-                    if (chrome.isUser) {
+                    if (showBubbleChrome) {
                         Modifier
+                            .heightIn(min = 40.dp)
+                            .background(chrome.bubbleColor, chrome.shape)
+                            .then(
+                                if (chrome.isUser) {
+                                    Modifier
+                                } else {
+                                    Modifier.border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                        shape = chrome.shape,
+                                    )
+                                }
+                            )
+                            .padding(horizontal = 14.dp, vertical = 10.dp)
                     } else {
-                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, chrome.shape)
+                        Modifier
                     }
-                )
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                ),
             contentAlignment = Alignment.CenterStart,
         ) {
             Column(
@@ -409,12 +422,23 @@ private data class AssistantMessageBubbleChrome(
 
 @Composable
 private fun AssistantTypingIndicator() {
-    Text(
-        text = stringResource(R.string.assistant_chat_typing_indicator),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = MaterialTheme.typography.bodyMedium,
-    )
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val dotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+        repeat(TYPING_INDICATOR_DOT_COUNT) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(color = dotColor, shape = CircleShape),
+            )
+        }
+    }
 }
+
+private const val TYPING_INDICATOR_DOT_COUNT = 3
 
 @Composable
 private fun AssistantMessageSegments(
@@ -452,23 +476,19 @@ private fun AssistantMessageSegments(
 private fun AssistantToolActivityPill(activity: AssistantToolActivity) {
     val label = stringResource(activity.labelRes())
     Surface(
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(7.dp)
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)),
-            )
+            ToolActivityProgressDots()
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.labelMedium,
@@ -497,6 +517,23 @@ private fun AssistantCardSegment(
             onAction = onCardAction,
             modifier = Modifier.fillMaxWidth(),
         )
+    }
+}
+
+@Composable
+private fun ToolActivityProgressDots() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val dotColor = MaterialTheme.colorScheme.primary
+        repeat(TYPING_INDICATOR_DOT_COUNT) {
+            Box(
+                modifier = Modifier
+                    .size(4.dp)
+                    .background(color = dotColor, shape = CircleShape),
+            )
+        }
     }
 }
 
@@ -539,6 +576,12 @@ private fun AssistantInlineError(
 
 private fun AssistantUiMessage.shouldShowEmptyPlaceholder(): Boolean =
     segments.all { it is AssistantUiSegment.Text && it.text.isEmpty() } && error == null
+
+private fun AssistantUiMessage.isStandaloneToolActivity(): Boolean =
+    role == AssistantUiMessage.Role.ASSISTANT &&
+        error == null &&
+        segments.isNotEmpty() &&
+        segments.all { it is AssistantUiSegment.ToolActivity }
 
 @Composable
 private fun AssistantStatusPanel(
