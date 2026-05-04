@@ -22,14 +22,16 @@ internal class OrdersUpdateToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "orders_update",
-        description = "Update an order's status. Status changes such as completed/cancelled/refunded fire " +
-            "customer emails — the merchant confirms before this dispatches. Do NOT use this to issue a " +
-            "refund — moving an order to 'refunded' only changes the status, it does not return funds.",
+        description = "Update a single order. Accepts only the `status` field. " +
+            "Allowed transitions: on-hold -> processing, processing -> completed. " +
+            "Cancellation and refund flows are not supported by this tool; never use it to issue refunds. " +
+            "Writes require Android confirmation UI; do not ask for confirmation in prose. " +
+            "Use at most one write per assistant turn; this is one single-entity write outside explicit bulk tools.",
         inputSchema = inputSchema {
             integer("id", description = "The order ID. Required.", required = true)
             enum(
                 "status",
-                values = listOf("pending", "processing", "on-hold", "completed", "cancelled", "refunded", "failed"),
+                values = ALLOWED_STATUSES.toList(),
                 description = "New order status.",
                 required = true,
             )
@@ -43,6 +45,15 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         }
         if (args.status !in ALLOWED_STATUSES) {
             return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
+        }
+        val currentStatus = dataSource.getOrder(args.id).getOrElse {
+            return ToolResult.TransportError(call.id, retryable = true)
+        }.status.normalizedOrderStatus()
+        if (args.status !in ALLOWED_TRANSITIONS[currentStatus].orEmpty()) {
+            return ToolResult.ValidationError(
+                call.id,
+                "Cannot transition order from '$currentStatus' to '${args.status}'.",
+            )
         }
         return dataSource.updateOrderStatus(args.id, args.status).fold(
             onSuccess = {
@@ -66,17 +77,16 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         val status: String,
     )
 
-    companion object {
-        // Allowed `status` values for `orders_update`
-        // Intentionally excludes "trash" to prevent accidental deletion of orders
+    private fun String.normalizedOrderStatus(): String = removePrefix("wc-")
+
+    private companion object {
         private val ALLOWED_STATUSES = setOf(
-            "pending",
             "processing",
-            "on-hold",
             "completed",
-            "cancelled",
-            "refunded",
-            "failed"
+        )
+        private val ALLOWED_TRANSITIONS = mapOf(
+            "on-hold" to setOf("processing"),
+            "processing" to setOf("completed"),
         )
     }
 }

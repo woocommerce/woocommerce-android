@@ -22,10 +22,11 @@ internal class ProductsUpdateToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "products_update",
-        description = "Update a single simple product. Accepts only name, regular_price, sale_price, " +
-            "stock_quantity, and status. Setting stock_quantity also enables stock management. " +
-            "Variable products should be updated through individual variations, not the parent product. " +
-            "At most one write is executed per turn.",
+        description = "Update a single simple product. Accepts only these fields: `name`, `regular_price`, " +
+            "`sale_price`, `stock_quantity`, and `status`. Setting `stock_quantity` also enables stock " +
+            "management. Variable products and variations are not updated by this tool; use variation-specific " +
+            "tools when available. Writes require Android confirmation UI; do not ask for confirmation in prose. " +
+            "Use at most one write per assistant turn; this is one single-entity write outside explicit bulk tools.",
         inputSchema = inputSchema {
             integer("id", description = "The product ID. Required.", required = true)
             string("name", description = "New product name.")
