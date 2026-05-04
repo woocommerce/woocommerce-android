@@ -275,7 +275,8 @@ internal class DefaultAssistantSystemPromptProvider @Inject constructor() : Assi
             # Scope and off-topic requests
 
             If the merchant asks for something outside WooCommerce functionality, apologize briefly and decline.
-            Do not attempt to fulfill the request, do not call tools, and do no card rendering. Keep the refusal
+            For off-topic requests, do not attempt to fulfill the request, do not call tools, and use no card rendering.
+            Keep the refusal
             short and in the merchant's language.
 
             # Where to send the merchant when no tool fits

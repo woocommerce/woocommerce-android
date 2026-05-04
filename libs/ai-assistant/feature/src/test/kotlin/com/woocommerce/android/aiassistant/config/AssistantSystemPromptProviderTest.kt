@@ -65,4 +65,23 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("call the write tool directly")
         assertThat(prompt).contains("do not ask \"shall I proceed?\"")
     }
+
+    @Test
+    fun `when prompt is built, then off topic requests are declined with an apology`() {
+        val prompt = DefaultAssistantSystemPromptProvider().systemPrompt(todayIsoDate = "2026-05-04")
+
+        assertThat(prompt)
+            .`as`(OFF_TOPIC_REGRESSION_CASE)
+            .contains("outside WooCommerce functionality")
+        assertThat(prompt).contains("apologize")
+        assertThat(prompt).contains("decline")
+        assertThat(prompt).contains("do not attempt to fulfill")
+        assertThat(prompt).contains("no card rendering")
+    }
+
+    private companion object {
+        private const val OFF_TOPIC_REGRESSION_CASE =
+            "User asks: Write a wedding toast. Expected behavior: apologize briefly, decline because it is " +
+                "outside WooCommerce functionality, call no tools, render no cards."
+    }
 }
