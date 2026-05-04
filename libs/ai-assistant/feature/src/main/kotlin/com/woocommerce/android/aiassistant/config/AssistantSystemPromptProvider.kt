@@ -11,7 +11,7 @@ internal interface AssistantSystemPromptProvider {
     fun systemPrompt(todayIsoDate: String? = null): String
 }
 
-internal class DefaultAssistantSystemPromptProvider @Inject constructor() : AssistantSystemPromptProvider {
+internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : AssistantSystemPromptProvider {
     override fun systemPrompt(todayIsoDate: String?): String {
         val isoDate = todayIsoDate ?: defaultToday()
         val date = weekdayAnchor(isoDate) ?: isoDate
