@@ -131,6 +131,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 price = price.takeIf { it.isNotBlank() },
                 stockStatus = stockStatus.takeIf { it.isNotBlank() },
                 status = status.takeIf { it.isNotBlank() },
+                imageUrl = getFirstImageUrl()?.takeIf { it.isNotBlank() },
             ),
         ),
     )
