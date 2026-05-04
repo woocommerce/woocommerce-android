@@ -25,7 +25,8 @@ class AssistantCardSegmentMapperTest {
                     remoteOrderId = 1L,
                     number = "#1",
                     status = "processing",
-                    total = "12.34 USD",
+                    total = "12.34",
+                    currency = "USD",
                     customerName = "Jane Doe",
                     date = "2026-05-01T10:00:00Z",
                 )
@@ -35,7 +36,8 @@ class AssistantCardSegmentMapperTest {
                     remoteOrderId = 2L,
                     number = "#2",
                     status = "processing",
-                    total = "12.34 USD",
+                    total = "12.34",
+                    currency = "USD",
                     customerName = "Jane Doe",
                     date = "2026-05-01T10:00:00Z",
                 )

@@ -10,10 +10,14 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AiAssistantHostFragment : BaseFragment() {
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
     override fun onCreateView(
@@ -25,7 +29,7 @@ class AiAssistantHostFragment : BaseFragment() {
             AssistantRoute(
                 conversationId = ASSISTANT_CONVERSATION_ID,
                 onBack = { findNavController().navigateUp() },
-                assistantCardRenderer = WooAssistantCardRenderer(),
+                assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
                 onCardAction = { action ->
                     findNavController().navigateSafely(action.toNavDirections())
                 },

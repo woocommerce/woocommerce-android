@@ -33,7 +33,8 @@ class AssistantCardPayloadParserTest {
                 remoteOrderId = 123L,
                 number = "#1001",
                 status = "processing",
-                total = "12.34 USD",
+                total = "12.34",
+                currency = "USD",
                 customerName = "Jane Doe",
                 date = "2026-05-01T10:00:00Z",
             )
@@ -61,6 +62,7 @@ class AssistantCardPayloadParserTest {
                 number = "#1001",
                 status = "",
                 total = "12.34",
+                currency = "",
                 customerName = "",
                 date = "",
             )

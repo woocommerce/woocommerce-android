@@ -6,6 +6,7 @@ sealed interface AssistantCard {
         val number: String,
         val status: String,
         val total: String,
+        val currency: String,
         val customerName: String,
         val date: String,
     ) : AssistantCard

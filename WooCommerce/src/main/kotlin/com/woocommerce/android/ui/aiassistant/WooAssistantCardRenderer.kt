@@ -11,8 +11,11 @@ import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
+import com.woocommerce.android.util.CurrencyFormatter
 
-class WooAssistantCardRenderer : AssistantCardRenderer {
+class WooAssistantCardRenderer(
+    private val currencyFormatter: CurrencyFormatter,
+) : AssistantCardRenderer {
     @Composable
     override fun OrderCard(
         card: AssistantCard.Order,
@@ -20,7 +23,7 @@ class WooAssistantCardRenderer : AssistantCardRenderer {
         modifier: Modifier,
     ) {
         OrderSummaryRow(
-            order = card.toOrderSummaryRowModel(),
+            order = card.toOrderSummaryRowModel(currencyFormatter),
             onClick = { onAction(card.toOpenOrderAction()) },
             modifier = modifier,
         )
@@ -29,15 +32,22 @@ class WooAssistantCardRenderer : AssistantCardRenderer {
 
 internal fun AssistantCard.Order.toOpenOrderAction() = AssistantCardAction.OpenOrder(remoteOrderId)
 
-internal fun AssistantCard.Order.toOrderSummaryRowModel() = OrderSummaryRowModel(
+internal fun AssistantCard.Order.toOrderSummaryRowModel(currencyFormatter: CurrencyFormatter) = OrderSummaryRowModel(
     number = number,
     date = date,
     customerName = customerName,
     status = status,
     statusColor = status.toOrderStatusColor(),
-    totalPrice = total,
+    totalPrice = formatTotalPrice(currencyFormatter),
     isPosOrder = false,
 )
+
+private fun AssistantCard.Order.formatTotalPrice(currencyFormatter: CurrencyFormatter): String =
+    when {
+        total.isBlank() -> ""
+        currency.isBlank() -> total
+        else -> currencyFormatter.formatCurrency(total, currency)
+    }
 
 @ColorRes
 private fun String.toOrderStatusColor(): Int =

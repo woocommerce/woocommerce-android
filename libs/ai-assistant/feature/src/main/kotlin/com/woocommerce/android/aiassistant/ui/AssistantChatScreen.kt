@@ -856,7 +856,7 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = listOf(card.customerName, card.status, card.total)
+                    text = listOf(card.customerName, card.status, card.unformattedTotal)
                         .filter { it.isNotBlank() }
                         .joinToString(" - "),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -871,10 +871,16 @@ private fun sampleOrderCard() = AssistantCard.Order(
     remoteOrderId = 3479L,
     number = "#3479",
     status = "processing",
-    total = "42.00 USD",
+    total = "42.00",
+    currency = "USD",
     customerName = "Jane Doe",
     date = "2026-05-01T10:00:00Z",
 )
+
+private val AssistantCard.Order.unformattedTotal: String
+    get() = total.takeIf { it.isNotBlank() }
+        ?.let { listOf(it, currency).filter { value -> value.isNotBlank() }.joinToString(" ") }
+        .orEmpty()
 
 private fun sampleConfirmationPreview() = RenderedConfirmationPreview(
     message = "Update order #3479",

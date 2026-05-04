@@ -18,14 +18,12 @@ internal object AssistantCardPayloadParser {
             remoteOrderId = remoteOrderId,
             number = card.title,
             status = details.status.orEmpty(),
-            total = listOfNotBlank(details.total, details.currency).joinToString(" "),
+            total = details.total.orEmpty(),
+            currency = details.currency.orEmpty(),
             customerName = details.customerName.orEmpty(),
             date = details.dateCreated.orEmpty(),
         )
     }
-
-    private fun listOfNotBlank(vararg values: String?): List<String> =
-        values.filterNotNull().filter { it.isNotBlank() }
 
     private const val ORDER_FAMILY = "order"
 }
