@@ -73,6 +73,7 @@ class AssistantViewModel @AssistedInject constructor(
         }
         _uiState.update {
             it.copy(
+                messages = it.messages.withoutTransientActivity(),
                 status = AssistantUiStatus.ERROR,
                 error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
@@ -104,6 +105,7 @@ class AssistantViewModel @AssistedInject constructor(
                     activeAssistantMessageId = null
                     _uiState.update {
                         it.copy(
+                            messages = it.messages.withoutTransientActivity(),
                             status = AssistantUiStatus.ERROR,
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
@@ -143,7 +145,7 @@ class AssistantViewModel @AssistedInject constructor(
                 )
             }
             state.copy(
-                messages = state.messages.withoutRetryActions() + turnMessages,
+                messages = state.messages.withoutTransientActivity().withoutRetryActions() + turnMessages,
                 status = AssistantUiStatus.STREAMING,
                 error = null,
                 canRetry = false,
@@ -203,12 +205,14 @@ class AssistantViewModel @AssistedInject constructor(
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
-                        messages = it.messages.withAssistantError(
-                            activeMessageId = activeMessageId,
-                            error = normalizedError,
-                            canRetry = canRetry,
-                            nextId = idGenerator::nextId,
-                        ),
+                        messages = it.messages
+                            .withoutTransientActivity()
+                            .withAssistantError(
+                                activeMessageId = activeMessageId,
+                                error = normalizedError,
+                                canRetry = canRetry,
+                                nextId = idGenerator::nextId,
+                            ),
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
                         canRetry = canRetry,
@@ -283,6 +287,7 @@ class AssistantViewModel @AssistedInject constructor(
                     activeAssistantMessageId = null
                     _uiState.update {
                         it.copy(
+                            messages = it.messages.withoutTransientActivity(),
                             status = AssistantUiStatus.ERROR,
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
@@ -346,6 +351,13 @@ class AssistantViewModel @AssistedInject constructor(
             } else {
                 message
             }
+        }
+
+    private fun List<AssistantUiMessage>.withoutTransientActivity(): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.filterNot { it is AssistantUiSegment.ToolActivity }
+            )
         }
 
     private fun List<AssistantUiMessage>.withAssistantError(

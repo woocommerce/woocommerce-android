@@ -191,6 +191,47 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active tool activity, when turn completes, then transient activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Find order 123"),
+                    AssistantMessage.Assistant("Order 123 is processing."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.shouldShowTypingIndicator(state.messages.last())).isFalse()
+    }
+
+    @Test
+    fun `given active tool activity, when turn fails, then transient activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("Find order 123")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.canRetry).isTrue()
+    }
+
+    @Test
     fun `when turn fails with retry available, then state exposes error and retry calls runtime`() = runTest {
         viewModel.onSendMessage("Hello")
         runtime.emit(
@@ -638,6 +679,21 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active tool activity, when cancel is requested, then transient activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.error).isEqualTo(AssistantUiError.CANCELLED)
+    }
+
+    @Test
     fun `given partial assistant text, when cancel is requested, then partial text remains visible`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
@@ -680,6 +736,29 @@ class AssistantViewModelTest {
                     ),
                 )
             )
+        }
+
+    @Test
+    fun `given failed turn with tool activity, when retry starts, then old transient activity is not replayed`() =
+        runTest {
+            viewModel.onSendMessage("Find order 123")
+            runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Find order 123")),
+                    retryAvailable = true,
+                    error = AssistantError.Network,
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.onRetry()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.messages.dropLast(1).toolActivitySegments()).isEmpty()
+            assertThat(state.shouldShowTypingIndicator(state.messages.last())).isTrue()
         }
 
     @Test
@@ -981,6 +1060,12 @@ class AssistantViewModelTest {
             return "message-$count"
         }
     }
+
+    private fun AssistantUiState.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
+        messages.toolActivitySegments()
+
+    private fun List<AssistantUiMessage>.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
+        flatMap { it.segments }.filterIsInstance<AssistantUiSegment.ToolActivity>()
 
     private companion object {
         const val CONVERSATION_ID = "conversation-1"
