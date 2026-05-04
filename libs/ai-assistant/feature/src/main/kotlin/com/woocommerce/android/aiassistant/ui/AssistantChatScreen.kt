@@ -401,7 +401,11 @@ private fun AssistantCardSegment(
             onAction = onCardAction,
             modifier = Modifier.fillMaxWidth(),
         )
-        is AssistantCard.Product -> Unit
+        is AssistantCard.Product -> assistantCardRenderer.ProductCard(
+            card = card,
+            onAction = onCardAction,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -774,6 +778,8 @@ private fun AssistantChatScreenPreview() {
                     segments = listOf(
                         AssistantUiSegment.Text("Here is order #3479."),
                         AssistantUiSegment.Card(sampleOrderCard()),
+                        AssistantUiSegment.Text("Here is a matching product."),
+                        AssistantUiSegment.Card(sampleProductCard()),
                     ),
                 ),
             )
@@ -866,6 +872,39 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
             }
         }
     }
+
+    @Composable
+    override fun ProductCard(
+        card: AssistantCard.Product,
+        onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        Surface(
+            modifier = modifier,
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        ) {
+            Column(
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = card.name,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = listOf(card.stockStatus, card.price)
+                        .filter { it.isNotBlank() }
+                        .joinToString(" - "),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
 }
 
 private fun sampleOrderCard() = AssistantCard.Order(
@@ -876,6 +915,16 @@ private fun sampleOrderCard() = AssistantCard.Order(
     currency = "USD",
     customerName = "Jane Doe",
     date = "2026-05-01T10:00:00Z",
+)
+
+private fun sampleProductCard() = AssistantCard.Product(
+    remoteProductId = 456L,
+    name = "Woo socks",
+    sku = "woo-socks",
+    price = "9.99",
+    stockStatus = "instock",
+    status = "publish",
+    imageUrl = "",
 )
 
 private val AssistantCard.Order.unformattedTotal: String

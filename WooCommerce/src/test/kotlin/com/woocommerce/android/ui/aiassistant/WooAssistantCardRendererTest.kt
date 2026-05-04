@@ -9,6 +9,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 
 class WooAssistantCardRendererTest {
     private val currencyFormatter: CurrencyFormatter = mock()
@@ -44,6 +45,30 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
+    fun `given assistant product card, when action helper is used, then open product id is used`() {
+        val action = productCard().toOpenProductAction()
+
+        assertThat(action).isEqualTo(AssistantCardAction.OpenProduct(remoteProductId = 456L))
+    }
+
+    @Test
+    fun `given assistant product card, when price is numeric, then host formatter formats it`() {
+        val decimalFormatter: (BigDecimal) -> String = { amount -> "\$${amount.toPlainString()}" }
+        whenever(currencyFormatter.buildBigDecimalFormatter()).thenReturn(decimalFormatter)
+
+        val price = productCard(price = "9.99").formatProductPrice(currencyFormatter)
+
+        assertThat(price).isEqualTo("$9.99")
+    }
+
+    @Test
+    fun `given assistant product card, when price is not numeric, then raw price is used`() {
+        val price = productCard(price = "Free").formatProductPrice(currencyFormatter)
+
+        assertThat(price).isEqualTo("Free")
+    }
+
+    @Test
     fun `given ciab open status, when mapped, then processing color is used like dashboard orders`() {
         val model = orderCard(status = "open", currency = "").toOrderSummaryRowModel(currencyFormatter)
 
@@ -61,5 +86,17 @@ class WooAssistantCardRendererTest {
         currency = currency,
         customerName = "Jane Doe",
         date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun productCard(
+        price: String = "9.99",
+    ) = AssistantCard.Product(
+        remoteProductId = 456L,
+        name = "Socks",
+        sku = "woo-socks",
+        price = price,
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/socks.png",
     )
 }

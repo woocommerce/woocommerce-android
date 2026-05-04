@@ -10,4 +10,11 @@ interface AssistantCardRenderer {
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     )
+
+    @Composable
+    fun ProductCard(
+        card: AssistantCard.Product,
+        onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    )
 }
