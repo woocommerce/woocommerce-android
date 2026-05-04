@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.runtime
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
+import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
@@ -14,8 +15,10 @@ import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -28,6 +31,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
     private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
+    private val cardParser: AssistantCardUiStructuredParser,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -51,6 +55,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             catalogSnapshot = toolCatalogSelector.select(request.toolScope, toolRegistry.descriptors()),
         )
         var pendingError: AssistantError? = null
+        val toolNamesById = mutableMapOf<String, String>()
 
         agenticLoop.runTurn(
             conversationId = request.conversationId,
@@ -85,20 +90,37 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.ConfirmationResolved -> emit(
                     AssistantRuntimeEvent.ConfirmationResolved(event.result)
                 )
-                is LoopEvent.ToolCallStarted -> emit(
-                    AssistantRuntimeEvent.ToolCallStarted(
-                        toolCallId = event.call.id,
-                        toolName = event.call.name,
+                is LoopEvent.ToolCallStarted -> {
+                    toolNamesById[event.call.id] = event.call.name
+                    emit(
+                        AssistantRuntimeEvent.ToolCallStarted(
+                            toolCallId = event.call.id,
+                            toolName = event.call.name,
+                        )
                     )
-                )
-                is LoopEvent.ToolCallFinished -> emit(
-                    AssistantRuntimeEvent.ToolCallFinished(
-                        toolCallId = event.result.toolCallId,
+                }
+                is LoopEvent.ToolCallFinished -> {
+                    val toolName = toolNamesById.remove(event.result.toolCallId)
+                    emit(
+                        AssistantRuntimeEvent.ToolCallFinished(
+                            toolCallId = event.result.toolCallId,
+                        )
                     )
-                )
+                    val cards = event.result.toShowCards(toolName)
+                    if (cards.isNotEmpty()) {
+                        emit(AssistantRuntimeEvent.CardsResolved(cards))
+                    }
+                }
             }
         }
     }
+
+    private fun ToolResult.toShowCards(toolName: String?) =
+        if (toolName == SHOW_CARDS_TOOL_NAME && this is ToolResult.Success) {
+            cardParser.parse(uiStructured)
+        } else {
+            emptyList()
+        }
 
     private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
         return AssistantConfirmationCard(

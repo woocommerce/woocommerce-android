@@ -18,6 +18,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
@@ -53,7 +54,7 @@ internal class ShowCardsToolHandler internal constructor(
     )
 
     override val descriptor = ToolDescriptor(
-        name = "show_cards",
+        name = SHOW_CARDS_TOOL_NAME,
         description = "Show entity cards in the UI for orders or products selected by the assistant.",
         inputSchema = buildJsonObject {
             put("type", "object")

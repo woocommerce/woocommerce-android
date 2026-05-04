@@ -27,16 +27,25 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -46,6 +55,12 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class AgenticLoopAssistantRuntimeTest {
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = false
+        explicitNulls = false
+    }
+
     @Test
     fun `when agentic loop finishes with max iterations, then runtime preserves outcome`() = runTest {
         val updatedHistory = listOf(AssistantMessage.User("Hello"))
@@ -261,6 +276,49 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given show cards non success and success results, when adapted, then only success emits cards`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-validation")),
+                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-success")),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-success",
+                            structured = buildJsonObject { put("rendered", 1) },
+                            uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                        )
+                    ),
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-transport")),
+                    LoopEvent.ToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.CardsResolved(
+                listOf(
+                    AssistantCardEntry(
+                        key = AssistantCardKey(family = "order", id = "123"),
+                        card = AssistantCard.Order(
+                            remoteOrderId = 123L,
+                            number = "#123",
+                            status = "processing",
+                            total = "12.34",
+                            currency = "USD",
+                            customerName = "Jane Doe",
+                            date = "2026-05-01T10:00:00Z",
+                        ),
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
@@ -284,6 +342,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         confirmationSnapshotResolver = snapshotResolver,
+        cardParser = AssistantCardUiStructuredParser(json),
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -292,6 +351,28 @@ class AgenticLoopAssistantRuntimeTest {
         toolScope = ToolScope.GLOBAL,
         userMessage = "Hello",
         history = emptyList(),
+    )
+
+    private fun showCardsCall(id: String) = ToolCall(
+        id = id,
+        name = "show_cards",
+        arguments = buildJsonObject {},
+    )
+
+    private fun showCardsUiStructured(vararg cards: ShowCardPayload) =
+        json.encodeToJsonElement(ShowCardsUiStructured(cards = cards.toList()))
+
+    private fun orderPayload(id: String, title: String) = ShowCardPayload(
+        family = "order",
+        id = id,
+        title = title,
+        details = ShowCardDetails.Order(
+            status = "processing",
+            total = "12.34",
+            currency = "USD",
+            dateCreated = "2026-05-01T10:00:00Z",
+            customerName = "Jane Doe",
+        ),
     )
 
     private class FakeAgenticLoop(
