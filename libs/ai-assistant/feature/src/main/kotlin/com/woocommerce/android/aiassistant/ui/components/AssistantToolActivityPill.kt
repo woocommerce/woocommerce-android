@@ -16,6 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,8 +40,14 @@ internal fun AssistantToolActivityPill(
     modifier: Modifier = Modifier,
 ) {
     val label = stringResource(activity.labelRes())
+    val description = stringResource(R.string.assistant_chat_tool_activity_content_description, label)
     Surface(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = description
+            if (activity.status == AssistantToolActivity.Status.RUNNING) {
+                liveRegion = LiveRegionMode.Polite
+            }
+        },
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
