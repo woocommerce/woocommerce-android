@@ -226,6 +226,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     },
                     onFailure = { failure ->
                         consecutiveErrors++
+                        val reason = failure.toPollReason()
                         WooLog.w(
                             WooLog.T.LOGIN,
                             "QR login poll: failed (consecutive=$consecutiveErrors): $failure"
@@ -237,11 +238,11 @@ class QrLoginScannerViewModel @Inject constructor(
                             trackScanFailure(
                                 step = Step.POLL,
                                 errorContext = failure.javaClass.simpleName,
-                                errorType = ErrorReason.Network.name,
+                                errorType = reason.name,
                             )
                             _uiState.value = Error(
-                                reason = failure.toPollReason(),
-                                retryTicket = ticket
+                                reason = reason,
+                                retryTicket = ticket.takeIf { reason.isRetryEligible() }
                             )
                             return@launch
                         }

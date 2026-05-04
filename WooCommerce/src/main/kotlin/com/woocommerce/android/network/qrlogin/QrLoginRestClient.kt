@@ -168,11 +168,10 @@ class QrLoginRestClient @Inject constructor(
         return Request.Builder()
             .url(statusUrl)
             .get()
-            // Force-bust any intermediary HTTP cache (OkHttp's shared cache, edge proxy,
-            // CDN). Polling responses are state-bearing — pinning the first response and
-            // serving it forever means the app sees `scanned` indefinitely even after the
-            // merchant approves on wc-admin.
-            .cacheControl(CacheControl.FORCE_NETWORK)
+            // Force-bust any intermediary HTTP cache (OkHttp's shared cache, edge proxy, CDN).
+            // Polling responses are state-bearing, so pinning the first response means the app
+            // sees `scanned` indefinitely even after the merchant approves on wc-admin.
+            .cacheControl(POLL_CACHE_CONTROL)
             .build()
     }
 
@@ -359,6 +358,10 @@ class QrLoginRestClient @Inject constructor(
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_CONFLICT = 409
         const val HTTP_UPGRADE_REQUIRED = 426
+        val POLL_CACHE_CONTROL = CacheControl.Builder()
+            .noCache()
+            .noStore()
+            .build()
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

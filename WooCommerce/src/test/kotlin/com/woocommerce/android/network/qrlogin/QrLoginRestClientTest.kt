@@ -339,6 +339,9 @@ class QrLoginRestClientTest : BaseUnitTest() {
         assertThat(request.method).isEqualTo("GET")
         assertThat(request.url.toString())
             .isEqualTo("https://store.example/wp-json/wc-admin/mobile-app/qr-login-session-status?session_id=sess-99")
+        assertThat(request.header("Cache-Control"))
+            .contains("no-cache")
+            .contains("no-store")
     }
 
     @Test

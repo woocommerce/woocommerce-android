@@ -251,6 +251,20 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as UiState.Error
         assertThat(state.reason).isEqualTo(ErrorReason.RateLimited)
+        assertThat(state.retryTicket).isEqualTo(ticket)
+    }
+
+    @Test
+    fun `given endpoint-missing poll, when first error fires, then transitions without retry`() = testBlocking {
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            .thenReturn(Result.failure(QrLoginSessionStatusException.EndpointMissing))
+
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.EndpointMissing)
+        assertThat(state.retryTicket).isNull()
     }
 
     // endregion
