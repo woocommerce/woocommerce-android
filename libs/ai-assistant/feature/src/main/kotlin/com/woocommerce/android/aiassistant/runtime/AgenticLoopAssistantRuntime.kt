@@ -8,9 +8,14 @@ import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
+import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -22,6 +27,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val safetyOrchestrator: SafetyOrchestrator,
     private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
+    private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -30,16 +36,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
 
     override suspend fun cancelTurn(conversationId: String) = Unit
 
-    override suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult =
-        if (safetyOrchestrator.confirm(confirmationId)) {
-            AssistantRuntimeConfirmationResult.Accepted
+    override suspend fun resolveConfirmation(
+        result: ConfirmationResult,
+    ): AssistantRuntimeConfirmationDispatchResult =
+        if (safetyOrchestrator.resolve(result)) {
+            AssistantRuntimeConfirmationDispatchResult.Accepted
         } else {
-            AssistantRuntimeConfirmationResult.Deferred
+            AssistantRuntimeConfirmationDispatchResult.Deferred
         }
-
-    override suspend fun cancelWrite(confirmationId: String) {
-        safetyOrchestrator.cancel(confirmationId)
-    }
 
     private fun runTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = flow {
         val context = SessionContext(
@@ -58,9 +62,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.AssistantTextDelta -> emit(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
-                is LoopEvent.ConfirmationRequested -> emit(
-                    AssistantRuntimeEvent.AwaitingConfirmation(event.request.toPendingConfirmation())
-                )
+                is LoopEvent.ConfirmationRequested -> {
+                    val snapshot = confirmationSnapshotResolver.resolve(event.request)
+                    emit(
+                        AssistantRuntimeEvent.AwaitingConfirmation(
+                            event.request.toConfirmationCard(snapshot)
+                        )
+                    )
+                }
                 is LoopEvent.Finished -> {
                     emit(
                         AssistantRuntimeEvent.Finished(
@@ -73,20 +82,25 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     pendingError = null
                 }
                 is LoopEvent.Failed -> pendingError = event.error
-                is LoopEvent.ConfirmationResolved,
+                is LoopEvent.ConfirmationResolved -> emit(
+                    AssistantRuntimeEvent.ConfirmationResolved(event.result)
+                )
                 is LoopEvent.ToolCallFinished,
                 is LoopEvent.ToolCallStarted -> Unit
             }
         }
     }
 
-    private fun ConfirmationRequest.toPendingConfirmation() = AssistantPendingConfirmation(
-        id = id,
-        toolCall = ToolCall(
-            id = toolCallId,
-            name = toolName,
-            arguments = arguments,
-        ),
-        preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this)),
-    )
+    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
+        return AssistantConfirmationCard(
+            confirmationId = id,
+            toolCall = ToolCall(
+                id = toolCallId,
+                name = toolName,
+                arguments = arguments,
+            ),
+            state = AssistantConfirmationCardState.PENDING,
+            preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
+        )
+    }
 }

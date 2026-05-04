@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,19 +44,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -137,17 +142,16 @@ fun AssistantChatScreen(
             AssistantMessageThread(
                 messages = state.messages,
                 onRetry = onRetry,
-                modifier = Modifier.weight(1f),
-            )
-            AssistantStatusPanel(
-                state = state,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
+                modifier = Modifier.weight(1f),
             )
+            AssistantStatusPanel(state = state)
             AssistantComposer(
                 inputText = inputText,
                 onInputTextChange = onInputTextChange,
                 isTurnActive = state.isTurnActive,
+                shouldShowStopControl = state.shouldShowStopControl,
                 onSendMessage = onSendMessage,
                 onCancelTurn = onCancelTurn,
             )
@@ -218,10 +222,12 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
 private fun AssistantMessageThread(
     messages: List<AssistantUiMessage>,
     onRetry: () -> Unit,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
-    LaunchedEffect(messages.size, messages.lastOrNull()?.text) {
+    LaunchedEffect(messages.size, messages.lastOrNull()?.segments) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.lastIndex)
         }
@@ -240,6 +246,8 @@ private fun AssistantMessageThread(
             AssistantMessageBubble(
                 message = message,
                 onRetry = onRetry,
+                onConfirmWrite = onConfirmWrite,
+                onCancelWrite = onCancelWrite,
             )
         }
     }
@@ -249,6 +257,8 @@ private fun AssistantMessageThread(
 private fun AssistantMessageBubble(
     message: AssistantUiMessage,
     onRetry: () -> Unit,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
@@ -298,21 +308,20 @@ private fun AssistantMessageBubble(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (message.text.isNotEmpty()) {
-                    Text(
-                        text = message.text,
-                        color = textColor,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
-                    )
-                }
+                AssistantMessageSegments(
+                    message = message,
+                    textColor = textColor,
+                    isUser = isUser,
+                    onConfirmWrite = onConfirmWrite,
+                    onCancelWrite = onCancelWrite,
+                )
                 message.error?.let { error ->
                     AssistantInlineError(
                         error = error,
                         onRetry = onRetry,
                     )
                 }
-                if (message.text.isEmpty() && message.error == null) {
+                if (message.shouldShowEmptyPlaceholder()) {
                     Text(
                         text = " ",
                         color = textColor,
@@ -322,6 +331,46 @@ private fun AssistantMessageBubble(
             }
         }
     }
+}
+
+@Composable
+private fun AssistantMessageSegments(
+    message: AssistantUiMessage,
+    textColor: Color,
+    isUser: Boolean,
+    onConfirmWrite: () -> Unit,
+    onCancelWrite: () -> Unit,
+) {
+    message.segments.forEach { segment ->
+        when (segment) {
+            is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
+                confirmation = segment.model,
+                onConfirmWrite = onConfirmWrite,
+                onCancelWrite = onCancelWrite,
+            )
+            is AssistantUiSegment.Text -> AssistantMessageTextSegment(
+                text = segment.text,
+                textColor = textColor,
+                isUser = isUser,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantMessageTextSegment(
+    text: String,
+    textColor: Color,
+    isUser: Boolean,
+) {
+    if (text.isEmpty()) return
+
+    Text(
+        text = text,
+        color = textColor,
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = if (isUser) TextAlign.End else TextAlign.Start,
+    )
 }
 
 @Composable
@@ -345,20 +394,15 @@ private fun AssistantInlineError(
     }
 }
 
+private fun AssistantUiMessage.shouldShowEmptyPlaceholder(): Boolean =
+    segments.all { it is AssistantUiSegment.Text && it.text.isEmpty() } && error == null
+
 @Composable
 private fun AssistantStatusPanel(
     state: AssistantUiState,
-    onConfirmWrite: () -> Unit,
-    onCancelWrite: () -> Unit,
 ) {
     when (state.status) {
-        AssistantUiStatus.AWAITING_CONFIRMATION -> state.pendingConfirmation?.let {
-            AssistantConfirmationPanel(
-                confirmation = it,
-                onConfirmWrite = onConfirmWrite,
-                onCancelWrite = onCancelWrite,
-            )
-        }
+        AssistantUiStatus.AWAITING_CONFIRMATION -> Unit
         AssistantUiStatus.ERROR -> {
             if (state.shouldShowFallbackError) {
                 AssistantFallbackErrorPanel(error = state.error)
@@ -388,42 +432,214 @@ private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
 }
 
 @Composable
-private fun AssistantConfirmationPanel(
-    confirmation: AssistantPendingConfirmation,
+private fun AssistantConfirmationCardSegment(
+    confirmation: AssistantConfirmationCard,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
 ) {
-    Column(
+    val colors = confirmation.state.confirmationCardColors()
+    val shape = RoundedCornerShape(12.dp)
+
+    Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .fillMaxWidth(),
+        shape = shape,
+        color = colors.container,
+        border = BorderStroke(1.dp, colors.border),
     ) {
-        Text(
-            text = confirmation.preview?.message
-                ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            style = MaterialTheme.typography.titleSmall,
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Button(onClick = onConfirmWrite) {
-                Text(stringResource(R.string.assistant_chat_confirm))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(confirmation.state.iconRes()),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = colors.accent,
+                )
+                Text(
+                    text = stringResource(confirmation.state.eyebrowRes()),
+                    color = colors.accent,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
-            OutlinedButton(onClick = onCancelWrite) {
-                Text(stringResource(R.string.assistant_chat_cancel))
+            Text(
+                text = confirmation.preview?.summary
+                    ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
+                color = colors.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            confirmation.preview?.rows?.forEach { row ->
+                ConfirmationDiffRow(
+                    row = row,
+                    colors = colors,
+                )
+            }
+            if (confirmation.state == AssistantConfirmationCardState.PENDING) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = onCancelWrite,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, colors.border),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.title),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.assistant_chat_cancel),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Button(
+                        onClick = onConfirmWrite,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.assistant_chat_confirm),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
+private fun ConfirmationDiffRow(
+    row: RenderedConfirmationPreviewField,
+    colors: AssistantConfirmationCardColors,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
+            .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text = row.label,
+            color = colors.label,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
+        row.beforeValue?.let { beforeValue ->
+            ConfirmationDiffLine(
+                prefix = stringResource(R.string.assistant_confirmation_now),
+                value = beforeValue,
+                colors = colors,
+                strikethrough = true,
+            )
+        }
+        ConfirmationDiffLine(
+            prefix = stringResource(R.string.assistant_confirmation_after),
+            value = row.afterValue,
+            colors = colors,
+        )
+    }
+}
+
+@Composable
+private fun ConfirmationDiffLine(
+    prefix: String,
+    value: String,
+    colors: AssistantConfirmationCardColors,
+    strikethrough: Boolean = false,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Text(
+            text = prefix,
+            modifier = Modifier.widthIn(min = 40.dp),
+            color = colors.label,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            text = value,
+            modifier = Modifier.weight(1f),
+            color = if (strikethrough) colors.label else colors.value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
+            textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
+        )
+    }
+}
+
+@Composable
+private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantConfirmationCardColors {
+    val colorScheme = MaterialTheme.colorScheme
+
+    return when (this) {
+        AssistantConfirmationCardState.PENDING -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerHigh,
+            border = colorScheme.primary.copy(alpha = 0.28f),
+            accent = colorScheme.primary,
+            title = colorScheme.onSurface,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurface,
+        )
+        AssistantConfirmationCardState.CONFIRMED -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerHigh,
+            border = colorScheme.outlineVariant,
+            accent = colorScheme.primary,
+            title = colorScheme.onSurface,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurface,
+        )
+        AssistantConfirmationCardState.CANCELLED -> AssistantConfirmationCardColors(
+            container = colorScheme.surfaceContainerLow,
+            border = colorScheme.outlineVariant,
+            accent = colorScheme.onSurfaceVariant,
+            title = colorScheme.onSurfaceVariant,
+            label = colorScheme.onSurfaceVariant,
+            value = colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+private data class AssistantConfirmationCardColors(
+    val container: Color,
+    val border: Color,
+    val accent: Color,
+    val title: Color,
+    val label: Color,
+    val value: Color,
+)
+
+@Composable
 private fun AssistantComposer(
     inputText: String,
     onInputTextChange: (String) -> Unit,
     isTurnActive: Boolean,
+    shouldShowStopControl: Boolean,
     onSendMessage: () -> Unit,
     onCancelTurn: () -> Unit,
 ) {
@@ -457,7 +673,7 @@ private fun AssistantComposer(
                         }
                     ),
                 )
-                if (isTurnActive) {
+                if (shouldShowStopControl) {
                     Button(
                         onClick = onCancelTurn,
                         modifier = Modifier.heightIn(min = 56.dp),
@@ -518,23 +734,36 @@ private fun AssistantChatScreenPreview() {
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 720, fontScale = 1.5f)
 @Composable
 private fun AssistantChatScreenConfirmationPreview() {
     AssistantChatScreen(
         state = AssistantUiState(
             messages = listOf(
-                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Cancel order 123"),
-                AssistantUiMessage("preview-2", AssistantUiMessage.Role.ASSISTANT, "I need confirmation first."),
-            ),
-            status = AssistantUiStatus.AWAITING_CONFIRMATION,
-            pendingConfirmation = AssistantPendingConfirmation(
-                id = "confirmation-preview",
-                toolCall = ToolCall(
-                    id = "call-preview",
-                    name = "orders_update",
-                    arguments = buildJsonObject { put("id", 123) },
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Mark order 3479 as completed"),
+                AssistantUiMessage(
+                    id = "preview-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text("I'll mark order #3479 as completed."),
+                        AssistantUiSegment.ConfirmationCard(
+                            AssistantConfirmationCard(
+                                confirmationId = "confirmation-preview",
+                                toolCall = ToolCall(
+                                    id = "call-preview",
+                                    name = "orders_update",
+                                    arguments = buildJsonObject { put("id", 3479) },
+                                ),
+                                state = AssistantConfirmationCardState.PENDING,
+                                preview = sampleConfirmationPreview(),
+                            )
+                        ),
+                    ),
                 ),
             ),
+            status = AssistantUiStatus.AWAITING_CONFIRMATION,
+            activeConfirmationId = "confirmation-preview",
         ),
         inputText = "",
         onInputTextChange = {},
@@ -546,3 +775,15 @@ private fun AssistantChatScreenConfirmationPreview() {
         onBack = {},
     )
 }
+
+private fun sampleConfirmationPreview() = RenderedConfirmationPreview(
+    message = "Update order #3479",
+    fields = listOf(
+        RenderedConfirmationPreviewField(
+            name = "status",
+            label = "Status",
+            beforeValue = "Processing",
+            value = "Completed",
+        )
+    ),
+)

@@ -39,6 +39,11 @@
     <string name="ai_assistant_confirmation_field_value_updated">Updated</string>
     <string name="ai_assistant_confirmation_field_value_off">Off</string>
     <string name="ai_assistant_confirmation_message_list_separator">%1$s, %2$s</string>
+    <string name="assistant_confirmation_eyebrow_pending">Pending change</string>
+    <string name="assistant_confirmation_eyebrow_confirmed">Confirmed</string>
+    <string name="assistant_confirmation_eyebrow_cancelled">Cancelled</string>
+    <string name="assistant_confirmation_now">Now</string>
+    <string name="assistant_confirmation_after">After</string>
     <string name="assistant_chat_title">AI Assistant</string>
     <string name="assistant_chat_status_idle">Ready</string>
     <string name="assistant_chat_status_streaming">Working</string>

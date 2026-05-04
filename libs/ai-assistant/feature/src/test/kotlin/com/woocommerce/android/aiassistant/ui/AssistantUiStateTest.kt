@@ -131,6 +131,20 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `when turn is streaming, then stop control is visible`() {
+        val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
+
+        assertThat(state.shouldShowStopControl).isTrue()
+    }
+
+    @Test
+    fun `when turn is awaiting confirmation, then stop control is hidden`() {
+        val state = AssistantUiState(status = AssistantUiStatus.AWAITING_CONFIRMATION)
+
+        assertThat(state.shouldShowStopControl).isFalse()
+    }
+
+    @Test
     fun `when status is idle, then turn is not active`() {
         val state = AssistantUiState(status = AssistantUiStatus.IDLE)
 
@@ -142,5 +156,21 @@ class AssistantUiStateTest {
         val state = AssistantUiState(status = AssistantUiStatus.ERROR)
 
         assertThat(state.isTurnActive).isFalse()
+    }
+
+    @Test
+    fun `given confirmation card state, when resolving chrome resources, then eyebrow and icon are mapped`() {
+        assertThat(AssistantConfirmationCardState.PENDING.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_pending)
+        assertThat(AssistantConfirmationCardState.PENDING.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_pending)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_confirmed)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_confirmed)
+        assertThat(AssistantConfirmationCardState.CANCELLED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_cancelled)
+        assertThat(AssistantConfirmationCardState.CANCELLED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_cancelled)
     }
 }

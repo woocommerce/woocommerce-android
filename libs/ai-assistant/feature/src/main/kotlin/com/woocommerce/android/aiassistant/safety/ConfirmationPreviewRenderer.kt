@@ -9,14 +9,16 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
 ) {
     fun render(preview: ConfirmationPreview): RenderedConfirmationPreview =
         RenderedConfirmationPreview(
-            message = render(preview.message),
-            fields = preview.fields.map {
-                RenderedConfirmationPreviewField(
+            message = render(preview.summary),
+            fields = preview.rows.map {
+                RenderedConfirmationDiffRow(
                     name = it.name,
                     label = render(it.label),
                     value = render(it.value),
+                    beforeValue = it.beforeValue?.let(::render),
                 )
             },
+            isBulk = preview.isBulk,
         )
 
     @Suppress("SpreadOperator")
@@ -36,11 +38,30 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
 
 data class RenderedConfirmationPreview(
     val message: String,
-    val fields: List<RenderedConfirmationPreviewField>,
-)
+    val fields: List<RenderedConfirmationDiffRow>,
+    val isBulk: Boolean,
+) {
+    constructor(message: String, fields: List<RenderedConfirmationPreviewField>) : this(
+        message = message,
+        fields = fields,
+        isBulk = false,
+    )
 
-data class RenderedConfirmationPreviewField(
+    val summary: String
+        get() = message
+
+    val rows: List<RenderedConfirmationPreviewField>
+        get() = fields
+}
+
+data class RenderedConfirmationDiffRow(
     val name: String,
     val label: String,
     val value: String,
-)
+    val beforeValue: String? = null,
+) {
+    val afterValue: String
+        get() = value
+}
+
+typealias RenderedConfirmationPreviewField = RenderedConfirmationDiffRow
