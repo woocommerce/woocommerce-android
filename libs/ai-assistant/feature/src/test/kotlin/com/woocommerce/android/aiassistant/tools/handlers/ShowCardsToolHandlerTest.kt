@@ -5,6 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
@@ -97,7 +98,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolver returns render payload extras, when executed, then structured excludes private fields`() = runTest {
+    fun `given resolver returns summary extras, when executed, then structured excludes private fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(leakyProductCard(id = "456")),
             referencesJson = """[{ "family": "product", "id": "456" }]"""
@@ -122,6 +123,51 @@ class ShowCardsToolHandlerTest {
         assertThat(cards).hasSize(1)
         assertThat(cards.first().jsonObject["family"]?.jsonPrimitive?.content).isEqualTo("order")
         assertThat(cards.first().jsonObject["id"]?.jsonPrimitive?.content).isEqualTo("123")
+    }
+
+    @Test
+    fun `given resolved order, when executed, then uiStructured contains typed order details`() = runTest {
+        val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
+
+        val card = uiCards(result).single().jsonObject
+        val details = card.getValue("details").jsonObject
+
+        assertThat(card.keys).containsExactly("family", "id", "title", "details")
+        assertThat(card.getValue("family").jsonPrimitive.content).isEqualTo("order")
+        assertThat(card.getValue("id").jsonPrimitive.content).isEqualTo("123")
+        assertThat(card.getValue("title").jsonPrimitive.content).isEqualTo("#123")
+        assertThat(details.keys).containsExactly("kind", "status", "total", "currency", "date_created")
+        assertThat(details.getValue("kind").jsonPrimitive.content).isEqualTo("order")
+        assertThat(details.getValue("status").jsonPrimitive.content).isEqualTo("processing")
+        assertThat(details.getValue("total").jsonPrimitive.content).isEqualTo("12.34")
+        assertThat(details.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(details.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(card.keys).doesNotContain("subtitle", "badges", "attributes")
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
+    }
+
+    @Test
+    fun `given resolved product, when executed, then uiStructured contains typed product details`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(productCard(id = "456")),
+            referencesJson = """[{ "family": "product", "id": "456" }]"""
+        )
+
+        val card = uiCards(result).single().jsonObject
+        val details = card.getValue("details").jsonObject
+
+        assertThat(card.keys).containsExactly("family", "id", "title", "details")
+        assertThat(card.getValue("family").jsonPrimitive.content).isEqualTo("product")
+        assertThat(card.getValue("id").jsonPrimitive.content).isEqualTo("456")
+        assertThat(card.getValue("title").jsonPrimitive.content).isEqualTo("Socks")
+        assertThat(details.keys).containsExactly("kind", "sku", "price", "stock_status", "status")
+        assertThat(details.getValue("kind").jsonPrimitive.content).isEqualTo("product")
+        assertThat(details.getValue("sku").jsonPrimitive.content).isEqualTo("woo-socks")
+        assertThat(details.getValue("price").jsonPrimitive.content).isEqualTo("9.99")
+        assertThat(details.getValue("stock_status").jsonPrimitive.content).isEqualTo("instock")
+        assertThat(details.getValue("status").jsonPrimitive.content).isEqualTo("publish")
+        assertThat(card.keys).doesNotContain("subtitle", "badges", "attributes")
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
     }
 
     @Test
@@ -343,6 +389,12 @@ class ShowCardsToolHandlerTest {
                 family = "order",
                 id = id,
                 title = "#$id",
+                details = ShowCardDetails.Order(
+                    status = "processing",
+                    total = "12.34",
+                    currency = "USD",
+                    dateCreated = "2026-05-01T10:00:00Z",
+                ),
             )
         )
     }
@@ -365,6 +417,12 @@ class ShowCardsToolHandlerTest {
                 family = "product",
                 id = id,
                 title = "Socks",
+                details = ShowCardDetails.Product(
+                    sku = "woo-socks",
+                    price = "9.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                ),
             )
         )
     }
@@ -394,12 +452,11 @@ class ShowCardsToolHandlerTest {
                 family = "product",
                 id = id,
                 title = "Socks",
-                attributes = mapOf(
-                    "description" to "Long description",
-                    "html" to "<p>Private</p>",
-                    "image" to "https://example.com/image.png",
-                    "metadata" to "private",
-                    "raw" to "entity",
+                details = ShowCardDetails.Product(
+                    sku = "woo-socks",
+                    price = "9.99",
+                    stockStatus = "instock",
+                    status = "publish",
                 ),
             )
         )

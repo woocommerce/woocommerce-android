@@ -100,12 +100,11 @@ internal class DefaultShowCardsResolver @Inject constructor(
             family = ShowCardFamily.Order.serializedName,
             id = ref.id,
             title = number.toDisplayOrderNumber(orderId),
-            subtitle = status.takeIf { it.isNotBlank() },
-            badges = listOfNotBlank(status),
-            attributes = mapOfNotBlank(
-                "total" to total,
-                "currency" to currency,
-                "date_created" to dateCreated,
+            details = ShowCardDetails.Order(
+                status = status.takeIf { it.isNotBlank() },
+                total = total.takeIf { it.isNotBlank() },
+                currency = currency.takeIf { it.isNotBlank() },
+                dateCreated = dateCreated.takeIf { it.isNotBlank() },
             ),
         ),
     )
@@ -125,12 +124,11 @@ internal class DefaultShowCardsResolver @Inject constructor(
             family = ShowCardFamily.Product.serializedName,
             id = ref.id,
             title = name.ifBlank { "Product $remoteProductId" },
-            subtitle = sku.takeIf { it.isNotBlank() },
-            badges = listOfNotBlank(stockStatus, status),
-            attributes = mapOfNotBlank(
-                "price" to price,
-                "stock_status" to stockStatus,
-                "status" to status,
+            details = ShowCardDetails.Product(
+                sku = sku.takeIf { it.isNotBlank() },
+                price = price.takeIf { it.isNotBlank() },
+                stockStatus = stockStatus.takeIf { it.isNotBlank() },
+                status = status.takeIf { it.isNotBlank() },
             ),
         ),
     )
@@ -144,12 +142,6 @@ private fun String.toDisplayOrderNumber(orderId: Long): String {
     val value = takeIf { it.isNotBlank() } ?: fallback
     return if (value.startsWith("#")) value else "#$value"
 }
-
-private fun listOfNotBlank(vararg values: String): List<String> =
-    values.filter { it.isNotBlank() }
-
-private fun mapOfNotBlank(vararg pairs: Pair<String, String>): Map<String, String> =
-    pairs.filter { (_, value) -> value.isNotBlank() }.toMap()
 
 private fun CachedLookupResult<*>.missingReason(): ShowCardsRejectionReason =
     if (fetchFailed) ShowCardsRejectionReason.FetchFailed else ShowCardsRejectionReason.NotFound

@@ -117,9 +117,21 @@ class ShowCardsResolverTest {
         )
         assertThat(result[0].card.family).isEqualTo("order")
         assertThat(result[0].card.id).isEqualTo("1")
+        assertThat(result[0].card.title).isEqualTo("#1")
+        val orderDetails = result[0].card.details as ShowCardDetails.Order
+        assertThat(orderDetails.status).isEqualTo("processing")
+        assertThat(orderDetails.total).isEqualTo("12.34")
+        assertThat(orderDetails.currency).isEqualTo("USD")
+        assertThat(orderDetails.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
         assertThat(result[1].summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
         assertThat(result[1].card.family).isEqualTo("product")
         assertThat(result[1].card.id).isEqualTo("2")
+        assertThat(result[1].card.title).isEqualTo("Socks")
+        val productDetails = result[1].card.details as ShowCardDetails.Product
+        assertThat(productDetails.sku).isEqualTo("woo-socks")
+        assertThat(productDetails.price).isEqualTo("9.99")
+        assertThat(productDetails.stockStatus).isEqualTo("instock")
+        assertThat(productDetails.status).isEqualTo("publish")
     }
 
     @Test
