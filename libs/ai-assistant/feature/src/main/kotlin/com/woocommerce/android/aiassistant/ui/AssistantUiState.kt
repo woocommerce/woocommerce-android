@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 
 data class AssistantUiState(
     val messages: List<AssistantUiMessage> = emptyList(),
@@ -69,6 +70,8 @@ sealed interface AssistantUiSegment {
     data class Text(val text: String) : AssistantUiSegment
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
+
+    data class Card(val card: AssistantCard) : AssistantUiSegment
 }
 
 data class AssistantConfirmationCard(

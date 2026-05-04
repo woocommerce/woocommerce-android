@@ -84,7 +84,15 @@ class ShowCardsToolHandlerTest {
 
         val summary = firstResolvedSummary(result)
 
-        assertThat(summary.keys).containsExactly("id", "number", "status", "total", "currency", "date_created")
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "number",
+            "status",
+            "total",
+            "currency",
+            "date_created",
+            "customer_name",
+        )
     }
 
     @Test
@@ -141,6 +149,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.total).isEqualTo("12.34")
         assertThat(details.currency).isEqualTo("USD")
         assertThat(details.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(details.customerName).isEqualTo("Jane Doe")
         assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
     }
@@ -384,6 +393,7 @@ class ShowCardsToolHandlerTest {
                     total = "12.34",
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
+                    customerName = "Jane Doe",
                 )
             ).jsonObject,
             card = ShowCardPayload(
@@ -395,6 +405,7 @@ class ShowCardsToolHandlerTest {
                     total = "12.34",
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
+                    customerName = "Jane Doe",
                 ),
             )
         )

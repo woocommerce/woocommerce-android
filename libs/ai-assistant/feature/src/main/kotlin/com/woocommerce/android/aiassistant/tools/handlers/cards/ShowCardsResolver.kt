@@ -94,6 +94,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 total = total,
                 currency = currency,
                 dateCreated = dateCreated,
+                customerName = customerName,
             )
         ),
         card = ShowCardPayload(
@@ -105,6 +106,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 total = total.takeIf { it.isNotBlank() },
                 currency = currency.takeIf { it.isNotBlank() },
                 dateCreated = dateCreated.takeIf { it.isNotBlank() },
+                customerName = customerName.takeIf { it.isNotBlank() },
             ),
         ),
     )
@@ -142,6 +144,11 @@ private fun String.toDisplayOrderNumber(orderId: Long): String {
     val value = takeIf { it.isNotBlank() } ?: fallback
     return if (value.startsWith("#")) value else "#$value"
 }
+
+private val OrderEntity.customerName: String
+    get() = listOf(billingFirstName, billingLastName)
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
 
 private fun CachedLookupResult<*>.missingReason(): ShowCardsRejectionReason =
     if (fetchFailed) ShowCardsRejectionReason.FetchFailed else ShowCardsRejectionReason.NotFound

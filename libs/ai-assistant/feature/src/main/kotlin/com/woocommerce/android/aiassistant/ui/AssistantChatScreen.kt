@@ -61,6 +61,9 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -69,6 +72,8 @@ fun AssistantRoute(
     conversationId: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    assistantCardRenderer: AssistantCardRenderer? = null,
+    onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val viewModel = hiltViewModel<AssistantViewModel, AssistantViewModel.Factory> { factory ->
         factory.create(conversationId)
@@ -78,6 +83,8 @@ fun AssistantRoute(
         viewModel = viewModel,
         onBack = onBack,
         modifier = modifier,
+        assistantCardRenderer = assistantCardRenderer,
+        onCardAction = onCardAction,
     )
 }
 
@@ -86,6 +93,8 @@ fun AssistantChatScreen(
     viewModel: AssistantViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    assistantCardRenderer: AssistantCardRenderer? = null,
+    onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
     var inputText by rememberSaveable { mutableStateOf("") }
@@ -107,6 +116,8 @@ fun AssistantChatScreen(
         onCancelWrite = viewModel::onCancelWrite,
         onBack = onBack,
         modifier = modifier,
+        assistantCardRenderer = assistantCardRenderer,
+        onCardAction = onCardAction,
     )
 }
 
@@ -122,6 +133,8 @@ fun AssistantChatScreen(
     onCancelWrite: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    assistantCardRenderer: AssistantCardRenderer? = null,
+    onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -144,6 +157,8 @@ fun AssistantChatScreen(
                 onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
+                assistantCardRenderer = assistantCardRenderer,
+                onCardAction = onCardAction,
                 modifier = Modifier.weight(1f),
             )
             AssistantStatusPanel(state = state)
@@ -224,6 +239,8 @@ private fun AssistantMessageThread(
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    assistantCardRenderer: AssistantCardRenderer?,
+    onCardAction: (AssistantCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -248,6 +265,8 @@ private fun AssistantMessageThread(
                 onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
+                assistantCardRenderer = assistantCardRenderer,
+                onCardAction = onCardAction,
             )
         }
     }
@@ -259,6 +278,8 @@ private fun AssistantMessageBubble(
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    assistantCardRenderer: AssistantCardRenderer?,
+    onCardAction: (AssistantCardAction) -> Unit,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
@@ -314,6 +335,8 @@ private fun AssistantMessageBubble(
                     isUser = isUser,
                     onConfirmWrite = onConfirmWrite,
                     onCancelWrite = onCancelWrite,
+                    assistantCardRenderer = assistantCardRenderer,
+                    onCardAction = onCardAction,
                 )
                 message.error?.let { error ->
                     AssistantInlineError(
@@ -340,6 +363,8 @@ private fun AssistantMessageSegments(
     isUser: Boolean,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    assistantCardRenderer: AssistantCardRenderer?,
+    onCardAction: (AssistantCardAction) -> Unit,
 ) {
     message.segments.forEach { segment ->
         when (segment) {
@@ -348,12 +373,34 @@ private fun AssistantMessageSegments(
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
             )
+            is AssistantUiSegment.Card -> AssistantCardSegment(
+                card = segment.card,
+                assistantCardRenderer = assistantCardRenderer,
+                onCardAction = onCardAction,
+            )
             is AssistantUiSegment.Text -> AssistantMessageTextSegment(
                 text = segment.text,
                 textColor = textColor,
                 isUser = isUser,
             )
         }
+    }
+}
+
+@Composable
+private fun AssistantCardSegment(
+    card: AssistantCard,
+    assistantCardRenderer: AssistantCardRenderer?,
+    onCardAction: (AssistantCardAction) -> Unit,
+) {
+    if (assistantCardRenderer == null) return
+
+    when (card) {
+        is AssistantCard.Order -> assistantCardRenderer.OrderCard(
+            card = card,
+            onAction = onCardAction,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -720,6 +767,14 @@ private fun AssistantChatScreenPreview() {
             messages = listOf(
                 AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show today's sales"),
                 AssistantUiMessage("preview-2", AssistantUiMessage.Role.ASSISTANT, "Sales are up 12% today."),
+                AssistantUiMessage(
+                    id = "preview-3",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text("Here is order #3479."),
+                        AssistantUiSegment.Card(sampleOrderCard()),
+                    ),
+                ),
             )
         ),
         inputText = "",
@@ -730,6 +785,7 @@ private fun AssistantChatScreenPreview() {
         onConfirmWrite = {},
         onCancelWrite = {},
         onBack = {},
+        assistantCardRenderer = PreviewAssistantCardRenderer,
     )
 }
 
@@ -775,6 +831,56 @@ private fun AssistantChatScreenConfirmationPreview() {
         onBack = {},
     )
 }
+
+private object PreviewAssistantCardRenderer : AssistantCardRenderer {
+    @Composable
+    override fun OrderCard(
+        card: AssistantCard.Order,
+        onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        Surface(
+            modifier = modifier,
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        ) {
+            Column(
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = card.number,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = listOf(card.customerName, card.status, card.unformattedTotal)
+                        .filter { it.isNotBlank() }
+                        .joinToString(" - "),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+}
+
+private fun sampleOrderCard() = AssistantCard.Order(
+    remoteOrderId = 3479L,
+    number = "#3479",
+    status = "processing",
+    total = "42.00",
+    currency = "USD",
+    customerName = "Jane Doe",
+    date = "2026-05-01T10:00:00Z",
+)
+
+private val AssistantCard.Order.unformattedTotal: String
+    get() = total.takeIf { it.isNotBlank() }
+        ?.let { listOf(it, currency).filter { value -> value.isNotBlank() }.joinToString(" ") }
+        .orEmpty()
 
 private fun sampleConfirmationPreview() = RenderedConfirmationPreview(
     message = "Update order #3479",

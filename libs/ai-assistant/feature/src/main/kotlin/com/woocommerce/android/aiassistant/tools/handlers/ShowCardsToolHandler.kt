@@ -160,7 +160,15 @@ internal class ShowCardsToolHandler internal constructor(
     }
 
     private companion object {
-        val ORDER_SUMMARY_KEYS = setOf("id", "number", "status", "total", "currency", "date_created")
+        val ORDER_SUMMARY_KEYS = setOf(
+            "id",
+            "number",
+            "status",
+            "total",
+            "currency",
+            "date_created",
+            "customer_name",
+        )
         val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
     }
 }
