@@ -170,6 +170,41 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `when loop emits tool lifecycle, then runtime forwards sanitized tool activity`() = runTest {
+        val call = ToolCall(
+            id = "call-1",
+            name = "orders_get",
+            arguments = buildJsonObject {
+                put("private_order_id", 123)
+            },
+        )
+        val result = ToolResult.Success(
+            toolCallId = "call-1",
+            structured = buildJsonObject {
+                put("status", "processing")
+            },
+        )
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(call),
+                    LoopEvent.ToolCallFinished(result),
+                )
+            ),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.ToolCallStarted(
+                toolCallId = "call-1",
+                toolName = "orders_get",
+            ),
+            AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"),
+        )
+    }
+
+    @Test
     fun `when loop stops cleanly after confirmation cancel, then runtime finish has no cancelled error`() = runTest {
         val updatedHistory = listOf(
             AssistantMessage.User("Cancel order 123"),

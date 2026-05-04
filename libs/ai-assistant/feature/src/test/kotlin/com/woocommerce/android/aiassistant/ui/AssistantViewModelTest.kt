@@ -90,6 +90,69 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `when message is sent, then empty active assistant message shows typing indicator`() = runTest {
+        viewModel.onSendMessage("Show my recent orders")
+
+        val state = viewModel.uiState.value
+        val assistantMessage = state.messages.last()
+        assertThat(state.activeAssistantMessageId).isEqualTo(assistantMessage.id)
+        assertThat(state.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
+    fun `given active assistant bubble, when text delta arrives, then typing indicator is hidden`() = runTest {
+        viewModel.onSendMessage("Summarize sales")
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today."))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given active assistant bubble, when tool starts, then typing indicator stays visible`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+
+        runtime.emit(
+            AssistantRuntimeEvent.ToolCallStarted(
+                toolCallId = "call-1",
+                toolName = "orders_get",
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                )
+            ),
+        )
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
+    fun `given active tool activity, when matching tool finishes, then activity is preserved as completed`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    status = AssistantToolActivity.Status.COMPLETED,
+                )
+            ),
+        )
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
     fun `given active assistant bubble, when text deltas arrive, then the same bubble grows`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
@@ -128,6 +191,75 @@ class AssistantViewModelTest {
         assertThat(state.isTurnActive).isFalse()
         assertThat(state.canRetry).isFalse()
         assertThat(state.error).isNull()
+    }
+
+    @Test
+    fun `given running tool activity, when turn completes, then unfinished activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Find order 123"),
+                    AssistantMessage.Assistant("Order 123 is processing."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given completed tool activity, when turn completes, then completed activity is preserved`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Find order 123"),
+                    AssistantMessage.Assistant("Order 123 is processing."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.toolActivitySegments()).containsExactly(
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    status = AssistantToolActivity.Status.COMPLETED,
+                )
+            ),
+        )
+    }
+
+    @Test
+    fun `given active tool activity, when turn fails, then transient activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("Find order 123")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.canRetry).isTrue()
     }
 
     @Test
@@ -578,6 +710,21 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active tool activity, when cancel is requested, then transient activity is cleared`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.activeAssistantMessageId).isNull()
+        assertThat(state.toolActivitySegments()).isEmpty()
+        assertThat(state.error).isEqualTo(AssistantUiError.CANCELLED)
+    }
+
+    @Test
     fun `given partial assistant text, when cancel is requested, then partial text remains visible`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
@@ -620,6 +767,29 @@ class AssistantViewModelTest {
                     ),
                 )
             )
+        }
+
+    @Test
+    fun `given failed turn with tool activity, when retry starts, then old transient activity is not replayed`() =
+        runTest {
+            viewModel.onSendMessage("Find order 123")
+            runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Find order 123")),
+                    retryAvailable = true,
+                    error = AssistantError.Network,
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.onRetry()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.messages.dropLast(1).toolActivitySegments()).isEmpty()
+            assertThat(state.shouldShowTypingIndicator).isTrue()
         }
 
     @Test
@@ -921,6 +1091,12 @@ class AssistantViewModelTest {
             return "message-$count"
         }
     }
+
+    private fun AssistantUiState.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
+        messages.toolActivitySegments()
+
+    private fun List<AssistantUiMessage>.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
+        flatMap { it.segments }.filterIsInstance<AssistantUiSegment.ToolActivity>()
 
     private companion object {
         const val CONVERSATION_ID = "conversation-1"

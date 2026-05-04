@@ -14,6 +14,7 @@ data class AssistantUiState(
     val error: AssistantUiError? = null,
     val canRetry: Boolean = false,
     val activeConfirmationId: String? = null,
+    val activeAssistantMessageId: String? = null,
     val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
@@ -30,6 +31,22 @@ data class AssistantUiState(
         get() = status == AssistantUiStatus.ERROR &&
             error != null &&
             messages.lastOrNull()?.error == null
+
+    /**
+     * Mirrors iOS `streamingState == .sending`: dots are visible from submit until the active assistant
+     * message starts streaming actual text. Tool activity segments don't count as "text", so the dots
+     * stay visible during pre-text tool calls and disappear only once the model emits its first text
+     * token. Within a single message text is appended monotonically, so once dots hide they don't bounce
+     * back for that turn.
+     */
+    val shouldShowTypingIndicator: Boolean
+        get() = status == AssistantUiStatus.STREAMING && !activeAssistantHasStreamedText
+
+    private val activeAssistantHasStreamedText: Boolean
+        get() {
+            val active = messages.firstOrNull { it.id == activeAssistantMessageId } ?: return false
+            return active.segments.any { it is AssistantUiSegment.Text && it.text.isNotEmpty() }
+        }
 }
 
 enum class AssistantUiStatus {
@@ -66,12 +83,54 @@ data class AssistantUiMessage(
     }
 }
 
+data class AssistantToolActivity(
+    val toolCallId: String,
+    val toolName: String,
+    val status: Status = Status.RUNNING,
+) {
+    enum class Status {
+        RUNNING,
+        COMPLETED,
+    }
+}
+
 sealed interface AssistantUiSegment {
     data class Text(val text: String) : AssistantUiSegment
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
 
     data class Card(val card: AssistantCard) : AssistantUiSegment
+
+    data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
+}
+
+internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
+    get() = segments.any { segment ->
+        when (segment) {
+            is AssistantUiSegment.Text -> segment.text.isNotEmpty()
+            is AssistantUiSegment.ConfirmationCard -> true
+            is AssistantUiSegment.Card -> true
+            is AssistantUiSegment.ToolActivity -> true
+        }
+    }
+
+@StringRes
+internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
+    "orders_list",
+    "orders_get" -> R.string.assistant_chat_tool_activity_orders_read
+    "orders_update",
+    "orders_bulk_update" -> R.string.assistant_chat_tool_activity_orders_write
+    "products_list",
+    "products_get",
+    "product_variations_list" -> R.string.assistant_chat_tool_activity_products_read
+    "products_update",
+    "products_bulk_update",
+    "product_variations_update" -> R.string.assistant_chat_tool_activity_products_write
+    "analytics_orders",
+    "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
+    "customers_list" -> R.string.assistant_chat_tool_activity_customers
+    "show_cards" -> R.string.assistant_chat_tool_activity_cards
+    else -> R.string.assistant_chat_tool_activity_generic
 }
 
 data class AssistantConfirmationCard(

@@ -29,6 +29,15 @@ data class AssistantTurnRequest(
 sealed interface AssistantRuntimeEvent {
     data class AssistantTextDelta(val text: String) : AssistantRuntimeEvent
 
+    data class ToolCallStarted(
+        val toolCallId: String,
+        val toolName: String,
+    ) : AssistantRuntimeEvent
+
+    data class ToolCallFinished(
+        val toolCallId: String,
+    ) : AssistantRuntimeEvent
+
     data class AwaitingConfirmation(
         val confirmation: AssistantConfirmationCard,
     ) : AssistantRuntimeEvent

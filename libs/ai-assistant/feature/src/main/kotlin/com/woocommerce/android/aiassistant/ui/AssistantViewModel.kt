@@ -73,10 +73,12 @@ class AssistantViewModel @AssistedInject constructor(
         }
         _uiState.update {
             it.copy(
+                messages = it.messages.withoutTransientActivity(),
                 status = AssistantUiStatus.ERROR,
                 error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
                 activeConfirmationId = null,
+                activeAssistantMessageId = null,
             )
         }
     }
@@ -103,10 +105,12 @@ class AssistantViewModel @AssistedInject constructor(
                     activeAssistantMessageId = null
                     _uiState.update {
                         it.copy(
+                            messages = it.messages.withoutTransientActivity(),
                             status = AssistantUiStatus.ERROR,
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
                             activeConfirmationId = null,
+                            activeAssistantMessageId = null,
                         )
                     }
                 }
@@ -141,11 +145,12 @@ class AssistantViewModel @AssistedInject constructor(
                 )
             }
             state.copy(
-                messages = state.messages.withoutRetryActions() + turnMessages,
+                messages = state.messages.withoutTransientActivity().withoutRetryActions() + turnMessages,
                 status = AssistantUiStatus.STREAMING,
                 error = null,
                 canRetry = false,
                 activeConfirmationId = null,
+                activeAssistantMessageId = assistantMessageId,
             )
         }
 
@@ -165,6 +170,8 @@ class AssistantViewModel @AssistedInject constructor(
     private fun reduceRuntimeEvent(event: AssistantRuntimeEvent) {
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
+            is AssistantRuntimeEvent.ToolCallStarted -> showToolActivity(event)
+            is AssistantRuntimeEvent.ToolCallFinished -> markToolActivityCompleted(event.toolCallId)
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
                 _uiState.update {
                     it.copy(
@@ -198,19 +205,50 @@ class AssistantViewModel @AssistedInject constructor(
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
-                        messages = it.messages.withAssistantError(
-                            activeMessageId = activeMessageId,
-                            error = normalizedError,
-                            canRetry = canRetry,
-                            nextId = idGenerator::nextId,
-                        ),
+                        messages = it.messages
+                            .withoutTransientActivity()
+                            .withAssistantError(
+                                activeMessageId = activeMessageId,
+                                error = normalizedError,
+                                canRetry = canRetry,
+                                nextId = idGenerator::nextId,
+                            ),
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),
                         canRetry = canRetry,
                         activeConfirmationId = null,
+                        activeAssistantMessageId = null,
                     )
                 }
             }
+        }
+    }
+
+    private fun showToolActivity(event: AssistantRuntimeEvent.ToolCallStarted) {
+        val messageId = activeAssistantMessageId ?: return
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.withToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = event.toolCallId,
+                                toolName = event.toolName,
+                            )
+                        )
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun markToolActivityCompleted(toolCallId: String) {
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.withToolActivityStatus(toolCallId, AssistantToolActivity.Status.COMPLETED)
+            )
         }
     }
 
@@ -251,10 +289,12 @@ class AssistantViewModel @AssistedInject constructor(
                     activeAssistantMessageId = null
                     _uiState.update {
                         it.copy(
+                            messages = it.messages.withoutTransientActivity(),
                             status = AssistantUiStatus.ERROR,
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
                             activeConfirmationId = null,
+                            activeAssistantMessageId = null,
                         )
                     }
                 }
@@ -313,6 +353,16 @@ class AssistantViewModel @AssistedInject constructor(
             } else {
                 message
             }
+        }
+
+    private fun List<AssistantUiMessage>.withoutTransientActivity(): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.filterNot { segment ->
+                    segment is AssistantUiSegment.ToolActivity &&
+                        segment.activity.status == AssistantToolActivity.Status.RUNNING
+                }
+            )
         }
 
     private fun List<AssistantUiMessage>.withAssistantError(
@@ -379,6 +429,29 @@ class AssistantViewModel @AssistedInject constructor(
         updatedSegments[updatedSegments.lastIndex] = lastSegment.copy(text = lastSegment.text + delta)
         return copy(segments = updatedSegments)
     }
+
+    private fun AssistantUiMessage.withToolActivity(activity: AssistantToolActivity): AssistantUiMessage =
+        copy(
+            segments = segments.filterNot {
+                it is AssistantUiSegment.ToolActivity && it.activity.toolCallId == activity.toolCallId
+            } + AssistantUiSegment.ToolActivity(activity)
+        )
+
+    private fun List<AssistantUiMessage>.withToolActivityStatus(
+        toolCallId: String,
+        status: AssistantToolActivity.Status,
+    ): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.map { segment ->
+                    if (segment is AssistantUiSegment.ToolActivity && segment.activity.toolCallId == toolCallId) {
+                        AssistantUiSegment.ToolActivity(segment.activity.copy(status = status))
+                    } else {
+                        segment
+                    }
+                }
+            )
+        }
 
     private fun AssistantUiMessage.appendConfirmationCard(
         confirmation: AssistantConfirmationCard,

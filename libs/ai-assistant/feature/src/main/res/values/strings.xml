@@ -53,6 +53,16 @@
     <string name="assistant_chat_status_content_description">Assistant status: %1$s</string>
     <string name="assistant_chat_message_user_content_description">You: %1$s</string>
     <string name="assistant_chat_message_assistant_content_description">Assistant: %1$s</string>
+    <string name="assistant_chat_typing_content_description">Assistant is thinking</string>
+    <string name="assistant_chat_tool_activity_orders_read">Checking orders</string>
+    <string name="assistant_chat_tool_activity_orders_write">Updating orders</string>
+    <string name="assistant_chat_tool_activity_products_read">Checking products</string>
+    <string name="assistant_chat_tool_activity_products_write">Updating products</string>
+    <string name="assistant_chat_tool_activity_analytics">Checking analytics</string>
+    <string name="assistant_chat_tool_activity_customers">Checking customers</string>
+    <string name="assistant_chat_tool_activity_cards">Preparing cards</string>
+    <string name="assistant_chat_tool_activity_generic">Checking your store</string>
+    <string name="assistant_chat_tool_activity_content_description">Assistant is working: %1$s</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>
     <string name="assistant_chat_send">Send</string>
     <string name="assistant_chat_stop">Stop</string>
