@@ -724,6 +724,42 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given duplicate card keys across one turn, when cards arrive, then first seen cards are kept`() = runTest {
+        viewModel.onSendMessage("Show matching cards")
+        val firstOrder = givenOrderEntry(id = "123", number = "#123")
+        val duplicateOrder = givenOrderEntry(id = "123", number = "#duplicate")
+        val secondOrder = givenOrderEntry(id = "456", number = "#456")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateOrder, secondOrder)))
+        advanceUntilIdle()
+
+        val cardSegments = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.Card>()
+
+        assertThat(cardSegments).containsExactly(
+            AssistantUiSegment.Card(firstOrder.card),
+            AssistantUiSegment.Card(secondOrder.card),
+        )
+    }
+
+    @Test
+    fun `given same id across different families, when cards arrive, then both cards are kept`() = runTest {
+        viewModel.onSendMessage("Show order and product 123")
+        val order = givenOrderEntry(id = "123", number = "#123")
+        val product = givenProductEntry(id = "123", name = "Socks")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(order, product)))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments)
+            .contains(
+                AssistantUiSegment.Card(order.card),
+                AssistantUiSegment.Card(product.card),
+            )
+    }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
@@ -1136,6 +1172,19 @@ class AssistantViewModelTest {
             currency = "USD",
             customerName = "Jane Doe",
             date = "2026-05-01T10:00:00Z",
+        ),
+    )
+
+    private fun givenProductEntry(id: String, name: String) = AssistantCardEntry(
+        key = AssistantCardKey(family = "product", id = id),
+        card = AssistantCard.Product(
+            remoteProductId = id.toLong(),
+            name = name,
+            sku = "woo-socks",
+            price = "9.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/socks.png",
         ),
     )
 
