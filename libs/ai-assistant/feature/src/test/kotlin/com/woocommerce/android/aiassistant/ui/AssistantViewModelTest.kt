@@ -12,6 +12,9 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -645,6 +648,27 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active assistant bubble, when card entries arrive, then card segments are appended`() = runTest {
+        viewModel.onSendMessage("Show order 123")
+        val activeBubbleId = viewModel.uiState.value.messages.last().id
+        val orderEntry = givenOrderEntry(id = "123", number = "#123")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderEntry)))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+            AssistantUiMessage(
+                id = activeBubbleId,
+                role = AssistantUiMessage.Role.ASSISTANT,
+                segments = listOf(
+                    AssistantUiSegment.Text(""),
+                    AssistantUiSegment.Card(orderEntry.card),
+                ),
+            )
+        )
+    }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
@@ -1045,6 +1069,19 @@ class AssistantViewModelTest {
             arguments = buildJsonObject { put("id", 123) },
         ),
         state = AssistantConfirmationCardState.PENDING,
+    )
+
+    private fun givenOrderEntry(id: String, number: String) = AssistantCardEntry(
+        key = AssistantCardKey(family = "order", id = id),
+        card = AssistantCard.Order(
+            remoteOrderId = id.toLong(),
+            number = number,
+            status = "processing",
+            total = "12.34",
+            currency = "USD",
+            customerName = "Jane Doe",
+            date = "2026-05-01T10:00:00Z",
+        ),
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {

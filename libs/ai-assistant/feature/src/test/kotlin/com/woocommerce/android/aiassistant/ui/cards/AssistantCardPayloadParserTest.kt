@@ -70,6 +70,28 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
+    fun `given order payload, when parsed as entries, then raw family id key is preserved`() {
+        val entries = AssistantCardPayloadParser.parseEntries(
+            ShowCardsUiStructured(
+                cards = listOf(orderPayload(id = "00123", title = "#123"))
+            )
+        )
+
+        assertThat(entries.single().key).isEqualTo(AssistantCardKey(family = "order", id = "00123"))
+        assertThat(entries.single().card).isEqualTo(
+            AssistantCard.Order(
+                remoteOrderId = 123L,
+                number = "#123",
+                status = "processing",
+                total = "",
+                currency = "",
+                customerName = "",
+                date = "",
+            )
+        )
+    }
+
+    @Test
     fun `given product payload, when parsed, then product card contains displayed fields`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
