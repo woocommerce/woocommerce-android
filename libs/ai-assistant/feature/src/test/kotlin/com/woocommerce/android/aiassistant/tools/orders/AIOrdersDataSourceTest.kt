@@ -200,14 +200,16 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
-    fun `given order ids, when getOrders is called, then orders are fetched once with include ids`() =
+    fun `given order ids, when getOrders is called, then orders are fetched and read from cache`() =
         runTest {
             val orders = listOf(
                 OrderEntity(localSiteId = LocalId(1), orderId = 123L),
                 OrderEntity(localSiteId = LocalId(1), orderId = 456L),
             )
-            whenever(orderStore.getOrdersByIdsAndSite(listOf(123L, 456L), site)).thenReturn(emptyList())
-            stubFetchOrders(WooResult(orders))
+            whenever(orderStore.getOrdersByIdsAndSite(listOf(123L, 456L), site))
+                .thenReturn(emptyList())
+                .thenReturn(orders)
+            stubFetchOrders(WooResult(emptyList()))
 
             val result = dataSource.getOrders(orderIds = listOf(123L, 456L)).getOrThrow()
 

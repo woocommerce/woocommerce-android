@@ -116,10 +116,10 @@ internal class AIOrdersDataSource @Inject constructor(
 
         val fetched = fetchOrders(include = idsToFetch, perPage = idsToFetch.size)
         return fetched.fold(
-            onSuccess = { page ->
+            onSuccess = {
                 Result.success(
                     CachedLookupResult(
-                        items = cachedOrders + page.orders,
+                        items = orderStore.getOrdersByIdsAndSite(ids, site),
                         cacheHitCount = cachedIds.size,
                         cacheMissCount = idsToFetch.size,
                         fetchAttempted = true,
