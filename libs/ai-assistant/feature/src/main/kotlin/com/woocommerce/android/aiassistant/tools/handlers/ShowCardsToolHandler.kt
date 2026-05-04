@@ -128,7 +128,7 @@ internal class ShowCardsToolHandler internal constructor(
             resolver.resolve(validRefs)
         } catch (exception: CancellationException) {
             throw exception
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             validRefs.map { ref ->
                 ShowCardsResolution.Missing(
                     ref = ref,
