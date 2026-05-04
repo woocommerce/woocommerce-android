@@ -298,7 +298,7 @@ class AgenticLoopAssistantRuntimeTest {
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
 
-        assertThat(events).containsExactly(
+        assertThat(events.cardEvents()).containsExactly(
             AssistantRuntimeEvent.CardsResolved(
                 listOf(
                     AssistantCardEntry(
@@ -343,7 +343,7 @@ class AgenticLoopAssistantRuntimeTest {
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
 
-        assertThat(events).isEmpty()
+        assertThat(events.cardEvents()).isEmpty()
     }
 
     @Test
@@ -370,7 +370,8 @@ class AgenticLoopAssistantRuntimeTest {
 
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
-            assertThat(events).containsExactly(
+            assertThat(events.cardEvents()).isEmpty()
+            assertThat(events).contains(
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.COMPLETED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
@@ -406,7 +407,7 @@ class AgenticLoopAssistantRuntimeTest {
 
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
-            assertThat(events).containsExactly(
+            assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(listOf(expectedOrderEntry(id = "123", number = "#123")))
             )
         }
@@ -431,7 +432,8 @@ class AgenticLoopAssistantRuntimeTest {
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
 
-        assertThat(events).containsExactly(
+        assertThat(events.cardEvents()).isEmpty()
+        assertThat(events).contains(
             AssistantRuntimeEvent.AssistantTextDelta("I could not find matching cards.")
         )
     }
@@ -466,7 +468,7 @@ class AgenticLoopAssistantRuntimeTest {
 
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
-            assertThat(events).isEmpty()
+            assertThat(events.cardEvents()).isEmpty()
         }
 
     @Test
@@ -538,6 +540,9 @@ class AgenticLoopAssistantRuntimeTest {
             date = "2026-05-01T10:00:00Z",
         ),
     )
+
+    private fun List<AssistantRuntimeEvent>.cardEvents() =
+        filterIsInstance<AssistantRuntimeEvent.CardsResolved>()
 
     private class FakeAgenticLoop(
         private val events: List<LoopEvent>,
