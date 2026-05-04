@@ -91,27 +91,31 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     AssistantRuntimeEvent.ConfirmationResolved(event.result)
                 )
                 is LoopEvent.ToolCallStarted -> {
-                    toolNamesById[event.call.id] = event.call.name
-                    emit(
-                        AssistantRuntimeEvent.ToolCallStarted(
-                            toolCallId = event.call.id,
-                            toolName = event.call.name,
-                        )
-                    )
+                    emit(event.toRuntimeEvent(toolNamesById))
                 }
                 is LoopEvent.ToolCallFinished -> {
                     val toolName = toolNamesById.remove(event.result.toolCallId)
-                    emit(
-                        AssistantRuntimeEvent.ToolCallFinished(
-                            toolCallId = event.result.toolCallId,
-                        )
-                    )
-                    val cards = event.result.toShowCards(toolName)
-                    if (cards.isNotEmpty()) {
-                        emit(AssistantRuntimeEvent.CardsResolved(cards))
-                    }
+                    event.result.toRuntimeEvents(toolName).forEach { emit(it) }
                 }
             }
+        }
+    }
+
+    private fun LoopEvent.ToolCallStarted.toRuntimeEvent(
+        toolNamesById: MutableMap<String, String>,
+    ): AssistantRuntimeEvent.ToolCallStarted {
+        toolNamesById[call.id] = call.name
+        return AssistantRuntimeEvent.ToolCallStarted(
+            toolCallId = call.id,
+            toolName = call.name,
+        )
+    }
+
+    private fun ToolResult.toRuntimeEvents(toolName: String?): List<AssistantRuntimeEvent> = buildList {
+        add(AssistantRuntimeEvent.ToolCallFinished(toolCallId = toolCallId))
+        val cards = toShowCards(toolName)
+        if (cards.isNotEmpty()) {
+            add(AssistantRuntimeEvent.CardsResolved(cards))
         }
     }
 
