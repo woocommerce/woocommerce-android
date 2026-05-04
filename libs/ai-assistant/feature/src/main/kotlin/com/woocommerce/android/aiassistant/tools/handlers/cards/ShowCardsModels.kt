@@ -1,9 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
@@ -124,9 +122,7 @@ internal data class ShowCardPayload(
     val details: ShowCardDetails,
 )
 
-@OptIn(ExperimentalSerializationApi::class)
 @Serializable
-@JsonClassDiscriminator("kind")
 internal sealed interface ShowCardDetails {
     @Serializable
     @SerialName("order")

@@ -11,12 +11,14 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolution
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
@@ -129,20 +131,17 @@ class ShowCardsToolHandlerTest {
     fun `given resolved order, when executed, then uiStructured contains typed order details`() = runTest {
         val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
 
-        val card = uiCards(result).single().jsonObject
-        val details = card.getValue("details").jsonObject
+        val card = typedUiCards(result).single()
+        val details = card.details as ShowCardDetails.Order
 
-        assertThat(card.keys).containsExactly("family", "id", "title", "details")
-        assertThat(card.getValue("family").jsonPrimitive.content).isEqualTo("order")
-        assertThat(card.getValue("id").jsonPrimitive.content).isEqualTo("123")
-        assertThat(card.getValue("title").jsonPrimitive.content).isEqualTo("#123")
-        assertThat(details.keys).containsExactly("kind", "status", "total", "currency", "date_created")
-        assertThat(details.getValue("kind").jsonPrimitive.content).isEqualTo("order")
-        assertThat(details.getValue("status").jsonPrimitive.content).isEqualTo("processing")
-        assertThat(details.getValue("total").jsonPrimitive.content).isEqualTo("12.34")
-        assertThat(details.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
-        assertThat(details.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
-        assertThat(card.keys).doesNotContain("subtitle", "badges", "attributes")
+        assertThat(card.family).isEqualTo("order")
+        assertThat(card.id).isEqualTo("123")
+        assertThat(card.title).isEqualTo("#123")
+        assertThat(details.status).isEqualTo("processing")
+        assertThat(details.total).isEqualTo("12.34")
+        assertThat(details.currency).isEqualTo("USD")
+        assertThat(details.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
     }
 
@@ -153,20 +152,17 @@ class ShowCardsToolHandlerTest {
             referencesJson = """[{ "family": "product", "id": "456" }]"""
         )
 
-        val card = uiCards(result).single().jsonObject
-        val details = card.getValue("details").jsonObject
+        val card = typedUiCards(result).single()
+        val details = card.details as ShowCardDetails.Product
 
-        assertThat(card.keys).containsExactly("family", "id", "title", "details")
-        assertThat(card.getValue("family").jsonPrimitive.content).isEqualTo("product")
-        assertThat(card.getValue("id").jsonPrimitive.content).isEqualTo("456")
-        assertThat(card.getValue("title").jsonPrimitive.content).isEqualTo("Socks")
-        assertThat(details.keys).containsExactly("kind", "sku", "price", "stock_status", "status")
-        assertThat(details.getValue("kind").jsonPrimitive.content).isEqualTo("product")
-        assertThat(details.getValue("sku").jsonPrimitive.content).isEqualTo("woo-socks")
-        assertThat(details.getValue("price").jsonPrimitive.content).isEqualTo("9.99")
-        assertThat(details.getValue("stock_status").jsonPrimitive.content).isEqualTo("instock")
-        assertThat(details.getValue("status").jsonPrimitive.content).isEqualTo("publish")
-        assertThat(card.keys).doesNotContain("subtitle", "badges", "attributes")
+        assertThat(card.family).isEqualTo("product")
+        assertThat(card.id).isEqualTo("456")
+        assertThat(card.title).isEqualTo("Socks")
+        assertThat(details.sku).isEqualTo("woo-socks")
+        assertThat(details.price).isEqualTo("9.99")
+        assertThat(details.stockStatus).isEqualTo("instock")
+        assertThat(details.status).isEqualTo("publish")
+        assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
     }
 
@@ -369,6 +365,11 @@ class ShowCardsToolHandlerTest {
 
     private fun uiCards(result: ToolResult) =
         requireNotNull(assertSuccess(result).uiStructured).jsonObject.getValue("cards").jsonArray
+
+    private fun typedUiCards(result: ToolResult) =
+        json.decodeFromJsonElement<ShowCardsUiStructured>(
+            requireNotNull(assertSuccess(result).uiStructured)
+        ).cards
 
     private fun orderCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Order, id = id)
