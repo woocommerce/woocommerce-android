@@ -153,7 +153,7 @@ fun AssistantChatScreen(
                 .imePadding(),
         ) {
             AssistantMessageThread(
-                messages = state.messages,
+                state = state,
                 onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
@@ -235,7 +235,7 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
 
 @Composable
 private fun AssistantMessageThread(
-    messages: List<AssistantUiMessage>,
+    state: AssistantUiState,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
@@ -243,8 +243,9 @@ private fun AssistantMessageThread(
     onCardAction: (AssistantCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val messages = state.messages
     val listState = rememberLazyListState()
-    LaunchedEffect(messages.size, messages.lastOrNull()?.segments) {
+    LaunchedEffect(messages.size, messages.lastOrNull()?.segments, state.activeAssistantMessageId) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.lastIndex)
         }
@@ -262,6 +263,7 @@ private fun AssistantMessageThread(
         ) { message ->
             AssistantMessageBubble(
                 message = message,
+                showTypingIndicator = state.shouldShowTypingIndicator(message),
                 onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
@@ -275,6 +277,7 @@ private fun AssistantMessageThread(
 @Composable
 private fun AssistantMessageBubble(
     message: AssistantUiMessage,
+    showTypingIndicator: Boolean,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
@@ -283,10 +286,10 @@ private fun AssistantMessageBubble(
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
-    val messageContentDescription = if (isUser) {
-        stringResource(R.string.assistant_chat_message_user_content_description, messageText)
-    } else {
-        stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
+    val messageContentDescription = when {
+        isUser -> stringResource(R.string.assistant_chat_message_user_content_description, messageText)
+        showTypingIndicator -> stringResource(R.string.assistant_chat_typing_content_description)
+        else -> stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
     }
     val bubbleColor = if (isUser) {
         MaterialTheme.colorScheme.primary
@@ -308,7 +311,7 @@ private fun AssistantMessageBubble(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics { contentDescription = messageContentDescription },
+            .semantics(mergeDescendants = true) { contentDescription = messageContentDescription },
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
     ) {
         Box(
@@ -344,7 +347,9 @@ private fun AssistantMessageBubble(
                         onRetry = onRetry,
                     )
                 }
-                if (message.shouldShowEmptyPlaceholder()) {
+                if (showTypingIndicator) {
+                    AssistantTypingIndicator()
+                } else if (message.shouldShowEmptyPlaceholder()) {
                     Text(
                         text = " ",
                         color = textColor,
@@ -354,6 +359,15 @@ private fun AssistantMessageBubble(
             }
         }
     }
+}
+
+@Composable
+private fun AssistantTypingIndicator() {
+    Text(
+        text = stringResource(R.string.assistant_chat_typing_indicator),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
 
 @Composable
@@ -760,6 +774,30 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
         R.string.assistant_chat_status_awaiting_confirmation
     )
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantChatScreenTypingPreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show today's sales"),
+                AssistantUiMessage("preview-2", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "preview-2",
+        ),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onBack = {},
+    )
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)

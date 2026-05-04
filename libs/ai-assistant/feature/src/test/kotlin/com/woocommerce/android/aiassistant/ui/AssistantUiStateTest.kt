@@ -108,6 +108,54 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given active empty assistant message, when checking typing indicator, then indicator is visible`() {
+        val message = AssistantUiMessage(
+            id = "assistant-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            text = "",
+        )
+        val state = AssistantUiState(
+            messages = listOf(message),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator(message)).isTrue()
+    }
+
+    @Test
+    fun `given active assistant message with text, when checking typing indicator, then indicator is hidden`() {
+        val message = AssistantUiMessage(
+            id = "assistant-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            text = "Sales are up today.",
+        )
+        val state = AssistantUiState(
+            messages = listOf(message),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator(message)).isFalse()
+    }
+
+    @Test
+    fun `given inactive empty assistant message, when checking typing indicator, then indicator is hidden`() {
+        val message = AssistantUiMessage(
+            id = "assistant-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            text = "",
+        )
+        val state = AssistantUiState(
+            messages = listOf(message),
+            status = AssistantUiStatus.IDLE,
+            activeAssistantMessageId = null,
+        )
+
+        assertThat(state.shouldShowTypingIndicator(message)).isFalse()
+    }
+
+    @Test
     fun `given ui errors, when mapping to message resources, then fallback copy resources are returned`() {
         assertThat(AssistantUiError.CONFIRMATION_DEFERRED.toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)

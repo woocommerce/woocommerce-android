@@ -77,6 +77,7 @@ class AssistantViewModel @AssistedInject constructor(
                 error = AssistantError.Cancelled.toAssistantUiError(),
                 canRetry = false,
                 activeConfirmationId = null,
+                activeAssistantMessageId = null,
             )
         }
     }
@@ -107,6 +108,7 @@ class AssistantViewModel @AssistedInject constructor(
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
                             activeConfirmationId = null,
+                            activeAssistantMessageId = null,
                         )
                     }
                 }
@@ -146,6 +148,7 @@ class AssistantViewModel @AssistedInject constructor(
                 error = null,
                 canRetry = false,
                 activeConfirmationId = null,
+                activeAssistantMessageId = assistantMessageId,
             )
         }
 
@@ -208,6 +211,7 @@ class AssistantViewModel @AssistedInject constructor(
                         error = event.toAssistantUiError(),
                         canRetry = canRetry,
                         activeConfirmationId = null,
+                        activeAssistantMessageId = null,
                     )
                 }
             }
@@ -255,6 +259,7 @@ class AssistantViewModel @AssistedInject constructor(
                             error = AssistantUiError.CONFIRMATION_DEFERRED,
                             canRetry = false,
                             activeConfirmationId = null,
+                            activeAssistantMessageId = null,
                         )
                     }
                 }

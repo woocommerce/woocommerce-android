@@ -90,6 +90,27 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `when message is sent, then empty active assistant message shows typing indicator`() = runTest {
+        viewModel.onSendMessage("Show my recent orders")
+
+        val state = viewModel.uiState.value
+        val assistantMessage = state.messages.last()
+        assertThat(state.activeAssistantMessageId).isEqualTo(assistantMessage.id)
+        assertThat(state.shouldShowTypingIndicator(assistantMessage)).isTrue()
+    }
+
+    @Test
+    fun `given active assistant bubble, when text delta arrives, then typing indicator is hidden`() = runTest {
+        viewModel.onSendMessage("Summarize sales")
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today."))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        val assistantMessage = state.messages.last()
+        assertThat(state.shouldShowTypingIndicator(assistantMessage)).isFalse()
+    }
+
+    @Test
     fun `given active assistant bubble, when text deltas arrive, then the same bubble grows`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id

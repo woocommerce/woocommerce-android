@@ -14,6 +14,7 @@ data class AssistantUiState(
     val error: AssistantUiError? = null,
     val canRetry: Boolean = false,
     val activeConfirmationId: String? = null,
+    val activeAssistantMessageId: String? = null,
     val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
@@ -73,6 +74,21 @@ sealed interface AssistantUiSegment {
 
     data class Card(val card: AssistantCard) : AssistantUiSegment
 }
+
+internal fun AssistantUiState.shouldShowTypingIndicator(message: AssistantUiMessage): Boolean =
+    status == AssistantUiStatus.STREAMING &&
+        message.id == activeAssistantMessageId &&
+        message.role == AssistantUiMessage.Role.ASSISTANT &&
+        message.error == null &&
+        message.hasVisibleAssistantContent.not()
+
+private val AssistantUiMessage.hasVisibleAssistantContent: Boolean
+    get() = segments.any { segment ->
+        when (segment) {
+            is AssistantUiSegment.Text -> segment.text.isNotEmpty()
+            is AssistantUiSegment.ConfirmationCard -> true
+        }
+    }
 
 data class AssistantConfirmationCard(
     val confirmationId: String,
