@@ -669,6 +669,41 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given cards arrive between text deltas, when turn finishes, then cards stay on active assistant message`() =
+        runTest {
+            viewModel.onSendMessage("Show order 123")
+            val activeBubbleId = viewModel.uiState.value.messages.last().id
+            val orderEntry = givenOrderEntry(id = "123", number = "#123")
+
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Here is the order."))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderEntry)))
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Anything else?"))
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Show order 123"),
+                        AssistantMessage.Assistant("Here is the order. Anything else?"),
+                    ),
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeBubbleId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text("Here is the order."),
+                        AssistantUiSegment.Card(orderEntry.card),
+                        AssistantUiSegment.Text("Anything else?"),
+                    ),
+                )
+            )
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
