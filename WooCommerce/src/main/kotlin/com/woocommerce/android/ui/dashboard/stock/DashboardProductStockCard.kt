@@ -261,10 +261,6 @@ fun ProductStockRow(
         onClick = { onItemClicked(product) },
         displayDivider = displayDivider,
         modifier = modifier,
-        contentVerticalArrangement = Arrangement.Top,
-        dividerContent = {
-            Divider(modifier = Modifier.padding(top = 8.dp))
-        },
         trailingContent = {
             Text(
                 text = product.stockQuantity,
@@ -278,7 +274,6 @@ fun ProductStockRow(
                 product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
                 else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
             },
-            modifier = Modifier.padding(bottom = 8.dp),
             color = colorResource(id = R.color.color_on_surface_medium_selector),
             maxLines = Int.MAX_VALUE,
             overflow = TextOverflow.Clip,

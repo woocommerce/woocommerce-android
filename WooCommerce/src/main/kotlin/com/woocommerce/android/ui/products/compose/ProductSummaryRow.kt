@@ -21,7 +21,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
@@ -37,30 +36,27 @@ fun ProductSummaryRow(
     enabled: Boolean = true,
     displayDivider: Boolean = false,
     imageContentDescription: String = stringResource(id = R.string.product_image_content_description),
-    contentVerticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(4.dp),
-    dividerContent: @Composable (() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
-    subtitle: @Composable ColumnScope.() -> Unit,
+    supportingContent: @Composable ColumnScope.() -> Unit,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ProductThumbnail(
             imageUrl = imageUrl.orEmpty(),
             contentDescription = imageContentDescription,
-            modifier = Modifier.padding(top = 12.dp),
         )
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 8.dp),
-            verticalArrangement = contentVerticalArrangement,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.padding(bottom = 4.dp),
                 verticalAlignment = Alignment.Top,
@@ -77,9 +73,10 @@ fun ProductSummaryRow(
                 )
                 trailingContent?.invoke(this)
             }
-            subtitle()
+            supportingContent()
+            Spacer(modifier = Modifier.height(12.dp))
             if (displayDivider) {
-                dividerContent?.invoke() ?: ProductSummaryRowDivider()
+                Divider()
             }
         }
     }
@@ -101,16 +98,6 @@ fun ProductSummaryRowInfo(
         maxLines = maxLines,
         overflow = overflow,
         style = style,
-    )
-}
-
-@Composable
-private fun ProductSummaryRowDivider(
-    topPadding: Dp = 4.dp,
-) {
-    Divider(
-        modifier = Modifier.padding(top = topPadding),
-        color = colorResource(id = R.color.divider_color),
     )
 }
 
