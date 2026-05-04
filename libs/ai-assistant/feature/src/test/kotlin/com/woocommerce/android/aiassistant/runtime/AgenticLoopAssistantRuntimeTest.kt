@@ -319,6 +319,34 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given non show cards success with card shaped uiStructured, when adapted, then cards are ignored`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(
+                        ToolCall(
+                            id = "call-orders",
+                            name = "orders_list",
+                            arguments = buildJsonObject {},
+                        )
+                    ),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-orders",
+                            structured = buildJsonObject { put("ok", true) },
+                            uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                        )
+                    ),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).isEmpty()
+    }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
