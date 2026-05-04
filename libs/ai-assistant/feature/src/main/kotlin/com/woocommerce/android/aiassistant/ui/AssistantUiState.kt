@@ -31,6 +31,22 @@ data class AssistantUiState(
         get() = status == AssistantUiStatus.ERROR &&
             error != null &&
             messages.lastOrNull()?.error == null
+
+    /**
+     * Mirrors iOS `streamingState == .sending`: dots are visible from submit until the active assistant
+     * message starts streaming actual text. Tool activity segments don't count as "text", so the dots
+     * stay visible during pre-text tool calls and disappear only once the model emits its first text
+     * token. Within a single message text is appended monotonically, so once dots hide they don't bounce
+     * back for that turn.
+     */
+    val shouldShowTypingIndicator: Boolean
+        get() = status == AssistantUiStatus.STREAMING && !activeAssistantHasStreamedText
+
+    private val activeAssistantHasStreamedText: Boolean
+        get() {
+            val active = messages.firstOrNull { it.id == activeAssistantMessageId } ?: return false
+            return active.segments.any { it is AssistantUiSegment.Text && it.text.isNotEmpty() }
+        }
 }
 
 enum class AssistantUiStatus {
@@ -82,14 +98,7 @@ sealed interface AssistantUiSegment {
     data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
 }
 
-internal fun AssistantUiState.shouldShowTypingIndicator(message: AssistantUiMessage): Boolean =
-    status == AssistantUiStatus.STREAMING &&
-        message.id == activeAssistantMessageId &&
-        message.role == AssistantUiMessage.Role.ASSISTANT &&
-        message.error == null &&
-        message.hasVisibleAssistantContent.not()
-
-private val AssistantUiMessage.hasVisibleAssistantContent: Boolean
+internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
     get() = segments.any { segment ->
         when (segment) {
             is AssistantUiSegment.Text -> segment.text.isNotEmpty()

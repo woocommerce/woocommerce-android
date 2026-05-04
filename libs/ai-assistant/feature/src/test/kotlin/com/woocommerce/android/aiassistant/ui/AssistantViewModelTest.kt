@@ -96,7 +96,7 @@ class AssistantViewModelTest {
         val state = viewModel.uiState.value
         val assistantMessage = state.messages.last()
         assertThat(state.activeAssistantMessageId).isEqualTo(assistantMessage.id)
-        assertThat(state.shouldShowTypingIndicator(assistantMessage)).isTrue()
+        assertThat(state.shouldShowTypingIndicator).isTrue()
     }
 
     @Test
@@ -105,13 +105,11 @@ class AssistantViewModelTest {
         runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today."))
         advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        val assistantMessage = state.messages.last()
-        assertThat(state.shouldShowTypingIndicator(assistantMessage)).isFalse()
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isFalse()
     }
 
     @Test
-    fun `given active assistant bubble, when tool starts, then tool activity segment is shown`() = runTest {
+    fun `given active assistant bubble, when tool starts, then typing indicator stays visible`() = runTest {
         viewModel.onSendMessage("Find order 123")
 
         runtime.emit(
@@ -131,8 +129,7 @@ class AssistantViewModelTest {
                 )
             ),
         )
-        assertThat(viewModel.uiState.value.shouldShowTypingIndicator(viewModel.uiState.value.messages.last()))
-            .isFalse()
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
     }
 
     @Test
@@ -145,8 +142,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
             AssistantUiSegment.Text(""),
         )
-        assertThat(viewModel.uiState.value.shouldShowTypingIndicator(viewModel.uiState.value.messages.last()))
-            .isTrue()
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
     }
 
     @Test
@@ -208,7 +204,7 @@ class AssistantViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.activeAssistantMessageId).isNull()
         assertThat(state.toolActivitySegments()).isEmpty()
-        assertThat(state.shouldShowTypingIndicator(state.messages.last())).isFalse()
+        assertThat(state.shouldShowTypingIndicator).isFalse()
     }
 
     @Test
@@ -758,7 +754,7 @@ class AssistantViewModelTest {
 
             val state = viewModel.uiState.value
             assertThat(state.messages.dropLast(1).toolActivitySegments()).isEmpty()
-            assertThat(state.shouldShowTypingIndicator(state.messages.last())).isTrue()
+            assertThat(state.shouldShowTypingIndicator).isTrue()
         }
 
     @Test

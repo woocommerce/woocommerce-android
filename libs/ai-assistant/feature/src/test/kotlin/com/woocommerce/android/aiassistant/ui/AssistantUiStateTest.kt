@@ -108,51 +108,76 @@ class AssistantUiStateTest {
     }
 
     @Test
-    fun `given active empty assistant message, when checking typing indicator, then indicator is visible`() {
-        val message = AssistantUiMessage(
-            id = "assistant-1",
-            role = AssistantUiMessage.Role.ASSISTANT,
-            text = "",
-        )
+    fun `given streaming with active empty assistant message, when checking typing indicator, then it is visible`() {
         val state = AssistantUiState(
-            messages = listOf(message),
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
             status = AssistantUiStatus.STREAMING,
             activeAssistantMessageId = "assistant-1",
         )
 
-        assertThat(state.shouldShowTypingIndicator(message)).isTrue()
+        assertThat(state.shouldShowTypingIndicator).isTrue()
     }
 
     @Test
-    fun `given active assistant message with text, when checking typing indicator, then indicator is hidden`() {
-        val message = AssistantUiMessage(
-            id = "assistant-1",
-            role = AssistantUiMessage.Role.ASSISTANT,
-            text = "Sales are up today.",
-        )
+    fun `given streaming with active tool activity but no text, when checking typing indicator, then it is visible`() {
         val state = AssistantUiState(
-            messages = listOf(message),
+            messages = listOf(
+                AssistantUiMessage(
+                    id = "assistant-1",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(toolCallId = "call-1", toolName = "orders_list"),
+                        ),
+                    ),
+                ),
+            ),
             status = AssistantUiStatus.STREAMING,
             activeAssistantMessageId = "assistant-1",
         )
 
-        assertThat(state.shouldShowTypingIndicator(message)).isFalse()
+        assertThat(state.shouldShowTypingIndicator).isTrue()
     }
 
     @Test
-    fun `given inactive empty assistant message, when checking typing indicator, then indicator is hidden`() {
-        val message = AssistantUiMessage(
-            id = "assistant-1",
-            role = AssistantUiMessage.Role.ASSISTANT,
-            text = "",
-        )
+    fun `given streaming with active assistant message that has streamed text, when checking typing indicator, then it is hidden`() {
         val state = AssistantUiState(
-            messages = listOf(message),
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, "Sales are up today."),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given idle status, when checking typing indicator, then it is hidden`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
             status = AssistantUiStatus.IDLE,
             activeAssistantMessageId = null,
         )
 
-        assertThat(state.shouldShowTypingIndicator(message)).isFalse()
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given awaiting confirmation, when checking typing indicator, then it is hidden`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
+            status = AssistantUiStatus.AWAITING_CONFIRMATION,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isFalse()
     }
 
     @Test
