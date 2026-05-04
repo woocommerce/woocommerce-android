@@ -64,7 +64,8 @@ internal class ShowCardsReferenceValidator {
     private fun JsonPrimitive.stringContentOrNull(): String? =
         contentOrNull?.takeIf { isString }
 
-    private fun String.isValidShowCardsId(): Boolean = isNotBlank()
+    private fun String.isValidShowCardsId(): Boolean =
+        toLongOrNull()?.let { it > 0L } == true
 
     private fun ValidationState.rejectInvalidId(index: Int, family: ShowCardFamily) =
         reject(index, family.serializedName, reason = ShowCardsRejectionReason.InvalidId)

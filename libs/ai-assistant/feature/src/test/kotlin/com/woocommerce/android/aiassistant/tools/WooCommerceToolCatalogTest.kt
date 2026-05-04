@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHa
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.orders.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
@@ -36,7 +37,7 @@ class WooCommerceToolCatalogTest {
         ProductVariationsUpdateToolHandler(mock(), mock()),
         AnalyticsRevenueToolHandler(mock(), mock()),
         AnalyticsOrdersToolHandler(mock(), mock()),
-        ShowCardsToolHandler(),
+        ShowCardsToolHandler(mock<ShowCardsResolver>()),
         CustomersListToolHandler(mock()),
     )
 

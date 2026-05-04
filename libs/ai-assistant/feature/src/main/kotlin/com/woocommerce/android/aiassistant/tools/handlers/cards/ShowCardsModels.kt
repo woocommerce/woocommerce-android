@@ -119,7 +119,26 @@ internal data class ShowCardPayload(
     val family: String,
     val id: String,
     val title: String,
-    val subtitle: String? = null,
-    val badges: List<String> = emptyList(),
-    val attributes: Map<String, String> = emptyMap(),
+    val details: ShowCardDetails,
 )
+
+@Serializable
+internal sealed interface ShowCardDetails {
+    @Serializable
+    @SerialName("order")
+    data class Order(
+        val status: String? = null,
+        val total: String? = null,
+        val currency: String? = null,
+        @SerialName("date_created") val dateCreated: String? = null,
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("product")
+    data class Product(
+        val sku: String? = null,
+        val price: String? = null,
+        @SerialName("stock_status") val stockStatus: String? = null,
+        val status: String? = null,
+    ) : ShowCardDetails
+}
