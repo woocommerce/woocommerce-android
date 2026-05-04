@@ -364,19 +364,28 @@ private fun AssistantCardSegment(
 ) {
     if (assistantCardRenderer == null) return
 
-    when (card) {
-        is AssistantCard.Order -> assistantCardRenderer.OrderCard(
-            card = card,
-            onAction = onCardAction,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        is AssistantCard.Product -> assistantCardRenderer.ProductCard(
-            card = card,
-            onAction = onCardAction,
-            modifier = Modifier.fillMaxWidth(),
-        )
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(ASSISTANT_CARD_CORNER_RADIUS),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        when (card) {
+            is AssistantCard.Order -> assistantCardRenderer.OrderCard(
+                card = card,
+                onAction = onCardAction,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            is AssistantCard.Product -> assistantCardRenderer.ProductCard(
+                card = card,
+                onAction = onCardAction,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
+
+private val ASSISTANT_CARD_CORNER_RADIUS = 12.dp
 
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
@@ -649,30 +658,23 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
-        Surface(
-            modifier = modifier,
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(
-                    text = card.number,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = listOf(card.customerName, card.status, card.unformattedTotal)
-                        .filter { it.isNotBlank() }
-                        .joinToString(" - "),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+            Text(
+                text = card.number,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = listOf(card.customerName, card.status, card.unformattedTotal)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 
@@ -682,30 +684,23 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
-        Surface(
-            modifier = modifier,
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(
-                    text = card.name,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = listOf(card.stockStatus, card.price)
-                        .filter { it.isNotBlank() }
-                        .joinToString(" - "),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+            Text(
+                text = card.name,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = listOf(card.stockStatus, card.price)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
