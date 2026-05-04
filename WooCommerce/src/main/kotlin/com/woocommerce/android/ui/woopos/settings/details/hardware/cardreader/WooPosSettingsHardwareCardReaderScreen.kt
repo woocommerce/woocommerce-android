@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -234,7 +235,7 @@ private fun ReaderConnectedIndicator() {
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         Box(
             modifier = Modifier
-                .size(14.dp)
+                .size(14.dp.toAdaptiveComponentSize())
                 .background(color = WooPosTheme.colors.success, shape = CircleShape)
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
