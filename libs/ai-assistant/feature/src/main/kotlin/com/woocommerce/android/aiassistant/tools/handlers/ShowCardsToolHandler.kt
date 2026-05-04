@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
@@ -18,7 +19,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
-import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
