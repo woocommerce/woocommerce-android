@@ -2273,12 +2273,12 @@
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Turn on notifications&lt;/a&gt; in your device settings to receive store notifications.</string>
+    <string name="settings_notifs_enable_title">Enable notifications</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
     <string name="settings_notifs_new_orders">New orders</string>
     <string name="settings_notifs_new_orders_subtitle">All orders</string>
-    <string name="settings_notifs_new_orders_enable_title">Enable new order notifications</string>
     <string name="settings_notifs_new_orders_enable_description">Get notified when an order is placed in your store.</string>
     <string name="settings_notifs_notify_me_for">Notify me for</string>
     <string name="settings_notifs_new_orders_all_title">All new orders</string>
@@ -2290,7 +2290,6 @@
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_new_reviews">New reviews</string>
     <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
-    <string name="settings_notifs_new_reviews_enable_title">Enable new review notifications</string>
     <string name="settings_notifs_new_reviews_enable_description">Get notified when someone leaves a review on one of your products.</string>
     <string name="settings_notifs_new_reviews_all_title">All new reviews</string>
     <string name="settings_notifs_new_reviews_all_description">Ping for every review, regardless of rating.</string>
