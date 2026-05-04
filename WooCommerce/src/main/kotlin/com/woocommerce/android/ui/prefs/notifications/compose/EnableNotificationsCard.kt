@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.notifications.compose
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,36 @@ internal fun EnableNotificationsCard(
     title: String,
     description: String,
     isEnabled: Boolean,
-    onEnabledChanged: (Boolean) -> Unit
+    onEnabledChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+) {
+    EnableNotificationsCard(
+        title = title,
+        isEnabled = isEnabled,
+        onEnabledChanged = onEnabledChanged,
+        modifier = modifier,
+        descriptionContent = {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    )
+}
+
+@Composable
+internal fun EnableNotificationsCard(
+    title: String,
+    isEnabled: Boolean,
+    onEnabledChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+    descriptionContent: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier = modifier
+            .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         color = MaterialTheme.colorScheme.surface
@@ -42,12 +67,7 @@ internal fun EnableNotificationsCard(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                descriptionContent()
             }
             WCSwitch(
                 checked = isEnabled,
