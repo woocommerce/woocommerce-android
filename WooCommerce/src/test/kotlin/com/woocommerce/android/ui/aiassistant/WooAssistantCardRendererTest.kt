@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.aiassistant
 import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -14,15 +13,16 @@ import java.math.BigDecimal
 
 class WooAssistantCardRendererTest {
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val context: Context = mock()
 
     @Test
     fun `given assistant order card, when mapped, then host row model formats total with order currency`() {
         whenever(currencyFormatter.formatCurrency("12.34", "USD")).thenReturn("$12.34")
 
-        val model = orderCard().toOrderSummaryRowModel(currencyFormatter)
+        val model = orderCard().toOrderSummaryRowModel(context, currencyFormatter)
 
         assertThat(model.number).isEqualTo("#1001")
-        assertThat(model.date).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(model.date).matches("^May [12]$")
         assertThat(model.customerName).isEqualTo("Jane Doe")
         assertThat(model.status).isEqualTo("processing")
         assertThat(model.statusColor).isEqualTo(R.color.tag_bg_processing)
@@ -33,32 +33,25 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant order card without currency, when mapped, then raw total is used`() {
-        val model = orderCard(currency = "").toOrderSummaryRowModel(currencyFormatter)
+        val model = orderCard(currency = "").toOrderSummaryRowModel(context, currencyFormatter)
 
         assertThat(model.totalPrice).isEqualTo("12.34")
     }
 
     @Test
-    fun `given assistant order card, when action helper is used, then open order id is used`() {
-        val action = orderCard().toOpenOrderAction()
+    fun `given assistant order card with unparseable date, when mapped, then raw date is preserved`() {
+        val model = orderCard(currency = "", date = "not-a-date").toOrderSummaryRowModel(context, currencyFormatter)
 
-        assertThat(action).isEqualTo(AssistantCardAction.OpenOrder(remoteOrderId = 123L))
+        assertThat(model.date).isEqualTo("not-a-date")
     }
 
     @Test
-    fun `given assistant product card, when action helper is used, then open product id is used`() {
-        val action = productCard().toOpenProductAction()
+    fun `given assistant order card with blank customer name, when mapped, then guest fallback is used`() {
+        whenever(context.getString(R.string.orderdetail_customer_name_default)).thenReturn("Guest")
 
-        assertThat(action).isEqualTo(AssistantCardAction.OpenProduct(remoteProductId = 456L))
-    }
+        val model = orderCard(currency = "", customerName = "").toOrderSummaryRowModel(context, currencyFormatter)
 
-    @Test
-    fun `given assistant product card, when click helper is invoked, then open product action is emitted`() {
-        val actions = mutableListOf<AssistantCardAction>()
-
-        productCard().toProductCardClick(actions::add).invoke()
-
-        assertThat(actions).containsExactly(AssistantCardAction.OpenProduct(remoteProductId = 456L))
+        assertThat(model.customerName).isEqualTo("Guest")
     }
 
     @Test
@@ -83,25 +76,18 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
-    fun `given assistant product card, when price is numeric, then host formatter formats it`() {
-        val decimalFormatter: (BigDecimal) -> String = { amount -> "\$${amount.toPlainString()}" }
-        whenever(currencyFormatter.buildBigDecimalFormatter()).thenReturn(decimalFormatter)
+    fun `given assistant product card with non-numeric price, when row model is built, then raw price is used`() {
+        val context: Context = mock()
+        whenever(context.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
 
-        val price = productCard(price = "9.99").formatProductPrice(currencyFormatter)
+        val model = productCard(price = "Free").toProductSummaryRowModel(context, currencyFormatter)
 
-        assertThat(price).isEqualTo("$9.99")
-    }
-
-    @Test
-    fun `given assistant product card, when price is not numeric, then raw price is used`() {
-        val price = productCard(price = "Free").formatProductPrice(currencyFormatter)
-
-        assertThat(price).isEqualTo("Free")
+        assertThat(model.stockStatusPriceText).isEqualTo("In stock \u2022 Free")
     }
 
     @Test
     fun `given ciab open status, when mapped, then processing color is used like dashboard orders`() {
-        val model = orderCard(status = "open", currency = "").toOrderSummaryRowModel(currencyFormatter)
+        val model = orderCard(status = "open", currency = "").toOrderSummaryRowModel(context, currencyFormatter)
 
         assertThat(model.statusColor).isEqualTo(R.color.tag_bg_processing)
     }
@@ -109,14 +95,16 @@ class WooAssistantCardRendererTest {
     private fun orderCard(
         status: String = "processing",
         currency: String = "USD",
+        date: String = "2026-05-01T10:00:00Z",
+        customerName: String = "Jane Doe",
     ) = AssistantCard.Order(
         remoteOrderId = 123L,
         number = "#1001",
         status = status,
         total = "12.34",
         currency = currency,
-        customerName = "Jane Doe",
-        date = "2026-05-01T10:00:00Z",
+        customerName = customerName,
+        date = date,
     )
 
     private fun productCard(
