@@ -412,6 +412,31 @@ class AgenticLoopAssistantRuntimeTest {
         }
 
     @Test
+    fun `given show cards success with empty cards, when adapted, then no card event is emitted`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-empty")),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-empty",
+                            structured = buildJsonObject { put("rendered", 0) },
+                            uiStructured = showCardsUiStructured(),
+                        )
+                    ),
+                    LoopEvent.AssistantTextDelta("I could not find matching cards."),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.AssistantTextDelta("I could not find matching cards.")
+        )
+    }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()

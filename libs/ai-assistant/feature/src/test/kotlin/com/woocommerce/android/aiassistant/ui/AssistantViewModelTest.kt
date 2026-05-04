@@ -704,6 +704,26 @@ class AssistantViewModelTest {
         }
 
     @Test
+    fun `given no card event is emitted, when turn finishes, then no card segment is present`() = runTest {
+        viewModel.onSendMessage("Show missing order")
+
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("I could not find that order."))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Show missing order"),
+                    AssistantMessage.Assistant("I could not find that order."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+            .isEmpty()
+    }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
