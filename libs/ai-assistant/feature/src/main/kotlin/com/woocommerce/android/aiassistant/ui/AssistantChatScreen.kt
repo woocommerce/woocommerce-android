@@ -924,7 +924,7 @@ private fun sampleProductCard() = AssistantCard.Product(
     price = "9.99",
     stockStatus = "instock",
     status = "publish",
-    imageUrl = "",
+    imageUrl = "https://example.com/socks.png",
 )
 
 private val AssistantCard.Order.unformattedTotal: String

@@ -5,7 +5,6 @@ import androidx.annotation.ColorRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
@@ -44,26 +43,47 @@ class WooAssistantCardRenderer(
         modifier: Modifier,
     ) {
         val context = LocalContext.current
+        val rowModel = card.toProductSummaryRowModel(context, currencyFormatter)
         ProductSummaryRow(
-            title = card.name,
-            imageUrl = card.imageUrl,
-            onClick = { onAction(card.toOpenProductAction()) },
+            title = rowModel.title,
+            imageUrl = rowModel.imageUrl,
+            onClick = card.toProductCardClick(onAction),
             modifier = modifier,
-            imageContentDescription = stringResource(R.string.product_image_content_description),
         ) {
-            ProductSummaryRowInfo(card.toStockStatusPriceText(context, currencyFormatter))
-            card.sku
-                .takeIf { it.isNotBlank() }
-                ?.let { sku ->
-                    ProductSummaryRowInfo(context.getString(R.string.orderdetail_product_lineitem_sku_value, sku))
-                }
+            ProductSummaryRowInfo(rowModel.stockStatusPriceText)
+            rowModel.skuText?.let { sku -> ProductSummaryRowInfo(sku) }
         }
     }
 }
 
+internal data class AssistantProductSummaryRowModel(
+    val title: String,
+    val imageUrl: String,
+    val stockStatusPriceText: String,
+    val skuText: String?,
+)
+
 internal fun AssistantCard.Order.toOpenOrderAction() = AssistantCardAction.OpenOrder(remoteOrderId)
 
 internal fun AssistantCard.Product.toOpenProductAction() = AssistantCardAction.OpenProduct(remoteProductId)
+
+internal fun AssistantCard.Product.toProductCardClick(
+    onAction: (AssistantCardAction) -> Unit,
+): () -> Unit = {
+    onAction(toOpenProductAction())
+}
+
+internal fun AssistantCard.Product.toProductSummaryRowModel(
+    context: Context,
+    currencyFormatter: CurrencyFormatter,
+) = AssistantProductSummaryRowModel(
+    title = name,
+    imageUrl = imageUrl,
+    stockStatusPriceText = toStockStatusPriceText(context, currencyFormatter),
+    skuText = sku
+        .takeIf { it.isNotBlank() }
+        ?.let { context.getString(R.string.orderdetail_product_lineitem_sku_value, it) },
+)
 
 internal fun AssistantCard.Order.toOrderSummaryRowModel(currencyFormatter: CurrencyFormatter) = OrderSummaryRowModel(
     number = number,

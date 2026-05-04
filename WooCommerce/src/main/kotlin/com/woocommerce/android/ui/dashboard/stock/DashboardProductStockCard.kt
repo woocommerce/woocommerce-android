@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
@@ -260,6 +261,10 @@ fun ProductStockRow(
         onClick = { onItemClicked(product) },
         displayDivider = displayDivider,
         modifier = modifier,
+        contentVerticalArrangement = Arrangement.Top,
+        dividerContent = {
+            Divider(modifier = Modifier.padding(top = 8.dp))
+        },
         trailingContent = {
             Text(
                 text = product.stockQuantity,
@@ -274,6 +279,10 @@ fun ProductStockRow(
                 else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
             },
             modifier = Modifier.padding(bottom = 8.dp),
+            color = colorResource(id = R.color.color_on_surface_medium_selector),
+            maxLines = Int.MAX_VALUE,
+            overflow = TextOverflow.Clip,
+            style = MaterialTheme.typography.body2,
         )
     }
 }

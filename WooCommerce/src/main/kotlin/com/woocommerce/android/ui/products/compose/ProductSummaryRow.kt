@@ -16,9 +16,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
@@ -34,6 +37,8 @@ fun ProductSummaryRow(
     enabled: Boolean = true,
     displayDivider: Boolean = false,
     imageContentDescription: String = stringResource(id = R.string.product_image_content_description),
+    contentVerticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(4.dp),
+    dividerContent: @Composable (() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
     subtitle: @Composable ColumnScope.() -> Unit,
 ) {
@@ -53,7 +58,7 @@ fun ProductSummaryRow(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = contentVerticalArrangement,
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -74,10 +79,7 @@ fun ProductSummaryRow(
             }
             subtitle()
             if (displayDivider) {
-                Divider(
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = colorResource(id = R.color.divider_color),
-                )
+                dividerContent?.invoke() ?: ProductSummaryRowDivider()
             }
         }
     }
@@ -87,14 +89,28 @@ fun ProductSummaryRow(
 fun ProductSummaryRowInfo(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = colorResource(id = R.color.color_on_surface_medium),
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    style: TextStyle = MaterialTheme.typography.caption,
 ) {
     Text(
         modifier = modifier,
         text = text,
-        color = colorResource(id = R.color.color_on_surface_medium),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.caption,
+        color = color,
+        maxLines = maxLines,
+        overflow = overflow,
+        style = style,
+    )
+}
+
+@Composable
+private fun ProductSummaryRowDivider(
+    topPadding: Dp = 4.dp,
+) {
+    Divider(
+        modifier = Modifier.padding(top = topPadding),
+        color = colorResource(id = R.color.divider_color),
     )
 }
 
@@ -104,7 +120,7 @@ private fun ProductSummaryRowPreview() {
     WooThemeWithBackground {
         ProductSummaryRow(
             title = "Woo socks",
-            imageUrl = null,
+            imageUrl = "https://example.com/socks.png",
             onClick = {},
         ) {
             ProductSummaryRowInfo("In stock \u2022 \$9.99")

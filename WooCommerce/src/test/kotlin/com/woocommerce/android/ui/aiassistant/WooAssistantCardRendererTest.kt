@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aiassistant
 
+import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
@@ -49,6 +50,36 @@ class WooAssistantCardRendererTest {
         val action = productCard().toOpenProductAction()
 
         assertThat(action).isEqualTo(AssistantCardAction.OpenProduct(remoteProductId = 456L))
+    }
+
+    @Test
+    fun `given assistant product card, when click helper is invoked, then open product action is emitted`() {
+        val actions = mutableListOf<AssistantCardAction>()
+
+        productCard().toProductCardClick(actions::add).invoke()
+
+        assertThat(actions).containsExactly(AssistantCardAction.OpenProduct(remoteProductId = 456L))
+    }
+
+    @Test
+    fun `given assistant product card, when row model is built, then product image url is preserved`() {
+        val context: Context = mock()
+        val decimalFormatter: (BigDecimal) -> String = { amount -> "\$${amount.toPlainString()}" }
+        whenever(context.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
+        whenever(context.getString(R.string.orderdetail_product_lineitem_sku_value, "woo-socks"))
+            .thenReturn("SKU: woo-socks")
+        whenever(currencyFormatter.buildBigDecimalFormatter()).thenReturn(decimalFormatter)
+
+        val model = productCard().toProductSummaryRowModel(context, currencyFormatter)
+
+        assertThat(model).isEqualTo(
+            AssistantProductSummaryRowModel(
+                title = "Socks",
+                imageUrl = "https://example.com/socks.png",
+                stockStatusPriceText = "In stock \u2022 \$9.99",
+                skuText = "SKU: woo-socks",
+            )
+        )
     }
 
     @Test
