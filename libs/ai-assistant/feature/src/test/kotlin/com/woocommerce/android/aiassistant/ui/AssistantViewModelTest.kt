@@ -133,7 +133,7 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given active tool activity, when matching tool finishes, then activity segment is removed`() = runTest {
+    fun `given active tool activity, when matching tool finishes, then activity is preserved as completed`() = runTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
@@ -141,6 +141,13 @@ class AssistantViewModelTest {
 
         assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
             AssistantUiSegment.Text(""),
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    status = AssistantToolActivity.Status.COMPLETED,
+                )
+            ),
         )
         assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
     }
@@ -187,7 +194,7 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given active tool activity, when turn completes, then transient activity is cleared`() = runTest {
+    fun `given running tool activity, when turn completes, then unfinished activity is cleared`() = runTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(
@@ -205,6 +212,34 @@ class AssistantViewModelTest {
         assertThat(state.activeAssistantMessageId).isNull()
         assertThat(state.toolActivitySegments()).isEmpty()
         assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given completed tool activity, when turn completes, then completed activity is preserved`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Find order 123"),
+                    AssistantMessage.Assistant("Order 123 is processing."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertThat(state.toolActivitySegments()).containsExactly(
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    status = AssistantToolActivity.Status.COMPLETED,
+                )
+            ),
+        )
     }
 
     @Test

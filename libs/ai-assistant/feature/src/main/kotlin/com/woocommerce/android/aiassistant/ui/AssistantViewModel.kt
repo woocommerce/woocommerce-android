@@ -171,7 +171,7 @@ class AssistantViewModel @AssistedInject constructor(
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
             is AssistantRuntimeEvent.ToolCallStarted -> showToolActivity(event)
-            is AssistantRuntimeEvent.ToolCallFinished -> hideToolActivity(event.toolCallId)
+            is AssistantRuntimeEvent.ToolCallFinished -> markToolActivityCompleted(event.toolCallId)
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
                 _uiState.update {
                     it.copy(
@@ -244,9 +244,11 @@ class AssistantViewModel @AssistedInject constructor(
         }
     }
 
-    private fun hideToolActivity(toolCallId: String) {
+    private fun markToolActivityCompleted(toolCallId: String) {
         _uiState.update { state ->
-            state.copy(messages = state.messages.withoutToolActivity(toolCallId))
+            state.copy(
+                messages = state.messages.withToolActivityStatus(toolCallId, AssistantToolActivity.Status.COMPLETED)
+            )
         }
     }
 
@@ -356,7 +358,10 @@ class AssistantViewModel @AssistedInject constructor(
     private fun List<AssistantUiMessage>.withoutTransientActivity(): List<AssistantUiMessage> =
         map { message ->
             message.copy(
-                segments = message.segments.filterNot { it is AssistantUiSegment.ToolActivity }
+                segments = message.segments.filterNot { segment ->
+                    segment is AssistantUiSegment.ToolActivity &&
+                        segment.activity.status == AssistantToolActivity.Status.RUNNING
+                }
             )
         }
 
@@ -432,11 +437,18 @@ class AssistantViewModel @AssistedInject constructor(
             } + AssistantUiSegment.ToolActivity(activity)
         )
 
-    private fun List<AssistantUiMessage>.withoutToolActivity(toolCallId: String): List<AssistantUiMessage> =
+    private fun List<AssistantUiMessage>.withToolActivityStatus(
+        toolCallId: String,
+        status: AssistantToolActivity.Status,
+    ): List<AssistantUiMessage> =
         map { message ->
             message.copy(
-                segments = message.segments.filterNot {
-                    it is AssistantUiSegment.ToolActivity && it.activity.toolCallId == toolCallId
+                segments = message.segments.map { segment ->
+                    if (segment is AssistantUiSegment.ToolActivity && segment.activity.toolCallId == toolCallId) {
+                        AssistantUiSegment.ToolActivity(segment.activity.copy(status = status))
+                    } else {
+                        segment
+                    }
                 }
             )
         }

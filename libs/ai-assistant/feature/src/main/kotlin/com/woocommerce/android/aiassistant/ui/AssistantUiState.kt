@@ -86,7 +86,13 @@ data class AssistantUiMessage(
 data class AssistantToolActivity(
     val toolCallId: String,
     val toolName: String,
-)
+    val status: Status = Status.RUNNING,
+) {
+    enum class Status {
+        RUNNING,
+        COMPLETED,
+    }
+}
 
 sealed interface AssistantUiSegment {
     data class Text(val text: String) : AssistantUiSegment
