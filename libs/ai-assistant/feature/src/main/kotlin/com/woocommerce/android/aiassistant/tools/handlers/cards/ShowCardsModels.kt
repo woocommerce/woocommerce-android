@@ -142,5 +142,6 @@ internal sealed interface ShowCardDetails {
         val price: String? = null,
         @SerialName("stock_status") val stockStatus: String? = null,
         val status: String? = null,
+        @SerialName("image_url") val imageUrl: String? = null,
     ) : ShowCardDetails
 }

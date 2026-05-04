@@ -401,6 +401,7 @@ private fun AssistantCardSegment(
             onAction = onCardAction,
             modifier = Modifier.fillMaxWidth(),
         )
+        is AssistantCard.Product -> Unit
     }
 }
 
