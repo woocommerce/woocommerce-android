@@ -54,6 +54,7 @@ class NotificationSettingsFragment : BaseFragment() {
                 is NotificationSettingsViewModel.OpenNewOrderNotificationSettings -> openNewOrderNotificationSettings()
                 is NotificationSettingsViewModel.OpenNewReviewNotificationSettings ->
                     openNewReviewNotificationSettings()
+                is NotificationSettingsViewModel.OpenStockNotificationSettings -> openStockNotificationSettings()
                 is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,
@@ -82,6 +83,13 @@ class NotificationSettingsFragment : BaseFragment() {
         findNavController().navigateSafely(
             NotificationSettingsFragmentDirections
                 .actionNotificationSettingsFragmentToNewReviewNotificationSettingsFragment()
+        )
+    }
+
+    private fun openStockNotificationSettings() {
+        findNavController().navigateSafely(
+            NotificationSettingsFragmentDirections
+                .actionNotificationSettingsFragmentToNewStockNotificationSettingsFragment()
         )
     }
 }

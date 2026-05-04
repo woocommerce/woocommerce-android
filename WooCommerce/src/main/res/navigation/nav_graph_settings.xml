@@ -217,6 +217,9 @@
         <action
             android:id="@+id/action_notificationSettingsFragment_to_newReviewNotificationSettingsFragment"
             app:destination="@id/newReviewNotificationSettingsFragment" />
+        <action
+            android:id="@+id/action_notificationSettingsFragment_to_newStockNotificationSettingsFragment"
+            app:destination="@id/newStockNotificationSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/newOrderNotificationSettingsFragment"
@@ -226,6 +229,10 @@
         android:id="@+id/newReviewNotificationSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsFragment"
         android:label="NewReviewNotificationSettingsFragment" />
+    <fragment
+        android:id="@+id/newStockNotificationSettingsFragment"
+        android:name="com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsFragment"
+        android:label="NewStockNotificationSettingsFragment" />
     <fragment
         android:id="@+id/pluginsFragment"
         android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
