@@ -50,7 +50,7 @@ fun NewReviewNotificationSettingsScreen(viewModel: NewReviewNotificationSettings
 }
 
 @Composable
-fun NewReviewNotificationSettingsScreen(
+private fun NewReviewNotificationSettingsScreen(
     viewState: ViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
     onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
