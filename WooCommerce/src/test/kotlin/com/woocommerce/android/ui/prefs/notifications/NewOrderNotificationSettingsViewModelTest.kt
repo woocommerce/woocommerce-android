@@ -97,6 +97,16 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewState.getOrAwaitValue().thresholdAmount)
             .isEqualTo(BigDecimal(750))
     }
+    
+     @Test
+     fun `when high value threshold amount is below minimum, then use minimum amount`() = testBlocking {
+        setup()
+
+        viewModel.onThresholdAmountChanged(BigDecimal.ZERO)
+
+        assertThat(viewModel.viewState.getOrAwaitValue().thresholdAmount)
+            .isEqualTo(BigDecimal.ONE)
+    }
 
     @Test
     fun `given cha ching sound is modified, when view is loaded, then expose modified state`() = testBlocking {
