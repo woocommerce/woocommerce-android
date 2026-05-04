@@ -379,6 +379,39 @@ class AgenticLoopAssistantRuntimeTest {
         }
 
     @Test
+    fun `given show cards success with valid and unsupported cards, when adapted, then valid cards are emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-partial")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-partial",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(
+                                    orderPayload(id = "123", title = "#123"),
+                                    ShowCardPayload(
+                                        family = "customer",
+                                        id = "456",
+                                        title = "Customer",
+                                        details = ShowCardDetails.Product(),
+                                    ),
+                                ),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events).containsExactly(
+                AssistantRuntimeEvent.CardsResolved(listOf(expectedOrderEntry(id = "123", number = "#123")))
+            )
+        }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
@@ -432,6 +465,19 @@ class AgenticLoopAssistantRuntimeTest {
             currency = "USD",
             dateCreated = "2026-05-01T10:00:00Z",
             customerName = "Jane Doe",
+        ),
+    )
+
+    private fun expectedOrderEntry(id: String, number: String) = AssistantCardEntry(
+        key = AssistantCardKey(family = "order", id = id),
+        card = AssistantCard.Order(
+            remoteOrderId = id.toLong(),
+            number = number,
+            status = "processing",
+            total = "12.34",
+            currency = "USD",
+            customerName = "Jane Doe",
+            date = "2026-05-01T10:00:00Z",
         ),
     )
 
