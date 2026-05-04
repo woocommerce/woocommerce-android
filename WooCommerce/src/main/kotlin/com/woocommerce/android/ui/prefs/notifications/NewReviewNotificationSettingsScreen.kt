@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -125,7 +125,7 @@ private fun RatingSelector(
         )
         Row(
             modifier = Modifier.padding(top = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             for (rating in MIN_RATING..MAX_RATING) {
                 RatingStar(
@@ -146,20 +146,24 @@ private fun RatingStar(
     enabled: Boolean,
     onClick: () -> Unit
 ) {
-    Icon(
-        imageVector = ImageVector.vectorResource(
-            id = if (isSelected) R.drawable.ic_star_filled_24dp else R.drawable.ic_star_24dp
-        ),
-        contentDescription = pluralStringResource(
-            id = R.plurals.settings_notifs_new_reviews_selected_rating,
-            count = rating,
-            rating
-        ),
-        tint = ratingStarColor(isSelected = isSelected, enabled = enabled),
-        modifier = Modifier
-            .size(40.dp)
-            .clickable(enabled = enabled, onClick = onClick)
-    )
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.size(48.dp)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(
+                id = if (isSelected) R.drawable.ic_star_filled_24dp else R.drawable.ic_star_24dp
+            ),
+            contentDescription = pluralStringResource(
+                id = R.plurals.settings_notifs_new_reviews_selected_rating,
+                count = rating,
+                rating
+            ),
+            tint = ratingStarColor(isSelected = isSelected, enabled = enabled),
+            modifier = Modifier.size(40.dp)
+        )
+    }
 }
 
 @Composable
