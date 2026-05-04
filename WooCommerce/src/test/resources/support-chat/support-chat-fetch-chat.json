@@ -1,0 +1,52 @@
+{
+  "chat_id": 4242,
+  "session_id": "session-abc-123",
+  "bot_slug": "woo-workflow-support_mobile_inapp",
+  "bot_version": "v1.0.0",
+  "messages": [
+    {
+      "message_id": 1,
+      "role": "user",
+      "content": "I can't load my orders"
+    },
+    {
+      "message_id": 2,
+      "role": "bot",
+      "content": "Let me help with that.",
+      "context": {
+        "flags": {
+          "forward_to_human_support": false,
+          "canned_response": false,
+          "logged_in": true,
+          "branch": null
+        }
+      }
+    },
+    {
+      "message_id": 3,
+      "role": "user",
+      "content": "I tried that, still not working"
+    },
+    {
+      "message_id": 4,
+      "role": "bot",
+      "content": "Let me check further...",
+      "context": {
+        "sources": [
+          {
+            "title": "Order sync",
+            "url": "https://woocommerce.com/help/order-sync",
+            "heading": "Order sync issues",
+            "content": "If orders fail to sync..."
+          }
+        ],
+        "flags": {
+          "forward_to_human_support": false,
+          "canned_response": false,
+          "logged_in": true,
+          "branch": "diagnostics"
+        }
+      }
+    }
+  ]
+}

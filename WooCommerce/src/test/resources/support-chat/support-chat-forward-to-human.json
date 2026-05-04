@@ -1,0 +1,22 @@
+{
+  "chat_id": 9999,
+  "session_id": "session-xyz-789",
+  "bot_slug": "woo-workflow-support_mobile_inapp",
+  "bot_version": "v1.0.0",
+  "messages": [
+    {
+      "message_id": 1,
+      "role": "bot",
+      "content": "I'm escalating this to a human agent.",
+      "context": {
+        "sources": [],
+        "flags": {
+          "forward_to_human_support": true,
+          "canned_response": false,
+          "logged_in": true,
+          "branch": "escalation"
+        }
+      }
+    }
+  ]
+}
