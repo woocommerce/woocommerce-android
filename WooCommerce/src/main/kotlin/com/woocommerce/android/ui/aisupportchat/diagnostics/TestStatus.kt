@@ -1,0 +1,12 @@
+package com.woocommerce.android.ui.aisupportchat.diagnostics
+
+/**
+ * State of a single [DiagnosticTest] as it progresses through the
+ * pending → running → passed/failed lifecycle.
+ */
+sealed interface TestStatus {
+    data object Pending : TestStatus
+    data object Running : TestStatus
+    data object Passed : TestStatus
+    data class Failed(val message: String? = null) : TestStatus
+}
