@@ -286,9 +286,18 @@ private fun AssistantMessageBubble(
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val messageText = message.text.ifEmpty { " " }
+    val toolActivity = message.segments
+        .filterIsInstance<AssistantUiSegment.ToolActivity>()
+        .lastOrNull()
+        ?.activity
+    val toolActivityLabel = toolActivity?.let { stringResource(it.labelRes()) }
     val messageContentDescription = when {
         isUser -> stringResource(R.string.assistant_chat_message_user_content_description, messageText)
         showTypingIndicator -> stringResource(R.string.assistant_chat_typing_content_description)
+        toolActivityLabel != null -> stringResource(
+            R.string.assistant_chat_tool_activity_content_description,
+            toolActivityLabel,
+        )
         else -> stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
     }
     val bubbleColor = if (isUser) {
@@ -396,6 +405,37 @@ private fun AssistantMessageSegments(
                 text = segment.text,
                 textColor = textColor,
                 isUser = isUser,
+            )
+            is AssistantUiSegment.ToolActivity -> AssistantToolActivityPill(segment.activity)
+        }
+    }
+}
+
+@Composable
+private fun AssistantToolActivityPill(activity: AssistantToolActivity) {
+    val label = stringResource(activity.labelRes())
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(7.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)),
+            )
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Medium,
             )
         }
     }
@@ -774,6 +814,42 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
         R.string.assistant_chat_status_awaiting_confirmation
     )
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantChatScreenToolActivityPreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Find order 123"),
+                AssistantUiMessage(
+                    id = "preview-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text(""),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-preview",
+                                toolName = "orders_get",
+                            )
+                        ),
+                    ),
+                ),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "preview-2",
+        ),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onBack = {},
+    )
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)

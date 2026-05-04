@@ -111,6 +111,45 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active assistant bubble, when tool starts, then tool activity segment is shown`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+
+        runtime.emit(
+            AssistantRuntimeEvent.ToolCallStarted(
+                toolCallId = "call-1",
+                toolName = "orders_get",
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+            AssistantUiSegment.ToolActivity(
+                AssistantToolActivity(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                )
+            ),
+        )
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator(viewModel.uiState.value.messages.last()))
+            .isFalse()
+    }
+
+    @Test
+    fun `given active tool activity, when matching tool finishes, then activity segment is removed`() = runTest {
+        viewModel.onSendMessage("Find order 123")
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+        )
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator(viewModel.uiState.value.messages.last()))
+            .isTrue()
+    }
+
+    @Test
     fun `given active assistant bubble, when text deltas arrive, then the same bubble grows`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         val activeBubbleId = viewModel.uiState.value.messages.last().id

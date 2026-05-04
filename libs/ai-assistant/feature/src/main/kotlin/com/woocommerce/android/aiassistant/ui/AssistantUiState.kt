@@ -67,12 +67,19 @@ data class AssistantUiMessage(
     }
 }
 
+data class AssistantToolActivity(
+    val toolCallId: String,
+    val toolName: String,
+)
+
 sealed interface AssistantUiSegment {
     data class Text(val text: String) : AssistantUiSegment
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
 
     data class Card(val card: AssistantCard) : AssistantUiSegment
+
+    data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
 }
 
 internal fun AssistantUiState.shouldShowTypingIndicator(message: AssistantUiMessage): Boolean =
@@ -87,8 +94,29 @@ private val AssistantUiMessage.hasVisibleAssistantContent: Boolean
         when (segment) {
             is AssistantUiSegment.Text -> segment.text.isNotEmpty()
             is AssistantUiSegment.ConfirmationCard -> true
+            is AssistantUiSegment.Card -> true
+            is AssistantUiSegment.ToolActivity -> true
         }
     }
+
+@StringRes
+internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
+    "orders_list",
+    "orders_get" -> R.string.assistant_chat_tool_activity_orders_read
+    "orders_update",
+    "orders_bulk_update" -> R.string.assistant_chat_tool_activity_orders_write
+    "products_list",
+    "products_get",
+    "product_variations_list" -> R.string.assistant_chat_tool_activity_products_read
+    "products_update",
+    "products_bulk_update",
+    "product_variations_update" -> R.string.assistant_chat_tool_activity_products_write
+    "analytics_orders",
+    "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
+    "customers_list" -> R.string.assistant_chat_tool_activity_customers
+    "show_cards" -> R.string.assistant_chat_tool_activity_cards
+    else -> R.string.assistant_chat_tool_activity_generic
+}
 
 data class AssistantConfirmationCard(
     val confirmationId: String,

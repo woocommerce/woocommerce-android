@@ -156,6 +156,38 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given known tool names, when resolving activity label, then humanized labels are returned`() {
+        val expectedLabels = mapOf(
+            "orders_list" to R.string.assistant_chat_tool_activity_orders_read,
+            "orders_get" to R.string.assistant_chat_tool_activity_orders_read,
+            "orders_update" to R.string.assistant_chat_tool_activity_orders_write,
+            "orders_bulk_update" to R.string.assistant_chat_tool_activity_orders_write,
+            "products_list" to R.string.assistant_chat_tool_activity_products_read,
+            "products_get" to R.string.assistant_chat_tool_activity_products_read,
+            "product_variations_list" to R.string.assistant_chat_tool_activity_products_read,
+            "products_update" to R.string.assistant_chat_tool_activity_products_write,
+            "products_bulk_update" to R.string.assistant_chat_tool_activity_products_write,
+            "product_variations_update" to R.string.assistant_chat_tool_activity_products_write,
+            "analytics_orders" to R.string.assistant_chat_tool_activity_analytics,
+            "analytics_revenue" to R.string.assistant_chat_tool_activity_analytics,
+            "customers_list" to R.string.assistant_chat_tool_activity_customers,
+            "show_cards" to R.string.assistant_chat_tool_activity_cards,
+        )
+
+        expectedLabels.forEach { (toolName, labelRes) ->
+            assertThat(AssistantToolActivity("call-1", toolName).labelRes())
+                .describedAs(toolName)
+                .isEqualTo(labelRes)
+        }
+    }
+
+    @Test
+    fun `given unknown tool name, when resolving activity label, then generic label is returned`() {
+        assertThat(AssistantToolActivity("call-1", "private_internal_tool").labelRes())
+            .isEqualTo(R.string.assistant_chat_tool_activity_generic)
+    }
+
+    @Test
     fun `given ui errors, when mapping to message resources, then fallback copy resources are returned`() {
         assertThat(AssistantUiError.CONFIRMATION_DEFERRED.toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)

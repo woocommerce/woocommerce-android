@@ -85,8 +85,17 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 is LoopEvent.ConfirmationResolved -> emit(
                     AssistantRuntimeEvent.ConfirmationResolved(event.result)
                 )
-                is LoopEvent.ToolCallFinished,
-                is LoopEvent.ToolCallStarted -> Unit
+                is LoopEvent.ToolCallStarted -> emit(
+                    AssistantRuntimeEvent.ToolCallStarted(
+                        toolCallId = event.call.id,
+                        toolName = event.call.name,
+                    )
+                )
+                is LoopEvent.ToolCallFinished -> emit(
+                    AssistantRuntimeEvent.ToolCallFinished(
+                        toolCallId = event.result.toolCallId,
+                    )
+                )
             }
         }
     }

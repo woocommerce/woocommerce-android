@@ -168,6 +168,8 @@ class AssistantViewModel @AssistedInject constructor(
     private fun reduceRuntimeEvent(event: AssistantRuntimeEvent) {
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
+            is AssistantRuntimeEvent.ToolCallStarted -> showToolActivity(event)
+            is AssistantRuntimeEvent.ToolCallFinished -> hideToolActivity(event.toolCallId)
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
                 _uiState.update {
                     it.copy(
@@ -215,6 +217,32 @@ class AssistantViewModel @AssistedInject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun showToolActivity(event: AssistantRuntimeEvent.ToolCallStarted) {
+        val messageId = activeAssistantMessageId ?: return
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.withToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = event.toolCallId,
+                                toolName = event.toolName,
+                            )
+                        )
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun hideToolActivity(toolCallId: String) {
+        _uiState.update { state ->
+            state.copy(messages = state.messages.withoutToolActivity(toolCallId))
         }
     }
 
@@ -384,6 +412,22 @@ class AssistantViewModel @AssistedInject constructor(
         updatedSegments[updatedSegments.lastIndex] = lastSegment.copy(text = lastSegment.text + delta)
         return copy(segments = updatedSegments)
     }
+
+    private fun AssistantUiMessage.withToolActivity(activity: AssistantToolActivity): AssistantUiMessage =
+        copy(
+            segments = segments.filterNot {
+                it is AssistantUiSegment.ToolActivity && it.activity.toolCallId == activity.toolCallId
+            } + AssistantUiSegment.ToolActivity(activity)
+        )
+
+    private fun List<AssistantUiMessage>.withoutToolActivity(toolCallId: String): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.filterNot {
+                    it is AssistantUiSegment.ToolActivity && it.activity.toolCallId == toolCallId
+                }
+            )
+        }
 
     private fun AssistantUiMessage.appendConfirmationCard(
         confirmation: AssistantConfirmationCard,
