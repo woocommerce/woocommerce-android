@@ -135,6 +135,7 @@ class ShowCardsResolverTest {
         assertThat(productDetails.price).isEqualTo("9.99")
         assertThat(productDetails.stockStatus).isEqualTo("instock")
         assertThat(productDetails.status).isEqualTo("publish")
+        assertThat(productDetails.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
     }
 
     @Test
@@ -235,5 +236,10 @@ class ShowCardsResolverTest {
         price = "9.99",
         stockStatus = "instock",
         status = "publish",
+        images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
     )
+
+    private companion object {
+        private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
+    }
 }

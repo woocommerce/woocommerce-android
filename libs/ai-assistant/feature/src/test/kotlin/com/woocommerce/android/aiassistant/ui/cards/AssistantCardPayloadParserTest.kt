@@ -70,7 +70,7 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given product and invalid order payloads, when parsed, then they are ignored`() {
+    fun `given product payload, when parsed, then product card contains displayed fields`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
@@ -78,13 +78,47 @@ class AssistantCardPayloadParserTest {
                         family = "product",
                         id = "456",
                         title = "Socks",
+                        details = ShowCardDetails.Product(
+                            sku = "woo-socks",
+                            price = "9.99",
+                            stockStatus = "instock",
+                            status = "publish",
+                            imageUrl = "https://example.com/socks.png",
+                        ),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Product(
+                remoteProductId = 456L,
+                name = "Socks",
+                sku = "woo-socks",
+                price = "9.99",
+                stockStatus = "instock",
+                status = "publish",
+                imageUrl = "https://example.com/socks.png",
+            )
+        )
+    }
+
+    @Test
+    fun `given unsupported and invalid payloads, when parsed, then they are ignored`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "customer",
+                        id = "456",
+                        title = "Customer",
                         details = ShowCardDetails.Product(),
                     ),
                     ShowCardPayload(
-                        family = "order",
+                        family = "product",
                         id = "not-a-number",
-                        title = "#bad",
-                        details = ShowCardDetails.Order(),
+                        title = "Bad product",
+                        details = ShowCardDetails.Product(),
                     ),
                     ShowCardPayload(
                         family = "order",

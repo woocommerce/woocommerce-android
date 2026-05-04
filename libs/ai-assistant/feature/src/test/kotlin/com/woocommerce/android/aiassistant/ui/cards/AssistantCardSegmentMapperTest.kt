@@ -9,12 +9,12 @@ import org.junit.Test
 
 class AssistantCardSegmentMapperTest {
     @Test
-    fun `given show cards payload, when mapped, then card segments preserve parsed card order`() {
+    fun `given order and product payloads, when mapped, then card segments preserve parsed card order`() {
         val segments = AssistantCardSegmentMapper.toSegments(
             ShowCardsUiStructured(
                 cards = listOf(
                     orderPayload(id = "1", title = "#1"),
-                    orderPayload(id = "2", title = "#2"),
+                    productPayload(id = "2", title = "Socks"),
                 )
             )
         )
@@ -32,14 +32,14 @@ class AssistantCardSegmentMapperTest {
                 )
             ),
             AssistantUiSegment.Card(
-                AssistantCard.Order(
-                    remoteOrderId = 2L,
-                    number = "#2",
-                    status = "processing",
-                    total = "12.34",
-                    currency = "USD",
-                    customerName = "Jane Doe",
-                    date = "2026-05-01T10:00:00Z",
+                AssistantCard.Product(
+                    remoteProductId = 2L,
+                    name = "Socks",
+                    sku = "woo-socks",
+                    price = "9.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                    imageUrl = "https://example.com/socks.png",
                 )
             ),
         )
@@ -51,9 +51,9 @@ class AssistantCardSegmentMapperTest {
             ShowCardsUiStructured(
                 cards = listOf(
                     ShowCardPayload(
-                        family = "product",
+                        family = "customer",
                         id = "456",
-                        title = "Socks",
+                        title = "Customer",
                         details = ShowCardDetails.Product(),
                     ),
                     ShowCardPayload(
@@ -79,6 +79,19 @@ class AssistantCardSegmentMapperTest {
             currency = "USD",
             dateCreated = "2026-05-01T10:00:00Z",
             customerName = "Jane Doe",
+        ),
+    )
+
+    private fun productPayload(id: String, title: String) = ShowCardPayload(
+        family = "product",
+        id = id,
+        title = title,
+        details = ShowCardDetails.Product(
+            sku = "woo-socks",
+            price = "9.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/socks.png",
         ),
     )
 }

@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.dashboard.stock
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +35,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -48,6 +45,8 @@ import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.OpenProductDetail
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.compose.ProductSummaryRow
+import com.woocommerce.android.ui.products.compose.ProductSummaryRowInfo
 import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
@@ -256,49 +255,35 @@ fun ProductStockRow(
     displayDivider: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onItemClicked(product) }
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        ProductThumbnail(
-            imageUrl = product.imageUrl ?: "",
-            contentDescription = stringResource(id = R.string.product_image_content_description),
-            modifier = Modifier.padding(top = 12.dp)
-        )
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.padding(bottom = 4.dp)) {
-                Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),
-                    text = product.name,
-                    style = MaterialTheme.typography.subtitle1,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = product.stockQuantity,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.color_error)
-                )
-            }
+    ProductSummaryRow(
+        title = product.name,
+        imageUrl = product.imageUrl,
+        onClick = { onItemClicked(product) },
+        displayDivider = displayDivider,
+        modifier = modifier,
+        contentVerticalArrangement = Arrangement.Top,
+        dividerContent = {
+            Divider(modifier = Modifier.padding(top = 8.dp))
+        },
+        trailingContent = {
             Text(
-                modifier = Modifier.padding(bottom = 8.dp),
-                text = when {
-                    product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
-                    else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
-                },
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector)
+                text = product.stockQuantity,
+                color = colorResource(id = R.color.color_error),
+                style = MaterialTheme.typography.subtitle1,
             )
-            if (displayDivider) {
-                Divider(modifier = Modifier.padding(top = 8.dp))
-            }
-        }
+        },
+    ) {
+        ProductSummaryRowInfo(
+            text = when {
+                product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
+                else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
+            },
+            modifier = Modifier.padding(bottom = 8.dp),
+            color = colorResource(id = R.color.color_on_surface_medium_selector),
+            maxLines = Int.MAX_VALUE,
+            overflow = TextOverflow.Clip,
+            style = MaterialTheme.typography.body2,
+        )
     }
 }
 

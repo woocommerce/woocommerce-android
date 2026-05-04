@@ -171,8 +171,10 @@ class ShowCardsToolHandlerTest {
         assertThat(details.price).isEqualTo("9.99")
         assertThat(details.stockStatus).isEqualTo("instock")
         assertThat(details.status).isEqualTo("publish")
+        assertThat(details.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
         assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("image_url")
     }
 
     @Test
@@ -434,6 +436,7 @@ class ShowCardsToolHandlerTest {
                     price = "9.99",
                     stockStatus = "instock",
                     status = "publish",
+                    imageUrl = PRODUCT_IMAGE_URL,
                 ),
             )
         )
@@ -494,5 +497,9 @@ class ShowCardsToolHandlerTest {
     private object ThrowingResolver : ShowCardsResolver {
         override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> =
             error("Resolver failed")
+    }
+
+    private companion object {
+        private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
     }
 }

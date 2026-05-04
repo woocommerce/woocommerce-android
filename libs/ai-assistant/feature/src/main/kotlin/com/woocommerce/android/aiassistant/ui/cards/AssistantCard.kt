@@ -10,4 +10,14 @@ sealed interface AssistantCard {
         val customerName: String,
         val date: String,
     ) : AssistantCard
+
+    data class Product(
+        val remoteProductId: Long,
+        val name: String,
+        val sku: String,
+        val price: String,
+        val stockStatus: String,
+        val status: String,
+        val imageUrl: String,
+    ) : AssistantCard
 }
