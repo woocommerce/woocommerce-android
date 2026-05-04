@@ -760,6 +760,30 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given finished history contains card shaped tool json, when reduced, then no card segment is created`() =
+        runTest {
+            viewModel.onSendMessage("Show analytics")
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Show analytics"),
+                        AssistantMessage.Tool(
+                            toolCallId = "call-analytics",
+                            content = """{"cards":[{"family":"order","id":"123"}]}""",
+                        ),
+                        AssistantMessage.Assistant("Revenue is up today."),
+                    ),
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+                .isEmpty()
+        }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 

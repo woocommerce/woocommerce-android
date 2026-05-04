@@ -437,6 +437,39 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given arbitrary tool success with json cards key, when adapted, then no fallback cards are emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(
+                            ToolCall(
+                                id = "call-arbitrary",
+                                name = "analytics_revenue",
+                                arguments = buildJsonObject {},
+                            )
+                        ),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-arbitrary",
+                                structured = buildJsonObject {
+                                    put("cards", "model visible but not UI cards")
+                                },
+                                uiStructured = buildJsonObject {
+                                    put("cards", "also ignored")
+                                },
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events).isEmpty()
+        }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
