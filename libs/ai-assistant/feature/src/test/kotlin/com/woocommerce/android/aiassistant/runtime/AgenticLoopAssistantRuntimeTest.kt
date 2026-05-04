@@ -347,6 +347,38 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given show cards success with malformed uiStructured, when adapted, then no card event is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-malformed",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = buildJsonObject { put("cards", "not an array") },
+                            )
+                        ),
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.COMPLETED,
+                            updatedHistory = listOf(AssistantMessage.User("Hello")),
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events).containsExactly(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                )
+            )
+        }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
