@@ -4556,4 +4556,6 @@
     <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
     <string name="woo_pos_promo_next_button">Next</string>
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">the United Kingdom</string>
 </resources>

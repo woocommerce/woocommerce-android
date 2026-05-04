@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.7
+The My Store Performance card now lets you switch between Gross, Net, and Total revenue and pick your order date type (Paid, Placed, or Completed). We also fixed POS navigation resetting on rotation, refreshed the POS Orders empty state, and squashed bugs in the product list and image loading.
+
 ## 24.6
 Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.
 

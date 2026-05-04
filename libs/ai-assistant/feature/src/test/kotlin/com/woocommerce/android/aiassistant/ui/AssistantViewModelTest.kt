@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui
 
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
@@ -160,6 +161,157 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given network failure with retry available, when turn fails, then active assistant message exposes retry`() =
+        runTest {
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = true,
+                    error = AssistantError.Network,
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isTrue()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.Network,
+                        canRetry = true,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).containsExactly(
+                AssistantTurnRequest(
+                    conversationId = CONVERSATION_ID,
+                    siteId = SITE_ID,
+                    toolScope = ToolScope.GLOBAL,
+                    userMessage = "Hello",
+                    history = emptyList(),
+                )
+            )
+        }
+
+    @Test
+    fun `given outcome unknown failure, when turn fails, then verify message has no retry action`() =
+        runTest {
+            viewModel.onSendMessage("Update order 42")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Update order 42"),
+                        AssistantMessage.Assistant("I'll update that order."),
+                    ),
+                    retryAvailable = false,
+                    error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isFalse()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                        canRetry = false,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).isEmpty()
+        }
+
+    @Test
+    fun `given upstream failure marked retryable by runtime, when turn fails, then retry is not exposed`() =
+        runTest {
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = true,
+                    error = AssistantError.UpstreamFailure,
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertThat(state.status).isEqualTo(AssistantUiStatus.ERROR)
+            assertThat(state.canRetry).isFalse()
+            assertThat(state.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = AssistantError.UpstreamFailure,
+                        canRetry = false,
+                    ),
+                )
+            )
+
+            viewModel.onRetry()
+
+            assertThat(runtime.retryRequests).isEmpty()
+        }
+
+    @Test
+    fun `given unknown error with raw cause, when turn fails, then normalized error metadata drives the transcript`() =
+        runTest {
+            val rawCause = IllegalStateException("raw upstream token abc123")
+            val normalizedError = AssistantError.Unknown(cause = rawCause)
+            viewModel.onSendMessage("Hello")
+            val activeAssistantId = viewModel.uiState.value.messages.last().id
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.FAILED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    retryAvailable = false,
+                    error = normalizedError,
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeAssistantId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    text = "",
+                    error = AssistantMessageError(
+                        error = normalizedError,
+                        canRetry = false,
+                    ),
+                )
+            )
+            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.assistant_chat_error_unknown)
+        }
+
+    @Test
     fun `when turn reaches max iterations, then state exposes an error`() = runTest {
         viewModel.onSendMessage("Hello")
 
@@ -173,6 +325,10 @@ class AssistantViewModelTest {
 
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
     }
@@ -267,6 +423,71 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given retryable failed turn, when a new turn starts, then previous retry action is disabled`() = runTest {
+        viewModel.onSendMessage("First")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("First")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+        assertThat(viewModel.uiState.value.messages.last().error?.canRetry).isTrue()
+
+        viewModel.onSendMessage("Second")
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.first { it.text.isEmpty() }.error?.canRetry).isFalse()
+        assertThat(viewModel.uiState.value.canRetry).isFalse()
+        assertThat(runtime.retryRequests).isEmpty()
+    }
+
+    @Test
+    fun `given two retryable failed turns, when retry is requested, then latest failed turn is retried`() = runTest {
+        viewModel.onSendMessage("First")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("First")),
+                retryAvailable = true,
+                error = AssistantError.Network,
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onSendMessage("Second")
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("First"),
+                    AssistantMessage.User("Second"),
+                ),
+                retryAvailable = true,
+                error = AssistantError.Timeout,
+            )
+        )
+        advanceUntilIdle()
+
+        val messageErrors = viewModel.uiState.value.messages.mapNotNull { it.error }
+        assertThat(messageErrors.map { it.canRetry }).containsExactly(false, true)
+
+        viewModel.onRetry()
+
+        assertThat(runtime.retryRequests).containsExactly(
+            AssistantTurnRequest(
+                conversationId = CONVERSATION_ID,
+                siteId = SITE_ID,
+                toolScope = ToolScope.GLOBAL,
+                userMessage = "Second",
+                history = listOf(AssistantMessage.User("First")),
+            )
+        )
+    }
+
+    @Test
     fun `when runtime awaits confirmation, then state exposes pending confirmation`() = runTest {
         viewModel.onSendMessage("Cancel order 123")
         val confirmation = AssistantPendingConfirmation(
@@ -295,6 +516,10 @@ class AssistantViewModelTest {
         assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_cancelled)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
@@ -491,6 +716,10 @@ class AssistantViewModelTest {
         assertThat(runtime.confirmedConfirmationIds).containsExactly("confirmation-1")
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.ERROR)
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
+        assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
+        assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
+            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+        assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.pendingConfirmation).isNull()
     }
 
