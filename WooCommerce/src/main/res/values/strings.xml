@@ -2290,7 +2290,7 @@
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_new_reviews">New reviews</string>
     <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
-    <string name="settings_notifs_new_reviews_enable_title">Enable notifications</string>
+    <string name="settings_notifs_new_reviews_enable_title">Enable new review notifications</string>
     <string name="settings_notifs_new_reviews_enable_description">Get notified when someone leaves a review on one of your products.</string>
     <string name="settings_notifs_new_reviews_all_title">All new reviews</string>
     <string name="settings_notifs_new_reviews_all_description">Ping for every review, regardless of rating.</string>
