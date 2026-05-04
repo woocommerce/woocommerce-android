@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui.cards
 
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import org.assertj.core.api.Assertions.assertThat
@@ -15,14 +16,12 @@ class AssistantCardPayloadParserTest {
                         family = "order",
                         id = "123",
                         title = "#1001",
-                        subtitle = "processing",
-                        badges = listOf("processing"),
-                        attributes = mapOf(
-                            "status" to "processing",
-                            "total" to "12.34",
-                            "currency" to "USD",
-                            "date_created" to "2026-05-01T10:00:00Z",
-                            "customer_name" to "Jane Doe",
+                        details = ShowCardDetails.Order(
+                            status = "processing",
+                            total = "12.34",
+                            currency = "USD",
+                            dateCreated = "2026-05-01T10:00:00Z",
+                            customerName = "Jane Doe",
                         ),
                     )
                 )
@@ -42,7 +41,7 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given order payload without status attribute, when parsed, then subtitle is used`() {
+    fun `given order payload without status detail, when parsed, then status is empty`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
@@ -50,8 +49,7 @@ class AssistantCardPayloadParserTest {
                         family = "order",
                         id = "123",
                         title = "#1001",
-                        subtitle = "completed",
-                        attributes = mapOf("total" to "12.34"),
+                        details = ShowCardDetails.Order(total = "12.34"),
                     )
                 )
             )
@@ -61,7 +59,7 @@ class AssistantCardPayloadParserTest {
             AssistantCard.Order(
                 remoteOrderId = 123L,
                 number = "#1001",
-                status = "completed",
+                status = "",
                 total = "12.34",
                 customerName = "",
                 date = "",
@@ -74,9 +72,24 @@ class AssistantCardPayloadParserTest {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
-                    ShowCardPayload(family = "product", id = "456", title = "Socks"),
-                    ShowCardPayload(family = "order", id = "not-a-number", title = "#bad"),
-                    ShowCardPayload(family = "order", id = "0", title = "#0"),
+                    ShowCardPayload(
+                        family = "product",
+                        id = "456",
+                        title = "Socks",
+                        details = ShowCardDetails.Product(),
+                    ),
+                    ShowCardPayload(
+                        family = "order",
+                        id = "not-a-number",
+                        title = "#bad",
+                        details = ShowCardDetails.Order(),
+                    ),
+                    ShowCardPayload(
+                        family = "order",
+                        id = "0",
+                        title = "#0",
+                        details = ShowCardDetails.Order(),
+                    ),
                 )
             )
         )
@@ -102,6 +115,6 @@ class AssistantCardPayloadParserTest {
         family = "order",
         id = id,
         title = title,
-        attributes = mapOf("status" to "processing"),
+        details = ShowCardDetails.Order(status = "processing"),
     )
 }

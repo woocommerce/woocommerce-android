@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui.cards
 
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.ui.AssistantUiSegment
@@ -47,8 +48,18 @@ class AssistantCardSegmentMapperTest {
         val segments = AssistantCardSegmentMapper.toSegments(
             ShowCardsUiStructured(
                 cards = listOf(
-                    ShowCardPayload(family = "product", id = "456", title = "Socks"),
-                    ShowCardPayload(family = "order", id = "not-a-number", title = "#bad"),
+                    ShowCardPayload(
+                        family = "product",
+                        id = "456",
+                        title = "Socks",
+                        details = ShowCardDetails.Product(),
+                    ),
+                    ShowCardPayload(
+                        family = "order",
+                        id = "not-a-number",
+                        title = "#bad",
+                        details = ShowCardDetails.Order(),
+                    ),
                 )
             )
         )
@@ -60,12 +71,12 @@ class AssistantCardSegmentMapperTest {
         family = "order",
         id = id,
         title = title,
-        attributes = mapOf(
-            "status" to "processing",
-            "total" to "12.34",
-            "currency" to "USD",
-            "date_created" to "2026-05-01T10:00:00Z",
-            "customer_name" to "Jane Doe",
+        details = ShowCardDetails.Order(
+            status = "processing",
+            total = "12.34",
+            currency = "USD",
+            dateCreated = "2026-05-01T10:00:00Z",
+            customerName = "Jane Doe",
         ),
     )
 }

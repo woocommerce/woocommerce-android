@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui.cards
 
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 
@@ -11,19 +12,15 @@ internal object AssistantCardPayloadParser {
         if (card.family != ORDER_FAMILY) return null
 
         val remoteOrderId = card.id.toLongOrNull()?.takeIf { it > 0 } ?: return null
-        val attributes = card.attributes
-        val status = attributes["status"]
-            ?: card.subtitle
-            ?: card.badges.firstOrNull()
-            ?: ""
+        val details = card.details as? ShowCardDetails.Order ?: return null
 
         return AssistantCard.Order(
             remoteOrderId = remoteOrderId,
             number = card.title,
-            status = status,
-            total = listOfNotBlank(attributes["total"], attributes["currency"]).joinToString(" "),
-            customerName = attributes["customer_name"].orEmpty(),
-            date = attributes["date_created"].orEmpty(),
+            status = details.status.orEmpty(),
+            total = listOfNotBlank(details.total, details.currency).joinToString(" "),
+            customerName = details.customerName.orEmpty(),
+            date = details.dateCreated.orEmpty(),
         )
     }
 
