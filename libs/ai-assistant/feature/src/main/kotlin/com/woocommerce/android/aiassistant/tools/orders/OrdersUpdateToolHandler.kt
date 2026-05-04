@@ -43,6 +43,10 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
+        return execute(call, args)
+    }
+
+    private suspend fun execute(call: ToolCall, args: Args): ToolResult {
         if (args.status !in ALLOWED_STATUSES) {
             return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
         }
