@@ -284,55 +284,27 @@ private fun AssistantMessageBubble(
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
 ) {
-    val isUser = message.role == AssistantUiMessage.Role.USER
-    val messageText = message.text.ifEmpty { " " }
-    val toolActivity = message.segments
-        .filterIsInstance<AssistantUiSegment.ToolActivity>()
-        .lastOrNull()
-        ?.activity
-    val toolActivityLabel = toolActivity?.let { stringResource(it.labelRes()) }
-    val messageContentDescription = when {
-        isUser -> stringResource(R.string.assistant_chat_message_user_content_description, messageText)
-        showTypingIndicator -> stringResource(R.string.assistant_chat_typing_content_description)
-        toolActivityLabel != null -> stringResource(
-            R.string.assistant_chat_tool_activity_content_description,
-            toolActivityLabel,
-        )
-        else -> stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
-    }
-    val bubbleColor = if (isUser) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    val textColor = if (isUser) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-    val shape = RoundedCornerShape(
-        topStart = 16.dp,
-        topEnd = 16.dp,
-        bottomStart = if (isUser) 16.dp else 4.dp,
-        bottomEnd = if (isUser) 4.dp else 16.dp,
+    val chrome = assistantMessageBubbleChrome(
+        message = message,
+        showTypingIndicator = showTypingIndicator,
     )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics(mergeDescendants = true) { contentDescription = messageContentDescription },
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+            .semantics(mergeDescendants = true) { contentDescription = chrome.contentDescription },
+        horizontalArrangement = if (chrome.isUser) Arrangement.End else Arrangement.Start,
     ) {
         Box(
             modifier = Modifier
                 .widthIn(max = 360.dp)
                 .heightIn(min = 40.dp)
-                .background(bubbleColor, shape)
+                .background(chrome.bubbleColor, chrome.shape)
                 .then(
-                    if (isUser) {
+                    if (chrome.isUser) {
                         Modifier
                     } else {
-                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, chrome.shape)
                     }
                 )
                 .padding(horizontal = 14.dp, vertical = 10.dp),
@@ -343,8 +315,8 @@ private fun AssistantMessageBubble(
             ) {
                 AssistantMessageSegments(
                     message = message,
-                    textColor = textColor,
-                    isUser = isUser,
+                    textColor = chrome.textColor,
+                    isUser = chrome.isUser,
                     onConfirmWrite = onConfirmWrite,
                     onCancelWrite = onCancelWrite,
                     assistantCardRenderer = assistantCardRenderer,
@@ -361,7 +333,7 @@ private fun AssistantMessageBubble(
                 } else if (message.shouldShowEmptyPlaceholder()) {
                     Text(
                         text = " ",
-                        color = textColor,
+                        color = chrome.textColor,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -369,6 +341,71 @@ private fun AssistantMessageBubble(
         }
     }
 }
+
+@Composable
+private fun assistantMessageBubbleChrome(
+    message: AssistantUiMessage,
+    showTypingIndicator: Boolean,
+): AssistantMessageBubbleChrome {
+    val isUser = message.role == AssistantUiMessage.Role.USER
+    val bubbleColor = if (isUser) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+    val textColor = if (isUser) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    return AssistantMessageBubbleChrome(
+        isUser = isUser,
+        contentDescription = message.contentDescription(
+            isUser = isUser,
+            showTypingIndicator = showTypingIndicator,
+        ),
+        bubbleColor = bubbleColor,
+        textColor = textColor,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+            bottomStart = if (isUser) 16.dp else 4.dp,
+            bottomEnd = if (isUser) 4.dp else 16.dp,
+        ),
+    )
+}
+
+@Composable
+private fun AssistantUiMessage.contentDescription(
+    isUser: Boolean,
+    showTypingIndicator: Boolean,
+): String {
+    val messageText = text.ifEmpty { " " }
+    val toolActivityLabel = segments
+        .filterIsInstance<AssistantUiSegment.ToolActivity>()
+        .lastOrNull()
+        ?.activity
+        ?.let { stringResource(it.labelRes()) }
+
+    return when {
+        isUser -> stringResource(R.string.assistant_chat_message_user_content_description, messageText)
+        showTypingIndicator -> stringResource(R.string.assistant_chat_typing_content_description)
+        toolActivityLabel != null -> stringResource(
+            R.string.assistant_chat_tool_activity_content_description,
+            toolActivityLabel,
+        )
+        else -> stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
+    }
+}
+
+private data class AssistantMessageBubbleChrome(
+    val isUser: Boolean,
+    val contentDescription: String,
+    val bubbleColor: Color,
+    val textColor: Color,
+    val shape: RoundedCornerShape,
+)
 
 @Composable
 private fun AssistantTypingIndicator() {
