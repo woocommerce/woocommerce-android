@@ -11,11 +11,16 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -48,6 +53,7 @@ class WooPosBuiltInReaderConnectorTest {
 
     @Before
     fun setUp() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         whenever(onboardingChecker.getOnboardingState()).thenReturn(
             CardReaderOnboardingState.OnboardingCompleted(
                 preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
@@ -55,6 +61,11 @@ class WooPosBuiltInReaderConnectorTest {
                 countryCode = "US",
             )
         )
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test

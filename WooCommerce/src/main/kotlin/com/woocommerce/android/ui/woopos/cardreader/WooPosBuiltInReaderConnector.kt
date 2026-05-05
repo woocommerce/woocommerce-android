@@ -13,7 +13,9 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WooPosBuiltInReaderConnector @Inject constructor(
@@ -28,7 +30,10 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             return Result.success(Unit)
         }
 
-        initializeCardReaderManagerIfNeeded()
+        runCatching { initializeCardReaderManager() }.onFailure {
+            logger.e("Failed to initialize card reader manager for TTP", it)
+            return Result.failure(it)
+        }
 
         val locationId = when (val locationResult = fetchLocationId()) {
             is LocationIdFetchingResult.Success -> locationResult.locationId
@@ -56,6 +61,10 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     }
 
     private suspend fun discoverFirstBuiltInReader(): CardReader? {
+        runCatching { initializeCardReaderManager() }.onFailure {
+            logger.e("Failed to initialize card reader manager before discovery", it)
+            return null
+        }
         val event = cardReaderManager
             .discoverReaders(
                 isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
@@ -74,13 +83,17 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         return locationRepository.getDefaultLocationId(pluginType)
     }
 
-    private fun initializeCardReaderManagerIfNeeded() {
-        if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize(
-                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
-                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                isDebug = BuildConfig.DEBUG,
-            )
+    private suspend fun initializeCardReaderManager() {
+        if (cardReaderManager.initialized) return
+        withContext(Dispatchers.Main.immediate) {
+            if (!cardReaderManager.initialized) {
+                cardReaderManager.initialize(
+                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                    useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                    isDebug = BuildConfig.DEBUG,
+                )
+                logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
+            }
         }
     }
 }
