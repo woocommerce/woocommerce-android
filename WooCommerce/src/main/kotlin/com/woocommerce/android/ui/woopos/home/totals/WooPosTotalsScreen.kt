@@ -391,6 +391,8 @@ private fun TapToPayPromoted(
         WooPosText(
             text = stringResource(R.string.woopos_tap_to_pay_promoted_subtitle),
             style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
