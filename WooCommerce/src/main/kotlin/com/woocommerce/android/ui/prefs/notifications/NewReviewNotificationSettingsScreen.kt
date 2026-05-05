@@ -70,7 +70,8 @@ private fun NewReviewNotificationSettingsScreen(
                 title = stringResource(R.string.settings_notifs_new_reviews_enable_title),
                 description = stringResource(R.string.settings_notifs_new_reviews_enable_description),
                 isEnabled = viewState.notificationsEnabled,
-                onEnabledChanged = onNotificationsEnabledChanged
+                onEnabledChanged = onNotificationsEnabledChanged,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
             SettingsSectionHeader(
                 text = stringResource(R.string.settings_notifs_notify_me_for),

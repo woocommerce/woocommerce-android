@@ -23,7 +23,7 @@ internal fun EnableNotificationsCard(
     description: String,
     isEnabled: Boolean,
     onEnabledChanged: (Boolean) -> Unit,
-    modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+    modifier: Modifier = Modifier
 ) {
     EnableNotificationsCard(
         title = title,
@@ -46,7 +46,7 @@ internal fun EnableNotificationsCard(
     title: String,
     isEnabled: Boolean,
     onEnabledChanged: (Boolean) -> Unit,
-    modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+    modifier: Modifier = Modifier,
     descriptionContent: @Composable ColumnScope.() -> Unit
 ) {
     Surface(

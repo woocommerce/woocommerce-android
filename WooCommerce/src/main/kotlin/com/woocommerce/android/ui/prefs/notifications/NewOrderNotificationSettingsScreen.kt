@@ -67,7 +67,8 @@ private fun NewOrderNotificationSettingsScreen(
                 title = stringResource(R.string.settings_notifs_new_orders_enable_title),
                 description = stringResource(R.string.settings_notifs_new_orders_enable_description),
                 isEnabled = viewState.notificationsEnabled,
-                onEnabledChanged = onNotificationsEnabledChanged
+                onEnabledChanged = onNotificationsEnabledChanged,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
             AnimatedVisibility(
                 visible = viewState.newOrderNotificationSoundStatus != NewOrderNotificationSoundStatus.DEFAULT
