@@ -1,5 +1,3 @@
-@file:Suppress("ImportOrdering")
-
 package com.woocommerce.android.ui.aiassistant
 
 import android.content.Context
@@ -177,10 +175,16 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
-    fun `given assistant stats card, when click action is built, then analytics date range is emitted`() {
-        val action = AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07")
+    fun `given assistant stats card, when stats card click handler is invoked, then analytics action is emitted`() {
+        val actions = mutableListOf<AssistantCardAction>()
 
-        assertThat(action).isEqualTo(AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07"))
+        statsCard(after = "2026-05-01", before = "2026-05-07")
+            .toStatsCardClickHandler(actions::add)
+            .invoke()
+
+        assertThat(actions).containsExactly(
+            AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07")
+        )
     }
 
     private fun orderCard(

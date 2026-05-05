@@ -28,10 +28,16 @@ internal class AiAssistantStatsCardRenderer(
                 currencyFormatter = currencyFormatter,
                 unavailableValue = context.getString(R.string.assistant_stats_card_metric_unavailable),
             ),
-            onClick = { onAction(AssistantCardAction.OpenAnalytics(card.after, card.before)) },
+            onClick = card.toStatsCardClickHandler(onAction),
             modifier = modifier,
         )
     }
+}
+
+internal fun AssistantCard.Stats.toStatsCardClickHandler(
+    onAction: (AssistantCardAction) -> Unit,
+): () -> Unit = {
+    onAction(AssistantCardAction.OpenAnalytics(after, before))
 }
 
 private const val ASSISTANT_STATS_PERIOD_SEPARATOR = " - "
