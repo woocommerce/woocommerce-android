@@ -298,7 +298,8 @@ class QrLoginScannerViewModel @Inject constructor(
                     )
                     _uiState.value = Error(
                         reason = reason,
-                        retryTicket = ticket.takeIf { reason.isRetryEligible() }
+                        retryTicket = ticket.takeIf { reason.isRetryEligible() },
+                        retryExchangeGrant = exchangeGrant.takeIf { reason.isRetryEligible() }
                     )
                 }
             )
@@ -354,8 +355,11 @@ class QrLoginScannerViewModel @Inject constructor(
      * transient failures (network, rate-limit) where the token is most likely still valid.
      */
     fun onRetryExchange() {
-        val ticket = (_uiState.value as? Error)?.retryTicket ?: return
-        startScan(ticket)
+        val error = _uiState.value as? Error ?: return
+        val ticket = error.retryTicket ?: return
+        error.retryExchangeGrant
+            ?.let { exchangeGrant -> startExchange(ticket, exchangeGrant) }
+            ?: startScan(ticket)
     }
 
     override fun onCleared() {
@@ -515,7 +519,11 @@ class QrLoginScannerViewModel @Inject constructor(
             val sessionId: String,
             val expiresAtEpochMs: Long,
         ) : UiState
-        data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
+        data class Error(
+            val reason: ErrorReason,
+            val retryTicket: QrLoginPayload.Ticket?,
+            val retryExchangeGrant: String? = null,
+        ) : UiState
         data class WarningSessionReplace(val pending: PendingHandoff) : UiState
     }
 

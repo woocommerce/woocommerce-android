@@ -368,6 +368,28 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             val state = viewModel.uiState.value as UiState.Error
             assertThat(state.reason).isEqualTo(ErrorReason.Network)
             assertThat(state.retryTicket).isEqualTo(ticket)
+            assertThat(state.retryExchangeGrant).isEqualTo("grant-1")
+        }
+
+    @Test
+    fun `given exchange network error, when retried, then exchange is re-run with same grant`() =
+        testBlocking {
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
+            whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
+                .thenReturn(Result.failure(QrLoginExchangeException.Network))
+                .thenReturn(Result.success(credentials))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+            viewModel.onRetryExchange()
+            advanceUntilIdle()
+
+            verify(restClient, times(1)).scan(ticket.siteUrl, ticket.token)
+            verify(restClient, times(2)).exchange(ticket.siteUrl, ticket.token, "grant-1")
+            assertThat(events.last())
+                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
         }
 
     @Test
