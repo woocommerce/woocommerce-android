@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
@@ -26,6 +27,8 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             return Result.success(Unit)
         }
+
+        initializeCardReaderManagerIfNeeded()
 
         val locationId = when (val locationResult = fetchLocationId()) {
             is LocationIdFetchingResult.Success -> locationResult.locationId
@@ -69,5 +72,15 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         val pluginType = cardReaderOnboardingChecker.getOnboardingState().preferredPlugin
             ?: PluginType.WOOCOMMERCE_PAYMENTS
         return locationRepository.getDefaultLocationId(pluginType)
+    }
+
+    private fun initializeCardReaderManagerIfNeeded() {
+        if (!cardReaderManager.initialized) {
+            cardReaderManager.initialize(
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                isDebug = BuildConfig.DEBUG,
+            )
+        }
     }
 }
