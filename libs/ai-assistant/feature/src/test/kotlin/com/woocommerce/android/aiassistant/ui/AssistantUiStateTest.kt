@@ -350,7 +350,7 @@ class AssistantUiStateTest {
             segments = listOf(cardGroup, text),
         )
 
-        val orderedSegments = message.orderedSegments(isStreaming = false)
+        val orderedSegments = message.orderedSegments(AssistantUiState(status = AssistantUiStatus.IDLE))
 
         assertThat(orderedSegments).containsExactly(text, cardGroup)
     }
@@ -366,7 +366,7 @@ class AssistantUiStateTest {
             segments = listOf(firstText, cardGroup, secondText),
         )
 
-        val orderedSegments = message.orderedSegments(isStreaming = false)
+        val orderedSegments = message.orderedSegments(AssistantUiState(status = AssistantUiStatus.IDLE))
 
         assertThat(orderedSegments).containsExactly(firstText, secondText, cardGroup)
     }
@@ -380,7 +380,7 @@ class AssistantUiStateTest {
             segments = listOf(cardGroup),
         )
 
-        val orderedSegments = message.orderedSegments(isStreaming = false)
+        val orderedSegments = message.orderedSegments(AssistantUiState(status = AssistantUiStatus.IDLE))
 
         assertThat(orderedSegments).containsExactly(cardGroup)
     }
@@ -396,7 +396,7 @@ class AssistantUiStateTest {
             segments = listOf(text, cardGroup, confirmationCard),
         )
 
-        val orderedSegments = message.orderedSegments(isStreaming = false)
+        val orderedSegments = message.orderedSegments(AssistantUiState(status = AssistantUiStatus.IDLE))
 
         assertThat(orderedSegments).containsExactly(text, confirmationCard, cardGroup)
     }
@@ -411,7 +411,12 @@ class AssistantUiStateTest {
             segments = listOf(text, cardGroup),
         )
 
-        val orderedSegments = message.orderedSegments(isStreaming = true)
+        val orderedSegments = message.orderedSegments(
+            AssistantUiState(
+                status = AssistantUiStatus.STREAMING,
+                activeAssistantMessageId = "message-1",
+            )
+        )
 
         assertThat(orderedSegments).containsExactly(text)
     }
@@ -435,7 +440,7 @@ class AssistantUiStateTest {
             ),
             AssistantUiState(status = AssistantUiStatus.IDLE, activeAssistantMessageId = null),
         ).forEach { state ->
-            assertThat(message.orderedSegments(isStreaming = state.isStreamingMessage(message)))
+            assertThat(message.orderedSegments(state))
                 .describedAs(state.status.name)
                 .containsExactly(text, cardGroup)
         }
