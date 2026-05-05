@@ -17,9 +17,12 @@ import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.tools.analytics.ANALYTICS_REVENUE_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantAnalyticsRevenueCardParser
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -34,6 +37,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
     private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
     private val cardParser: AssistantCardUiStructuredParser,
+    private val analyticsRevenueCardParser: AssistantAnalyticsRevenueCardParser,
     private val systemPromptProvider: AssistantSystemPromptProvider,
 ) : AssistantRuntime {
 
@@ -122,18 +126,19 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
 
     private fun ToolResult.toRuntimeEvents(toolName: String?): List<AssistantRuntimeEvent> = buildList {
         add(AssistantRuntimeEvent.ToolCallFinished(toolCallId = toolCallId))
-        val cards = toShowCards(toolName)
+        val cards = toCards(toolName)
         if (cards.isNotEmpty()) {
-            add(AssistantRuntimeEvent.CardsResolved(cards.map { it.card }))
+            add(AssistantRuntimeEvent.CardsResolved(cards))
         }
     }
 
-    private fun ToolResult.toShowCards(toolName: String?) =
-        if (toolName == SHOW_CARDS_TOOL_NAME && this is ToolResult.Success) {
-            cardParser.parse(uiStructured)
-        } else {
-            emptyList()
-        }
+    private fun ToolResult.toCards(toolName: String?): List<AssistantCard> = when {
+        toolName == SHOW_CARDS_TOOL_NAME && this is ToolResult.Success ->
+            cardParser.parse(uiStructured).map { it.card }
+        toolName == ANALYTICS_REVENUE_TOOL_NAME && this is ToolResult.Success ->
+            listOfNotNull(analyticsRevenueCardParser.parse(this))
+        else -> emptyList()
+    }
 
     private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
         return AssistantConfirmationCard(

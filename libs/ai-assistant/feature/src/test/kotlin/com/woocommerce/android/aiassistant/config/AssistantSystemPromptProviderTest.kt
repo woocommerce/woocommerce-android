@@ -33,12 +33,14 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then show cards is the only card producer`() {
+    fun `when prompt is built, then show cards remains entity only and stats cards are app owned`() {
         val prompt = WooCommerceAssistantSystemPromptProvider().systemPrompt(todayIsoDate = "2026-05-04")
 
         assertThat(prompt).contains("show_cards")
-        assertThat(prompt).contains("the only mechanism for surfacing entities")
-        assertThat(prompt).contains("The UI never renders cards on its own")
+        assertThat(prompt).contains("the only mechanism for surfacing order and product entities")
+        assertThat(prompt).contains("Do not call `show_cards` for analytics")
+        assertThat(prompt).contains("Successful `analytics_revenue` results may be rendered")
+        assertThat(prompt).contains("app-owned stats card with a compact trend graph")
         assertThat(prompt).contains("no card JSON")
         assertThat(prompt).contains("no card tokens")
         assertThat(prompt).contains("There is no terminal `respond` tool")

@@ -28,6 +28,7 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.tools.analytics.ANALYTICS_REVENUE_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
@@ -36,6 +37,7 @@ import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDat
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantAnalyticsRevenueCardParser
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
@@ -46,6 +48,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -376,6 +380,87 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given analytics revenue success, when adapted, then stats card with graph points is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-analytics")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-analytics",
+                                structured = analyticsRevenueStructured(),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.cardEvents()).containsExactly(
+                AssistantRuntimeEvent.CardsResolved(
+                    listOf(
+                        AssistantCard.Stats(
+                            after = "2026-05-01",
+                            before = "2026-05-03",
+                            revenueTotal = "123.45",
+                            revenueCurrency = "USD",
+                            orderCount = "3",
+                            chartPoints = listOf(
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 10.0),
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 20.0),
+                            ),
+                        )
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given analytics revenue validation error, when adapted, then no stats card is emitted`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-validation")),
+                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events.cardEvents()).isEmpty()
+    }
+
+    @Test
+    fun `given analytics revenue success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-arbitrary")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-arbitrary",
+                                structured = buildJsonObject {
+                                    put("cards", "model visible but not UI cards")
+                                },
+                                uiStructured = buildJsonObject {
+                                    put("cards", "also ignored")
+                                },
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.cardEvents()).isEmpty()
+        }
+
+    @Test
     fun `given show cards success with malformed uiStructured, when adapted, then no card event is emitted`() =
         runTest {
             val runtime = runtime(
@@ -468,7 +553,7 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given arbitrary tool success with json cards key, when adapted, then no fallback cards are emitted`() =
+    fun `given orders list success with json cards key, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
@@ -476,7 +561,7 @@ class AgenticLoopAssistantRuntimeTest {
                         LoopEvent.ToolCallStarted(
                             ToolCall(
                                 id = "call-arbitrary",
-                                name = "analytics_revenue",
+                                name = "orders_list",
                                 arguments = buildJsonObject {},
                             )
                         ),
@@ -526,6 +611,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
+        analyticsRevenueCardParser = AssistantAnalyticsRevenueCardParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
     )
 
@@ -542,6 +628,36 @@ class AgenticLoopAssistantRuntimeTest {
         name = "show_cards",
         arguments = buildJsonObject {},
     )
+
+    private fun analyticsRevenueCall(id: String) = ToolCall(
+        id = id,
+        name = ANALYTICS_REVENUE_TOOL_NAME,
+        arguments = buildJsonObject {},
+    )
+
+    private fun analyticsRevenueStructured() = buildJsonObject {
+        put("after", "2026-05-01")
+        put("before", "2026-05-03")
+        put("currency", "USD")
+        putJsonObject("totals") {
+            put("net_revenue", "123.45")
+            put("orders_count", 3)
+        }
+        putJsonArray("revenue_chart") {
+            add(
+                buildJsonObject {
+                    put("date", "2026-05-01")
+                    put("value", 10.0)
+                }
+            )
+            add(
+                buildJsonObject {
+                    put("date", "2026-05-02")
+                    put("value", 20.0)
+                }
+            )
+        }
+    }
 
     private fun showCardsUiStructured(vararg cards: ShowCardPayload) =
         json.encodeToJsonElement(ShowCardsUiStructured(cards = cards.toList()))
