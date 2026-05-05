@@ -27,7 +27,7 @@ class ToolReplayTrackerTest {
     private val history = listOf<AssistantMessage>(AssistantMessage.System("You are a helpful assistant."))
 
     @Test
-    fun `given fifth identical call, when running turn, then cap wins over replay`() = runTest {
+    fun `given ToolReplayTracker sees fifth identical call, when running turn, then cap wins over replay`() = runTest {
         val registry = RecordingToolRegistry(
             descriptor = safeEchoDescriptor(),
             resultBuilder = { call ->
@@ -61,7 +61,7 @@ class ToolReplayTrackerTest {
     }
 
     @Test
-    fun `given cached success has UI payload, when replayed, then UI payload is preserved`() = runTest {
+    fun `given ToolReplayTracker replays UI payload, when running turn, then UI payload is preserved`() = runTest {
         val uiPayload = buildJsonObject { put("ui_only", "rich_card_data") }
         val registry = RecordingToolRegistry(
             descriptor = safeEchoDescriptor(),
