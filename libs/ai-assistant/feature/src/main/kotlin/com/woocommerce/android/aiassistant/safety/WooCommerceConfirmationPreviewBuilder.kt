@@ -17,30 +17,46 @@ import kotlinx.serialization.json.longOrNull
 import javax.inject.Inject
 
 internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
-    fun build(request: ConfirmationRequest): ConfirmationPreview = build(request.toolName, request.arguments)
+    fun build(
+        request: ConfirmationRequest,
+        snapshot: ConfirmationSnapshot? = null,
+    ): ConfirmationPreview = build(request.toolName, request.arguments, snapshot)
 
-    fun build(call: ToolCall): ConfirmationPreview = build(call.name, call.arguments)
+    fun build(
+        call: ToolCall,
+        snapshot: ConfirmationSnapshot? = null,
+    ): ConfirmationPreview = build(call.name, call.arguments, snapshot)
 
     fun build(
         toolName: String,
         arguments: JsonObject,
+        snapshot: ConfirmationSnapshot? = null,
     ): ConfirmationPreview = when (toolName) {
-        ORDERS_UPDATE -> ordersUpdate(arguments)
+        ORDERS_UPDATE -> ordersUpdate(arguments, snapshot)
         ORDERS_BULK_UPDATE -> ordersBulkUpdate(arguments)
-        PRODUCTS_UPDATE -> productsUpdate(arguments)
+        PRODUCTS_UPDATE -> productsUpdate(arguments, snapshot)
         PRODUCTS_BULK_UPDATE -> productsBulkUpdate(arguments)
-        PRODUCT_VARIATIONS_UPDATE -> productVariationsUpdate(arguments)
+        PRODUCT_VARIATIONS_UPDATE -> productVariationsUpdate(arguments, snapshot)
         else -> genericPreview(toolName)
     }
 
     fun supportsDedicatedPreview(toolName: String): Boolean = toolName in DEDICATED_TOOL_NAMES
 
-    private fun ordersUpdate(arguments: JsonObject): ConfirmationPreview {
+    private fun ordersUpdate(arguments: JsonObject, snapshot: ConfirmationSnapshot?): ConfirmationPreview {
         val id = arguments.longValue("id")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_order_update_generic))
         val status = arguments.stringValue("status")
         val fields = buildList {
-            status?.let { add(textField("status", it, R.string.ai_assistant_confirmation_field_status)) }
+            status?.let {
+                add(
+                    textField(
+                        name = "status",
+                        value = it,
+                        label = R.string.ai_assistant_confirmation_field_status,
+                        beforeValue = snapshot?.currentValues?.get("status"),
+                    )
+                )
+            }
         }
 
         if (status != null) {
@@ -107,13 +123,14 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                 summary,
             ),
             fields = fields,
+            isBulk = true,
         )
     }
 
-    private fun productsUpdate(arguments: JsonObject): ConfirmationPreview {
+    private fun productsUpdate(arguments: JsonObject, snapshot: ConfirmationSnapshot?): ConfirmationPreview {
         val id = arguments.longValue("id")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_update_generic))
-        val fields = productFields(arguments)
+        val fields = productFields(arguments, snapshot)
         return ConfirmationPreview(
             message = string(
                 R.string.ai_assistant_confirmation_product_update_summary,
@@ -129,7 +146,7 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_products_bulk_update_generic))
         val patch = arguments.objectValue("patch")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_products_bulk_update_generic))
-        val fields = productFields(patch)
+        val fields = productFields(patch, snapshot = null)
         return ConfirmationPreview(
             message = quantity(
                 quantity = ids.size,
@@ -138,10 +155,11 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                 fields.toChangeSummary(),
             ),
             fields = fields,
+            isBulk = true,
         )
     }
 
-    private fun productVariationsUpdate(arguments: JsonObject): ConfirmationPreview {
+    private fun productVariationsUpdate(arguments: JsonObject, snapshot: ConfirmationSnapshot?): ConfirmationPreview {
         val productId = arguments.longValue("product_id")
             ?: return ConfirmationPreview(
                 string(R.string.ai_assistant_confirmation_product_variation_update_generic)
@@ -150,7 +168,7 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             ?: return ConfirmationPreview(
                 string(R.string.ai_assistant_confirmation_product_variation_update_generic)
             )
-        val fields = variationFields(arguments)
+        val fields = variationFields(arguments, snapshot)
         return ConfirmationPreview(
             message = string(
                 R.string.ai_assistant_confirmation_product_variation_update_summary,
@@ -162,47 +180,140 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         )
     }
 
-    private fun productFields(arguments: JsonObject): List<ConfirmationPreviewField> =
-        productOrVariationFields(arguments, includeName = true, includeStockStatus = false, includeSku = false)
+    private fun productFields(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ): List<ConfirmationPreviewField> =
+        productOrVariationFields(
+            arguments = arguments,
+            snapshot = snapshot,
+            includeName = true,
+            includeStockStatus = false,
+            includeSku = false,
+        )
 
-    private fun variationFields(arguments: JsonObject): List<ConfirmationPreviewField> =
-        productOrVariationFields(arguments, includeName = false, includeStockStatus = true, includeSku = true)
+    private fun variationFields(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ): List<ConfirmationPreviewField> =
+        productOrVariationFields(
+            arguments = arguments,
+            snapshot = snapshot,
+            includeName = false,
+            includeStockStatus = true,
+            includeSku = true,
+        )
 
     private fun productOrVariationFields(
         arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
         includeName: Boolean,
         includeStockStatus: Boolean,
         includeSku: Boolean,
     ): List<ConfirmationPreviewField> = buildList {
+        addOptionalNameField(arguments, snapshot, includeName)
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "regular_price",
+            label = R.string.ai_assistant_confirmation_field_regular_price,
+        )
+        addOptionalSalePriceField(arguments, snapshot)
+        addOptionalStockQuantityField(arguments, snapshot)
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "stock_status",
+            label = R.string.ai_assistant_confirmation_field_stock_status,
+            include = includeStockStatus,
+        )
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "status",
+            label = R.string.ai_assistant_confirmation_field_status,
+        )
+        addOptionalTextField(
+            arguments = arguments,
+            snapshot = snapshot,
+            key = "sku",
+            label = R.string.ai_assistant_confirmation_field_sku,
+            include = includeSku,
+        )
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalNameField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+        includeName: Boolean,
+    ) {
         arguments.stringValue("name")
             ?.takeIf { includeName }
-            ?.let { add(textField("name", it, R.string.ai_assistant_confirmation_field_name)) }
-        arguments.stringValue("regular_price")
-            ?.let { add(textField("regular_price", it, R.string.ai_assistant_confirmation_field_regular_price)) }
-        arguments.stringValue("sale_price")
-            ?.let {
-                val value = it.takeIf { price -> price.isNotEmpty() }?.let(::raw)
-                    ?: string(R.string.ai_assistant_confirmation_field_value_off)
-                add(messageField("sale_price", value, R.string.ai_assistant_confirmation_field_sale_price))
-            }
-        arguments.intValue("stock_quantity")
-            ?.let {
+            ?.let { name ->
                 add(
                     textField(
-                        name = "stock_quantity",
-                        value = it.toString(),
-                        label = R.string.ai_assistant_confirmation_field_stock_quantity,
+                        name = "name",
+                        value = name,
+                        label = R.string.ai_assistant_confirmation_field_name,
+                        beforeValue = snapshot?.currentValues?.get("name"),
                     )
                 )
             }
-        arguments.stringValue("stock_status")
-            ?.takeIf { includeStockStatus }
-            ?.let { add(textField("stock_status", it, R.string.ai_assistant_confirmation_field_stock_status)) }
-        arguments.stringValue("status")
-            ?.let { add(textField("status", it, R.string.ai_assistant_confirmation_field_status)) }
-        arguments.stringValue("sku")
-            ?.takeIf { includeSku }
-            ?.let { add(textField("sku", it, R.string.ai_assistant_confirmation_field_sku)) }
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalSalePriceField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ) {
+        arguments.stringValue("sale_price")?.let { salePrice ->
+            val value = salePrice.takeIf { it.isNotEmpty() }?.let(::raw)
+                ?: string(R.string.ai_assistant_confirmation_field_value_off)
+            add(
+                messageField(
+                    name = "sale_price",
+                    value = value,
+                    label = R.string.ai_assistant_confirmation_field_sale_price,
+                    beforeValue = snapshot?.currentValues?.get("sale_price")?.let(::salePriceValue),
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalStockQuantityField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+    ) {
+        arguments.intValue("stock_quantity")?.let { stockQuantity ->
+            add(
+                textField(
+                    name = "stock_quantity",
+                    value = stockQuantity.toString(),
+                    label = R.string.ai_assistant_confirmation_field_stock_quantity,
+                    beforeValue = snapshot?.currentValues?.get("stock_quantity"),
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ConfirmationPreviewField>.addOptionalTextField(
+        arguments: JsonObject,
+        snapshot: ConfirmationSnapshot?,
+        key: String,
+        label: Int,
+        include: Boolean = true,
+    ) {
+        arguments.stringValue(key)
+            ?.takeIf { include }
+            ?.let { value ->
+                add(
+                    textField(
+                        name = key,
+                        value = value,
+                        label = label,
+                        beforeValue = snapshot?.currentValues?.get(key),
+                    )
+                )
+            }
     }
 
     private fun genericPreview(toolName: String): ConfirmationPreview =
@@ -251,21 +362,34 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         name: String,
         value: String,
         @StringRes label: Int,
+        beforeValue: String? = null,
     ): ConfirmationPreviewField = messageField(
         name = name,
         value = raw(value),
         label = label,
+        beforeValue = beforeValue?.let { previewValue(name, it) },
     )
 
     private fun messageField(
         name: String,
         value: ConfirmationPreviewText,
         @StringRes label: Int,
+        beforeValue: ConfirmationPreviewText? = null,
     ): ConfirmationPreviewField = ConfirmationPreviewField(
         name = name,
         value = value,
         label = string(label),
+        beforeValue = beforeValue,
     )
+
+    private fun salePriceValue(value: String): ConfirmationPreviewText =
+        value.takeIf { it.isNotEmpty() }?.let(::raw)
+            ?: string(R.string.ai_assistant_confirmation_field_value_off)
+
+    private fun previewValue(name: String, value: String): ConfirmationPreviewText = when (name) {
+        "sale_price" -> salePriceValue(value)
+        else -> raw(value)
+    }
 
     private fun List<ConfirmationPreviewText>.toLocalizedList(): ConfirmationPreviewText =
         reduceOrNull { left, right ->

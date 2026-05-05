@@ -1,0 +1,86 @@
+package com.woocommerce.android.ui.woopos.orders.details.refund
+
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE
+import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
+
+const val ISSUE_REFUND_DISMISSED_KEY = "issue_refund_dismissed"
+private const val ISSUE_REFUND_DISABLE_PARTIAL_KEY = "disablePartialRefund"
+private const val ISSUE_REFUND_ROUTE =
+    "$ORDERS_ROUTE/issue_refund/{$ORDERS_ROUTE_ORDER_ID_KEY}" +
+        "?$ISSUE_REFUND_DISABLE_PARTIAL_KEY={$ISSUE_REFUND_DISABLE_PARTIAL_KEY}"
+
+fun NavController.navigateToIssueRefundScreen(orderId: Long, disablePartialRefund: Boolean = false) {
+    navigateOnce(
+        "$ORDERS_ROUTE/issue_refund/$orderId" +
+            "?$ISSUE_REFUND_DISABLE_PARTIAL_KEY=$disablePartialRefund"
+    )
+}
+
+fun NavGraphBuilder.issueRefundScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
+    composable(
+        route = ISSUE_REFUND_ROUTE,
+        arguments = listOf(
+            navArgument(ORDERS_ROUTE_ORDER_ID_KEY) { type = NavType.LongType },
+            navArgument(ISSUE_REFUND_DISABLE_PARTIAL_KEY) {
+                type = NavType.BoolType
+                defaultValue = false
+            }
+        ),
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth },
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth },
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth },
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth },
+            )
+        },
+    ) { backStackEntry ->
+        val args = requireNotNull(backStackEntry.arguments) {
+            "arguments are required for issue refund screen"
+        }
+        val orderId = args.getLong(ORDERS_ROUTE_ORDER_ID_KEY)
+        val disablePartialRefund = args.getBoolean(ISSUE_REFUND_DISABLE_PARTIAL_KEY)
+
+        val refundReasonResult = backStackEntry.savedStateHandle
+            .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
+            .collectAsState()
+
+        LaunchedEffect(refundReasonResult.value) {
+            if (refundReasonResult.value != null) {
+                backStackEntry.savedStateHandle.remove<String>(REFUND_REASON_RESULT_KEY)
+            }
+        }
+
+        WooPosIssueRefundScreen(
+            orderId = orderId,
+            onNavigationEvent = onNavigationEvent,
+            refundReasonUpdate = refundReasonResult.value,
+            disablePartialRefund = disablePartialRefund,
+        )
+    }
+}

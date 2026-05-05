@@ -1,16 +1,20 @@
 package com.woocommerce.android.aiassistant.ui
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
-import com.woocommerce.android.aiassistant.runtime.AssistantPendingConfirmation
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 
 data class AssistantUiState(
     val messages: List<AssistantUiMessage> = emptyList(),
     val status: AssistantUiStatus = AssistantUiStatus.IDLE,
     val error: AssistantUiError? = null,
     val canRetry: Boolean = false,
-    val pendingConfirmation: AssistantPendingConfirmation? = null,
+    val activeConfirmationId: String? = null,
+    val activeAssistantMessageId: String? = null,
     val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
@@ -20,10 +24,29 @@ data class AssistantUiState(
         get() = status == AssistantUiStatus.STREAMING ||
             status == AssistantUiStatus.AWAITING_CONFIRMATION
 
+    val shouldShowStopControl: Boolean
+        get() = status == AssistantUiStatus.STREAMING
+
     val shouldShowFallbackError: Boolean
         get() = status == AssistantUiStatus.ERROR &&
             error != null &&
             messages.lastOrNull()?.error == null
+
+    /**
+     * Mirrors iOS `streamingState == .sending`: dots are visible from submit until the active assistant
+     * message starts streaming actual text. Tool activity segments don't count as "text", so the dots
+     * stay visible during pre-text tool calls and disappear only once the model emits its first text
+     * token. Within a single message text is appended monotonically, so once dots hide they don't bounce
+     * back for that turn.
+     */
+    val shouldShowTypingIndicator: Boolean
+        get() = status == AssistantUiStatus.STREAMING && !activeAssistantHasStreamedText
+
+    private val activeAssistantHasStreamedText: Boolean
+        get() {
+            val active = messages.firstOrNull { it.id == activeAssistantMessageId } ?: return false
+            return active.segments.any { it is AssistantUiSegment.Text && it.text.isNotEmpty() }
+        }
 }
 
 enum class AssistantUiStatus {
@@ -36,13 +59,105 @@ enum class AssistantUiStatus {
 data class AssistantUiMessage(
     val id: String,
     val role: Role,
-    val text: String,
+    val segments: List<AssistantUiSegment>,
     val error: AssistantMessageError? = null,
 ) {
+    constructor(
+        id: String,
+        role: Role,
+        text: String,
+        error: AssistantMessageError? = null,
+    ) : this(
+        id = id,
+        role = role,
+        segments = listOf(AssistantUiSegment.Text(text)),
+        error = error,
+    )
+
+    val text: String
+        get() = segments.filterIsInstance<AssistantUiSegment.Text>().joinToString(separator = "") { it.text }
+
     enum class Role {
         USER,
         ASSISTANT,
     }
+}
+
+data class AssistantToolActivity(
+    val toolCallId: String,
+    val toolName: String,
+    val status: Status = Status.RUNNING,
+) {
+    enum class Status {
+        RUNNING,
+        COMPLETED,
+    }
+}
+
+sealed interface AssistantUiSegment {
+    data class Text(val text: String) : AssistantUiSegment
+
+    data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
+
+    data class Card(val card: AssistantCard) : AssistantUiSegment
+
+    data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
+}
+
+internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
+    get() = segments.any { segment ->
+        when (segment) {
+            is AssistantUiSegment.Text -> segment.text.isNotEmpty()
+            is AssistantUiSegment.ConfirmationCard -> true
+            is AssistantUiSegment.Card -> true
+            is AssistantUiSegment.ToolActivity -> true
+        }
+    }
+
+@StringRes
+internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
+    "orders_list",
+    "orders_get" -> R.string.assistant_chat_tool_activity_orders_read
+    "orders_update",
+    "orders_bulk_update" -> R.string.assistant_chat_tool_activity_orders_write
+    "products_list",
+    "products_get",
+    "product_variations_list" -> R.string.assistant_chat_tool_activity_products_read
+    "products_update",
+    "products_bulk_update",
+    "product_variations_update" -> R.string.assistant_chat_tool_activity_products_write
+    "analytics_orders",
+    "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
+    "customers_list" -> R.string.assistant_chat_tool_activity_customers
+    "show_cards" -> R.string.assistant_chat_tool_activity_cards
+    else -> R.string.assistant_chat_tool_activity_generic
+}
+
+data class AssistantConfirmationCard(
+    val confirmationId: String,
+    val toolCall: ToolCall,
+    val state: AssistantConfirmationCardState,
+    val preview: RenderedConfirmationPreview? = null,
+)
+
+enum class AssistantConfirmationCardState {
+    PENDING,
+    CONFIRMED,
+    CANCELLED,
+}
+
+@StringRes
+internal fun AssistantConfirmationCardState.eyebrowRes(): Int = when (this) {
+    AssistantConfirmationCardState.PENDING -> R.string.assistant_confirmation_eyebrow_pending
+    AssistantConfirmationCardState.CONFIRMED -> R.string.assistant_confirmation_eyebrow_confirmed
+    AssistantConfirmationCardState.CANCELLED -> R.string.assistant_confirmation_eyebrow_cancelled
+}
+
+@DrawableRes
+internal fun AssistantConfirmationCardState.iconRes(): Int = when (this) {
+    AssistantConfirmationCardState.PENDING -> R.drawable.ic_assistant_confirmation_pending
+    AssistantConfirmationCardState.CONFIRMED -> R.drawable.ic_assistant_confirmation_confirmed
+    AssistantConfirmationCardState.CANCELLED -> R.drawable.ic_assistant_confirmation_cancelled
 }
 
 data class AssistantMessageError(

@@ -114,7 +114,9 @@ class ShowCardsResolverTest {
             "total",
             "currency",
             "date_created",
+            "customer_name",
         )
+        assertThat(result[0].summary.getValue("customer_name").jsonPrimitive.content).isEqualTo("Jane Doe")
         assertThat(result[0].card.family).isEqualTo("order")
         assertThat(result[0].card.id).isEqualTo("1")
         assertThat(result[0].card.title).isEqualTo("#1")
@@ -123,6 +125,7 @@ class ShowCardsResolverTest {
         assertThat(orderDetails.total).isEqualTo("12.34")
         assertThat(orderDetails.currency).isEqualTo("USD")
         assertThat(orderDetails.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(orderDetails.customerName).isEqualTo("Jane Doe")
         assertThat(result[1].summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
         assertThat(result[1].card.family).isEqualTo("product")
         assertThat(result[1].card.id).isEqualTo("2")
@@ -132,6 +135,7 @@ class ShowCardsResolverTest {
         assertThat(productDetails.price).isEqualTo("9.99")
         assertThat(productDetails.stockStatus).isEqualTo("instock")
         assertThat(productDetails.status).isEqualTo("publish")
+        assertThat(productDetails.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
     }
 
     @Test
@@ -218,6 +222,8 @@ class ShowCardsResolverTest {
         total = "12.34",
         currency = "USD",
         dateCreated = "2026-05-01T10:00:00Z",
+        billingFirstName = "Jane",
+        billingLastName = "Doe",
     )
 
     private fun product(
@@ -230,5 +236,10 @@ class ShowCardsResolverTest {
         price = "9.99",
         stockStatus = "instock",
         status = "publish",
+        images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
     )
+
+    private companion object {
+        private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
+    }
 }

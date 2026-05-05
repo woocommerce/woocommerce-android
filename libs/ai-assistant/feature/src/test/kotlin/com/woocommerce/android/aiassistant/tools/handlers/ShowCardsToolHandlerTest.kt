@@ -84,7 +84,15 @@ class ShowCardsToolHandlerTest {
 
         val summary = firstResolvedSummary(result)
 
-        assertThat(summary.keys).containsExactly("id", "number", "status", "total", "currency", "date_created")
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "number",
+            "status",
+            "total",
+            "currency",
+            "date_created",
+            "customer_name",
+        )
     }
 
     @Test
@@ -141,6 +149,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.total).isEqualTo("12.34")
         assertThat(details.currency).isEqualTo("USD")
         assertThat(details.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(details.customerName).isEqualTo("Jane Doe")
         assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
     }
@@ -162,8 +171,10 @@ class ShowCardsToolHandlerTest {
         assertThat(details.price).isEqualTo("9.99")
         assertThat(details.stockStatus).isEqualTo("instock")
         assertThat(details.status).isEqualTo("publish")
+        assertThat(details.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
         assertThat(uiCards(result).single().jsonObject.keys).doesNotContain("subtitle", "badges", "attributes")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("details")
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("image_url")
     }
 
     @Test
@@ -384,6 +395,7 @@ class ShowCardsToolHandlerTest {
                     total = "12.34",
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
+                    customerName = "Jane Doe",
                 )
             ).jsonObject,
             card = ShowCardPayload(
@@ -395,6 +407,7 @@ class ShowCardsToolHandlerTest {
                     total = "12.34",
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
+                    customerName = "Jane Doe",
                 ),
             )
         )
@@ -423,6 +436,7 @@ class ShowCardsToolHandlerTest {
                     price = "9.99",
                     stockStatus = "instock",
                     status = "publish",
+                    imageUrl = PRODUCT_IMAGE_URL,
                 ),
             )
         )
@@ -483,5 +497,9 @@ class ShowCardsToolHandlerTest {
     private object ThrowingResolver : ShowCardsResolver {
         override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> =
             error("Resolver failed")
+    }
+
+    private companion object {
+        private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
     }
 }
