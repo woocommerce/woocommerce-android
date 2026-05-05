@@ -174,10 +174,24 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
+    fun `given order is cached, when getOrder is called, then fresh order is fetched`() =
+        runTest {
+            val cachedEntity = OrderEntity(localSiteId = LocalId(1), orderId = 123L, status = "pending")
+            val freshEntity = OrderEntity(localSiteId = LocalId(1), orderId = 123L, status = "processing")
+            whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(cachedEntity)
+            whenever(orderStore.fetchSingleOrderSync(site, 123L)).thenReturn(WooResult(freshEntity))
+
+            val result = dataSource.getOrder(orderId = 123L)
+
+            assertThat(result.isSuccess).isTrue
+            assertThat(result.getOrThrow()).isEqualTo(freshEntity)
+            verify(orderStore).fetchSingleOrderSync(site, 123L)
+        }
+
+    @Test
     fun `when getOrder is called, then fetchSingleOrderSync is called`() =
         runTest {
             val entity = OrderEntity(localSiteId = LocalId(1), orderId = 123L)
-            whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(null)
             whenever(orderStore.fetchSingleOrderSync(site, 123L)).thenReturn(WooResult(entity))
 
             val result = dataSource.getOrder(orderId = 123L)
@@ -190,7 +204,6 @@ class AIOrdersDataSourceTest {
     @Test
     fun `given network returns an error, when getOrder is called, then a failure result is returned`() =
         runTest {
-            whenever(orderStore.getOrderByIdAndSite(123L, site)).thenReturn(null)
             whenever(orderStore.fetchSingleOrderSync(site, 123L))
                 .thenReturn(WooResult(WooError(WooErrorType.API_ERROR, GenericErrorType.SERVER_ERROR, "boom")))
 

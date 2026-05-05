@@ -4,6 +4,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -107,6 +108,111 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given streaming with active empty assistant message, when checking typing indicator, then it is visible`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
+    fun `given streaming with active tool activity but no text, when checking typing indicator, then it is visible`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage(
+                    id = "assistant-1",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(toolCallId = "call-1", toolName = "orders_list"),
+                        ),
+                    ),
+                ),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
+    fun `given streaming with active assistant message that has streamed text, when checking typing indicator, then it is hidden`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, "Sales are up today."),
+            ),
+            status = AssistantUiStatus.STREAMING,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given idle status, when checking typing indicator, then it is hidden`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
+            status = AssistantUiStatus.IDLE,
+            activeAssistantMessageId = null,
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given awaiting confirmation, when checking typing indicator, then it is hidden`() {
+        val state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("assistant-1", AssistantUiMessage.Role.ASSISTANT, ""),
+            ),
+            status = AssistantUiStatus.AWAITING_CONFIRMATION,
+            activeAssistantMessageId = "assistant-1",
+        )
+
+        assertThat(state.shouldShowTypingIndicator).isFalse()
+    }
+
+    @Test
+    fun `given known tool names, when resolving activity label, then humanized labels are returned`() {
+        val expectedLabels = mapOf(
+            "orders_list" to R.string.assistant_chat_tool_activity_orders_read,
+            "orders_get" to R.string.assistant_chat_tool_activity_orders_read,
+            "orders_update" to R.string.assistant_chat_tool_activity_orders_write,
+            "orders_bulk_update" to R.string.assistant_chat_tool_activity_orders_write,
+            "products_list" to R.string.assistant_chat_tool_activity_products_read,
+            "products_get" to R.string.assistant_chat_tool_activity_products_read,
+            "product_variations_list" to R.string.assistant_chat_tool_activity_products_read,
+            "products_update" to R.string.assistant_chat_tool_activity_products_write,
+            "products_bulk_update" to R.string.assistant_chat_tool_activity_products_write,
+            "product_variations_update" to R.string.assistant_chat_tool_activity_products_write,
+            "analytics_orders" to R.string.assistant_chat_tool_activity_analytics,
+            "analytics_revenue" to R.string.assistant_chat_tool_activity_analytics,
+            "customers_list" to R.string.assistant_chat_tool_activity_customers,
+            "show_cards" to R.string.assistant_chat_tool_activity_cards,
+        )
+
+        expectedLabels.forEach { (toolName, labelRes) ->
+            assertThat(AssistantToolActivity("call-1", toolName).labelRes())
+                .describedAs(toolName)
+                .isEqualTo(labelRes)
+        }
+    }
+
+    @Test
+    fun `given unknown tool name, when resolving activity label, then generic label is returned`() {
+        assertThat(AssistantToolActivity("call-1", "private_internal_tool").labelRes())
+            .isEqualTo(R.string.assistant_chat_tool_activity_generic)
+    }
+
+    @Test
     fun `given ui errors, when mapping to message resources, then fallback copy resources are returned`() {
         assertThat(AssistantUiError.CONFIRMATION_DEFERRED.toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
@@ -131,6 +237,20 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `when turn is streaming, then stop control is visible`() {
+        val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
+
+        assertThat(state.shouldShowStopControl).isTrue()
+    }
+
+    @Test
+    fun `when turn is awaiting confirmation, then stop control is hidden`() {
+        val state = AssistantUiState(status = AssistantUiStatus.AWAITING_CONFIRMATION)
+
+        assertThat(state.shouldShowStopControl).isFalse()
+    }
+
+    @Test
     fun `when status is idle, then turn is not active`() {
         val state = AssistantUiState(status = AssistantUiStatus.IDLE)
 
@@ -143,4 +263,58 @@ class AssistantUiStateTest {
 
         assertThat(state.isTurnActive).isFalse()
     }
+
+    @Test
+    fun `given confirmation card state, when resolving chrome resources, then eyebrow and icon are mapped`() {
+        assertThat(AssistantConfirmationCardState.PENDING.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_pending)
+        assertThat(AssistantConfirmationCardState.PENDING.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_pending)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_confirmed)
+        assertThat(AssistantConfirmationCardState.CONFIRMED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_confirmed)
+        assertThat(AssistantConfirmationCardState.CANCELLED.eyebrowRes())
+            .isEqualTo(R.string.assistant_confirmation_eyebrow_cancelled)
+        assertThat(AssistantConfirmationCardState.CANCELLED.iconRes())
+            .isEqualTo(R.drawable.ic_assistant_confirmation_cancelled)
+    }
+
+    @Test
+    fun `given assistant card, when card segment is created, then card is preserved`() {
+        val card = orderCard()
+
+        val segment: AssistantUiSegment = AssistantUiSegment.Card(card)
+
+        assertThat(segment).isEqualTo(AssistantUiSegment.Card(card))
+    }
+
+    @Test
+    fun `given assistant message, when text and card segments are used, then segment order is preserved`() {
+        val card = orderCard()
+
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(
+                AssistantUiSegment.Text("Here is the order."),
+                AssistantUiSegment.Card(card),
+            ),
+        )
+
+        assertThat(message.segments).containsExactly(
+            AssistantUiSegment.Text("Here is the order."),
+            AssistantUiSegment.Card(card),
+        )
+    }
+
+    private fun orderCard() = AssistantCard.Order(
+        remoteOrderId = 123L,
+        number = "#1001",
+        status = "processing",
+        total = "12.34",
+        currency = "USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
+    )
 }

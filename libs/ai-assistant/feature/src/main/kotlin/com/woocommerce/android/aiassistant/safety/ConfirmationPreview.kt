@@ -5,12 +5,20 @@ import androidx.annotation.StringRes
 internal data class ConfirmationPreview(
     val message: ConfirmationPreviewText,
     val fields: List<ConfirmationPreviewField> = emptyList(),
-)
+    val isBulk: Boolean = false,
+) {
+    val summary: ConfirmationPreviewText
+        get() = message
+
+    val rows: List<ConfirmationPreviewField>
+        get() = fields
+}
 
 internal data class ConfirmationPreviewField(
     val name: String,
     val label: ConfirmationPreviewText,
     val value: ConfirmationPreviewText,
+    val beforeValue: ConfirmationPreviewText? = null,
 )
 
 internal sealed interface ConfirmationPreviewText {

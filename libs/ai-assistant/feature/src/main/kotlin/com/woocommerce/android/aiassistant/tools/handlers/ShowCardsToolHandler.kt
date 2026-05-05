@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
@@ -53,7 +54,7 @@ internal class ShowCardsToolHandler internal constructor(
     )
 
     override val descriptor = ToolDescriptor(
-        name = "show_cards",
+        name = SHOW_CARDS_TOOL_NAME,
         description = "Show entity cards in the UI for orders or products selected by the assistant.",
         inputSchema = buildJsonObject {
             put("type", "object")
@@ -160,7 +161,15 @@ internal class ShowCardsToolHandler internal constructor(
     }
 
     private companion object {
-        val ORDER_SUMMARY_KEYS = setOf("id", "number", "status", "total", "currency", "date_created")
+        val ORDER_SUMMARY_KEYS = setOf(
+            "id",
+            "number",
+            "status",
+            "total",
+            "currency",
+            "date_created",
+            "customer_name",
+        )
         val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
     }
 }

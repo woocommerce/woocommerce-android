@@ -2,10 +2,11 @@ package com.woocommerce.android.aiassistant.runtime
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
-import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
-import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
+import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import kotlinx.coroutines.flow.Flow
 
 interface AssistantRuntime {
@@ -15,9 +16,7 @@ interface AssistantRuntime {
 
     suspend fun cancelTurn(conversationId: String)
 
-    suspend fun confirmWrite(confirmationId: String): AssistantRuntimeConfirmationResult
-
-    suspend fun cancelWrite(confirmationId: String)
+    suspend fun resolveConfirmation(result: ConfirmationResult): AssistantRuntimeConfirmationDispatchResult
 }
 
 data class AssistantTurnRequest(
@@ -31,8 +30,25 @@ data class AssistantTurnRequest(
 sealed interface AssistantRuntimeEvent {
     data class AssistantTextDelta(val text: String) : AssistantRuntimeEvent
 
+    data class ToolCallStarted(
+        val toolCallId: String,
+        val toolName: String,
+    ) : AssistantRuntimeEvent
+
+    data class ToolCallFinished(
+        val toolCallId: String,
+    ) : AssistantRuntimeEvent
+
     data class AwaitingConfirmation(
-        val confirmation: AssistantPendingConfirmation,
+        val confirmation: AssistantConfirmationCard,
+    ) : AssistantRuntimeEvent
+
+    data class ConfirmationResolved(
+        val result: ConfirmationResult,
+    ) : AssistantRuntimeEvent
+
+    data class CardsResolved(
+        val cards: List<AssistantCard>,
     ) : AssistantRuntimeEvent
 
     data class Finished(
@@ -43,13 +59,7 @@ sealed interface AssistantRuntimeEvent {
     ) : AssistantRuntimeEvent
 }
 
-data class AssistantPendingConfirmation(
-    val id: String,
-    val toolCall: ToolCall,
-    val preview: RenderedConfirmationPreview? = null,
-)
-
-sealed interface AssistantRuntimeConfirmationResult {
-    data object Accepted : AssistantRuntimeConfirmationResult
-    data object Deferred : AssistantRuntimeConfirmationResult
+sealed interface AssistantRuntimeConfirmationDispatchResult {
+    data object Accepted : AssistantRuntimeConfirmationDispatchResult
+    data object Deferred : AssistantRuntimeConfirmationDispatchResult
 }

@@ -294,7 +294,11 @@ private fun TotalsLoaded(
     }
 
     val allMethods = buildList {
-        if (state.readerStatus.isReaderConnected() && state.isTapToPayAvailable) {
+        val readerConnected = state.readerStatus.isReaderConnected()
+        if (!readerConnected && state.isTapToPayAvailable) {
+            add(WooPosPaymentMethod.CARD_READER)
+        }
+        if (readerConnected && state.isTapToPayAvailable) {
             add(WooPosPaymentMethod.TAP_TO_PAY)
         }
         add(WooPosPaymentMethod.SCAN_TO_PAY)
@@ -352,6 +356,7 @@ private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = wh
 }
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
+    WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
     WooPosPaymentMethod.SCAN_TO_PAY -> null
     WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
