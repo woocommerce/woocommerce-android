@@ -3757,6 +3757,10 @@
     <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
     <string name="woopos_payment_method_all_methods_label">All payment methods</string>
     <string name="woopos_payment_method_picker_dialog_title">Choose payment method</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap to Pay on phone</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to Pay</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Tap to Pay on phone illustration</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">Edit order</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">Remove coupons</string>
