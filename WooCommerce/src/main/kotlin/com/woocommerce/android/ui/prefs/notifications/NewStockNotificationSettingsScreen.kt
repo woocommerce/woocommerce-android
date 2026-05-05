@@ -73,8 +73,7 @@ private fun NewStockNotificationSettingsScreen(
                 title = stringResource(R.string.settings_notifs_stock_enable_title),
                 description = stringResource(R.string.settings_notifs_stock_enable_description),
                 isEnabled = viewState.notificationsEnabled,
-                onEnabledChanged = onNotificationsEnabledChanged,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                onEnabledChanged = onNotificationsEnabledChanged
             )
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_low_stock_title),
