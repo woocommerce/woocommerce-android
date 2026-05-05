@@ -563,19 +563,13 @@ class WooPosTotalsViewModel @Inject constructor(
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
                     is CardReaderPaymentState.ProcessingPayment -> {
-                        if (isTapToPayPayment) {
-                            ensurePaymentInProgressStateForTapToPay()
-                        } else {
-                            handleProcessingPaymentState(paymentState)
-                        }
+                        if (isTapToPayPayment) return@collect
+                        handleProcessingPaymentState(paymentState)
                     }
 
                     is CardReaderPaymentState.LoadingData -> {
-                        if (isTapToPayPayment) {
-                            ensurePaymentInProgressStateForTapToPay()
-                        } else {
-                            handleReaderLoadingPaymentState()
-                        }
+                        if (isTapToPayPayment) return@collect
+                        handleReaderLoadingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentCapturing -> {
