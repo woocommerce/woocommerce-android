@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.runtime
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
@@ -57,6 +58,39 @@ class AgenticLoopAssistantRuntimeTest {
         ignoreUnknownKeys = true
         encodeDefaults = false
         explicitNulls = false
+    }
+
+    @Test
+    fun `when turn starts, then runtime prepends injected system prompt before calling core loop`() = runTest {
+        val fakeLoop = CapturingAgenticLoop(events = emptyList())
+        val runtime = runtime(agenticLoop = fakeLoop, systemPrompt = "prompt from provider")
+
+        runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(fakeLoop.receivedHistory).containsExactly(
+            AssistantMessage.System("prompt from provider")
+        )
+    }
+
+    @Test
+    fun `given stale system prompt in history, when turn starts, then runtime replaces it`() = runTest {
+        val fakeLoop = CapturingAgenticLoop(events = emptyList())
+        val runtime = runtime(agenticLoop = fakeLoop, systemPrompt = "fresh prompt")
+        val request = givenTurnRequest().copy(
+            history = listOf(
+                AssistantMessage.System("stale prompt"),
+                AssistantMessage.User("previous"),
+                AssistantMessage.Assistant("answer"),
+            )
+        )
+
+        runtime.startTurn(request).toList()
+
+        assertThat(fakeLoop.receivedHistory).containsExactly(
+            AssistantMessage.System("fresh prompt"),
+            AssistantMessage.User("previous"),
+            AssistantMessage.Assistant("answer"),
+        )
     }
 
     @Test
@@ -482,6 +516,7 @@ class AgenticLoopAssistantRuntimeTest {
         agenticLoop: AgenticLoop = FakeAgenticLoop(events = emptyList()),
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
         snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
+        systemPrompt: String = "system prompt v1",
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
         toolRegistry = EmptyToolRegistry,
@@ -491,6 +526,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
+        systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -545,6 +581,28 @@ class AgenticLoopAssistantRuntimeTest {
             history: List<AssistantMessage>,
             context: SessionContext,
         ): Flow<LoopEvent> = flowOf(*events.toTypedArray())
+    }
+
+    private class CapturingAgenticLoop(
+        private val events: List<LoopEvent>,
+    ) : AgenticLoop {
+        lateinit var receivedHistory: List<AssistantMessage>
+
+        override fun runTurn(
+            conversationId: String,
+            userMessage: String,
+            history: List<AssistantMessage>,
+            context: SessionContext,
+        ): Flow<LoopEvent> {
+            receivedHistory = history
+            return flowOf(*events.toTypedArray())
+        }
+    }
+
+    private class FakeSystemPromptProvider(
+        private val prompt: String,
+    ) : AssistantSystemPromptProvider {
+        override fun systemPrompt(todayIsoDate: String?): String = prompt
     }
 
     private object EmptyToolRegistry : ToolRegistry {
