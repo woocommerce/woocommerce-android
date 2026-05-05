@@ -112,7 +112,7 @@ private fun OrderActions(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     foldPrimaryAction: Boolean = false,
 ) {
-    val actions = details.actionsState.actions
+    val actions = details.actions
     val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
     val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
 
@@ -748,11 +748,9 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actionsState = WooPosOrdersState.OrderActionsState(
-            listOf(
-                WooPosOrdersState.OrderAction.IssueRefund(1L),
-                WooPosOrdersState.OrderAction.EmailReceipt(1L)
-            )
+        actions = listOf(
+            WooPosOrdersState.OrderAction.IssueRefund(1L),
+            WooPosOrdersState.OrderAction.EmailReceipt(1L)
         )
     )
 

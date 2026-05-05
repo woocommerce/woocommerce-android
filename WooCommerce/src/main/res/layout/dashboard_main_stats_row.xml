@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
         android:baselineAligned="false"
-        android:gravity="top"
+        android:gravity="bottom"
         android:orientation="horizontal">
 
         <LinearLayout

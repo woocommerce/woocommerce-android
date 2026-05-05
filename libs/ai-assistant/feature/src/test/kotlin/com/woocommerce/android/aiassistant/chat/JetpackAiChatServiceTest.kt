@@ -11,10 +11,10 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -80,7 +80,7 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
-    fun `given assistant tool calls with null content, when sent, then request preserves null assistant content`() = runTest {
+    fun `given assistant tool calls with null content, when sent, then request uses empty assistant content for backend compatibility`() = runTest {
         server.enqueue(sseResponse(SAMPLE_SSE_BODY))
 
         val service = newService()
@@ -107,7 +107,7 @@ class JetpackAiChatServiceTest {
         val body = Json.parseToJsonElement(recorded.body.readUtf8()).jsonObject
         val assistantMessage = body.getValue("messages").jsonArray.single().jsonObject
 
-        assertThat(assistantMessage.getValue("content")).isEqualTo(JsonNull)
+        assertThat(assistantMessage.getValue("content").jsonPrimitive.content).isEmpty()
         assertThat(assistantMessage.getValue("tool_calls").jsonArray).hasSize(1)
     }
 
