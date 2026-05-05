@@ -419,15 +419,17 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun handleCollectPayment() {
         val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
-        viewModelScope.launch {
-            _navigationEvent.emit(
-                WooPosNavigationEvent.OpenCardPayment(
-                    orderId = details.orderId,
-                    source = CardPaymentSource.BOOKINGS,
-                    showCashPaymentButton = true,
-                )
+        emitNav(
+            WooPosNavigationEvent.OpenCardPayment(
+                orderId = details.orderId,
+                source = CardPaymentSource.BOOKINGS,
+                showCashPaymentButton = true,
             )
-        }
+        )
+    }
+
+    private fun emitNav(event: WooPosNavigationEvent) {
+        viewModelScope.launch { _navigationEvent.emit(event) }
     }
 
     private fun handleAttendanceToggle(attended: Boolean) {
@@ -542,13 +544,10 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                viewModelScope.launch {
-                    _navigationEvent.emit(
-                        WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId)
-                    )
-                }
+                emitNav(WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId))
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
+                if (_state.value !is WooPosBookingsState.Content) return
                 viewModelScope.launch {
                     analyticsTracker.trackIssueRefundTapped()
                     _navigationEvent.emit(

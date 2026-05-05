@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -423,6 +424,21 @@ open class WooCommerceStore @Inject internal constructor(
                     WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                 }
             }
+        }
+    }
+
+    suspend fun fetchAnalyticsOrderDateType(site: SiteModel): WooResult<WCAnalyticsOrderDateType> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsOrderDateType") {
+            wcCoreRestClient.fetchAnalyticsOrderDateType(site).asWooResult()
+        }
+    }
+
+    suspend fun updateAnalyticsOrderDateType(
+        site: SiteModel,
+        orderDateType: WCAnalyticsOrderDateType
+    ): WooResult<WCAnalyticsOrderDateType> {
+        return coroutineEngine.withDefaultContext(T.API, this, "updateAnalyticsOrderDateType") {
+            wcCoreRestClient.updateAnalyticsOrderDateType(site, orderDateType).asWooResult()
         }
     }
 

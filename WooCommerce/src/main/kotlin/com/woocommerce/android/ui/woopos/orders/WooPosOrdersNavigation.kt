@@ -2,17 +2,13 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
-import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
@@ -70,30 +66,9 @@ private fun NavGraphBuilder.ordersComposable(
             )
         },
     ) { backStackEntry ->
-        val navigatedFromEmailReceiptSent = backStackEntry.savedStateHandle
-            .getStateFlow(EMAIL_RECEIPT_SENT, false)
-            .collectAsState()
-
-        val issueRefundDismissed = backStackEntry.savedStateHandle
-            .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
-            .collectAsState()
-
-        LaunchedEffect(navigatedFromEmailReceiptSent.value) {
-            if (navigatedFromEmailReceiptSent.value) {
-                backStackEntry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
-            }
-        }
-
-        LaunchedEffect(issueRefundDismissed.value) {
-            if (issueRefundDismissed.value) {
-                backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
-            }
-        }
-
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
-            navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value,
-            issueRefundDismissed = issueRefundDismissed.value,
+            backStackEntry = backStackEntry,
         )
     }
 }

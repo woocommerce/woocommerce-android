@@ -1,9 +1,9 @@
 package com.woocommerce.android.aiassistant.core.loop
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 
 data class LoopFailureContext(
-    val errorKind: AssistantErrorKind,
+    val error: AssistantError,
     val visibleOutputStarted: Boolean,
     val retryCount: Int,
 )
@@ -22,16 +22,17 @@ object ConservativeRetryPolicy : RetryPolicy {
     const val MAX_AUTO_RETRIES = 2
     private const val BACKOFF_MS = 500L
 
-    private val retryableKinds = setOf(
-        AssistantErrorKind.NETWORK,
-        AssistantErrorKind.TIMEOUT,
-        AssistantErrorKind.RATE_LIMIT,
-    )
-
     override fun decide(failure: LoopFailureContext): RetryDecision = when {
+        !isRetryable(failure.error) -> RetryDecision.DoNotRetry
         failure.visibleOutputStarted -> RetryDecision.ShowManualRetry
-        failure.errorKind !in retryableKinds -> RetryDecision.DoNotRetry
         failure.retryCount >= MAX_AUTO_RETRIES -> RetryDecision.ShowManualRetry
         else -> RetryDecision.RetryNow(BACKOFF_MS)
+    }
+
+    private fun isRetryable(error: AssistantError): Boolean = when (error) {
+        AssistantError.Network,
+        AssistantError.Timeout,
+        AssistantError.RateLimit -> true
+        else -> false
     }
 }

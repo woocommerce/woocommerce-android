@@ -320,6 +320,7 @@ class WooPosOrdersListViewModelTest {
     @Test
     fun `given orders loaded, when selecting order in SinglePane mode, then coordinator selection is not updated`() =
         runTest {
+            // GIVEN
             whenever(dataSource.loadOrders()).thenReturn(
                 flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1), order(2), order(3)))) }
             )

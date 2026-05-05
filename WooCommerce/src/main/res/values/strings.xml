@@ -348,6 +348,19 @@
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue_type_gross">Gross</string>
+    <string name="dashboard_stats_revenue_type_net">Net</string>
+    <string name="dashboard_stats_revenue_type_total">Total</string>
+    <string name="dashboard_stats_paid_orders">Paid orders</string>
+    <string name="dashboard_stats_placed_orders">Placed orders</string>
+    <string name="dashboard_stats_completed_orders">Completed orders</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Order date type</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Choose which orders to include in your performance metrics for the selected time range.</string>
+    <string name="dashboard_stats_paid_orders_description">Count orders on the date the order was paid.</string>
+    <string name="dashboard_stats_placed_orders_description">Count orders on the date they were placed or created.</string>
+    <string name="dashboard_stats_completed_orders_description">Count orders on the date they were marked as completed.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">This is a store-wide setting, which also controls the “Date type” option in WooCommerce admin analytics settings.</string>
+    <string name="dashboard_stats_order_date_type_update_error">Unable to update order type. Please try again.</string>
     <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
@@ -2254,6 +2267,7 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_push_notifications">Push notifications</string>
     <string name="settings_store_name">Store name</string>
     <string name="settings_enable_push_notifications">Enable Push Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -2261,6 +2275,12 @@
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
+    <string name="settings_notifs_new_orders">New orders</string>
+    <string name="settings_notifs_new_orders_subtitle">All orders</string>
+    <string name="settings_notifs_stock">Stock</string>
+    <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_new_reviews">New reviews</string>
+    <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -3133,6 +3153,9 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
+
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="more_menu_button_ai_assistant_description">Ask about your store</string>
 
     <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
@@ -4529,4 +4552,6 @@
     <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
     <string name="woo_pos_promo_next_button">Next</string>
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">the United Kingdom</string>
 </resources>

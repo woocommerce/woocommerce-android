@@ -9,7 +9,6 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
@@ -71,7 +70,7 @@ class OpenAiMappingTest {
         assertThat(systemMessage.getValue("role").jsonPrimitive.content).isEqualTo("system")
         assertThat(userMessage.getValue("role").jsonPrimitive.content).isEqualTo("user")
         assertThat(assistantMessage.getValue("role").jsonPrimitive.content).isEqualTo("assistant")
-        assertThat(assistantMessage.getValue("content")).isEqualTo(JsonNull)
+        assertThat(assistantMessage.getValue("content").jsonPrimitive.content).isEmpty()
         assertThat(
             assistantMessage.getValue("tool_calls").jsonArray.single().jsonObject
                 .getValue("function").jsonObject

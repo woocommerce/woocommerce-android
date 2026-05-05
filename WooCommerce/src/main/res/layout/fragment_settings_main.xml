@@ -172,8 +172,7 @@
                 android:id="@+id/option_notifications"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/settings_notifs_device"
-                app:optionValue="@string/settings_notifs_device_detail" />
+                app:optionTitle="@string/settings_notifs_device" />
 
         </LinearLayout>
 

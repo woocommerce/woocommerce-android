@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.sentry)
     alias(libs.plugins.androidx.navigation.safeargs)
@@ -13,6 +14,15 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
+}
+
+def isComposeScreenshotTestsEnabled = providers
+        .gradleProperty("android.experimental.enableScreenshotTest")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+if (isComposeScreenshotTestsEnabled) {
+    apply plugin: libs.plugins.compose.screenshot.get().pluginId
 }
 
 fladle {
@@ -77,6 +87,10 @@ def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properti
 
 android {
     namespace = "com.woocommerce.android"
+
+    if (isComposeScreenshotTestsEnabled) {
+        experimentalProperties["android.experimental.enableScreenshotTest"] = true
+    }
 
     compileSdk = gradle.ext.compileSdkVersion
 
@@ -215,6 +229,11 @@ android {
 }
 
 dependencies {
+    if (isComposeScreenshotTestsEnabled) {
+        screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
+        screenshotTestImplementation(libs.google.screenshot.validation.api)
+    }
+
     implementation(libs.wordpress.libaddressinput.common) {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
@@ -272,6 +291,7 @@ dependencies {
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
     implementation(project(":libs:ai-assistant:feature"))
+    implementation(project(":libs:ai-assistant:core"))
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"

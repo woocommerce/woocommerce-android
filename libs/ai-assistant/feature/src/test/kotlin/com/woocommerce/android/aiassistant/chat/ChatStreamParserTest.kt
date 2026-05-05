@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.chat
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantErrorKind
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.flow
@@ -123,7 +123,7 @@ class ChatStreamParserTest {
 
         assertThat(events).hasSize(1)
         val failure = events.single() as AssistantEvent.Failed
-        assertThat(failure.kind).isEqualTo(AssistantErrorKind.INVALID_STREAM)
+        assertThat(failure.kind).isEqualTo(ChatStreamError.INVALID_STREAM)
         assertThat(failure.cause).isInstanceOf(MalformedChunkException::class.java)
     }
 
@@ -135,7 +135,7 @@ class ChatStreamParserTest {
 
         assertThat(events).hasSize(1)
         val failure = events.single() as AssistantEvent.Failed
-        assertThat(failure.kind).isEqualTo(AssistantErrorKind.INVALID_STREAM)
+        assertThat(failure.kind).isEqualTo(ChatStreamError.INVALID_STREAM)
         assertThat(failure.cause).isInstanceOf(MalformedChunkException::class.java)
     }
 

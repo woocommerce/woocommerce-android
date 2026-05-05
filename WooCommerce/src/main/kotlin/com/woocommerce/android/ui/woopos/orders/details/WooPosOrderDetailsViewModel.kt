@@ -149,12 +149,12 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private fun handleActionClicked(action: OrderAction) {
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> {
-                viewModelScope.launch {
-                    _navigationEvent.emit(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
-                }
-            }
+            is OrderAction.IssueRefund -> emitNav(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
         }
+    }
+
+    private fun emitNav(event: WooPosNavigationEvent) {
+        viewModelScope.launch { _navigationEvent.emit(event) }
     }
 
     private fun onEmailReceiptButtonClicked(orderId: Long) {
