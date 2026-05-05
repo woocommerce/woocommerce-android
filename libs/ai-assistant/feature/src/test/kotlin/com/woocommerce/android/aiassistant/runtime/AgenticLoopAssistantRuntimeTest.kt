@@ -27,16 +27,23 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -46,6 +53,12 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class AgenticLoopAssistantRuntimeTest {
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = false
+        explicitNulls = false
+    }
+
     @Test
     fun `when agentic loop finishes with max iterations, then runtime preserves outcome`() = runTest {
         val updatedHistory = listOf(AssistantMessage.User("Hello"))
@@ -261,6 +274,199 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given show cards non success and success results, when adapted, then only success emits cards`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-validation")),
+                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-success")),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-success",
+                            structured = buildJsonObject { put("rendered", 1) },
+                            uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                        )
+                    ),
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-transport")),
+                    LoopEvent.ToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events.cardEvents()).containsExactly(
+            AssistantRuntimeEvent.CardsResolved(
+                listOf(
+                    AssistantCard.Order(
+                        remoteOrderId = 123L,
+                        number = "#123",
+                        status = "processing",
+                        total = "12.34",
+                        currency = "USD",
+                        customerName = "Jane Doe",
+                        date = "2026-05-01T10:00:00Z",
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `given non show cards success with card shaped uiStructured, when adapted, then cards are ignored`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(
+                        ToolCall(
+                            id = "call-orders",
+                            name = "orders_list",
+                            arguments = buildJsonObject {},
+                        )
+                    ),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-orders",
+                            structured = buildJsonObject { put("ok", true) },
+                            uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                        )
+                    ),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events.cardEvents()).isEmpty()
+    }
+
+    @Test
+    fun `given show cards success with malformed uiStructured, when adapted, then no card event is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-malformed",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = buildJsonObject { put("cards", "not an array") },
+                            )
+                        ),
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.COMPLETED,
+                            updatedHistory = listOf(AssistantMessage.User("Hello")),
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.cardEvents()).isEmpty()
+            assertThat(events).contains(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                )
+            )
+        }
+
+    @Test
+    fun `given show cards success with valid and unsupported cards, when adapted, then valid cards are emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-partial")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-partial",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(
+                                    orderPayload(id = "123", title = "#123"),
+                                    ShowCardPayload(
+                                        family = "customer",
+                                        id = "456",
+                                        title = "Customer",
+                                        details = ShowCardDetails.Product(),
+                                    ),
+                                ),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.cardEvents()).containsExactly(
+                AssistantRuntimeEvent.CardsResolved(listOf(expectedOrderCard(id = "123", number = "#123")))
+            )
+        }
+
+    @Test
+    fun `given show cards success with empty cards, when adapted, then no card event is emitted`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.ToolCallStarted(showCardsCall(id = "call-empty")),
+                    LoopEvent.ToolCallFinished(
+                        ToolResult.Success(
+                            toolCallId = "call-empty",
+                            structured = buildJsonObject { put("rendered", 0) },
+                            uiStructured = showCardsUiStructured(),
+                        )
+                    ),
+                    LoopEvent.AssistantTextDelta("I could not find matching cards."),
+                )
+            )
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events.cardEvents()).isEmpty()
+        assertThat(events).contains(
+            AssistantRuntimeEvent.AssistantTextDelta("I could not find matching cards.")
+        )
+    }
+
+    @Test
+    fun `given arbitrary tool success with json cards key, when adapted, then no fallback cards are emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(
+                            ToolCall(
+                                id = "call-arbitrary",
+                                name = "analytics_revenue",
+                                arguments = buildJsonObject {},
+                            )
+                        ),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-arbitrary",
+                                structured = buildJsonObject {
+                                    put("cards", "model visible but not UI cards")
+                                },
+                                uiStructured = buildJsonObject {
+                                    put("cards", "also ignored")
+                                },
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.cardEvents()).isEmpty()
+        }
+
+    @Test
     fun `when cancelled confirmation is resolved, then runtime forwards the cancellation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
@@ -284,6 +490,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         confirmationSnapshotResolver = snapshotResolver,
+        cardParser = AssistantCardUiStructuredParser(json),
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -293,6 +500,41 @@ class AgenticLoopAssistantRuntimeTest {
         userMessage = "Hello",
         history = emptyList(),
     )
+
+    private fun showCardsCall(id: String) = ToolCall(
+        id = id,
+        name = "show_cards",
+        arguments = buildJsonObject {},
+    )
+
+    private fun showCardsUiStructured(vararg cards: ShowCardPayload) =
+        json.encodeToJsonElement(ShowCardsUiStructured(cards = cards.toList()))
+
+    private fun orderPayload(id: String, title: String) = ShowCardPayload(
+        family = "order",
+        id = id,
+        title = title,
+        details = ShowCardDetails.Order(
+            status = "processing",
+            total = "12.34",
+            currency = "USD",
+            dateCreated = "2026-05-01T10:00:00Z",
+            customerName = "Jane Doe",
+        ),
+    )
+
+    private fun expectedOrderCard(id: String, number: String) = AssistantCard.Order(
+        remoteOrderId = id.toLong(),
+        number = number,
+        status = "processing",
+        total = "12.34",
+        currency = "USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun List<AssistantRuntimeEvent>.cardEvents() =
+        filterIsInstance<AssistantRuntimeEvent.CardsResolved>()
 
     private class FakeAgenticLoop(
         private val events: List<LoopEvent>,

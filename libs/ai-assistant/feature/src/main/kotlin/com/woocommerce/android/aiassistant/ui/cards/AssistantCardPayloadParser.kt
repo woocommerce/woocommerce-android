@@ -6,7 +6,19 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStruc
 
 internal object AssistantCardPayloadParser {
     fun parse(payload: ShowCardsUiStructured): List<AssistantCard> =
-        payload.cards.mapNotNull(::parseCard)
+        parseEntries(payload).map { it.card }
+
+    fun parseEntries(payload: ShowCardsUiStructured): List<AssistantCardEntry> =
+        payload.cards.mapNotNull(::parseEntry)
+
+    private fun parseEntry(card: ShowCardPayload): AssistantCardEntry? {
+        val parsedCard = parseCard(card) ?: return null
+
+        return AssistantCardEntry(
+            key = AssistantCardKey(family = card.family, id = card.id),
+            card = parsedCard,
+        )
+    }
 
     private fun parseCard(card: ShowCardPayload): AssistantCard? =
         when (card.family) {

@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 internal const val MAX_SHOW_CARDS_REFS = 10
+internal const val SHOW_CARDS_TOOL_NAME = "show_cards"
 
 @Serializable
 internal data class ShowCardsArguments(

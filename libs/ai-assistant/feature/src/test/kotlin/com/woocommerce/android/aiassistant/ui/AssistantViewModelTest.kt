@@ -12,6 +12,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -645,6 +646,142 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given active assistant bubble, when cards arrive, then card segments are appended`() = runTest {
+        viewModel.onSendMessage("Show order 123")
+        val activeBubbleId = viewModel.uiState.value.messages.last().id
+        val orderCard = givenOrderCard(id = "123", number = "#123")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+            AssistantUiMessage(
+                id = activeBubbleId,
+                role = AssistantUiMessage.Role.ASSISTANT,
+                segments = listOf(
+                    AssistantUiSegment.Text(""),
+                    AssistantUiSegment.Card(orderCard),
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `given cards arrive between text deltas, when turn finishes, then cards stay on active assistant message`() =
+        runTest {
+            viewModel.onSendMessage("Show order 123")
+            val activeBubbleId = viewModel.uiState.value.messages.last().id
+            val orderCard = givenOrderCard(id = "123", number = "#123")
+
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Here is the order."))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Anything else?"))
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Show order 123"),
+                        AssistantMessage.Assistant("Here is the order. Anything else?"),
+                    ),
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
+                AssistantUiMessage(
+                    id = activeBubbleId,
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.Text("Here is the order."),
+                        AssistantUiSegment.Card(orderCard),
+                        AssistantUiSegment.Text("Anything else?"),
+                    ),
+                )
+            )
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.IDLE)
+        }
+
+    @Test
+    fun `given no card event is emitted, when turn finishes, then no card segment is present`() = runTest {
+        viewModel.onSendMessage("Show missing order")
+
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("I could not find that order."))
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.COMPLETED,
+                updatedHistory = listOf(
+                    AssistantMessage.User("Show missing order"),
+                    AssistantMessage.Assistant("I could not find that order."),
+                ),
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+            .isEmpty()
+    }
+
+    @Test
+    fun `given duplicate card keys across one turn, when cards arrive, then first seen cards are kept`() = runTest {
+        viewModel.onSendMessage("Show matching cards")
+        val firstOrder = givenOrderCard(id = "123", number = "#123")
+        val duplicateOrder = givenOrderCard(id = "123", number = "#duplicate")
+        val secondOrder = givenOrderCard(id = "456", number = "#456")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateOrder, secondOrder)))
+        advanceUntilIdle()
+
+        val cardSegments = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.Card>()
+
+        assertThat(cardSegments).containsExactly(
+            AssistantUiSegment.Card(firstOrder),
+            AssistantUiSegment.Card(secondOrder),
+        )
+    }
+
+    @Test
+    fun `given same id across different families, when cards arrive, then both cards are kept`() = runTest {
+        viewModel.onSendMessage("Show order and product 123")
+        val order = givenOrderCard(id = "123", number = "#123")
+        val product = givenProductCard(id = "123", name = "Socks")
+
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(order, product)))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments)
+            .contains(
+                AssistantUiSegment.Card(order),
+                AssistantUiSegment.Card(product),
+            )
+    }
+
+    @Test
+    fun `given finished history contains card shaped tool json, when reduced, then no card segment is created`() =
+        runTest {
+            viewModel.onSendMessage("Show analytics")
+
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = listOf(
+                        AssistantMessage.User("Show analytics"),
+                        AssistantMessage.Tool(
+                            toolCallId = "call-analytics",
+                            content = """{"cards":[{"family":"order","id":"123"}]}""",
+                        ),
+                        AssistantMessage.Assistant("Revenue is up today."),
+                    ),
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+                .isEmpty()
+        }
+
+    @Test
     fun `when cancel is requested, then runtime is cancelled and turn is no longer active`() = runTest {
         viewModel.onSendMessage("Hello")
 
@@ -1045,6 +1182,26 @@ class AssistantViewModelTest {
             arguments = buildJsonObject { put("id", 123) },
         ),
         state = AssistantConfirmationCardState.PENDING,
+    )
+
+    private fun givenOrderCard(id: String, number: String) = AssistantCard.Order(
+        remoteOrderId = id.toLong(),
+        number = number,
+        status = "processing",
+        total = "12.34",
+        currency = "USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun givenProductCard(id: String, name: String) = AssistantCard.Product(
+        remoteProductId = id.toLong(),
+        name = name,
+        sku = "woo-socks",
+        price = "9.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/socks.png",
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {

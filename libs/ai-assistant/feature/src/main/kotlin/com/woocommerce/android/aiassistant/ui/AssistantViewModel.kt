@@ -12,6 +12,8 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -39,6 +41,7 @@ class AssistantViewModel @AssistedInject constructor(
     private var history: List<AssistantMessage> = emptyList()
     private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
     private var lastUserMessage: String? = null
+    private val activeCardKeys = linkedSetOf<AssistantCardKey>()
 
     fun onSendMessage(message: String) {
         if (_uiState.value.isTurnActive) return
@@ -124,6 +127,7 @@ class AssistantViewModel @AssistedInject constructor(
 
     private fun startTurn(message: String, isRetry: Boolean) {
         turnJob?.cancel()
+        activeCardKeys.clear()
         if (!isRetry) {
             lastTurnBaseHistory = history
         }
@@ -197,11 +201,13 @@ class AssistantViewModel @AssistedInject constructor(
                     )
                 }
             }
+            is AssistantRuntimeEvent.CardsResolved -> appendAssistantCards(event.cards)
             is AssistantRuntimeEvent.Finished -> {
                 val activeMessageId = activeAssistantMessageId
                 val normalizedError = event.normalizedAssistantError()
                 val canRetry = event.canRetry()
                 activeAssistantMessageId = null
+                activeCardKeys.clear()
                 history = event.updatedHistory
                 _uiState.update {
                     it.copy(
@@ -301,6 +307,32 @@ class AssistantViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private fun appendAssistantCards(cards: List<AssistantCard>) {
+        val messageId = activeAssistantMessageId ?: return
+        val newSegments = cards
+            .filter { activeCardKeys.add(it.toCardKey()) }
+            .map { AssistantUiSegment.Card(it) }
+        if (newSegments.isEmpty()) return
+
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.copy(segments = message.segments + newSegments)
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun AssistantCard.toCardKey(): AssistantCardKey =
+        when (this) {
+            is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
+            is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+        }
 
     private fun appendAssistantText(delta: String) {
         val messageId = activeAssistantMessageId ?: return
