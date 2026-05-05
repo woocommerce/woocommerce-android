@@ -100,6 +100,15 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         }
     }
 
+    suspend fun disconnectIfConnected() {
+        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connected) return
+        runCatching {
+            withContext(Dispatchers.Main.immediate) {
+                cardReaderManager.disconnectReader()
+            }
+        }.onFailure { logger.e("Failed to disconnect built-in reader", it) }
+    }
+
     private suspend fun fetchLocationId(): LocationIdFetchingResult {
         val pluginType = cardReaderOnboardingChecker.getOnboardingState().preferredPlugin
             ?: PluginType.WOOCOMMERCE_PAYMENTS

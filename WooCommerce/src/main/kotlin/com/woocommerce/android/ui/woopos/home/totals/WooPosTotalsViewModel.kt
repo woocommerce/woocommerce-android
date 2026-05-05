@@ -581,11 +581,15 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
-                        if (isTapToPayPayment) {
+                        val wasTapToPay = isTapToPayPayment
+                        if (wasTapToPay) {
                             isTTPPaymentInProgress = false
                         }
                         isTapToPayPayment = false
                         setTapToPayInProgress(false)
+                        if (wasTapToPay) {
+                            launch { builtInReaderConnector.disconnectIfConnected() }
+                        }
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 
@@ -598,6 +602,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
                         isTTPPaymentInProgress = false
                         isTapToPayPayment = false
+                        launch { builtInReaderConnector.disconnectIfConnected() }
                         uiState.value = buildBuiltInPaymentFailedState(paymentState)
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                     }
