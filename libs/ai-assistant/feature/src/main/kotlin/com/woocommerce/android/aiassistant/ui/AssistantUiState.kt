@@ -104,16 +104,6 @@ sealed interface AssistantUiSegment {
     data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
 }
 
-internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
-    get() = segments.any { segment ->
-        when (segment) {
-            is AssistantUiSegment.Text -> segment.text.isNotEmpty()
-            is AssistantUiSegment.ConfirmationCard -> true
-            is AssistantUiSegment.CardGroup -> segment.cards.isNotEmpty()
-            is AssistantUiSegment.ToolActivity -> true
-        }
-    }
-
 @StringRes
 internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     "orders_list",

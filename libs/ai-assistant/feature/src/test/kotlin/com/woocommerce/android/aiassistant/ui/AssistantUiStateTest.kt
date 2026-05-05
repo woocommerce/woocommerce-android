@@ -4,7 +4,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -338,6 +340,107 @@ class AssistantUiStateTest {
         )
     }
 
+    @Test
+    fun `given final card group before text, when ordering segments, then text renders before card group`() {
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val text = AssistantUiSegment.Text("Here is the order.")
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(cardGroup, text),
+        )
+
+        val orderedSegments = message.orderedSegments(isStreaming = false)
+
+        assertThat(orderedSegments).containsExactly(text, cardGroup)
+    }
+
+    @Test
+    fun `given final text card group text, when ordering segments, then text renders before card group`() {
+        val firstText = AssistantUiSegment.Text("Here are your matching orders.")
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val secondText = AssistantUiSegment.Text("I found the most recent one first.")
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(firstText, cardGroup, secondText),
+        )
+
+        val orderedSegments = message.orderedSegments(isStreaming = false)
+
+        assertThat(orderedSegments).containsExactly(firstText, secondText, cardGroup)
+    }
+
+    @Test
+    fun `given final card-only message, when ordering segments, then card group remains visible`() {
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(cardGroup),
+        )
+
+        val orderedSegments = message.orderedSegments(isStreaming = false)
+
+        assertThat(orderedSegments).containsExactly(cardGroup)
+    }
+
+    @Test
+    fun `given final text card group and confirmation, when ordering segments, then confirmation is not moved after cards`() {
+        val text = AssistantUiSegment.Text("Review this change before applying it.")
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val confirmationCard = AssistantUiSegment.ConfirmationCard(confirmationCard())
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(text, cardGroup, confirmationCard),
+        )
+
+        val orderedSegments = message.orderedSegments(isStreaming = false)
+
+        assertThat(orderedSegments).containsExactly(text, confirmationCard, cardGroup)
+    }
+
+    @Test
+    fun `given streaming assistant message with card group, when ordering segments, then card group is hidden`() {
+        val text = AssistantUiSegment.Text("I found this order.")
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(text, cardGroup),
+        )
+
+        val orderedSegments = message.orderedSegments(isStreaming = true)
+
+        assertThat(orderedSegments).containsExactly(text)
+    }
+
+    @Test
+    fun `given non-streaming error and finished states, when ordering segments, then card groups are visible`() {
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val text = AssistantUiSegment.Text("Here is the order.")
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(cardGroup, text),
+        )
+
+        listOf(
+            AssistantUiState(status = AssistantUiStatus.ERROR, activeAssistantMessageId = "message-1"),
+            AssistantUiState(
+                status = AssistantUiStatus.ERROR,
+                error = AssistantUiError.CANCELLED,
+                activeAssistantMessageId = "message-1",
+            ),
+            AssistantUiState(status = AssistantUiStatus.IDLE, activeAssistantMessageId = null),
+        ).forEach { state ->
+            assertThat(message.orderedSegments(isStreaming = state.isStreamingMessage(message)))
+                .describedAs(state.status.name)
+                .containsExactly(text, cardGroup)
+        }
+    }
+
     private fun orderCard() = AssistantCard.Order(
         remoteOrderId = 123L,
         number = "#1001",
@@ -346,5 +449,15 @@ class AssistantUiStateTest {
         currency = "USD",
         customerName = "Jane Doe",
         date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun confirmationCard() = AssistantConfirmationCard(
+        confirmationId = "confirmation-1",
+        toolCall = ToolCall(
+            id = "tool-call-1",
+            name = "orders_update",
+            arguments = buildJsonObject { },
+        ),
+        state = AssistantConfirmationCardState.PENDING,
     )
 }
