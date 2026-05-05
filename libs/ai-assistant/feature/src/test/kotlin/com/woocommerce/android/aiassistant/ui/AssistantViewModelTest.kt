@@ -1196,6 +1196,40 @@ class AssistantViewModelTest {
             )
         }
 
+    @Test
+    fun `given cancelled confirmation is resolved, when next turn starts, then transcript card stays closed`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        runtime.emit(
+            AssistantRuntimeEvent.ConfirmationResolved(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            )
+        )
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = listOf(AssistantMessage.User("Cancel order 123")),
+            )
+        )
+        advanceUntilIdle()
+        val resolvedMessageId = viewModel.uiState.value.messages.last().id
+
+        viewModel.onSendMessage("Show order 123")
+        advanceUntilIdle()
+
+        val resolvedMessage = viewModel.uiState.value.messages.first { it.id == resolvedMessageId }
+        assertThat(resolvedMessage.segments).contains(
+            AssistantUiSegment.ConfirmationCard(
+                givenConfirmationCard().copy(state = AssistantConfirmationCardState.CANCELLED)
+            )
+        )
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
+    }
+
     private fun givenConfirmationCard() = AssistantConfirmationCard(
         confirmationId = "confirmation-1",
         toolCall = ToolCall(
