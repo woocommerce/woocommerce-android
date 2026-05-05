@@ -352,8 +352,16 @@ private fun LazyListState.isPinnedToRenderedEnd(
     if (lastVisibleItem.index != targetIndex) return false
 
     val distanceFromViewportEnd = layoutInfo.viewportEndOffset - (lastVisibleItem.offset + lastVisibleItem.size)
-    return distanceFromViewportEnd <= bottomPinThresholdPx
+    return isRenderedTargetPinnedToViewportEnd(
+        distanceFromViewportEnd = distanceFromViewportEnd,
+        bottomPinThresholdPx = bottomPinThresholdPx,
+    )
 }
+
+internal fun isRenderedTargetPinnedToViewportEnd(
+    distanceFromViewportEnd: Int,
+    bottomPinThresholdPx: Int,
+): Boolean = distanceFromViewportEnd in 0..bottomPinThresholdPx
 
 private fun AssistantUiMessage.hasVisibleContent(): Boolean =
     role == AssistantUiMessage.Role.USER ||
