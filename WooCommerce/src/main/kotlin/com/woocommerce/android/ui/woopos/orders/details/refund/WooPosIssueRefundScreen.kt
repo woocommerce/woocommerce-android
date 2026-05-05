@@ -237,11 +237,6 @@ private fun RefundScreenHeader(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = closeContentDescription,
                 modifier = Modifier.size(WooPosIconSize.Large.value),
-                tint = if (closeButtonEnabled) {
-                    MaterialTheme.colorScheme.onSurface
-                } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                }
             )
         }
 
@@ -273,27 +268,15 @@ private fun RefundScreenButtons(
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         when (state) {
-            is WooPosRefundState.Loading -> {
-                WooPosButton(
-                    text = stringResource(R.string.continue_button),
-                    onClick = {},
-                    state = WooPosButtonState.DISABLED,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            is WooPosRefundState.Loading -> ContinueToReviewButton(
+                enabled = false,
+                onClick = {},
+            )
             is WooPosRefundState.Content -> when (state.step) {
-                WooPosRefundState.Content.RefundStep.SelectItems -> {
-                    WooPosButton(
-                        text = stringResource(R.string.continue_button),
-                        onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
-                        state = if (state.selectedItemIds.isNotEmpty()) {
-                            WooPosButtonState.ENABLED
-                        } else {
-                            WooPosButtonState.DISABLED
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                WooPosRefundState.Content.RefundStep.SelectItems -> ContinueToReviewButton(
+                    enabled = state.selectedItemIds.isNotEmpty(),
+                    onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
+                )
                 WooPosRefundState.Content.RefundStep.ReviewRefund -> {
                     WooPosButton(
                         text = stringResource(R.string.continue_button),
@@ -393,6 +376,19 @@ private fun RefundScreenButtons(
             }
         }
     }
+}
+
+@Composable
+private fun ContinueToReviewButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    WooPosButton(
+        text = stringResource(R.string.continue_button),
+        onClick = onClick,
+        state = if (enabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
