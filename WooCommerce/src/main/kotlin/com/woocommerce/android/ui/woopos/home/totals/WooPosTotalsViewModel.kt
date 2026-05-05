@@ -178,6 +178,9 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+        if (isTapToPayPayment) {
+            isTTPPaymentInProgress = false
+        }
         isTapToPayPayment = false
     }
 
@@ -528,6 +531,9 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
+                        if (isTapToPayPayment) {
+                            isTTPPaymentInProgress = false
+                        }
                         isTapToPayPayment = false
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
@@ -539,7 +545,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
                         wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
+                        isTTPPaymentInProgress = false
                         isTapToPayPayment = false
+                        cardReaderPaymentController?.stop()
+                        cardReaderPaymentController = null
                         childrenToParentEventSender.sendToParent(
                             ToastMessageDisplayed(uiStringParser.asString(paymentState.errorType.message))
                         )
