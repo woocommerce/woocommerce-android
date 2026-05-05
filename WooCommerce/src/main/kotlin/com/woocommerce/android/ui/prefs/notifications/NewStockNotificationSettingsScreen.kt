@@ -90,7 +90,7 @@ private fun NewStockNotificationSettingsScreen(
                     onEditStoreSettingsClicked = onEditStoreSettingsClicked
                 )
             }
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider()
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_out_of_stock_title),
                 description = stringResource(R.string.settings_notifs_stock_out_of_stock_description),
@@ -100,7 +100,7 @@ private fun NewStockNotificationSettingsScreen(
                     onStockNotificationEnabledChanged(StockNotificationType.OutOfStock, it)
                 }
             )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider()
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_backorder_title),
                 description = stringResource(R.string.settings_notifs_stock_backorder_description),
