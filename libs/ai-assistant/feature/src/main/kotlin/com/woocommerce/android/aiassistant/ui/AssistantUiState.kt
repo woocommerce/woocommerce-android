@@ -119,7 +119,6 @@ internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     "analytics_orders",
     "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
     "customers_list" -> R.string.assistant_chat_tool_activity_customers
-    "show_cards" -> R.string.assistant_chat_tool_activity_cards
     else -> R.string.assistant_chat_tool_activity_generic
 }
 

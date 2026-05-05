@@ -228,7 +228,6 @@ class AssistantUiStateTest {
             "analytics_orders" to R.string.assistant_chat_tool_activity_analytics,
             "analytics_revenue" to R.string.assistant_chat_tool_activity_analytics,
             "customers_list" to R.string.assistant_chat_tool_activity_customers,
-            "show_cards" to R.string.assistant_chat_tool_activity_cards,
         )
 
         expectedLabels.forEach { (toolName, labelRes) ->

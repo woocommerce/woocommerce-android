@@ -12,6 +12,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
@@ -231,6 +232,8 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     private fun showToolActivity(event: AssistantRuntimeEvent.ToolCallStarted) {
+        if (event.toolName == SHOW_CARDS_TOOL_NAME) return
+
         val messageId = activeAssistantMessageId ?: return
         _uiState.update { state ->
             state.copy(
